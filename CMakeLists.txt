@@ -3,6 +3,9 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+# Set the MinGW generator
+set(CMAKE_GENERATOR "MinGW Makefiles")
+
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -14,8 +17,12 @@ project ("Eclipse engine")
 # Add source to this project's executable.
 add_executable (CMakeTarget "src/Main.cpp" "src/Main.h")
 
+# Set the C++ compiler to g++
+set(CMAKE_CXX_COMPILER "g++")
+
+# Set the MinGW root directory if needed
+# set(CMAKE_FIND_ROOT_PATH "C:\MinGW")
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET CMakeTarget PROPERTY CXX_STANDARD 20)
 endif()
-
-# TODO: Add tests and install targets if needed.

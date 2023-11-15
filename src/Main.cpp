@@ -1,12 +1,13 @@
-﻿// Main.cpp : Defines the entry point for the application.
-//
-
-#include "Main.h"
-
-using namespace std;
+﻿#include "Main.h"
+#include <iostream>
 
 int main()
 {
-	cout << "Hello CMake." << endl;
-	return 0;
+    std::cout << "Hello CMake." << std::endl;
+
+    // Wait for user input before exiting
+    std::cout << "Press Enter to exit...";
+    std::cin.get();
+
+    return 0;
 }
