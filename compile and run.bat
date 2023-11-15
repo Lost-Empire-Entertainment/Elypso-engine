@@ -1,8 +1,15 @@
-REM move to the build folder
-cd "C:\Users\sande\Documents\cpp_projects\Eclipse engine\build"
-REM configure project and generate build files
+@echo off
+REM Get the path where the batch file is run from
+set "current_path=%~dp0"
+
+REM Move to the build folder relative to the batch file path
+cd /d "%current_path%build"
+
+REM Configure project and generate build files
 cmake -G "MinGW Makefiles" ..
-REM generate the executable
+
+REM Generate the executable
 mingw32-make
-REM run the generated executable
+
+REM Run the generated executable
 .\CMakeTarget.exe
