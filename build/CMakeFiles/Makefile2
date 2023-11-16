@@ -53,10 +53,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\sande\Documents\cpp_projects\Eclipse engine"
+CMAKE_SOURCE_DIR = C:\Users\sande\Documents\Eclipse_engine
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\sande\Documents\cpp_projects\Eclipse engine\build"
+CMAKE_BINARY_DIR = C:\Users\sande\Documents\Eclipse_engine\build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -80,14 +80,14 @@ clean: CMakeFiles/CMakeTarget.dir/clean
 CMakeFiles/CMakeTarget.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\CMakeTarget.dir\build.make CMakeFiles/CMakeTarget.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\CMakeTarget.dir\build.make CMakeFiles/CMakeTarget.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\sande\Documents\cpp_projects\Eclipse engine\build\CMakeFiles" --progress-num=1,2 "Built target CMakeTarget"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\sande\Documents\Eclipse_engine\build\CMakeFiles --progress-num=1,2 "Built target CMakeTarget"
 .PHONY : CMakeFiles/CMakeTarget.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/CMakeTarget.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\sande\Documents\cpp_projects\Eclipse engine\build\CMakeFiles" 2
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\sande\Documents\Eclipse_engine\build\CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/CMakeTarget.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\sande\Documents\cpp_projects\Eclipse engine\build\CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\sande\Documents\Eclipse_engine\build\CMakeFiles 0
 .PHONY : CMakeFiles/CMakeTarget.dir/rule
 
 # Convenience name for target.
