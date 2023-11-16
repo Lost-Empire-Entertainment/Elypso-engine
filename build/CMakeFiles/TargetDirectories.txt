@@ -1,3 +1,0 @@
-C:/Users/sande/Documents/cpp_projects/Eclipse engine/build/CMakeFiles/CMakeTarget.dir
-C:/Users/sande/Documents/cpp_projects/Eclipse engine/build/CMakeFiles/edit_cache.dir
-C:/Users/sande/Documents/cpp_projects/Eclipse engine/build/CMakeFiles/rebuild_cache.dir

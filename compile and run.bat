@@ -13,3 +13,5 @@ mingw32-make
 
 REM Run the generated executable
 .\CMakeTarget.exe
+
+pause
