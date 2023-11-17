@@ -1,13 +1,9 @@
 ﻿#include "Main.h"
-#include <iostream>
+
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello CMake." << std::endl;
-
-    // Wait for user input before exiting
-    std::cout << "Press Enter to exit...";
-    std::cin.get();
-
-    return 0;
+	cout << "Hello CMake." << endl;
+	return 0;
 }
