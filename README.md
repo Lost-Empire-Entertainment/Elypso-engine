@@ -1,4 +1,4 @@
-Welcome to the main repository of the Draconian engine which is a C++ OpenGL engine for RPG and shooter games. This engines main goal is to make games for the game development company Lost Empire Entertainment but it will also stay open source and free to use for anyone else for other purposes.
+Welcome to the main repository of Elypso engine which is a C++ OpenGL engine for RPG and shooter games. This engines main goal is to make games for the game development company Lost Empire Entertainment but it will also stay open source and free to use for anyone else for other purposes.
 
 Libraries used in this engine:
 - CMake (alternative to visual studio for generating build files for the engine)
