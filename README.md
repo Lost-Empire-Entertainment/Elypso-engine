@@ -7,6 +7,7 @@ Libraries used in this engine:
 - GLAD (simplifies the process of managing OpenGL function pointers. It generates platform-specific code for loading OpenGL functions, making it easier to use OpenGL in a cross-platform manner)
 - GLM (C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification)
 - GLTF (supports static models, animation, and moving scenes)
+- Dear ImGUI (bloat-free graphical user interface library for C++. It outputs optimized vertex buffers that you can render anytime in your 3D-pipeline-enabled applications)
 
 Join the community server: https://discord.com/invite/3jxDdHJ6SQ
 
