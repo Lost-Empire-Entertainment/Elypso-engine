@@ -1,4 +1,9 @@
-cmake_minimum_required (VERSION 3.8)
+# Check and set the default build type if not specified
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
+cmake_minimum_required(VERSION 3.8)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -6,31 +11,26 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-project ("Elypso engine")
+project("Elypso engine")
+
+# Set the output directory for the executable
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 # Add source to this project's executable.
-add_executable (CMakeTarget "src/Main.cpp")
+add_executable(CMakeTarget "src/Main.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET CMakeTarget PROPERTY CXX_STANDARD 20)
 endif()
 
-# CPack configuration
-set(CPACK_PACKAGE_NAME "Elypso engine")
-set(CPACK_PACKAGE_VERSION "Prototype 1")
+# Include NSIS as the generator for CPack
+set(CPACK_GENERATOR "NSIS")
 
-# For Windows NSIS installer
-set(CPACK_GENERATOR NSIS)  
-set(CPACK_NSIS_MODIFY_PATH ON)
+# Set CPack NSIS variables (customize as needed)
+set(CPACK_NSIS_PACKAGE_NAME "ElypsoEngine")
+set(CPACK_NSIS_DISPLAY_NAME "Elypso Engine")
+set(CPACK_NSIS_EXECUTABLE_NAME "ElypsoEngineSetup")
+set(CPACK_NSIS_INSTALL_ROOT "C:/Program Files/ElypsoEngine")
 
-# Set the icon for the installer
-set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/files/icon.ico")
-
-# Specify the start menu shortcut
-set(CPACK_NSIS_CREATE_ICONS_EXTRA "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Elypso Engine.lnk' '$INSTDIR\\\\bin\\\\CMakeTarget.exe'")
-
-# Set additional CPack options if needed
-# set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "69")
-# set(CPACK_PACKAGE_EXECUTABLES "CMakeTarget" "Elypso Engine")
-
+# Include CPack to enable packaging
 include(CPack)
