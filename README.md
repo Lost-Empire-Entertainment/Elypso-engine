@@ -1,4 +1,4 @@
-Welcome to the main repository of Elypso engine which is a C++ OpenGL engine for RPG and shooter games. This engines main goal is to make games for the game development company Lost Empire Entertainment but it will also stay open source and free to use for anyone else for other purposes.
+Welcome to the main repository of Elypso engine which is an open source C++ OpenGL engine primarily focusing on RPG and shooter games and will be the main game creation engine for my game studio Lost Empire Entertainment once it is production ready.
 
 Libraries used in this engine:
 - CMake (alternative to visual studio for generating build files for the engine)
@@ -8,6 +8,6 @@ Libraries used in this engine:
 - GLM (C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification)
 - GLTF (supports static models, animation, and moving scenes)
 
-Join the community server: https://discord.com/invite/3jxDdHJ6SQ
+Join the community server: [https://discord.com/invite/3jxDdHJ6SQ
 
-Check out the trello board: https://trello.com/b/hbt6ebCZ/draconian-engine
+Check out the trello board: https://trello.com/b/hbt6ebCZ/elypso-engine
