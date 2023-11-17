@@ -8,6 +8,6 @@ Libraries used in this engine:
 - GLM (C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification)
 - GLTF (supports static models, animation, and moving scenes)
 
-Join the community server: [https://discord.com/invite/3jxDdHJ6SQ
+Join the community server: https://discord.com/invite/3jxDdHJ6SQ
 
 Check out the trello board: https://trello.com/b/hbt6ebCZ/elypso-engine
