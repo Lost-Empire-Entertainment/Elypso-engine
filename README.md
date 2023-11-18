@@ -11,13 +11,4 @@ Libraries used in this engine:
 - GLM (C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification)
 - GLTF (supports static models, animation, and moving scenes)
 - Dear ImGUI (bloat-free graphical user interface library for C++. It outputs optimized vertex buffers that you can render anytime in your 3D-pipeline-enabled applications)
-
-Cross-platform executable libraries:
-- windows executable: visual studio, cmake, cpack
-- linux executable: visual studio, cmake, cpack
-- mac executable: visual studio, cmake, cpack
-
-Cross-platform installer libraries:
-- windows installer: nsis
-- linux installer: dpkg (creates .deb file)
-- mac installer: create-dmg (creates .dmg file)
+- NSIS (windows installer generator)
