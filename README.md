@@ -1,5 +1,9 @@
 Welcome to the main repository of Elypso engine which is an open source C++ OpenGL engine primarily focusing on RPG and shooter games and will be the main game creation engine for my game studio Lost Empire Entertainment once it is production ready.
 
+Join the community server: https://discord.com/invite/3jxDdHJ6SQ
+
+Check out the trello board: https://trello.com/b/hbt6ebCZ/elypso-engine
+
 Libraries used in this engine:
 - CMake (alternative to visual studio for generating build files for the engine)
 - GLFW (provides a simple API for creating windows, contexts and surfaces, receiving input and events)
@@ -17,7 +21,3 @@ Cross-platform installer libraries:
 - windows installer: nsis
 - linux installer: dpkg (creates .deb file)
 - mac installer: create-dmg (creates .dmg file)
-
-Join the community server: https://discord.com/invite/3jxDdHJ6SQ
-
-Check out the trello board: https://trello.com/b/hbt6ebCZ/elypso-engine
