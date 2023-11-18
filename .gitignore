@@ -7,10 +7,10 @@
 *.o
 *.obj
 
-# Ignore the .vs Visual Studio folder
+# Visual Studio folder
 .vs/
 
-# Ignore the build folder and its contents
+# Build folder
 build/
 
 # Precompiled Headers
