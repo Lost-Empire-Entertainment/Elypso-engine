@@ -1,15 +1,25 @@
-REM Configure the project (Release build)
+@echo off
+:: Batch script to configure, build, and install Elypso engine
+
+:: Change to the script directory
+cd /d "%~dp0"
+
+:: Remove existing build and bin directories
+rmdir /s /q build
+rmdir /s /q bin
+
+:: Configure the project (Release build)
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
-REM Build the project
+:: Build the project
 cmake --build build --config Release
 
-REM Install the project
+:: Install the project
 cmake --install build --config Release
 
-REM Additional logging for CMake configuration and CPack
+:: Additional logging for CMake configuration and CPack
 cmake . > cmake_log.txt 2>&1
 cpack > cpack_log.txt 2>&1
 
-REM Pause to keep the console window open for review
+:: Pause to keep the console window open for review
 pause

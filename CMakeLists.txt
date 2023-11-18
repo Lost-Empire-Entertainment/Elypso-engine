@@ -16,9 +16,20 @@ project("Elypso engine")
 # Add source to this project's executable.
 add_executable(CMakeTarget "src/Main.cpp")
 
+# Debugging messages for installation paths
+message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "CMAKE_INSTALL_BINDIR: ${CMAKE_INSTALL_BINDIR}")
+message(STATUS "CMAKE_INSTALL_SRCDIR: ${CMAKE_INSTALL_SRCDIR}")
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET CMakeTarget PROPERTY CXX_STANDARD 20)
 endif()
+
+# Specify the installation directory for the executable
+install(TARGETS CMakeTarget DESTINATION bin)
+
+# Specify the installation directory for other files (headers, libraries, etc.)
+install(FILES "src/Main.cpp" DESTINATION src)
 
 # Include CPack to enable packaging
 include(CPack)
