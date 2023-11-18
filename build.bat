@@ -8,14 +8,17 @@ cd /d "%~dp0"
 rmdir /s /q build
 rmdir /s /q bin
 
-:: Configure the project (Release build)
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+:: Configure the project (Release build) and generate NSIS installer
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS
 
 :: Build the project
 cmake --build build --config Release
 
-:: Install the project
+:: Package the project using CPack
 cmake --install build --config Release
+cd build
+cpack
+cd ..
 
 :: Additional logging for CMake configuration and CPack
 cmake . > cmake_log.txt 2>&1

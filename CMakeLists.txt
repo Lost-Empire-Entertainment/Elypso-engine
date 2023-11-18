@@ -33,3 +33,23 @@ install(FILES "src/Main.cpp" DESTINATION src)
 
 # Include CPack to enable packaging
 include(CPack)
+
+# Define the package version
+set(MY_PACKAGE_VERSION "Prototype 1")
+
+# Set generators for Windows, Linux, and macOS
+set(CPACK_GENERATOR NSIS;DEB;PackageMaker)
+
+# Set package properties for Windows (NSIS)
+set(CPACK_NSIS_DISPLAY_NAME "Elypso Engine")
+set(CPACK_NSIS_PACKAGE_NAME "ElypsoEngine")
+set(CPACK_NSIS_EXECUTABLE_NAME "ElypsoEngine")
+set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
+
+# Set package properties for Linux (DEB)
+set(CPACK_PACKAGE_NAME "ElypsoEngine")
+set(CPACK_PACKAGE_VERSION ${MY_PACKAGE_VERSION})
+
+# Set package properties for macOS (DMG)
+set(CPACK_PACKAGE_NAME "ElypsoEngine")
+set(CPACK_PACKAGE_VERSION ${MY_PACKAGE_VERSION})

@@ -8,6 +8,17 @@
 *.obj
 
 .vs*
+build/
+cmakefiles/
+_CPACK_Packages/
+*.vcxproj
+*.filters
+*.sln
+*.cmake
+CMakeCache.txt
+cmake_log.txt
+cpack_log.txt
+install_manifest.txt
 
 # Precompiled Headers
 *.gch
