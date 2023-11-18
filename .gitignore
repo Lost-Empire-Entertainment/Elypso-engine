@@ -13,6 +13,9 @@
 # Build folder
 build/
 
+# Logs folder
+logs/
+
 # Precompiled Headers
 *.gch
 *.pch
