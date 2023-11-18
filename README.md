@@ -9,14 +9,14 @@ Libraries used in this engine:
 - Dear ImGUI (bloat-free graphical user interface library for C++. It outputs optimized vertex buffers that you can render anytime in your 3D-pipeline-enabled applications)
 
 Cross-platform libraries:
-windows executable: Mingw-w64
-windows installer from executable: nsis
+- windows executable: Mingw-w64
+- windows installer from executable: nsis
 
-linux executable: Mingw-w64
-linux installer from executable: dpkg (creates .deb file)
+- linux executable: Mingw-w64
+- linux installer from executable: dpkg (creates .deb file)
 
-mac executable: osxcross
-mac installer from executable: create-dmg (creates .dmg file)
+- mac executable: osxcross
+- mac installer from executable: create-dmg (creates .dmg file)
 
 Join the community server: https://discord.com/invite/3jxDdHJ6SQ
 
