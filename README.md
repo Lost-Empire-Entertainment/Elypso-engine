@@ -7,7 +7,16 @@ Libraries used in this engine:
 - GLM (C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification)
 - GLTF (supports static models, animation, and moving scenes)
 - Dear ImGUI (bloat-free graphical user interface library for C++. It outputs optimized vertex buffers that you can render anytime in your 3D-pipeline-enabled applications)
-- NSIS (Windows installer generator)
+
+Cross-platform libraries:
+windows executable: Mingw-w64
+windows installer from executable: nsis
+
+linux executable: Mingw-w64
+linux installer from executable: dpkg (creates .deb file)
+
+mac executable: osxcross
+mac installer from executable: create-dmg (creates .dmg file)
 
 Join the community server: https://discord.com/invite/3jxDdHJ6SQ
 
