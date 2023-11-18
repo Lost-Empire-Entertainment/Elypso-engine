@@ -6,6 +6,7 @@ Check out the trello board: https://trello.com/b/hbt6ebCZ/elypso-engine
 
 Libraries used in this engine:
 - CMake (alternative to visual studio for generating build files for the engine)
+- CPack (configure generators for binary installers and source packages)
 - GLFW (provides a simple API for creating windows, contexts and surfaces, receiving input and events)
 - GLAD (simplifies the process of managing OpenGL function pointers. It generates platform-specific code for loading OpenGL functions, making it easier to use OpenGL in a cross-platform manner)
 - GLM (C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification)
