@@ -47,17 +47,16 @@ target_include_directories(CMakeTarget PRIVATE "include")
 include(CPack)
 
 # Common package properties
+set(CPACK_GENERATOR "NSIS;DEB;DragNDrop")
 set(CPACK_PACKAGE_NAME "ElypsoEngine")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 
-# ---WINDOWS INSTALLER---
-
 # Set package properties for Windows (NSIS)
-set(CPACK_GENERATOR NSIS)
 set(CPACK_NSIS_DISPLAY_NAME "Elypso Engine")
 set(CPACK_NSIS_PACKAGE_NAME "ElypsoEngine")
 set(CPACK_NSIS_EXECUTABLE_NAME "ElypsoEngine")
 set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
+set(CPACK_NSIS_CONTACT "Lost Empire Entertainment")
 
 # Add uninstaller configuration for NSIS
 set(CPACK_NSIS_CREATE_UNINSTALLED_TARGET TRUE)
@@ -67,13 +66,3 @@ set(CPACK_NSIS_MODIFY_PATH ON)
 set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/files/icon.ico")
 # Uninstaller icon
 set(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_CURRENT_SOURCE_DIR}/files/icon.ico")
-
-# ---LINUX (.deb) INSTALLER---
-
-# Set package properties for Linux (DEB)
-set(CPACK_GENERATOR DEB)
-
-# ---MAC (.dmg) INSTALLER---
-
-# Set package properties for macOS (DMG)
-set(CPACK_GENERATOR DragNDrop)
