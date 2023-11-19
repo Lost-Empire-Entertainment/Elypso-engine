@@ -1,4 +1,4 @@
-Welcome to the main repository of Elypso engine which is an open source C++ OpenGL engine primarily focusing on RPG and shooter games and will be the main game creation engine for my game studio Lost Empire Entertainment once it is production ready.
+Welcome to the main repository of Elypso engine which is an open source C++ OpenGL engine used in Windows primarily focusing on RPG and shooter games and will be the main game creation engine for my game studio Lost Empire Entertainment once it is production ready.
 
 Join the community server: https://discord.com/invite/3jxDdHJ6SQ
 
@@ -14,8 +14,4 @@ Libraries used in this engine:
 - Dear ImGUI (bloat-free graphical user interface library for C++. It outputs optimized vertex buffers that you can render anytime in your 3D-pipeline-enabled applications)
 - NSIS (windows installer generator)
 
-How to set up the project source locally:
-- You must use Windows (the project was made on windows and is untested on other platforms)
-- You are recommended to use visual studio (Visual studio code might work too but it is untested)
-- You must download cmake, cpack and nsis (setup tutorial coming soon)
-- The rest of the library requirements are updated as the project development continues
+Note: Setup instructions are coming early 2024, currently the project is in a super early prototype phase and libraries or critical file structure setups may change during development so a solid installation structure has not yet been set.
