@@ -27,10 +27,12 @@ set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 
-file(GLOB_RECURSE SOURCE_FILES "${SRC_DIR}/*.cpp")
-file(GLOB_RECURSE GLAD_SOURCE "${SRC_DIR}/glad/*.c")
+set(SOURCE_FILES
+    ${SRC_DIR}/Main.cpp
+    ${SRC_DIR}/glad/glad.c
+)
 
-add_executable(ElypsoEngine ${SOURCE_FILES} ${GLAD_SOURCE})
+add_executable(ElypsoEngine ${SOURCE_FILES})
 
 # Add GLFW as an imported target
 add_library(glfw STATIC IMPORTED)
