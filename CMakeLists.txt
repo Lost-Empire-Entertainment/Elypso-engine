@@ -58,7 +58,6 @@ install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Debugging messages for installation paths
 message(STATUS "[Engine Debug] Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "[Engine Debug] Glad Source: ${GLAD_SOURCE}")
 
 # Debugging messages for additional information
 message(STATUS "[Engine Debug] GLFW Library Location: ${LIB_DIR}/glfw3.lib")
