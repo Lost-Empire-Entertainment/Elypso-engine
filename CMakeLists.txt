@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.27)
 
+# Set the installation prefix (optional)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install" CACHE PATH "Installation directory")
+
 # Check and set the default build type if not specified
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo;MinSizeRel" CACHE STRING "" FORCE)
@@ -8,8 +11,8 @@ endif()
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
-   cmake_policy(SET CMP0141 NEW)
-   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+    cmake_policy(SET CMP0141 NEW)
+    set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
 set(PROJECT_MAJOR_VERSION 0)
@@ -19,35 +22,68 @@ set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 
 project("Elypso engine" VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
-# Add source to this project's executable.
-file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
-file(GLOB_RECURSE HEADER_FILES "include/*.h")
+# Add the path to the include, lib, and source directories
+set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
+set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 
-# Group source files in the IDE
-source_group("Source Files" FILES ${SOURCE_FILES})
-source_group("Header Files" FILES ${HEADER_FILES})
+file(GLOB_RECURSE SOURCE_FILES "${SRC_DIR}/*.cpp")
+file(GLOB_RECURSE GLAD_SOURCE "${SRC_DIR}/glad/*.c")
 
-add_executable(CMakeTarget ${SOURCE_FILES})
+add_executable(ElypsoEngine ${SOURCE_FILES} ${GLAD_SOURCE})
 
-# Set C++ standard to C++20 (if CMake version is greater than 3.27)
-if (CMAKE_VERSION VERSION_GREATER 3.27)
-  target_compile_features(CMakeTarget PRIVATE cxx_std_20)
-endif()
+# Add GLFW as an imported target
+add_library(glfw STATIC IMPORTED)
+set_target_properties(glfw PROPERTIES
+  IMPORTED_LOCATION "${LIB_DIR}/glfw3.lib"
+  INTERFACE_INCLUDE_DIRECTORIES "${INCLUDE_DIR}/glfw"
+)
+
+target_include_directories(ElypsoEngine PRIVATE 
+    ${INCLUDE_DIR} 
+    ${INCLUDE_DIR}/glad
+    ${INCLUDE_DIR}/glfw
+    ${INCLUDE_DIR}/glm
+)
+
+# Find and include OpenGL for rendering
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+target_link_libraries(ElypsoEngine PRIVATE glfw OpenGL::GL)
 
 set(CMAKE_INSTALL_BINDIR bin)
-install(TARGETS CMakeTarget DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Debugging messages for installation paths
-message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "[Engine Debug] Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "[Engine Debug] Glad Source: ${GLAD_SOURCE}")
 
-# Include directories for headers
-target_include_directories(CMakeTarget PRIVATE "include")
+# Debugging messages for additional information
+message(STATUS "[Engine Debug] GLFW Library Location: ${LIB_DIR}/glfw3.lib")
+message(STATUS "[Engine Debug] OpenGL Include Directories: ${OPENGL_INCLUDE_DIRS}")
+
+# Debugging messages for the list of source files
+message(STATUS "[Engine Debug] List of Source Files:")
+foreach(SOURCE_FILE ${SOURCE_FILES})
+    message(STATUS "    ${SOURCE_FILE}")
+endforeach()
+
+# Debugging messages for build type and compiler information
+message(STATUS "[Engine Debug] CMake Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "[Engine Debug] C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "[Engine Debug] C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
+
+# Debugging messages for project version
+message(STATUS "[Engine Debug] Project Version: ${PROJECT_VERSION}")
+
+# Install the target
+install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Include CPack to enable packaging
 include(CPack)
 
 # Common package properties
-set(CPACK_GENERATOR "NSIS;DEB;DragNDrop")
+set(CPACK_GENERATOR "NSIS")
 set(CPACK_PACKAGE_NAME "ElypsoEngine")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 

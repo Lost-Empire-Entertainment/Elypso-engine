@@ -14,7 +14,7 @@ cd /d "%~dp0"
 
 :: Clean the build directory before configuration
 if exist build (
-    echo [Engine] Deleting folder: build
+    echo [Engine Cleanup] Deleting folder: build
     rd /s /q build
 )
 mkdir build
@@ -35,11 +35,11 @@ cpack
 
 :: Remove unused files and folders in build folder
 for /f "delims=" %%F in ('dir /b /a-d ^| find /v "Elypso engine-"') do (
-    echo [Engine] Deleting file: build/%%F
+    echo [Engine Cleanup] Deleting file: build/%%F
     del "%%F"
 )
 for /d %%D in (*) do (
-    echo [Engine] Deleting folder: build/%%D
+    echo [Engine Cleanup] Deleting folder: build/%%D
     rd /s /q "%%D"
 )
 
@@ -48,13 +48,13 @@ cd ..
 :: Remove unused files and folders in source folder
 for /f "delims=" %%X in ('dir /b /a-d *.vcxproj *.filters *.sln *.cmake CMakeCache.txt install_manifest.txt') do (
 	if exist "%%X" (
-		echo [Engine] Deleting file: %%X
+		echo [Engine Cleanup] Deleting file: %%X
         del /q "%%X"
     )
 )
 for /d %%D in (CMakeFiles _CPACK_Packages) do (
     if exist "%%D" (
-        echo [Engine] Deleting folder: %%D
+        echo [Engine Cleanup] Deleting folder: %%D
         rd /s /q "%%D"
     )
 )
