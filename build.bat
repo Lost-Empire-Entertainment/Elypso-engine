@@ -18,16 +18,17 @@ if exist build (
     rd /s /q build
 )
 mkdir build
+cd build
 
 :: Configure the project (Release build) and generate NSIS installer
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS
+cmake -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS ..
 
 if %errorlevel% neq 0 (
     echo [Engine Error] CMake configuration failed.
 )
 
 :: Build the project
-cmake --build build --config Release
+cmake --build . --config Release
 
 if %errorlevel% neq 0 (
     echo [Engine Error] Build failed.
@@ -38,7 +39,6 @@ if not exist logs mkdir logs
 cmake . > logs\cmake_log.txt 2>&1
 
 :: Package the project using CPack
-cd build
 cpack
 
 if %errorlevel% neq 0 (
@@ -54,21 +54,5 @@ if %errorlevel% neq 0 (
 ::     echo [Engine Cleanup] Deleting folder: build/%%D
 ::     rd /s /q "%%D"
 :: )
-
-cd ..
-
-:: Remove unused files and folders in source folder
-for /f "delims=" %%X in ('dir /b /a-d *.cmake CMakeCache.txt install_manifest.txt glad.*') do (
-	if exist "%%X" (
-		echo [Engine Cleanup] Deleting file: %%X
-        del /q "%%X"
-    )
-)
-for /d %%D in (CMakeFiles _CPACK_Packages ElypsoEngine.dir glad.dir x64 Release) do (
-    if exist "%%D" (
-        echo [Engine Cleanup] Deleting folder: %%D
-        rd /s /q "%%D"
-    )
-)
 
 pause

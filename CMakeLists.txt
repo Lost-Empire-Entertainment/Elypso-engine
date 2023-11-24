@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.27)
 
-# Set the installation prefix (optional)
+set(CMAKE_CXX_STANDARD 20)
+
+file(GLOB_RECURSE SOURCE_FILES "src/*.cpp" "include/*.h")
+
+# Set the installation folder name
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install" CACHE PATH "Installation directory")
 
 # Check and set the default build type if not specified
@@ -28,32 +32,37 @@ set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 
 set(SOURCE_FILES
-    ${SRC_DIR}/Main.cpp
+    ${SRC_DIR}/main.cpp
     ${SRC_DIR}/glad/glad.c
 )
 
 add_executable(ElypsoEngine ${SOURCE_FILES})
 
-# Add GLFW as an imported target
+# Set up GLFW
 add_library(glfw STATIC IMPORTED)
 set_target_properties(glfw PROPERTIES
   IMPORTED_LOCATION "${LIB_DIR}/glfw3.lib"
 )
 
+# Set up GLAD
 add_library(glad STATIC ${SRC_DIR}/glad/glad.c)
 target_include_directories(glad PUBLIC ${INCLUDE_DIR}/glad)
-set_target_properties(glad PROPERTIES LINKER_LANGUAGE C)
+set_target_properties(glad PROPERTIES 
+	LINKER_LANGUAGE CXX
+)
+
+find_package(OpenGL REQUIRED)
+target_link_libraries(ElypsoEngine PRIVATE glfw OpenGL::GL glad)
 
 target_include_directories(ElypsoEngine PRIVATE 
     ${INCLUDE_DIR}
     ${INCLUDE_DIR}/glfw
     ${INCLUDE_DIR}/glm
+    ${INCLUDE_DIR}/glad
+	${OPENGL_INCLUDE_DIRS}
 )
 
-# Find and include OpenGL for rendering
-find_package(OpenGL REQUIRED)
-target_link_libraries(ElypsoEngine PRIVATE glfw OpenGL::GL glad ${LIB_DIR}/glfw3.lib)
-
+# Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
