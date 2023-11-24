@@ -1,3 +1,9 @@
+# Files and folders not needed for sharing the project
+.vs/
+x64/
+build/
+logs/
+
 # Prerequisites
 *.d
 
@@ -6,15 +12,6 @@
 *.lo
 *.o
 *.obj
-
-# Visual Studio folder
-.vs/
-
-# Build folder
-build/
-
-# Logs folder
-logs/
 
 # Precompiled Headers
 *.gch
