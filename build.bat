@@ -22,8 +22,16 @@ mkdir build
 :: Configure the project (Release build) and generate NSIS installer
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS
 
+if %errorlevel% neq 0 (
+    echo [Engine Error] CMake configuration failed.
+)
+
 :: Build the project
 cmake --build build --config Release
+
+if %errorlevel% neq 0 (
+    echo [Engine Error] Build failed.
+)
 
 :: Additional logging for CMake configuration and CPack
 if not exist logs mkdir logs
@@ -32,6 +40,10 @@ cmake . > logs\cmake_log.txt 2>&1
 :: Package the project using CPack
 cd build
 cpack
+
+if %errorlevel% neq 0 (
+    echo [Engine Error] CPack packaging failed.
+)
 
 :: Remove unused files and folders in build folder
 for /f "delims=" %%F in ('dir /b /a-d ^| find /v "Elypso engine-"') do (
@@ -46,13 +58,13 @@ for /d %%D in (*) do (
 cd ..
 
 :: Remove unused files and folders in source folder
-for /f "delims=" %%X in ('dir /b /a-d *.vcxproj *.filters *.sln *.cmake CMakeCache.txt install_manifest.txt') do (
+for /f "delims=" %%X in ('dir /b /a-d *.cmake CMakeCache.txt install_manifest.txt') do (
 	if exist "%%X" (
 		echo [Engine Cleanup] Deleting file: %%X
         del /q "%%X"
     )
 )
-for /d %%D in (CMakeFiles _CPACK_Packages) do (
+for /d %%D in (CMakeFiles _CPACK_Packages Release ElypsoEngine.dir) do (
     if exist "%%D" (
         echo [Engine Cleanup] Deleting folder: %%D
         rd /s /q "%%D"

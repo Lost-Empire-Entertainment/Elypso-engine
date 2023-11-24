@@ -24,25 +24,14 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-<<<<<<< Updated upstream
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-=======
-
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
->>>>>>> Stashed changes
 	//initialize glad before calling any opengl functions
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
-	}
-	else
-	{
-		std::cout << "GLAD initialized successfully" << std::endl;
 	}
 
 	glViewport(0, 0, 800, 600);

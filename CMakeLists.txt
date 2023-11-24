@@ -50,13 +50,8 @@ target_include_directories(ElypsoEngine PRIVATE
 
 # Find and include OpenGL for rendering
 find_package(OpenGL REQUIRED)
-<<<<<<< Updated upstream
-include_directories(${OPENGL_INCLUDE_DIRS})
-target_link_libraries(ElypsoEngine PRIVATE glfw OpenGL::GL)
-=======
-
 target_link_libraries(ElypsoEngine PRIVATE OpenGL::GL ${LIB_DIR}/glfw3.lib)
->>>>>>> Stashed changes
+
 
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -65,11 +60,7 @@ install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
 message(STATUS "[Engine Debug] Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
 
 # Debugging messages for additional information
-<<<<<<< Updated upstream
-message(STATUS "[Engine Debug] GLFW Library Location: ${LIB_DIR}/glfw3.lib")
-=======
 message(STATUS "[Engine Debug] GLFW Library File: ${LIB_DIR}/glfw3.lib")
->>>>>>> Stashed changes
 message(STATUS "[Engine Debug] OpenGL Include Directories: ${OPENGL_INCLUDE_DIRS}")
 
 # Debugging messages for the list of source files
