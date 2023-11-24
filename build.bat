@@ -46,25 +46,25 @@ if %errorlevel% neq 0 (
 )
 
 :: Remove unused files and folders in build folder
-for /f "delims=" %%F in ('dir /b /a-d ^| find /v "Elypso engine-"') do (
-    echo [Engine Cleanup] Deleting file: build/%%F
-    del "%%F"
-)
-for /d %%D in (*) do (
-    echo [Engine Cleanup] Deleting folder: build/%%D
-    rd /s /q "%%D"
-)
+:: for /f "delims=" %%F in ('dir /b /a-d ^| find /v "Elypso engine-"') do (
+::     echo [Engine Cleanup] Deleting file: build/%%F
+::     del "%%F"
+:: )
+:: for /d %%D in (*) do (
+::     echo [Engine Cleanup] Deleting folder: build/%%D
+::     rd /s /q "%%D"
+:: )
 
 cd ..
 
 :: Remove unused files and folders in source folder
-for /f "delims=" %%X in ('dir /b /a-d *.cmake CMakeCache.txt install_manifest.txt') do (
+for /f "delims=" %%X in ('dir /b /a-d *.cmake CMakeCache.txt install_manifest.txt glad.*') do (
 	if exist "%%X" (
 		echo [Engine Cleanup] Deleting file: %%X
         del /q "%%X"
     )
 )
-for /d %%D in (CMakeFiles _CPACK_Packages Release ElypsoEngine.dir) do (
+for /d %%D in (CMakeFiles _CPACK_Packages ElypsoEngine.dir glad.dir x64 Release) do (
     if exist "%%D" (
         echo [Engine Cleanup] Deleting folder: %%D
         rd /s /q "%%D"

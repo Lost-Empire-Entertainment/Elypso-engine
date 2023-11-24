@@ -38,20 +38,21 @@ add_executable(ElypsoEngine ${SOURCE_FILES})
 add_library(glfw STATIC IMPORTED)
 set_target_properties(glfw PROPERTIES
   IMPORTED_LOCATION "${LIB_DIR}/glfw3.lib"
-  INTERFACE_INCLUDE_DIRECTORIES "${INCLUDE_DIR}/glfw"
 )
 
+add_library(glad STATIC ${SRC_DIR}/glad/glad.c)
+target_include_directories(glad PUBLIC ${INCLUDE_DIR}/glad)
+set_target_properties(glad PROPERTIES LINKER_LANGUAGE C)
+
 target_include_directories(ElypsoEngine PRIVATE 
-    ${INCLUDE_DIR} 
-    ${INCLUDE_DIR}/glad
+    ${INCLUDE_DIR}
     ${INCLUDE_DIR}/glfw
     ${INCLUDE_DIR}/glm
 )
 
 # Find and include OpenGL for rendering
 find_package(OpenGL REQUIRED)
-target_link_libraries(ElypsoEngine PRIVATE OpenGL::GL ${LIB_DIR}/glfw3.lib)
-
+target_link_libraries(ElypsoEngine PRIVATE glfw OpenGL::GL glad ${LIB_DIR}/glfw3.lib)
 
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
