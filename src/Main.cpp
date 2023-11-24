@@ -24,9 +24,16 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
+<<<<<<< Updated upstream
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+=======
+
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+>>>>>>> Stashed changes
 	//initialize glad before calling any opengl functions
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
