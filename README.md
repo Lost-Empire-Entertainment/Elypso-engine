@@ -13,7 +13,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 ```
-- Windows OS
+- Windows 11 (untested on older versions but Windows 10 should work fine too)
 - gpu with openGL 4.6 support
 - Visual Studio 17 2022 (untested on older VS versions and other IDEs)
 - CMake downloaded and set up with CMake/bin folder added to environment path
