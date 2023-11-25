@@ -10,6 +10,7 @@ project("Elypso engine" VERSION ${PROJECT_VERSION})
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 
 # Add GLAD
 add_library(glad STATIC ${SRC_DIR}/glad/glad.c)
@@ -52,6 +53,9 @@ set(CPACK_RESOURCE_FILE_LICENSE ${LICENSE_FILE})
 # Set the output directory for CPack-generated files
 set(CPACK_PACKAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/install")
 
+# Enable NSIS debugging
+set(CPACK_NSIS_DEBUG ON)
+
 # Common package properties
 set(CPACK_GENERATOR "NSIS")
 set(CPACK_PACKAGE_NAME "Elypso engine")
@@ -69,9 +73,9 @@ set(CPACK_NSIS_CREATE_UNINSTALLED_TARGET TRUE)
 set(CPACK_NSIS_MODIFY_PATH ON)
 
 # Installer icon
-set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/files/icon.ico")
-# Uninstaller icon
-set(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_CURRENT_SOURCE_DIR}/files/icon.ico")
+set(CPACK_NSIS_MUI_ICON "${FILES_DIR}/icon.ico")
+# Executable icon
+set(CPACK_NSIS_INSTALLED_ICON_NAME "${FILES_DIR}/icon.ico")
 
 # Include CPack to enable packaging
 include(CPack)

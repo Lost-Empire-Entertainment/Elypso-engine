@@ -14,14 +14,14 @@ cd /d "%~dp0"
 
 :: Clean the install directory before configuration
 if exist install (
-    echo [Engine Cleanup] Deleting folder: install
+    echo [Engine Cleanup] Deleted folder: install
     rd /s /q install
 )
 mkdir install
 
 :: Clean the build directory before configuration
 if exist build (
-    echo [Engine Cleanup] Deleting folder: build
+    echo [Engine Cleanup] Deleted folder: build
     rd /s /q build
 )
 mkdir build
@@ -35,7 +35,7 @@ if %errorlevel% neq 0 (
 )
 
 :: Build the project
-if not exist logs mkdir logs
+mkdir logs
 cmake --build . --config Release > logs\build_log.txt 2>&1
 
 if %errorlevel% neq 0 (
@@ -49,19 +49,13 @@ if %errorlevel% neq 0 (
     echo [Engine Error] CPack packaging failed.
 )
 
-:: Delete unnecessary files in install directory
+:: Move installer and installed exe to install folder and delete everything else
 cd ../install
-for %%F in (*) do (
-    if exist "%%F" (
-        echo [Engine Cleanup] Deleting file: install/%%F
-        del /q "%%F"
-    )
-)
-
-:: Create win64 folder and move installer files there and delete _CPack_Packages folder
-if not exist win64 mkdir win64
-xcopy /s /e "%~dp0\install\_CPack_Packages\win64\NSIS\*" "%~dp0\install\win64"
+move "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer\bin\Elypso_engine.exe" "%~dp0\install"
+echo [Engine Cleanup] Moved file: Elypso_engine.exe to install
+move "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer.exe" "%~dp0\install"
+echo [Engine Cleanup] Moved file: Elypso engine installer.exe to install
 rd /s /q "_CPack_Packages"
-echo [Engine Cleanup] Deleting folder: install/_CPack_Packages
+echo [Engine Cleanup] Deleted folder: install/_CPack_Packages
 
 pause
