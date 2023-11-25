@@ -12,6 +12,13 @@ if %errorlevel% neq 0 (
 :: Change to the script directory
 cd /d "%~dp0"
 
+:: Clean the install directory before configuration
+if exist install (
+    echo [Engine Cleanup] Deleting folder: install
+    rd /s /q install
+)
+mkdir install
+
 :: Clean the build directory before configuration
 if exist build (
     echo [Engine Cleanup] Deleting folder: build
@@ -28,31 +35,20 @@ if %errorlevel% neq 0 (
 )
 
 :: Build the project
-cmake --build . --config Release
+if not exist logs mkdir logs
+cmake --build . --config Release > logs\build_log.txt 2>&1
 
 if %errorlevel% neq 0 (
     echo [Engine Error] Build failed.
 )
 
-:: Additional logging for CMake configuration and CPack
-if not exist logs mkdir logs
 cmake . > logs\cmake_log.txt 2>&1
 
 :: Package the project using CPack
-cpack
+cpack > logs\cpack_log.txt 2>&1
 
 if %errorlevel% neq 0 (
     echo [Engine Error] CPack packaging failed.
 )
-
-:: Remove unused files and folders in build folder
-:: for /f "delims=" %%F in ('dir /b /a-d ^| find /v "Elypso engine-"') do (
-::     echo [Engine Cleanup] Deleting file: build/%%F
-::     del "%%F"
-:: )
-:: for /d %%D in (*) do (
-::     echo [Engine Cleanup] Deleting folder: build/%%D
-::     rd /s /q "%%D"
-:: )
 
 pause

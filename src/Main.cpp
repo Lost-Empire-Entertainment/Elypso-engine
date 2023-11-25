@@ -1,8 +1,7 @@
-﻿#include "Main.h"
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
+﻿#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
-using namespace std;
+#include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -27,19 +26,12 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	/*
-	//initialize glad before calling any opengl functions
+	// glad: load all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	*/
-
-	glViewport(0, 0, 800, 600);
-
-	//call window resize method every time window is resized
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	//keep window open until user closes it
 	while (!glfwWindowShouldClose(window))
