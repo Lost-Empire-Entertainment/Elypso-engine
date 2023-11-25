@@ -42,13 +42,26 @@ if %errorlevel% neq 0 (
     echo [Engine Error] Build failed.
 )
 
-cmake . > logs\cmake_log.txt 2>&1
-
-:: Package the project using CPack
-cpack > logs\cpack_log.txt 2>&1
+:: Package the project using CPack with the custom configuration file
+cpack -C Release > logs\cpack_log.txt 2>&1
 
 if %errorlevel% neq 0 (
     echo [Engine Error] CPack packaging failed.
 )
+
+:: Delete unnecessary files in install directory
+cd ../install
+for %%F in (*) do (
+    if exist "%%F" (
+        echo [Engine Cleanup] Deleting file: install/%%F
+        del /q "%%F"
+    )
+)
+
+:: Create win64 folder and move installer files there and delete _CPack_Packages folder
+if not exist win64 mkdir win64
+xcopy /s /e "%~dp0\install\_CPack_Packages\win64\NSIS\*" "%~dp0\install\win64"
+rd /s /q "_CPack_Packages"
+echo [Engine Cleanup] Deleting folder: install/_CPack_Packages
 
 pause
