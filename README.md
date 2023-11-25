@@ -23,8 +23,8 @@ These instructions will get you a copy of the project up and running on your loc
 ### Installing
 
 ```
-- run build.bat
-- launch Elypso engine.sln from build folder to modify project code
+- run build.bat to generate the build and install folders with all the important files
+- right click the parent project directory and press open with visual studio to launch the solution
 - install folder contains the engine installer which allows creating the exe to run the actual engine itself
 ```
 
