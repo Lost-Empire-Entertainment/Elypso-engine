@@ -31,16 +31,14 @@ These instructions will get you a copy of the project up and running on your loc
 - build folder contains the visual studio solution and all the necessary files that allow creating the installer for the project
 ```
 
-## Built With
+## Built with
 
-* [CMake and cpack](https://cmake.org/) - generates build files for the engine
+* [CMake](https://cmake.org/) - generates build files for the engine
 * [GLFW](https://www.glfw.org/) - provides a simple API for creating windows, contexts and surfaces, receiving input and events
 * [GLAD](https://glad.dav1d.de/) - simplifies the process of managing OpenGL function pointers in a cross-platform manner
 * [GLM](https://github.com/g-truc/glm) - C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification
-* [Assimp](https://github.com/assimp/assimp) - can import and load over 40 3d file formats into a shared, in-memory format
-* [ImGUI](https://github.com/ocornut/imgui) - graphical user interface library for C++
 * [NSIS](https://nsis.sourceforge.io/Download) - windows installer generator
-* [nlohmann/json](https://github.com/nlohmann/json) - data interchange format that is easy for humans to read and write, and easy for machines to parse and generate
+* [ImGUI](https://github.com/ocornut/imgui) - graphical user interface library
 
 ## Authors
 
