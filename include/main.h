@@ -1,28 +1,35 @@
 ﻿#pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+//external
+#include <glad.h>
+#include <glfw3.h>
 
+//engine
+#include "writeConsoleMessage.h"
+
+//cpp
 #include <iostream>
 #include <string>
 
-enum MessageType {
-	SUCCESS,
-	SHADER_ERROR,
-	WINDOW_SETUP_ERROR,
-	GLFW_ERROR,
-	GLAD_ERROR,
-	USER_CLOSE
+enum ShaderState {
+	vertex,
+	fragment,
+	link_shaders,
+	vertex_data_and_buffers
 };
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
-
 int WindowSetup();
-void ShaderSetup();
+void ImGuiSetup();
+
+void SetUpVertexShader();
+void SetUpFragmentShader();
+void LinkShaders();
+void SetUpVertexDataAndBuffers();
+bool FoundShaderCompileErrors(ShaderState state);
+
+void RenderUI();
 void WindowLoop();
-void WriteConsoleMessage(MessageType messageType, const std::string& message);
-void Shutdown(MessageType reason, const std::string& errorMessage);
+void Shutdown(MessageType reason, ErrorType errorType, const std::string& errorMessage);
 
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(PROJECT_MAJOR_VERSION 0)
 set(PROJECT_MINOR_VERSION 0)
@@ -29,16 +30,22 @@ target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 # Add your source files
 set(SOURCE_FILES
     ${SRC_DIR}/main.cpp
+	${SRC_DIR}/timestamp.cpp
+	${SRC_DIR}/writeConsoleMessage.cpp
     ${SRC_DIR}/glad/glad.c
 	${SRC_DIR}/imgui/imgui.cpp
     ${SRC_DIR}/imgui/imgui_demo.cpp
     ${SRC_DIR}/imgui/imgui_draw.cpp
-    ${SRC_DIR}/imgui/imgui_widgets.cpp
+	${SRC_DIR}/imgui/imgui_impl_glfw.cpp
+	${SRC_DIR}/imgui/imgui_impl_opengl3.cpp
 	${SRC_DIR}/imgui/imgui_tables.cpp
+    ${SRC_DIR}/imgui/imgui_widgets.cpp
 )
 
 # Add the executable
 add_executable(Elypso_engine ${SOURCE_FILES})
+
+target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR} 
