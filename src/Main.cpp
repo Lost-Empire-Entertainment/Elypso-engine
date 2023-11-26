@@ -1,14 +1,17 @@
-﻿#include <main.h>
+﻿#include "main.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <magic_enum/magic_enum.hpp>
 
 #include <iostream>
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+#include <string>
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+unsigned int VAO, VBO, shaderProgram;
+
+GLFWwindow* window;
 
 const char *vertexShaderSource = 
 	"#version 330 core\n"
@@ -27,17 +30,33 @@ const char *fragmentShaderSource =
 
 int main()
 {
+	if (WindowSetup() != 0) {
+		Shutdown(WINDOW_SETUP_ERROR, "Window setup failed.");
+		return -1;
+	}
+	ShaderSetup();
+
+	WriteConsoleMessage(SUCCESS, "Setup was successful!");
+
+	//keep window open until user closes it
+	while (!glfwWindowShouldClose(window)) WindowLoop();
+
+	Shutdown(USER_CLOSE, "User closed program.");
+	return 0;
+}
+
+static int WindowSetup()
+{
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//create a window object holding all the windowing data
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Elypso engine", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Elypso engine", NULL, NULL);
 	if (window == NULL)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
+		Shutdown(GLFW_ERROR, "Failed to create GLFW window");
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
@@ -46,10 +65,15 @@ int main()
 	//check if glad is initialized before continuing
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		Shutdown(GLAD_ERROR, "Failed to initialize GLAD");
 		return -1;
 	}
 
+	return 0;
+}
+
+static void ShaderSetup() 
+{
 	//vertex shader
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -58,10 +82,10 @@ int main()
 	int success;
 	char infoLog[512];
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) 
+	if (!success)
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		Shutdown(SHADER_ERROR, "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" + std::string(infoLog));
 	}
 
 	//fragment shader
@@ -70,28 +94,28 @@ int main()
 	glCompileShader(fragmentShader);
 	//check for shader compile errors
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) 
+	if (!success)
 	{
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		Shutdown(SHADER_ERROR, "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" + std::string(infoLog));
 	}
 
 	//link shaders
-	unsigned int shaderProgram = glCreateProgram();
+	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 	//check for linking errors
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) 
+	if (!success)
 	{
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		Shutdown(SHADER_ERROR, "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" + std::string(infoLog));
 	}
 
 	//clean up shaders
 	glDeleteShader(vertexShader);
-	glCreateShader(fragmentShader);
+	glDeleteShader(fragmentShader);
 
 	//set up vertex data and buffers and configure vertex attributes
 	float vertices[] = {
@@ -100,10 +124,9 @@ int main()
 		0.0f, 0.5f, 0.0f    //top
 	};
 
-	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	
+
 	//bind the Vertex Array Object first, 
 	//then bind and set vertex buffers, 
 	//and then configure vertex attributes
@@ -127,33 +150,53 @@ int main()
 
 	//uncomment this call to draw in wireframe polygons
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
 
-	//keep window open until user closes it
-	while (!glfwWindowShouldClose(window))
+static void WindowLoop() 
+{
+	processInput(window);
+
+	//simple green color instead of black
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	//draw the triangle
+	glUseProgram(shaderProgram);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+}
+
+static void WriteConsoleMessage(MessageType messageType, const std::string& message)
+{
+	std::cout << "[" << magic_enum::enum_name(messageType) << "] " << message;
+}
+
+static void Shutdown(MessageType reason, const std::string& errorMessage)
+{
+	WriteConsoleMessage(reason, errorMessage);
+
+	switch (reason) 
 	{
-		processInput(window);
+		case SHADER_ERROR:
+			break;
+		case GLFW_ERROR:
+			glfwTerminate();
+			break;
+		case GLAD_ERROR:
+			break;
+		case USER_CLOSE:
+			//de-allocate all resources once they've outlived their purpose
+			glDeleteVertexArrays(1, &VAO);
+			glDeleteBuffers(1, &VBO);
+			glDeleteProgram(shaderProgram);
 
-		//simple green color instead of black
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		//draw the triangle
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+			//clean all glfw resources after program is closed
+			glfwTerminate();
+			break;
 	}
-
-	//de-allocate all resources once they've outlived their purpose
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(shaderProgram);
-
-	//clean all glfw resources after program is closed
-	glfwTerminate();
-	return 0;
 }
 
 //process all input and react accordingly

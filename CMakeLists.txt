@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.27)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(PROJECT_MAJOR_VERSION 0)
 set(PROJECT_MINOR_VERSION 0)
 set(PROJECT_PATCH_VERSION 1)
@@ -19,16 +22,30 @@ target_include_directories(glad PUBLIC ${INCLUDE_DIR})
 # Add GLFW
 set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
 
-add_executable(Elypso_engine
-	${SRC_DIR}/main.cpp
-    ${SRC_DIR}/glad/glad.c
+# Add magic_enum
+add_library(magic_enum INTERFACE)
+target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
+
+# Add your source files
+set(SOURCE_FILES
+    src/Main.cpp
+    src/glad/glad.c
 )
+
+# Add your header files
+set(HEADER_FILES
+    ${INCLUDE_DIR}/magic_enum/magic_enum.hpp
+)
+
+# Add the executable
+add_executable(Elypso_engine ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR} 
 	${INCLUDE_DIR}/glad
 	${INCLUDE_DIR}/glfw
 	${INCLUDE_DIR}/glm
+	${INCLUDE_DIR}/magic_enum
 )
 
 target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
@@ -46,7 +63,7 @@ message(STATUS "[Engine Debug] Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "[Engine Debug] GLFW Library File: ${LIB_DIR}/glfw/glfw3.lib")
 
 # Set the path to the license file
-set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/LICENSE)
+set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/LICENSE.md)
 # Specify the license file for CPack to include in the installer
 set(CPACK_RESOURCE_FILE_LICENSE ${LICENSE_FILE})
 
