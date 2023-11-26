@@ -204,6 +204,9 @@ static void SetUpVertexDataAndBuffers()
 {
 	WriteConsoleMessage(SHADER, INFO, "Setting up vertex data and buffers...\n");
 
+	//enable depth testing
+	glEnable(GL_DEPTH_TEST);
+
 	//set up vertex data and buffers and configure vertex attributes
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f, //left
@@ -318,6 +321,9 @@ static bool FoundShaderCompileErrors(ShaderState state)
 //handles the imgui UI rendering
 static void RenderUI() 
 {
+	//clear color and depth buffers
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	ImGui::Begin("Scene view");
 
 	//render the triangle and background inside the imgui window
@@ -337,7 +343,6 @@ static void RenderUI()
 
 	//clear the background to dark green
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
 
 	//render the orange triangle
 	glUseProgram(shaderProgram);

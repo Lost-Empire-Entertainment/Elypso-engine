@@ -28,18 +28,9 @@ add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 
 # Add your source files
-set(SOURCE_FILES
-    ${SRC_DIR}/main.cpp
-	${SRC_DIR}/timestamp.cpp
-	${SRC_DIR}/writeConsoleMessage.cpp
-    ${SRC_DIR}/glad/glad.c
-	${SRC_DIR}/imgui/imgui.cpp
-    ${SRC_DIR}/imgui/imgui_demo.cpp
-    ${SRC_DIR}/imgui/imgui_draw.cpp
-	${SRC_DIR}/imgui/imgui_impl_glfw.cpp
-	${SRC_DIR}/imgui/imgui_impl_opengl3.cpp
-	${SRC_DIR}/imgui/imgui_tables.cpp
-    ${SRC_DIR}/imgui/imgui_widgets.cpp
+file(GLOB_RECURSE SOURCE_FILES
+    ${SRC_DIR}/*.cpp
+    ${SRC_DIR}/*.c
 )
 
 # Add the executable

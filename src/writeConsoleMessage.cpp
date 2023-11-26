@@ -1,5 +1,4 @@
 //engine
-#include "main.h"
 #include "timestamp.h"
 #include "writeConsoleMessage.h"
 
