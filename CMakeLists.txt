@@ -28,17 +28,17 @@ target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 
 # Add your source files
 set(SOURCE_FILES
-    src/Main.cpp
-    src/glad/glad.c
-)
-
-# Add your header files
-set(HEADER_FILES
-    ${INCLUDE_DIR}/magic_enum/magic_enum.hpp
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/glad/glad.c
+	${SRC_DIR}/imgui/imgui.cpp
+    ${SRC_DIR}/imgui/imgui_demo.cpp
+    ${SRC_DIR}/imgui/imgui_draw.cpp
+    ${SRC_DIR}/imgui/imgui_widgets.cpp
+	${SRC_DIR}/imgui/imgui_tables.cpp
 )
 
 # Add the executable
-add_executable(Elypso_engine ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(Elypso_engine ${SOURCE_FILES})
 
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR} 
@@ -46,6 +46,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/glfw
 	${INCLUDE_DIR}/glm
 	${INCLUDE_DIR}/magic_enum
+	${INCLUDE_DIR}/imgui
 )
 
 target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
