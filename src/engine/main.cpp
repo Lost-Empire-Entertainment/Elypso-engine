@@ -320,6 +320,9 @@ static bool FoundShaderCompileErrors(ShaderState state)
 //handles the imgui UI rendering
 static void RenderUI()
 {
+	//render to framebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
 	//clear color and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//clear the background to dark green
@@ -332,29 +335,46 @@ static void RenderUI()
 
 	ImGui::Begin("Scene view");
 
-	//render the triangle and background inside the imgui window
+	RenderToTexture();
+
+	//display the texture within the imgui window
 	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-
-	//set up a framebuffer for rendering imgui content
-	GLuint framebuffer;
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		//WriteConsoleMessage(SHADER, ERROR, "Framebuffer is not complete!\n\n");
-	}
-
-	//set up a viewport within the imgui window
-	glViewport(0, 0, static_cast<GLsizei>(viewportSize.x), static_cast<GLsizei>(viewportSize.y));
-
-	//reset the framebuffer and viewport
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-
-	//unbind and delete the framebuffer object
-	glDeleteFramebuffers(1, &framebuffer);
+	ImGui::Image(
+		(void*)(intptr_t)textureColorbuffer,
+		ImVec2(viewportSize.x, viewportSize.y),
+		ImVec2(0, 1),
+		ImVec2(1, 0));
 
 	ImGui::End();
+}
+//render the scene to a texture
+static void RenderToTexture() 
+{
+	//set up the framebuffer
+	if (framebuffer == 0) 
+	{
+		glGenFramebuffers(1, &framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+		//create a texture to hold the rendered data
+		glGenTextures(1, &textureColorbuffer);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		//attach the texture to the framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			//handle framebuffer error
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //this is run while the window is open

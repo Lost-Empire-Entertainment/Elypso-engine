@@ -17,9 +17,9 @@ enum ShaderState {
 	vertex_data_and_buffers
 };
 
-extern GLuint framebuffer;
+extern GLuint framebuffer = 0;
+extern GLuint textureColorbuffer = 0;
 
-void InitializeFramebuffer();
 int WindowSetup();
 void ImGuiSetup();
 
@@ -30,6 +30,7 @@ void SetUpVertexDataAndBuffers();
 bool FoundShaderCompileErrors(ShaderState state);
 
 void RenderUI();
+void RenderToTexture();
 void WindowLoop();
 void Shutdown(MessageType reason, ErrorType errorType, const std::string& errorMessage);
 
