@@ -22,15 +22,15 @@ These instructions will get you a copy of the project up and running on your loc
 - NSIS installed with makensis.exe added to environment path
 ```
 
-### Installing
+### Setup
 
 ```
-1) run build.bat to generate the build and install folders with all the important files
-2) right click the parent project directory and press open with visual studio to launch the solution
-3) build the project from the opened solution file on x64 Release platform
+- right-click the source directory folder and click open with visual studio to edit the source code
+- run build.bat to create the executable for the engine in build/Release
+- run create_installer.bat to create the installer for the engine to distribute your modified version
 
-- install folder contains the engine installer which allows creating the exe to run the actual engine itself
-- build folder contains the visual studio solution and all the necessary files that allow creating the installer for the project
+- src/engine and include/engine are all the scripts created for the engine
+- src/external, include/external and lib contain files that were added from external libraries
 ```
 
 ## Built with

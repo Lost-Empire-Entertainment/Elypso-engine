@@ -1,5 +1,5 @@
 ﻿//engine
-#include "main.h"
+#include <main.h>
 #include "timestamp.h"
 #include "writeConsoleMessage.h"
 
@@ -11,7 +11,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-//cpp
 #include <iostream>
 #include <string>
 #include <sstream>

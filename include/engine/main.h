@@ -1,13 +1,12 @@
 ﻿#pragma once
 
-//external
-#include <glad.h>
-#include <glfw3.h>
-
 //engine
 #include "writeConsoleMessage.h"
 
-//cpp
+//external
+#include "glad.h"
+#include "glfw3.h"
+
 #include <iostream>
 #include <string>
 

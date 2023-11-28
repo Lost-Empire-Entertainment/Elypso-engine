@@ -1,6 +1,5 @@
 #pragma once
 
-//cpp
 #include <iostream>
 #include <string>
 

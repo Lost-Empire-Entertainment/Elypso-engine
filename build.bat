@@ -1,10 +1,17 @@
 @echo off
-:: Batch script to configure, build, and create installer for Elypso engine
+:: Batch script to build the files for Elypso engine
+
+:: Reusable message types printed to console
+set "enerr=[ENGINE_ERROR]"
+set "encle=[ENGINE_CLEANUP]"
+set "cminf=[CMAKE_INFO]"
+set "cmerr=[CMAKE_ERROR]"
+set "cmsuc=[CMAKE_SUCCESS]"
 
 :: Check if the script is running with administrative privileges
 NET SESSION >nul 2>&1
 if %errorlevel% neq 0 (
-    echo This script requires administrative privileges. Please run as administrator.
+    echo %enerr% This script requires administrative privileges. Please run as administrator.
     pause
     exit /b 1
 )
@@ -12,50 +19,39 @@ if %errorlevel% neq 0 (
 :: Change to the script directory
 cd /d "%~dp0"
 
-:: Clean the install directory before configuration
-if exist install (
-    echo [Engine Cleanup] Deleted folder: install
-    rd /s /q install
-)
-mkdir install
-
 :: Clean the build directory before configuration
-if exist build (
-    echo [Engine Cleanup] Deleted folder: build
+if exist "build" (
+    echo %encle% Deleted folder: build
     rd /s /q build
 )
 mkdir build
 cd build
 
+echo %cminf% Started CMake configuration.
+
 :: Configure the project (Release build) and generate NSIS installer
 cmake -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS ..
 
 if %errorlevel% neq 0 (
-    echo [Engine Error] CMake configuration failed.
+    echo %cmerr% CMake configuration failed.
+) else (
+	echo %cmsuc% Cmake configuration succeeded!
 )
 
 :: Build the project
+echo %cminf% Started build generation.
 mkdir logs
 cmake --build . --config Release > logs\build_log.txt 2>&1
 
 if %errorlevel% neq 0 (
-    echo [Engine Error] Build failed.
+    echo %cmerr% Build failed.
+) else (
+	echo %cmsuc% Build succeeded!
 )
 
-:: Package the project using CPack with the custom configuration file
-cpack -C Release > logs\cpack_log.txt 2>&1
-
-if %errorlevel% neq 0 (
-    echo [Engine Error] CPack packaging failed.
+:: Allows running "build.bat skip_pause" to build and close console once finished
+if "%1" neq "skip_pause" (
+    pause
 )
 
-:: Move installer and installed exe to install folder and delete everything else
-cd ../install
-move "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer\bin\Elypso_engine.exe" "%~dp0\install"
-echo [Engine Cleanup] Moved file: Elypso_engine.exe to install
-move "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer.exe" "%~dp0\install"
-echo [Engine Cleanup] Moved file: Elypso engine installer.exe to install
-rd /s /q "_CPack_Packages"
-echo [Engine Cleanup] Deleted folder: install/_CPack_Packages
-
-pause
+exit

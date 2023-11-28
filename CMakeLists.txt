@@ -6,18 +6,22 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(PROJECT_MAJOR_VERSION 0)
 set(PROJECT_MINOR_VERSION 0)
-set(PROJECT_PATCH_VERSION 1)
+set(PROJECT_PATCH_VERSION 2)
 set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
 
 project("Elypso engine" VERSION ${PROJECT_VERSION})
 
+# Reusable message types printed to console
+set(eninf "[ENGINE_INFO]")
+
+# Paths to frequently used directories
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 
 # Add GLAD
-add_library(glad STATIC ${SRC_DIR}/glad/glad.c)
+add_library(glad STATIC ${SRC_DIR}/external/glad/glad.c)
 target_include_directories(glad PUBLIC ${INCLUDE_DIR})
 
 # Add GLFW
@@ -39,27 +43,28 @@ add_executable(Elypso_engine ${SOURCE_FILES})
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
 target_include_directories(Elypso_engine PRIVATE 
-	${INCLUDE_DIR} 
-	${INCLUDE_DIR}/glad
-	${INCLUDE_DIR}/glfw
-	${INCLUDE_DIR}/glm
-	${INCLUDE_DIR}/magic_enum
-	${INCLUDE_DIR}/imgui
+	${INCLUDE_DIR}/engine
+	${INCLUDE_DIR}/external
+	${INCLUDE_DIR}/external/glad
+	${INCLUDE_DIR}/external/glfw
+	${INCLUDE_DIR}/external/glm
+	${INCLUDE_DIR}/external/magic_enum
+	${INCLUDE_DIR}/external/imgui
 )
 
 target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
 
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
-install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
+ install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Various debugging messages to help
-message(STATUS "[Engine Debug] Project Version: ${PROJECT_VERSION}")
-message(STATUS "[Engine Debug] C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "[Engine Debug] C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
-message(STATUS "[Engine Debug] CMake Build Type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "[Engine Debug] Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "[Engine Debug] GLFW Library File: ${LIB_DIR}/glfw/glfw3.lib")
+message(STATUS "${eninf} Project Version: ${PROJECT_VERSION}")
+message(STATUS "${eninf} C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "${eninf} C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "${eninf} CMake Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "${eninf} Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "${eninf} GLFW Library File: ${LIB_DIR}/glfw/glfw3.lib")
 
 # Set the path to the license file
 set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/LICENSE.md)
