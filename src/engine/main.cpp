@@ -62,7 +62,7 @@ int main()
 		WriteConsoleMessage(SHADER, ERROR, "Shader setup was unsuccessful!");
 		return -1;
 	}
-	else 
+	else
 	{
 		WriteConsoleMessage(WINDOW_LOOP, INFO, "Entering window loop...\n");
 
@@ -133,7 +133,7 @@ static void ImGuiSetup()
 	WriteConsoleMessage(IMGUI, SUCCESS, "ImGui initialized successfully!\n\n");
 }
 
-static void SetUpVertexShader() 
+static void SetUpVertexShader()
 {
 	WriteConsoleMessage(SHADER, INFO, "Initializing vertex shader...\n");
 
@@ -153,7 +153,7 @@ static void SetUpVertexShader()
 
 	SetUpFragmentShader();
 }
-static void SetUpFragmentShader() 
+static void SetUpFragmentShader()
 {
 	WriteConsoleMessage(SHADER, INFO, "Initializing fragment shader...\n");
 
@@ -173,7 +173,7 @@ static void SetUpFragmentShader()
 
 	LinkShaders();
 }
-static void LinkShaders() 
+static void LinkShaders()
 {
 	WriteConsoleMessage(SHADER, INFO, "Linking shaders...\n");
 
@@ -199,7 +199,7 @@ static void LinkShaders()
 
 	SetUpVertexDataAndBuffers();
 }
-static void SetUpVertexDataAndBuffers() 
+static void SetUpVertexDataAndBuffers()
 {
 	WriteConsoleMessage(SHADER, INFO, "Setting up vertex data and buffers...\n");
 
@@ -254,12 +254,12 @@ static void SetUpVertexDataAndBuffers()
 }
 
 //checks if any errors were found during compilation
-static bool FoundShaderCompileErrors(ShaderState state) 
+static bool FoundShaderCompileErrors(ShaderState state)
 {
 	std::ostringstream oss;
 	std::string message;
 
-	switch (state) 
+	switch (state)
 	{
 	default:
 		oss << "Error: " << magic_enum::enum_name(state) << " is not a valid shader state!\n\n";
@@ -318,10 +318,17 @@ static bool FoundShaderCompileErrors(ShaderState state)
 }
 
 //handles the imgui UI rendering
-static void RenderUI() 
+static void RenderUI()
 {
 	//clear color and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//clear the background to dark green
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+	//render the orange triangle
+	glUseProgram(shaderProgram);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	ImGui::Begin("Scene view");
 
@@ -332,21 +339,13 @@ static void RenderUI()
 	GLuint framebuffer;
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		//WriteConsoleMessage(SHADER, ERROR, "Framebuffer is not complete!\n\n");
 	}
 
 	//set up a viewport within the imgui window
 	glViewport(0, 0, static_cast<GLsizei>(viewportSize.x), static_cast<GLsizei>(viewportSize.y));
-
-	//clear the background to dark green
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-	//render the orange triangle
-	glUseProgram(shaderProgram);
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	//reset the framebuffer and viewport
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

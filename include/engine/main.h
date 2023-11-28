@@ -17,6 +17,9 @@ enum ShaderState {
 	vertex_data_and_buffers
 };
 
+extern GLuint framebuffer;
+
+void InitializeFramebuffer();
 int WindowSetup();
 void ImGuiSetup();
 
