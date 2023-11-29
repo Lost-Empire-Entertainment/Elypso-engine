@@ -36,10 +36,6 @@ These instructions will get you a copy of the project up and running on your loc
 - src/engine and include/engine contain the actual scripts that were created for the engine
 - src/external, include/external and lib are folders containing libraries and scripts that were not created by the developers of this engine
 
-- main.cpp handles the core mechanics of the game, it does not directly control anything itself, its just the place where all the necessary methods are placed to that need to run at a particular order
-- render.cpp is the core rendering script that handles how everything is rendered in the Scene view window but it does not directly control what is rendered, those will be split into their own sections
-- gui.cpp is the core gui script that controls how all the graphical user interface of the engine is created, run and destroyed based on user input
-
 - timestamp.cpp is a small script that just handles adding a timestamp to each console message
 - writeConsoleMessage.cpp is a small script that handles how each console message is sent to the console
 ```
