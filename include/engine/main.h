@@ -21,7 +21,6 @@ extern GLuint framebuffer = 0;
 extern GLuint textureColorbuffer = 0;
 
 int WindowSetup();
-void ImGuiSetup();
 
 void SetUpVertexShader();
 void SetUpFragmentShader();
@@ -29,8 +28,6 @@ void LinkShaders();
 void SetUpVertexDataAndBuffers();
 bool FoundShaderCompileErrors(ShaderState state);
 
-void RenderUI();
-void RenderToTexture();
 void WindowLoop();
 void Shutdown(MessageType reason, ErrorType errorType, const std::string& errorMessage);
 

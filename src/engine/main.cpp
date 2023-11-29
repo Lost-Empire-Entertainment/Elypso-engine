@@ -7,9 +7,6 @@
 #include "glad.h"
 #include "glfw3.h"
 #include "magic_enum.hpp"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 
 #include <iostream>
 #include <string>
@@ -51,8 +48,6 @@ int main()
 		Shutdown(WINDOW_SETUP, ERROR, "Error: Window setup failed!\n\n");
 		return -1;
 	}
-
-	ImGuiSetup();
 
 	//starts shader setup
 	SetUpVertexShader();
@@ -114,23 +109,6 @@ static int WindowSetup()
 	WriteConsoleMessage(GLAD, SUCCESS, "GLAD initialized successfully!\n\n");
 
 	return 0;
-}
-
-static void ImGuiSetup()
-{
-	WriteConsoleMessage(IMGUI, INFO, "Initializing ImGui...\n");
-
-	//set up imgui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	(void)io;
-
-	//initialize imgui for glfw and opengl
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330 core");
-
-	WriteConsoleMessage(IMGUI, SUCCESS, "ImGui initialized successfully!\n\n");
 }
 
 static void SetUpVertexShader()
@@ -317,9 +295,11 @@ static bool FoundShaderCompileErrors(ShaderState state)
 	return false;
 }
 
-//handles the imgui UI rendering
-static void RenderUI()
+//this is run while the window is open
+static void WindowLoop()
 {
+	processInput(window);
+
 	//render to framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	//clear color and depth buffers
@@ -331,67 +311,6 @@ static void RenderUI()
 	glUseProgram(shaderProgram);
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	ImGui::Begin("Scene view");
-
-	RenderToTexture();
-
-	//display the texture within the imgui window
-	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-	ImGui::Image(
-		(void*)(intptr_t)textureColorbuffer,
-		ImVec2(viewportSize.x, viewportSize.y),
-		ImVec2(0, 1),
-		ImVec2(1, 0));
-
-	ImGui::End();
-}
-//render the scene to a texture
-static void RenderToTexture() 
-{
-	//set up the framebuffer
-	if (framebuffer == 0) 
-	{
-		glGenFramebuffers(1, &framebuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-		//create a texture to hold the rendered data
-		glGenTextures(1, &textureColorbuffer);
-		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		//attach the texture to the framebuffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		{
-			//handle framebuffer error
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-//this is run while the window is open
-static void WindowLoop()
-{
-	processInput(window);
-
-	//start imgui
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	//render imgui UI
-	RenderUI();
-
-	//render imgui UI on top
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	GLenum glError = glGetError();
 	if (glError != GL_NO_ERROR) {
@@ -422,11 +341,6 @@ static void Shutdown(MessageType reason, ErrorType errorType, const std::string&
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 		glDeleteProgram(shaderProgram);
-
-		//clean up imgui resources
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
 
 		//clean all glfw resources after program is closed
 		glfwTerminate();
