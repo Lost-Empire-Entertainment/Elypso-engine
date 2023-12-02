@@ -1,5 +1,5 @@
 @echo off
-:: Batch script to create the installer for the engine
+:: Batch script to build the executable and create the installer for the engine
 
 :: Reusable message types printed to console
 set "eninf=[ENGINE_INFO]"
@@ -15,6 +15,10 @@ if %errorlevel% neq 0 (
 
 :: Change to the script directory
 cd /d "%~dp0"
+
+echo %eninf% Initializing build generation.
+
+start /wait build.bat build
 
 echo %eninf% Initializing installer creation.
 
