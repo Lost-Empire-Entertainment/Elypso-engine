@@ -94,16 +94,9 @@ void RenderManager::WindowLoop()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	//clear color
 	glClear(GL_COLOR_BUFFER_BIT);
-	//activate the shader before any calls to gluniform
-	glUseProgram(ShaderManager::shaderProgram);
-
-	//update shader uniform
-	double timeValue = glfwGetTime();
-	float greenValue = static_cast<float>(sin(timeValue) / 2.0 + 0.5);
-	int vertexColorLocation = glGetUniformLocation(ShaderManager::shaderProgram, "ourColor");
-	glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
 	//render the triangle
+	glBindVertexArray(ShaderManager::VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	//swap the front and back buffers

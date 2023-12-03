@@ -125,9 +125,10 @@ void ShaderManager::SetUpVertexDataAndBuffers()
 
 	//set up vertex data and buffers and configure vertex attributes
 	float vertices[] = {
-		0.5f, -0.5f, 0.0f,  //bottom right
-		-0.5f, -0.5f, 0.0f, //bottom left
-		0.0f, 0.5f, 0.0f    //top
+		//positions			//colors
+		0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, //bottom right
+		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, //bottom left
+		0.0f, 0.5f, 0.0f ,  0.0f, 0.0f, 1.0f  //top
 	};
 
 	glGenVertexArrays(1, &ShaderManager::VAO);
@@ -141,22 +142,26 @@ void ShaderManager::SetUpVertexDataAndBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	//position attribute
 	glVertexAttribPointer(
-		0, 
-		3, 
-		GL_FLOAT, 
-		GL_FALSE, 
-		3 * sizeof(float), 
+		0,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		6 * sizeof(float),
 		(void*)0);
 	glEnableVertexAttribArray(0);
+	//color attribute
+	glVertexAttribPointer(
+		1,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		6 * sizeof(float),
+		(void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
-	//unbind the VAO afterwards so other VAO calls wont accidentally modify this VAO,
-	//but this rarely happens. modifying other VAOs requires a call to glBindVertexArray anyways
-	//so we generally dont unbind VAOs (nor VBOs) when its not directly necessary
-	//glBindVertexArray(0);
-
-	//uncomment this call to draw in wireframe polygons
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glUseProgram(ShaderManager::shaderProgram);
 
 	if (!ShaderManager::FoundShaderCompileErrors(vertex_data_and_buffers))
 	{
