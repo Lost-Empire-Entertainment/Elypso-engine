@@ -3,7 +3,7 @@
 
 :: Reusable message types printed to console
 set "enerr=[ENGINE_ERROR]"
-set "encln=[ENGINE_CLEANUP]"
+set "eninf=[ENGINE_INFO]"
 set "cminf=[CMAKE_INFO]"
 set "cmerr=[CMAKE_ERROR]"
 set "cmsuc=[CMAKE_SUCCESS]"
@@ -39,7 +39,7 @@ if "%1" == "cmake_config" (
 
 	:: Clean the build directory before configuration
 	if exist "build" (
-		echo %encln% Deleted folder: build
+		echo %eninf% Deleted folder: build
 		rd /s /q build
 	)
 	mkdir build
@@ -48,13 +48,13 @@ if "%1" == "cmake_config" (
 	echo %cminf% Started CMake configuration.
 
 	:: Configure the project (Release build) and generate NSIS installer
-	:: if not exist logs mkdir logs
-	cmake -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS ..
+	if not exist logs mkdir logs
+	cmake -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS .. >> logs\cmake_log.txt 2>&1
 
 	if %errorlevel% neq 0 (
 		echo %cmerr% CMake configuration failed. Check build/logs/build_log.txt for more details.
 	) else (
-		echo %cmsuc% Cmake configuration succeeded!
+		echo %cmsuc% Cmake configuration succeeded! Created log file at build/logs/cmake_log.txt.
 	)
 )
 
@@ -70,14 +70,13 @@ if "%1" == "build" (
 
 	:: Build the project
 	echo %cminf% Started build generation.
-	if not exist logs mkdir logs
 	cmake --build . --config Release > logs\build_log.txt 2>&1
 
 	if %errorlevel% neq 0 (
 		echo %cmerr% Build failed because %exe% did not get generated properly. Check build/logs/build_log.txt for more details.
 	) else (
 		if exist "%~dp0\build\Release\%exe%" (
-			echo %cmsuc% Build succeeded!
+			echo %cmsuc% Build succeeded! Created log file at build/logs/build_log.txt.
 		) else (
 			echo %cmerr% Build failed because %exe% did not get generated properly. Check build/logs/build_log.txt for more details.
 		)
@@ -95,7 +94,7 @@ if "%1" == "install" (
 	:: If install folder exists then delete it to always ensure a fresh installer is created
 	if exist install (
 		rd /s /q install
-		echo %encln% Deleted folder: install
+		echo %eninf% Deleted folder: install
 	)
 
 	mkdir install
@@ -108,19 +107,19 @@ if "%1" == "install" (
 	cpack -C Release > "logs\cpack_log.txt" 2>&1
 
 	if %errorlevel% neq 0 (
-		echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/build_log.txt and build/logs/cpack_log.txt for more details.
+		echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/cpack_log.txt for more details.
 	) else (
 		if exist "%~dp0\install\_CPack_Packages\win64\NSIS\%inst%" (
-			echo %cpsuc% CPack packaging succeeded!
+			echo %cpsuc% CPack packaging succeeded! Created log file at build/logs/cpack_log.txt.
 			
 			:: Move installed exe to install folder and delete cpack packages folder
 			cd ../install
 			move "%~dp0\install\_CPack_Packages\win64\NSIS\%ifol%\bin\%exe%" "%~dp0\install"
-			echo %encln% Moved file: %exe% to install
+			echo %eninf% Moved file: %exe% to install
 			rd /s /q "_CPack_Packages"
-			echo %encln% Deleted folder: install/_CPack_Packages
+			echo %eninf% Deleted folder: install/_CPack_Packages
 		) else (
-			echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/build_log.txt and build/logs/cpack_log.txt for more details.
+			echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/cpack_log.txt for more details.
 		)
 	)
 )

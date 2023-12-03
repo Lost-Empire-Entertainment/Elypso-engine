@@ -39,6 +39,15 @@ These instructions will get you a copy of the project up and running on your loc
 - writeConsoleMessage.cpp is a small script that handles how each console message is sent to the console
 ```
 
+### Logs
+
+```
+- cmake configuration log is found at build\logs\cmake_log.txt
+- build generation log is found at build\logs\build_log.txt
+- cpack log is found at build\logs\cpack_log.txt
+- engine log is found at install\engine_log.txt
+```
+
 ## Built with
 
 * [CMake](https://cmake.org/) - generates build files for the engine

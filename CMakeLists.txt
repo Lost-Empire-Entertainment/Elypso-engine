@@ -35,6 +35,7 @@ target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 file(GLOB_RECURSE SOURCE_FILES
     ${SRC_DIR}/*.cpp
     ${SRC_DIR}/*.c
+	${SRC_DIR}/*.glsl
 	${INCLUDE_DIR}/*.hpp
     ${INCLUDE_DIR}/*.h
 )
@@ -58,7 +59,7 @@ target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
 
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
- install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Various debugging messages to help
 message(STATUS "${eninf} Project Version: ${PROJECT_VERSION}")

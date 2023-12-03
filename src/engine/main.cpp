@@ -1,6 +1,5 @@
 ﻿//external
 #include "glad.h"
-#include "glfw3.h"
 #include "magic_enum.hpp"
 
 //engine
@@ -17,8 +16,8 @@
 int main()
 {
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::ENGINE, 
-		ConsoleManager::ErrorType::INFO, 
+		ConsoleManager::Caller::ENGINE, 
+		ConsoleManager::Type::INFO, 
 		"Initializing Elypso engine...\n");
 
 	InputManager::InputSetup();
@@ -33,16 +32,16 @@ int main()
 	if (!ShaderManager::shaderSetupSuccess)
 	{
 		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER, 
-			ConsoleManager::ErrorType::ERROR, 
+			ConsoleManager::Caller::SHADER, 
+			ConsoleManager::Type::ERROR, 
 			"Shader setup was unsuccessful!");
 		return -1;
 	}
 	else
 	{
 		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::WINDOW_LOOP,
-			ConsoleManager::ErrorType::INFO,
+			ConsoleManager::Caller::WINDOW_LOOP,
+			ConsoleManager::Type::INFO,
 			"Entering window loop...\n");
 
 		while (!glfwWindowShouldClose(RenderManager::window))
@@ -53,8 +52,8 @@ int main()
 		}
 
 		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::WINDOW_LOOP,
-			ConsoleManager::ErrorType::INFO,
+			ConsoleManager::Caller::WINDOW_LOOP,
+			ConsoleManager::Type::INFO,
 			"Exiting window loop...\n");
 
 		ShutdownManager::Shutdown();

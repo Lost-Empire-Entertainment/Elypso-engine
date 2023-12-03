@@ -51,7 +51,6 @@ if not exist build (
 ) else (
 	start /wait build.bat build
 )
-pause
 goto menu
 
 :nsis_install
@@ -62,7 +61,6 @@ if not exist build (
 ) else (
 	start /wait build.bat install
 )
-pause
 goto menu
 
 :end

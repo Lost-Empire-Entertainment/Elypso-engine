@@ -1,127 +1,21 @@
 //external
-#include "magic_enum.hpp"
 #include "glad.h"
+#include "magic_enum.hpp"
 
 //engine
 #include "shader.h"
+#include "render.h"
 #include "console.h"
 
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 void ShaderManager::ShaderSetup()
 {
-	ShaderManager::SetUpVertexShader();
-}
-
-void ShaderManager::SetUpVertexShader()
-{
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::SHADER, 
-		ConsoleManager::ErrorType::INFO, 
-		"Initializing vertex shader...\n");
-
-	ShaderManager::vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(
-		ShaderManager::vertexShader, 
-		1, 
-		&ShaderManager::vertexShaderSource, 
-		NULL);
-	glCompileShader(ShaderManager::vertexShader);
-
-	if (!ShaderManager::FoundShaderCompileErrors(vertex))
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER,
-			ConsoleManager::ErrorType::SUCCESS,
-			"Vertex shader initialized successfully!\n\n");
-	}
-	else
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER,
-			ConsoleManager::ErrorType::ERROR,
-			"Vertex shader compilation failed!\n\n");
-		return;
-	}
-
-	ShaderManager::SetUpFragmentShader();
-}
-void ShaderManager::SetUpFragmentShader()
-{
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::SHADER,
-		ConsoleManager::ErrorType::INFO,
-		"Initializing fragment shader...\n");
-
-	ShaderManager::fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(
-		ShaderManager::fragmentShader, 
-		1, 
-		&ShaderManager::fragmentShaderSource, 
-		NULL);
-	glCompileShader(ShaderManager::fragmentShader);
-
-	if (!ShaderManager::FoundShaderCompileErrors(fragment))
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER, 
-			ConsoleManager::ErrorType::SUCCESS, 
-			"Fragment shader initialized successfully!\n\n");
-	}
-	else
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER, 
-			ConsoleManager::ErrorType::ERROR, 
-			"Fragment shader compilation failed!\n\n");
-		return;
-	}
-
-	ShaderManager::LinkShaders();
-}
-void ShaderManager::LinkShaders()
-{
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::SHADER, 
-		ConsoleManager::ErrorType::INFO, 
-		"Linking shaders...\n");
-
-	//link shaders
-	ShaderManager::shaderProgram = glCreateProgram();
-	glAttachShader(ShaderManager::shaderProgram, ShaderManager::vertexShader);
-	glAttachShader(ShaderManager::shaderProgram, ShaderManager::fragmentShader);
-	glLinkProgram(ShaderManager::shaderProgram);
-
-	//clean up shaders
-	glDeleteShader(ShaderManager::vertexShader);
-	glDeleteShader(ShaderManager::fragmentShader);
-
-	if (!ShaderManager::FoundShaderCompileErrors(link_shaders))
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER, 
-			ConsoleManager::ErrorType::SUCCESS, 
-			"Shaders linked successfully!\n\n");
-	}
-	else
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER, 
-			ConsoleManager::ErrorType::ERROR, 
-			"Shader linking failed!\n\n");
-		return;
-	}
-
-	ShaderManager::SetUpVertexDataAndBuffers();
-}
-void ShaderManager::SetUpVertexDataAndBuffers()
-{
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::SHADER, 
-		ConsoleManager::ErrorType::INFO, 
-		"Setting up vertex data and buffers...\n");
+	//call the shader generator to set up the vertex and fragment shaders
+	ShaderManager shader(ShaderManager::vertexShader, ShaderManager::fragmentShader);
 
 	//set up vertex data and buffers and configure vertex attributes
 	float vertices[] = {
@@ -161,120 +55,129 @@ void ShaderManager::SetUpVertexDataAndBuffers()
 		(void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glUseProgram(ShaderManager::shaderProgram);
-
-	if (!ShaderManager::FoundShaderCompileErrors(vertex_data_and_buffers))
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER, 
-			ConsoleManager::ErrorType::SUCCESS, 
-			"Vertex data and buffer setup was successful!\n\n");
-	}
-	else
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::SHADER, 
-			ConsoleManager::ErrorType::ERROR, 
-			"Failed to set up vertex data and buffers!\n\n");
-		return;
-	}
-
 	ShaderManager::shaderSetupSuccess = true;
 }
 
-//checks if any errors were found during compilation
-bool ShaderManager::FoundShaderCompileErrors(ShaderState state)
+ShaderManager::ShaderManager(const char* vertexPath, const char* fragmentPath)
 {
-	std::ostringstream oss;
-	std::string message;
+	ConsoleManager::WriteConsoleMessage(
+		ConsoleManager::Caller::SHADER,
+		ConsoleManager::Type::ERROR,
+		"Absolute vertex path: " + std::string(vertexPath) + "\n");
+	ConsoleManager::WriteConsoleMessage(
+		ConsoleManager::Caller::SHADER,
+		ConsoleManager::Type::ERROR,
+		"Absolute fragment path: " + std::string(fragmentPath) + "\n");
 
-	switch (state)
+	std::string vertexCode;
+	std::string fragmentCode;
+	std::ifstream vShaderFile;
+	std::ifstream fShaderFile;
+
+	//ensure ifstream objects can throw exceptions
+	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try
 	{
-	default:
-		oss << "Error: " << magic_enum::enum_name(state) << " is not a valid shader state!\n\n";
+		//open files
+		vShaderFile.open(vertexPath);
+		fShaderFile.open(fragmentPath);
+		std::stringstream vShaderStream, fShaderStream;
+		//read file buffer contents into streams
+		vShaderStream << vShaderFile.rdbuf();
+		fShaderStream << fShaderFile.rdbuf();
+		//close file handlers
+		vShaderFile.close();
+		fShaderFile.close();
+		//convert stream into string
+		vertexCode = vShaderStream.str();
+		fragmentCode = fShaderStream.str();
+	}
+	catch (std::ifstream::failure& e)
+	{
 		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::ENGINE, 
-			ConsoleManager::ErrorType::ERROR, 
-			oss.str());
-
-		return true;
-
-		break;
-	case vertex:
-		glGetShaderiv(ShaderManager::vertexShader, GL_COMPILE_STATUS, &ShaderManager::success);
-		if (!ShaderManager::success)
-		{
-			glGetShaderInfoLog(
-				ShaderManager::vertexShader, 
-				512, 
-				NULL, 
-				ShaderManager::infoLog);
-			message = "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n\n" + std::string(ShaderManager::infoLog);
-			ConsoleManager::WriteConsoleMessage(
-				ConsoleManager::MessageType::SHADER, 
-				ConsoleManager::ErrorType::ERROR, 
-				message);
-
-			return true;
-		}
-		break;
-	case fragment:
-		glGetShaderiv(
-			ShaderManager::fragmentShader, 
-			GL_COMPILE_STATUS, 
-			&ShaderManager::success);
-		if (!ShaderManager::success)
-		{
-			glGetShaderInfoLog(
-				ShaderManager::fragmentShader, 
-				512, 
-				NULL, 
-				ShaderManager::infoLog);
-			message = "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n\n" + std::string(ShaderManager::infoLog);
-			ConsoleManager::WriteConsoleMessage(
-				ConsoleManager::MessageType::SHADER, 
-				ConsoleManager::ErrorType::ERROR, 
-				message);
-
-			return true;
-		}
-		break;
-	case link_shaders:
-		glGetProgramiv(
-			ShaderManager::shaderProgram, 
-			GL_LINK_STATUS, 
-			&ShaderManager::success);
-		if (!ShaderManager::success)
-		{
-			glGetProgramInfoLog(
-				ShaderManager::shaderProgram, 
-				512, 
-				NULL, 
-				ShaderManager::infoLog);
-			message = "ERROR::SHADER::PROGRAM::LINKING_FAILED\n\n" + std::string(ShaderManager::infoLog);
-			ConsoleManager::WriteConsoleMessage(
-				ConsoleManager::MessageType::SHADER, 
-				ConsoleManager::ErrorType::ERROR, 
-				message);
-
-			return true;
-		}
-		break;
-	case vertex_data_and_buffers:
-		error = glGetError();
-		if (ShaderManager::error != GL_NO_ERROR)
-		{
-			message = "OpenGL Error: " + std::to_string(ShaderManager::error) + "\n\n";
-			ConsoleManager::WriteConsoleMessage(
-				ConsoleManager::MessageType::SHADER, 
-				ConsoleManager::ErrorType::ERROR, 
-				message);
-
-			return true;
-		}
-
-		break;
+			ConsoleManager::Caller::SHADER,
+			ConsoleManager::Type::ERROR,
+			"Shader failed to load! " +
+			std::string(e.what()));
 	}
 
-	return false;
+	const char* vShaderCode = vertexCode.c_str();
+	const char* fShaderCode = fragmentCode.c_str();
+
+	unsigned int vertex, fragment;
+
+	vertex = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex, 1, &vShaderCode, NULL);
+	glCompileShader(vertex);
+	ShaderManager::CheckCompileErrors(vertex, "VERTEX");
+
+	fragment = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment, 1, &fShaderCode, NULL);
+	glCompileShader(fragment);
+	ShaderManager::CheckCompileErrors(fragment, "FRAGMENT");
+
+	ID = glCreateProgram();
+	glAttachShader(ID, vertex);
+	glAttachShader(ID, fragment);
+	glLinkProgram(ID);
+	ShaderManager::CheckCompileErrors(ID, "PROGRAM");
+
+	glDeleteShader(vertex);
+	glDeleteShader(fragment);
+}
+
+void ShaderManager::Use()
+{
+	glUseProgram(ID);
+}
+
+void ShaderManager::SetBool(const std::string& name, bool value) const
+{
+	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+}
+
+void ShaderManager::SetInt(const std::string& name, int value) const
+{
+	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void ShaderManager::SetFloat(const std::string& name, float value) const
+{
+	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void ShaderManager::CheckCompileErrors(unsigned int shader, std::string type)
+{
+	int success;
+	char infoLog[1024];
+
+	if (type != "PROGRAM")
+	{
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleManager::Caller::SHADER,
+				ConsoleManager::Type::ERROR,
+				"ERROR::SHADER_COMPILATION_ERROR of type: " +
+				type + "\n" +
+				infoLog + "\n");
+		}
+	}
+	else
+	{
+		glGetProgramiv(shader, GL_LINK_STATUS, &success);
+		if (!success)
+		{
+			glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleManager::Caller::SHADER,
+				ConsoleManager::Type::ERROR,
+				"ERROR::PROGRAM_LINKING_ERROR of type: " +
+				type + "\n" +
+				infoLog + "\n");
+		}
+	}
 }

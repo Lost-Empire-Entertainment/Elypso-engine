@@ -1,33 +1,41 @@
 //external
 #include "glad.h"
-#include "glfw3.h"
 
 //engine
 #include "console.h"
 #include "render.h"
-#include "shader.h"
 #include "shutdown.h"
+
+ShaderManager RenderManager::shader(ShaderManager::vertexShader, ShaderManager::fragmentShader);
 
 int RenderManager::WindowSetup()
 {
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::GLFW, 
-		ConsoleManager::ErrorType::INFO, 
+		ConsoleManager::Caller::GLFW, 
+		ConsoleManager::Type::INFO, 
 		"Initializing GLFW...\n");
 
-	glfwInit();
+	if (glfwInit() != GLFW_TRUE) 
+	{
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::GLFW,
+			ConsoleManager::Type::ERROR,
+			"Failed to initialize GLFW!\n\n");
+		ShutdownManager::Shutdown();
+		return -1;
+	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::GLFW,
-		ConsoleManager::ErrorType::SUCCESS, 
+		ConsoleManager::Caller::GLFW,
+		ConsoleManager::Type::SUCCESS, 
 		"GLFW initialized successfully!\n\n");
 
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::WINDOW_SETUP,
-		ConsoleManager::ErrorType::INFO, 
+		ConsoleManager::Caller::WINDOW_SETUP,
+		ConsoleManager::Type::INFO, 
 		"Creating window...\n");
 
 	//create a window object holding all the windowing data
@@ -41,9 +49,9 @@ int RenderManager::WindowSetup()
 	if (RenderManager::window == NULL)
 	{
 		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::GLFW,
-			ConsoleManager::ErrorType::ERROR,
-			"Error: Failed to create GLFW window!\n\n");
+			ConsoleManager::Caller::GLFW,
+			ConsoleManager::Type::ERROR,
+			"Failed to create GLFW window!\n\n");
 
 		ShutdownManager::Shutdown();
 		return -1;
@@ -54,28 +62,29 @@ int RenderManager::WindowSetup()
 		RenderManager::UpdateAfterRescale);
 
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::WINDOW_SETUP,
-		ConsoleManager::ErrorType::SUCCESS, 
+		ConsoleManager::Caller::WINDOW_SETUP,
+		ConsoleManager::Type::SUCCESS, 
 		"Window initialized successfully!\n\n");
 
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::GLAD,
-		ConsoleManager::ErrorType::INFO, 
+		ConsoleManager::Caller::GLAD,
+		ConsoleManager::Type::INFO, 
 		"Initializing GLAD...\n");
 
 	//check if glad is initialized before continuing
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::GLAD,
-			ConsoleManager::ErrorType::ERROR, 
-			"Error: Failed to initialize GLAD!\n\n");
+			ConsoleManager::Caller::GLAD,
+			ConsoleManager::Type::ERROR, 
+			"Failed to initialize GLAD!\n\n");
 		return -1;
+		ShutdownManager::Shutdown();
 	}
 
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::GLAD,
-		ConsoleManager::ErrorType::SUCCESS, 
+		ConsoleManager::Caller::GLAD,
+		ConsoleManager::Type::SUCCESS, 
 		"GLAD initialized successfully!\n\n");
 
 	return 0;
@@ -96,6 +105,7 @@ void RenderManager::WindowLoop()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	//render the triangle
+	RenderManager::shader.Use();
 	glBindVertexArray(ShaderManager::VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 

@@ -1,6 +1,7 @@
 //engine
 #include "timestamp.h"
 #include "console.h"
+#include "logger.h"
 
 //external
 #include "magic_enum.hpp"
@@ -8,36 +9,49 @@
 #include <string>
 #include <iostream>
 
-void ConsoleManager::WriteConsoleMessage(MessageType messageType, ErrorType errorType, const std::string& message)
+Logger logger("engine_log.txt");
+
+void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const std::string& message)
 {
-	switch (errorType)
+	std::string msg;
+
+	switch (type)
 	{
 	default:
-		std::cerr
-			<< Timestamp::GetCurrentTimestamp()
-			<< magic_enum::enum_name(errorType)
-			<< " is not a valid error type!";
+		msg = 
+			Timestamp::GetCurrentTimestamp() +
+			std::string(magic_enum::enum_name(type)) +
+			" is not a valid error type!";
+
+		std::cerr << msg;
+		logger.Log(msg);
 		break;
-	case ConsoleManager::ErrorType::INFO:
-	case ConsoleManager::ErrorType::SUCCESS:
-		std::cout
-			<< Timestamp::GetCurrentTimestamp()
-			<< "["
-			<< magic_enum::enum_name(messageType)
-			<< "_"
-			<< magic_enum::enum_name(errorType)
-			<< "] "
-			<< message;
+	case ConsoleManager::Type::INFO:
+	case ConsoleManager::Type::SUCCESS:
+		msg =
+			Timestamp::GetCurrentTimestamp() +
+			"[" + 
+			std::string(magic_enum::enum_name(caller)) +
+			"_" + 
+			std::string(magic_enum::enum_name(type)) +
+			"] " + 
+			message;
+
+		std::cout << msg;
+		logger.Log(msg);
 		break;
-	case ConsoleManager::ErrorType::ERROR:
-		std::cerr
-			<< Timestamp::GetCurrentTimestamp()
-			<< "["
-			<< magic_enum::enum_name(messageType)
-			<< "_"
-			<< magic_enum::enum_name(errorType)
-			<< "] "
-			<< message;
+	case ConsoleManager::Type::ERROR:
+		msg = 
+			Timestamp::GetCurrentTimestamp() +
+			"[" +
+			std::string(magic_enum::enum_name(caller)) +
+			"_" +
+			std::string(magic_enum::enum_name(type)) +
+			"] " +
+			message;
+
+		std::cerr << msg;
+		logger.Log(msg);
 		break;
 	}
 }

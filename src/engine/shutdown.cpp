@@ -10,8 +10,8 @@
 void ShutdownManager::Shutdown() 
 {
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::SHUTDOWN, 
-		ConsoleManager::ErrorType::INFO, 
+		ConsoleManager::Caller::SHUTDOWN, 
+		ConsoleManager::Type::INFO, 
 		"Cleaning up resources...\n");
 
 	//de-allocate all resources once they've outlived their purpose
@@ -23,7 +23,7 @@ void ShutdownManager::Shutdown()
 	glfwTerminate();
 
 	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::MessageType::SHUTDOWN, 
-		ConsoleManager::ErrorType::SUCCESS, 
+		ConsoleManager::Caller::SHUTDOWN, 
+		ConsoleManager::Type::SUCCESS, 
 		"Shutdown complete!\n");
 }

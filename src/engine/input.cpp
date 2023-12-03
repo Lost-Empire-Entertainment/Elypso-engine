@@ -1,5 +1,5 @@
 //external
-#include "glfw3.h"
+#include "glad.h"
 
 //engine
 #include "input.h"
@@ -17,8 +17,8 @@ void InputManager::ProcessInput(GLFWwindow* window)
 	if (glfwGetKey(RenderManager::window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
 	{
 		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::MessageType::INPUT,
-			ConsoleManager::ErrorType::SUCCESS,
+			ConsoleManager::Caller::INPUT,
+			ConsoleManager::Type::SUCCESS,
 			"User pressed ESC key to shut down engine...\n\n");
 
 		glfwSetWindowShouldClose(window, true);

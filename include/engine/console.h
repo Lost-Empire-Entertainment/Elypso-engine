@@ -6,7 +6,7 @@
 class ConsoleManager
 {
 public:
-	enum class MessageType : char
+	enum class Caller : char
 	{
 		ENGINE,
 		INPUT,
@@ -18,12 +18,14 @@ public:
 		IMGUI,
 		SHUTDOWN
 	};
-	enum class ErrorType : char
+	enum class Type : char
 	{
 		SUCCESS,
 		INFO,
+		DEBUG,
+		CLEANUP,
 		ERROR
 	};
 
-	static void WriteConsoleMessage(MessageType messageType, ErrorType errorType, const std::string& message);
+	static void WriteConsoleMessage(Caller caller, Type type, const std::string& message);
 };
