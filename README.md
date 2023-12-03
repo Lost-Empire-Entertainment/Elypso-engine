@@ -26,8 +26,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ```
 - right-click the source directory folder and click open with visual studio to edit the source code
-- run build.bat to create the executable for the engine which will be placed to build/Release
-- run create_installer.bat to create the installer for the engine to distribute your modified version
+- run RUN_ME.bat to configure cmake, generate build folder or generate nsis installer
 ```
 
 ### Script layout
