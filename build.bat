@@ -10,6 +10,9 @@ set "cmsuc=[CMAKE_SUCCESS]"
 set "cpinf=[CPACK_INFO]"
 set "cperr=[CPACK_ERROR]"
 set "cpsuc=[CPACK_SUCCESS]"
+set "inst=Elypso engine installer.exe"
+set "ifol=Elypso engine installer"
+set "exe=Elypso_engine.exe"
 
 :: Check if the script is running with administrative privileges
 NET SESSION >nul 2>&1
@@ -61,9 +64,13 @@ if "%1" == "build" (
 	cmake --build . --config Release > logs\build_log.txt 2>&1
 
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed.
+		echo %cmerr% Build failed because %exe% did not get generated properly. Check build/logs/build_log.txt for more details.
 	) else (
-		echo %cmsuc% Build succeeded!
+		if exist "%~dp0\build\Release\%exe%" (
+			echo %cmsuc% Build succeeded!
+		) else (
+			echo %cmerr% Build failed because %exe% did not get generated properly. Check build/logs/build_log.txt for more details.
+		)
 	)
 )
 
@@ -98,21 +105,20 @@ if "%1" == "install" (
 	cpack -C Release > "logs\cpack_log.txt" 2>&1
 
 	if %errorlevel% neq 0 (
-		echo %cperr% CPack packaging failed.
+		echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/build_log.txt and build/logs/cpack_log.txt for more details.
 	) else (
-		echo %cpsuc% CPack packaging succeeded!
-	)
-	
-	:: Move installed exe to install folder and delete cpack packages folder
-	cd ../install
-	if exist "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer.exe" (
-		move "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer\bin\Elypso_engine.exe" "%~dp0\install"
-		echo %encln% Moved file: Elypso_engine.exe to install
-	
-		rd /s /q "_CPack_Packages"
-		echo %encln% Deleted folder: install/_CPack_Packages
-	) else (
-		echo %enerr% Cannot find %~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer.exe!
+		if exist "%~dp0\install\_CPack_Packages\win64\NSIS\%inst%" (
+			echo %cpsuc% CPack packaging succeeded!
+			
+			:: Move installed exe to install folder and delete cpack packages folder
+			cd ../install
+			move "%~dp0\install\_CPack_Packages\win64\NSIS\%ifol%\bin\%exe%" "%~dp0\install"
+			echo %encln% Moved file: %exe% to install
+			rd /s /q "_CPack_Packages"
+			echo %encln% Deleted folder: install/_CPack_Packages
+		) else (
+			echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/build_log.txt and build/logs/cpack_log.txt for more details.
+		)
 	)
 )
 
