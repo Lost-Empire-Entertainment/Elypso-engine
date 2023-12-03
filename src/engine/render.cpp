@@ -7,7 +7,6 @@
 #include "render.h"
 #include "shader.h"
 #include "shutdown.h"
-#include "input.h"
 
 int RenderManager::WindowSetup()
 {
@@ -35,7 +34,9 @@ int RenderManager::WindowSetup()
 	RenderManager::window = glfwCreateWindow(
 		RenderManager::SCR_WIDTH, 
 		RenderManager::SCR_HEIGHT, 
-		"Elypso engine", NULL, NULL);
+		"Elypso engine", 
+		NULL, 
+		NULL);
 
 	if (RenderManager::window == NULL)
 	{
@@ -89,24 +90,21 @@ void RenderManager::UpdateAfterRescale(GLFWwindow* window, int width, int height
 //this is run while the window is open
 void RenderManager::WindowLoop()
 {
-	InputManager::ProcessInput(RenderManager::window);
-
-	//render to framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, ShaderManager::framebuffer);
-	//clear color and depth buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//clear the background to dark green
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-	//render the orange triangle
+	//clear color
+	glClear(GL_COLOR_BUFFER_BIT);
+	//activate the shader before any calls to gluniform
 	glUseProgram(ShaderManager::shaderProgram);
-	glBindVertexArray(ShaderManager::VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-	GLenum glError = glGetError();
-	if (glError != GL_NO_ERROR) {
-		//std::cerr << "OpenGL Error: " << glError << std::endl;
-	}
+	//update shader uniform
+	double timeValue = glfwGetTime();
+	float greenValue = static_cast<float>(sin(timeValue) / 2.0 + 0.5);
+	int vertexColorLocation = glGetUniformLocation(ShaderManager::shaderProgram, "ourColor");
+	glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+	//render the triangle
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	//swap the front and back buffers
 	glfwSwapBuffers(RenderManager::window);

@@ -123,13 +123,10 @@ void ShaderManager::SetUpVertexDataAndBuffers()
 		ConsoleManager::ErrorType::INFO, 
 		"Setting up vertex data and buffers...\n");
 
-	//enable depth testing
-	glEnable(GL_DEPTH_TEST);
-
 	//set up vertex data and buffers and configure vertex attributes
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f, //left
-		0.5f, -0.5f, 0.0f,  //right
+		0.5f, -0.5f, 0.0f,  //bottom right
+		-0.5f, -0.5f, 0.0f, //bottom left
 		0.0f, 0.5f, 0.0f    //top
 	};
 
@@ -153,15 +150,10 @@ void ShaderManager::SetUpVertexDataAndBuffers()
 		(void*)0);
 	glEnableVertexAttribArray(0);
 
-	//the call to glVertexAttribPointer registered VBO
-	//as the vertex attributes bound vertex buffer object
-	//so afterwards we can safely unbind
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	//unbind the VAO afterwards so other VAO calls wont accidentally modify this VAO,
 	//but this rarely happens. modifying other VAOs requires a call to glBindVertexArray anyways
 	//so we generally dont unbind VAOs (nor VBOs) when its not directly necessary
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 
 	//uncomment this call to draw in wireframe polygons
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

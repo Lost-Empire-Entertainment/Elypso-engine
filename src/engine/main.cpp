@@ -45,7 +45,12 @@ int main()
 			ConsoleManager::ErrorType::INFO,
 			"Entering window loop...\n");
 
-		while (!glfwWindowShouldClose(RenderManager::window)) RenderManager::WindowLoop();
+		while (!glfwWindowShouldClose(RenderManager::window))
+		{
+			InputManager::ProcessInput(RenderManager::window);
+
+			RenderManager::WindowLoop();
+		}
 
 		ConsoleManager::WriteConsoleMessage(
 			ConsoleManager::MessageType::WINDOW_LOOP,
