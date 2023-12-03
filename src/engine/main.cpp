@@ -22,40 +22,33 @@ int main()
 
 	InputManager::InputSetup();
 
-	if (RenderManager::WindowSetup() != 0) {
-		ShutdownManager::Shutdown();
+	ShaderManager shader(ShaderManager::vertexShader, ShaderManager::fragmentShader);
+
+	if (RenderManager::WindowSetup() != 0) 
+	{
+		ShutdownManager::Shutdown(shader);
+		std::cin.get();
 		return -1;
 	}
 
-	ShaderManager::ShaderSetup();
+	ConsoleManager::WriteConsoleMessage(
+		ConsoleManager::Caller::WINDOW_LOOP,
+		ConsoleManager::Type::INFO,
+		"Entering window loop...\n");
 
-	if (!ShaderManager::shaderSetupSuccess)
+	while (!glfwWindowShouldClose(RenderManager::window))
 	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::Caller::SHADER, 
-			ConsoleManager::Type::ERROR, 
-			"Shader setup was unsuccessful!");
-		return -1;
+		InputManager::ProcessInput(RenderManager::window);
+
+		RenderManager::WindowLoop();
 	}
-	else
-	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::Caller::WINDOW_LOOP,
-			ConsoleManager::Type::INFO,
-			"Entering window loop...\n");
 
-		while (!glfwWindowShouldClose(RenderManager::window))
-		{
-			InputManager::ProcessInput(RenderManager::window);
+	ConsoleManager::WriteConsoleMessage(
+		ConsoleManager::Caller::WINDOW_LOOP,
+		ConsoleManager::Type::INFO,
+		"Exiting window loop...\n");
 
-			RenderManager::WindowLoop();
-		}
-
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::Caller::WINDOW_LOOP,
-			ConsoleManager::Type::INFO,
-			"Exiting window loop...\n");
-
-		ShutdownManager::Shutdown();
-	}
+	ShutdownManager::Shutdown(shader);
+	std::cin.get();
+	return 0;
 }

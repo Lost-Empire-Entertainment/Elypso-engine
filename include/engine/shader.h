@@ -23,16 +23,18 @@ public:
 
 	static inline bool shaderSetupSuccess;
 
-	static inline const char* vertexShader = "C:/Users/sande/Documents/CPP projects/Elypso engine/src/engine/shaders/vertex.shader";
-	static inline const char* fragmentShader = "C:/Users/sande/Documents/CPP projects/Elypso engine/src/engine/shaders/fragment.shader";
+	static inline const char* vertexShader = "C:/Users/sande/Documents/CPP projects/Elypso engine/src/engine/shaders/vertexShader.vs";
+	static inline const char* fragmentShader = "C:/Users/sande/Documents/CPP projects/Elypso engine/src/engine/shaders/fragmentShader.fs";
 
-	static inline unsigned int VAO, VBO, shaderProgram;
+	unsigned int VAO, VBO;
+
+	static inline unsigned int shaderProgram;
 
 	static inline GLenum error;
 	static inline GLuint framebuffer = 0;
 	static inline GLuint textureColorbuffer = 0;
 
-	static void ShaderSetup();
+	int ShaderSetup();
 
 	ShaderManager(const char* vertexPath, const char* fragmetPath);
 

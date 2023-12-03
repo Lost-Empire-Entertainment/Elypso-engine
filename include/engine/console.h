@@ -13,6 +13,7 @@ public:
 		SHADER,
 		WINDOW_SETUP,
 		WINDOW_LOOP,
+		OPENGL,
 		GLFW,
 		GLAD,
 		IMGUI,

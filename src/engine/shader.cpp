@@ -11,8 +11,9 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <filesystem>
 
-void ShaderManager::ShaderSetup()
+int ShaderManager::ShaderSetup()
 {
 	//call the shader generator to set up the vertex and fragment shaders
 	ShaderManager shader(ShaderManager::vertexShader, ShaderManager::fragmentShader);
@@ -25,15 +26,15 @@ void ShaderManager::ShaderSetup()
 		0.0f, 0.5f, 0.0f ,  0.0f, 0.0f, 1.0f  //top
 	};
 
-	glGenVertexArrays(1, &ShaderManager::VAO);
-	glGenBuffers(1, &ShaderManager::VBO);
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
 
 	//bind the Vertex Array Object first, 
 	//then bind and set vertex buffers, 
 	//and then configure vertex attributes
-	glBindVertexArray(ShaderManager::VAO);
+	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	//position attribute
@@ -55,20 +56,20 @@ void ShaderManager::ShaderSetup()
 		(void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	ShaderManager::shaderSetupSuccess = true;
+	GLenum error = glGetError();
+	if (error != GL_NO_ERROR)
+	{
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::OPENGL,
+			ConsoleManager::Type::ERROR,
+			"OpenGL Error after setting up vertex data: " + std::to_string(error));
+		return -1;
+	}
+	else return 0;
 }
 
 ShaderManager::ShaderManager(const char* vertexPath, const char* fragmentPath)
 {
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::Caller::SHADER,
-		ConsoleManager::Type::ERROR,
-		"Absolute vertex path: " + std::string(vertexPath) + "\n");
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::Caller::SHADER,
-		ConsoleManager::Type::ERROR,
-		"Absolute fragment path: " + std::string(fragmentPath) + "\n");
-
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::ifstream vShaderFile;
@@ -92,13 +93,66 @@ ShaderManager::ShaderManager(const char* vertexPath, const char* fragmentPath)
 		//convert stream into string
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
+
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::SHADER,
+			ConsoleManager::Type::DEBUG,
+			"Absolute vertex path: " + std::string(vertexPath) + "\n");
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::SHADER,
+			ConsoleManager::Type::DEBUG,
+			"Absolute fragment path: " + std::string(fragmentPath) + "\n");
+
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::SHADER,
+			ConsoleManager::Type::DEBUG,
+			"Current directory: " + std::filesystem::current_path().string() + "\n");
+
+		if (!std::filesystem::exists(ShaderManager::vertexShader))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleManager::Caller::SHADER,
+				ConsoleManager::Type::ERROR,
+				"Did not find vertex shader!\n");
+		}
+		else 
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleManager::Caller::SHADER,
+				ConsoleManager::Type::ERROR,
+				"Vertex shader path is valid.\n");
+		}
+
+		if (!std::filesystem::exists(ShaderManager::fragmentShader))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleManager::Caller::SHADER,
+				ConsoleManager::Type::ERROR,
+				"Did not find fragment shader!\n");
+		}
+		else
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleManager::Caller::SHADER,
+				ConsoleManager::Type::ERROR,
+				"Fragment shader path is valid.\n");
+		}
+
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::SHADER,
+			ConsoleManager::Type::DEBUG,
+			"Vertex shader code:\n" + vertexCode + "\n");
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::SHADER,
+			ConsoleManager::Type::DEBUG,
+			"Fragment shader code:\n" + fragmentCode + "\n");
 	}
 	catch (std::ifstream::failure& e)
 	{
 		ConsoleManager::WriteConsoleMessage(
 			ConsoleManager::Caller::SHADER,
 			ConsoleManager::Type::ERROR,
-			"Shader failed to load! " +
+			"Failed to set up shaders! " +
 			std::string(e.what()));
 	}
 
@@ -125,6 +179,16 @@ ShaderManager::ShaderManager(const char* vertexPath, const char* fragmentPath)
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+
+	if (ShaderSetup() != 0)
+	{
+		ConsoleManager::WriteConsoleMessage(
+			ConsoleManager::Caller::SHADER,
+			ConsoleManager::Type::ERROR,
+			"Failed to set up shaders! Exiting...\n");
+		std::cin.get();
+		exit(-1);
+	}
 }
 
 void ShaderManager::Use()

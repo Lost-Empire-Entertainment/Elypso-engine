@@ -21,7 +21,6 @@ int RenderManager::WindowSetup()
 			ConsoleManager::Caller::GLFW,
 			ConsoleManager::Type::ERROR,
 			"Failed to initialize GLFW!\n\n");
-		ShutdownManager::Shutdown();
 		return -1;
 	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -52,8 +51,6 @@ int RenderManager::WindowSetup()
 			ConsoleManager::Caller::GLFW,
 			ConsoleManager::Type::ERROR,
 			"Failed to create GLFW window!\n\n");
-
-		ShutdownManager::Shutdown();
 		return -1;
 	}
 	glfwMakeContextCurrent(RenderManager::window);
@@ -74,12 +71,15 @@ int RenderManager::WindowSetup()
 	//check if glad is initialized before continuing
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::Caller::GLAD,
-			ConsoleManager::Type::ERROR, 
-			"Failed to initialize GLAD!\n\n");
-		return -1;
-		ShutdownManager::Shutdown();
+		GLenum error = glGetError();
+		if (error != GL_NO_ERROR)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleManager::Caller::OPENGL,
+				ConsoleManager::Type::ERROR,
+				"OpenGL Error after GLAD initialization: " + std::to_string(error));
+			return -1;
+		}
 	}
 
 	ConsoleManager::WriteConsoleMessage(
@@ -106,7 +106,7 @@ void RenderManager::WindowLoop()
 
 	//render the triangle
 	RenderManager::shader.Use();
-	glBindVertexArray(ShaderManager::VAO);
+	glBindVertexArray(shader.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	//swap the front and back buffers

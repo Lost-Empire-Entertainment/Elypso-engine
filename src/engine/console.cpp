@@ -26,6 +26,8 @@ void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const std::st
 		std::cerr << msg;
 		logger.Log(msg);
 		break;
+	case ConsoleManager::Type::CLEANUP:
+	case ConsoleManager::Type::DEBUG:
 	case ConsoleManager::Type::INFO:
 	case ConsoleManager::Type::SUCCESS:
 		msg =

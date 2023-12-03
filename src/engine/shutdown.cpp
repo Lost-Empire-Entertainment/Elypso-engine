@@ -7,7 +7,7 @@
 #include "shader.h"
 #include "shutdown.h"
 
-void ShutdownManager::Shutdown() 
+void ShutdownManager::Shutdown(ShaderManager& shaderManager)
 {
 	ConsoleManager::WriteConsoleMessage(
 		ConsoleManager::Caller::SHUTDOWN, 
@@ -15,9 +15,9 @@ void ShutdownManager::Shutdown()
 		"Cleaning up resources...\n");
 
 	//de-allocate all resources once they've outlived their purpose
-	glDeleteVertexArrays(1, &ShaderManager::VAO);
-	glDeleteBuffers(1, &ShaderManager::VBO);
-	glDeleteProgram(ShaderManager::shaderProgram);
+	glDeleteVertexArrays(1, &shaderManager.VAO);
+	glDeleteBuffers(1, &shaderManager.VBO);
+	glDeleteProgram(shaderManager.shaderProgram);
 
 	//clean all glfw resources after program is closed
 	glfwTerminate();
