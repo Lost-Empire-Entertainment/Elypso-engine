@@ -2,4 +2,8 @@
 
 #include <string>
 
-std::string GetCurrentTimestamp();
+class Timestamp
+{
+public:
+	static std::string GetCurrentTimestamp();
+};

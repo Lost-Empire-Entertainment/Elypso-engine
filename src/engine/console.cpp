@@ -1,28 +1,27 @@
 //engine
 #include "timestamp.h"
-#include "writeConsoleMessage.h"
+#include "console.h"
 
 //external
 #include "magic_enum.hpp"
 
-//cpp
 #include <string>
+#include <iostream>
 
-//prints the message to the console
-void WriteConsoleMessage(MessageType messageType, ErrorType errorType, const std::string& message)
+void ConsoleManager::WriteConsoleMessage(MessageType messageType, ErrorType errorType, const std::string& message)
 {
 	switch (errorType)
 	{
 	default:
 		std::cerr
-			<< GetCurrentTimestamp()
+			<< Timestamp::GetCurrentTimestamp()
 			<< magic_enum::enum_name(errorType)
 			<< " is not a valid error type!";
 		break;
-	case INFO:
-	case SUCCESS:
+	case ConsoleManager::ErrorType::INFO:
+	case ConsoleManager::ErrorType::SUCCESS:
 		std::cout
-			<< GetCurrentTimestamp()
+			<< Timestamp::GetCurrentTimestamp()
 			<< "["
 			<< magic_enum::enum_name(messageType)
 			<< "_"
@@ -30,9 +29,9 @@ void WriteConsoleMessage(MessageType messageType, ErrorType errorType, const std
 			<< "] "
 			<< message;
 		break;
-	case ERROR:
+	case ConsoleManager::ErrorType::ERROR:
 		std::cerr
-			<< GetCurrentTimestamp()
+			<< Timestamp::GetCurrentTimestamp()
 			<< "["
 			<< magic_enum::enum_name(messageType)
 			<< "_"

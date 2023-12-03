@@ -102,12 +102,12 @@ if "%1" == "install" (
 	) else (
 		echo %cpsuc% CPack packaging succeeded!
 	)
-
+	
 	:: Move installed exe to install folder and delete cpack packages folder
 	cd ../install
 	if exist "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer.exe" (
-		move "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer\bin\Elypso engine.exe" "%~dp0\install"
-		echo %encln% Moved file: Elypso engine.exe to install
+		move "%~dp0\install\_CPack_Packages\win64\NSIS\Elypso engine installer\bin\Elypso_engine.exe" "%~dp0\install"
+		echo %encln% Moved file: Elypso_engine.exe to install
 	
 		rd /s /q "_CPack_Packages"
 		echo %encln% Deleted folder: install/_CPack_Packages
