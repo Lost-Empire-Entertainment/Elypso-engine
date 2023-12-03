@@ -44,12 +44,25 @@ goto menu
 
 :build_generation
 echo %eninf% Running build generation...
-start /wait build.bat build
+
+if not exist build (
+	echo %enerr% Did not find build folder. Please run CMake Configuration.
+	pause
+) else (
+	start /wait build.bat build
+)
+pause
 goto menu
 
 :nsis_install
 echo %eninf% Running installer generation...
-start /wait build.bat install
+
+if not exist build (
+	echo %enerr% Did not find build folder. Please first run CMake Configuration and then Build Generation.
+) else (
+	start /wait build.bat install
+)
+pause
 goto menu
 
 :end
