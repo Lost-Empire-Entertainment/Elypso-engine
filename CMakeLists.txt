@@ -35,7 +35,6 @@ target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 file(GLOB_RECURSE SOURCE_FILES
     ${SRC_DIR}/*.cpp
     ${SRC_DIR}/*.c
-	${SRC_DIR}/*.glsl
 	${INCLUDE_DIR}/*.hpp
     ${INCLUDE_DIR}/*.h
 )

@@ -1,17 +1,9 @@
-﻿//external
-#include "glad.h"
-#include "magic_enum.hpp"
-
-//engine
+﻿//engine
 #include "render.h"
 #include "shader.h"
 #include "input.h"
 #include "console.h"
 #include "shutdown.h"
-
-#include <iostream>
-#include <string>
-#include <sstream>
 
 int main()
 {
@@ -22,14 +14,14 @@ int main()
 
 	InputManager::InputSetup();
 
-	ShaderManager shader(ShaderManager::vertexShader, ShaderManager::fragmentShader);
-
 	if (RenderManager::WindowSetup() != 0) 
 	{
-		ShutdownManager::Shutdown(shader);
+		ShutdownManager::Shutdown();
 		std::cin.get();
 		return -1;
 	}
+
+	ShaderManager::ShaderSetup();
 
 	ConsoleManager::WriteConsoleMessage(
 		ConsoleManager::Caller::WINDOW_LOOP,
@@ -48,7 +40,7 @@ int main()
 		ConsoleManager::Type::INFO,
 		"Exiting window loop...\n");
 
-	ShutdownManager::Shutdown(shader);
+	ShutdownManager::Shutdown();
 	std::cin.get();
 	return 0;
 }

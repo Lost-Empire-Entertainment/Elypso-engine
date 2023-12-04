@@ -16,7 +16,6 @@ public:
 	static const unsigned int SCR_HEIGHT = 600;
 
 	static inline GLFWwindow* window;
-	static ShaderManager shader;
 
 	static int WindowSetup();
 	static void UpdateAfterRescale(GLFWwindow* window, int width, int height);

@@ -19,33 +19,36 @@ public:
 		vertex_data_and_buffers
 	};
 
-	unsigned int ID;
-
 	static inline bool shaderSetupSuccess;
-
-	static inline const char* vertexShader = "C:/Users/sande/Documents/CPP projects/Elypso engine/src/engine/shaders/vertexShader.vs";
-	static inline const char* fragmentShader = "C:/Users/sande/Documents/CPP projects/Elypso engine/src/engine/shaders/fragmentShader.fs";
-
-	unsigned int VAO, VBO;
-
-	static inline unsigned int shaderProgram;
+	static inline int success;
+	static inline char infoLog[512];
+	static inline unsigned int VAO, VBO, shaderProgram, vertexShader, fragmentShader;
+	static inline const char* vertexShaderSource =
+		"#version 330 core\n"
+		"layout (location = 0) in vec3 aPos;\n"
+		"layout (location = 1) in vec3 aColor;\n"
+		"out vec3 ourColor;\n"
+		"void main()\n"
+		"{\n"
+		"	gl_Position = vec4(aPos, 1.0);\n"
+		"	ourColor = aColor;\n"
+		"}\0";
+	static inline const char* fragmentShaderSource =
+		"#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"in vec3 ourColor;\n"
+		"void main()\n"
+		"{\n"
+		"	FragColor = vec4(ourColor, 1.0); \n"
+		"}\n\0";
 
 	static inline GLenum error;
 	static inline GLuint framebuffer = 0;
 	static inline GLuint textureColorbuffer = 0;
-
-	int ShaderSetup();
-
-	ShaderManager(const char* vertexPath, const char* fragmetPath);
-
-	void Use();
-
-	void SetBool(const std::string& name, bool value) const;
-	
-	void SetInt(const std::string& name, int value) const;
-
-	void SetFloat(const std::string& name, float value) const;
-
-private:
-	void CheckCompileErrors(unsigned int shader, std::string type);
+	static void ShaderSetup();
+	static void SetUpVertexShader();
+	static void SetUpFragmentShader();
+	static void LinkShaders();
+	static void SetUpVertexDataAndBuffers();
+	static bool FoundShaderCompileErrors(ShaderState shaderState);
 };

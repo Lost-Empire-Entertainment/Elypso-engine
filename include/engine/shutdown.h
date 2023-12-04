@@ -6,5 +6,5 @@
 class ShutdownManager
 {
 public:
-	static void Shutdown(ShaderManager& shaderManager);
+	static void Shutdown();
 };
