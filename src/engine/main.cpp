@@ -4,43 +4,44 @@
 #include "input.h"
 #include "console.h"
 #include "shutdown.h"
+#include "core.h"
 
 int main()
 {
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::Caller::ENGINE, 
-		ConsoleManager::Type::INFO, 
-		"Initializing Elypso engine...\n");
+	Core::ConsoleManager::WriteConsoleMessage(
+		Core::ConsoleManager::Caller::ENGINE,
+		Core::ConsoleManager::Type::INFO,
+		"Initializing " + Core::name + " " + Core::version + "...\n");
 
-	InputManager::InputSetup();
+	Core::InputManager::InputSetup();
 
-	if (RenderManager::WindowSetup() != 0) 
+	if (Graphics::RenderManager::WindowSetup() != 0) 
 	{
-		ShutdownManager::Shutdown();
+		Core::ShutdownManager::Shutdown();
 		std::cin.get();
 		return -1;
 	}
 
-	ShaderManager::ShaderSetup();
+	Graphics::ShaderManager::ShaderSetup();
 
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::Caller::WINDOW_LOOP,
-		ConsoleManager::Type::INFO,
+	Core::ConsoleManager::WriteConsoleMessage(
+		Core::ConsoleManager::Caller::WINDOW_LOOP,
+		Core::ConsoleManager::Type::INFO,
 		"Entering window loop...\n");
 
-	while (!glfwWindowShouldClose(RenderManager::window))
+	while (!glfwWindowShouldClose(Graphics::RenderManager::window))
 	{
-		InputManager::ProcessInput(RenderManager::window);
+		Core::InputManager::ProcessInput(Graphics::RenderManager::window);
 
-		RenderManager::WindowLoop();
+		Graphics::RenderManager::WindowLoop();
 	}
 
-	ConsoleManager::WriteConsoleMessage(
-		ConsoleManager::Caller::WINDOW_LOOP,
-		ConsoleManager::Type::INFO,
+	Core::ConsoleManager::WriteConsoleMessage(
+		Core::ConsoleManager::Caller::WINDOW_LOOP,
+		Core::ConsoleManager::Type::INFO,
 		"Exiting window loop...\n");
 
-	ShutdownManager::Shutdown();
+	Core::ShutdownManager::Shutdown();
 	std::cin.get();
 	return 0;
 }

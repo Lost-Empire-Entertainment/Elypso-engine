@@ -1,0 +1,54 @@
+Elypso engine
+|-- .git
+|-- .vs (added when opening project in visual studio)
+|-- build (added when generating build files)
+|-- files
+|   |-- icon.ico
+|-- include
+|   |-- engine
+|       |-- core
+|           |-- console.h
+|           |-- core.h
+|           |-- logger.h
+|           |-- shutdown.h
+|           |-- timestamp.h
+|       |-- graphics
+|           |-- render.h
+|           |-- shader.h
+|       |-- input
+|           |-- input.h
+|   |-- external
+|       |-- glad
+|       |-- glfw
+|       |-- glm
+|       |-- imgui
+|       |-- magic_enum
+|-- install (added when generating installer)
+|-- lib
+|   |-- glfw
+|-- out (added when opening project in visual studio)
+|-- src
+|   |-- engine
+|       |-- main.cpp
+|       |-- core
+|           |-- console.cpp
+|           |-- core.cpp
+|           |-- logger.cpp
+|           |-- shutdown.cpp
+|           |-- timestamp.cpp
+|       |-- graphics
+|           |-- render.cpp
+|           |-- shader.cpp
+|           |-- shaders
+|               |-- fragmentShader.fs
+|               |-- vertexShader.vs
+|       |-- input
+|           |-- input.cpp
+|   |-- external
+|-- .gitignore
+|-- build.bat
+|-- CMakeLists.txt
+|-- CMakePresets.json
+|-- LICENSE.md
+|-- README.md
+|-- RUN_ME.bat

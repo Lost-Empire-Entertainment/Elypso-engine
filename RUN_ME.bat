@@ -20,29 +20,32 @@ cd /d "%~dp0"
 cls
 echo Write the number of your choice to choose the action.
 echo.
-echo 1. Cmake Configuration
-echo 2. Build Generation
-echo 3. NSIS Installation
+echo 1. Reconfigure CMake
+echo 2. Generate build files
+echo 3. Generate installer
 echo 4. Exit
+echo.
+echo 0. Reset (DELETES .VS AND OUT FOLDERS)
 echo.
 set /p choice="Choice: "
 
 :: Process user input
-if "%choice%"=="1" goto cmake_config
-if "%choice%"=="2" goto build_generation
-if "%choice%"=="3" goto nsis_install
+if "%choice%"=="1" goto cmake
+if "%choice%"=="2" goto build
+if "%choice%"=="3" goto install
 if "%choice%"=="4" goto end
+if "%choice%"=="0" goto reset
 
-echo %enerr% Invalid choice! Please enter a number between 1 and 4.
+echo %enerr% Invalid choice! Please enter a valid number.
 pause
 goto menu
 
-:cmake_config
+:cmake
 echo %eninf% Running CMake configuration...
 start /wait build.bat cmake_config
 goto menu
 
-:build_generation
+:build
 echo %eninf% Running build generation...
 
 if not exist build (
@@ -53,7 +56,7 @@ if not exist build (
 )
 goto menu
 
-:nsis_install
+:install
 echo %eninf% Running installer generation...
 
 if not exist build (
@@ -61,6 +64,27 @@ if not exist build (
 ) else (
 	start /wait build.bat install
 )
+goto menu
+
+:reset
+echo %eninf% Running reset...
+if not exist out (
+	if not exist .vs (
+		echo %eninf% There is nothing to delete.
+		pause
+		goto menu
+	)
+)
+
+if exist .vs (
+	echo %eninf% Deleted folder: .vs
+	rd /s /q .vs
+)
+if exist out (
+	echo %eninf% Deleted folder: out
+	rd /s /q out
+)
+pause
 goto menu
 
 :end
