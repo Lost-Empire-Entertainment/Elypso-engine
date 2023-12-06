@@ -56,7 +56,7 @@ These instructions will get you a copy of the project up and running on your loc
 * [GLM](https://github.com/g-truc/glm) - C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification
 * [NSIS](https://nsis.sourceforge.io/Download) - windows installer generator
 * [magic enum](https://github.com/Neargye/magic_enum) - provides static reflection for enums, work with any enum type without any macro or boilerplate code
-* [ImGUI](https://github.com/ocornut/imgui) - graphical user interface library
+* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
 
 ## Authors
 

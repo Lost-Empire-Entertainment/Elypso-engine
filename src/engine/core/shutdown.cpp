@@ -21,6 +21,7 @@ namespace Core
 		//de-allocate all resources once they've outlived their purpose
 		glDeleteVertexArrays(1, &Graphics::Render::VAO);
 		glDeleteBuffers(1, &Graphics::Render::VBO);
+		glDeleteBuffers(1, &Graphics::Render::EBO);
 
 		//clean all glfw resources after program is closed
 		glfwTerminate();

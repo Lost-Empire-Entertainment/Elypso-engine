@@ -21,6 +21,7 @@ namespace Core::Console
 			OPENGL,
 			GLFW,
 			GLAD,
+			TEXTURE,
 			IMGUI,
 			SHUTDOWN
 		};

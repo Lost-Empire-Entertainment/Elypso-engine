@@ -56,6 +56,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/external/glm
 	${INCLUDE_DIR}/external/magic_enum
 	${INCLUDE_DIR}/external/imgui
+	${INCLUDE_DIR}/external/stb_image
 )
 
 target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
