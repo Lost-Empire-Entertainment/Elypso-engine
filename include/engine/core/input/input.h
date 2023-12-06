@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CORE_INPUT_H
+#define CORE_INPUT_H
+
 //external
 #include <glfw3.h>
 
@@ -23,3 +26,5 @@ namespace Core::Input
 		static void ProcessInput(GLFWwindow* window);
 	};
 }
+
+#endif

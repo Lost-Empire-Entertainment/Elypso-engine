@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef GRAPHICS_RENDER_H
+#define GRAPHICS_RENDER_H
+
 //external
 #include "glad.h"
 #include "glfw3.h"
@@ -24,3 +27,5 @@ namespace Graphics
 		static void WindowLoop();
 	};
 }
+
+#endif

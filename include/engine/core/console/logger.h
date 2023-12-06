@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CORE_CONSOLE_LOGGER_H
+#define CORE_CONSOLE_LOGGER_H
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -19,3 +22,5 @@ namespace Core::Console
 		std::ofstream logFile;
 	};
 }
+
+#endif

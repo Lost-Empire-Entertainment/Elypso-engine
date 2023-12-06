@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CORE_H
+#define CORE_H
+
 #include <string>
 
 namespace Core
@@ -11,3 +14,5 @@ namespace Core
 	void RunEngine();
 	int ShutdownEngine();
 }
+
+#endif

@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef GRAPHICS_SHADER_H
+#define GRAPHICS_SHADER_H
+
 //external
 #include "glad.h"
 
@@ -55,3 +58,5 @@ namespace Graphics
 		static bool FoundShaderCompileErrors(ShaderState shaderState);
 	};
 }
+
+#endif

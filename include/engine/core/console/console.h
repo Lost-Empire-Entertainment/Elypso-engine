@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CORE_CONSOLE_H
+#define CORE_CONSOLE_H
+
 #include <iostream>
 #include <string>
 
@@ -33,3 +36,5 @@ namespace Core::Console
 		static void WriteConsoleMessage(Caller caller, Type type, const std::string& message);
 	};
 }
+
+#endif

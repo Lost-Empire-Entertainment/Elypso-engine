@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef CORE_CONSOLE_TIMESTAMP_H
+#define CORE_CONSOLE_TIMESTAMP_H
+
 #include <string>
 
 namespace Core::Console
@@ -10,3 +13,5 @@ namespace Core::Console
 		static std::string GetCurrentTimestamp();
 	};
 }
+
+#endif
