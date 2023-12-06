@@ -13,7 +13,7 @@
 namespace Core
 {
 	const std::string name = "Elypso engine";
-	const std::string version = "0.0.2 prototype";
+	const std::string version = "0.0.3 prototype";
 
 	int InitializeEngine()
 	{
@@ -32,7 +32,7 @@ namespace Core
 				"Window setup was unsuccessful!\n\n");
 
 			Core::ShutdownManager::Shutdown();
-
+			std::cin.get();
 			return -1;
 		}
 
@@ -46,7 +46,7 @@ namespace Core
 				"Shader setup was unsuccessful!\n\n");
 
 			Core::ShutdownManager::Shutdown();
-
+			std::cin.get();
 			return -1;
 		}
 		else return 0;
