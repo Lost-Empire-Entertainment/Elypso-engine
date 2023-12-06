@@ -16,6 +16,8 @@ namespace Core
 			Core::Console::ConsoleManager::Type::INFO,
 			"Cleaning up resources...\n");
 
+		Graphics::Render::Shutdown();
+
 		//de-allocate all resources once they've outlived their purpose
 		glDeleteVertexArrays(1, &Graphics::Render::VAO);
 		glDeleteBuffers(1, &Graphics::Render::VBO);

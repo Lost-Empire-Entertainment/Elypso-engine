@@ -12,9 +12,8 @@
 
 namespace Graphics
 {
-	Shader Render::shader(
-		"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\vertexShader.vs",
-		"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\fragmentShader.fs");
+	Shader* Render::shader;
+	bool Render::shaderInitialized = false;
 
 	int Render::WindowSetup() 
 	{
@@ -78,7 +77,14 @@ namespace Graphics
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLAD initialized successfully!\n\n");
 
-		shader.Use();
+		if (!shaderInitialized)
+		{
+			shader = new Shader(
+				"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\vertexShader.vs",
+				"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\fragmentShader.fs");
+
+			shaderInitialized = true;
+		}
 
 		float vertices[] =
 		{
@@ -111,6 +117,12 @@ namespace Graphics
 		glViewport(0, 0, width, height);
 	}
 
+	void Render::Shutdown()
+	{
+		delete shader;
+		shader = nullptr;
+	}
+
 	void Render::WindowLoop()
 	{
 		//clear the background to dark green
@@ -119,9 +131,12 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//render the triangle
-		shader.Use();
-		glBindVertexArray(Render::VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		if (shader)
+		{
+			shader->Use();
+			glBindVertexArray(Render::VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+		}
 
 		//swap the front and back buffers
 		glfwSwapBuffers(Render::window);

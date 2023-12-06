@@ -17,6 +17,8 @@ namespace Graphics
 	class Render
 	{
 	public:
+		static bool shaderInitialized;
+
 		static inline const unsigned int SCR_WIDTH = 800;
 		static inline const unsigned int SCR_HEIGHT = 600;
 
@@ -24,10 +26,11 @@ namespace Graphics
 
 		static inline GLFWwindow* window;
 
-		static Shader shader;
+		static Shader* shader;
 
 		static int WindowSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
+		static void Shutdown();
 		static void WindowLoop();
 	};
 }
