@@ -2,7 +2,7 @@
 
 Welcome to the main repository of Elypso engine which is an open source C++ OpenGL engine used in Windows. Its main goal will be to make RPG and shooter games and it will be the main game creation engine for my game studio Lost Empire Entertainment once it is production ready.
 
-[Join the public community server](https://discord.gg/wPYCSSenX2)
+[Join the community server](https://discord.gg/wPYCSSenX2)
 
 [Check out the trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
 
