@@ -4,7 +4,7 @@
 
 //engine
 #include "console.h"
-#include "shader.h"
+#include "render.h"
 #include "shutdown.h"
 
 namespace Core
@@ -17,9 +17,8 @@ namespace Core
 			"Cleaning up resources...\n");
 
 		//de-allocate all resources once they've outlived their purpose
-		glDeleteVertexArrays(1, &Graphics::ShaderManager::VAO);
-		glDeleteBuffers(1, &Graphics::ShaderManager::VBO);
-		glDeleteProgram(Graphics::ShaderManager::shaderProgram);
+		glDeleteVertexArrays(1, &Graphics::Render::VAO);
+		glDeleteBuffers(1, &Graphics::Render::VBO);
 
 		//clean all glfw resources after program is closed
 		glfwTerminate();

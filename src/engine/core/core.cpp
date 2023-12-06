@@ -24,7 +24,7 @@ namespace Core
 
 		Core::Input::InputManager::InputSetup();
 
-		if (Graphics::RenderManager::WindowSetup() != 0)
+		if (Graphics::Render::WindowSetup() != 0)
 		{
 			Core::Console::ConsoleManager::WriteConsoleMessage(
 				Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
@@ -36,20 +36,7 @@ namespace Core
 			return -1;
 		}
 
-		Graphics::ShaderManager::ShaderSetup();
-
-		if (!Graphics::ShaderManager::shaderSetupSuccess)
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::ERROR,
-				"Shader setup was unsuccessful!\n\n");
-
-			Core::ShutdownManager::Shutdown();
-			std::cin.get();
-			return -1;
-		}
-		else return 0;
+		return 0;
 	}
 
 	void RunEngine()
@@ -59,11 +46,11 @@ namespace Core
 			Core::Console::ConsoleManager::Type::INFO,
 			"Entering window loop...\n");
 
-		while (!glfwWindowShouldClose(Graphics::RenderManager::window))
+		while (!glfwWindowShouldClose(Graphics::Render::window))
 		{
-			Core::Input::InputManager::ProcessInput(Graphics::RenderManager::window);
+			Core::Input::InputManager::ProcessInput(Graphics::Render::window);
 
-			Graphics::RenderManager::WindowLoop();
+			Graphics::Render::WindowLoop();
 		}
 
 		Core::Console::ConsoleManager::WriteConsoleMessage(

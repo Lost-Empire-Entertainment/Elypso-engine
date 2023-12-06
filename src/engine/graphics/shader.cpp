@@ -1,259 +1,124 @@
 //external
 #include "glad.h"
-#include "magic_enum.hpp"
 
 //engine
 #include "shader.h"
-#include "render.h"
 #include "console.h"
 
+#include <string>
+#include <fstream>
 #include <sstream>
+#include <iostream>
 
 namespace Graphics
 {
-	void ShaderManager::ShaderSetup()
+	Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	{
-		ShaderManager::SetUpVertexShader();
+        std::string vertexCode;
+        std::string fragmentCode;
+        std::ifstream vShaderFile;
+        std::ifstream fShaderFile;
+        //ensure ifstream objects can throw exceptions:
+        vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        try
+        {
+            //open files
+            vShaderFile.open(vertexPath);
+            fShaderFile.open(fragmentPath);
+            std::stringstream vShaderStream, fShaderStream;
+            //read file's buffer contents into streams
+            vShaderStream << vShaderFile.rdbuf();
+            fShaderStream << fShaderFile.rdbuf();
+            //close file handlers
+            vShaderFile.close();
+            fShaderFile.close();
+            //convert stream into string
+            vertexCode = vShaderStream.str();
+            fragmentCode = fShaderStream.str();
+        }
+        catch (std::ifstream::failure& e)
+        {
+            Core::Console::ConsoleManager::WriteConsoleMessage(
+                Core::Console::ConsoleManager::Caller::SHADER,
+                Core::Console::ConsoleManager::Type::ERROR,
+                "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " +
+                std::string(e.what()) + "\n\n");
+        }
+        const char* vShaderCode = vertexCode.c_str();
+        const char* fShaderCode = fragmentCode.c_str();
+        //compile shaders
+        unsigned int vertex, fragment;
+        //vertex shader
+        vertex = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex, 1, &vShaderCode, NULL);
+        glCompileShader(vertex);
+        CheckCompileErrors(vertex, "VERTEX");
+        //fragment shader
+        fragment = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragment, 1, &fShaderCode, NULL);
+        glCompileShader(fragment);
+        CheckCompileErrors(fragment, "FRAGMENT");
+        //shader program
+        ID = glCreateProgram();
+        glAttachShader(ID, vertex);
+        glAttachShader(ID, fragment);
+        glLinkProgram(ID);
+        CheckCompileErrors(ID, "PROGRAM");
+        //delete shaders as they are no longer needed
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
 	}
-	void ShaderManager::SetUpVertexShader()
+
+	void Shader::Use()
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::SHADER,
-			Core::Console::ConsoleManager::Type::INFO,
-			"Initializing vertex shader...\n");
-		ShaderManager::vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(
-			ShaderManager::vertexShader,
-			1,
-			&ShaderManager::vertexShaderSource,
-			NULL);
-		glCompileShader(ShaderManager::vertexShader);
-		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::vertex))
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::SUCCESS,
-				"Vertex shader initialized successfully!\n\n");
-		}
-		else
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::ERROR,
-				"Vertex shader compilation failed!\n\n");
-			return;
-		}
-		ShaderManager::SetUpFragmentShader();
+        glUseProgram(ID);
 	}
-	void ShaderManager::SetUpFragmentShader()
+
+	void Shader::SetBool(const std::string &name, bool value) const
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::SHADER,
-			Core::Console::ConsoleManager::Type::INFO,
-			"Initializing fragment shader...\n");
-		ShaderManager::fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(
-			ShaderManager::fragmentShader,
-			1,
-			&ShaderManager::fragmentShaderSource,
-			NULL);
-		glCompileShader(ShaderManager::fragmentShader);
-		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::fragment))
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::SUCCESS,
-				"Fragment shader initialized successfully!\n\n");
-		}
-		else
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::ERROR,
-				"Fragment shader compilation failed!\n\n");
-			return;
-		}
-		ShaderManager::LinkShaders();
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 	}
-	void ShaderManager::LinkShaders()
+	void Shader::SetInt(const std::string& name, int value) const
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::SHADER,
-			Core::Console::ConsoleManager::Type::INFO,
-			"Linking shaders...\n");
-		//link shaders
-		ShaderManager::shaderProgram = glCreateProgram();
-		glAttachShader(ShaderManager::shaderProgram, ShaderManager::vertexShader);
-		glAttachShader(ShaderManager::shaderProgram, ShaderManager::fragmentShader);
-		glLinkProgram(ShaderManager::shaderProgram);
-		//clean up shaders
-		glDeleteShader(ShaderManager::vertexShader);
-		glDeleteShader(ShaderManager::fragmentShader);
-		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::link_shaders))
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::SUCCESS,
-				"Shaders linked successfully!\n\n");
-		}
-		else
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::ERROR,
-				"Shader linking failed!\n\n");
-			return;
-		}
-		ShaderManager::SetUpVertexDataAndBuffers();
+        glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 	}
-	void ShaderManager::SetUpVertexDataAndBuffers()
+	void Shader::SetFloat(const std::string& name, float value) const
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::SHADER,
-			Core::Console::ConsoleManager::Type::INFO,
-			"Setting up vertex data and buffers...\n");
-
-		//set up vertex data and buffers and configure vertex attributes
-		float vertices[] = {
-			//positions			//colors
-			0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, //bottom right
-			-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, //bottom left
-			0.0f, 0.5f, 0.0f ,  0.0f, 0.0f, 1.0f  //top
-		};
-
-		glGenVertexArrays(1, &ShaderManager::VAO);
-		glGenBuffers(1, &ShaderManager::VBO);
-		//bind the Vertex Array Object first, 
-		//then bind and set vertex buffers, 
-		//and then configure vertex attributes
-		glBindVertexArray(ShaderManager::VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		//position attribute
-		glVertexAttribPointer(
-			0,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			6 * sizeof(float),
-			(void*)0);
-		glEnableVertexAttribArray(0);
-
-		//color attribute
-		glVertexAttribPointer(
-			1,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			6 * sizeof(float),
-			(void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-
-		glUseProgram(ShaderManager::shaderProgram);
-
-		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::vertex_data_and_buffers))
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::SUCCESS,
-				"Vertex data and buffer setup was successful!\n\n");
-		}
-		else
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::SHADER,
-				Core::Console::ConsoleManager::Type::ERROR,
-				"Failed to set up vertex data and buffers!\n\n");
-			return;
-		}
-		ShaderManager::shaderSetupSuccess = true;
+        glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 	}
-	//checks if any errors were found during compilation
-	bool ShaderManager::FoundShaderCompileErrors(ShaderState state)
+
+	void Shader::CheckCompileErrors(unsigned int shader, std::string type)
 	{
-		std::ostringstream oss;
-		std::string message;
-		switch (state)
-		{
-		default:
-			oss << "Error: " << magic_enum::enum_name(state) << " is not a valid shader state!\n\n";
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::ENGINE,
-				Core::Console::ConsoleManager::Type::ERROR,
-				oss.str());
-			return true;
-			break;
-		case ShaderManager::ShaderState::vertex:
-			glGetShaderiv(ShaderManager::vertexShader, GL_COMPILE_STATUS, &ShaderManager::success);
-			if (!ShaderManager::success)
-			{
-				glGetShaderInfoLog(
-					ShaderManager::vertexShader,
-					512,
-					NULL,
-					ShaderManager::infoLog);
-				message = "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n\n" + std::string(ShaderManager::infoLog);
-				Core::Console::ConsoleManager::WriteConsoleMessage(
-					Core::Console::ConsoleManager::Caller::SHADER,
-					Core::Console::ConsoleManager::Type::ERROR,
-					message);
-				return true;
-			}
-			break;
-		case ShaderManager::ShaderState::fragment:
-			glGetShaderiv(
-				ShaderManager::fragmentShader,
-				GL_COMPILE_STATUS,
-				&ShaderManager::success);
-			if (!ShaderManager::success)
-			{
-				glGetShaderInfoLog(
-					ShaderManager::fragmentShader,
-					512,
-					NULL,
-					ShaderManager::infoLog);
-				message = "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n\n" + std::string(ShaderManager::infoLog);
-				Core::Console::ConsoleManager::WriteConsoleMessage(
-					Core::Console::ConsoleManager::Caller::SHADER,
-					Core::Console::ConsoleManager::Type::ERROR,
-					message);
-				return true;
-			}
-			break;
-		case ShaderManager::ShaderState::link_shaders:
-			glGetProgramiv(
-				ShaderManager::shaderProgram,
-				GL_LINK_STATUS,
-				&ShaderManager::success);
-			if (!ShaderManager::success)
-			{
-				glGetProgramInfoLog(
-					ShaderManager::shaderProgram,
-					512,
-					NULL,
-					ShaderManager::infoLog);
-				message = "ERROR::SHADER::PROGRAM::LINKING_FAILED\n\n" + std::string(ShaderManager::infoLog);
-				Core::Console::ConsoleManager::WriteConsoleMessage(
-					Core::Console::ConsoleManager::Caller::SHADER,
-					Core::Console::ConsoleManager::Type::ERROR,
-					message);
-				return true;
-			}
-			break;
-		case ShaderManager::ShaderState::vertex_data_and_buffers:
-			error = glGetError();
-			if (ShaderManager::error != GL_NO_ERROR)
-			{
-				message = "OpenGL Error: " + std::to_string(ShaderManager::error) + "\n\n";
-				Core::Console::ConsoleManager::WriteConsoleMessage(
-					Core::Console::ConsoleManager::Caller::SHADER,
-					Core::Console::ConsoleManager::Type::ERROR,
-					message);
-				return true;
-			}
-			break;
-		}
-		return false;
+        int success;
+        char infoLog[1024];
+        if (type != "PROGRAM")
+        {
+            glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                Core::Console::ConsoleManager::WriteConsoleMessage(
+                    Core::Console::ConsoleManager::Caller::SHADER,
+                    Core::Console::ConsoleManager::Type::ERROR,
+                    "ERROR::SHADER_COMPILATION_ERROR of type: " +
+                    std::string(type) + " " +
+                    std::string(infoLog) + "\n\n");
+            }
+        }
+        else
+        {
+            glGetProgramiv(shader, GL_LINK_STATUS, &success);
+            if (!success)
+            {
+                glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+                Core::Console::ConsoleManager::WriteConsoleMessage(
+                    Core::Console::ConsoleManager::Caller::SHADER,
+                    Core::Console::ConsoleManager::Type::ERROR,
+                    "ERROR::PROGRAM_LINKING_ERROR of type: " +
+                    std::string(type) + " " +
+                    std::string(infoLog) + "\n\n");
+            }
+        }
 	}
 }

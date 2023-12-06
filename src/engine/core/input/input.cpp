@@ -16,7 +16,7 @@ namespace Core::Input
 
 	void InputManager::ProcessInput(GLFWwindow* window)
 	{
-		if (glfwGetKey(Graphics::RenderManager::window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
+		if (glfwGetKey(Graphics::Render::window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
 		{
 			Core::Console::ConsoleManager::WriteConsoleMessage(
 				Core::Console::ConsoleManager::Caller::INPUT,

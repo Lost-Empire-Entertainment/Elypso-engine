@@ -1,14 +1,22 @@
 //external
 #include "glad.h"
+#include "glfw3.h"
 
 //engine
-#include "console.h"
 #include "render.h"
+#include "shader.h"
+#include "console.h"
 #include "shutdown.h"
+
+#include <iostream>
 
 namespace Graphics
 {
-	int RenderManager::WindowSetup()
+	Shader Render::shader(
+		"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\vertexShader.vs",
+		"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\fragmentShader.fs");
+
+	int Render::WindowSetup() 
 	{
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLFW,
@@ -22,18 +30,19 @@ namespace Graphics
 			Core::Console::ConsoleManager::Caller::GLFW,
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLFW initialized successfully!\n\n");
+
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
 			Core::Console::ConsoleManager::Type::INFO,
 			"Creating window...\n");
 		//create a window object holding all the windowing data
-		RenderManager::window = glfwCreateWindow(
-			RenderManager::SCR_WIDTH,
-			RenderManager::SCR_HEIGHT,
+		Render::window = glfwCreateWindow(
+			Render::SCR_WIDTH,
+			Render::SCR_HEIGHT,
 			"Elypso engine",
 			NULL,
 			NULL);
-		if (Graphics::RenderManager::window == NULL)
+		if (Render::window == NULL)
 		{
 			Core::Console::ConsoleManager::WriteConsoleMessage(
 				Core::Console::ConsoleManager::Caller::GLFW,
@@ -42,14 +51,15 @@ namespace Graphics
 			Core::ShutdownManager::Shutdown();
 			return -1;
 		}
-		glfwMakeContextCurrent(RenderManager::window);
+		glfwMakeContextCurrent(Render::window);
 		glfwSetFramebufferSizeCallback(
-			RenderManager::window,
-			RenderManager::UpdateAfterRescale);
+			Render::window,
+			Render::UpdateAfterRescale);
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"Window initialized successfully!\n\n");
+
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLAD,
 			Core::Console::ConsoleManager::Type::INFO,
@@ -67,15 +77,41 @@ namespace Graphics
 			Core::Console::ConsoleManager::Caller::GLAD,
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLAD initialized successfully!\n\n");
+
+		shader.Use();
+
+		float vertices[] =
+		{
+			// positions         // colors
+			 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
+			-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
+			 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
+		};
+
+		glGenVertexArrays(1, &Render::VAO);
+		glGenBuffers(1, &Render::VBO);
+
+		glBindVertexArray(Render::VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, Render::VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		// color attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+
 		return 0;
 	}
-	//make sure the viewport matches the new window dimentions
-	void RenderManager::UpdateAfterRescale(GLFWwindow* window, int width, int height)
+
+	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
 		glViewport(0, 0, width, height);
 	}
-	//this is run while the window is open
-	void RenderManager::WindowLoop()
+
+	void Render::WindowLoop()
 	{
 		//clear the background to dark green
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -83,11 +119,12 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//render the triangle
-		glBindVertexArray(ShaderManager::VAO);
+		shader.Use();
+		glBindVertexArray(Render::VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		//swap the front and back buffers
-		glfwSwapBuffers(RenderManager::window);
+		glfwSwapBuffers(Render::window);
 		//poll for events and process them
 		glfwPollEvents();
 	}
