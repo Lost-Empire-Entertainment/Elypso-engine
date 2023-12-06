@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <chrono>
 
-namespace Core
+namespace Core::Console
 {
 	std::string Timestamp::GetCurrentTimestamp()
 	{

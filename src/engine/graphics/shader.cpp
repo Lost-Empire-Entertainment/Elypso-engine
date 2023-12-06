@@ -17,9 +17,9 @@ namespace Graphics
 	}
 	void ShaderManager::SetUpVertexShader()
 	{
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::SHADER,
-			Core::ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::SHADER,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Initializing vertex shader...\n");
 		ShaderManager::vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(
@@ -30,16 +30,16 @@ namespace Graphics
 		glCompileShader(ShaderManager::vertexShader);
 		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::vertex))
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::SUCCESS,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::SUCCESS,
 				"Vertex shader initialized successfully!\n\n");
 		}
 		else
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::ERROR,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::ERROR,
 				"Vertex shader compilation failed!\n\n");
 			return;
 		}
@@ -47,9 +47,9 @@ namespace Graphics
 	}
 	void ShaderManager::SetUpFragmentShader()
 	{
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::SHADER,
-			Core::ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::SHADER,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Initializing fragment shader...\n");
 		ShaderManager::fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(
@@ -60,16 +60,16 @@ namespace Graphics
 		glCompileShader(ShaderManager::fragmentShader);
 		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::fragment))
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::SUCCESS,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::SUCCESS,
 				"Fragment shader initialized successfully!\n\n");
 		}
 		else
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::ERROR,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::ERROR,
 				"Fragment shader compilation failed!\n\n");
 			return;
 		}
@@ -77,9 +77,9 @@ namespace Graphics
 	}
 	void ShaderManager::LinkShaders()
 	{
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::SHADER,
-			Core::ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::SHADER,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Linking shaders...\n");
 		//link shaders
 		ShaderManager::shaderProgram = glCreateProgram();
@@ -91,16 +91,16 @@ namespace Graphics
 		glDeleteShader(ShaderManager::fragmentShader);
 		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::link_shaders))
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::SUCCESS,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::SUCCESS,
 				"Shaders linked successfully!\n\n");
 		}
 		else
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::ERROR,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::ERROR,
 				"Shader linking failed!\n\n");
 			return;
 		}
@@ -108,9 +108,9 @@ namespace Graphics
 	}
 	void ShaderManager::SetUpVertexDataAndBuffers()
 	{
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::SHADER,
-			Core::ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::SHADER,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Setting up vertex data and buffers...\n");
 
 		//set up vertex data and buffers and configure vertex attributes
@@ -154,16 +154,16 @@ namespace Graphics
 
 		if (!ShaderManager::FoundShaderCompileErrors(ShaderManager::ShaderState::vertex_data_and_buffers))
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::SUCCESS,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::SUCCESS,
 				"Vertex data and buffer setup was successful!\n\n");
 		}
 		else
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::SHADER,
-				Core::ConsoleManager::Type::ERROR,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::SHADER,
+				Core::Console::ConsoleManager::Type::ERROR,
 				"Failed to set up vertex data and buffers!\n\n");
 			return;
 		}
@@ -178,9 +178,9 @@ namespace Graphics
 		{
 		default:
 			oss << "Error: " << magic_enum::enum_name(state) << " is not a valid shader state!\n\n";
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::ENGINE,
-				Core::ConsoleManager::Type::ERROR,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::ENGINE,
+				Core::Console::ConsoleManager::Type::ERROR,
 				oss.str());
 			return true;
 			break;
@@ -194,9 +194,9 @@ namespace Graphics
 					NULL,
 					ShaderManager::infoLog);
 				message = "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n\n" + std::string(ShaderManager::infoLog);
-				Core::ConsoleManager::WriteConsoleMessage(
-					Core::ConsoleManager::Caller::SHADER,
-					Core::ConsoleManager::Type::ERROR,
+				Core::Console::ConsoleManager::WriteConsoleMessage(
+					Core::Console::ConsoleManager::Caller::SHADER,
+					Core::Console::ConsoleManager::Type::ERROR,
 					message);
 				return true;
 			}
@@ -214,9 +214,9 @@ namespace Graphics
 					NULL,
 					ShaderManager::infoLog);
 				message = "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n\n" + std::string(ShaderManager::infoLog);
-				Core::ConsoleManager::WriteConsoleMessage(
-					Core::ConsoleManager::Caller::SHADER,
-					Core::ConsoleManager::Type::ERROR,
+				Core::Console::ConsoleManager::WriteConsoleMessage(
+					Core::Console::ConsoleManager::Caller::SHADER,
+					Core::Console::ConsoleManager::Type::ERROR,
 					message);
 				return true;
 			}
@@ -234,9 +234,9 @@ namespace Graphics
 					NULL,
 					ShaderManager::infoLog);
 				message = "ERROR::SHADER::PROGRAM::LINKING_FAILED\n\n" + std::string(ShaderManager::infoLog);
-				Core::ConsoleManager::WriteConsoleMessage(
-					Core::ConsoleManager::Caller::SHADER,
-					Core::ConsoleManager::Type::ERROR,
+				Core::Console::ConsoleManager::WriteConsoleMessage(
+					Core::Console::ConsoleManager::Caller::SHADER,
+					Core::Console::ConsoleManager::Type::ERROR,
 					message);
 				return true;
 			}
@@ -246,9 +246,9 @@ namespace Graphics
 			if (ShaderManager::error != GL_NO_ERROR)
 			{
 				message = "OpenGL Error: " + std::to_string(ShaderManager::error) + "\n\n";
-				Core::ConsoleManager::WriteConsoleMessage(
-					Core::ConsoleManager::Caller::SHADER,
-					Core::ConsoleManager::Type::ERROR,
+				Core::Console::ConsoleManager::WriteConsoleMessage(
+					Core::Console::ConsoleManager::Caller::SHADER,
+					Core::Console::ConsoleManager::Type::ERROR,
 					message);
 				return true;
 			}

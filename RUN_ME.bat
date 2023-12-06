@@ -25,7 +25,7 @@ echo 2. Generate build files
 echo 3. Generate installer
 echo 4. Exit
 echo.
-echo 0. Reset (DELETES .VS AND OUT FOLDERS)
+echo 0. Reset (DELETES OUT FOLDER)
 echo.
 set /p choice="Choice: "
 
@@ -69,17 +69,11 @@ goto menu
 :reset
 echo %eninf% Running reset...
 if not exist out (
-	if not exist .vs (
-		echo %eninf% There is nothing to delete.
-		pause
-		goto menu
-	)
+	echo %eninf% There is nothing to delete.
+	pause
+	goto menu
 )
 
-if exist .vs (
-	echo %eninf% Deleted folder: .vs
-	rd /s /q .vs
-)
 if exist out (
 	echo %eninf% Deleted folder: out
 	rd /s /q out

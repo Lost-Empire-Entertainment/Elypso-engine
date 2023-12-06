@@ -11,9 +11,9 @@ namespace Core
 {
 	void ShutdownManager::Shutdown()
 	{
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::Caller::SHUTDOWN,
-			ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::SHUTDOWN,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Cleaning up resources...\n");
 
 		//de-allocate all resources once they've outlived their purpose
@@ -24,9 +24,9 @@ namespace Core
 		//clean all glfw resources after program is closed
 		glfwTerminate();
 
-		ConsoleManager::WriteConsoleMessage(
-			ConsoleManager::Caller::SHUTDOWN,
-			ConsoleManager::Type::SUCCESS,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::SHUTDOWN,
+			Core::Console::ConsoleManager::Type::SUCCESS,
 			"Shutdown complete!\n");
 	}
 }

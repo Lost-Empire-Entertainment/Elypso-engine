@@ -9,7 +9,7 @@
 #include <string>
 #include <iostream>
 
-namespace Core
+namespace Core::Console
 {
 	Logger logger("engine_log.txt");
 

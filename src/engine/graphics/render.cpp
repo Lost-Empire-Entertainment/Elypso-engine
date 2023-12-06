@@ -10,21 +10,21 @@ namespace Graphics
 {
 	int RenderManager::WindowSetup()
 	{
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::GLFW,
-			Core::ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::GLFW,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Initializing GLFW...\n");
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::GLFW,
-			Core::ConsoleManager::Type::SUCCESS,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::GLFW,
+			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLFW initialized successfully!\n\n");
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::WINDOW_SETUP,
-			Core::ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Creating window...\n");
 		//create a window object holding all the windowing data
 		RenderManager::window = glfwCreateWindow(
@@ -35,9 +35,9 @@ namespace Graphics
 			NULL);
 		if (Graphics::RenderManager::window == NULL)
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::GLFW,
-				Core::ConsoleManager::Type::ERROR,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::GLFW,
+				Core::Console::ConsoleManager::Type::ERROR,
 				"Error: Failed to create GLFW window!\n\n");
 			Core::ShutdownManager::Shutdown();
 			return -1;
@@ -46,26 +46,26 @@ namespace Graphics
 		glfwSetFramebufferSizeCallback(
 			RenderManager::window,
 			RenderManager::UpdateAfterRescale);
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::WINDOW_SETUP,
-			Core::ConsoleManager::Type::SUCCESS,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
+			Core::Console::ConsoleManager::Type::SUCCESS,
 			"Window initialized successfully!\n\n");
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::GLAD,
-			Core::ConsoleManager::Type::INFO,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::GLAD,
+			Core::Console::ConsoleManager::Type::INFO,
 			"Initializing GLAD...\n");
 		//check if glad is initialized before continuing
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
-			Core::ConsoleManager::WriteConsoleMessage(
-				Core::ConsoleManager::Caller::GLAD,
-				Core::ConsoleManager::Type::ERROR,
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::GLAD,
+				Core::Console::ConsoleManager::Type::ERROR,
 				"Error: Failed to initialize GLAD!\n\n");
 			return -1;
 		}
-		Core::ConsoleManager::WriteConsoleMessage(
-			Core::ConsoleManager::Caller::GLAD,
-			Core::ConsoleManager::Type::SUCCESS,
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::GLAD,
+			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLAD initialized successfully!\n\n");
 		return 0;
 	}

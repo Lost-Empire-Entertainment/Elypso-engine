@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Core
+namespace Core::Console
 {
 	class Timestamp
 	{

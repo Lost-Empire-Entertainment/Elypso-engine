@@ -5,7 +5,7 @@
 #include <string>
 #include <ctime>
 
-namespace Core
+namespace Core::Console
 {
 	class Logger
 	{

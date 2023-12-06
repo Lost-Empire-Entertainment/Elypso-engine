@@ -7,16 +7,17 @@ Elypso engine
 |-- include
 |   |-- engine
 |       |-- core
-|           |-- console.h
+|           |-- console
+|               |-- console.h
+|               |-- logger.h
+|               |-- timestamp.h
+|           |-- input
+|               |-- input.h
 |           |-- core.h
-|           |-- logger.h
 |           |-- shutdown.h
-|           |-- timestamp.h
 |       |-- graphics
 |           |-- render.h
 |           |-- shader.h
-|       |-- input
-|           |-- input.h
 |   |-- external
 |       |-- glad
 |       |-- glfw
@@ -29,21 +30,22 @@ Elypso engine
 |-- out (added when opening project in visual studio)
 |-- src
 |   |-- engine
-|       |-- main.cpp
 |       |-- core
-|           |-- console.cpp
+|           |-- console
+|               |-- console.cpp
+|               |-- logger.cpp
+|               |-- timestamp.cpp
+|           |-- input
+|               |-- input.cpp
 |           |-- core.cpp
-|           |-- logger.cpp
 |           |-- shutdown.cpp
-|           |-- timestamp.cpp
 |       |-- graphics
 |           |-- render.cpp
 |           |-- shader.cpp
 |           |-- shaders
 |               |-- fragmentShader.fs
 |               |-- vertexShader.vs
-|       |-- input
-|           |-- input.cpp
+|       |-- main.cpp
 |   |-- external
 |-- .gitignore
 |-- build.bat

@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace Core
+namespace Core::Input
 {
 	class InputManager
 	{

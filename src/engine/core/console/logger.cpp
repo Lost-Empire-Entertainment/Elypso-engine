@@ -1,7 +1,7 @@
 #include "logger.h"
 #include "console.h"
 
-namespace Core
+namespace Core::Console
 {
 	Logger::Logger(const std::string& logFileName)
 	{

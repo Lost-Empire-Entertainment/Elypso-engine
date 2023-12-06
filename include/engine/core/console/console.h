@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-namespace Core
+namespace Core::Console
 {
 	class ConsoleManager
 	{
