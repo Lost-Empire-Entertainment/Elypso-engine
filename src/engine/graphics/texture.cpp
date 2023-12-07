@@ -11,7 +11,7 @@
 
 namespace Graphics
 {
-	unsigned int Texture::texture = 0;
+	std::vector<unsigned int> Texture::textures;
 
 	Texture::Texture(const std::string& path) : texturePath(path){}
 
@@ -22,13 +22,14 @@ namespace Graphics
 			Core::Console::ConsoleManager::Type::INFO,
 			"Initializing texture...\n");
 
-		glGenTextures(1, &Texture::texture);
-		glBindTexture(GL_TEXTURE_2D, Texture::texture);
+		unsigned int texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		//set texture wrapping parameters
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		//set texture filtering parameters
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		//load image, create texture and generate mipmaps
 		int width, height, nrChannels;
@@ -37,6 +38,8 @@ namespace Graphics
 		{
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
+
+			textures.push_back(texture);
 
 			Core::Console::ConsoleManager::WriteConsoleMessage(
 				Core::Console::ConsoleManager::Caller::TEXTURE,

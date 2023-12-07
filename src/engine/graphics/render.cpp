@@ -154,7 +154,7 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//bind texture
-		glBindTexture(GL_TEXTURE_2D, Texture::texture);
+		glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
 
 		//render the triangle
 		if (shader)
