@@ -17,6 +17,11 @@ namespace Graphics
 
 	void Texture::LoadTexture()
 	{
+		Core::Console::ConsoleManager::WriteConsoleMessage(
+			Core::Console::ConsoleManager::Caller::TEXTURE,
+			Core::Console::ConsoleManager::Type::INFO,
+			"Initializing texture...\n");
+
 		glGenTextures(1, &Texture::texture);
 		glBindTexture(GL_TEXTURE_2D, Texture::texture);
 		//set texture wrapping parameters
@@ -32,6 +37,11 @@ namespace Graphics
 		{
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
+
+			Core::Console::ConsoleManager::WriteConsoleMessage(
+				Core::Console::ConsoleManager::Caller::TEXTURE,
+				Core::Console::ConsoleManager::Type::SUCCESS,
+				"Texture initialized successfully!\n\n");
 		}
 		else
 		{
