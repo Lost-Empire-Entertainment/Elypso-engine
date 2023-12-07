@@ -65,7 +65,6 @@ target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Various debugging messages to help
 message(STATUS "${eninf} Project Version: ${PROJECT_VERSION}")
 message(STATUS "${eninf} C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "${eninf} C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")

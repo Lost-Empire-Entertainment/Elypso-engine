@@ -3,12 +3,15 @@
 #include "glfw3.h"
 
 //engine
+#include "core.h"
 #include "render.h"
 #include "shader.h"
 #include "texture.h"
 #include "console.h"
 #include "shutdown.h"
+#include "search.h"
 
+#include <string>
 #include <iostream>
 
 namespace Graphics
@@ -16,8 +19,13 @@ namespace Graphics
 	Shader* Render::shader;
 	bool Render::shaderInitialized = false;
 
-	int Render::WindowSetup() 
+	int Render::WindowSetup()
 	{
+		std::string projectPath = Core::Search::SearchByParent("Elypso engine");
+		std::string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vs";
+		std::string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.fs";
+		std::string testTexturePath = projectPath + "\\files\\testTexture.jpg";
+
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLFW,
 			Core::Console::ConsoleManager::Type::INFO,
@@ -80,9 +88,7 @@ namespace Graphics
 
 		if (!shaderInitialized)
 		{
-			shader = new Shader(
-				"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\vertexShader.vs",
-				"C:\\Users\\sande\\Documents\\CPP projects\\Elypso engine\\src\\engine\\graphics\\shaders\\fragmentShader.fs");
+			shader = new Shader(vertexPath, fragmentPath);
 
 			shaderInitialized = true;
 		}
@@ -123,7 +129,7 @@ namespace Graphics
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
-		Texture tex("C:/Users/sande/Documents/CPP projects/Elypso engine/files/container.jpg");
+		Texture tex(testTexturePath);
 		tex.LoadTexture();
 
 		return 0;
