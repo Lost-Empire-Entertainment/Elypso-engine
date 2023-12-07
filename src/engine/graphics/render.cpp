@@ -89,6 +89,8 @@ namespace Graphics
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLAD initialized successfully!\n\n");
 
+		glEnable(GL_DEPTH_TEST);
+
 		if (!shaderInitialized)
 		{
 			shader = new Shader(vertexPath, fragmentPath);
@@ -96,13 +98,49 @@ namespace Graphics
 			shaderInitialized = true;
 		}
 
-		float vertices[] =
+		float vertices[] = 
 		{
-			//positions           //texture coords
-			 0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-			 0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-			-0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
 		unsigned int indices[] =
 		{
@@ -156,7 +194,7 @@ namespace Graphics
 		//clear the background to dark green
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		//clear color
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//bind texture
 		glActiveTexture(GL_TEXTURE0);
@@ -173,8 +211,8 @@ namespace Graphics
 		glm::mat4 projection = glm::mat4(1.0f);
 		model = glm::rotate(
 			model, 
-			glm::radians(-55.0f), 
-			glm::vec3(1.0f, 0.0f, 0.0f));
+			(float)glfwGetTime(),
+			glm::vec3(0.5f, 1.0f, 0.0f));
 		view = glm::translate(
 			view, 
 			glm::vec3(0.0f, 0.0f, -3.0f));
@@ -193,7 +231,7 @@ namespace Graphics
 
 		//render container
 		glBindVertexArray(Render::VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//swap the front and back buffers
 		glfwSwapBuffers(Render::window);
