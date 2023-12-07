@@ -29,16 +29,6 @@ These instructions will get you a copy of the project up and running on your loc
 - run RUN_ME.bat to configure cmake, generate build folder or generate nsis installer
 ```
 
-### Script layout
-
-```
-- src/engine and include/engine contain the actual scripts that were created for the engine
-- src/external, include/external and lib are folders containing libraries and scripts that were not created by the developers of this engine
-
-- timestamp.cpp is a small script that just handles adding a timestamp to each console message
-- writeConsoleMessage.cpp is a small script that handles how each console message is sent to the console
-```
-
 ### Logs
 
 ```
