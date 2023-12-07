@@ -47,13 +47,13 @@ namespace Graphics
 			Core::Console::ConsoleManager::Type::INFO,
 			"Creating window...\n");
 		//create a window object holding all the windowing data
-		Render::window = glfwCreateWindow(
-			Render::SCR_WIDTH,
-			Render::SCR_HEIGHT,
+		window = glfwCreateWindow(
+			SCR_WIDTH,
+			SCR_HEIGHT,
 			"Elypso engine",
 			NULL,
 			NULL);
-		if (Render::window == NULL)
+		if (window == NULL)
 		{
 			Core::Console::ConsoleManager::WriteConsoleMessage(
 				Core::Console::ConsoleManager::Caller::GLFW,
@@ -62,10 +62,8 @@ namespace Graphics
 			Core::ShutdownManager::Shutdown();
 			return -1;
 		}
-		glfwMakeContextCurrent(Render::window);
-		glfwSetFramebufferSizeCallback(
-			Render::window,
-			Render::UpdateAfterRescale);
+		glfwMakeContextCurrent(window);
+		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
 			Core::Console::ConsoleManager::Type::SUCCESS,
@@ -142,23 +140,29 @@ namespace Graphics
 			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
-		unsigned int indices[] =
-		{
-			0, 1, 3, //first triangle
-			1, 2, 3  //second triangle
-		};
+		//cube world space positions
+		cubePositions[0] = glm::vec3(0.0f, 0.0f, 0.0f);
+		cubePositions[1] = glm::vec3(2.0f, 5.0f, -15.0f);
+		cubePositions[2] = glm::vec3(-1.5f, -2.2f, -2.5f);
+		cubePositions[3] = glm::vec3(-3.8f, -2.0f, -12.3f);
+		cubePositions[4] = glm::vec3(2.4f, -0.4f, -3.5f);
+		cubePositions[5] = glm::vec3(-1.7f, 3.0f, -7.5f);
+		cubePositions[6] = glm::vec3(1.3f, -2.0f, -2.5f);
+		cubePositions[7] = glm::vec3(1.5f, 2.0f, -2.5f);
+		cubePositions[8] = glm::vec3(1.5f, 0.2f, -1.5f);
+		cubePositions[9] = glm::vec3(-1.3f, 1.0f, -1.5f);
 
-		glGenVertexArrays(1, &Render::VAO);
-		glGenBuffers(1, &Render::VBO);
-		glGenBuffers(1, &Render::EBO);
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
 
-		glBindVertexArray(Render::VAO);
+		glBindVertexArray(VAO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, Render::VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Render::EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 		//position attribute
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -206,32 +210,34 @@ namespace Graphics
 		shader->Use();
 
 		//create transformations
-		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
-		model = glm::rotate(
-			model, 
-			(float)glfwGetTime(),
-			glm::vec3(0.5f, 1.0f, 0.0f));
 		view = glm::translate(
 			view, 
 			glm::vec3(0.0f, 0.0f, -3.0f));
 		projection = glm::perspective(
 			glm::radians(45.0f), 
-			(float)Render::SCR_WIDTH / (float)Render::SCR_HEIGHT, 
+			(float)SCR_WIDTH / (float)SCR_HEIGHT, 
 			0.1f, 
 			100.0f);
-		//retrieve the matrix uniform locations
-		unsigned int modelLoc = glGetUniformLocation(shader->ID, "model");
-		unsigned int viewLoc = glGetUniformLocation(shader->ID, "view");
-		//pass them to the shaders
-		shader->SetMat4("model", model);
+		//pass transformation matrices to the shader
 		shader->SetMat4("view", view);
 		shader->SetMat4("projection", projection);
 
-		//render container
+		//render boxes
 		glBindVertexArray(Render::VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			//calculate the model matrix for each object
+			//and pass it to the shader before drawing
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			shader->SetMat4("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		//swap the front and back buffers
 		glfwSwapBuffers(Render::window);
