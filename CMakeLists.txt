@@ -54,6 +54,11 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/glm
+	${INCLUDE_DIR}/external/glm/detail
+	${INCLUDE_DIR}/external/glm/ext
+	${INCLUDE_DIR}/external/glm/gtc
+	${INCLUDE_DIR}/external/glm/gtx
+	${INCLUDE_DIR}/external/glm/simd
 	${INCLUDE_DIR}/external/magic_enum
 	${INCLUDE_DIR}/external/imgui
 	${INCLUDE_DIR}/external/stb_image

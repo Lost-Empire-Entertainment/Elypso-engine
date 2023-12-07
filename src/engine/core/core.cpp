@@ -13,7 +13,7 @@
 namespace Core
 {
 	const std::string name = "Elypso engine";
-	const std::string version = "0.0.3 prototype";
+	const std::string version = "0.0.4 prototype";
 
 	int InitializeEngine()
 	{
