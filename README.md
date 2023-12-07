@@ -1,16 +1,12 @@
 # Elypso engine
 
-Welcome to the main repository of Elypso engine which is an open source C++ OpenGL engine used in Windows. Its main goal will be to make RPG and shooter games and it will be the main game creation engine for my game studio Lost Empire Entertainment once it is production ready.
+Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is entirely "codeless" where the end user does not need to write a single line of code to make games with the engine. Everything is handled by the engine itself and the user only needs to know how to use the available packages. Packages are parts of the engine the end user can add and remove to change parts of the engine. Packages are completely optional and none of them need to be activated to run the engine itself but adding new packages or removing existing ones will modify what can be used to make games with in the engine.
 
 [Join the community server](https://discord.gg/wPYCSSenX2)
 
 [Check out the trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
