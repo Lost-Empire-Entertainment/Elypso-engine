@@ -25,8 +25,8 @@ namespace Graphics
 	int Render::WindowSetup()
 	{
 		std::string projectPath = Core::Search::SearchByParent("Elypso engine");
-		std::string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vs";
-		std::string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.fs";
+		std::string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vert";
+		std::string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
 		std::string texturePath = projectPath + "\\files";
 
 		Core::Console::ConsoleManager::WriteConsoleMessage(
