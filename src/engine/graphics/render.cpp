@@ -24,7 +24,7 @@ namespace Graphics
 		std::string projectPath = Core::Search::SearchByParent("Elypso engine");
 		std::string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vs";
 		std::string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.fs";
-		std::string testTexturePath = projectPath + "\\files\\crate.jpg";
+		std::string texturePath = projectPath + "\\files";
 
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLFW,
@@ -129,8 +129,8 @@ namespace Graphics
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
-		Texture tex(testTexturePath);
-		tex.LoadTexture();
+		Texture tex(texturePath);
+		tex.LoadTexture("pepe.png", true, GL_RGBA);
 
 		return 0;
 	}

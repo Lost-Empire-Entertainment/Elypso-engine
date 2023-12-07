@@ -19,8 +19,8 @@ namespace Graphics
 	public:
 		static bool shaderInitialized;
 
-		static inline const unsigned int SCR_WIDTH = 800;
-		static inline const unsigned int SCR_HEIGHT = 600;
+		static inline const unsigned int SCR_WIDTH = 1200;
+		static inline const unsigned int SCR_HEIGHT = 1200;
 
 		static inline unsigned int VBO, VAO, EBO;
 
