@@ -70,7 +70,7 @@ namespace Graphics
         glDeleteShader(fragment);
 	}
 
-	void Shader::Use()
+	void Shader::Use() const
 	{
         glUseProgram(ID);
 	}
@@ -128,10 +128,10 @@ namespace Graphics
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-	void Shader::CheckCompileErrors(unsigned int shader, std::string type)
+	void Shader::CheckCompileErrors(GLuint shader, std::string type)
 	{
-        int success;
-        char infoLog[1024];
+        GLint success;
+        GLchar infoLog[1024];
         if (type != "PROGRAM")
         {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
