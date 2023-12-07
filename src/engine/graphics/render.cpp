@@ -130,7 +130,12 @@ namespace Graphics
 		glEnableVertexAttribArray(2);
 
 		Texture tex(texturePath);
+		tex.LoadTexture("crate.jpg", false, GL_RGB);
 		tex.LoadTexture("pepe.png", true, GL_RGBA);
+
+		shader->Use();
+		shader->SetInt("texture1", 0);
+		shader->SetInt("texture2", 1);
 
 		return 0;
 	}
@@ -154,7 +159,10 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//bind texture
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
 
 		//render the triangle
 		if (shader)
