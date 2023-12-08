@@ -6,7 +6,10 @@
 #include "console.h"
 #include "render.h"
 
-namespace Core::Input
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
+
+namespace Core
 {
 	void InputManager::InputSetup()
 	{
@@ -18,9 +21,9 @@ namespace Core::Input
 	{
 		if (glfwGetKey(Core::Graphics::Render::window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
 		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::INPUT,
-				Core::Console::ConsoleManager::Type::SUCCESS,
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::SUCCESS,
 				"User pressed ESC key to shut down engine...\n\n");
 
 			glfwSetWindowShouldClose(window, true);

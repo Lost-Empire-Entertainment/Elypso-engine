@@ -8,9 +8,8 @@
 #include "shutdown.h"
 
 using namespace Core::Graphics;
-using namespace Core::Console;
-using Caller = ConsoleManager::Caller;
-using Type = ConsoleManager::Type;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {

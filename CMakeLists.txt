@@ -52,9 +52,7 @@ target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR}/engine
 	${INCLUDE_DIR}/engine/core
-	${INCLUDE_DIR}/engine/core/console
 	${INCLUDE_DIR}/engine/core/graphics
-	${INCLUDE_DIR}/engine/core/input
 	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw

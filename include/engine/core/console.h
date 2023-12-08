@@ -5,10 +5,12 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <ctime>
 
 using namespace std;
 
-namespace Core::Console
+namespace Core
 {
 	class ConsoleManager
 	{
@@ -43,6 +45,24 @@ namespace Core::Console
 		/// <param name="type">What type of a message is this?</param>
 		/// <param name="message">The actual message.</param>
 		static void WriteConsoleMessage(Caller caller, Type type, const string& message);
+	};
+
+	class Timestamp
+	{
+	public:
+		static string GetCurrentTimestamp();
+	};
+
+	class Logger
+	{
+	public:
+		Logger(const string& logFileName);
+		~Logger();
+
+		void Log(const string& message);
+
+	private:
+		ofstream logFile;
 	};
 }
 

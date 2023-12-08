@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace Core::Input
+namespace Core
 {
 	class InputManager
 	{
