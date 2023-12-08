@@ -7,6 +7,7 @@
 
 //engine
 #include "core.h"
+#include "deltaTime.h"
 #include "render.h"
 #include "shader.h"
 #include "texture.h"
@@ -235,16 +236,8 @@ namespace Graphics
 		//activate shader
 		shader->Use();
 
-		//create transformations
-		mat4 view = mat4(1.0f);
-		float radius = 10.0f;
-		float camX = static_cast<float>(sin(glfwGetTime()) * radius);
-		float camZ = static_cast<float>(cos(glfwGetTime()) * radius);
-		view = lookAt(
-			vec3(camX, 0.0f, camZ),
-			vec3(0.0f, 0.0f, 0.0f),
-			vec3(0.0f, 1.0f, 0.0f));
-		//pass transformation matrices to the shader
+		//camera/view transformation
+		mat4 view = lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		shader->SetMat4("view", view);
 
 		//render boxes

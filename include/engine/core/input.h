@@ -19,7 +19,11 @@ namespace Core
 		enum class Key : char
 		{
 			Escape,
-			Enter
+			Enter,
+			Forwards,
+			Backwards,
+			Left,
+			Right
 		};
 
 		static inline unordered_map<Key, int> key;

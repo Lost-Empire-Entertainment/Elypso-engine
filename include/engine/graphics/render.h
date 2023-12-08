@@ -21,6 +21,11 @@ namespace Graphics
 	public:
 		static inline unsigned int VBO, VAO, EBO;
 
+		static inline float cameraSpeed;
+		static inline vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
+		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
+
 		static inline GLFWwindow* window;
 
 		static void RenderSetup();

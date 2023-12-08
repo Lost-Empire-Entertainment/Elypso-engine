@@ -3,6 +3,7 @@
 
 //engine
 #include "core.h"
+#include "deltaTime.h"
 #include "console.h"
 #include "input.h"
 #include "render.h"
@@ -37,6 +38,8 @@ namespace Core
 
 		while (!glfwWindowShouldClose(Render::window))
 		{
+			DeltaTime::UpdateDeltaTime();
+
 			InputManager::ProcessInput(Render::window);
 
 			Render::WindowLoop();
