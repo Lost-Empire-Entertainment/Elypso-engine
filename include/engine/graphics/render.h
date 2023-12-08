@@ -14,7 +14,7 @@
 
 using namespace glm;
 
-namespace Core::Graphics
+namespace Graphics
 {
 	class Render
 	{

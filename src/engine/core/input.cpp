@@ -6,6 +6,7 @@
 #include "console.h"
 #include "render.h"
 
+using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -19,7 +20,7 @@ namespace Core
 
 	void InputManager::ProcessInput(GLFWwindow* window)
 	{
-		if (glfwGetKey(Core::Graphics::Render::window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
+		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INPUT,

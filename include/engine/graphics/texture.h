@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace Core::Graphics
+namespace Graphics
 {
 	class Texture
 	{

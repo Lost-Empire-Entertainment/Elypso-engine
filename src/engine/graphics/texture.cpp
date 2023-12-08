@@ -10,10 +10,11 @@
 #include <iostream>
 
 using namespace std;
+using namespace Core;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
-namespace Core::Graphics
+namespace Graphics
 {
 	vector<unsigned int> Texture::textures;
 

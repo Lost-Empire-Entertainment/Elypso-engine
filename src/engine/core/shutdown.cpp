@@ -7,7 +7,7 @@
 #include "render.h"
 #include "shutdown.h"
 
-using namespace Core::Graphics;
+using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

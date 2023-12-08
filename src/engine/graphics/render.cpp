@@ -19,10 +19,11 @@
 
 using namespace std;
 using namespace glm;
+using namespace Core;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
-namespace Core::Graphics
+namespace Graphics
 {
 	Shader* Render::shader;
 
@@ -108,8 +109,8 @@ namespace Core::Graphics
 	void Render::ContentSetup()
 	{
 		string projectPath = Core::Search::SearchByParent("Elypso engine");
-		string vertexPath = projectPath + "\\src\\engine\\core\\graphics\\shaders\\vertexShader.vert";
-		string fragmentPath = projectPath + "\\src\\engine\\core\\graphics\\shaders\\fragmentShader.frag";
+		string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vert";
+		string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
 		string texturePath = projectPath + "\\files";
 
 		glEnable(GL_DEPTH_TEST);
