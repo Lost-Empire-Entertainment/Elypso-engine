@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_map>
 
+using namespace std;
+
 namespace Core::Input
 {
 	class InputManager
@@ -20,7 +22,7 @@ namespace Core::Input
 			Enter
 		};
 
-		static inline std::unordered_map<Key, int> key;
+		static inline unordered_map<Key, int> key;
 
 		static void InputSetup();
 		static void ProcessInput(GLFWwindow* window);

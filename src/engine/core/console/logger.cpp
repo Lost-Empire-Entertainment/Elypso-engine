@@ -1,11 +1,13 @@
 #include "logger.h"
 #include "console.h"
 
+using namespace std;
+
 namespace Core::Console
 {
-	Logger::Logger(const std::string& logFileName)
+	Logger::Logger(const string& logFileName)
 	{
-		logFile.open(logFileName, std::ios::out | std::ios::app);
+		logFile.open(logFileName, ios::out | ios::app);
 		if (!logFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -23,11 +25,11 @@ namespace Core::Console
 		}
 	}
 
-	void Logger::Log(const std::string& message)
+	void Logger::Log(const string& message)
 	{
 		if (logFile.is_open())
 		{
-			logFile << message << std::endl;
+			logFile << message << endl;
 		}
 	}
 }

@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+using namespace std;
+using namespace Core;
+
 /*
 * =========================================
 * 
@@ -17,11 +20,11 @@
 
 int main()
 {
-	Core::InitializeEngine();
+	InitializeEngine();
 
-	Core::RunEngine();
+	RunEngine();
 
-	Core::ShutdownManager::Shutdown();
-	std::cin.get();
+	ShutdownManager::Shutdown();
+	cin.get();
 	return 0;
 }

@@ -10,23 +10,29 @@
 #include <sstream>
 #include <iostream>
 
+using namespace std;
+using namespace glm;
+using namespace Core::Console;
+using Caller = ConsoleManager::Caller;
+using Type = ConsoleManager::Type;
+
 namespace Core::Graphics
 {
-	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+	Shader::Shader(const string& vertexPath, const string& fragmentPath)
 	{
-        std::string vertexCode;
-        std::string fragmentCode;
-        std::ifstream vShaderFile;
-        std::ifstream fShaderFile;
+        string vertexCode;
+        string fragmentCode;
+        ifstream vShaderFile;
+        ifstream fShaderFile;
         //ensure ifstream objects can throw exceptions:
-        vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+        fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
         try
         {
             //open files
             vShaderFile.open(vertexPath);
             fShaderFile.open(fragmentPath);
-            std::stringstream vShaderStream, fShaderStream;
+            stringstream vShaderStream, fShaderStream;
             //read file's buffer contents into streams
             vShaderStream << vShaderFile.rdbuf();
             fShaderStream << fShaderFile.rdbuf();
@@ -37,13 +43,13 @@ namespace Core::Graphics
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
         }
-        catch (std::ifstream::failure& e)
+        catch (ifstream::failure& e)
         {
-            Core::Console::ConsoleManager::WriteConsoleMessage(
-                Core::Console::ConsoleManager::Caller::SHADER,
-                Core::Console::ConsoleManager::Type::ERROR,
+            ConsoleManager::WriteConsoleMessage(
+                Caller::SHADER,
+                Type::ERROR,
                 "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " +
-                std::string(e.what()) + "\n\n");
+                string(e.what()) + "\n\n");
         }
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
@@ -75,60 +81,60 @@ namespace Core::Graphics
         glUseProgram(ID);
 	}
 
-	void Shader::SetBool(const std::string &name, bool value) const
+	void Shader::SetBool(const string &name, bool value) const
 	{
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 	}
-	void Shader::SetInt(const std::string& name, int value) const
+	void Shader::SetInt(const string& name, int value) const
 	{
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 	}
-	void Shader::SetFloat(const std::string& name, float value) const
+	void Shader::SetFloat(const string& name, float value) const
 	{
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 	}
 
-    void Shader::SetVec2(const std::string& name, const glm::vec2& value) const
+    void Shader::SetVec2(const string& name, const vec2& value) const
     {
         glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
-    void Shader::SetVec2(const std::string& name, float x, float y) const
+    void Shader::SetVec2(const string& name, float x, float y) const
     {
         glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
     }
 
-    void Shader::SetVec3(const std::string& name, const glm::vec3& value) const
+    void Shader::SetVec3(const string& name, const vec3& value) const
     {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
-    void Shader::SetVec3(const std::string& name, float x, float y, float z) const
+    void Shader::SetVec3(const string& name, float x, float y, float z) const
     {
         glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
     }
 
-    void Shader::SetVec4(const std::string& name, const glm::vec4& value) const
+    void Shader::SetVec4(const string& name, const vec4& value) const
     {
         glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
     }
-    void Shader::SetVec4(const std::string& name, float x, float y, float z, float w) const
+    void Shader::SetVec4(const string& name, float x, float y, float z, float w) const
     {
         glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
     }
 
-    void Shader::SetMat2(const std::string& name, const glm::mat2& mat) const
+    void Shader::SetMat2(const string& name, const mat2& mat) const
     {
         glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
-    void Shader::SetMat3(const std::string& name, const glm::mat3& mat) const
+    void Shader::SetMat3(const string& name, const mat3& mat) const
     {
         glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
-    void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
+    void Shader::SetMat4(const string& name, const mat4& mat) const
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-	void Shader::CheckCompileErrors(GLuint shader, std::string type)
+	void Shader::CheckCompileErrors(GLuint shader, string type)
 	{
         GLint success;
         GLchar infoLog[1024];
@@ -138,12 +144,12 @@ namespace Core::Graphics
             if (!success)
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                Core::Console::ConsoleManager::WriteConsoleMessage(
-                    Core::Console::ConsoleManager::Caller::SHADER,
-                    Core::Console::ConsoleManager::Type::ERROR,
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::SHADER,
+                    Type::ERROR,
                     "ERROR::SHADER_COMPILATION_ERROR of type: " +
-                    std::string(type) + " " +
-                    std::string(infoLog) + "\n\n");
+                    string(type) + " " +
+                    string(infoLog) + "\n\n");
             }
         }
         else
@@ -152,12 +158,12 @@ namespace Core::Graphics
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                Core::Console::ConsoleManager::WriteConsoleMessage(
-                    Core::Console::ConsoleManager::Caller::SHADER,
-                    Core::Console::ConsoleManager::Type::ERROR,
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::SHADER,
+                    Type::ERROR,
                     "ERROR::PROGRAM_LINKING_ERROR of type: " +
-                    std::string(type) + " " +
-                    std::string(infoLog) + "\n\n");
+                    string(type) + " " +
+                    string(infoLog) + "\n\n");
             }
         }
 	}

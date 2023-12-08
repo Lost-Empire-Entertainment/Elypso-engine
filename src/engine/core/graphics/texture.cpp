@@ -9,17 +9,22 @@
 
 #include <iostream>
 
+using namespace std;
+using namespace Core::Console;
+using Caller = ConsoleManager::Caller;
+using Type = ConsoleManager::Type;
+
 namespace Core::Graphics
 {
-	std::vector<unsigned int> Texture::textures;
+	vector<unsigned int> Texture::textures;
 
-	Texture::Texture(const std::string& path) : texturePath(path){}
+	Texture::Texture(const string& path) : texturePath(path){}
 
-	void Texture::LoadTexture(const std::string& textureName, bool flipTexture, GLenum pixelFormat)
+	void Texture::LoadTexture(const string& textureName, bool flipTexture, GLenum pixelFormat)
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::TEXTURE,
-			Core::Console::ConsoleManager::Type::INFO,
+		ConsoleManager::WriteConsoleMessage(
+			Caller::TEXTURE,
+			Type::INFO,
 			"Initializing texture " + textureName + "...\n");
 
 		unsigned int texture;
@@ -42,16 +47,16 @@ namespace Core::Graphics
 
 			textures.push_back(texture);
 
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::TEXTURE,
-				Core::Console::ConsoleManager::Type::SUCCESS,
+			ConsoleManager::WriteConsoleMessage(
+				Caller::TEXTURE,
+				Type::SUCCESS,
 				"Texture " + textureName + " initialized successfully!\n\n");
 		}
 		else
 		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::TEXTURE,
-				Core::Console::ConsoleManager::Type::ERROR,
+			ConsoleManager::WriteConsoleMessage(
+				Caller::TEXTURE,
+				Type::ERROR,
 				"Failed to load " + textureName + " texture!\n\n");
 		}
 		stbi_image_free(data);

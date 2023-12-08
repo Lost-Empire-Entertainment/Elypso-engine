@@ -9,23 +9,25 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
+
 namespace Core::Console
 {
 	Logger logger("engine_log.txt");
 
-	void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const std::string& message)
+	void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message)
 	{
-		std::string msg;
+		string msg;
 
 		switch (type)
 		{
 		default:
 			msg =
 				Timestamp::GetCurrentTimestamp() +
-				std::string(magic_enum::enum_name(type)) +
+				string(magic_enum::enum_name(type)) +
 				" is not a valid error type!";
 
-			std::cerr << msg;
+			cerr << msg;
 			logger.Log(msg);
 			break;
 		case ConsoleManager::Type::CLEANUP:
@@ -35,26 +37,26 @@ namespace Core::Console
 			msg =
 				Timestamp::GetCurrentTimestamp() +
 				"[" +
-				std::string(magic_enum::enum_name(caller)) +
+				string(magic_enum::enum_name(caller)) +
 				"_" +
-				std::string(magic_enum::enum_name(type)) +
+				string(magic_enum::enum_name(type)) +
 				"] " +
 				message;
 
-			std::cout << msg;
+			cout << msg;
 			logger.Log(msg);
 			break;
 		case ConsoleManager::Type::ERROR:
 			msg =
 				Timestamp::GetCurrentTimestamp() +
 				"[" +
-				std::string(magic_enum::enum_name(caller)) +
+				string(magic_enum::enum_name(caller)) +
 				"_" +
-				std::string(magic_enum::enum_name(type)) +
+				string(magic_enum::enum_name(type)) +
 				"] " +
 				message;
 
-			std::cerr << msg;
+			cerr << msg;
 			logger.Log(msg);
 			break;
 		}

@@ -5,14 +5,19 @@
 
 #include <filesystem>
 
-namespace fs = std::filesystem;
+using namespace std;
 
 namespace Core
 {
 	class Search
 	{
 	public:
-		static std::string SearchByParent(const std::string& targetFolderName);
+		/// <summary>
+		/// A simple search script that goes up one parent at a time until it reaches the desired folder by name, stops at root folder.
+		/// </summary>
+		/// <param name="targetFolderName">What is the desired folder name we are searching for?</param>
+		/// <returns></returns>
+		static string SearchByParent(const string& targetFolderName);
 	};
 }
 

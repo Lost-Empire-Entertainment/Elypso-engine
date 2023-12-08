@@ -12,6 +12,8 @@
 
 #include <string>
 
+using namespace glm;
+
 namespace Core::Graphics
 {
 	class Render
@@ -32,7 +34,7 @@ namespace Core::Graphics
 		static inline const unsigned int SCR_WIDTH = 1200;
 		static inline const unsigned int SCR_HEIGHT = 1200;
 
-		static inline glm::vec3 cubePositions[10];
+		static inline vec3 cubePositions[10];
 
 		static void GLFWSetup();
 		static void WindowSetup();

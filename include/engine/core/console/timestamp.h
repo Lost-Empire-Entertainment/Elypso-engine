@@ -5,12 +5,14 @@
 
 #include <string>
 
+using namespace std;
+
 namespace Core::Console
 {
 	class Timestamp
 	{
 	public:
-		static std::string GetCurrentTimestamp();
+		static string GetCurrentTimestamp();
 	};
 }
 

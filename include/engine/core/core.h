@@ -5,19 +5,14 @@
 
 #include <string>
 
+using namespace std;
+
 namespace Core
 {
-	extern const std::string name;
-	extern const std::string version;
+	static const string name = "Elypso engine";
+	static const string version = "0.0.4 Prototype";
 
-	/*
-	* @brief Responsible for all the methods that are run when the engine is first initialized.
-	*/
 	void InitializeEngine();
-
-	/*
-	* @brief Responsible for all the methods that are run while the engine is actively running.
-	*/
 	void RunEngine();
 }
 

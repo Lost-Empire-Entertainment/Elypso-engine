@@ -11,6 +11,11 @@ set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 
 project("Elypso engine" VERSION ${PROJECT_VERSION})
 
+# Check if the compiler is MSVC and enable XML documentation generation
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /doc")
+endif()
+
 # Reusable message types printed to console
 set(eninf "[ENGINE_INFO]")
 

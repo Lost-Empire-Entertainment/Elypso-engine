@@ -10,50 +10,43 @@
 
 #include <string>
 
-/*
-* =========================================
-*
-* The core script of the engine, responsible for both
-* InitializeEngine and RunEngine methods that are
-* run in main.cpp to keep that script clean.
-*
-* =========================================
-*/
+using namespace Core::Input;
+using namespace Core::Graphics;
+using namespace Core::Console;
+using Caller = ConsoleManager::Caller;
+using Type = ConsoleManager::Type;
 
 namespace Core
 {
-	const std::string name = "Elypso engine";
-	const std::string version = "0.0.4 prototype";
-
 	void InitializeEngine()
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::ENGINE,
-			Core::Console::ConsoleManager::Type::INFO,
-			"Initializing " + Core::name + " " + Core::version + "...\n");
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"Initializing " + name + " " + version + "...\n");
 
-		Core::Input::InputManager::InputSetup();
+		InputManager::InputSetup();
 
-		Core::Graphics::Render::RenderSetup();
+		Render::RenderSetup();
 	}
 
 	void RunEngine()
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::WINDOW_LOOP,
-			Core::Console::ConsoleManager::Type::INFO,
+		ConsoleManager::WriteConsoleMessage(
+			Caller::WINDOW_LOOP,
+			Type::INFO,
 			"Entering window loop...\n");
 
-		while (!glfwWindowShouldClose(Core::Graphics::Render::window))
+		while (!glfwWindowShouldClose(Render::window))
 		{
-			Core::Input::InputManager::ProcessInput(Core::Graphics::Render::window);
+			InputManager::ProcessInput(Render::window);
 
-			Core::Graphics::Render::WindowLoop();
+			Render::WindowLoop();
 		}
 
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::WINDOW_LOOP,
-			Core::Console::ConsoleManager::Type::INFO,
+		ConsoleManager::WriteConsoleMessage(
+			Caller::WINDOW_LOOP,
+			Type::INFO,
 			"Exiting window loop...\n");
 	}
 }

@@ -7,28 +7,33 @@
 #include "render.h"
 #include "shutdown.h"
 
+using namespace Core::Graphics;
+using namespace Core::Console;
+using Caller = ConsoleManager::Caller;
+using Type = ConsoleManager::Type;
+
 namespace Core
 {
 	void ShutdownManager::Shutdown()
 	{
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::SHUTDOWN,
-			Core::Console::ConsoleManager::Type::INFO,
+		ConsoleManager::WriteConsoleMessage(
+			Caller::SHUTDOWN,
+			Type::INFO,
 			"Cleaning up resources...\n");
 
-		Core::Graphics::Render::Shutdown();
+		Render::Shutdown();
 
 		//de-allocate all resources once they've outlived their purpose
-		glDeleteVertexArrays(1, &Core::Graphics::Render::VAO);
-		glDeleteBuffers(1, &Core::Graphics::Render::VBO);
-		glDeleteBuffers(1, &Core::Graphics::Render::EBO);
+		glDeleteVertexArrays(1, &Render::VAO);
+		glDeleteBuffers(1, &Render::VBO);
+		glDeleteBuffers(1, &Render::EBO);
 
 		//clean all glfw resources after program is closed
 		glfwTerminate();
 
-		Core::Console::ConsoleManager::WriteConsoleMessage(
-			Core::Console::ConsoleManager::Caller::SHUTDOWN,
-			Core::Console::ConsoleManager::Type::SUCCESS,
+		ConsoleManager::WriteConsoleMessage(
+			Caller::SHUTDOWN,
+			Type::SUCCESS,
 			"Shutdown complete!\n");
 	}
 }

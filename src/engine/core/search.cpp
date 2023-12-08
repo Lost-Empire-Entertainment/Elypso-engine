@@ -3,21 +3,22 @@
 
 #include <filesystem>
 
-namespace fs = std::filesystem;
+using namespace std;
+using namespace std::filesystem;
 
 namespace Core
 {
-	std::string Search::SearchByParent(const std::string& targetFolderName)
+	string Search::SearchByParent(const string& targetFolderName)
 	{
 		//get the current working directory
-		fs::path currentPath = fs::current_path();
-		fs::path current = currentPath;
+		path currentPath = current_path();
+		path current = currentPath;
 
 		//iterate until we reach the root directory
 		while (!current.empty())
 		{
 			//check if the target folder exists in the current directory
-			if (fs::is_directory(current / targetFolderName))
+			if (is_directory(current / targetFolderName))
 			{
 				return (current / targetFolderName).string();
 			}

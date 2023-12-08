@@ -8,18 +8,24 @@
 #include <string>
 #include <ctime>
 
+using namespace std;
+
 namespace Core::Console
 {
 	class Logger
 	{
 	public:
-		Logger(const std::string& logFileName);
+		Logger(const string& logFileName);
 		~Logger();
 
-		void Log(const std::string& message);
+		/// <summary>
+		/// A simple method that prints the console message to an external txt file.
+		/// </summary>
+		/// <param name="message"></param>
+		void Log(const string& message);
 
 	private:
-		std::ofstream logFile;
+		ofstream logFile;
 	};
 }
 
