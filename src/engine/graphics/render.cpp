@@ -8,12 +8,14 @@
 //engine
 #include "core.h"
 #include "deltaTime.h"
+#include "camera.h"
 #include "render.h"
 #include "shader.h"
 #include "texture.h"
 #include "console.h"
 #include "shutdown.h"
 #include "search.h"
+#include "input.h"
 
 #include <string>
 #include <iostream>
@@ -27,6 +29,7 @@ using Type = Core::ConsoleManager::Type;
 namespace Graphics
 {
 	Shader* Render::shader;
+	Camera camera(vec3(0.0f, 0.0f, 3.0f));
 
 	void Render::RenderSetup()
 	{
@@ -79,6 +82,11 @@ namespace Graphics
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
+		glfwSetCursorPosCallback(window, InputManager::Mouse_Callback);
+		glfwSetScrollCallback(window, InputManager::Scroll_Callback);
+
+		//tell glfw to capture mouse
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_SETUP,
@@ -200,13 +208,6 @@ namespace Graphics
 		shader->Use();
 		shader->SetInt("texture1", 0);
 		shader->SetInt("texture2", 1);
-
-		mat4 projection = perspective(
-			radians(45.0f),
-			(float)SCR_WIDTH / (float)SCR_HEIGHT,
-			0.1f,
-			100.0f);
-		shader->SetMat4("projection", projection);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
@@ -236,8 +237,15 @@ namespace Graphics
 		//activate shader
 		shader->Use();
 
+		mat4 projection = perspective(
+			radians(camera.Zoom),
+			(float)SCR_WIDTH / (float)SCR_HEIGHT,
+			0.1f,
+			100.0f);
+		shader->SetMat4("projection", projection);
+
 		//camera/view transformation
-		mat4 view = lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		mat4 view = camera.GetViewMatrix();
 		shader->SetMat4("view", view);
 
 		//render boxes

@@ -6,6 +6,7 @@
 #include "console.h"
 #include "render.h"
 #include "deltaTime.h"
+#include "camera.h"
 
 using namespace glm;
 using namespace Graphics;
@@ -61,5 +62,31 @@ namespace Core
 			Render::cameraPos +=
 				normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
 		}
+	}
+
+	void InputManager::Mouse_Callback(GLFWwindow* window, double xPosIn, double yPosIn) 
+	{
+		float xPos = static_cast<float>(xPosIn);
+		float yPos = static_cast<float>(yPosIn);
+
+		if (firstMouse)
+		{
+			lastX = xPos;
+			lastY = yPos;
+			firstMouse = false;
+		}
+
+		float xOffset = xPos - lastX;
+		float yOffset = lastY - yPos;
+
+		lastX = xPos;
+		lastY = yPos;
+
+		Camera::Camera::ProcessMouseMovement(xOffset, yOffset);
+	}
+
+	void InputManager::Scroll_Callback(GLFWwindow* window, double xOffset, double yOffset)
+	{
+		Camera::Camera::ProcessMouseScroll(static_cast<float>(yOffset));
 	}
 }

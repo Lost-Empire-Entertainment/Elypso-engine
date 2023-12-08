@@ -19,6 +19,9 @@ namespace Graphics
 	class Render
 	{
 	public:
+		static inline const unsigned int SCR_WIDTH = 1200;
+		static inline const unsigned int SCR_HEIGHT = 1200;
+
 		static inline unsigned int VBO, VAO, EBO;
 
 		static inline float cameraSpeed;
@@ -35,9 +38,6 @@ namespace Graphics
 	private:
 
 		static Shader* shader;
-
-		static inline const unsigned int SCR_WIDTH = 1200;
-		static inline const unsigned int SCR_HEIGHT = 1200;
 
 		static inline vec3 cubePositions[10];
 
