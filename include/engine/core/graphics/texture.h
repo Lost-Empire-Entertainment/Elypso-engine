@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace Graphics
+namespace Core::Graphics
 {
 	class Texture
 	{

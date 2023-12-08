@@ -10,6 +10,16 @@
 
 #include <string>
 
+/*
+* =========================================
+*
+* The core script of the engine, responsible for both
+* InitializeEngine and RunEngine methods that are
+* run in main.cpp to keep that script clean.
+*
+* =========================================
+*/
+
 namespace Core
 {
 	const std::string name = "Elypso engine";
@@ -24,7 +34,7 @@ namespace Core
 
 		Core::Input::InputManager::InputSetup();
 
-		Graphics::Render::RenderSetup();
+		Core::Graphics::Render::RenderSetup();
 	}
 
 	void RunEngine()
@@ -34,11 +44,11 @@ namespace Core
 			Core::Console::ConsoleManager::Type::INFO,
 			"Entering window loop...\n");
 
-		while (!glfwWindowShouldClose(Graphics::Render::window))
+		while (!glfwWindowShouldClose(Core::Graphics::Render::window))
 		{
-			Core::Input::InputManager::ProcessInput(Graphics::Render::window);
+			Core::Input::InputManager::ProcessInput(Core::Graphics::Render::window);
 
-			Graphics::Render::WindowLoop();
+			Core::Graphics::Render::WindowLoop();
 		}
 
 		Core::Console::ConsoleManager::WriteConsoleMessage(

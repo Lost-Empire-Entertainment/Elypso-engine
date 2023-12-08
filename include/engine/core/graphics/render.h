@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace Graphics
+namespace Core::Graphics
 {
 	class Render
 	{

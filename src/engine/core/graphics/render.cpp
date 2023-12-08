@@ -17,7 +17,16 @@
 #include <string>
 #include <iostream>
 
-namespace Graphics
+/*
+* =========================================
+*
+* The core rendering script of the engine, responsible for
+* all core methods that are required to display content on the screen.
+*
+* =========================================
+*/
+
+namespace Core::Graphics
 {
 	Shader* Render::shader;
 
@@ -103,8 +112,8 @@ namespace Graphics
 	void Render::ContentSetup()
 	{
 		std::string projectPath = Core::Search::SearchByParent("Elypso engine");
-		std::string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vert";
-		std::string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
+		std::string vertexPath = projectPath + "\\src\\engine\\core\\graphics\\shaders\\vertexShader.vert";
+		std::string fragmentPath = projectPath + "\\src\\engine\\core\\graphics\\shaders\\fragmentShader.frag";
 		std::string texturePath = projectPath + "\\files";
 
 		glEnable(GL_DEPTH_TEST);

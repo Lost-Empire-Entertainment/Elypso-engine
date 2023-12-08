@@ -16,12 +16,12 @@ namespace Core
 			Core::Console::ConsoleManager::Type::INFO,
 			"Cleaning up resources...\n");
 
-		Graphics::Render::Shutdown();
+		Core::Graphics::Render::Shutdown();
 
 		//de-allocate all resources once they've outlived their purpose
-		glDeleteVertexArrays(1, &Graphics::Render::VAO);
-		glDeleteBuffers(1, &Graphics::Render::VBO);
-		glDeleteBuffers(1, &Graphics::Render::EBO);
+		glDeleteVertexArrays(1, &Core::Graphics::Render::VAO);
+		glDeleteBuffers(1, &Core::Graphics::Render::VBO);
+		glDeleteBuffers(1, &Core::Graphics::Render::EBO);
 
 		//clean all glfw resources after program is closed
 		glfwTerminate();

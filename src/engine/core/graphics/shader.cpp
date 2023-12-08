@@ -10,7 +10,7 @@
 #include <sstream>
 #include <iostream>
 
-namespace Graphics
+namespace Core::Graphics
 {
 	Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 	{

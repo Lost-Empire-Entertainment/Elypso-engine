@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-namespace Graphics
+namespace Core::Graphics
 {
 	std::vector<unsigned int> Texture::textures;
 
