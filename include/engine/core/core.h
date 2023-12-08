@@ -10,9 +10,8 @@ namespace Core
 	extern const std::string name;
 	extern const std::string version;
 
-	int InitializeEngine();
+	void InitializeEngine();
 	void RunEngine();
-	int ShutdownEngine();
 }
 
 #endif

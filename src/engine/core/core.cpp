@@ -15,7 +15,7 @@ namespace Core
 	const std::string name = "Elypso engine";
 	const std::string version = "0.0.4 prototype";
 
-	int InitializeEngine()
+	void InitializeEngine()
 	{
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::ENGINE,
@@ -24,19 +24,7 @@ namespace Core
 
 		Core::Input::InputManager::InputSetup();
 
-		if (Graphics::Render::WindowSetup() != 0)
-		{
-			Core::Console::ConsoleManager::WriteConsoleMessage(
-				Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
-				Core::Console::ConsoleManager::Type::ERROR,
-				"Window setup was unsuccessful!\n\n");
-
-			Core::ShutdownManager::Shutdown();
-			std::cin.get();
-			return -1;
-		}
-
-		return 0;
+		Graphics::Render::RenderSetup();
 	}
 
 	void RunEngine()
@@ -57,12 +45,5 @@ namespace Core
 			Core::Console::ConsoleManager::Caller::WINDOW_LOOP,
 			Core::Console::ConsoleManager::Type::INFO,
 			"Exiting window loop...\n");
-	}
-
-	int ShutdownEngine()
-	{
-		Core::ShutdownManager::Shutdown();
-		std::cin.get();
-		return 0;
 	}
 }

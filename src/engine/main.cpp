@@ -1,14 +1,16 @@
 ﻿//engine
 #include "core.h"
+#include "shutdown.h"
+
+#include <iostream>
 
 int main()
 {
-	if (Core::InitializeEngine() != 0) 
-	{
-		return -1;
-	}
+	Core::InitializeEngine();
 
 	Core::RunEngine();
 
-	Core::ShutdownEngine();
+	Core::ShutdownManager::Shutdown();
+	std::cin.get();
+	return 0;
 }

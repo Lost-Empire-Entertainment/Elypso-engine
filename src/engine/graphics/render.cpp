@@ -20,32 +20,39 @@
 namespace Graphics
 {
 	Shader* Render::shader;
-	bool Render::shaderInitialized = false;
 
-	int Render::WindowSetup()
+	void Render::RenderSetup()
 	{
-		std::string projectPath = Core::Search::SearchByParent("Elypso engine");
-		std::string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vert";
-		std::string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
-		std::string texturePath = projectPath + "\\files";
+		Render::GLFWSetup();
+		Render::WindowSetup();
+		Render::GladSetup();
+		Render::ContentSetup();
+	}
 
+	void Render::GLFWSetup()
+	{
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLFW,
 			Core::Console::ConsoleManager::Type::INFO,
 			"Initializing GLFW...\n");
+
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLFW,
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLFW initialized successfully!\n\n");
-
+	}
+	void Render::WindowSetup()
+	{
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
 			Core::Console::ConsoleManager::Type::INFO,
 			"Creating window...\n");
+
 		//create a window object holding all the windowing data
 		window = glfwCreateWindow(
 			SCR_WIDTH,
@@ -53,26 +60,31 @@ namespace Graphics
 			"Elypso engine",
 			NULL,
 			NULL);
+
 		if (window == NULL)
 		{
 			Core::Console::ConsoleManager::WriteConsoleMessage(
 				Core::Console::ConsoleManager::Caller::GLFW,
 				Core::Console::ConsoleManager::Type::ERROR,
 				"Error: Failed to create GLFW window!\n\n");
-			Core::ShutdownManager::Shutdown();
-			return -1;
+			return;
 		}
+
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
+
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::WINDOW_SETUP,
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"Window initialized successfully!\n\n");
-
+	}
+	void Render::GladSetup()
+	{
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLAD,
 			Core::Console::ConsoleManager::Type::INFO,
 			"Initializing GLAD...\n");
+
 		//check if glad is initialized before continuing
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
@@ -80,23 +92,26 @@ namespace Graphics
 				Core::Console::ConsoleManager::Caller::GLAD,
 				Core::Console::ConsoleManager::Type::ERROR,
 				"Error: Failed to initialize GLAD!\n\n");
-			return -1;
+			return;
 		}
+
 		Core::Console::ConsoleManager::WriteConsoleMessage(
 			Core::Console::ConsoleManager::Caller::GLAD,
 			Core::Console::ConsoleManager::Type::SUCCESS,
 			"GLAD initialized successfully!\n\n");
+	}
+	void Render::ContentSetup()
+	{
+		std::string projectPath = Core::Search::SearchByParent("Elypso engine");
+		std::string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vert";
+		std::string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
+		std::string texturePath = projectPath + "\\files";
 
 		glEnable(GL_DEPTH_TEST);
 
-		if (!shaderInitialized)
-		{
-			shader = new Shader(vertexPath, fragmentPath);
+		shader = new Shader(vertexPath, fragmentPath);
 
-			shaderInitialized = true;
-		}
-
-		float vertices[] = 
+		float vertices[] =
 		{
 			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -178,8 +193,6 @@ namespace Graphics
 		shader->Use();
 		shader->SetInt("texture1", 0);
 		shader->SetInt("texture2", 1);
-
-		return 0;
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
