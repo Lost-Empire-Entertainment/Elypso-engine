@@ -199,6 +199,13 @@ namespace Graphics
 		shader->Use();
 		shader->SetInt("texture1", 0);
 		shader->SetInt("texture2", 1);
+
+		mat4 projection = perspective(
+			radians(45.0f),
+			(float)SCR_WIDTH / (float)SCR_HEIGHT,
+			0.1f,
+			100.0f);
+		shader->SetMat4("projection", projection);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
@@ -230,21 +237,18 @@ namespace Graphics
 
 		//create transformations
 		mat4 view = mat4(1.0f);
-		mat4 projection = mat4(1.0f);
-		view = translate(
-			view, 
-			vec3(0.0f, 0.0f, -3.0f));
-		projection = perspective(
-			radians(45.0f), 
-			(float)SCR_WIDTH / (float)SCR_HEIGHT, 
-			0.1f, 
-			100.0f);
+		float radius = 10.0f;
+		float camX = static_cast<float>(sin(glfwGetTime()) * radius);
+		float camZ = static_cast<float>(cos(glfwGetTime()) * radius);
+		view = lookAt(
+			vec3(camX, 0.0f, camZ),
+			vec3(0.0f, 0.0f, 0.0f),
+			vec3(0.0f, 1.0f, 0.0f));
 		//pass transformation matrices to the shader
 		shader->SetMat4("view", view);
-		shader->SetMat4("projection", projection);
 
 		//render boxes
-		glBindVertexArray(Render::VAO);
+		glBindVertexArray(VAO);
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			//calculate the model matrix for each object
@@ -259,7 +263,7 @@ namespace Graphics
 		}
 
 		//swap the front and back buffers
-		glfwSwapBuffers(Render::window);
+		glfwSwapBuffers(window);
 		//poll for events and process them
 		glfwPollEvents();
 	}
