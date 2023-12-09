@@ -86,7 +86,7 @@ message(STATUS "${eninf} Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "${eninf} GLFW Library File: ${LIB_DIR}/glfw/glfw3.lib")
 
 # Set the path to the license file
-set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/LICENSE.md)
+set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/EULA.md)
 
 # Specify the license files for CPack to include in the installer
 set(CPACK_RESOURCE_FILE_LICENSE ${LICENSE_FILE})
