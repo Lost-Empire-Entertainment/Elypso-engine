@@ -1,3 +1,8 @@
+:: Copyright (C) 2023 Greenlaser
+:: This program comes with ABSOLUTELY NO WARRANTY.
+:: This is free software, and you are welcome to redistribute it under certain conditions.
+:: Read LICENSE.md and EULA.md for more information.
+
 @echo off
 :: Batch script to build the executable and create the installer for the engine
 
