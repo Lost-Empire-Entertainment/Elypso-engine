@@ -48,6 +48,7 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 
 * [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
 
-## License
+## Licenses
 
-This project is licensed under the GPL-3.0 License - see the [license](LICENSE.md) file for details
+* [GPL-3.0](LICENSE.md) - ensures the project remains open source and free for anyone to distribute and modify
+* [EULA](EULA.md) - goes over the permissions, requirements and disclaimers
