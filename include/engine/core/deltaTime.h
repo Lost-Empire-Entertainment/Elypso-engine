@@ -8,7 +8,7 @@ namespace Core
 	class DeltaTime
 	{
 	public:
-		static inline float deltatime;
+		static inline float deltaTime;
 		static void UpdateDeltaTime();
 	private:
 		static inline float lastFrame;

@@ -54,7 +54,7 @@ namespace Core
 			glfwSetWindowShouldClose(window, true);
 		}
 
-		Render::cameraSpeed = static_cast<float>(2.5f * DeltaTime::deltatime);
+		Render::cameraSpeed = static_cast<float>(2.5f * DeltaTime::deltaTime);
 		//camera forwards
 		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Forwards])) == GLFW_PRESS)
 		{
@@ -79,31 +79,5 @@ namespace Core
 			Render::cameraPos +=
 				normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
 		}
-	}
-
-	void InputManager::Mouse_Callback(GLFWwindow* window, double xPosIn, double yPosIn) 
-	{
-		float xPos = static_cast<float>(xPosIn);
-		float yPos = static_cast<float>(yPosIn);
-
-		if (firstMouse)
-		{
-			lastX = xPos;
-			lastY = yPos;
-			firstMouse = false;
-		}
-
-		float xOffset = xPos - lastX;
-		float yOffset = lastY - yPos;
-
-		lastX = xPos;
-		lastY = yPos;
-
-		Camera::Camera::ProcessMouseMovement(xOffset, yOffset);
-	}
-
-	void InputManager::Scroll_Callback(GLFWwindow* window, double xOffset, double yOffset)
-	{
-		Camera::Camera::ProcessMouseScroll(static_cast<float>(yOffset));
 	}
 }

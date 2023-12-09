@@ -35,7 +35,6 @@ namespace Core
 		static void InitializeEngine();
 		static void RunEngine();
 	};
-
 }
 
 #endif

@@ -93,7 +93,7 @@ if not exist out (
 	if not exist .vs (
 		if not exist build (
 			if not exist install (
-				echo %encln% There is nothing to delete.
+				echo %encln% There is nothing to reset.
 				pause
 				goto menu
 			)

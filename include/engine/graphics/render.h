@@ -26,6 +26,7 @@
 
 //engine
 #include "shader.h"
+#include "camera.h"
 
 #include <string>
 

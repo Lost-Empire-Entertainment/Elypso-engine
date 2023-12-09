@@ -9,7 +9,7 @@ namespace Core
 	void DeltaTime::UpdateDeltaTime()
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
-		deltatime = currentFrame - lastFrame;
+		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 	}
 }
