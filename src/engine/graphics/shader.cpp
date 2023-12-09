@@ -64,7 +64,7 @@ namespace Graphics
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::SHADER,
-                Type::ERROR,
+                Type::EXCEPTION,
                 "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " +
                 string(e.what()) + "\n\n");
         }
@@ -163,7 +163,7 @@ namespace Graphics
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
                 ConsoleManager::WriteConsoleMessage(
                     Caller::SHADER,
-                    Type::ERROR,
+                    Type::EXCEPTION,
                     "ERROR::SHADER_COMPILATION_ERROR of type: " +
                     string(type) + " " +
                     string(infoLog) + "\n\n");
@@ -177,7 +177,7 @@ namespace Graphics
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
                 ConsoleManager::WriteConsoleMessage(
                     Caller::SHADER,
-                    Type::ERROR,
+                    Type::EXCEPTION,
                     "ERROR::PROGRAM_LINKING_ERROR of type: " +
                     string(type) + " " +
                     string(infoLog) + "\n\n");

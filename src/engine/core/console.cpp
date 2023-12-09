@@ -78,7 +78,7 @@ namespace Core
 
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
-                Type::ERROR,
+                Type::EXCEPTION,
                 "Failed to open log file " + logFileName + "! Reason: " +
                 ec.message() + "\n\n");
         }
@@ -115,10 +115,7 @@ namespace Core
         case Type::SUCCESS:
             msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
             break;
-        case Type::ERROR:
-            msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
-            break;
-        case Type::WCERROR:
+        case Type::EXCEPTION:
             msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
             break;
         }

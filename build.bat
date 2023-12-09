@@ -7,14 +7,14 @@
 :: Batch script to build the executable and create the installer for the engine
 
 :: Reusable message types printed to console
-set "enerr=[ENGINE_ERROR]"
+set "enexc=[ENGINE_EXCEPTION]"
 set "eninf=[ENGINE_INFO]"
 set "encln=[ENGINE_CLEANUP]"
 set "cminf=[CMAKE_INFO]"
-set "cmerr=[CMAKE_ERROR]"
+set "cmerr=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
 set "cpinf=[CPACK_INFO]"
-set "cperr=[CPACK_ERROR]"
+set "cperr=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 set "inst=Elypso engine installer.exe"
 set "ifol=Elypso engine installer"
@@ -22,7 +22,7 @@ set "exe=Elypso_engine.exe"
 
 :: Can not run build.bat if no command was inserted
 if "%1%" == "" (
-	echo %enerr% Please run RUN_ME.bat to choose what actions to do with this project.
+	echo %enexc% Please run RUN_ME.bat to choose what actions to do with this project.
 	pause
 	exit
 )
@@ -30,7 +30,7 @@ if "%1%" == "" (
 :: Check if the script is running with administrative privileges
 NET SESSION >nul 2>&1
 if %errorlevel% neq 0 (
-    echo %enerr% This script requires administrative privileges. Please run as administrator.
+    echo %enexc% This script requires administrative privileges. Please run as administrator.
     pause
     exit /b 1
 )
