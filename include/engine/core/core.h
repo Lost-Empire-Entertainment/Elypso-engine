@@ -20,8 +20,6 @@
 #ifndef CORE_H
 #define CORE_H
 
-//#include <windows.h>
-//#include <iostream>
 #include <string>
 
 using namespace std;
@@ -36,15 +34,6 @@ namespace Core
 
 		static void InitializeEngine();
 		static void RunEngine();
-
-		//Engine(const wchar_t* instanceName);
-		//~Engine();
-
-		//bool IsAnotherInstanceRunning() const;
-		//void MarkAsRunning();
-		//void Release();
-	private:
-		//HANDLE hMutex;
 	};
 
 }
