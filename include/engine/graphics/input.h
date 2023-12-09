@@ -44,7 +44,8 @@ namespace Core
             A,
             D,
             Space,
-            Left_control
+            Left_control,
+            Left_shift
         };
 
         static inline unordered_map<Key, int> key;
@@ -52,11 +53,10 @@ namespace Core
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;
 
-        static inline float fov;
-
         static void InputSetup();
         static void ProcessInput(GLFWwindow* window);
-
+        vec3 GetFront() const { return cameraFront; }
+        vec3 GetRight() const { return normalize(cross(cameraFront, cameraUp)); }
     private:
         GLFWwindow* window;
         float yaw;

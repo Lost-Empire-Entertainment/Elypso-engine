@@ -48,6 +48,7 @@ namespace Graphics
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 		static inline GLFWwindow* window;
+		static inline float fov;
 
 		static Core::Input camera;
 

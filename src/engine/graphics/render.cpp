@@ -138,6 +138,8 @@ namespace Graphics
 		string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
 		string texturePath = projectPath + "\\files";
 
+		fov = 90;
+
 		glEnable(GL_DEPTH_TEST);
 
 		shader = new Shader(vertexPath, fragmentPath);
@@ -224,11 +226,28 @@ namespace Graphics
 		shader->Use();
 		shader->SetInt("texture1", 0);
 		shader->SetInt("texture2", 1);
+
+		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
+		// Calculate the new aspect ratio
+		float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+
+		// Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
+
+		// Calculate the new projection matrix
+		mat4 projection = perspective(
+			radians(fov),
+			aspectRatio,
+			0.1f,
+			100.0f);
+
+		// Pass the new projection matrix to the shader
+		shader->Use();
+		shader->SetMat4("projection", projection);
 	}
 
 	void Render::Shutdown()
@@ -252,13 +271,6 @@ namespace Graphics
 
 		//activate shader
 		shader->Use();
-
-		mat4 projection = perspective(
-			radians(Input::fov),
-			(float)SCR_WIDTH / (float)SCR_HEIGHT,
-			0.1f,
-			100.0f);
-		shader->SetMat4("projection", projection);
 
 		//camera/view transformation
 		Input::ProcessInput(Render::window);
