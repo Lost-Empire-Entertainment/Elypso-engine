@@ -23,9 +23,9 @@ using namespace Core;
 
 int main()
 {
-	InitializeEngine();
+	Engine::InitializeEngine();
 
-	RunEngine();
+	Engine::RunEngine();
 
 	ShutdownManager::Shutdown();
 	return 0;
