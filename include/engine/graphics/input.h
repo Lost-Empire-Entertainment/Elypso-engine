@@ -52,9 +52,9 @@ namespace Core
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;
 
+        static inline float fov;
+
         static void InputSetup();
-        void ProcessMouseMovement(double xpos, double ypos);
-        void ProcessKeyboardInput(GLFWwindow* window);
         static void ProcessInput(GLFWwindow* window);
 
     private:
@@ -65,9 +65,13 @@ namespace Core
         double lastY;
         bool firstMouse;
         float sensitivity;
+
         vec3 cameraPos;
         vec3 cameraFront;
         vec3 cameraUp;
+
+        void ProcessMouseMovement(double xpos, double ypos);
+        static void ProcessKeyboardInput(GLFWwindow* window);
     };
 }
 

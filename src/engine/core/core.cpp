@@ -45,8 +45,6 @@ namespace Core
 
 		Admin::RunAsAdmin();
 
-		Input::InputSetup();
-
 		Render::RenderSetup();
 	}
 
@@ -60,8 +58,6 @@ namespace Core
 		while (!glfwWindowShouldClose(Render::window))
 		{
 			DeltaTime::UpdateDeltaTime();
-
-			//InputManager::ProcessInput(Render::window);
 
 			Render::WindowLoop();
 		}

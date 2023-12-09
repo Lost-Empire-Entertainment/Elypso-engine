@@ -49,6 +49,8 @@ namespace Graphics
 
 	void Render::RenderSetup()
 	{
+		Input::InputSetup();
+
 		Render::GLFWSetup();
 		Render::WindowSetup();
 		Render::GladSetup();
@@ -252,16 +254,15 @@ namespace Graphics
 		shader->Use();
 
 		mat4 projection = perspective(
-			radians(90.0f),
+			radians(Input::fov),
 			(float)SCR_WIDTH / (float)SCR_HEIGHT,
 			0.1f,
 			100.0f);
 		shader->SetMat4("projection", projection);
 
 		//camera/view transformation
-		//mat4 view = lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		Input::ProcessInput(Render::window);
-		mat4 view = camera.GetViewMatrix();
+		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		shader->SetMat4("view", view);
 
 		//render boxes

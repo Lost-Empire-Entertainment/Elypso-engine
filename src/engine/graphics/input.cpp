@@ -41,6 +41,8 @@ namespace Core
         key[Key::D] = GLFW_KEY_D;
         key[Key::Space] = GLFW_KEY_SPACE;
         key[Key::Left_control] = GLFW_KEY_LEFT_CONTROL;
+
+        fov = 60;
     }
 
     Input::Input(GLFWwindow* window, float sensitivity) : 
@@ -56,61 +58,66 @@ namespace Core
 
 	void Input::ProcessInput(GLFWwindow* window)
 	{
-		if (glfwGetKey(window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::SUCCESS,
-				"User pressed ESC key to shut down engine...\n\n");
-
-			glfwSetWindowShouldClose(window, true);
-		}
+        Input::ProcessKeyboardInput(Render::window);
 
 		//process mouse movement
 		double mouseX, mouseY;
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 		glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
-		{
-			Render::camera.ProcessMouseMovement(xpos, ypos);
-		});
+			{
+				Render::camera.ProcessMouseMovement(xpos, ypos);
+			});
 		Render::camera.ProcessMouseMovement(mouseX, mouseY);
 		Render::cameraSpeed = static_cast<float>(2.5f * DeltaTime::deltaTime);
-
-		//camera forwards
-		if (glfwGetKey(window, static_cast<int>(key[Key::W])) == GLFW_PRESS)
-		{
-			Render::cameraPos +=
-				Render::cameraSpeed * Render::cameraFront;
-		}
-		//camera backwards
-		if (glfwGetKey(window, static_cast<int>(key[Key::S])) == GLFW_PRESS)
-		{
-			Render::cameraPos -=
-				Render::cameraSpeed * Render::cameraFront;
-		}
-		//camera left
-		if (glfwGetKey(window, static_cast<int>(key[Key::A])) == GLFW_PRESS)
-		{
-			Render::cameraPos -=
-				normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
-		}
-		//camera right
-		if (glfwGetKey(window, static_cast<int>(key[Key::D])) == GLFW_PRESS)
-		{
-			Render::cameraPos +=
-				normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
-		}
-		//camera up
-		if (glfwGetKey(window, static_cast<int>(key[Key::Space])) == GLFW_PRESS)
-		{
-			Render::cameraPos += Render::cameraUp * Render::cameraSpeed;
-		}
-		//camera down
-		if (glfwGetKey(window, static_cast<int>(key[Key::Left_control])) == GLFW_PRESS)
-		{
-			Render::cameraPos -= Render::cameraUp * Render::cameraSpeed;
-		}
 	}
+
+    void Input::ProcessKeyboardInput(GLFWwindow* window)
+    {
+        if (glfwGetKey(window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::SUCCESS,
+                "User pressed ESC key to shut down engine...\n\n");
+
+            glfwSetWindowShouldClose(window, true);
+        }
+
+        //camera forwards
+        if (glfwGetKey(window, static_cast<int>(key[Key::W])) == GLFW_PRESS)
+        {
+            Render::cameraPos +=
+                Render::cameraSpeed * Render::cameraFront;
+        }
+        //camera backwards
+        if (glfwGetKey(window, static_cast<int>(key[Key::S])) == GLFW_PRESS)
+        {
+            Render::cameraPos -=
+                Render::cameraSpeed * Render::cameraFront;
+        }
+        //camera left
+        if (glfwGetKey(window, static_cast<int>(key[Key::A])) == GLFW_PRESS)
+        {
+            Render::cameraPos -=
+                normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
+        }
+        //camera right
+        if (glfwGetKey(window, static_cast<int>(key[Key::D])) == GLFW_PRESS)
+        {
+            Render::cameraPos +=
+                normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
+        }
+        //camera up
+        if (glfwGetKey(window, static_cast<int>(key[Key::Space])) == GLFW_PRESS)
+        {
+            Render::cameraPos += Render::cameraUp * Render::cameraSpeed;
+        }
+        //camera down
+        if (glfwGetKey(window, static_cast<int>(key[Key::Left_control])) == GLFW_PRESS)
+        {
+            Render::cameraPos -= Render::cameraUp * Render::cameraSpeed;
+        }
+    }
 
     void Input::ProcessMouseMovement(double xpos, double ypos) {
         if (firstMouse) 
