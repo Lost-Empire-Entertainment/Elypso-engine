@@ -1,4 +1,4 @@
-﻿//<Elypso engine>
+//<Elypso engine>
 //    Copyright(C) < 2023 > < Greenlaser >
 //
 //    This program is free software : you can redistribute it and /or modify
@@ -15,18 +15,18 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-//engine
-#include "core.h"
-#include "shutdown.h"
+#pragma once
 
-using namespace Core;
+#ifndef CORE_ADMIN_H
+#define CORE_ADMIN_H
 
-int main()
+namespace Core
 {
-	InitializeEngine();
-
-	RunEngine();
-
-	ShutdownManager::Shutdown();
-	return 0;
+	class Admin 
+	{
+	public:
+		static void RunAsAdmin();
+	};
 }
+
+#endif

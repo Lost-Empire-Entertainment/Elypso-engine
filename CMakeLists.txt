@@ -5,6 +5,8 @@
 
 cmake_minimum_required(VERSION 3.27)
 
+set(CMAKE_INSTALL_PREFIX "C:/Program Files" CACHE PATH "Install path prefix, prepended onto install directories.")
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -15,11 +17,6 @@ set(PROJECT_PATCH_VERSION 4)
 set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
 
 project("Elypso engine" VERSION ${PROJECT_VERSION})
-
-# Check if the compiler is MSVC and enable XML documentation generation
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /doc")
-endif()
 
 # Reusable message types printed to console
 set(eninf "[ENGINE_INFO]")
@@ -77,6 +74,14 @@ target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+#copy and install license
+configure_file(${CMAKE_SOURCE_DIR}/LICENSE.md ${CMAKE_BINARY_DIR}/LICENSE.md COPYONLY)
+install(FILES ${CMAKE_BINARY_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+#copy and install EULA
+configure_file(${CMAKE_SOURCE_DIR}/EULA.md ${CMAKE_BINARY_DIR}/EULA.md COPYONLY)
+install(FILES ${CMAKE_BINARY_DIR}/EULA.md DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 message(STATUS "${eninf} Project Version: ${PROJECT_VERSION}")
 message(STATUS "${eninf} C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")

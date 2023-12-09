@@ -9,6 +9,7 @@
 :: Reusable message types printed to console
 set "eninf=[ENGINE_INFO]"
 set "enerr=[ENGINE_ERROR]"
+set "encln=[ENGINE_CLEANUP]"
 
 :: Check if the script is running with administrative privileges
 NET SESSION >nul 2>&1
@@ -92,7 +93,7 @@ if not exist out (
 	if not exist .vs (
 		if not exist build (
 			if not exist install (
-				echo %eninf% There is nothing to delete.
+				echo %encln% There is nothing to delete.
 				pause
 				goto menu
 			)
@@ -101,19 +102,19 @@ if not exist out (
 )
 
 if exist out (
-	echo %eninf% Deleted folder: out
+	echo %encln% Deleted folder: out
 	rd /s /q out
 )
 if exist .vs (
-	echo %eninf% Deleted folder: .vs
+	echo %encln% Deleted folder: .vs
 	rd /s /q .vs
 )
 if exist build (
-	echo %eninf% Deleted folder: build
+	echo %encln% Deleted folder: build
 	rd /s /q build
 )
 if exist install (
-	echo %eninf% Deleted folder: install
+	echo %encln% Deleted folder: install
 	rd /s /q install
 )
 

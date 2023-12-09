@@ -52,7 +52,8 @@ namespace Core
 			INFO,
 			DEBUG,
 			CLEANUP,
-			ERROR
+			ERROR,
+			WCERROR
 		};
 
 		/// <summary>
