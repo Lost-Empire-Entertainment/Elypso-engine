@@ -23,7 +23,6 @@
 #include "deltaTime.h"
 #include "admin.h"
 #include "console.h"
-#include "input.h"
 #include "render.h"
 #include "shutdown.h"
 
@@ -46,7 +45,7 @@ namespace Core
 
 		Admin::RunAsAdmin();
 
-		InputManager::InputSetup();
+		Input::InputSetup();
 
 		Render::RenderSetup();
 	}
@@ -62,7 +61,7 @@ namespace Core
 		{
 			DeltaTime::UpdateDeltaTime();
 
-			InputManager::ProcessInput(Render::window);
+			//InputManager::ProcessInput(Render::window);
 
 			Render::WindowLoop();
 		}

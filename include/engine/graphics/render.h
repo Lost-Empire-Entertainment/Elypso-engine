@@ -26,7 +26,7 @@
 
 //engine
 #include "shader.h"
-#include "camera.h"
+#include "input.h"
 
 #include <string>
 
@@ -48,6 +48,8 @@ namespace Graphics
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 		static inline GLFWwindow* window;
+
+		static Core::Input camera;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
