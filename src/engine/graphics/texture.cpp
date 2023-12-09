@@ -73,7 +73,7 @@ namespace Graphics
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::TEXTURE,
-				Type::ERROR,
+				Type::EXCEPTION,
 				"Failed to load " + textureName + " texture!\n\n");
 		}
 		stbi_image_free(data);

@@ -8,13 +8,13 @@
 
 :: Reusable message types printed to console
 set "eninf=[ENGINE_INFO]"
-set "enerr=[ENGINE_ERROR]"
+set "enexc=[ENGINE_EXCEPTION]"
 set "encln=[ENGINE_CLEANUP]"
 
 :: Check if the script is running with administrative privileges
 NET SESSION >nul 2>&1
 if %errorlevel% neq 0 (
-    echo %enerr% This script requires administrative privileges. Please run as administrator.
+    echo %enexc% This script requires administrative privileges. Please run as administrator.
     pause
     exit /b 1
 )
@@ -57,7 +57,7 @@ if "%choice%"=="3" goto install
 if "%choice%"=="4" goto end
 if "%choice%"=="0" goto reset
 
-echo %enerr% Invalid choice! Please enter a valid number.
+echo %enexc% Invalid choice! Please enter a valid number.
 pause
 goto menu
 
@@ -70,7 +70,7 @@ goto menu
 echo %eninf% Running build generation...
 
 if not exist build (
-	echo %enerr% Did not find build folder. Please run CMake Configuration.
+	echo %enexc% Did not find build folder. Please run CMake Configuration.
 	pause
 ) else (
 	start /wait build.bat build
@@ -81,7 +81,7 @@ goto menu
 echo %eninf% Running installer generation...
 
 if not exist build (
-	echo %enerr% Did not find build folder. Please first run CMake Configuration and then Build Generation.
+	echo %enexc% Did not find build folder. Please first run CMake Configuration and then Build Generation.
 ) else (
 	start /wait build.bat install
 )

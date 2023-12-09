@@ -29,7 +29,7 @@ namespace Core
         HANDLE token;
         if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token))
         {
-            std::cerr << "[ENGINE_ERROR] Error opening process token.\n\n";
+            std::cerr << "[ENGINE_EXCEPTION] Error opening process token.\n\n";
             ExitProcess(0);
             return;
         }
@@ -39,7 +39,7 @@ namespace Core
         PSID administratorsGroup;
         if (!AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &administratorsGroup))
         {
-            std::cerr << "[ENGINE_ERROR] Error initializing administrators group SID.";
+            std::cerr << "[ENGINE_EXCEPTION] Error initializing administrators group SID.";
             CloseHandle(token);
             ExitProcess(0);
             return;
@@ -47,7 +47,7 @@ namespace Core
 
         if (!CheckTokenMembership(nullptr, administratorsGroup, &isMember))
         {
-            std::cerr << "[ENGINE_ERROR] Error checking token membership.\n\n";
+            std::cerr << "[ENGINE_EXCEPTION] Error checking token membership.\n\n";
             FreeSid(administratorsGroup);
             CloseHandle(token);
             ExitProcess(0);
@@ -73,12 +73,12 @@ namespace Core
                 DWORD error = GetLastError();
                 if (error == ERROR_CANCELLED)
                 {
-                    std::wcerr << L"[ENGINE_ERROR] User denied admin privileges.\n\n";
+                    std::wcerr << L"[ENGINE_EXCEPTION] User denied admin privileges.\n\n";
                     ExitProcess(0);
                 }
                 else
                 {
-                    std::wcerr << L"[ENGINE_ERROR] Failed to obtain admin privileges. Error code: " << error + "\n\n";
+                    std::wcerr << L"[ENGINE_EXCEPTION] Failed to obtain admin privileges. Error code: " << error + "\n\n";
                     ExitProcess(0);
                 }
                 return;
