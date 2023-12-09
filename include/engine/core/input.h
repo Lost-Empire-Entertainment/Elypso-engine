@@ -41,10 +41,12 @@ namespace Core
 		{
 			Escape,
 			Enter,
-			Forwards,
-			Backwards,
-			Left,
-			Right
+			W,
+			S,
+			A,
+			D,
+			Space,
+			Left_control
 		};
 
 		static inline unordered_map<Key, int> key;

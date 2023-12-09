@@ -36,10 +36,12 @@ namespace Core
 	{
 		key[Key::Escape] = GLFW_KEY_ESCAPE;
 		key[Key::Enter] = GLFW_KEY_ENTER;
-		key[Key::Forwards] = GLFW_KEY_W;
-		key[Key::Backwards] = GLFW_KEY_S;
-		key[Key::Left] = GLFW_KEY_A;
-		key[Key::Right] = GLFW_KEY_D;
+		key[Key::W] = GLFW_KEY_W;
+		key[Key::S] = GLFW_KEY_S;
+		key[Key::A] = GLFW_KEY_A;
+		key[Key::D] = GLFW_KEY_D;
+		key[Key::Space] = GLFW_KEY_SPACE;
+		key[Key::Left_control] = GLFW_KEY_LEFT_CONTROL;
 	}
 
 	void InputManager::ProcessInput(GLFWwindow* window)
@@ -56,28 +58,38 @@ namespace Core
 
 		Render::cameraSpeed = static_cast<float>(2.5f * DeltaTime::deltaTime);
 		//camera forwards
-		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Forwards])) == GLFW_PRESS)
+		if (glfwGetKey(Render::window, static_cast<int>(key[Key::W])) == GLFW_PRESS)
 		{
 			Render::cameraPos += 
 				Render::cameraSpeed * Render::cameraFront;
 		}
 		//camera backwards
-		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Backwards])) == GLFW_PRESS)
+		if (glfwGetKey(Render::window, static_cast<int>(key[Key::S])) == GLFW_PRESS)
 		{
 			Render::cameraPos -= 
 				Render::cameraSpeed * Render::cameraFront;
 		}
 		//camera left
-		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Left])) == GLFW_PRESS)
+		if (glfwGetKey(Render::window, static_cast<int>(key[Key::A])) == GLFW_PRESS)
 		{
 			Render::cameraPos -= 
 				normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
 		}
 		//camera right
-		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Right])) == GLFW_PRESS)
+		if (glfwGetKey(Render::window, static_cast<int>(key[Key::D])) == GLFW_PRESS)
 		{
 			Render::cameraPos +=
 				normalize(cross(Render::cameraFront, Render::cameraUp)) * Render::cameraSpeed;
+		}
+		//camera up
+		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Space])) == GLFW_PRESS)
+		{
+			Render::cameraPos += Render::cameraUp * Render::cameraSpeed;
+		}
+		//camera down
+		if (glfwGetKey(Render::window, static_cast<int>(key[Key::Left_control])) == GLFW_PRESS)
+		{
+			Render::cameraPos -= Render::cameraUp * Render::cameraSpeed;
 		}
 	}
 }
