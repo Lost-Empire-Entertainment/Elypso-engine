@@ -1,3 +1,8 @@
+:: Copyright (C) 2023 Greenlaser
+:: This program comes with ABSOLUTELY NO WARRANTY.
+:: This is free software, and you are welcome to redistribute it under certain conditions.
+:: Read LICENSE.md and EULA.md for more information.
+
 @echo off
 :: Batch script to choose whether to configure, build or install Elypso engine
 
@@ -18,6 +23,21 @@ cd /d "%~dp0"
 
 :menu
 cls
+
+echo Elypso engine source manager
+echo.
+echo Copyright (C) 2023 Greenlaser
+echo.
+echo This program comes with ABSOLUTELY NO WARRANTY.
+echo This is free software, and you are welcome to redistribute it under certain conditions.
+echo Read LICENSE.md and EULA.md for more information.
+
+echo.
+
+echo ========================================================
+
+echo.
+
 echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake

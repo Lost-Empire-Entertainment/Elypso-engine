@@ -1,3 +1,8 @@
+# Copyright (C) 2023 Greenlaser
+# This program comes with ABSOLUTELY NO WARRANTY.
+# This is free software, and you are welcome to redistribute it under certain conditions.
+# Read LICENSE.md and EULA.md for more information.
+
 cmake_minimum_required(VERSION 3.27)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -82,7 +87,8 @@ message(STATUS "${eninf} GLFW Library File: ${LIB_DIR}/glfw/glfw3.lib")
 
 # Set the path to the license file
 set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/LICENSE.md)
-# Specify the license file for CPack to include in the installer
+
+# Specify the license files for CPack to include in the installer
 set(CPACK_RESOURCE_FILE_LICENSE ${LICENSE_FILE})
 
 # Set the output directory for CPack-generated files
