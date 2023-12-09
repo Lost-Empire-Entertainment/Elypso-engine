@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef CORE_DELTATIME_H
-#define CORE_DELTATIME_H
-
 namespace Core
 {
 	class DeltaTime
@@ -31,5 +28,3 @@ namespace Core
 		static inline float lastFrame;
 	};
 }
-
-#endif

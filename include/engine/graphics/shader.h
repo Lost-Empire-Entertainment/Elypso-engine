@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef GRAPHICS_SHADER_H
-#define GRAPHICS_SHADER_H
-
 //external
 #include "glad.h"
 #include "glm.hpp"
@@ -60,5 +57,3 @@ namespace Graphics
 		void CheckCompileErrors(GLuint shader, string type);
 	};
 }
-
-#endif

@@ -23,6 +23,7 @@
 #include "console.h"
 #include "render.h"
 #include "shutdown.h"
+#include "gui.h"
 
 using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;

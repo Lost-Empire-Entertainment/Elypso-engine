@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef CORE_CONSOLE_H
-#define CORE_CONSOLE_H
-
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -82,5 +79,3 @@ namespace Core
 		ofstream logFile;
 	};
 }
-
-#endif

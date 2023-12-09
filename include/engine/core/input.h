@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef GRAPHICS_INPUT_H
-#define GRAPHICS_INPUT_H
-
 //external
 #include "glm.hpp"
 #include "matrix_transform.hpp" //glm/gtc
@@ -74,5 +71,3 @@ namespace Core
         static void ProcessKeyboardInput(GLFWwindow* window);
     };
 }
-
-#endif

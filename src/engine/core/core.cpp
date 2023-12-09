@@ -38,7 +38,7 @@ namespace Core
 	void Engine::InitializeEngine()
 	{
 		name = "Elypso engine";
-		version = "0.0.4 Prototype";
+		version = "0.0.5 Prototype";
 
 		cout << "Copyright(C) < 2023 > < Greenlaser >\n";
 		cout << "Initializing " + name + " " + version + "...\n\n";

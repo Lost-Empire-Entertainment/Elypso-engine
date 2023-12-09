@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef CORE_H
-#define CORE_H
-
 #include <string>
 
 using namespace std;
@@ -36,5 +33,3 @@ namespace Core
 		static void RunEngine();
 	};
 }
-
-#endif

@@ -13,7 +13,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(PROJECT_MAJOR_VERSION 0)
 set(PROJECT_MINOR_VERSION 0)
-set(PROJECT_PATCH_VERSION 4)
+set(PROJECT_PATCH_VERSION 5)
 set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
 
 project("Elypso engine" VERSION ${PROJECT_VERSION})
@@ -27,6 +27,11 @@ set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 
+# Manually added source file paths
+set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/engine/core")
+set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics")
+set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
+
 # Add GLAD
 add_library(glad STATIC ${SRC_DIR}/external/glad/glad.c)
 target_include_directories(glad PUBLIC ${INCLUDE_DIR})
@@ -39,11 +44,32 @@ add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 
 # Add your source files
-file(GLOB_RECURSE SOURCE_FILES
-    ${SRC_DIR}/*.cpp
-    ${SRC_DIR}/*.c
-	${INCLUDE_DIR}/*.hpp
-    ${INCLUDE_DIR}/*.h
+set(SOURCE_FILES
+	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
+	${SRC_CORE_DIR}/admin.cpp
+	${SRC_CORE_DIR}/console.cpp
+	${SRC_CORE_DIR}/core.cpp
+	${SRC_CORE_DIR}/deltaTime.cpp
+	${SRC_CORE_DIR}/input.cpp
+	${SRC_CORE_DIR}/search.cpp
+	${SRC_CORE_DIR}/shutdown.cpp
+	${SRC_GRAPHICS_DIR}/gui.cpp
+	${SRC_GRAPHICS_DIR}/render.cpp
+	${SRC_GRAPHICS_DIR}/shader.cpp
+	${SRC_GRAPHICS_DIR}/texture.cpp
+)
+
+# Add your external files
+list(APPEND SOURCE_FILES
+	${EXTERNAL_DIR}/glad/glad.c
+	${EXTERNAL_DIR}/imgui/imgui.cpp
+	${EXTERNAL_DIR}/imgui/imgui_demo.cpp
+	${EXTERNAL_DIR}/imgui/imgui_draw.cpp
+	${EXTERNAL_DIR}/imgui/imgui_impl_glfw.cpp
+	${EXTERNAL_DIR}/imgui/imgui_impl_opengl3.cpp
+	${EXTERNAL_DIR}/imgui/imgui_tables.cpp
+	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
+	${EXTERNAL_DIR}/stb_image/stb_image.cpp
 )
 
 # Add the executable

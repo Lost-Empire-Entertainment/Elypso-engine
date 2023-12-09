@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef CORE_SEARCH_H
-#define CORE_SEARCH_H
-
 #include <string>
 
 using namespace std;
@@ -37,5 +34,3 @@ namespace Core
 		static string SearchByParent(const string& targetFolderName);
 	};
 }
-
-#endif

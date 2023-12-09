@@ -1,6 +1,3 @@
-//<Elypso engine>
-//    Copyright(C) < 2023 > < Greenlaser >
-//
 //    This program is free software : you can redistribute it and /or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
@@ -17,11 +14,14 @@
 
 #pragma once
 
-namespace Core
+namespace Graphics
 {
-	class Admin 
+	class GUI
 	{
 	public:
-		static void RunAsAdmin();
+		void Initialize();
+		void Render();
+		void Shutdown();
+		static GUI& GetInstance();
 	};
 }

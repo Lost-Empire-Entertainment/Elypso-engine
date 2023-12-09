@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef GRAPHICS_TEXTURE_H
-#define GRAPHICS_TEXTURE_H
-
 //external
 #include "glad.h"
 
@@ -46,5 +43,3 @@ namespace Graphics
 		void LoadTexture(const string& textureName, bool flipTexture = false, GLenum pixelFormat = GL_RGB);
 	};
 }
-
-#endif
