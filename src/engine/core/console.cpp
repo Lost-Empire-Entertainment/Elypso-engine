@@ -26,9 +26,12 @@
 #include <iomanip>
 #include <chrono>
 #include <fstream>
+#include <system_error>
+#include <filesystem>
 
 using namespace std;
 using namespace std::chrono;
+using namespace std::filesystem;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -59,13 +62,25 @@ namespace Core
 
     Logger::Logger(const string& logFileName)
     {
+        if (exists(logFileName))
+        {
+            remove(logFileName);
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::CLEANUP,
+                "Deleted file: engine_log.txt\n");
+        }
+
         logFile.open(logFileName, ios::out | ios::app);
         if (!logFile.is_open())
         {
+            error_code ec = make_error_code(static_cast<errc>(errno));
+
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE, 
-                Type::ERROR, 
-                "Error opening log file: " + logFileName + ".");
+                Caller::ENGINE,
+                Type::ERROR,
+                "Failed to open log file " + logFileName + "! Reason: " +
+                ec.message() + "\n\n");
         }
     }
 
@@ -101,6 +116,9 @@ namespace Core
             msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
             break;
         case Type::ERROR:
+            msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
+            break;
+        case Type::WCERROR:
             msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
             break;
         }

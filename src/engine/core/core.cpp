@@ -20,6 +20,7 @@
 
 //engine
 #include "core.h"
+#include "admin.h"
 #include "console.h"
 #include "input.h"
 #include "render.h"
@@ -38,6 +39,8 @@ namespace Core
 	{
 		cout << "Copyright(C) < 2023 > < Greenlaser >\n";
 		cout << "Initializing " + name + " " + version + "...\n\n";
+
+		Admin::RunAsAdmin();
 
 		InputManager::InputSetup();
 

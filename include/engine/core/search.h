@@ -20,7 +20,7 @@
 #ifndef CORE_SEARCH_H
 #define CORE_SEARCH_H
 
-#include <filesystem>
+#include <string>
 
 using namespace std;
 

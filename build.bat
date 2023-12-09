@@ -9,6 +9,7 @@
 :: Reusable message types printed to console
 set "enerr=[ENGINE_ERROR]"
 set "eninf=[ENGINE_INFO]"
+set "encln=[ENGINE_CLEANUP]"
 set "cminf=[CMAKE_INFO]"
 set "cmerr=[CMAKE_ERROR]"
 set "cmsuc=[CMAKE_SUCCESS]"
@@ -44,7 +45,7 @@ if "%1" == "cmake_config" (
 
 	:: Clean the build directory before configuration
 	if exist "build" (
-		echo %eninf% Deleted folder: build
+		echo %encln% Deleted folder: build
 		rd /s /q build
 	)
 	mkdir build
@@ -99,7 +100,7 @@ if "%1" == "install" (
 	:: If install folder exists then delete it to always ensure a fresh installer is created
 	if exist install (
 		rd /s /q install
-		echo %eninf% Deleted folder: install
+		echo %encln% Deleted folder: install
 	)
 
 	mkdir install
@@ -120,9 +121,9 @@ if "%1" == "install" (
 			:: Move installed exe to install folder and delete cpack packages folder
 			cd ../install
 			move "%~dp0\install\_CPack_Packages\win64\NSIS\%ifol%\bin\%exe%" "%~dp0\install"
-			echo %eninf% Moved file: %exe% to install
+			echo %encln% Moved file: %exe% to install
 			rd /s /q "_CPack_Packages"
-			echo %eninf% Deleted folder: install/_CPack_Packages
+			echo %encln% Deleted folder: install/_CPack_Packages
 		) else (
 			echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/cpack_log.txt for more details.
 		)
