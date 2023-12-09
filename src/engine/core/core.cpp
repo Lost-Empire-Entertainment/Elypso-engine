@@ -36,8 +36,11 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
-	void InitializeEngine()
+	void Engine::InitializeEngine()
 	{
+		name = "Elypso engine";
+		version = "0.0.4 Prototype";
+
 		cout << "Copyright(C) < 2023 > < Greenlaser >\n";
 		cout << "Initializing " + name + " " + version + "...\n\n";
 
@@ -48,7 +51,7 @@ namespace Core
 		Render::RenderSetup();
 	}
 
-	void RunEngine()
+	void Engine::RunEngine()
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,

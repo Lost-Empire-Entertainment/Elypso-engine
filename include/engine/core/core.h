@@ -26,11 +26,16 @@ using namespace std;
 
 namespace Core
 {
-	static const string name = "Elypso engine";
-	static const string version = "0.0.4 Prototype";
+	class Engine
+	{
+	public:
+		static inline string name;
+		static inline string version;
 
-	void InitializeEngine();
-	void RunEngine();
+		static void InitializeEngine();
+		static void RunEngine();
+	};
+
 }
 
 #endif
