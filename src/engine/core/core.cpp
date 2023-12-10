@@ -55,8 +55,6 @@ namespace Core
 		{
 			TimeManager::UpdateDeltaTime();
 
-			TimeManager::CalculateFPS(Render::useMonitorRefreshRate);
-
 			Render::WindowLoop();
 		}
 

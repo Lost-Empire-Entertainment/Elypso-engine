@@ -45,15 +45,13 @@ namespace Graphics
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 		static inline bool enableFullscreen;
-		static inline bool useMonitorRefreshRate;
+		static inline bool useMonitorRefreshRate = true;
 
 		static inline GLFWwindow* window;
 		static inline float fov;
 		static inline float aspectRatio;
 		static inline int windowedWidth;
 		static inline int windowedHeight;
-
-		//static inline high_resolution_clock::time_point lastTime = high_resolution_clock::now();
 
 		static Core::Input camera;
 

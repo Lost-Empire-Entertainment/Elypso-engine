@@ -62,8 +62,6 @@ namespace Graphics
 
 		TimeManager::targetDT = 1.0f / Graphics::GUI::GetScreenRefreshRate();
 		TimeManager::lastTime = high_resolution_clock::now();
-
-		//Render::ToggleFullscreenMode(window, false);
 	}
 
 	void Render::GLFWSetup()
@@ -111,7 +109,7 @@ namespace Graphics
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
 		glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
 		glfwSetWindowSizeLimits(window, 800, 600, 7680, 4320);
-		glfwSwapInterval(0);
+		glfwSwapInterval(1);
 
 		//tell glfw to capture mouse
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -309,7 +307,7 @@ namespace Graphics
 		mat4 projection = perspective(
 			radians(fov),
 			aspectRatio,
-			0.1f,
+			0.001f,
 			100.0f);
 		shader->Use();
 		shader->SetMat4("projection", projection);

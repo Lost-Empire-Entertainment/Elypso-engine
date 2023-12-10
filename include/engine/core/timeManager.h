@@ -35,16 +35,8 @@ namespace Core
 		static inline high_resolution_clock::time_point lastTime;
 
 		static void UpdateDeltaTime();
-		static void CalculateFPS(bool useMonitorRefreshRate);
 	private:
-		static inline high_resolution_clock::time_point startTime;
-		static inline high_resolution_clock::time_point endTime;
-		static inline high_resolution_clock::time_point startFrameTime;
-		static inline high_resolution_clock::time_point endFrameTime;
-		static inline high_resolution_clock::time_point lastUpdate;
-
 		static inline float lastFrame;
-
-		static void CalculateDisplayedFPS();
+		static inline high_resolution_clock::time_point lastUpdate;
 	};
 }

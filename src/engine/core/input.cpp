@@ -96,7 +96,7 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
-                "Set fullscreen state to " + to_string(Render::enableFullscreen) + ".\n");
+                "User set fullscreen state to " + to_string(Render::enableFullscreen) + ".\n");
 
             wasFullscreenKeyPressed = true;
         }
@@ -110,11 +110,12 @@ namespace Core
             && !wasVSYNCKeyPressed)
         {
             Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
+            glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
 
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
-                "Set vsync state to " + to_string(Render::useMonitorRefreshRate) + 
+                "User set vsync state to " + to_string(Render::useMonitorRefreshRate) + 
                 ". Monitor refresh rate: " + to_string(GUI::GetScreenRefreshRate()) + ".\n");
 
             wasVSYNCKeyPressed = true;
@@ -186,13 +187,11 @@ namespace Core
         //camera up
         if (glfwGetKey(window, static_cast<int>(key[Key::Space])) == GLFW_PRESS)
         {
-            //local Y
             Render::cameraPos += Render::cameraUp * Render::cameraSpeed * currentSpeed;
         }
         //camera down
         if (glfwGetKey(window, static_cast<int>(key[Key::Left_control])) == GLFW_PRESS)
         {
-            //local Y
             Render::cameraPos -= Render::cameraUp * Render::cameraSpeed * currentSpeed;
         }
     }
@@ -217,15 +216,15 @@ namespace Core
         yaw += xOffset;
         pitch += yOffset;
 
-        if (yaw > 359.99f || yaw < -359.99f)
+        if (yaw >= 360.00f || yaw <= -360.00f)
         {
             yaw = 0.0f;
         }
 
-        if (pitch > 89.0f)
-            pitch = 89.0f;
-        if (pitch < -89.0f)
-            pitch = -89.0f;
+        if (pitch > 90.0f)
+            pitch = 90.0f;
+        if (pitch < -90.0f)
+            pitch = -90.0f;
 
         vec3 front{};
         front.x = cos(radians(yaw)) * cos(radians(pitch));

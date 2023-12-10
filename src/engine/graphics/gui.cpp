@@ -120,7 +120,7 @@ namespace Graphics
 			Render::camera.GetCameraRotation().x,
 			Render::camera.GetCameraRotation().y,
 			Render::camera.GetCameraRotation().z);
-		ImGui::Text("FOV: %.2f", Graphics::Render::fov);
+		ImGui::Text("FOV: %.0f", Graphics::Render::fov);
 
 		ImGui::Text("");
 		ImGui::Text("===============");

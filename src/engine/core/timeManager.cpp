@@ -31,74 +31,46 @@ namespace Core
 {
 	void TimeManager::UpdateDeltaTime()
 	{
-		float targetFrameTime = 1.0f / 60;
-
+		//get the current time in seconds
 		float currentFrame = static_cast<float>(glfwGetTime());
+
+		//calculate the frame duration since the last frame
 		deltaTime = currentFrame - lastFrame;
 
-		//cap delta time to a maximum value (e.g., 0.1 seconds) to prevent large time steps
-		deltaTime = std::min(deltaTime, 0.1f);
+		//cap delta time to a maximum value (e.g., 1.0 / 60 seconds) to prevent large time steps
+		deltaTime = std::min(deltaTime, 1.0f / 60);
 
+		//update last frame time to keep track of delta time
+		lastFrame = currentFrame;
+
+		//calculate elapsed time and FPS
+		auto now = high_resolution_clock::now();
+		float elapsed_seconds = duration<float>(now - lastTime).count();
+
+		static high_resolution_clock::time_point previousFrameTime = high_resolution_clock::now();
+		high_resolution_clock::time_point currentFrameTime = high_resolution_clock::now();
+
+		auto frameDuration = duration_cast<microseconds>(currentFrameTime - previousFrameTime);
+		fps = 1.0 / (frameDuration.count() / 1e6);
+		previousFrameTime = currentFrameTime;
+		lastTime = high_resolution_clock::now();
+
+		//print delta time to the console if enabled
 		if (Input::printDeltaTimeToConsole)
 		{
 			cout << "Delta Time: " + to_string(deltaTime) << "\n";
 		}
 
-		//update last frame time to keep track of delta time
-		lastFrame = currentFrame;
-	}
-
-	void TimeManager::CalculateFPS(bool useMonitorRefreshRate)
-	{
-		//get the current time point
-		auto now = high_resolution_clock::now();
-
-		//calculate the elapsed time in seconds
-		float elapsed_seconds = duration<float>(now - lastTime).count();
-
-		static high_resolution_clock::time_point previousFrameTime = high_resolution_clock::now();
-		high_resolution_clock::time_point currentFrameTime = high_resolution_clock::now();
-		auto frameDuration = duration_cast<microseconds>(currentFrameTime - previousFrameTime);
-		fps = 1.0 / (frameDuration.count() / 1e6);
-
-		if (useMonitorRefreshRate)
-		{
-			//check if the elapsed time is less than the target frame time
-			if (elapsed_seconds < targetDT)
-			{
-				//sleep for the remaining time to avoid busy-waiting
-				float sleepDuration = targetDT - elapsed_seconds;
-				if (sleepDuration > 0.0f)
-				{
-					this_thread::sleep_for(duration<float>(sleepDuration));
-				}
-			}
-			else
-			{
-				if (Input::printFPSToConsole)
-				{
-					cout << "targetDT is out of range! " << targetDT << "\n";
-				}
-			}
-		}
+		//print FPS to the console if enabled
 		if (Input::printFPSToConsole)
 		{
-			cout << "Capped FPS: " << fps
+			cout << "FPS: " << fps
 				<< ", Elapsed time: " << elapsed_seconds
 				<< ", TargetDT: " << TimeManager::targetDT
 				<< ", Frame duration: " << frameDuration << "\n";
 		}
 
-		previousFrameTime = currentFrameTime;
-
-		//update lastTime for the next iteration
-		lastTime = high_resolution_clock::now();
-
-		TimeManager::CalculateDisplayedFPS();
-	}
-
-	void TimeManager::CalculateDisplayedFPS()
-	{
+		//calculate displayed FPS
 		high_resolution_clock::time_point currentTime = high_resolution_clock::now();
 		auto elapsedSeconds = duration_cast<duration<double>>(currentTime - lastUpdate).count();
 		if (elapsedSeconds >= 0.15f)
