@@ -58,6 +58,9 @@ namespace Graphics
 
 		GUI::GetInstance().Initialize();
 
+		//toggle vsync
+		glfwSwapInterval(0);
+
 		Render::ContentSetup();
 	}
 

@@ -54,6 +54,8 @@ namespace Core
         static void ProcessInput(GLFWwindow* window);
         vec3 GetFront() const { return cameraFront; }
         vec3 GetRight() const { return normalize(cross(cameraFront, cameraUp)); }
+
+        vec3 GetCameraRotation() const { return vec3(yaw, pitch, 0); }
     private:
         GLFWwindow* window;
         float yaw;

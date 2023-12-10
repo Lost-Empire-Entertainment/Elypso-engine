@@ -18,8 +18,11 @@
 #pragma once
 
 #include <string>
+#include <iostream>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 namespace Core
 {
@@ -28,8 +31,20 @@ namespace Core
 	public:
 		static inline string name;
 		static inline string version;
+		static inline double fps;
+		static inline double displayedFPS;
+		static inline double targetUpdateInterval;
 
 		static void InitializeEngine();
 		static void RunEngine();
+	private:
+		static inline high_resolution_clock::time_point startTime;
+		static inline high_resolution_clock::time_point endTime;
+		static inline high_resolution_clock::time_point startFrameTime;
+		static inline high_resolution_clock::time_point endFrameTime;
+		static inline high_resolution_clock::time_point lastUpdate;
+
+		static void CalculateFPS();
+		static void CalculateDisplayedFPS();
 	};
 }

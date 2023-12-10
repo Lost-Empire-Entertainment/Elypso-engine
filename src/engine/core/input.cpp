@@ -145,6 +145,11 @@ namespace Core
         yaw += xOffset;
         pitch += yOffset;
 
+        if (yaw > 359.99f || yaw < -359.99f)
+        {
+            yaw = 0.0f;
+        }
+
         if (pitch > 89.0f)
             pitch = 89.0f;
         if (pitch < -89.0f)

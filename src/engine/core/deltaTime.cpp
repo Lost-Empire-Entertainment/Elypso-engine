@@ -17,9 +17,14 @@
 
 //external
 #include "glfw3.h"
+#include "console.h"
 
 //engine
 #include "deltaTime.h"
+
+using namespace Core;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
@@ -27,6 +32,14 @@ namespace Core
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
+
+		/*
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"Delta Time: " + to_string(deltaTime) + "\n");
+		*/
+
 		lastFrame = currentFrame;
 	}
 }

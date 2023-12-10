@@ -21,6 +21,7 @@
 #include "core.h"
 #include "gui.h"
 #include "render.h"
+#include "input.h"
 
 #include <string>
 
@@ -64,7 +65,7 @@ namespace Graphics
 			ImGuiWindowFlags_NoSavedSettings;
 
 		//window initial size
-		ImVec2 initialSize(300, 300);
+		ImVec2 initialSize(400, 120);
 
 		//start a new window with specified flags and size
 		ImGui::SetNextWindowSize(initialSize, ImGuiCond_Once);
@@ -75,9 +76,20 @@ namespace Graphics
 		//set font size
 		ImGui::SetWindowFontScale(1.5);
 
-		ImGui::Text("Version: %s", Engine::version.c_str());
-		ImGui::Text("bruh bro");
-		ImGui::Text("bruh bro");
+		ImGui::Text("Version: %s", Engine::version);
+		ImGui::Text("FPS: %.2f", Core::Engine::displayedFPS);
+
+		ImGui::Text(
+			"Position: %.2f, %.2f, %.2f", 
+			Render::cameraPos.x,
+			Render::cameraPos.y,
+			Render::cameraPos.z);
+		ImGui::Text(
+			"Angle: %.2f, %.2f, %.2f", 
+			Render::camera.GetCameraRotation().x,
+			Render::camera.GetCameraRotation().y,
+			Render::camera.GetCameraRotation().z);
+
 
 		ImGui::End();
 	}
