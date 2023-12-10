@@ -21,6 +21,7 @@
 //engine
 #include "timeManager.h"
 #include "console.h"
+#include "input.h"
 
 #include <algorithm>
 #include <thread>
@@ -34,12 +35,10 @@ namespace Core
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 
-		/*
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"Delta Time: " + to_string(deltaTime) + "\n");
-		*/
+		if (Input::printFPSToConsole)
+		{
+			cout << "Delta Time : " + to_string(deltaTime) << "\n";
+		}
 
 		lastFrame = currentFrame;
 	}
@@ -54,6 +53,12 @@ namespace Core
 			auto frameDuration = duration_cast<microseconds>(currentFrameTime - previousFrameTime);
 			fps = 1.0 / (frameDuration.count() / 1e6);
 
+			if (Input::printFPSToConsole)
+			{
+				cout << "Uncapped FPS: " << fps
+					 << ", Frame duration: " << frameDuration << "\n";
+			}
+
 			previousFrameTime = currentFrameTime;
 		}
 		else
@@ -64,12 +69,37 @@ namespace Core
 			//calculate the elapsed time in seconds
 			float elapsed_seconds = duration<float>(now - lastTime).count();
 
+			static high_resolution_clock::time_point previousFrameTime = high_resolution_clock::now();
+			high_resolution_clock::time_point currentFrameTime = high_resolution_clock::now();
+			auto frameDuration = duration_cast<microseconds>(currentFrameTime - previousFrameTime);
+			fps = 1.0 / (frameDuration.count() / 1e6);
+
 			//check if the elapsed time is less than the target frame time
 			if (elapsed_seconds < targetDT)
 			{
 				//sleep for the remaining time to avoid busy-waiting
-				this_thread::sleep_for(duration<float>(targetDT - elapsed_seconds));
+				float sleepDuration = targetDT - elapsed_seconds;
+				if (sleepDuration > 0.0f) 
+				{
+					this_thread::sleep_for(duration<float>(sleepDuration));
+				}
 			}
+			else
+			{
+				if (Input::printFPSToConsole)
+				{
+					cout << "targetDT is out of range! " << targetDT << "\n";
+				}
+			}
+			if (Input::printFPSToConsole)
+			{
+				cout << "Capped FPS: " << fps
+					 << ", Elapsed time: " << elapsed_seconds
+					 << ", TargetDT: " << TimeManager::targetDT
+					 << ", Frame duration: " << frameDuration << "\n";
+			}
+
+			previousFrameTime = currentFrameTime;
 
 			//update lastTime for the next iteration
 			lastTime = high_resolution_clock::now();

@@ -97,7 +97,7 @@ namespace Graphics
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
 
 		//window initial size
-		ImVec2 initialSize(350, 450);
+		ImVec2 initialSize(350, 700);
 
 		//start a new window with specified flags and size
 		ImGui::SetNextWindowSize(initialSize, ImGuiCond_Once);
@@ -123,6 +123,9 @@ namespace Graphics
 		ImGui::Text("FOV: %.2f", Graphics::Render::fov);
 
 		ImGui::Text("");
+		ImGui::Text("===============");
+		ImGui::Text("General keys");
+		ImGui::Text("");
 
 		ImGui::Text("Forwards: %s", string(magic_enum::enum_name(Input::Key::W)));
 		ImGui::Text("Backwards: %s", string(magic_enum::enum_name(Input::Key::S)));
@@ -133,14 +136,28 @@ namespace Graphics
 		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::Key::Left_shift)));
 		ImGui::Text("Change FOV: scrollwheel");
 		string fullScreenText = (Render::enableFullscreen) ?
-			"(enabled)" :
-			"(disabled)";
-		ImGui::Text("Toggle fullscreen: %s, %s", string(magic_enum::enum_name(Input::Key::Z)), fullScreenText);
+			"(true)" :
+			"(false)";
+		ImGui::Text("Toggle fullscreen: %s %s", string(magic_enum::enum_name(Input::Key::Z)), fullScreenText);
 		string vsyncText = (Render::useMonitorRefreshRate) ?
-			"(enabled)" :
-			"(disabled)";
-		ImGui::Text("Toggle VSync: %s, %s", string(magic_enum::enum_name(Input::Key::X)), vsyncText);
+			"(true)" :
+			"(false)";
+		ImGui::Text("Toggle VSync: %s %s", string(magic_enum::enum_name(Input::Key::X)), vsyncText);
 		ImGui::Text("Quit: %s", string(magic_enum::enum_name(Input::Key::Escape)));
+
+		ImGui::Text("");
+		ImGui::Text("===============");
+		ImGui::Text("Console debugging keys");
+		ImGui::Text("");
+
+		string fpsText = (Input::printFPSToConsole) ?
+			"(true)" :
+			"(false)";
+		ImGui::Text("Print fps: %s %s", string(magic_enum::enum_name(Input::Key::F1)), fpsText);
+		string deltaTimeText = (Input::printDeltaTimeToConsole) ?
+			"(true)" :
+			"(false)";
+		ImGui::Text("Print deltaTime: %s %s", string(magic_enum::enum_name(Input::Key::F2)), deltaTimeText);
 
 		ImGui::End();
 	}

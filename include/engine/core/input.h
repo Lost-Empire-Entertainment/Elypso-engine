@@ -43,10 +43,15 @@ namespace Core
             Left_control, //camera down
             Left_shift, //camera faster movement
             Z, //toggle fullscreen mode
-            X //toggle vsync
+            X, //toggle vsync
+            F1, //toggle console framerate debug messages
+            F2 //toggle console deltatime debug messages
         };
 
         static inline unordered_map<Key, int> key;
+
+        static inline bool printFPSToConsole;
+        static inline bool printDeltaTimeToConsole;
 
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;
@@ -73,6 +78,8 @@ namespace Core
 
         static inline bool wasFullscreenKeyPressed;
         static inline bool wasVSYNCKeyPressed;
+        static inline bool wasFPSDebugKeyPressed;
+        static inline bool wasDeltaTimeDebugKeyPressed;
 
         void ProcessMouseMovement(double xpos, double ypos);
         static void ProcessKeyboardInput(GLFWwindow* window);

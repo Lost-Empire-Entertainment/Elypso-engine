@@ -48,6 +48,8 @@ namespace Core
         key[Key::Left_shift] = GLFW_KEY_LEFT_SHIFT;
         key[Key::Z] = GLFW_KEY_Z;
         key[Key::X] = GLFW_KEY_X;
+        key[Key::F1] = GLFW_KEY_F1;
+        key[Key::F2] = GLFW_KEY_F2;
     }
 
     Input::Input(GLFWwindow* window, float sensitivity) : 
@@ -106,6 +108,31 @@ namespace Core
         else if (vsyncKeyState == GLFW_RELEASE)
         {
             wasVSYNCKeyPressed = false;
+        }
+
+        //toggle console framerate debug messages
+        int fpsKeyState = glfwGetKey(window, static_cast<int>(key[Key::F1]));
+        if (fpsKeyState == GLFW_PRESS
+            && !wasFPSDebugKeyPressed)
+        {
+            Input::printFPSToConsole = !Input::printFPSToConsole;
+            wasFPSDebugKeyPressed = true;
+        }
+        else if (fpsKeyState == GLFW_RELEASE)
+        {
+            wasFPSDebugKeyPressed = false;
+        }
+        //toggle console deltaTime debug messages
+        int deltaTimeKeyState = glfwGetKey(window, static_cast<int>(key[Key::F2]));
+        if (deltaTimeKeyState == GLFW_PRESS
+            && !wasDeltaTimeDebugKeyPressed)
+        {
+            Input::printDeltaTimeToConsole = !Input::printDeltaTimeToConsole;
+            wasDeltaTimeDebugKeyPressed = true;
+        }
+        else if (deltaTimeKeyState == GLFW_RELEASE)
+        {
+            wasDeltaTimeDebugKeyPressed = false;
         }
 
         //escape
