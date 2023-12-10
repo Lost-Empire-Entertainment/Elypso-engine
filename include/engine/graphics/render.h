@@ -46,6 +46,7 @@ namespace Graphics
 
 		static inline GLFWwindow* window;
 		static inline float fov;
+		static inline float aspectRatio;
 
 		static Core::Input camera;
 

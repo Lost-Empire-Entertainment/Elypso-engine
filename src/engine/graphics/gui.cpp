@@ -16,6 +16,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "magic_enum.hpp"
 
 //engine
 #include "core.h"
@@ -42,19 +43,33 @@ namespace Graphics
 		ImGui_ImplOpenGL3_Init("#version 330");
 	}
 
+	int GUI::GetScreenWidth()
+	{
+		int width, height;
+		glfwGetFramebufferSize(Render::window, &width, &height);
+		return width;
+	}
+
+	int GUI::GetScreenHeight()
+	{
+		int width, height;
+		glfwGetFramebufferSize(Render::window, &width, &height);
+		return height;
+	}
+
 	void GUI::Render()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		GUI::RenderContent();
+		GUI::RenderDebugMenu();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
-	void GUI::RenderContent() 
+	void GUI::RenderDebugMenu()
 	{
 		//docked and not movable
 		ImGuiWindowFlags windowFlags =
@@ -64,21 +79,23 @@ namespace Graphics
 			ImGuiWindowFlags_NoCollapse |
 			ImGuiWindowFlags_NoSavedSettings;
 
+		ImVec4 bgColor = ImVec4(0.0f, 0.0f, 0.0f, 0.5f);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
+
 		//window initial size
-		ImVec2 initialSize(400, 120);
+		ImVec2 initialSize(360, 360);
 
 		//start a new window with specified flags and size
 		ImGui::SetNextWindowSize(initialSize, ImGuiCond_Once);
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
 
-		ImGui::Begin("Info", nullptr, windowFlags);
+		ImGui::Begin("Debug menu", nullptr, windowFlags);
 
 		//set font size
 		ImGui::SetWindowFontScale(1.5);
 
 		ImGui::Text("Version: %s", Engine::version);
 		ImGui::Text("FPS: %.2f", Core::Engine::displayedFPS);
-
 		ImGui::Text(
 			"Position: %.2f, %.2f, %.2f", 
 			Render::cameraPos.x,
@@ -89,7 +106,19 @@ namespace Graphics
 			Render::camera.GetCameraRotation().x,
 			Render::camera.GetCameraRotation().y,
 			Render::camera.GetCameraRotation().z);
+		ImGui::Text("FOV: %.2f", Graphics::Render::fov);
 
+		ImGui::Text("");
+
+		ImGui::Text("Forwards: %s", string(magic_enum::enum_name(Input::Key::W)));
+		ImGui::Text("Backwards: %s", string(magic_enum::enum_name(Input::Key::S)));
+		ImGui::Text("Left: %s", string(magic_enum::enum_name(Input::Key::A)));
+		ImGui::Text("Right: %s", string(magic_enum::enum_name(Input::Key::D)));
+		ImGui::Text("Up: %s", string(magic_enum::enum_name(Input::Key::Space)));
+		ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::Key::Left_control)));
+		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::Key::Left_shift)));
+		ImGui::Text("Change FOV: scrollwheel");
+		ImGui::Text("Quit: %s", string(magic_enum::enum_name(Input::Key::Escape)));
 
 		ImGui::End();
 	}

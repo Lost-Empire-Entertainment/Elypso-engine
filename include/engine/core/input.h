@@ -56,6 +56,7 @@ namespace Core
         vec3 GetRight() const { return normalize(cross(cameraFront, cameraUp)); }
 
         vec3 GetCameraRotation() const { return vec3(yaw, pitch, 0); }
+        static void ProcessScrollWheel(GLFWwindow* window, double xoffset, double yoffset);
     private:
         GLFWwindow* window;
         float yaw;
@@ -68,6 +69,7 @@ namespace Core
         vec3 cameraPos;
         vec3 cameraFront;
         vec3 cameraUp;
+
 
         void ProcessMouseMovement(double xpos, double ypos);
         static void ProcessKeyboardInput(GLFWwindow* window);

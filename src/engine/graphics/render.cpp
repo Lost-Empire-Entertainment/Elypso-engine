@@ -110,6 +110,7 @@ namespace Graphics
 
 		//tell glfw to capture mouse
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetScrollCallback(window, Input::ProcessScrollWheel);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_SETUP,
@@ -240,21 +241,10 @@ namespace Graphics
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
 		//Calculate the new aspect ratio
-		float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+		aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
 		//Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
-
-		//Calculate the new projection matrix
-		mat4 projection = perspective(
-			radians(fov),
-			aspectRatio,
-			0.1f,
-			100.0f);
-
-		//Pass the new projection matrix to the shader
-		shader->Use();
-		shader->SetMat4("projection", projection);
 	}
 
 	void Render::Shutdown()
@@ -285,6 +275,15 @@ namespace Graphics
 		Input::ProcessInput(Render::window);
 		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		shader->SetMat4("view", view);
+
+		//Calculate the new projection matrix
+		mat4 projection = perspective(
+			radians(fov),
+			aspectRatio,
+			0.1f,
+			100.0f);
+		shader->Use();
+		shader->SetMat4("projection", projection);
 
 		//render boxes
 		glBindVertexArray(VAO);

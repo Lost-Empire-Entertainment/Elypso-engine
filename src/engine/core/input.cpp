@@ -24,6 +24,10 @@
 #include "console.h"
 #include "deltaTime.h"
 
+#include <iostream>
+#include <string>
+
+using namespace std;
 using namespace glm;
 using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;
@@ -160,6 +164,14 @@ namespace Core
         front.y = sin(radians(pitch));
         front.z = sin(radians(yaw)) * cos(radians(pitch));
         cameraFront = normalize(front);
+    }
+
+    void Input::ProcessScrollWheel(GLFWwindow* window, double xoffset, double yoffset) 
+    {
+        Render::fov += yoffset * 3;
+
+        if (Render::fov > 110) Render::fov = 110;
+        if (Render::fov < 50) Render::fov = 50;
     }
 
     mat4 Input::GetViewMatrix() const

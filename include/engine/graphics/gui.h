@@ -20,9 +20,13 @@ namespace Graphics
 	{
 	public:
 		void Initialize();
+		int GetScreenWidth();
+		int GetScreenHeight();
 		void Render();
-		void RenderContent();
 		void Shutdown();
 		static GUI& GetInstance();
+
+		//rendered tabs
+		void RenderDebugMenu();
 	};
 }
