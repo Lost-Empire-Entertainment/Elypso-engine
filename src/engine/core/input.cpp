@@ -23,6 +23,7 @@
 #include "render.h"
 #include "console.h"
 #include "timeManager.h"
+#include "gui.h"
 
 #include <iostream>
 #include <string>
@@ -91,6 +92,12 @@ namespace Core
             && !wasFullscreenKeyPressed)
         {
             Render::ToggleFullscreenMode(Render::window, Render::enableFullscreen);
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set fullscreen state to " + to_string(Render::enableFullscreen) + ".\n");
+
             wasFullscreenKeyPressed = true;
         }
         else if (fullscreenKeyState == GLFW_RELEASE)
@@ -103,6 +110,13 @@ namespace Core
             && !wasVSYNCKeyPressed)
         {
             Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set vsync state to " + to_string(Render::useMonitorRefreshRate) + 
+                ". Monitor refresh rate: " + to_string(GUI::GetScreenRefreshRate()) + ".\n");
+
             wasVSYNCKeyPressed = true;
         }
         else if (vsyncKeyState == GLFW_RELEASE)

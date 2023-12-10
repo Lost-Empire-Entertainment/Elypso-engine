@@ -258,15 +258,7 @@ namespace Graphics
 		if (toggleFullscreen)
 		{
 			const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-			if (useMonitorRefreshRate)
-			{
-				glfwSetWindowMonitor(window, nullptr, 100, 100, windowedWidth, windowedHeight, mode->refreshRate);
-			}
-			else
-			{
-				glfwSetWindowMonitor(window, nullptr, 100, 100, windowedWidth, windowedHeight, GLFW_DONT_CARE);
-			}
-
+			glfwSetWindowMonitor(window, nullptr, 100, 100, windowedWidth, windowedHeight, GLFW_DONT_CARE);
 			UpdateAfterRescale(window, windowedWidth, windowedHeight);
 
 			enableFullscreen = false;
@@ -277,15 +269,7 @@ namespace Graphics
 			glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
 			GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
 			const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
-			if (useMonitorRefreshRate) 
-			{
-				glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-			}
-			else 
-			{
-				glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
-			}
-
+			glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
 			UpdateAfterRescale(window, mode->width, mode->height);
 
 			enableFullscreen = true;
