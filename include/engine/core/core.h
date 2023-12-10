@@ -18,35 +18,18 @@
 #pragma once
 
 #include <string>
-#include <iostream>
-#include <chrono>
 
 using namespace std;
-using namespace std::chrono;
 
 namespace Core
 {
 	class Engine
 	{
 	public:
-		static inline string name;
-		static inline string version;
-		static inline double fps;
-		static inline double displayedFPS;
+		static inline string name = "Elypso engine";
+		static inline string version = "0.0.6 Prototype";
 
 		static void InitializeEngine();
 		static void RunEngine();
-	private:
-		static inline high_resolution_clock::time_point startTime;
-		static inline high_resolution_clock::time_point endTime;
-		static inline high_resolution_clock::time_point startFrameTime;
-		static inline high_resolution_clock::time_point endFrameTime;
-		static inline high_resolution_clock::time_point lastUpdate;
-
-		static inline float targetDT = 1.0f / Core::Engine::fps;
-		static inline high_resolution_clock::time_point lastTime = high_resolution_clock::now();
-
-		static void CalculateFPS(bool useMonitorRefreshRate);
-		static void CalculateDisplayedFPS();
 	};
 }

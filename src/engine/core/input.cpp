@@ -22,7 +22,7 @@
 #include "input.h"
 #include "render.h"
 #include "console.h"
-#include "deltaTime.h"
+#include "timeManager.h"
 
 #include <iostream>
 #include <string>
@@ -73,7 +73,7 @@ namespace Core
 				Render::camera.ProcessMouseMovement(xpos, ypos);
 			});
 		Render::camera.ProcessMouseMovement(mouseX, mouseY);
-		Render::cameraSpeed = static_cast<float>(2.5f * DeltaTime::deltaTime);
+		Render::cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
 	}
 
     void Input::ProcessKeyboardInput(GLFWwindow* window)

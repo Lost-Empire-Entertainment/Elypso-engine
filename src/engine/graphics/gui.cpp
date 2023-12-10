@@ -20,6 +20,7 @@
 
 //engine
 #include "core.h"
+#include "timeManager.h"
 #include "gui.h"
 #include "render.h"
 #include "input.h"
@@ -95,7 +96,7 @@ namespace Graphics
 		ImGui::SetWindowFontScale(1.5);
 
 		ImGui::Text("Version: %s", Engine::version);
-		ImGui::Text("FPS: %.2f", Core::Engine::displayedFPS);
+		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 		ImGui::Text(
 			"Position: %.2f, %.2f, %.2f", 
 			Render::cameraPos.x,
