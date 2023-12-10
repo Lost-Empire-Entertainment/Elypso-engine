@@ -71,6 +71,8 @@ namespace Core
         vec3 cameraFront;
         vec3 cameraUp;
 
+        static inline bool wasFullscreenKeyPressed;
+        static inline bool wasVSYNCKeyPressed;
 
         void ProcessMouseMovement(double xpos, double ypos);
         static void ProcessKeyboardInput(GLFWwindow* window);

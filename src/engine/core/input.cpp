@@ -84,14 +84,28 @@ namespace Core
         else                    currentSpeed = 1.0f;
 
         //toggle fullscreen
-        if (glfwGetKey(window, static_cast<int>(key[Key::Z])) == GLFW_PRESS)
+        int fullscreenKeyState = glfwGetKey(window, static_cast<int>(key[Key::Z]));
+        if (fullscreenKeyState == GLFW_PRESS 
+            && !wasFullscreenKeyPressed)
         {
             Render::ToggleFullscreenMode(Render::window, Render::enableFullscreen);
+            wasFullscreenKeyPressed = true;
+        }
+        else if (fullscreenKeyState == GLFW_RELEASE)
+        {
+            wasFullscreenKeyPressed = false;
         }
         //toggle vsync
-        if (glfwGetKey(window, static_cast<int>(key[Key::X])) == GLFW_PRESS)
+        int vsyncKeyState = glfwGetKey(window, static_cast<int>(key[Key::X]));
+        if (vsyncKeyState == GLFW_PRESS 
+            && !wasVSYNCKeyPressed)
         {
             Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
+            wasVSYNCKeyPressed = true;
+        }
+        else if (vsyncKeyState == GLFW_RELEASE)
+        {
+            wasVSYNCKeyPressed = false;
         }
 
         //escape

@@ -31,6 +31,8 @@ namespace Core
 		static inline double fps;
 		static inline double displayedFPS;
 		static inline float deltaTime;
+		static inline float targetDT;
+		static inline high_resolution_clock::time_point lastTime;
 
 		static void UpdateDeltaTime();
 		static void CalculateFPS(bool useMonitorRefreshRate);
@@ -41,8 +43,6 @@ namespace Core
 		static inline high_resolution_clock::time_point endFrameTime;
 		static inline high_resolution_clock::time_point lastUpdate;
 
-		static inline float targetDT = 1.0f / fps;
-		static inline high_resolution_clock::time_point lastTime = high_resolution_clock::now();
 		static inline float lastFrame;
 
 		static void CalculateDisplayedFPS();

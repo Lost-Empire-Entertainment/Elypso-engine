@@ -32,6 +32,7 @@
 #include "shutdown.h"
 #include "search.h"
 #include "gui.h"
+#include "timeManager.h"
 
 #include <string>
 #include <iostream>
@@ -58,6 +59,9 @@ namespace Graphics
 		GUI::GetInstance().Initialize();
 
 		Render::ContentSetup();
+
+		TimeManager::targetDT = 1.0f / Graphics::GUI::GetScreenRefreshRate();
+		TimeManager::lastTime = high_resolution_clock::now();
 
 		//Render::ToggleFullscreenMode(window, false);
 	}
@@ -248,10 +252,10 @@ namespace Graphics
 		glViewport(0, 0, width, height);
 	}
 
-	void Render::ToggleFullscreenMode(GLFWwindow* window, bool enableFullscreen)
+	void Render::ToggleFullscreenMode(GLFWwindow* window, bool toggleFullscreen)
 	{
 		//switch to windowed
-		if (enableFullscreen)
+		if (toggleFullscreen)
 		{
 			const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 			if (useMonitorRefreshRate)
@@ -263,7 +267,7 @@ namespace Graphics
 				glfwSetWindowMonitor(window, nullptr, 100, 100, windowedWidth, windowedHeight, GLFW_DONT_CARE);
 			}
 
-			UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
+			UpdateAfterRescale(window, windowedWidth, windowedHeight);
 
 			enableFullscreen = false;
 		}
@@ -282,7 +286,7 @@ namespace Graphics
 				glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
 			}
 
-			UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
+			UpdateAfterRescale(window, mode->width, mode->height);
 
 			enableFullscreen = true;
 		}

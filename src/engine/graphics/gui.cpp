@@ -27,6 +27,7 @@
 
 #include <string>
 
+using namespace std;
 using namespace Core;
 
 namespace Graphics
@@ -56,6 +57,15 @@ namespace Graphics
 		int width, height;
 		glfwGetFramebufferSize(Render::window, &width, &height);
 		return height;
+	}
+
+	float GUI::GetScreenRefreshRate()
+	{
+		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+
+		const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+
+		return static_cast<float>(videoMode->refreshRate);
 	}
 
 	void GUI::Render()
@@ -119,8 +129,14 @@ namespace Graphics
 		ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::Key::Left_control)));
 		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::Key::Left_shift)));
 		ImGui::Text("Change FOV: scrollwheel");
-		ImGui::Text("Toggle fullscreen: %s", string(magic_enum::enum_name(Input::Key::Z)));
-		ImGui::Text("Toggle VSync: %s", string(magic_enum::enum_name(Input::Key::X)));
+		string fullScreenText = (Render::enableFullscreen) ?
+			"(enabled)" :
+			"(disabled)";
+		ImGui::Text("Toggle fullscreen: %s, %s", string(magic_enum::enum_name(Input::Key::Z)), fullScreenText);
+		string vsyncText = (Render::useMonitorRefreshRate) ?
+			"(enabled)" :
+			"(disabled)";
+		ImGui::Text("Toggle VSync: %s, %s", string(magic_enum::enum_name(Input::Key::X)), vsyncText);
 		ImGui::Text("Quit: %s", string(magic_enum::enum_name(Input::Key::Escape)));
 
 		ImGui::End();
