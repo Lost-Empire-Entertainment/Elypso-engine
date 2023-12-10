@@ -34,8 +34,8 @@ namespace Graphics
 	class Render
 	{
 	public:
-		static inline const unsigned int SCR_WIDTH = 1200;
-		static inline const unsigned int SCR_HEIGHT = 1200;
+		static inline const unsigned int SCR_WIDTH = 1280;
+		static inline const unsigned int SCR_HEIGHT = 720;
 
 		static inline unsigned int VBO, VAO, EBO;
 
@@ -44,14 +44,22 @@ namespace Graphics
 		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
+		static inline bool enableFullscreen;
+		static inline bool useMonitorRefreshRate;
+
 		static inline GLFWwindow* window;
 		static inline float fov;
 		static inline float aspectRatio;
+		static inline int windowedWidth;
+		static inline int windowedHeight;
+
+		//static inline high_resolution_clock::time_point lastTime = high_resolution_clock::now();
 
 		static Core::Input camera;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
+		static void ToggleFullscreenMode(GLFWwindow* window, bool enableFullscreen);
 		static void Shutdown();
 		static void WindowLoop();
 	private:

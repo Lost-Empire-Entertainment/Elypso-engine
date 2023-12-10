@@ -29,6 +29,7 @@
 #include <string>
 #include <chrono>
 #include <algorithm>
+#include <thread>
 
 using namespace std;
 using namespace std::chrono;
@@ -41,8 +42,7 @@ namespace Core
 	void Engine::InitializeEngine()
 	{
 		name = "Elypso engine";
-		version = "0.0.5 Prototype";
-		targetUpdateInterval = 0.1;
+		version = "0.0.6 Prototype";
 
 		cout << "Copyright(C) < 2023 > < Greenlaser >\n";
 		cout << "Initializing " + name + " " + version + "...\n\n";
@@ -63,7 +63,7 @@ namespace Core
 		{
 			DeltaTime::UpdateDeltaTime();
 
-			Engine::CalculateFPS();
+			Engine::CalculateFPS(Render::useMonitorRefreshRate);
 
 			Render::WindowLoop();
 		}
@@ -74,15 +74,36 @@ namespace Core
 			"Exiting window loop...\n");
 	}
 
-    void Engine::CalculateFPS()
+    void Engine::CalculateFPS(bool useMonitorRefreshRate)
     {
-        static high_resolution_clock::time_point previousFrameTime = high_resolution_clock::now();
-        high_resolution_clock::time_point currentFrameTime = high_resolution_clock::now();
+		if (!useMonitorRefreshRate)
+		{
+			static high_resolution_clock::time_point previousFrameTime = high_resolution_clock::now();
+			high_resolution_clock::time_point currentFrameTime = high_resolution_clock::now();
 
-        auto frameDuration = duration_cast<microseconds>(currentFrameTime - previousFrameTime);
-        fps = 1.0 / (frameDuration.count() / 1e6);
+			auto frameDuration = duration_cast<microseconds>(currentFrameTime - previousFrameTime);
+			fps = 1.0 / (frameDuration.count() / 1e6);
 
-        previousFrameTime = currentFrameTime;
+			previousFrameTime = currentFrameTime;
+		}
+		else
+		{
+			//get the current time point
+			auto now = high_resolution_clock::now();
+
+			//calculate the elapsed time in seconds
+			float elapsed_seconds = duration<float>(now - lastTime).count();
+
+			//check if the elapsed time is less than the target frame time
+			if (elapsed_seconds < targetDT)
+			{
+				//sleep for the remaining time to avoid busy-waiting
+				this_thread::sleep_for(duration<float>(targetDT - elapsed_seconds));
+			}
+
+			//update lastTime for the next iteration
+			lastTime = high_resolution_clock::now();
+		}
 
 		Engine::CalculateDisplayedFPS();
     }
@@ -91,7 +112,7 @@ namespace Core
 	{
 		high_resolution_clock::time_point currentTime = high_resolution_clock::now();
 		auto elapsedSeconds = duration_cast<duration<double>>(currentTime - lastUpdate).count();
-		if (elapsedSeconds >= targetUpdateInterval)
+		if (elapsedSeconds >= 0.15f)
 		{
 			lastUpdate = currentTime;
 			displayedFPS = fps;

@@ -30,6 +30,7 @@
 using namespace std;
 using namespace glm;
 using namespace Graphics;
+using namespace Core;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -38,7 +39,6 @@ namespace Core
     void Input::InputSetup()
     {
         key[Key::Escape] = GLFW_KEY_ESCAPE;
-        key[Key::Enter] = GLFW_KEY_ENTER;
         key[Key::W] = GLFW_KEY_W;
         key[Key::S] = GLFW_KEY_S;
         key[Key::A] = GLFW_KEY_A;
@@ -46,6 +46,8 @@ namespace Core
         key[Key::Space] = GLFW_KEY_SPACE;
         key[Key::Left_control] = GLFW_KEY_LEFT_CONTROL;
         key[Key::Left_shift] = GLFW_KEY_LEFT_SHIFT;
+        key[Key::Z] = GLFW_KEY_Z;
+        key[Key::X] = GLFW_KEY_X;
     }
 
     Input::Input(GLFWwindow* window, float sensitivity) : 
@@ -81,7 +83,18 @@ namespace Core
         if (isLeftShiftPressed) currentSpeed = 2.0f;
         else                    currentSpeed = 1.0f;
 
+        //toggle fullscreen
+        if (glfwGetKey(window, static_cast<int>(key[Key::Z])) == GLFW_PRESS)
+        {
+            Render::ToggleFullscreenMode(Render::window, Render::enableFullscreen);
+        }
+        //toggle vsync
+        if (glfwGetKey(window, static_cast<int>(key[Key::X])) == GLFW_PRESS)
+        {
+            Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
+        }
 
+        //escape
         if (glfwGetKey(window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
         {
             ConsoleManager::WriteConsoleMessage(

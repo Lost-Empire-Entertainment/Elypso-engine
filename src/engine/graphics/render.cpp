@@ -58,10 +58,9 @@ namespace Graphics
 
 		GUI::GetInstance().Initialize();
 
-		//toggle vsync
-		glfwSwapInterval(0);
-
 		Render::ContentSetup();
+
+		//Render::ToggleFullscreenMode(window, false);
 	}
 
 	void Render::GLFWSetup()
@@ -107,6 +106,9 @@ namespace Graphics
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
+		glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
+		glfwSetWindowSizeLimits(window, 800, 600, 7680, 4320);
+		glfwSwapInterval(0);
 
 		//tell glfw to capture mouse
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -245,6 +247,46 @@ namespace Graphics
 
 		//Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
+	}
+
+	void Render::ToggleFullscreenMode(GLFWwindow* window, bool enableFullscreen)
+	{
+		//switch to windowed
+		if (enableFullscreen)
+		{
+			const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+			if (useMonitorRefreshRate)
+			{
+				glfwSetWindowMonitor(window, nullptr, 100, 100, windowedWidth, windowedHeight, mode->refreshRate);
+			}
+			else
+			{
+				glfwSetWindowMonitor(window, nullptr, 100, 100, windowedWidth, windowedHeight, GLFW_DONT_CARE);
+			}
+
+			UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
+
+			enableFullscreen = false;
+		}
+		//switch to fullscreen
+		else
+		{
+			glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
+			GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+			if (useMonitorRefreshRate) 
+			{
+				glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+			}
+			else 
+			{
+				glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
+			}
+
+			UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
+
+			enableFullscreen = true;
+		}
 	}
 
 	void Render::Shutdown()

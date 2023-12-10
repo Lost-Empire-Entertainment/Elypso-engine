@@ -83,7 +83,7 @@ namespace Graphics
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
 
 		//window initial size
-		ImVec2 initialSize(360, 360);
+		ImVec2 initialSize(350, 450);
 
 		//start a new window with specified flags and size
 		ImGui::SetNextWindowSize(initialSize, ImGuiCond_Once);
@@ -118,6 +118,8 @@ namespace Graphics
 		ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::Key::Left_control)));
 		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::Key::Left_shift)));
 		ImGui::Text("Change FOV: scrollwheel");
+		ImGui::Text("Toggle fullscreen: %s", string(magic_enum::enum_name(Input::Key::Z)));
+		ImGui::Text("Toggle VSync: %s", string(magic_enum::enum_name(Input::Key::X)));
 		ImGui::Text("Quit: %s", string(magic_enum::enum_name(Input::Key::Escape)));
 
 		ImGui::End();

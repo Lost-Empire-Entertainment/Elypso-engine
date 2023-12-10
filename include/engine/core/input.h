@@ -34,15 +34,16 @@ namespace Core
     public:
         enum class Key : char
         {
-            Escape,
-            Enter,
-            W,
-            S,
-            A,
-            D,
-            Space,
-            Left_control,
-            Left_shift
+            Escape, //quit
+            W, //camera forwards
+            S, //camera backwards
+            A, //camera left
+            D, //camera right
+            Space, //camera up
+            Left_control, //camera down
+            Left_shift, //camera faster movement
+            Z, //toggle fullscreen mode
+            X //toggle vsync
         };
 
         static inline unordered_map<Key, int> key;

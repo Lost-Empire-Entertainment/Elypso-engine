@@ -33,7 +33,6 @@ namespace Core
 		static inline string version;
 		static inline double fps;
 		static inline double displayedFPS;
-		static inline double targetUpdateInterval;
 
 		static void InitializeEngine();
 		static void RunEngine();
@@ -44,7 +43,10 @@ namespace Core
 		static inline high_resolution_clock::time_point endFrameTime;
 		static inline high_resolution_clock::time_point lastUpdate;
 
-		static void CalculateFPS();
+		static inline float targetDT = 1.0f / Core::Engine::fps;
+		static inline high_resolution_clock::time_point lastTime = high_resolution_clock::now();
+
+		static void CalculateFPS(bool useMonitorRefreshRate);
 		static void CalculateDisplayedFPS();
 	};
 }
