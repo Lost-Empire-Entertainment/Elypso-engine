@@ -18,7 +18,13 @@
 #include "imgui_impl_opengl3.h"
 
 //engine
+#include "core.h"
 #include "gui.h"
+#include "render.h"
+
+#include <string>
+
+using namespace Core;
 
 namespace Graphics
 {
@@ -31,7 +37,7 @@ namespace Graphics
 	void GUI::Initialize()
 	{
 		ImGui::CreateContext();
-		ImGui_ImplGlfw_InitForOpenGL(nullptr, true);
+		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 	}
 
@@ -41,10 +47,39 @@ namespace Graphics
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		//content
+		GUI::RenderContent();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void GUI::RenderContent() 
+	{
+		//docked and not movable
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoSavedSettings;
+
+		//window initial size
+		ImVec2 initialSize(300, 300);
+
+		//start a new window with specified flags and size
+		ImGui::SetNextWindowSize(initialSize, ImGuiCond_Once);
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+
+		ImGui::Begin("Info", nullptr, windowFlags);
+
+		//set font size
+		ImGui::SetWindowFontScale(1.5);
+
+		ImGui::Text("Version: %s", Engine::version.c_str());
+		ImGui::Text("bruh bro");
+		ImGui::Text("bruh bro");
+
+		ImGui::End();
 	}
 
 	void GUI::Shutdown()

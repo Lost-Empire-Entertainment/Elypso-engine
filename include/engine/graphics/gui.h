@@ -21,6 +21,7 @@ namespace Graphics
 	public:
 		void Initialize();
 		void Render();
+		void RenderContent();
 		void Shutdown();
 		static GUI& GetInstance();
 	};

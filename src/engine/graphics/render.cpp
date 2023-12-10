@@ -56,8 +56,7 @@ namespace Graphics
 		Render::WindowSetup();
 		Render::GladSetup();
 
-		//GUI& gui = GUI::GetInstance();
-		//gui.Initialize();
+		GUI::GetInstance().Initialize();
 
 		Render::ContentSetup();
 	}
@@ -257,7 +256,7 @@ namespace Graphics
 
 	void Render::Shutdown()
 	{
-		//GUI::GetInstance().Shutdown();
+		GUI::GetInstance().Shutdown();
 
 		delete shader;
 		shader = nullptr;
@@ -299,7 +298,7 @@ namespace Graphics
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		//GUI::GetInstance().Render();
+		GUI::GetInstance().Render();
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
