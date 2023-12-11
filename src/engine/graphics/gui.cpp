@@ -154,10 +154,6 @@ namespace Graphics
 			"(true)" :
 			"(false)";
 		ImGui::Text("Print fps: %s %s", string(magic_enum::enum_name(Input::Key::F1)), fpsText);
-		string deltaTimeText = (Input::printDeltaTimeToConsole) ?
-			"(true)" :
-			"(false)";
-		ImGui::Text("Print deltaTime: %s %s", string(magic_enum::enum_name(Input::Key::F2)), deltaTimeText);
 
 		ImGui::End();
 	}

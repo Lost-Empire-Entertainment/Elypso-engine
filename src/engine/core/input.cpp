@@ -137,18 +137,6 @@ namespace Core
         {
             wasFPSDebugKeyPressed = false;
         }
-        //toggle console deltaTime debug messages
-        int deltaTimeKeyState = glfwGetKey(window, static_cast<int>(key[Key::F2]));
-        if (deltaTimeKeyState == GLFW_PRESS
-            && !wasDeltaTimeDebugKeyPressed)
-        {
-            Input::printDeltaTimeToConsole = !Input::printDeltaTimeToConsole;
-            wasDeltaTimeDebugKeyPressed = true;
-        }
-        else if (deltaTimeKeyState == GLFW_RELEASE)
-        {
-            wasDeltaTimeDebugKeyPressed = false;
-        }
 
         //escape
         if (glfwGetKey(window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)

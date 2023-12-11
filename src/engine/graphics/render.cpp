@@ -149,8 +149,6 @@ namespace Graphics
 		string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
 		string texturePath = projectPath + "\\files";
 
-		fov = 90;
-
 		glEnable(GL_DEPTH_TEST);
 
 		shader = new Shader(vertexPath, fragmentPath);
@@ -307,8 +305,8 @@ namespace Graphics
 		mat4 projection = perspective(
 			radians(fov),
 			aspectRatio,
-			0.001f,
-			100.0f);
+			nearClip,
+			farClip);
 		shader->Use();
 		shader->SetMat4("projection", projection);
 

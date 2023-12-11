@@ -55,21 +55,6 @@ namespace Core
 		previousFrameTime = currentFrameTime;
 		lastTime = high_resolution_clock::now();
 
-		//print delta time to the console if enabled
-		if (Input::printDeltaTimeToConsole)
-		{
-			cout << "Delta Time: " + to_string(deltaTime) << "\n";
-		}
-
-		//print FPS to the console if enabled
-		if (Input::printFPSToConsole)
-		{
-			cout << "FPS: " << fps
-				<< ", Elapsed time: " << elapsed_seconds
-				<< ", TargetDT: " << TimeManager::targetDT
-				<< ", Frame duration: " << frameDuration << "\n";
-		}
-
 		//calculate displayed FPS
 		high_resolution_clock::time_point currentTime = high_resolution_clock::now();
 		auto elapsedSeconds = duration_cast<duration<double>>(currentTime - lastUpdate).count();
@@ -77,6 +62,16 @@ namespace Core
 		{
 			lastUpdate = currentTime;
 			displayedFPS = fps;
+
+			//print FPS to the console if enabled
+			if (Input::printFPSToConsole)
+			{
+				cout << "FPS: " << displayedFPS
+					<< ", Elapsed time: " << elapsed_seconds
+					<< ", TargetDT: " << TimeManager::targetDT
+					<< ", Frame duration: " << frameDuration
+					<< ", Delta Time: " + to_string(deltaTime) << "\n";
+			}
 		}
 	}
 }

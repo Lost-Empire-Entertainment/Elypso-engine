@@ -48,10 +48,12 @@ namespace Graphics
 		static inline bool useMonitorRefreshRate = true;
 
 		static inline GLFWwindow* window;
-		static inline float fov;
+		static inline float fov = 90;
 		static inline float aspectRatio;
 		static inline int windowedWidth;
 		static inline int windowedHeight;
+		static inline float nearClip = 0.001f;
+		static inline float farClip = 100.0f;
 
 		static Core::Input camera;
 
