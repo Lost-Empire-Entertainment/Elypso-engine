@@ -111,9 +111,10 @@ namespace Graphics
 		glfwSetWindowSizeLimits(window, 800, 600, 7680, 4320);
 		glfwSwapInterval(1);
 
-		//tell glfw to capture mouse
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSetScrollCallback(window, Input::ProcessScrollWheel);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
+		glfwSetScrollCallback(window, Input::ScrollCallback);
+		glfwSetKeyCallback(window, Input::KeyCallback);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_SETUP,

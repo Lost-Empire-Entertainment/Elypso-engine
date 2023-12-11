@@ -39,7 +39,6 @@ namespace Core
 {
     void Input::InputSetup()
     {
-        key[Key::Escape] = GLFW_KEY_ESCAPE;
         key[Key::W] = GLFW_KEY_W;
         key[Key::S] = GLFW_KEY_S;
         key[Key::A] = GLFW_KEY_A;
@@ -72,20 +71,15 @@ namespace Core
 		double mouseX, mouseY;
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 		glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
-			{
-				Render::camera.ProcessMouseMovement(xpos, ypos);
-			});
+		{
+			Render::camera.ProcessMouseMovement(xpos, ypos);
+		});
 		Render::camera.ProcessMouseMovement(mouseX, mouseY);
-		Render::cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
+		Render::cameraSpeed = static_cast<float>(2.5f * mouseSpeedMultiplier * TimeManager::deltaTime);
 	}
 
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
-        bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(key[Key::Left_shift])) == GLFW_PRESS;
-        float currentSpeed = Render::cameraSpeed;
-        if (isLeftShiftPressed) currentSpeed = 2.0f;
-        else                    currentSpeed = 1.0f;
-
         //toggle fullscreen
         int fullscreenKeyState = glfwGetKey(window, static_cast<int>(key[Key::Z]));
         if (fullscreenKeyState == GLFW_PRESS 
@@ -138,96 +132,111 @@ namespace Core
             wasFPSDebugKeyPressed = false;
         }
 
-        //escape
-        if (glfwGetKey(window, static_cast<int>(key[Key::Escape])) == GLFW_PRESS)
+        if (mouseFocused)
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::INPUT,
-                Type::SUCCESS,
-                "User pressed ESC key to shut down engine...\n\n");
+            bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(key[Key::Left_shift])) == GLFW_PRESS;
+            float currentSpeed = Render::cameraSpeed;
+            if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;
+            else                    currentSpeed = 1.0f * moveSpeedMultiplier;
 
-            glfwSetWindowShouldClose(window, true);
-        }
+            vec3 front = Render::camera.GetFront();
+            vec3 right = Render::camera.GetRight();
 
-        vec3 front = Render::camera.GetFront();
-        vec3 right = Render::camera.GetRight();
-
-        //camera forwards
-        if (glfwGetKey(window, static_cast<int>(key[Key::W])) == GLFW_PRESS)
-        {
-            Render::cameraPos += Render::cameraSpeed * currentSpeed * front;
-        }
-        //camera backwards
-        if (glfwGetKey(window, static_cast<int>(key[Key::S])) == GLFW_PRESS)
-        {
-            Render::cameraPos -= Render::cameraSpeed * currentSpeed * front;
-        }
-        //camera left
-        if (glfwGetKey(window, static_cast<int>(key[Key::A])) == GLFW_PRESS)
-        {
-            Render::cameraPos -= Render::cameraSpeed * currentSpeed * right;
-        }
-        //camera right
-        if (glfwGetKey(window, static_cast<int>(key[Key::D])) == GLFW_PRESS)
-        {
-            Render::cameraPos += Render::cameraSpeed * currentSpeed * right;
-        }
-        //camera up
-        if (glfwGetKey(window, static_cast<int>(key[Key::Space])) == GLFW_PRESS)
-        {
-            Render::cameraPos += Render::cameraUp * Render::cameraSpeed * currentSpeed;
-        }
-        //camera down
-        if (glfwGetKey(window, static_cast<int>(key[Key::Left_control])) == GLFW_PRESS)
-        {
-            Render::cameraPos -= Render::cameraUp * Render::cameraSpeed * currentSpeed;
+            //camera forwards
+            if (glfwGetKey(window, static_cast<int>(key[Key::W])) == GLFW_PRESS)
+            {
+                Render::cameraPos += Render::cameraSpeed * currentSpeed * front;
+            }
+            //camera backwards
+            if (glfwGetKey(window, static_cast<int>(key[Key::S])) == GLFW_PRESS)
+            {
+                Render::cameraPos -= Render::cameraSpeed * currentSpeed * front;
+            }
+            //camera left
+            if (glfwGetKey(window, static_cast<int>(key[Key::A])) == GLFW_PRESS)
+            {
+                Render::cameraPos -= Render::cameraSpeed * currentSpeed * right;
+            }
+            //camera right
+            if (glfwGetKey(window, static_cast<int>(key[Key::D])) == GLFW_PRESS)
+            {
+                Render::cameraPos += Render::cameraSpeed * currentSpeed * right;
+            }
+            //camera up
+            if (glfwGetKey(window, static_cast<int>(key[Key::Space])) == GLFW_PRESS)
+            {
+                Render::cameraPos += Render::cameraUp * Render::cameraSpeed * currentSpeed;
+            }
+            //camera down
+            if (glfwGetKey(window, static_cast<int>(key[Key::Left_control])) == GLFW_PRESS)
+            {
+                Render::cameraPos -= Render::cameraUp * Render::cameraSpeed * currentSpeed;
+            }
         }
     }
 
-    void Input::ProcessMouseMovement(double xpos, double ypos) {
-        if (firstMouse) 
+    void Input::ProcessMouseMovement(double xpos, double ypos) 
+    {
+        if (mouseFocused)
         {
+            if (firstMouse)
+            {
+                lastX = xpos;
+                lastY = ypos;
+                firstMouse = false;
+            }
+
+            double xOffset = xpos - lastX;
+            double yOffset = lastY - ypos;
+
             lastX = xpos;
             lastY = ypos;
-            firstMouse = false;
+
+            xOffset *= sensitivity;
+            yOffset *= sensitivity;
+
+            yaw += xOffset;
+            pitch += yOffset;
+
+            if (yaw >= 360.00f
+                || yaw <= -360.00f)
+            {
+                yaw = 0.0f;
+            }
+
+            if (pitch > 90.0f) pitch = 90.0f;
+            if (pitch < -90.0f) pitch = -90.0f;
+
+            vec3 front{};
+            front.x = cos(radians(yaw)) * cos(radians(pitch));
+            front.y = sin(radians(pitch));
+            front.z = sin(radians(yaw)) * cos(radians(pitch));
+            cameraFront = normalize(front);
         }
+    }
 
-        double xOffset = xpos - lastX;
-        double yOffset = lastY - ypos;
+    void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
+    {}
 
-        lastX = xpos;
-        lastY = ypos;
-
-        xOffset *= sensitivity;
-        yOffset *= sensitivity;
-
-        yaw += xOffset;
-        pitch += yOffset;
-
-        if (yaw >= 360.00f || yaw <= -360.00f)
+    void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
+	{
+        if (action == GLFW_PRESS
+            && key == GLFW_KEY_ESCAPE)
         {
-            yaw = 0.0f;
+            mouseFocused = !mouseFocused;
+            if (mouseFocused)
+            {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
+            else
+            {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            }
         }
-
-        if (pitch > 90.0f)
-            pitch = 90.0f;
-        if (pitch < -90.0f)
-            pitch = -90.0f;
-
-        vec3 front{};
-        front.x = cos(radians(yaw)) * cos(radians(pitch));
-        front.y = sin(radians(pitch));
-        front.z = sin(radians(yaw)) * cos(radians(pitch));
-        cameraFront = normalize(front);
     }
 
-    void Input::ProcessScrollWheel(GLFWwindow* window, double xoffset, double yoffset) 
-    {
-        Render::fov += yoffset * 3;
-
-        if (Render::fov > 110) Render::fov = 110;
-        if (Render::fov < 50) Render::fov = 50;
-    }
+    void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+    {}
 
     mat4 Input::GetViewMatrix() const
     {

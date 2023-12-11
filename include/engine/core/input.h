@@ -34,7 +34,6 @@ namespace Core
     public:
         enum class Key : char
         {
-            Escape, //quit
             W, //camera forwards
             S, //camera backwards
             A, //camera left
@@ -50,6 +49,10 @@ namespace Core
 
         static inline unordered_map<Key, int> key;
 
+        static inline float mouseSpeedMultiplier = 1.0f;
+        static inline float moveSpeedMultiplier = 1.0f;
+        static inline bool mouseFocused;
+
         static inline bool printFPSToConsole;
 
         Input(GLFWwindow* window, float sensitivity = 0.05f);
@@ -61,7 +64,9 @@ namespace Core
         vec3 GetRight() const { return normalize(cross(cameraFront, cameraUp)); }
 
         vec3 GetCameraRotation() const { return vec3(yaw, pitch, 0); }
-        static void ProcessScrollWheel(GLFWwindow* window, double xoffset, double yoffset);
+        static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+        static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     private:
         GLFWwindow* window;
         float yaw;

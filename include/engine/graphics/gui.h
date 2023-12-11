@@ -34,5 +34,17 @@ namespace Graphics
 
 		//rendered ui
 		void RenderDebugMenu();
+		void RenderSlider();
+
+		//debug groups
+		void RDM_Info();
+		void RDM_GeneralKeys();
+		void RDM_DebugKeys();
+
+		//slider groups
+		void RS_CameraClipRange();
+		void RS_MouseSpeed();
+		void RS_MoveSpeedMultiplier();
+		void RS_FOV();
 	};
 }
