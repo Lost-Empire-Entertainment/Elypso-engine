@@ -19,8 +19,8 @@
 #include "glad.h"
 
 //engine
-#include "shader.h"
-#include "console.h"
+#include "shader.hpp"
+#include "console.hpp"
 
 #include <string>
 #include <fstream>

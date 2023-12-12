@@ -19,11 +19,11 @@
 #include "glad.h"
 
 //engine
-#include "input.h"
-#include "render.h"
-#include "console.h"
-#include "timeManager.h"
-#include "gui.h"
+#include "input.hpp"
+#include "render.hpp"
+#include "console.hpp"
+#include "timeManager.hpp"
+#include "gui.hpp"
 
 #include <iostream>
 #include <string>

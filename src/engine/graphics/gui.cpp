@@ -22,11 +22,11 @@
 #include "magic_enum.hpp"
 
 //engine
-#include "core.h"
-#include "timeManager.h"
-#include "gui.h"
-#include "render.h"
-#include "input.h"
+#include "core.hpp"
+#include "timeManager.hpp"
+#include "gui.hpp"
+#include "render.hpp"
+#include "input.hpp"
 
 #include <string>
 

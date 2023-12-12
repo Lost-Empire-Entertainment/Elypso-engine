@@ -23,16 +23,16 @@
 #include "type_ptr.hpp"
 
 //engine
-#include "core.h"
-#include "input.h"
-#include "render.h"
-#include "shader.h"
-#include "texture.h"
-#include "console.h"
-#include "shutdown.h"
-#include "search.h"
-#include "gui.h"
-#include "timeManager.h"
+#include "core.hpp"
+#include "input.hpp"
+#include "render.hpp"
+#include "shader.hpp"
+#include "texture.hpp"
+#include "console.hpp"
+#include "shutdown.hpp"
+#include "search.hpp"
+#include "gui.hpp"
+#include "timeManager.hpp"
 
 #include <string>
 #include <iostream>

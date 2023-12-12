@@ -20,10 +20,10 @@
 #include "glfw3.h"
 
 //engine
-#include "console.h"
-#include "render.h"
-#include "shutdown.h"
-#include "gui.h"
+#include "console.hpp"
+#include "render.hpp"
+#include "shutdown.hpp"
+#include "gui.hpp"
 
 using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;

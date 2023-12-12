@@ -16,8 +16,8 @@
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
 //engine
-#include "core.h"
-#include "shutdown.h"
+#include "core.hpp"
+#include "shutdown.hpp"
 
 using namespace Core;
 

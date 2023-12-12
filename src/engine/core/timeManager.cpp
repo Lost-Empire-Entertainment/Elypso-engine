@@ -19,8 +19,8 @@
 #include "glfw3.h"
 
 //engine
-#include "timeManager.h"
-#include "input.h"
+#include "timeManager.hpp"
+#include "input.hpp"
 
 #include <algorithm>
 #include <thread>

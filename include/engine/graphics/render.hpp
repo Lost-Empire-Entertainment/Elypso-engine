@@ -22,8 +22,8 @@
 #include "glfw3.h"
 
 //engine
-#include "shader.h"
-#include "input.h"
+#include "shader.hpp"
+#include "input.hpp"
 
 #include <string>
 

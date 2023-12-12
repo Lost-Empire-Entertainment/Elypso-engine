@@ -19,12 +19,12 @@
 #include "glad.h"
 
 //engine
-#include "core.h"
-#include "admin.h"
-#include "console.h"
-#include "render.h"
-#include "shutdown.h"
-#include "timeManager.h"
+#include "core.hpp"
+#include "admin.hpp"
+#include "console.hpp"
+#include "render.hpp"
+#include "shutdown.hpp"
+#include "timeManager.hpp"
 
 #include <string>
 
