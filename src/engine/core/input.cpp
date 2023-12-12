@@ -75,9 +75,6 @@ namespace Core
 
         if (cameraEnabled)
         {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
-
             //process mouse movement
             double mouseX, mouseY;
             glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -87,7 +84,10 @@ namespace Core
             });
             Render::camera.ProcessMouseMovement(mouseX, mouseY);
             Render::cameraSpeed = static_cast<float>(2.5f * mouseSpeedMultiplier * TimeManager::deltaTime);
+
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
+        else glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
         if (printInputToConsole)
         {
@@ -281,16 +281,6 @@ namespace Core
             && key == GLFW_KEY_ESCAPE)
         {
             cameraEnabled = !cameraEnabled;
-            if (!cameraEnabled)
-            {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
-            }
-            else
-            {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-                ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
-            }
         }
     }
 
