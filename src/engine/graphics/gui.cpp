@@ -43,9 +43,13 @@ namespace Graphics
 
 	void GUI::Initialize()
 	{
+		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
+
+		ImGui::StyleColorsDark();
 	}
 
 	int GUI::GetScreenWidth()
@@ -175,25 +179,25 @@ namespace Graphics
 
 		ImGui::Text("General keys");
 		ImGui::Text("");
-		ImGui::Text("Forwards: %s", string(magic_enum::enum_name(Input::Key::W)));
-		ImGui::Text("Backwards: %s", string(magic_enum::enum_name(Input::Key::S)));
-		ImGui::Text("Left: %s", string(magic_enum::enum_name(Input::Key::A)));
-		ImGui::Text("Right: %s", string(magic_enum::enum_name(Input::Key::D)));
-		ImGui::Text("Up: %s", string(magic_enum::enum_name(Input::Key::Space)));
-		ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::Key::Left_control)));
-		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::Key::Left_shift)));
+		ImGui::Text("Forwards: %s", string(magic_enum::enum_name(Input::Key::CameraForwards)));
+		ImGui::Text("Backwards: %s", string(magic_enum::enum_name(Input::Key::CameraBackwards)));
+		ImGui::Text("Left: %s", string(magic_enum::enum_name(Input::Key::CameraLeft)));
+		ImGui::Text("Right: %s", string(magic_enum::enum_name(Input::Key::CameraRight)));
+		ImGui::Text("Up: %s", string(magic_enum::enum_name(Input::Key::CameraUp)));
+		ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::Key::CameraDown)));
+		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::Key::CameraSprint)));
 		string fullScreenText = (Render::enableFullscreen) ?
 			"(true)" :
 			"(false)";
-		ImGui::Text("Toggle fullscreen: %s %s", string(magic_enum::enum_name(Input::Key::Z)), fullScreenText);
+		ImGui::Text("Toggle fullscreen: %s %s", string(magic_enum::enum_name(Input::Key::ToggleFullscreen)), fullScreenText);
 		string vsyncText = (Render::useMonitorRefreshRate) ?
 			"(true)" :
 			"(false)";
-		ImGui::Text("Toggle VSync: %s %s", string(magic_enum::enum_name(Input::Key::X)), vsyncText);
+		ImGui::Text("Toggle VSync: %s %s", string(magic_enum::enum_name(Input::Key::ToggleVSYNC)), vsyncText);
 		string mouseFocusText = (Input::mouseFocused) ?
 			"(true)" :
 			"(false)";
-		ImGui::Text("Toggle mouse focus: Escape %s", mouseFocusText);
+		ImGui::Text("Toggle focus: Escape %s", mouseFocusText);
 	}
 	void GUI::RDM_DebugKeys()
 	{
@@ -204,7 +208,15 @@ namespace Graphics
 		string fpsText = (Input::printFPSToConsole) ?
 			"(true)" :
 			"(false)";
-		ImGui::Text("FPS debug messages: %s %s", string(magic_enum::enum_name(Input::Key::F1)), fpsText);
+		ImGui::Text("FPS debug messages: %s %s", string(magic_enum::enum_name(Input::Key::PrintFPSDebugToConsole)), fpsText);
+		string imguiText = (Input::printIMGUIToConsole) ?
+			"(true)" :
+			"(false)";
+		ImGui::Text("ImGui debug messages: %s %s", string(magic_enum::enum_name(Input::Key::PrintIMGUIDebugToConsole)), imguiText);
+		string inputText = (Input::printInputToConsole) ?
+			"(true)" :
+			"(false)";
+		ImGui::Text("Input debug messages: %s %s", string(magic_enum::enum_name(Input::Key::PrintFPSDebugToConsole)), inputText);
 	}
 
 	void GUI::RS_CameraClipRange()

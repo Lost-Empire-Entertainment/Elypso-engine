@@ -34,17 +34,18 @@ namespace Core
     public:
         enum class Key : char
         {
-            W, //camera forwards
-            S, //camera backwards
-            A, //camera left
-            D, //camera right
-            Space, //camera up
-            Left_control, //camera down
-            Left_shift, //camera faster movement
-            Z, //toggle fullscreen mode
-            X, //toggle vsync
-            F1, //toggle console framerate debug messages
-            F2 //toggle console deltatime debug messages
+            CameraForwards,
+            CameraBackwards,
+            CameraLeft,
+            CameraRight,
+            CameraUp,
+            CameraDown,
+            CameraSprint,
+            ToggleFullscreen,
+            ToggleVSYNC,
+            PrintFPSDebugToConsole,
+            PrintIMGUIDebugToConsole,
+            PrintInputDebugToConsole
         };
 
         static inline unordered_map<Key, int> key;
@@ -54,6 +55,8 @@ namespace Core
         static inline bool mouseFocused;
 
         static inline bool printFPSToConsole;
+        static inline bool printIMGUIToConsole;
+        static inline bool printInputToConsole;
 
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;

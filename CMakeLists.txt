@@ -43,34 +43,11 @@ set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
 add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 
-# Add your source files
-set(SOURCE_FILES
-	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
-	${SRC_CORE_DIR}/admin.cpp
-	${SRC_CORE_DIR}/console.cpp
-	${SRC_CORE_DIR}/core.cpp
-	${SRC_CORE_DIR}/timeManager.cpp
-	${SRC_CORE_DIR}/input.cpp
-	${SRC_CORE_DIR}/search.cpp
-	${SRC_CORE_DIR}/shutdown.cpp
-	${SRC_GRAPHICS_DIR}/gui.cpp
-	${SRC_GRAPHICS_DIR}/render.cpp
-	${SRC_GRAPHICS_DIR}/shader.cpp
-	${SRC_GRAPHICS_DIR}/texture.cpp
-)
+# Group external libraries
+add_library(external_libs INTERFACE)
+target_link_libraries(external_libs INTERFACE glad magic_enum)
 
-# Add your external files
-list(APPEND SOURCE_FILES
-	${EXTERNAL_DIR}/glad/glad.c
-	${EXTERNAL_DIR}/imgui/imgui.cpp
-	${EXTERNAL_DIR}/imgui/imgui_demo.cpp
-	${EXTERNAL_DIR}/imgui/imgui_draw.cpp
-	${EXTERNAL_DIR}/imgui/imgui_impl_glfw.cpp
-	${EXTERNAL_DIR}/imgui/imgui_impl_opengl3.cpp
-	${EXTERNAL_DIR}/imgui/imgui_tables.cpp
-	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
-	${EXTERNAL_DIR}/stb_image/stb_image.cpp
-)
+file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # Add the executable
 add_executable(Elypso_engine ${SOURCE_FILES})
@@ -95,7 +72,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/external/stb_image
 )
 
-target_link_libraries(Elypso_engine PRIVATE glad ${GLFW_LIBRARY_PATH})
+target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
 
 # Set the subsystem to WINDOWS
 # set_target_properties(Elypso_engine PROPERTIES
@@ -114,8 +91,8 @@ set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 #copy and install license
-configure_file(${CMAKE_SOURCE_DIR}/LICENSE.md ${CMAKE_BINARY_DIR}/LICENSE.md COPYONLY)
-install(FILES ${CMAKE_BINARY_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${CMAKE_BINARY_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_BINDIR}/licenses)
+install(FILES ${CMAKE_BINARY_DIR}/EULA.md DESTINATION ${CMAKE_INSTALL_BINDIR}/licenses)
 
 #copy and install EULA
 configure_file(${CMAKE_SOURCE_DIR}/EULA.md ${CMAKE_BINARY_DIR}/EULA.md COPYONLY)

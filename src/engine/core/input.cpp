@@ -39,17 +39,18 @@ namespace Core
 {
     void Input::InputSetup()
     {
-        key[Key::W] = GLFW_KEY_W;
-        key[Key::S] = GLFW_KEY_S;
-        key[Key::A] = GLFW_KEY_A;
-        key[Key::D] = GLFW_KEY_D;
-        key[Key::Space] = GLFW_KEY_SPACE;
-        key[Key::Left_control] = GLFW_KEY_LEFT_CONTROL;
-        key[Key::Left_shift] = GLFW_KEY_LEFT_SHIFT;
-        key[Key::Z] = GLFW_KEY_Z;
-        key[Key::X] = GLFW_KEY_X;
-        key[Key::F1] = GLFW_KEY_F1;
-        key[Key::F2] = GLFW_KEY_F2;
+        key[Key::CameraForwards] = GLFW_KEY_W;
+        key[Key::CameraBackwards] = GLFW_KEY_S;
+        key[Key::CameraLeft] = GLFW_KEY_A;
+        key[Key::CameraRight] = GLFW_KEY_D;
+        key[Key::CameraUp] = GLFW_KEY_SPACE;
+        key[Key::CameraDown] = GLFW_KEY_LEFT_CONTROL;
+        key[Key::CameraSprint] = GLFW_KEY_LEFT_SHIFT;
+        key[Key::ToggleFullscreen] = GLFW_KEY_Z;
+        key[Key::ToggleVSYNC] = GLFW_KEY_X;
+        key[Key::PrintFPSDebugToConsole] = GLFW_KEY_F1;
+        key[Key::PrintIMGUIDebugToConsole] = GLFW_KEY_F2;
+        key[Key::PrintInputDebugToConsole] = GLFW_KEY_F3;
     }
 
     Input::Input(GLFWwindow* window, float sensitivity) : 
@@ -81,7 +82,7 @@ namespace Core
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
         //toggle fullscreen
-        int fullscreenKeyState = glfwGetKey(window, static_cast<int>(key[Key::Z]));
+        int fullscreenKeyState = glfwGetKey(window, static_cast<int>(key[Key::ToggleFullscreen]));
         if (fullscreenKeyState == GLFW_PRESS 
             && !wasFullscreenKeyPressed)
         {
@@ -99,7 +100,7 @@ namespace Core
             wasFullscreenKeyPressed = false;
         }
         //toggle vsync
-        int vsyncKeyState = glfwGetKey(window, static_cast<int>(key[Key::X]));
+        int vsyncKeyState = glfwGetKey(window, static_cast<int>(key[Key::ToggleVSYNC]));
         if (vsyncKeyState == GLFW_PRESS 
             && !wasVSYNCKeyPressed)
         {
@@ -120,7 +121,7 @@ namespace Core
         }
 
         //toggle console framerate debug messages
-        int fpsKeyState = glfwGetKey(window, static_cast<int>(key[Key::F1]));
+        int fpsKeyState = glfwGetKey(window, static_cast<int>(key[Key::PrintFPSDebugToConsole]));
         if (fpsKeyState == GLFW_PRESS
             && !wasFPSDebugKeyPressed)
         {
@@ -134,7 +135,7 @@ namespace Core
 
         if (mouseFocused)
         {
-            bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(key[Key::Left_shift])) == GLFW_PRESS;
+            bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(key[Key::CameraSprint])) == GLFW_PRESS;
             float currentSpeed = Render::cameraSpeed;
             if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;
             else                    currentSpeed = 1.0f * moveSpeedMultiplier;
@@ -143,32 +144,32 @@ namespace Core
             vec3 right = Render::camera.GetRight();
 
             //camera forwards
-            if (glfwGetKey(window, static_cast<int>(key[Key::W])) == GLFW_PRESS)
+            if (glfwGetKey(window, static_cast<int>(key[Key::CameraForwards])) == GLFW_PRESS)
             {
                 Render::cameraPos += Render::cameraSpeed * currentSpeed * front;
             }
             //camera backwards
-            if (glfwGetKey(window, static_cast<int>(key[Key::S])) == GLFW_PRESS)
+            if (glfwGetKey(window, static_cast<int>(key[Key::CameraBackwards])) == GLFW_PRESS)
             {
                 Render::cameraPos -= Render::cameraSpeed * currentSpeed * front;
             }
             //camera left
-            if (glfwGetKey(window, static_cast<int>(key[Key::A])) == GLFW_PRESS)
+            if (glfwGetKey(window, static_cast<int>(key[Key::CameraLeft])) == GLFW_PRESS)
             {
                 Render::cameraPos -= Render::cameraSpeed * currentSpeed * right;
             }
             //camera right
-            if (glfwGetKey(window, static_cast<int>(key[Key::D])) == GLFW_PRESS)
+            if (glfwGetKey(window, static_cast<int>(key[Key::CameraRight])) == GLFW_PRESS)
             {
                 Render::cameraPos += Render::cameraSpeed * currentSpeed * right;
             }
             //camera up
-            if (glfwGetKey(window, static_cast<int>(key[Key::Space])) == GLFW_PRESS)
+            if (glfwGetKey(window, static_cast<int>(key[Key::CameraUp])) == GLFW_PRESS)
             {
                 Render::cameraPos += Render::cameraUp * Render::cameraSpeed * currentSpeed;
             }
             //camera down
-            if (glfwGetKey(window, static_cast<int>(key[Key::Left_control])) == GLFW_PRESS)
+            if (glfwGetKey(window, static_cast<int>(key[Key::CameraDown])) == GLFW_PRESS)
             {
                 Render::cameraPos -= Render::cameraUp * Render::cameraSpeed * currentSpeed;
             }
