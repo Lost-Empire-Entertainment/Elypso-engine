@@ -43,6 +43,7 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 * [NSIS](https://nsis.sourceforge.io/Download) - windows installer generator
 * [magic enum](https://github.com/Neargye/magic_enum) - provides static reflection for enums, work with any enum type without any macro or boilerplate code
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
+* [Dear ImGui](https://github.com/ocornut/imgui) - open source immediate mode graphic user library
 
 ## Authors
 
@@ -50,5 +51,5 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 
 ## Licenses
 
-* [GPL-3.0](LICENSE.md) - ensures the project remains open source and free for anyone to distribute and modify
-* [EULA](EULA.md) - goes over the permissions, requirements and disclaimers
+* [GPL-3.0](LICENSE.md)
+* [EULA](EULA.md)
