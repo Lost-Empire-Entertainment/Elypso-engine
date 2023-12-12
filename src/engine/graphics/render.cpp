@@ -294,7 +294,7 @@ namespace Graphics
 		glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
-
+		
 		//activate shader
 		shader->Use();
 
@@ -309,7 +309,6 @@ namespace Graphics
 			aspectRatio,
 			nearClip,
 			farClip);
-		shader->Use();
 		shader->SetMat4("projection", projection);
 
 		//render boxes
@@ -331,7 +330,5 @@ namespace Graphics
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
-		//poll for events and process them
-		glfwPollEvents();
 	}
 }

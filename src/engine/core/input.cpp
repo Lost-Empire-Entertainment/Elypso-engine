@@ -68,15 +68,18 @@ namespace Core
 	{
         Input::ProcessKeyboardInput(Render::window);
 
-		//process mouse movement
-		double mouseX, mouseY;
-		glfwGetCursorPos(window, &mouseX, &mouseY);
-		glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
-		{
-			Render::camera.ProcessMouseMovement(xpos, ypos);
-		});
-		Render::camera.ProcessMouseMovement(mouseX, mouseY);
-		Render::cameraSpeed = static_cast<float>(2.5f * mouseSpeedMultiplier * TimeManager::deltaTime);
+        if (mouseFocused)
+        {
+            //process mouse movement
+            double mouseX, mouseY;
+            glfwGetCursorPos(window, &mouseX, &mouseY);
+            glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
+                {
+                    Render::camera.ProcessMouseMovement(xpos, ypos);
+                });
+            Render::camera.ProcessMouseMovement(mouseX, mouseY);
+            Render::cameraSpeed = static_cast<float>(2.5f * mouseSpeedMultiplier * TimeManager::deltaTime);
+        }
 
         if (printInputToConsole)
         {
@@ -223,42 +226,39 @@ namespace Core
 
     void Input::ProcessMouseMovement(double xpos, double ypos) 
     {
-        if (mouseFocused)
+        if (firstMouse)
         {
-            if (firstMouse)
-            {
-                lastX = xpos;
-                lastY = ypos;
-                firstMouse = false;
-            }
-
-            double xOffset = xpos - lastX;
-            double yOffset = lastY - ypos;
-
             lastX = xpos;
             lastY = ypos;
-
-            xOffset *= sensitivity;
-            yOffset *= sensitivity;
-
-            yaw += xOffset;
-            pitch += yOffset;
-
-            if (yaw >= 360.00f
-                || yaw <= -360.00f)
-            {
-                yaw = 0.0f;
-            }
-
-            if (pitch > 90.0f) pitch = 90.0f;
-            if (pitch < -90.0f) pitch = -90.0f;
-
-            vec3 front{};
-            front.x = cos(radians(yaw)) * cos(radians(pitch));
-            front.y = sin(radians(pitch));
-            front.z = sin(radians(yaw)) * cos(radians(pitch));
-            cameraFront = normalize(front);
+            firstMouse = false;
         }
+
+        double xOffset = xpos - lastX;
+        double yOffset = lastY - ypos;
+
+        lastX = xpos;
+        lastY = ypos;
+
+        xOffset *= sensitivity;
+        yOffset *= sensitivity;
+
+        yaw += xOffset;
+        pitch += yOffset;
+
+        if (yaw >= 360.00f
+            || yaw <= -360.00f)
+        {
+            yaw = 0.0f;
+        }
+
+        if (pitch > 90.0f) pitch = 90.0f;
+        if (pitch < -90.0f) pitch = -90.0f;
+
+        vec3 front{};
+        front.x = cos(radians(yaw)) * cos(radians(pitch));
+        front.y = sin(radians(pitch));
+        front.z = sin(radians(yaw)) * cos(radians(pitch));
+        cameraFront = normalize(front);
     }
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 

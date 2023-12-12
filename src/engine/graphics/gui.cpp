@@ -173,15 +173,6 @@ namespace Graphics
 		GUI::RDM_GeneralKeys();
 		GUI::RDM_DebugKeys();
 
-		if (Input::PrintIMGUIDebugToConsole
-			&& ImGui::IsItemHovered())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI,
-				Type::DEBUG,
-				"Mouse is hovering over the debug menu!\n");
-		}
-
 		ImGui::End();
 	}
 
@@ -217,15 +208,6 @@ namespace Graphics
 		GUI::RS_MouseSpeed();
 		GUI::RS_MoveSpeedMultiplier();
 		GUI::RS_FOV();
-
-		if (Input::PrintIMGUIDebugToConsole
-			&& ImGui::IsItemHovered())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI,
-				Type::DEBUG,
-				"Mouse is hovering over the sliders menu!\n");
-		}
 
 		ImGui::End();
 	}
@@ -315,26 +297,8 @@ namespace Graphics
 		ImGui::Text("Near clip");
 		ImGui::SliderFloat("", &Render::nearClip, 0.001f, 1.0f);
 
-		if (Input::printIMGUIToConsole
-			&& ImGui::IsItemHovered())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI,
-				Type::DEBUG,
-				"Hovering over near clip slider!");
-		}
-
 		ImGui::Text("Far clip");
 		ImGui::SliderFloat("", &Render::farClip, 1.0f, 100.0f);
-
-		if (Input::printIMGUIToConsole
-			&& ImGui::IsItemHovered())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI,
-				Type::DEBUG,
-				"Hovering over far clip slider!");
-		}
 	}
 	void GUI::RS_MouseSpeed()
 	{
@@ -343,15 +307,6 @@ namespace Graphics
 		ImGui::Text("Mouse speed multiplier");
 		ImGui::Text("");
 		ImGui::SliderFloat("", &Input::mouseSpeedMultiplier, 0.1f, 10.0f);
-
-		if (Input::printIMGUIToConsole
-			&& ImGui::IsItemHovered())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI,
-				Type::DEBUG,
-				"Hovering over mouse speed multiplier slider!");
-		}
 	}
 	void GUI::RS_MoveSpeedMultiplier()
 	{
@@ -360,15 +315,6 @@ namespace Graphics
 		ImGui::Text("Move speed multiplier");
 		ImGui::Text("");
 		ImGui::SliderFloat("", &Input::moveSpeedMultiplier, 0.1f, 10.0f);
-
-		if (Input::printIMGUIToConsole
-			&& ImGui::IsItemHovered())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI,
-				Type::DEBUG,
-				"Hovering over move speed multiplier slider!");
-		}
 	}
 	void GUI::RS_FOV()
 	{
@@ -377,15 +323,6 @@ namespace Graphics
 		ImGui::Text("FOV");
 		ImGui::Text("");
 		ImGui::SliderFloat("", &Render::fov, 70.0f, 110.0f);
-
-		if (Input::printIMGUIToConsole
-			&& ImGui::IsItemHovered())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI,
-				Type::DEBUG,
-				"Hovering over fov slider!");
-		}
 	}
 
 	void GUI::Shutdown()
