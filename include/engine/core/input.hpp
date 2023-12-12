@@ -74,7 +74,7 @@ namespace Core
 
         static inline float mouseSpeedMultiplier = 1.0f;
         static inline float moveSpeedMultiplier = 1.0f;
-        static inline bool mouseFocused;
+        static inline bool cameraEnabled;
 
         static inline bool printFPSToConsole;
         static inline bool printIMGUIToConsole;

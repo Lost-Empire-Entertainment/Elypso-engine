@@ -17,6 +17,9 @@
 
 //external
 #include "glad.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 //engine
 #include "console.hpp"
@@ -68,15 +71,20 @@ namespace Core
 	{
         Input::ProcessKeyboardInput(Render::window);
 
-        if (mouseFocused)
+        ImGuiIO& io = ImGui::GetIO();
+
+        if (cameraEnabled)
         {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
+
             //process mouse movement
             double mouseX, mouseY;
             glfwGetCursorPos(window, &mouseX, &mouseY);
             glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
-                {
-                    Render::camera.ProcessMouseMovement(xpos, ypos);
-                });
+            {
+                Render::camera.ProcessMouseMovement(xpos, ypos);
+            });
             Render::camera.ProcessMouseMovement(mouseX, mouseY);
             Render::cameraSpeed = static_cast<float>(2.5f * mouseSpeedMultiplier * TimeManager::deltaTime);
         }
@@ -181,7 +189,7 @@ namespace Core
             wasInputDebugKeyPressed = false;
         }
 
-        if (mouseFocused)
+        if (cameraEnabled)
         {
             bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraSprint])) == GLFW_PRESS;
             float currentSpeed = Render::cameraSpeed;
@@ -226,39 +234,42 @@ namespace Core
 
     void Input::ProcessMouseMovement(double xpos, double ypos) 
     {
-        if (firstMouse)
+        if (cameraEnabled)
         {
+            if (firstMouse)
+            {
+                lastX = xpos;
+                lastY = ypos;
+                firstMouse = false;
+            }
+
+            double xOffset = xpos - lastX;
+            double yOffset = lastY - ypos;
+
             lastX = xpos;
             lastY = ypos;
-            firstMouse = false;
-        }
 
-        double xOffset = xpos - lastX;
-        double yOffset = lastY - ypos;
+            xOffset *= sensitivity;
+            yOffset *= sensitivity;
 
-        lastX = xpos;
-        lastY = ypos;
+            yaw += xOffset;
+            pitch += yOffset;
 
-        xOffset *= sensitivity;
-        yOffset *= sensitivity;
+            if (yaw >= 360.00f
+                || yaw <= -360.00f)
+            {
+                yaw = 0.0f;
+            }
 
-        yaw += xOffset;
-        pitch += yOffset;
+            if (pitch > 90.0f) pitch = 90.0f;
+            if (pitch < -90.0f) pitch = -90.0f;
 
-        if (yaw >= 360.00f
-            || yaw <= -360.00f)
-        {
-            yaw = 0.0f;
-        }
-
-        if (pitch > 90.0f) pitch = 90.0f;
-        if (pitch < -90.0f) pitch = -90.0f;
-
-        vec3 front{};
-        front.x = cos(radians(yaw)) * cos(radians(pitch));
-        front.y = sin(radians(pitch));
-        front.z = sin(radians(yaw)) * cos(radians(pitch));
-        cameraFront = normalize(front);
+            vec3 front{};
+            front.x = cos(radians(yaw)) * cos(radians(pitch));
+            front.y = sin(radians(pitch));
+            front.z = sin(radians(yaw)) * cos(radians(pitch));
+            cameraFront = normalize(front);
+        }        
     }
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
@@ -269,14 +280,16 @@ namespace Core
         if (action == GLFW_PRESS
             && key == GLFW_KEY_ESCAPE)
         {
-            mouseFocused = !mouseFocused;
-            if (mouseFocused)
+            cameraEnabled = !cameraEnabled;
+            if (!cameraEnabled)
             {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
             }
             else
             {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
             }
         }
     }

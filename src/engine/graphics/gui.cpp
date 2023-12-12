@@ -255,10 +255,10 @@ namespace Graphics
 			"Toggle VSync: %s %s", 
 			string(magic_enum::enum_name(Input::key[Input::Action::ToggleVSYNC])), 
 			vsyncText);
-		string mouseFocusText = (Input::mouseFocused) ?
+		string cameraEnabledText = (Input::cameraEnabled) ?
 			"(true)" :
 			"(false)";
-		ImGui::Text("Toggle focus: Escape %s", mouseFocusText);
+		ImGui::Text("Toggle camera: Escape %s", cameraEnabledText);
 	}
 	void GUI::RDM_DebugKeys()
 	{
@@ -295,10 +295,10 @@ namespace Graphics
 		ImGui::Text("");
 
 		ImGui::Text("Near clip");
-		ImGui::SliderFloat("", &Render::nearClip, 0.001f, 1.0f);
+		ImGui::SliderFloat("##nearclip", &Render::nearClip, 0.001f, 1.0f);
 
 		ImGui::Text("Far clip");
-		ImGui::SliderFloat("", &Render::farClip, 1.0f, 100.0f);
+		ImGui::SliderFloat("##farclip", &Render::farClip, 1.0f, 100.0f);
 	}
 	void GUI::RS_MouseSpeed()
 	{
@@ -306,7 +306,7 @@ namespace Graphics
 
 		ImGui::Text("Mouse speed multiplier");
 		ImGui::Text("");
-		ImGui::SliderFloat("", &Input::mouseSpeedMultiplier, 0.1f, 10.0f);
+		ImGui::SliderFloat("##mousespeed", &Input::mouseSpeedMultiplier, 0.1f, 10.0f);
 	}
 	void GUI::RS_MoveSpeedMultiplier()
 	{
@@ -314,7 +314,7 @@ namespace Graphics
 
 		ImGui::Text("Move speed multiplier");
 		ImGui::Text("");
-		ImGui::SliderFloat("", &Input::moveSpeedMultiplier, 0.1f, 10.0f);
+		ImGui::SliderFloat("##movespeed", &Input::moveSpeedMultiplier, 0.1f, 10.0f);
 	}
 	void GUI::RS_FOV()
 	{
@@ -322,7 +322,7 @@ namespace Graphics
 
 		ImGui::Text("FOV");
 		ImGui::Text("");
-		ImGui::SliderFloat("", &Render::fov, 70.0f, 110.0f);
+		ImGui::SliderFloat("##fov", &Render::fov, 70.0f, 110.0f);
 	}
 
 	void GUI::Shutdown()
