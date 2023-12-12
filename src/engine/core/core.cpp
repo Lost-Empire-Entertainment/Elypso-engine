@@ -19,9 +19,9 @@
 #include "glad.h"
 
 //engine
-#include "core.hpp"
 #include "admin.hpp"
 #include "console.hpp"
+#include "core.hpp"
 #include "render.hpp"
 #include "shutdown.hpp"
 #include "timeManager.hpp"

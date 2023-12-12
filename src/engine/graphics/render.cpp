@@ -23,23 +23,24 @@
 #include "type_ptr.hpp"
 
 //engine
+#include "console.hpp"
 #include "core.hpp"
+#include "gui.hpp"
 #include "input.hpp"
 #include "render.hpp"
+#include "searchUtils.hpp"
 #include "shader.hpp"
-#include "texture.hpp"
-#include "console.hpp"
 #include "shutdown.hpp"
-#include "search.hpp"
-#include "gui.hpp"
+#include "texture.hpp"
 #include "timeManager.hpp"
 
-#include <string>
 #include <iostream>
+#include <string>
 
 using namespace std;
 using namespace glm;
 using namespace Core;
+using namespace Utils;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -145,7 +146,7 @@ namespace Graphics
 	}
 	void Render::ContentSetup()
 	{
-		string projectPath = Core::Search::SearchByParent("Elypso engine");
+		string projectPath = Search::SearchByParent("Elypso engine");
 		string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vert";
 		string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
 		string texturePath = projectPath + "\\files";

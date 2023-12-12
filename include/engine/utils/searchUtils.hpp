@@ -15,35 +15,22 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-//engine
-#include "search.hpp"
+#pragma once
 
-#include <filesystem>
+#include <string>
 
 using namespace std;
-using namespace std::filesystem;
 
-namespace Core
+namespace Utils
 {
-	string Search::SearchByParent(const string& targetFolderName)
+	class Search
 	{
-		//get the current working directory
-		path currentPath = current_path();
-		path current = currentPath;
-
-		//iterate until we reach the root directory
-		while (!current.empty())
-		{
-			//check if the target folder exists in the current directory
-			if (is_directory(current / targetFolderName))
-			{
-				return (current / targetFolderName).string();
-			}
-
-			current = current.parent_path();
-		}
-
-		//if no folder was found
-		return "";
-	}
+	public:
+		/// <summary>
+		/// A simple search script that goes up one parent at a time until it reaches the desired folder by name, stops at root folder.
+		/// </summary>
+		/// <param name="targetFolderName">What is the desired folder name we are searching for?</param>
+		/// <returns></returns>
+		static string SearchByParent(const string& targetFolderName);
+	};
 }

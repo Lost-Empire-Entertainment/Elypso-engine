@@ -21,8 +21,8 @@
 #include "stb_image.h"
 
 //engine
-#include "texture.hpp"
 #include "console.hpp"
+#include "texture.hpp"
 
 #include <iostream>
 

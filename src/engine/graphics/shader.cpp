@@ -19,13 +19,13 @@
 #include "glad.h"
 
 //engine
-#include "shader.hpp"
 #include "console.hpp"
+#include "shader.hpp"
 
-#include <string>
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 using namespace glm;

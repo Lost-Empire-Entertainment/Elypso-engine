@@ -21,9 +21,9 @@
 
 //engine
 #include "console.hpp"
+#include "gui.hpp"
 #include "render.hpp"
 #include "shutdown.hpp"
-#include "gui.hpp"
 
 using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;

@@ -30,6 +30,7 @@ set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 # Manually added source file paths
 set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/engine/core")
 set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics")
+set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/engine/utils")
 set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
 
 # Add GLAD
@@ -47,7 +48,35 @@ target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+# Add your source files
+set(SOURCE_FILES
+	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
+	${SRC_CORE_DIR}/admin.cpp
+	${SRC_CORE_DIR}/console.cpp
+	${SRC_CORE_DIR}/core.cpp
+	${SRC_CORE_DIR}/timeManager.cpp
+	${SRC_CORE_DIR}/input.cpp
+	${SRC_CORE_DIR}/shutdown.cpp
+	${SRC_GRAPHICS_DIR}/gui.cpp
+	${SRC_GRAPHICS_DIR}/render.cpp
+	${SRC_GRAPHICS_DIR}/shader.cpp
+	${SRC_GRAPHICS_DIR}/texture.cpp
+	${SRC_UTILS_DIR}/searchUtils.cpp
+	${SRC_UTILS_DIR}/stringUtils.cpp
+)
+
+# Add your external files
+list(APPEND SOURCE_FILES
+	${EXTERNAL_DIR}/glad/glad.c
+	${EXTERNAL_DIR}/imgui/imgui.cpp
+	${EXTERNAL_DIR}/imgui/imgui_demo.cpp
+	${EXTERNAL_DIR}/imgui/imgui_draw.cpp
+	${EXTERNAL_DIR}/imgui/imgui_impl_glfw.cpp
+	${EXTERNAL_DIR}/imgui/imgui_impl_opengl3.cpp
+	${EXTERNAL_DIR}/imgui/imgui_tables.cpp
+	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
+	${EXTERNAL_DIR}/stb_image/stb_image.cpp
+)
 
 # Add the executable
 add_executable(Elypso_engine ${SOURCE_FILES})
@@ -58,6 +87,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/engine
 	${INCLUDE_DIR}/engine/core
 	${INCLUDE_DIR}/engine/graphics
+	${INCLUDE_DIR}/engine/utils
 	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw

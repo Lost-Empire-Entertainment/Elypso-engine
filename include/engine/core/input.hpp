@@ -21,18 +21,24 @@
 #include "glm.hpp"
 #include "matrix_transform.hpp" //glm/gtc
 #include "glfw3.h"
+#include "magic_enum.hpp"
+
+//engine
+#include "stringUtils.hpp"
 
 #include <unordered_map>
+#include <iostream>
 
 using namespace std;
 using namespace glm;
+using namespace Utils;
 
 namespace Core
 {
     class Input
     {
     public:
-        enum class Key : char
+        enum Action
         {
             CameraForwards,
             CameraBackwards,
@@ -47,8 +53,24 @@ namespace Core
             PrintIMGUIDebugToConsole,
             PrintInputDebugToConsole
         };
+        enum Key
+        {
+			W,
+			A,
+			S,
+			D,
+			Space,
+			Left_control,
+			Left_shift,
+			Z,
+			X,
+			F1,
+			F2,
+			F3
+		};
 
-        static inline unordered_map<Key, int> key;
+        static inline unordered_map<Action, Key> key;
+        static inline unordered_map<Action, int> glfwKey;
 
         static inline float mouseSpeedMultiplier = 1.0f;
         static inline float moveSpeedMultiplier = 1.0f;
@@ -63,10 +85,11 @@ namespace Core
 
         static void InputSetup();
         static void ProcessInput(GLFWwindow* window);
+
         vec3 GetFront() const { return cameraFront; }
         vec3 GetRight() const { return normalize(cross(cameraFront, cameraUp)); }
-
         vec3 GetCameraRotation() const { return vec3(yaw, pitch, 0); }
+
         static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
@@ -86,6 +109,8 @@ namespace Core
         static inline bool wasFullscreenKeyPressed;
         static inline bool wasVSYNCKeyPressed;
         static inline bool wasFPSDebugKeyPressed;
+        static inline bool wasIMGUIDebugKeyPressed;
+        static inline bool wasInputDebugKeyPressed;
 
         void ProcessMouseMovement(double xpos, double ypos);
         static void ProcessKeyboardInput(GLFWwindow* window);
