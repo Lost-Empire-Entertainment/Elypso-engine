@@ -15,7 +15,6 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 - gpu with openGL 4.6 support
 - Visual Studio 17 2022 (untested on older VS versions and other IDEs)
 - CMake downloaded and set up with CMake/bin folder added to environment path
-- NSIS installed with makensis.exe added to environment path
 ```
 
 ### Setup
@@ -40,7 +39,6 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 * [GLFW](https://www.glfw.org/) - provides a simple API for creating windows, contexts and surfaces, receiving input and events
 * [GLAD](https://glad.dav1d.de/) - simplifies the process of managing OpenGL function pointers in a cross-platform manner
 * [GLM](https://github.com/g-truc/glm) - C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification
-* [NSIS](https://nsis.sourceforge.io/Download) - windows installer generator
 * [magic enum](https://github.com/Neargye/magic_enum) - provides static reflection for enums, work with any enum type without any macro or boilerplate code
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
 * [Dear ImGui](https://github.com/ocornut/imgui) - open source immediate mode graphic user library
