@@ -295,10 +295,28 @@ namespace Graphics
 		ImGui::Text("");
 
 		ImGui::Text("Near clip");
-		ImGui::SliderFloat("##nearclip", &Render::nearClip, 0.001f, 1.0f);
+		ImGui::SliderFloat("##nearclip", &Render::nearClip, 0.001f, 10.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust camera near clip range.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##nearclip"))
+		{
+			Render::nearClip = 0.001f;
+		}
 
 		ImGui::Text("Far clip");
-		ImGui::SliderFloat("##farclip", &Render::farClip, 1.0f, 100.0f);
+		ImGui::SliderFloat("##farclip", &Render::farClip, 10.0f, 100.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust camera far clip range.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##farclip"))
+		{
+			Render::farClip = 100.0f;
+		}
 	}
 	void GUI::RS_MouseSpeed()
 	{
@@ -307,6 +325,15 @@ namespace Graphics
 		ImGui::Text("Mouse speed multiplier");
 		ImGui::Text("");
 		ImGui::SliderFloat("##mousespeed", &Input::mouseSpeedMultiplier, 0.1f, 10.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust mouse sensitivity.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##mousesens"))
+		{
+			Input::mouseSpeedMultiplier = 1.0f;
+		}
 	}
 	void GUI::RS_MoveSpeedMultiplier()
 	{
@@ -315,6 +342,15 @@ namespace Graphics
 		ImGui::Text("Move speed multiplier");
 		ImGui::Text("");
 		ImGui::SliderFloat("##movespeed", &Input::moveSpeedMultiplier, 0.1f, 10.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust camera move speed.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##movespeedmult"))
+		{
+			Input::moveSpeedMultiplier = 1.0f;
+		}
 	}
 	void GUI::RS_FOV()
 	{
@@ -323,6 +359,15 @@ namespace Graphics
 		ImGui::Text("FOV");
 		ImGui::Text("");
 		ImGui::SliderFloat("##fov", &Render::fov, 70.0f, 110.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust camera field of view.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##fov"))
+		{
+			Render::fov = 90.0f;
+		}
 	}
 
 	void GUI::Shutdown()
