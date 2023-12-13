@@ -43,7 +43,6 @@ namespace Graphics
 
 		//slider groups
 		void RS_CameraClipRange();
-		void RS_MouseSpeed();
 		void RS_MoveSpeedMultiplier();
 		void RS_FOV();
 	};

@@ -35,17 +35,6 @@ using namespace Utils;
 
 namespace Core
 {
-    struct InputSettings
-    {
-        float mouseSpeedMultiplier = 1.0f;
-        float moveSpeedMultiplier = 1.0f;
-        bool cameraEnabled;
-
-        bool printFPSToConsole;
-        bool printIMGUIToConsole;
-        bool printInputToConsole;
-    };
-
     class Input
     {
     public:
@@ -80,6 +69,15 @@ namespace Core
 			F3
 		};
 
+        struct InputSettings
+        {
+            float moveSpeedMultiplier = 1.0f;
+            bool cameraEnabled = false;
+
+            bool printFPSToConsole = false;
+            bool printIMGUIToConsole = false;
+            bool printInputToConsole = false;
+        };
         static inline InputSettings inputSettings;
 
         static inline unordered_map<Action, Key> key;
@@ -101,11 +99,11 @@ namespace Core
     private:
         struct DebugSettings
         {
-            bool wasFullscreenKeyPressed;
-            bool wasVSYNCKeyPressed;
-            bool wasFPSDebugKeyPressed;
-            bool wasIMGUIDebugKeyPressed;
-            bool wasInputDebugKeyPressed;
+            bool wasFullscreenKeyPressed = false;
+            bool wasVSYNCKeyPressed = false;
+            bool wasFPSDebugKeyPressed = false;
+            bool wasIMGUIDebugKeyPressed = false;
+            bool wasInputDebugKeyPressed = false;
         };
         static inline DebugSettings debugSettings;
 

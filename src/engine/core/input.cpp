@@ -54,6 +54,8 @@ namespace Core
         key[Action::PrintFPSDebugToConsole] = Key::F1; glfwKey[Action::PrintFPSDebugToConsole] = GLFW_KEY_F1;
         key[Action::PrintIMGUIDebugToConsole] = Key::F2; glfwKey[Action::PrintIMGUIDebugToConsole] = GLFW_KEY_F2;
         key[Action::PrintInputDebugToConsole] = Key::F3; glfwKey[Action::PrintInputDebugToConsole] = GLFW_KEY_F3;
+
+        ImGuiIO& io = ImGui::GetIO();
     }
 
     Input::Input(GLFWwindow* window, float sensitivity) : 
@@ -71,23 +73,25 @@ namespace Core
 	{
         Input::ProcessKeyboardInput(Render::window);
 
-        ImGuiIO& io = ImGui::GetIO();
-
         if (inputSettings.cameraEnabled)
         {
-            //process mouse movement
-            double mouseX, mouseY;
-            glfwGetCursorPos(window, &mouseX, &mouseY);
             glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
             {
                 Render::camera.ProcessMouseMovement(xpos, ypos);
             });
-            Render::camera.ProcessMouseMovement(mouseX, mouseY);
-            Render::cameraSpeed = static_cast<float>(2.5f * inputSettings.mouseSpeedMultiplier * TimeManager::deltaTime);
+            Render::cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
-        else glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        else
+        {
+            glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) 
+            {
+                ImGui::GetIO().MousePos = ImVec2(xpos, ypos);
+            });
+
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
 
         if (inputSettings.printInputToConsole)
         {

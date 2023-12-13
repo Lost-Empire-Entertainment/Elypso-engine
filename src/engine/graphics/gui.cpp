@@ -205,7 +205,6 @@ namespace Graphics
 		ImGui::SetWindowFontScale(1.5);
 
 		GUI::RS_CameraClipRange();
-		GUI::RS_MouseSpeed();
 		GUI::RS_MoveSpeedMultiplier();
 		GUI::RS_FOV();
 
@@ -316,23 +315,6 @@ namespace Graphics
 		if (ImGui::Button("Reset##farclip"))
 		{
 			Render::farClip = 100.0f;
-		}
-	}
-	void GUI::RS_MouseSpeed()
-	{
-		ImGui::Separator();
-
-		ImGui::Text("Mouse speed multiplier");
-		ImGui::Text("");
-		ImGui::SliderFloat("##mousespeed", &Input::inputSettings.mouseSpeedMultiplier, 0.1f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust mouse sensitivity.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##mousesens"))
-		{
-			Input::inputSettings.mouseSpeedMultiplier = 1.0f;
 		}
 	}
 	void GUI::RS_MoveSpeedMultiplier()
