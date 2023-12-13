@@ -73,7 +73,7 @@ namespace Core
 
         ImGuiIO& io = ImGui::GetIO();
 
-        if (cameraEnabled)
+        if (inputSettings.cameraEnabled)
         {
             //process mouse movement
             double mouseX, mouseY;
@@ -83,13 +83,13 @@ namespace Core
                 Render::camera.ProcessMouseMovement(xpos, ypos);
             });
             Render::camera.ProcessMouseMovement(mouseX, mouseY);
-            Render::cameraSpeed = static_cast<float>(2.5f * mouseSpeedMultiplier * TimeManager::deltaTime);
+            Render::cameraSpeed = static_cast<float>(2.5f * inputSettings.mouseSpeedMultiplier * TimeManager::deltaTime);
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
         else glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-        if (printInputToConsole)
+        if (inputSettings.printInputToConsole)
         {
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
             {
@@ -116,7 +116,7 @@ namespace Core
         //toggle fullscreen
         int fullscreenKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::ToggleFullscreen]));
         if (fullscreenKeyState == GLFW_PRESS 
-            && !wasFullscreenKeyPressed)
+            && !debugSettings.wasFullscreenKeyPressed)
         {
             Render::ToggleFullscreenMode(Render::window, Render::enableFullscreen);
 
@@ -125,16 +125,16 @@ namespace Core
                 Type::INFO,
                 "User set fullscreen state to " + to_string(Render::enableFullscreen) + ".\n");
 
-            wasFullscreenKeyPressed = true;
+            debugSettings.wasFullscreenKeyPressed = true;
         }
         else if (fullscreenKeyState == GLFW_RELEASE)
         {
-            wasFullscreenKeyPressed = false;
+            debugSettings.wasFullscreenKeyPressed = false;
         }
         //toggle vsync
         int vsyncKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::ToggleVSYNC]));
         if (vsyncKeyState == GLFW_PRESS 
-            && !wasVSYNCKeyPressed)
+            && !debugSettings.wasVSYNCKeyPressed)
         {
             Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
             glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
@@ -145,56 +145,56 @@ namespace Core
                 "User set vsync state to " + to_string(Render::useMonitorRefreshRate) + 
                 ". Monitor refresh rate: " + to_string(GUI::GetScreenRefreshRate()) + ".\n");
 
-            wasVSYNCKeyPressed = true;
+            debugSettings.wasVSYNCKeyPressed = true;
         }
         else if (vsyncKeyState == GLFW_RELEASE)
         {
-            wasVSYNCKeyPressed = false;
+            debugSettings.wasVSYNCKeyPressed = false;
         }
 
         //toggle console framerate debug messages
         int fpsKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::PrintFPSDebugToConsole]));
         if (fpsKeyState == GLFW_PRESS
-            && !wasFPSDebugKeyPressed)
+            && !debugSettings.wasFPSDebugKeyPressed)
         {
-            Input::printFPSToConsole = !Input::printFPSToConsole;
-            wasFPSDebugKeyPressed = true;
+            inputSettings.printFPSToConsole = !inputSettings.printFPSToConsole;
+            debugSettings.wasFPSDebugKeyPressed = true;
         }
         else if (fpsKeyState == GLFW_RELEASE)
         {
-            wasFPSDebugKeyPressed = false;
+            debugSettings.wasFPSDebugKeyPressed = false;
         }
         //toggle console imgui debug messages
         int imguiKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::PrintIMGUIDebugToConsole]));
         if (imguiKeyState == GLFW_PRESS
-            && !wasIMGUIDebugKeyPressed)
+            && !debugSettings.wasIMGUIDebugKeyPressed)
         {
-            Input::printIMGUIToConsole = !Input::printIMGUIToConsole;
-            wasIMGUIDebugKeyPressed = true;
+            inputSettings.printIMGUIToConsole = !inputSettings.printIMGUIToConsole;
+            debugSettings.wasIMGUIDebugKeyPressed = true;
         }
         else if (imguiKeyState == GLFW_RELEASE)
         {
-            wasIMGUIDebugKeyPressed = false;
+            debugSettings.wasIMGUIDebugKeyPressed = false;
         }
         //toggle console input debug messages
         int inputKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::PrintInputDebugToConsole]));
         if (inputKeyState == GLFW_PRESS
-            && !wasInputDebugKeyPressed)
+            && !debugSettings.wasInputDebugKeyPressed)
         {
-            Input::printInputToConsole = !Input::printInputToConsole;
-            wasInputDebugKeyPressed = true;
+            inputSettings.printInputToConsole = !inputSettings.printInputToConsole;
+            debugSettings.wasInputDebugKeyPressed = true;
         }
         else if (inputKeyState == GLFW_RELEASE)
         {
-            wasInputDebugKeyPressed = false;
+            debugSettings.wasInputDebugKeyPressed = false;
         }
 
-        if (cameraEnabled)
+        if (inputSettings.cameraEnabled)
         {
             bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraSprint])) == GLFW_PRESS;
             float currentSpeed = Render::cameraSpeed;
-            if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;
-            else                    currentSpeed = 1.0f * moveSpeedMultiplier;
+            if (isLeftShiftPressed) currentSpeed = 2.0f * inputSettings.moveSpeedMultiplier;
+            else                    currentSpeed = 1.0f * inputSettings.moveSpeedMultiplier;
 
             vec3 front = Render::camera.GetFront();
             vec3 right = Render::camera.GetRight();
@@ -234,7 +234,7 @@ namespace Core
 
     void Input::ProcessMouseMovement(double xpos, double ypos) 
     {
-        if (cameraEnabled)
+        if (inputSettings.cameraEnabled)
         {
             if (firstMouse)
             {
@@ -280,7 +280,7 @@ namespace Core
         if (action == GLFW_PRESS
             && key == GLFW_KEY_ESCAPE)
         {
-            cameraEnabled = !cameraEnabled;
+            inputSettings.cameraEnabled = !inputSettings.cameraEnabled;
         }
     }
 

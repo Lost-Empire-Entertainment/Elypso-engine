@@ -35,6 +35,17 @@ using namespace Utils;
 
 namespace Core
 {
+    struct InputSettings
+    {
+        float mouseSpeedMultiplier = 1.0f;
+        float moveSpeedMultiplier = 1.0f;
+        bool cameraEnabled;
+
+        bool printFPSToConsole;
+        bool printIMGUIToConsole;
+        bool printInputToConsole;
+    };
+
     class Input
     {
     public:
@@ -69,16 +80,10 @@ namespace Core
 			F3
 		};
 
+        static inline InputSettings inputSettings;
+
         static inline unordered_map<Action, Key> key;
         static inline unordered_map<Action, int> glfwKey;
-
-        static inline float mouseSpeedMultiplier = 1.0f;
-        static inline float moveSpeedMultiplier = 1.0f;
-        static inline bool cameraEnabled;
-
-        static inline bool printFPSToConsole;
-        static inline bool printIMGUIToConsole;
-        static inline bool printInputToConsole;
 
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;
@@ -94,6 +99,16 @@ namespace Core
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     private:
+        struct DebugSettings
+        {
+            bool wasFullscreenKeyPressed;
+            bool wasVSYNCKeyPressed;
+            bool wasFPSDebugKeyPressed;
+            bool wasIMGUIDebugKeyPressed;
+            bool wasInputDebugKeyPressed;
+        };
+        static inline DebugSettings debugSettings;
+
         GLFWwindow* window;
         float yaw;
         float pitch;
@@ -105,12 +120,6 @@ namespace Core
         vec3 cameraPos;
         vec3 cameraFront;
         vec3 cameraUp;
-
-        static inline bool wasFullscreenKeyPressed;
-        static inline bool wasVSYNCKeyPressed;
-        static inline bool wasFPSDebugKeyPressed;
-        static inline bool wasIMGUIDebugKeyPressed;
-        static inline bool wasInputDebugKeyPressed;
 
         void ProcessMouseMovement(double xpos, double ypos);
         static void ProcessKeyboardInput(GLFWwindow* window);

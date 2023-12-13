@@ -91,7 +91,7 @@ namespace Graphics
 		GUI::RenderDebugMenu();
 		GUI::RenderSlider();
 
-		if (Input::printIMGUIToConsole)
+		if (Input::inputSettings.printIMGUIToConsole)
 		{
 			/*
 			ImVec2 mousePos = ImGui::GetMousePos();
@@ -255,7 +255,7 @@ namespace Graphics
 			"Toggle VSync: %s %s", 
 			string(magic_enum::enum_name(Input::key[Input::Action::ToggleVSYNC])), 
 			vsyncText);
-		string cameraEnabledText = (Input::cameraEnabled) ?
+		string cameraEnabledText = (Input::inputSettings.cameraEnabled) ?
 			"(true)" :
 			"(false)";
 		ImGui::Text("Toggle camera: Escape %s", cameraEnabledText);
@@ -266,21 +266,21 @@ namespace Graphics
 
 		ImGui::Text("Debug keys");
 		ImGui::Text("");
-		string fpsText = (Input::printFPSToConsole) ?
+		string fpsText = (Input::inputSettings.printFPSToConsole) ?
 			"(true)" :
 			"(false)";
 		ImGui::Text(
 			"FPS messages: %s %s", 
 			string(magic_enum::enum_name(Input::key[Input::Action::PrintFPSDebugToConsole])), 
 			fpsText);
-		string imguiText = (Input::printIMGUIToConsole) ?
+		string imguiText = (Input::inputSettings.printIMGUIToConsole) ?
 			"(true)" :
 			"(false)";
 		ImGui::Text(
 			"ImGui messages: %s %s", 
 			string(magic_enum::enum_name(Input::key[Input::Action::PrintIMGUIDebugToConsole])), 
 			imguiText);
-		string inputText = (Input::printInputToConsole) ?
+		string inputText = (Input::inputSettings.printInputToConsole) ?
 			"(true)" :
 			"(false)";
 		ImGui::Text(
@@ -324,7 +324,7 @@ namespace Graphics
 
 		ImGui::Text("Mouse speed multiplier");
 		ImGui::Text("");
-		ImGui::SliderFloat("##mousespeed", &Input::mouseSpeedMultiplier, 0.1f, 10.0f);
+		ImGui::SliderFloat("##mousespeed", &Input::inputSettings.mouseSpeedMultiplier, 0.1f, 10.0f);
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetTooltip("Adjust mouse sensitivity.");
@@ -332,7 +332,7 @@ namespace Graphics
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##mousesens"))
 		{
-			Input::mouseSpeedMultiplier = 1.0f;
+			Input::inputSettings.mouseSpeedMultiplier = 1.0f;
 		}
 	}
 	void GUI::RS_MoveSpeedMultiplier()
@@ -341,7 +341,7 @@ namespace Graphics
 
 		ImGui::Text("Move speed multiplier");
 		ImGui::Text("");
-		ImGui::SliderFloat("##movespeed", &Input::moveSpeedMultiplier, 0.1f, 10.0f);
+		ImGui::SliderFloat("##movespeed", &Input::inputSettings.moveSpeedMultiplier, 0.1f, 10.0f);
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetTooltip("Adjust camera move speed.");
@@ -349,7 +349,7 @@ namespace Graphics
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##movespeedmult"))
 		{
-			Input::moveSpeedMultiplier = 1.0f;
+			Input::inputSettings.moveSpeedMultiplier = 1.0f;
 		}
 	}
 	void GUI::RS_FOV()

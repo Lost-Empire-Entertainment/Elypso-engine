@@ -64,7 +64,7 @@ namespace Core
 			displayedFPS = fps;
 
 			//print FPS to the console if enabled
-			if (Input::printFPSToConsole)
+			if (Input::inputSettings.printFPSToConsole)
 			{
 				cout << "FPS: " << displayedFPS
 					<< ", Elapsed time: " << elapsed_seconds
