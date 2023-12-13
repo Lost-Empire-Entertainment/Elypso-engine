@@ -39,7 +39,7 @@ namespace Graphics
 		//debug groups
 		void RDM_Info();
 		void RDM_GeneralKeys();
-		void RDM_DebugKeys();
+		void RDM_DebugButtons();
 
 		//slider groups
 		void RS_CameraClipRange();

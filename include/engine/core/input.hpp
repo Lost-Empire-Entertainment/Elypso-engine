@@ -46,12 +46,7 @@ namespace Core
             CameraRight,
             CameraUp,
             CameraDown,
-            CameraSprint,
-            ToggleFullscreen,
-            ToggleVSYNC,
-            PrintFPSDebugToConsole,
-            PrintIMGUIDebugToConsole,
-            PrintInputDebugToConsole
+            CameraSprint
         };
         enum Key
         {
@@ -61,12 +56,7 @@ namespace Core
 			D,
 			Space,
 			Left_control,
-			Left_shift,
-			Z,
-			X,
-			F1,
-			F2,
-			F3
+			Left_shift
 		};
 
         struct InputSettings
@@ -97,16 +87,6 @@ namespace Core
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     private:
-        struct DebugSettings
-        {
-            bool wasFullscreenKeyPressed = false;
-            bool wasVSYNCKeyPressed = false;
-            bool wasFPSDebugKeyPressed = false;
-            bool wasIMGUIDebugKeyPressed = false;
-            bool wasInputDebugKeyPressed = false;
-        };
-        static inline DebugSettings debugSettings;
-
         GLFWwindow* window;
         float yaw;
         float pitch;

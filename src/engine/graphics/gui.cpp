@@ -171,7 +171,7 @@ namespace Graphics
 
 		GUI::RDM_Info();
 		GUI::RDM_GeneralKeys();
-		GUI::RDM_DebugKeys();
+		GUI::RDM_DebugButtons();
 
 		ImGui::End();
 	}
@@ -240,52 +240,53 @@ namespace Graphics
 		ImGui::Text("Up: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraUp])));
 		ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraDown])));
 		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraSprint])));
-		string fullScreenText = (Render::enableFullscreen) ?
-			"(true)" :
-			"(false)";
-		ImGui::Text(
-			"Toggle fullscreen: %s %s", 
-			string(magic_enum::enum_name(Input::key[Input::Action::ToggleFullscreen])), 
-			fullScreenText);
-		string vsyncText = (Render::useMonitorRefreshRate) ?
-			"(true)" :
-			"(false)";
-		ImGui::Text(
-			"Toggle VSync: %s %s", 
-			string(magic_enum::enum_name(Input::key[Input::Action::ToggleVSYNC])), 
-			vsyncText);
 		string cameraEnabledText = (Input::inputSettings.cameraEnabled) ?
 			"(true)" :
 			"(false)";
 		ImGui::Text("Toggle camera: Escape %s", cameraEnabledText);
 	}
-	void GUI::RDM_DebugKeys()
+	void GUI::RDM_DebugButtons()
 	{
 		ImGui::Separator();
 
-		ImGui::Text("Debug keys");
+		ImGui::Text("Debug buttons");
 		ImGui::Text("");
-		string fpsText = (Input::inputSettings.printFPSToConsole) ?
-			"(true)" :
-			"(false)";
-		ImGui::Text(
-			"FPS messages: %s %s", 
-			string(magic_enum::enum_name(Input::key[Input::Action::PrintFPSDebugToConsole])), 
-			fpsText);
-		string imguiText = (Input::inputSettings.printIMGUIToConsole) ?
-			"(true)" :
-			"(false)";
-		ImGui::Text(
-			"ImGui messages: %s %s", 
-			string(magic_enum::enum_name(Input::key[Input::Action::PrintIMGUIDebugToConsole])), 
-			imguiText);
-		string inputText = (Input::inputSettings.printInputToConsole) ?
-			"(true)" :
-			"(false)";
-		ImGui::Text(
-			"Input messages: %s %s", 
-			string(magic_enum::enum_name(Input::key[Input::Action::PrintInputDebugToConsole])), 
-			inputText);
+
+		if (ImGui::Button(Render::enableFullscreen ?
+			"Disable fullscreen" :
+			"Enable fullscreen"))
+		{
+			Render::enableFullscreen = !Render::enableFullscreen;
+			Render::ToggleFullscreenMode(Render::window, Render::enableFullscreen ? false : true);
+		}
+		if (ImGui::Button(Render::useMonitorRefreshRate ?
+			"Disable VSync" :
+			"Enable VSync"))
+		{
+			Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
+			glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
+		}
+
+		ImGui::Text("");
+
+		if (ImGui::Button(Input::inputSettings.printFPSToConsole ?
+			"Disable FPS messages" :
+			"Enable FPS messages"))
+		{
+			Input::inputSettings.printFPSToConsole = !Input::inputSettings.printFPSToConsole;
+		}
+		if (ImGui::Button(Input::inputSettings.printIMGUIToConsole ?
+			"Disable ImGui messages" :
+			"Enable ImGui messages"))
+		{
+			Input::inputSettings.printIMGUIToConsole = !Input::inputSettings.printIMGUIToConsole;
+		}
+		if (ImGui::Button(Input::inputSettings.printInputToConsole ?
+			"Disable input messages" :
+			"Enable input messages"))
+		{
+			Input::inputSettings.printInputToConsole = !Input::inputSettings.printInputToConsole;
+		}
 	}
 
 	void GUI::RS_CameraClipRange()

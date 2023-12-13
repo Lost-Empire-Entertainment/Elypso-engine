@@ -49,11 +49,6 @@ namespace Core
         key[Action::CameraUp] = Key::Space; glfwKey[Action::CameraUp] = GLFW_KEY_SPACE;
         key[Action::CameraDown] = Key::Left_control; glfwKey[Action::CameraDown] = GLFW_KEY_LEFT_CONTROL;
         key[Action::CameraSprint] = Key::Left_shift; glfwKey[Action::CameraSprint] = GLFW_KEY_LEFT_SHIFT;
-        key[Action::ToggleFullscreen] = Key::Z; glfwKey[Action::ToggleFullscreen] = GLFW_KEY_Z;
-        key[Action::ToggleVSYNC] = Key::X; glfwKey[Action::ToggleVSYNC] = GLFW_KEY_X;
-        key[Action::PrintFPSDebugToConsole] = Key::F1; glfwKey[Action::PrintFPSDebugToConsole] = GLFW_KEY_F1;
-        key[Action::PrintIMGUIDebugToConsole] = Key::F2; glfwKey[Action::PrintIMGUIDebugToConsole] = GLFW_KEY_F2;
-        key[Action::PrintInputDebugToConsole] = Key::F3; glfwKey[Action::PrintInputDebugToConsole] = GLFW_KEY_F3;
 
         ImGuiIO& io = ImGui::GetIO();
     }
@@ -117,82 +112,6 @@ namespace Core
 
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
-        //toggle fullscreen
-        int fullscreenKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::ToggleFullscreen]));
-        if (fullscreenKeyState == GLFW_PRESS 
-            && !debugSettings.wasFullscreenKeyPressed)
-        {
-            Render::ToggleFullscreenMode(Render::window, Render::enableFullscreen);
-
-            ConsoleManager::WriteConsoleMessage(
-                Caller::INPUT,
-                Type::INFO,
-                "User set fullscreen state to " + to_string(Render::enableFullscreen) + ".\n");
-
-            debugSettings.wasFullscreenKeyPressed = true;
-        }
-        else if (fullscreenKeyState == GLFW_RELEASE)
-        {
-            debugSettings.wasFullscreenKeyPressed = false;
-        }
-        //toggle vsync
-        int vsyncKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::ToggleVSYNC]));
-        if (vsyncKeyState == GLFW_PRESS 
-            && !debugSettings.wasVSYNCKeyPressed)
-        {
-            Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
-            glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
-
-            ConsoleManager::WriteConsoleMessage(
-                Caller::INPUT,
-                Type::INFO,
-                "User set vsync state to " + to_string(Render::useMonitorRefreshRate) + 
-                ". Monitor refresh rate: " + to_string(GUI::GetScreenRefreshRate()) + ".\n");
-
-            debugSettings.wasVSYNCKeyPressed = true;
-        }
-        else if (vsyncKeyState == GLFW_RELEASE)
-        {
-            debugSettings.wasVSYNCKeyPressed = false;
-        }
-
-        //toggle console framerate debug messages
-        int fpsKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::PrintFPSDebugToConsole]));
-        if (fpsKeyState == GLFW_PRESS
-            && !debugSettings.wasFPSDebugKeyPressed)
-        {
-            inputSettings.printFPSToConsole = !inputSettings.printFPSToConsole;
-            debugSettings.wasFPSDebugKeyPressed = true;
-        }
-        else if (fpsKeyState == GLFW_RELEASE)
-        {
-            debugSettings.wasFPSDebugKeyPressed = false;
-        }
-        //toggle console imgui debug messages
-        int imguiKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::PrintIMGUIDebugToConsole]));
-        if (imguiKeyState == GLFW_PRESS
-            && !debugSettings.wasIMGUIDebugKeyPressed)
-        {
-            inputSettings.printIMGUIToConsole = !inputSettings.printIMGUIToConsole;
-            debugSettings.wasIMGUIDebugKeyPressed = true;
-        }
-        else if (imguiKeyState == GLFW_RELEASE)
-        {
-            debugSettings.wasIMGUIDebugKeyPressed = false;
-        }
-        //toggle console input debug messages
-        int inputKeyState = glfwGetKey(window, static_cast<int>(glfwKey[Action::PrintInputDebugToConsole]));
-        if (inputKeyState == GLFW_PRESS
-            && !debugSettings.wasInputDebugKeyPressed)
-        {
-            inputSettings.printInputToConsole = !inputSettings.printInputToConsole;
-            debugSettings.wasInputDebugKeyPressed = true;
-        }
-        else if (inputKeyState == GLFW_RELEASE)
-        {
-            debugSettings.wasInputDebugKeyPressed = false;
-        }
-
         if (inputSettings.cameraEnabled)
         {
             bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraSprint])) == GLFW_PRESS;
