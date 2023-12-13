@@ -21,7 +21,8 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 
 ```
 - right-click the source directory folder and click open with visual studio to edit the source code
-- run RUN_ME.bat to configure cmake, generate build folder or generate nsis installer
+- run RUN_ME.bat to configure cmake at first setup and whenever you make file changes
+- run RUN_ME.bat to generate the executable with the build command
 ```
 
 ### Logs
