@@ -59,7 +59,6 @@ namespace Graphics
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
-		static void ToggleFullscreenMode(GLFWwindow* window, bool enableFullscreen);
 		static void Shutdown();
 		static void WindowLoop();
 	private:

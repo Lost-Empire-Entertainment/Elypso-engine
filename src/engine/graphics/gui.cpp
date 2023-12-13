@@ -252,13 +252,6 @@ namespace Graphics
 		ImGui::Text("Debug buttons");
 		ImGui::Text("");
 
-		if (ImGui::Button(Render::enableFullscreen ?
-			"Disable fullscreen" :
-			"Enable fullscreen"))
-		{
-			Render::enableFullscreen = !Render::enableFullscreen;
-			Render::ToggleFullscreenMode(Render::window, Render::enableFullscreen ? false : true);
-		}
 		if (ImGui::Button(Render::useMonitorRefreshRate ?
 			"Disable VSync" :
 			"Enable VSync"))

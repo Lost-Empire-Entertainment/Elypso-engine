@@ -89,46 +89,5 @@ if "%1" == "build" (
 	)
 )
 
-::
-:: START INSTALL WITH "build.bat install" COMMAND
-::
-
-if "%1" == "install" (
-	:: Change to the script directory
-	cd /d "%~dp0"
-	
-	:: If install folder exists then delete it to always ensure a fresh installer is created
-	if exist install (
-		rd /s /q install
-		echo %encln% Deleted folder: install
-	)
-
-	mkdir install
-
-	cd build
-
-	echo %cpinf% Started CPack configuration.
-
-	:: Package the project using CPack with the custom configuration file
-	cpack -C Release > "logs\cpack_log.txt" 2>&1
-
-	if %errorlevel% neq 0 (
-		echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/cpack_log.txt for more details.
-	) else (
-		if exist "%~dp0\install\_CPack_Packages\win64\NSIS\%inst%" (
-			echo %cpsuc% CPack packaging succeeded! Created log file at build/logs/cpack_log.txt.
-			
-			:: Move installed exe to install folder and delete cpack packages folder
-			cd ../install
-			move "%~dp0\install\_CPack_Packages\win64\NSIS\%ifol%\bin\%exe%" "%~dp0\install"
-			echo %encln% Moved file: %exe% to install
-			rd /s /q "_CPack_Packages"
-			echo %encln% Deleted folder: install/_CPack_Packages
-		) else (
-			echo %cperr% CPack packaging failed because %inst% did not get generated properly. Check build/logs/cpack_log.txt for more details.
-		)
-	)
-)
-
 pause
 exit

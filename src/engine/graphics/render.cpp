@@ -250,30 +250,6 @@ namespace Graphics
 		glViewport(0, 0, width, height);
 	}
 
-	void Render::ToggleFullscreenMode(GLFWwindow* window, bool toggleFullscreen)
-	{
-		//switch to windowed
-		if (toggleFullscreen)
-		{
-			const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-			glfwSetWindowMonitor(window, nullptr, 100, 100, windowedWidth, windowedHeight, GLFW_DONT_CARE);
-			UpdateAfterRescale(window, windowedWidth, windowedHeight);
-
-			enableFullscreen = false;
-		}
-		//switch to fullscreen
-		else
-		{
-			glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
-			GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
-			const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
-			glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
-			UpdateAfterRescale(window, mode->width, mode->height);
-
-			enableFullscreen = true;
-		}
-	}
-
 	void Render::Shutdown()
 	{
 		GUI::GetInstance().Shutdown();

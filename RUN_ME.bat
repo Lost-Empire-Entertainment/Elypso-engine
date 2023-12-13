@@ -43,18 +43,16 @@ echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake
 echo 2. Generate build files
-echo 3. Generate installer
-echo 4. Exit
+echo 3. Exit
 echo.
-echo 0. Reset (DELETES OUT, .VS, BUILD AND INSTALL FOLDERS)
+echo 0. Reset (DELETES OUT, .VS AND BUILD FOLDERS)
 echo.
 set /p choice="Choice: "
 
 :: Process user input
 if "%choice%"=="1" goto cmake
 if "%choice%"=="2" goto build
-if "%choice%"=="3" goto install
-if "%choice%"=="4" goto end
+if "%choice%"=="3" goto end
 if "%choice%"=="0" goto reset
 
 echo %enexc% Invalid choice! Please enter a valid number.
@@ -77,26 +75,14 @@ if not exist build (
 )
 goto menu
 
-:install
-echo %eninf% Running installer generation...
-
-if not exist build (
-	echo %enexc% Did not find build folder. Please first run CMake Configuration and then Build Generation.
-) else (
-	start /wait build.bat install
-)
-goto menu
-
 :reset
 echo %eninf% Running reset...
 if not exist out (
 	if not exist .vs (
 		if not exist build (
-			if not exist install (
-				echo %encln% There is nothing to reset.
-				pause
-				goto menu
-			)
+			echo %encln% There is nothing to reset.
+			pause
+			goto menu
 		)
 	)
 )
@@ -112,10 +98,6 @@ if exist .vs (
 if exist build (
 	echo %encln% Deleted folder: build
 	rd /s /q build
-)
-if exist install (
-	echo %encln% Deleted folder: install
-	rd /s /q install
 )
 
 pause

@@ -144,29 +144,10 @@ set(CPACK_RESOURCE_FILE_LICENSE ${LICENSE_FILE})
 # Set the output directory for CPack-generated files
 set(CPACK_PACKAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/install")
 
-# Enable NSIS debugging
-set(CPACK_NSIS_DEBUG ON)
-
 # Common package properties
 set(CPACK_GENERATOR "NSIS")
 set(CPACK_PACKAGE_NAME "Elypso engine")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
-
-# Set package properties for Windows (NSIS)
-set(CPACK_NSIS_DISPLAY_NAME "Elypso engine")
-set(CPACK_NSIS_PACKAGE_NAME "Elypso engine")
-set(CPACK_PACKAGE_FILE_NAME "Elypso engine installer")
-set(CPACK_NSIS_EXECUTABLE_NAME "Elypso engine")
-set(CPACK_NSIS_CONTACT "Lost Empire Entertainment")
-
-# Add uninstaller configuration for NSIS
-set(CPACK_NSIS_CREATE_UNINSTALLED_TARGET TRUE)
-set(CPACK_NSIS_MODIFY_PATH ON)
-
-# Installer icon
-set(CPACK_NSIS_MUI_ICON "${FILES_DIR}/icon.ico")
-# Executable icon
-set(CPACK_NSIS_INSTALLED_ICON_NAME "${FILES_DIR}/icon.ico")
 
 # Include CPack to enable packaging
 include(CPack)
