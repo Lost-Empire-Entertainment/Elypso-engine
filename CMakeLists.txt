@@ -120,34 +120,19 @@ target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PA
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-#copy and install license
-install(FILES ${CMAKE_BINARY_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_BINDIR}/licenses)
-install(FILES ${CMAKE_BINARY_DIR}/EULA.md DESTINATION ${CMAKE_INSTALL_BINDIR}/licenses)
-
-#copy and install EULA
-configure_file(${CMAKE_SOURCE_DIR}/EULA.md ${CMAKE_BINARY_DIR}/EULA.md COPYONLY)
-install(FILES ${CMAKE_BINARY_DIR}/EULA.md DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-message(STATUS "${eninf} Project Version: ${PROJECT_VERSION}")
-message(STATUS "${eninf} C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
-message(STATUS "${eninf} C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
-message(STATUS "${eninf} CMake Build Type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "${eninf} Cmake Install Prefix: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "${eninf} GLFW Library File: ${LIB_DIR}/glfw/glfw3.lib")
-
-# Set the path to the license file
-set(LICENSE_FILE ${CMAKE_SOURCE_DIR}/EULA.md)
-
-# Specify the license files for CPack to include in the installer
-set(CPACK_RESOURCE_FILE_LICENSE ${LICENSE_FILE})
-
-# Set the output directory for CPack-generated files
-set(CPACK_PACKAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/install")
-
-# Common package properties
-set(CPACK_GENERATOR "NSIS")
-set(CPACK_PACKAGE_NAME "Elypso engine")
-set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+# Copy "files" directory to the install directory after build
+add_custom_command(TARGET Elypso_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_engine>/files
+)
+# Copy "README.md", "LICENSE.md", and "EULA.md" files to the install directory after build
+add_custom_command(TARGET Elypso_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/README.md
+    ${CMAKE_SOURCE_DIR}/LICENSE.md
+    ${CMAKE_SOURCE_DIR}/EULA.md
+    $<TARGET_FILE_DIR:Elypso_engine>/
+)
 
 # Include CPack to enable packaging
 include(CPack)

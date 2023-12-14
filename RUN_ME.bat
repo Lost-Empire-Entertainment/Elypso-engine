@@ -43,16 +43,18 @@ echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake
 echo 2. Generate build files
-echo 3. Exit
+echo 3. Install engine (copies necessary files over to C:\Program Files\Elypso engine)
+echo 4. Exit
 echo.
-echo 0. Reset (DELETES OUT, .VS AND BUILD FOLDERS)
+echo 0. Reset (DELETES OUT, .VS, BUILD AND ENGINE FOLDERS)
 echo.
 set /p choice="Choice: "
 
 :: Process user input
 if "%choice%"=="1" goto cmake
 if "%choice%"=="2" goto build
-if "%choice%"=="3" goto end
+if "%choice%"=="3" goto install
+if "%choice%"=="4" goto end
 if "%choice%"=="0" goto reset
 
 echo %enexc% Invalid choice! Please enter a valid number.
@@ -73,16 +75,32 @@ if not exist build (
 ) else (
 	start /wait build.bat build
 )
+pause
 goto menu
+
+:install
+echo %eninf% Installing engine...
+
+if not exist build\Release\Elypso_engine.exe (
+	echo %enexc% Did not find executable. Please run CMake Configuration and build generation.
+	pause
+) else (
+	start /wait build.bat install
+)
+pause
+goto menu
+
 
 :reset
 echo %eninf% Running reset...
 if not exist out (
 	if not exist .vs (
 		if not exist build (
-			echo %encln% There is nothing to reset.
-			pause
-			goto menu
+			if not exist "C:\Program Files\Elypso engine" (
+				echo %encln% There is nothing to reset.
+				pause
+				goto menu
+			)
 		)
 	)
 )
@@ -99,7 +117,10 @@ if exist build (
 	echo %encln% Deleted folder: build
 	rd /s /q build
 )
-
+if exist "C:\Program Files\Elypso engine" (
+	echo %encln% Deleted folder: Elypso engine
+	rd /s /q "C:\Program Files\Elypso engine"
+)
 pause
 goto menu
 

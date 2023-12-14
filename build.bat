@@ -16,9 +16,6 @@ set "cmsuc=[CMAKE_SUCCESS]"
 set "cpinf=[CPACK_INFO]"
 set "cperr=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
-set "inst=Elypso engine installer.exe"
-set "ifol=Elypso engine installer"
-set "exe=Elypso_engine.exe"
 
 :: Can not run build.bat if no command was inserted
 if "%1%" == "" (
@@ -53,9 +50,9 @@ if "%1" == "cmake_config" (
 
 	echo %cminf% Started CMake configuration.
 
-	:: Configure the project (Release build) and generate NSIS installer
+	:: Configure the project (Release build)
 	if not exist logs mkdir logs
-	cmake -DCMAKE_BUILD_TYPE=Release -DCPACK_GENERATOR=NSIS .. >> logs\cmake_log.txt 2>&1
+	cmake -DCMAKE_BUILD_TYPE=Release .. >> logs\cmake_log.txt 2>&1
 
 	if %errorlevel% neq 0 (
 		echo %cmerr% CMake configuration failed. Check build/logs/build_log.txt for more details.
@@ -70,23 +67,63 @@ if "%1" == "cmake_config" (
 
 if "%1" == "build" (
 	:: Change to the script directory
-	cd /d "%~dp0"
-	
-	cd build
+	cd /d "%~dp0\build"
 
 	:: Build the project
 	echo %cminf% Started build generation.
 	cmake --build . --config Release > logs\build_log.txt 2>&1
-
+	
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed because %exe% did not get generated properly. Check build/logs/build_log.txt for more details.
+		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly. Check build/logs/build_log.txt for more details.
 	) else (
-		if exist "%~dp0\build\Release\%exe%" (
-			echo %cmsuc% Build succeeded! Created log file at build/logs/build_log.txt.
-		) else (
-			echo %cmerr% Build failed because %exe% did not get generated properly. Check build/logs/build_log.txt for more details.
-		)
+		echo %cmsuc% Build succeeded! Created log file at build/logs/build_log.txt.
 	)
+)
+
+::
+:: START INSTALL WITH "build.bat install" COMMAND
+::
+
+if "%1" == "install" (
+	cd /d "C:\Program Files"
+	
+	if not exist "Elypso engine" mkdir "Elypso engine"
+		
+	if exist "Elypso engine\Elypso_engine.exe" (
+		echo %encln% Deleted file: Elypso_engine.exe
+		del "Elypso engine\Elypso_engine.exe"
+	)
+	if exist "Elypso engine\files" (
+		echo %encln% Deleted folder: files
+		rd /s /q "Elypso engine\files"
+	)
+	if exist "Elypso engine\LICENSE.md" (
+		echo %encln% Deleted file: LICENSE.md
+		del "Elypso engine\LICENSE.md"
+	)
+	if exist "Elypso engine\EULA.md" (
+		echo %encln% Deleted file: EULA.md
+		del "Elypso engine\EULA.md"
+	)
+	if exist "Elypso engine\README.md" (
+		echo %encln% Deleted file: README.md
+		del "Elypso engine\README.md"
+	)
+	
+	echo %encln% Copied file: Elypso_engine.exe to C:\Program Files\Elypso engine
+	copy "%~dp0\build\Release\Elypso_engine.exe" "C:\Program Files\Elypso engine\Elypso_engine.exe"
+	
+	echo %encln% Copied folder: files to C:\Program Files\Elypso engine
+	xcopy "%~dp0\build\Release\files" "C:\Program Files\Elypso engine\files" /E /I /Y
+		
+	echo %encln% Copied file: LICENSE.md to C:\Program Files\Elypso engine
+	copy "%~dp0\LICENSE.md" "C:\Program Files\Elypso engine\LICENSE.md"
+		
+	echo %encln% Copied file: EULA.md to C:\Program Files\Elypso engine
+	copy "%~dp0\EULA.md" "C:\Program Files\Elypso engine\EULA.md"
+		
+	echo %encln% Copied file: README.md to C:\Program Files\Elypso engine
+	copy "%~dp0\README.md" "C:\Program Files\Elypso engine\README.md"
 )
 
 pause

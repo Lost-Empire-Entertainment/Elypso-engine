@@ -36,11 +36,13 @@
 
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 using namespace std;
 using namespace glm;
 using namespace Core;
 using namespace Utils;
+using namespace std::filesystem;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -146,10 +148,17 @@ namespace Graphics
 	}
 	void Render::ContentSetup()
 	{
-		string projectPath = Search::SearchByParent("Elypso engine");
-		string vertexPath = projectPath + "\\src\\engine\\graphics\\shaders\\vertexShader.vert";
-		string fragmentPath = projectPath + "\\src\\engine\\graphics\\shaders\\fragmentShader.frag";
-		string texturePath = projectPath + "\\files";
+		path fullPath = current_path();
+		string fullPathString = fullPath.generic_string();
+		string filePath = fullPathString + "/files";
+
+		string vertexPath = filePath + "/vertexShader.vert";
+		string fragmentPath = filePath + "/fragmentShader.frag";
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			"Files directory: " + filePath + "\n");
 
 		glEnable(GL_DEPTH_TEST);
 
@@ -230,7 +239,7 @@ namespace Graphics
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
-		Texture tex(texturePath);
+		Texture tex(filePath);
 		tex.LoadTexture("crate.jpg", false, GL_RGB);
 		tex.LoadTexture("pepe.png", true, GL_RGBA);
 
