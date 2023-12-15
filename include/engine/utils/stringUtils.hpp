@@ -44,5 +44,9 @@ namespace Utils
 		/// <param name="delimiter">Which char is the splitter?</param>
 		/// <returns></returns>
 		static vector<string> Split(const string& input, char delimiter);
+
+		static bool CanConvertStringToFloat(const string& value);
+
+		static bool CanConvertStringToInt(const string& value);
 	};
 }

@@ -17,11 +17,18 @@
 
 //engine
 #include "stringUtils.hpp"
+#include "console.hpp"
 
 #include <iostream>
 #include <sstream>
 
+using std::stof;
+using std::stoi;
+using std::exception;
 using std::istringstream;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Utils
 {
@@ -47,5 +54,43 @@ namespace Utils
 			tokens.push_back(token);
 		}
 		return tokens;
+	}
+
+	bool String::CanConvertStringToFloat(const string& value)
+	{
+		try
+		{
+			size_t pos;
+			float convertedValue = stof(value, &pos);
+
+			return pos == value.length();
+		}
+		catch (const exception& e)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Couldn't convert " + value + " to float!" + e.what());
+			return false;
+		}
+	}
+
+	bool String::CanConvertStringToInt(const string& value)
+	{
+		try
+		{
+			size_t pos;
+			int convertedValue = stoi(value, &pos);
+
+			return pos == value.length();
+		}
+		catch (const exception& e)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Couldn't convert " + value + " to int!" + e.what());
+			return false;
+		}
 	}
 }

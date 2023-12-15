@@ -31,5 +31,7 @@ namespace File
 	private:
 		static inline string filePath;
 		static inline string documentPath;
+
+		static bool IsValueInRange(string type, string value);
 	};
 }
