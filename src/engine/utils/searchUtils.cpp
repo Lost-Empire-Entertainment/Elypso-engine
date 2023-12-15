@@ -44,4 +44,9 @@ namespace Utils
 		//if no folder was found
 		return "";
 	}
+
+	string Search::FindDocumentsFolder()
+	{
+		return "";
+	}
 }

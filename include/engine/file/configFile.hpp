@@ -34,6 +34,6 @@ namespace File
 		static void SaveDataAtShutdown();
 	private:
 		static inline string filePath;
-		static inline ifstream inputFile;
+		static inline string documentPath;
 	};
 }

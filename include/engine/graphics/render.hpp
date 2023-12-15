@@ -36,8 +36,8 @@ namespace Graphics
 	class Render
 	{
 	public:
-		static inline const unsigned int SCR_WIDTH = 1280;
-		static inline const unsigned int SCR_HEIGHT = 720;
+		static inline unsigned int SCR_WIDTH = 1280;
+		static inline unsigned int SCR_HEIGHT = 720;
 
 		static inline unsigned int VBO, VAO, EBO;
 
@@ -67,6 +67,9 @@ namespace Graphics
 		static Shader* shader;
 
 		static inline vec3 cubePositions[10];
+
+		static inline int SCR_POS_X;
+		static inline int SCR_POS_Y;
 
 		static void GLFWSetup();
 		static void WindowSetup();

@@ -33,5 +33,7 @@ namespace Utils
 		/// <param name="targetFolderName">What is the desired folder name we are searching for?</param>
 		/// <returns></returns>
 		static string SearchByParent(const string& targetFolderName);
+
+		static string FindDocumentsFolder();
 	};
 }

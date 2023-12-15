@@ -87,43 +87,26 @@ if "%1" == "build" (
 if "%1" == "install" (
 	cd /d "C:\Program Files"
 	
-	if not exist "Elypso engine" mkdir "Elypso engine"
-		
-	if exist "Elypso engine\Elypso_engine.exe" (
-		echo %encln% Deleted file: Elypso_engine.exe
-		del "Elypso engine\Elypso_engine.exe"
+	if exist "C:\Program Files\Elypso engine" (
+		echo %encln% Deleted folder: Elypso engine
+		rd /s /q "C:\Program Files\Elypso engine"
 	)
-	if exist "Elypso engine\files" (
-		echo %encln% Deleted folder: files
-		rd /s /q "Elypso engine\files"
-	)
-	if exist "Elypso engine\LICENSE.md" (
-		echo %encln% Deleted file: LICENSE.md
-		del "Elypso engine\LICENSE.md"
-	)
-	if exist "Elypso engine\EULA.md" (
-		echo %encln% Deleted file: EULA.md
-		del "Elypso engine\EULA.md"
-	)
-	if exist "Elypso engine\README.md" (
-		echo %encln% Deleted file: README.md
-		del "Elypso engine\README.md"
-	)
+	mkdir "Elypso engine"
 	
-	echo %encln% Copied file: Elypso_engine.exe to C:\Program Files\Elypso engine
+	echo %eninf% Copied file: Elypso_engine.exe to C:\Program Files\Elypso engine
 	copy "%~dp0\build\Release\Elypso_engine.exe" "C:\Program Files\Elypso engine\Elypso_engine.exe"
-	
-	echo %encln% Copied folder: files to C:\Program Files\Elypso engine
-	xcopy "%~dp0\build\Release\files" "C:\Program Files\Elypso engine\files" /E /I /Y
 		
-	echo %encln% Copied file: LICENSE.md to C:\Program Files\Elypso engine
+	echo %eninf% Copied file: LICENSE.md to C:\Program Files\Elypso engine
 	copy "%~dp0\LICENSE.md" "C:\Program Files\Elypso engine\LICENSE.md"
 		
-	echo %encln% Copied file: EULA.md to C:\Program Files\Elypso engine
+	echo %eninf% Copied file: EULA.md to C:\Program Files\Elypso engine
 	copy "%~dp0\EULA.md" "C:\Program Files\Elypso engine\EULA.md"
 		
-	echo %encln% Copied file: README.md to C:\Program Files\Elypso engine
+	echo %eninf% Copied file: README.md to C:\Program Files\Elypso engine
 	copy "%~dp0\README.md" "C:\Program Files\Elypso engine\README.md"
+	
+	echo %eninf% Copied folder: files to C:\Program Files\Elypso engine
+	xcopy "%~dp0\build\Release\files" "C:\Program Files\Elypso engine\files" /E /I /Y
 )
 
 pause

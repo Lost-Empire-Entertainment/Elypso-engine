@@ -5,6 +5,10 @@
 
 cmake_minimum_required(VERSION 3.27)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+endif()
+
 set(CMAKE_INSTALL_PREFIX "C:/Program Files" CACHE PATH "Install path prefix, prepended onto install directories.")
 
 set(CMAKE_CXX_STANDARD 20)
