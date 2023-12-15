@@ -90,6 +90,7 @@ namespace Graphics
 
 		GUI::RenderDebugMenu();
 		GUI::RenderSlider();
+		GUI::RenderConsole();
 
 		if (Input::inputSettings.printIMGUIToConsole)
 		{
@@ -146,27 +147,14 @@ namespace Graphics
 
 	void GUI::RenderDebugMenu()
 	{
-		//docked and not movable
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoSavedSettings;
-
-		ImVec4 bgColor = ImVec4(0.0f, 0.0f, 0.0f, 0.5f);
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
-
-		//window initial size
+		ImVec2 initialPos(5, 5);
 		ImVec2 initialSize(350, 700);
+		ImVec2 minSize(350, 600);
+		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
 
-		//start a new window with specified flags and size
-		ImGui::SetNextWindowSize(initialSize, ImGuiCond_Once);
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::Begin("Debug menu");
 
-		ImGui::Begin("Debug menu", nullptr, windowFlags);
-
-		//set font size
 		ImGui::SetWindowFontScale(1.5);
 
 		GUI::RDM_Info();
@@ -179,34 +167,36 @@ namespace Graphics
 	// render sliders menu at the top right corner like RenderDebugMenu()
 	void GUI::RenderSlider()
 	{
-		//docked and not movable
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoSavedSettings;
-
-		ImVec4 bgColor = ImVec4(0.0f, 0.0f, 0.0f, 0.5f);
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
-
+		ImVec2 initialPos(925, 5);
 		ImVec2 initialSize(350, 700);
+		ImVec2 minSize(350, 600);
+		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
 
-		ImVec2 viewportSize = ImGui::GetIO().DisplaySize;
+		ImGui::Begin("Sliders menu");
 
-		ImVec2 windowPos(viewportSize.x - initialSize.x, 0);
-
-		ImGui::SetNextWindowSize(initialSize, ImGuiCond_Once);
-		ImGui::SetNextWindowPos(windowPos);
-
-		ImGui::Begin("Sliders menu", nullptr, windowFlags);
-
-		//set font size
 		ImGui::SetWindowFontScale(1.5);
 
 		GUI::RS_CameraClipRange();
 		GUI::RS_MoveSpeedMultiplier();
 		GUI::RS_FOV();
+
+		ImGui::End();
+	}
+
+	void GUI::RenderConsole()
+	{
+		ImVec2 initialPos(365, 505);
+		ImVec2 initialSize(550, 200);
+		ImVec2 minSize(350, 200);
+		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGui::Begin("Console");
+
+		ImGui::SetWindowFontScale(1.5);
+
+		ImGui::Text("This is a console!");
 
 		ImGui::End();
 	}

@@ -35,6 +35,7 @@ namespace Graphics
 		//rendered ui
 		void RenderDebugMenu();
 		void RenderSlider();
+		void RenderConsole();
 
 		//debug groups
 		void RDM_Info();
