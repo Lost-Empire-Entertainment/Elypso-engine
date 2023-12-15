@@ -17,14 +17,28 @@
 
 //external
 #include "glad.h"
+#include "glm.hpp"
 
 //engine
 #include "console.hpp"
 #include "shader.hpp"
 
-using namespace std;
-using namespace glm;
-using namespace Core;
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+using std::string;
+using std::ifstream;
+using std::stringstream;
+using glm::vec2;
+using glm::vec3;
+using glm::vec4;
+using glm::mat2;
+using glm::mat3;
+using glm::mat4;
+
+using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

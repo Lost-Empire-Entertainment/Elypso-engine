@@ -17,6 +17,7 @@
 
 //external
 #include "glad.h"
+#include "glfw3.h"
 
 //engine
 #include "admin.hpp"
@@ -27,7 +28,12 @@
 #include "timeManager.hpp"
 #include "configFile.hpp"
 
-using namespace Graphics;
+#include <iostream>
+#include <string>
+
+using std::string;
+using std::cout;
+using Graphics::Render;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

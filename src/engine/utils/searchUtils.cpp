@@ -18,8 +18,13 @@
 //engine
 #include "searchUtils.hpp"
 
-using namespace std;
-using namespace std::filesystem;
+#include <string>
+#include <filesystem>
+#include <iostream>
+
+using std::string;
+using std::filesystem::path;
+using std::filesystem::current_path;
 
 namespace Utils
 {

@@ -43,7 +43,7 @@ echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake
 echo 2. Generate build files
-echo 3. Install engine (copies necessary files over to C:\Program Files\Elypso engine)
+echo 3. Install engine (creates a fresh install of Elypso engine to C:\Program Files\Elypso engine)
 echo 4. Exit
 echo.
 echo 0. Reset (DELETES OUT, .VS, BUILD AND ENGINE FOLDERS)

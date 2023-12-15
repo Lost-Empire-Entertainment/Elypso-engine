@@ -17,23 +17,6 @@
 
 #pragma once
 
-//external
-#include "glm.hpp"
-#include "glm/gtc/matrix_transform.hpp" //two matrix_transform.hpp files exist in glm
-#include "glfw3.h"
-#include "magic_enum.hpp"
-
-//engine
-#include "stringUtils.hpp"
-
-#include <unordered_map>
-#include <iostream>
-#include <string>
-
-using namespace std;
-using namespace glm;
-using namespace Utils;
-
 namespace Core
 {
     class Input

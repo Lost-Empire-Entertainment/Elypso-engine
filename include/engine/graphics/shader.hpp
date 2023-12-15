@@ -17,18 +17,6 @@
 
 #pragma once
 
-//external
-#include "glad.h"
-#include "glm.hpp"
-
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
-using namespace std;
-using namespace glm;
-
 namespace Graphics
 {
 	class Shader

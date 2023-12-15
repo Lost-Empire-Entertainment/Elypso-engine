@@ -1,17 +1,17 @@
 //engine
 #include "stringUtils.hpp"
 
-using namespace std;
+#include <string>
+#include <iostream>
+#include <vector>
+#include <sstream>
+
+using std::string;
+using std::vector;
+using std::istringstream;
 
 namespace Utils
 {
-	/// <summary>
-	/// Replace a part of a string with something else.
-	/// </summary>
-	/// <param name="original">Full string</param>
-	/// <param name="search">Part to search for.</param>
-	/// <param name="replacement">Part to replace searched part with.</param>
-	/// <returns></returns>
 	string String::Replace(const string& original, const string& search, const string& replacement)
 	{
 		string result = original;
@@ -22,5 +22,17 @@ namespace Utils
 			pos += replacement.length();
 		}
 		return result;
+	}
+
+	vector<string> String::Split(const string& input, char delimiter)
+	{
+		vector<string> tokens;
+		string token;
+		istringstream tokenStream(input);
+		while (getline(tokenStream, token, delimiter))
+		{
+			tokens.push_back(token);
+		}
+		return tokens;
 	}
 }

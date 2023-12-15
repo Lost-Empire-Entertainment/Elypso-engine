@@ -17,6 +17,10 @@
 
 //external
 #include "glad.h"
+#include "glm.hpp"
+#include "glm/gtc/matrix_transform.hpp" //two matrix_transform.hpp files exist in glm
+#include "glfw3.h"
+#include "magic_enum.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -27,11 +31,23 @@
 #include "input.hpp"
 #include "render.hpp"
 #include "timeManager.hpp"
+#include "stringUtils.hpp"
 
-using namespace std;
-using namespace glm;
-using namespace Graphics;
-using namespace Core;
+#include <unordered_map>
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <sstream>
+
+using std::unordered_map;
+using std::ostringstream;
+using std::fixed;
+using std::setprecision;
+using glm::vec3;
+using glm::mat4;
+using glm::radians;
+
+using Graphics::Render;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -95,7 +111,7 @@ namespace Core
                 messageStream << 
                     "Left mouse button pressed at (" << 
                     fixed << 
-                    setprecision(2) << 
+                    setprecision(2) <<
                     mouseX << ", " << 
                     mouseY << ")\n";
 

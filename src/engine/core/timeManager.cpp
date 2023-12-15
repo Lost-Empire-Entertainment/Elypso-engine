@@ -22,7 +22,16 @@
 #include "input.hpp"
 #include "timeManager.hpp"
 
-using namespace Core;
+#include <iostream>
+#include <chrono>
+#include <algorithm>
+#include <thread>
+
+using std::cout;
+using std::to_string;
+using std::chrono::duration;
+using std::chrono::high_resolution_clock;
+using std::chrono::microseconds;
 
 namespace Core
 {

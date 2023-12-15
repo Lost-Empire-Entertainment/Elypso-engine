@@ -17,14 +17,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <chrono>
-#include <algorithm>
-#include <thread>
-
-using namespace std;
-using namespace std::chrono;
-
 namespace Core
 {
 	class TimeManager 

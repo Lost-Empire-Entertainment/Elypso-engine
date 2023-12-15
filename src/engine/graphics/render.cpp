@@ -34,11 +34,24 @@
 #include "texture.hpp"
 #include "timeManager.hpp"
 
-using namespace std;
-using namespace glm;
-using namespace Core;
-using namespace Utils;
-using namespace std::filesystem;
+#include <string>
+#include <iostream>
+#include <filesystem>
+
+using std::string;
+using std::chrono::high_resolution_clock;
+using std::filesystem::current_path;
+using std::filesystem::path;
+using glm::vec3;
+using glm::mat4;
+using glm::perspective;
+using glm::radians;
+using glm::rotate;
+
+using Core::Input;
+using Core::ConsoleManager;
+using Core::TimeManager;
+using Graphics::Shader;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -107,7 +120,7 @@ namespace Graphics
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
 		glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
-		glfwSetWindowSizeLimits(window, 800, 600, 7680, 4320);
+		glfwSetWindowSizeLimits(window, 1280, 720, 7680, 4320);
 		glfwSwapInterval(1);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);

@@ -18,6 +18,10 @@
 //engine
 #include "admin.hpp"
 
+#include <iostream>
+#include <Windows.h>
+#include <sddl.h>
+
 namespace Core
 {
     void Admin::RunAsAdmin()

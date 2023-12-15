@@ -15,11 +15,39 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
+//external
+#include "glad.h"
+#include "glfw3.h"
+
 //engine
 #include "configFile.hpp"
 #include "render.hpp"
+#include "console.hpp"
+#include "stringUtils.hpp"
 
-using namespace Graphics;
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+#include <string>
+#include <algorithm>
+#include <vector>
+
+using std::string;
+using std::ifstream;
+using std::vector;
+using std::to_string;
+using std::ofstream;
+using std::endl;
+using std::filesystem::current_path;
+using std::filesystem::path;
+using std::filesystem::exists;
+using std::filesystem::remove;
+
+using Core::ConsoleManager;
+using Graphics::Render;
+using Utils::String;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace File
 {
@@ -30,65 +58,132 @@ namespace File
 
 		filePath = fullPathString + "/" + fileName;
 
-		//check if file exists
 		if (exists(filePath))
 		{
-			string line;
-			while (getline(inputFile, line))
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::DEBUG,
+				"Config file path: " + filePath + "\n");
+
+			ifstream configFile(filePath);
+			if (!configFile.is_open())
 			{
-				cout << line << endl;
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Couldn't open config.txt!\n\n");
+				return;
 			}
 
-			inputFile.close();
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Reading from config.txt...\n");
+
+			string line;
+			while (getline(configFile, line))
+			{
+				line.erase(remove(line.begin(), line.end(), ' '), line.end());
+				vector<string> lineSplit = String::Split(line, ':');
+				vector<string> lineVariables;
+
+				string name = lineSplit[0];
+				string variables = lineSplit[1];
+				if (variables.find(',') != string::npos)
+				{
+					variables = lineSplit[1];
+					lineVariables = String::Split(variables, ',');
+				}
+				else lineVariables.push_back(lineSplit[1]);
+
+				//output config file results
+				/*
+				cout << "Name: " << name << endl;
+				for (const auto& variable : lineVariables)
+				{
+					cout << "  - " << variable << endl;
+				}
+				*/
+
+				if (name == "resolution")
+				{
+					unsigned int width = stoul(lineVariables[0]);
+					Render::SCR_WIDTH = width;
+					unsigned int height = stoul(lineVariables[1]);
+					Render::SCR_HEIGHT = height;
+					glfwSetWindowSize(Render::window, width, height);
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::DEBUG,
+						"Set resolution to " + to_string(Render::SCR_WIDTH) + ", " + to_string(Render::SCR_HEIGHT) + "\n");
+				}
+			}
+		}
+		else
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Did not find config.txt. Resetting to default values.\n");
 		}
 	}
 
 	void ConfigFile::SaveDataAtShutdown()
 	{
-		//check if file exists
 		if (exists(filePath))
 		{
-			if (remove(filePath)) 
+			if (!remove(filePath))
 			{
-				cout << "File output.txt has been successfully deleted." << endl;
-			}
-			else 
-			{
-				cerr << "Error deleting config.txt!" << endl;
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Couldn't delete config.txt!\n\n");
 				return;
 			}
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::CLEANUP,
+				"Deleted file: config.txt\n");
 		}
-		else
+
+		//open the file for writing
+		ofstream configFile("config.txt");
+
+		if (!configFile.is_open())
 		{
-			//open the file for writing
-			ofstream configFile("config.txt");
-
-			//check if the file is open
-			if (!configFile.is_open())
-			{
-				cerr << "Error opening new config.txt!" << endl;
-			}
-			else
-			{
-				//write config data into the config file
-				configFile << "resolution: " << Render::SCR_WIDTH << ", " << Render::SCR_HEIGHT << endl;
-				configFile << "vsync: " << Render::useMonitorRefreshRate << endl;
-				configFile << "fps: " << Render::fov << endl;
-				configFile << "camera near clip: " << Render::nearClip << endl;
-				configFile << "camera far clip: " << Render::farClip << endl;
-				configFile << "camera position: " <<
-					Render::cameraPos.x << ", " <<
-					Render::cameraPos.y << ", " <<
-					Render::cameraPos.z << endl;
-				configFile << "camera rotation: " <<
-					Render::camera.GetCameraRotation().x << ", " <<
-					Render::camera.GetCameraRotation().y << ", " <<
-					Render::camera.GetCameraRotation().z << endl;
-
-				configFile.close();
-
-				cout << "Sucessfully saved data to config.txt!" << endl;
-			}
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Couldn't open new config.txt!\n\n");
+			return;
 		}
+
+		//write config data into the config file
+		int width;
+		int height;
+		glfwGetWindowSize(Render::window, &width, &height);
+		configFile << "resolution: " << width << ", " << height << endl;
+
+		configFile << "vsync: " << Render::useMonitorRefreshRate << endl;
+		configFile << "fov: " << Render::fov << endl;
+		configFile << "camnearclip: " << Render::nearClip << endl;
+		configFile << "camfarclip: " << Render::farClip << endl;
+		configFile << "campos: " <<
+			Render::cameraPos.x << ", " <<
+			Render::cameraPos.y << ", " <<
+			Render::cameraPos.z << endl;
+		configFile << "camrot: " <<
+			Render::camera.GetCameraRotation().x << ", " <<
+			Render::camera.GetCameraRotation().y << ", " <<
+			Render::camera.GetCameraRotation().z << endl;
+
+		configFile.close();
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			"Sucessfully saved data to config.txt!\n");
 	}
 }

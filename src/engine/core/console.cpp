@@ -21,9 +21,32 @@
 //external
 #include "magic_enum.hpp"
 
-using namespace std;
-using namespace std::chrono;
-using namespace std::filesystem;
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <ctime>
+#include <chrono>
+#include <filesystem>
+#include <iomanip>
+#include <system_error>
+
+using std::string;
+using std::stringstream;
+using std::setw;
+using std::setfill;
+using std::ios;
+using std::error_code;
+using std::make_error_code;
+using std::errc;
+using std::endl;
+using std::cerr;
+using std::ofstream;
+using std::chrono::system_clock;
+using std::chrono::microseconds;
+using std::chrono::milliseconds;
+using std::filesystem::exists;
+using std::filesystem::remove;
+
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
