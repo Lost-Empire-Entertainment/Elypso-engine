@@ -34,10 +34,6 @@
 #include "texture.hpp"
 #include "timeManager.hpp"
 
-#include <iostream>
-#include <string>
-#include <filesystem>
-
 using namespace std;
 using namespace glm;
 using namespace Core;

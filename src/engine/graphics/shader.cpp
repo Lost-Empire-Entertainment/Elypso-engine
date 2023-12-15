@@ -22,11 +22,6 @@
 #include "console.hpp"
 #include "shader.hpp"
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-
 using namespace std;
 using namespace glm;
 using namespace Core;

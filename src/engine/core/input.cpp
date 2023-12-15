@@ -28,9 +28,6 @@
 #include "render.hpp"
 #include "timeManager.hpp"
 
-#include <iostream>
-#include <string>
-
 using namespace std;
 using namespace glm;
 using namespace Graphics;

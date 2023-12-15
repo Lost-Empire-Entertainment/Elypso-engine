@@ -22,6 +22,9 @@
 #include "glm.hpp"
 
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 using namespace std;
 using namespace glm;

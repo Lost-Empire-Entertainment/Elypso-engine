@@ -26,6 +26,8 @@
 #include "input.hpp"
 
 #include <string>
+#include <iostream>
+#include <filesystem>
 
 using namespace glm;
 
@@ -44,7 +46,6 @@ namespace Graphics
 		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
-		static inline bool enableFullscreen;
 		static inline bool useMonitorRefreshRate = true;
 
 		static inline GLFWwindow* window;

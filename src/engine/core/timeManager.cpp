@@ -22,9 +22,6 @@
 #include "input.hpp"
 #include "timeManager.hpp"
 
-#include <algorithm>
-#include <thread>
-
 using namespace Core;
 
 namespace Core

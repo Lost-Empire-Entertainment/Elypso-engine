@@ -18,14 +18,20 @@
 //engine
 #include "core.hpp"
 #include "shutdown.hpp"
+#include "configFile.hpp"
 
 using namespace Core;
+using namespace File;
 
 int main()
 {
 	Engine::InitializeEngine();
 
+	ConfigFile::ProcessConfigFile("config.txt");
+
 	Engine::RunEngine();
+
+	ConfigFile::SaveDataAtShutdown();
 
 	ShutdownManager::Shutdown();
 	return 0;

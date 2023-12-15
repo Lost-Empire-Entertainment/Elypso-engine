@@ -17,6 +17,10 @@
 
 #pragma once
 
+#include <iostream>
+#include <Windows.h>
+#include <sddl.h>
+
 namespace Core
 {
 	class Admin 

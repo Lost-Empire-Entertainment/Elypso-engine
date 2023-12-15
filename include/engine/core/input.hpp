@@ -19,7 +19,7 @@
 
 //external
 #include "glm.hpp"
-#include "matrix_transform.hpp" //glm/gtc
+#include "glm/gtc/matrix_transform.hpp" //two matrix_transform.hpp files exist in glm
 #include "glfw3.h"
 #include "magic_enum.hpp"
 
@@ -28,6 +28,7 @@
 
 #include <unordered_map>
 #include <iostream>
+#include <string>
 
 using namespace std;
 using namespace glm;

@@ -24,8 +24,6 @@
 #include "console.hpp"
 #include "texture.hpp"
 
-#include <iostream>
-
 using namespace std;
 using namespace Core;
 using Caller = Core::ConsoleManager::Caller;

@@ -25,8 +25,7 @@
 #include "render.hpp"
 #include "shutdown.hpp"
 #include "timeManager.hpp"
-
-#include <string>
+#include "configFile.hpp"
 
 using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;
