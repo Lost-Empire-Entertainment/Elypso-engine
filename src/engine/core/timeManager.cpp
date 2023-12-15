@@ -22,7 +22,14 @@
 #include "input.hpp"
 #include "timeManager.hpp"
 
-using namespace Core;
+#include <iostream>
+#include <algorithm>
+#include <thread>
+
+using std::cout;
+using std::to_string;
+using std::chrono::microseconds;
+using std::chrono::duration;
 
 namespace Core
 {

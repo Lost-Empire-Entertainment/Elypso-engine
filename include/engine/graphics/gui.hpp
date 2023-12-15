@@ -17,9 +17,6 @@
 
 #pragma once
 
-#include <sstream>
-#include <string>
-
 namespace Graphics
 {
 	class GUI

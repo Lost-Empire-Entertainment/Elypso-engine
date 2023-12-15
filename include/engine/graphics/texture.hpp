@@ -17,14 +17,9 @@
 
 #pragma once
 
-//external
-#include "glad.h"
-
-#include <string>
 #include <vector>
-#include <iostream>
 
-using namespace std;
+using std::vector;
 
 namespace Graphics
 {

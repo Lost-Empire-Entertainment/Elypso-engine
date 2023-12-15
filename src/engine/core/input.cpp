@@ -17,21 +17,31 @@
 
 //external
 #include "glad.h"
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "magic_enum.hpp"
 
 //engine
 #include "console.hpp"
 #include "gui.hpp"
-#include "input.hpp"
 #include "render.hpp"
 #include "timeManager.hpp"
+#include "stringUtils.hpp"
+#include "input.hpp"
 
-using namespace std;
-using namespace glm;
-using namespace Graphics;
-using namespace Core;
+#include <iostream>
+#include <string>
+
+using glm::radians;
+using glm::lookAt;
+using std::ostringstream;
+using std::fixed;
+using std::setprecision;
+
+using Graphics::Render;
+using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

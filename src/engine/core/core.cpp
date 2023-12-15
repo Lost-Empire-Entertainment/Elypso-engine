@@ -27,7 +27,9 @@
 #include "timeManager.hpp"
 #include "configFile.hpp"
 
-using namespace Graphics;
+using std::cout;
+
+using Graphics::Render;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

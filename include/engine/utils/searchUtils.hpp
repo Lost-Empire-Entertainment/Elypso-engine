@@ -18,9 +18,8 @@
 #pragma once
 
 #include <string>
-#include <filesystem>
 
-using namespace std;
+using std::string;
 
 namespace Utils
 {

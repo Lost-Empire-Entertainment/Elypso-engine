@@ -21,18 +21,15 @@
 #include "glm.hpp"
 #include "glm/gtc/matrix_transform.hpp" //two matrix_transform.hpp files exist in glm
 #include "glfw3.h"
-#include "magic_enum.hpp"
 
 //engine
-#include "stringUtils.hpp"
+#include "input.hpp"
 
 #include <unordered_map>
-#include <iostream>
-#include <string>
 
-using namespace std;
-using namespace glm;
-using namespace Utils;
+using glm::vec3;
+using glm::mat4;
+using std::unordered_map;
 
 namespace Core
 {

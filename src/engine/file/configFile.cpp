@@ -19,9 +19,23 @@
 #include "configFile.hpp"
 #include "render.hpp"
 #include "console.hpp"
+#include "stringUtils.hpp"
+
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+
+using std::endl;
+using std::to_string;
+using std::ifstream;
+using std::filesystem::path;
+using std::filesystem::current_path;
+using std::filesystem::exists;
+using std::filesystem::remove;
 
 using Graphics::Render;
 using Core::ConsoleManager;
+using Utils::String;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

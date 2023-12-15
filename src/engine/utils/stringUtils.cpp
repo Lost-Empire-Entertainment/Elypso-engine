@@ -18,7 +18,10 @@
 //engine
 #include "stringUtils.hpp"
 
-using namespace std;
+#include <iostream>
+#include <sstream>
+
+using std::istringstream;
 
 namespace Utils
 {

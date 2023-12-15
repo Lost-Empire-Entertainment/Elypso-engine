@@ -17,13 +17,9 @@
 
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <filesystem>
 #include <string>
 
-using namespace std;
-using namespace std::filesystem;
+using std::string;
 
 namespace File
 {

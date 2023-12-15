@@ -22,9 +22,15 @@
 #include "console.hpp"
 #include "shader.hpp"
 
-using namespace std;
-using namespace glm;
-using namespace Core;
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+using std::ifstream;
+using std::stringstream;
+
+using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

@@ -26,19 +26,24 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "gui.hpp"
-#include "input.hpp"
 #include "render.hpp"
 #include "searchUtils.hpp"
-#include "shader.hpp"
 #include "shutdown.hpp"
 #include "texture.hpp"
 #include "timeManager.hpp"
 
-using namespace std;
-using namespace glm;
-using namespace Core;
-using namespace Utils;
-using namespace std::filesystem;
+#include <string>
+#include <iostream>
+#include <filesystem>
+
+using std::filesystem::path;
+using std::filesystem::current_path;
+using glm::perspective;
+using glm::radians;
+
+using Core::Input;
+using Core::TimeManager;
+using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

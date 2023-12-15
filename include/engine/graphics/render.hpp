@@ -17,19 +17,8 @@
 
 #pragma once
 
-//external
-#include "glad.h"
-#include "glfw3.h"
-
-//engine
-#include "shader.hpp"
 #include "input.hpp"
-
-#include <string>
-#include <iostream>
-#include <filesystem>
-
-using namespace glm;
+#include "shader.hpp"
 
 namespace Graphics
 {

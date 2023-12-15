@@ -31,9 +31,13 @@
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
 
-using namespace std;
-using namespace Core;
-using namespace Utils;
+#include <sstream>
+#include <string>
+
+using Core::Engine;
+using Core::Input;
+using Core::ConsoleManager;
+using Core::TimeManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
