@@ -273,7 +273,13 @@ namespace File
 			}
 
 			configFile.close();
+		}
+	}
 
+	void ConfigFile::SaveDataAtShutdown()
+	{
+		if (exists(filePath + "/configFile.txt"))
+		{
 			if (!remove(filePath + "/configFile.txt"))
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -288,10 +294,7 @@ namespace File
 				Type::CLEANUP,
 				"Deleted file: config.txt\n");
 		}
-	}
 
-	void ConfigFile::SaveDataAtShutdown()
-	{
 		//open the file for writing
 		ofstream configFile(filePath + "/configFile.txt");
 
