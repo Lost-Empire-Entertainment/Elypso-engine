@@ -35,7 +35,7 @@ RUN_ME.bat has useful mechanics:
 - cmake configuration log is found at build\logs\cmake_log.txt
 - build generation log is found at build\logs\build_log.txt
 - cpack log is found at build\logs\cpack_log.txt
-- engine log is found at install\engine_log.txt
+- engine log is found where you run the engine exe
 ```
 
 ## Built with
