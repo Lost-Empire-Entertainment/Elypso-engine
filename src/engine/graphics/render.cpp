@@ -159,7 +159,7 @@ namespace Graphics
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
-			"Files directory: " + filePath + "\n");
+			"Game files path: " + filePath + "\n");
 
 		glEnable(GL_DEPTH_TEST);
 

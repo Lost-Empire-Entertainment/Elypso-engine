@@ -53,7 +53,7 @@ namespace File
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
-			"Documents folder path: " + filePath + "\n");
+			"Game documents path: " + filePath + "\n");
 
 		//check if file exists
 		if (exists(filePath + "/configFile.txt"))

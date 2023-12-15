@@ -29,6 +29,7 @@
 #include "render.hpp"
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
+#include "searchUtils.hpp"
 
 #include <sstream>
 #include <string>
@@ -37,6 +38,7 @@ using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
 using Core::TimeManager;
+using Utils::Search;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -52,7 +54,17 @@ namespace Graphics
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		ImGuiIO& io = ImGui::GetIO();
+
+		static string tempString = Search::FindDocumentsFolder() + "/imgui.ini";
+		const char* customConfigPath = tempString.c_str();
+		io.IniFilename = customConfigPath;
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::IMGUI,
+			Type::DEBUG,
+			"Imgui.ini path: " + tempString + ".\n");
+
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 
