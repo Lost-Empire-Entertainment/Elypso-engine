@@ -29,6 +29,7 @@
 
 using glm::vec3;
 using glm::mat4;
+using glm::radians;
 using std::unordered_map;
 
 namespace Core
@@ -80,6 +81,19 @@ namespace Core
         vec3 GetFront() const { return cameraFront; }
         vec3 GetRight() const { return normalize(cross(cameraFront, cameraUp)); }
         vec3 GetCameraRotation() const { return vec3(yaw, pitch, 0); }
+        void SetCameraRotation(const vec3& newRotation) 
+        {
+            //update internal state (yaw and pitch)
+            yaw = newRotation.x;
+            pitch = newRotation.y;
+
+            //recalculate cameraFront based on the new yaw and pitch
+            vec3 front{};
+            front.x = cos(radians(yaw)) * cos(radians(pitch));
+            front.y = sin(radians(pitch));
+            front.z = sin(radians(yaw)) * cos(radians(pitch));
+            cameraFront = normalize(front);
+        }
 
         static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

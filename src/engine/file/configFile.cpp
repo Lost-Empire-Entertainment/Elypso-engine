@@ -15,6 +15,9 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
+//external
+#include "glm.hpp"
+
 //engine
 #include "configFile.hpp"
 #include "render.hpp"
@@ -26,6 +29,7 @@
 #include <fstream>
 #include <filesystem>
 
+using glm::vec3;
 using std::cout;
 using std::endl;
 using std::to_string;
@@ -212,6 +216,10 @@ namespace File
 						&& ConfigFile::IsValueInRange("camposy", lineVariables[1])
 						&& ConfigFile::IsValueInRange("camposz", lineVariables[2]))
 					{
+						Render::cameraPos.x = stof(lineVariables[0]);
+						Render::cameraPos.y = stof(lineVariables[0]);
+						Render::cameraPos.z = stof(lineVariables[0]);
+
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
@@ -234,6 +242,11 @@ namespace File
 						&& ConfigFile::IsValueInRange("camroty", lineVariables[1])
 						&& ConfigFile::IsValueInRange("camrotz", lineVariables[2]))
 					{
+						Render::camera.SetCameraRotation(vec3(
+							stof(lineVariables[0]),
+							stof(lineVariables[1]),
+							stof(lineVariables[2])));
+
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
