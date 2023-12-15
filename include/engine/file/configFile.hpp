@@ -17,6 +17,14 @@
 
 #pragma once
 
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+#include <string>
+
+using namespace std;
+using namespace std::filesystem;
+
 namespace File
 {
 	class ConfigFile
@@ -26,6 +34,6 @@ namespace File
 		static void SaveDataAtShutdown();
 	private:
 		static inline string filePath;
-		static inline string documentPath;
+		static inline ifstream inputFile;
 	};
 }

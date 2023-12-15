@@ -25,7 +25,7 @@
 #include "render.hpp"
 #include "shutdown.hpp"
 
-using Graphics::Render;
+using namespace Graphics;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

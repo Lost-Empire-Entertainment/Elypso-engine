@@ -17,6 +17,15 @@
 
 #pragma once
 
+//external
+#include "glad.h"
+
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
 namespace Graphics
 {
 	class Texture

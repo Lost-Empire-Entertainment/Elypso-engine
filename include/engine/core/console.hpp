@@ -17,6 +17,17 @@
 
 #pragma once
 
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <ctime>
+#include <chrono>
+#include <filesystem>
+#include <iomanip>
+#include <system_error>
+
+using namespace std;
+
 namespace Core
 {
 	class ConsoleManager

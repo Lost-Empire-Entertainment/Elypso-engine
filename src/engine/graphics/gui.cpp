@@ -17,7 +17,6 @@
 
 //external
 #include "glad.h"
-#include "glfw3.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -32,13 +31,9 @@
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
 
-#include <sstream>
-#include <string>
-
-using Core::Input;
-using Core::ConsoleManager;
-using Core::Engine;
-using Core::TimeManager;
+using namespace std;
+using namespace Core;
+using namespace Utils;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

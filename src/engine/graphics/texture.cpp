@@ -24,13 +24,8 @@
 #include "console.hpp"
 #include "texture.hpp"
 
-#include <vector>;
-#include <string>;
-
-using std::vector;
-using std::string;
-
-using Core::ConsoleManager;
+using namespace std;
+using namespace Core;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

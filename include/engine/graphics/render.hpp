@@ -17,13 +17,27 @@
 
 #pragma once
 
+//external
+#include "glad.h"
+#include "glfw3.h"
+
+//engine
+#include "shader.hpp"
+#include "input.hpp"
+
+#include <string>
+#include <iostream>
+#include <filesystem>
+
+using namespace glm;
+
 namespace Graphics
 {
 	class Render
 	{
 	public:
-		static inline unsigned int SCR_WIDTH = 1280;
-		static inline unsigned int SCR_HEIGHT = 720;
+		static inline const unsigned int SCR_WIDTH = 1280;
+		static inline const unsigned int SCR_HEIGHT = 720;
 
 		static inline unsigned int VBO, VAO, EBO;
 
@@ -45,17 +59,14 @@ namespace Graphics
 		static Core::Input camera;
 
 		static void RenderSetup();
-
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 		static void Shutdown();
 		static void WindowLoop();
 	private:
+
 		static Shader* shader;
 
 		static inline vec3 cubePositions[10];
-
-		static inline int SCR_POS_X;
-		static inline int SCR_POS_Y;
 
 		static void GLFWSetup();
 		static void WindowSetup();

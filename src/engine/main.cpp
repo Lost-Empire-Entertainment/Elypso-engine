@@ -20,9 +20,8 @@
 #include "shutdown.hpp"
 #include "configFile.hpp"
 
-using Core::Engine;
-using Core::ShutdownManager;
-using File::ConfigFile;
+using namespace Core;
+using namespace File;
 
 int main()
 {
