@@ -20,22 +20,23 @@
 #include "render.hpp"
 #include "console.hpp"
 #include "stringUtils.hpp"
+#include "searchUtils.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 
+using std::cout;
 using std::endl;
 using std::to_string;
 using std::ifstream;
-using std::filesystem::path;
-using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::remove;
 
 using Graphics::Render;
 using Core::ConsoleManager;
 using Utils::String;
+using Utils::Search;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -43,19 +44,17 @@ namespace File
 {
 	void ConfigFile::ProcessConfigFile(const string& fileName)
 	{
-		path fullPath = current_path();
-		string fullPathString = fullPath.generic_string();
+		filePath = Search::FindDocumentsFolder();
 
-		filePath = fullPathString + "/" + fileName;
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			"Documents folder path: " + filePath + "\n");
 
-		if (exists(filePath))
+		//check if file exists
+		if (exists(filePath + "/configFile.txt"))
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::DEBUG,
-				"Config file path: " + filePath + "\n");
-
-			ifstream configFile(filePath);
+			ifstream configFile(filePath + "/configFile.txt");
 			if (!configFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -108,15 +107,10 @@ namespace File
 						"Set resolution to " + to_string(Render::SCR_WIDTH) + ", " + to_string(Render::SCR_HEIGHT) + "\n");
 				}
 			}
-		}
-	}
 
-	void ConfigFile::SaveDataAtShutdown()
-	{
-		//check if file exists
-		if (exists(filePath))
-		{
-			if (!remove(filePath)) 
+			configFile.close();
+
+			if (!remove(filePath + "/configFile.txt"))
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
@@ -130,45 +124,46 @@ namespace File
 				Type::CLEANUP,
 				"Deleted file: config.txt\n");
 		}
-		else
+	}
+
+	void ConfigFile::SaveDataAtShutdown()
+	{
+		//open the file for writing
+		ofstream configFile(filePath + "/configFile.txt");
+
+		if (!configFile.is_open())
 		{
-			//open the file for writing
-			ofstream configFile("config.txt");
-
-			if (!configFile.is_open())
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Couldn't open new config.txt!\n\n");
-				return;
-			}
-
-			//write config data into the config file
-			int width;
-			int height;
-			glfwGetWindowSize(Render::window, &width, &height);
-			configFile << "resolution: " << width << ", " << height << endl;
-
-			configFile << "vsync: " << Render::useMonitorRefreshRate << endl;
-			configFile << "fov: " << Render::fov << endl;
-			configFile << "camnearclip: " << Render::nearClip << endl;
-			configFile << "camfarclip: " << Render::farClip << endl;
-			configFile << "campos: " <<
-				Render::cameraPos.x << ", " <<
-				Render::cameraPos.y << ", " <<
-				Render::cameraPos.z << endl;
-			configFile << "camrot: " <<
-				Render::camera.GetCameraRotation().x << ", " <<
-				Render::camera.GetCameraRotation().y << ", " <<
-				Render::camera.GetCameraRotation().z << endl;
-
-			configFile.close();
-
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
-				Type::DEBUG,
-				"Sucessfully saved data to config.txt!\n");
+				Type::EXCEPTION,
+				"Couldn't open new config.txt!\n\n");
+			return;
 		}
+
+		//write config data into the config file
+		int width;
+		int height;
+		glfwGetWindowSize(Render::window, &width, &height);
+		configFile << "resolution: " << width << ", " << height << endl;
+
+		configFile << "vsync: " << Render::useMonitorRefreshRate << endl;
+		configFile << "fov: " << Render::fov << endl;
+		configFile << "camnearclip: " << Render::nearClip << endl;
+		configFile << "camfarclip: " << Render::farClip << endl;
+		configFile << "campos: " <<
+			Render::cameraPos.x << ", " <<
+			Render::cameraPos.y << ", " <<
+			Render::cameraPos.z << endl;
+		configFile << "camrot: " <<
+			Render::camera.GetCameraRotation().x << ", " <<
+			Render::camera.GetCameraRotation().y << ", " <<
+			Render::camera.GetCameraRotation().z << endl;
+
+		configFile.close();
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			"Sucessfully saved data to config.txt!\n");
 	}
 }

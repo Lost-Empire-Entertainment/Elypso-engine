@@ -15,9 +15,6 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-//external
-#include "glad.h"
-
 //engine
 #include "admin.hpp"
 #include "console.hpp"

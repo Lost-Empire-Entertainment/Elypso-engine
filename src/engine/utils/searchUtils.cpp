@@ -17,9 +17,13 @@
 
 //engine
 #include "searchUtils.hpp"
+#include "stringUtils.hpp"
 
+#include <Windows.h>
+#include <ShlObj.h>
 #include <filesystem>
 
+using std::wstring;
 using std::filesystem::path;
 using std::filesystem::current_path;
 
@@ -49,6 +53,17 @@ namespace Utils
 
 	string Search::FindDocumentsFolder()
 	{
-		return "";
+		PWSTR path;
+		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &path);
+		if (SUCCEEDED(result))
+		{
+			wstring wPath(path);
+			CoTaskMemFree(path); //free the allocated memory
+
+			return String::Replace(
+				string(wPath.begin(), wPath.end()), "\\", "/") + 
+				"/" + "Elypso engine";
+		}
+		else return "";
 	}
 }

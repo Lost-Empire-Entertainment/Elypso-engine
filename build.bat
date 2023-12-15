@@ -17,6 +17,9 @@ set "cpinf=[CPACK_INFO]"
 set "cperr=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
+set "programFilesPath=C:\Program Files\Elypso engine"
+set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
+
 :: Can not run build.bat if no command was inserted
 if "%1%" == "" (
 	echo %enexc% Please run RUN_ME.bat to choose what actions to do with this project.
@@ -87,26 +90,31 @@ if "%1" == "build" (
 if "%1" == "install" (
 	cd /d "C:\Program Files"
 	
-	if exist "C:\Program Files\Elypso engine" (
-		echo %encln% Deleted folder: Elypso engine
-		rd /s /q "C:\Program Files\Elypso engine"
+	if exist "%programFilesPath%" (
+		echo %encln% Deleted folder: Program Files/Elypso engine
+		rd /s /q "%programFilesPath%"
 	)
-	mkdir "Elypso engine"
+	mkdir "%programFilesPath%"
+	if exist "%documentsPath%" (
+		echo %encln% Deleted folder: Documents/Elypso engine
+		rd /s /q "%documentsPath%"
+	)
+	mkdir "%documentsPath%"
 	
-	echo %eninf% Copied file: Elypso_engine.exe to C:\Program Files\Elypso engine
-	copy "%~dp0\build\Release\Elypso_engine.exe" "C:\Program Files\Elypso engine\Elypso_engine.exe"
+	echo %eninf% Copied file: Elypso_engine.exe to Program Files\Elypso engine
+	copy "%~dp0\build\Release\Elypso_engine.exe" "%programFilesPath%\Elypso_engine.exe"
 		
-	echo %eninf% Copied file: LICENSE.md to C:\Program Files\Elypso engine
-	copy "%~dp0\LICENSE.md" "C:\Program Files\Elypso engine\LICENSE.md"
+	echo %eninf% Copied file: LICENSE.md to Program Files\Elypso engine
+	copy "%~dp0\LICENSE.md" "%programFilesPath%\LICENSE.md"
 		
-	echo %eninf% Copied file: EULA.md to C:\Program Files\Elypso engine
-	copy "%~dp0\EULA.md" "C:\Program Files\Elypso engine\EULA.md"
+	echo %eninf% Copied file: EULA.md to Program Files\Elypso engine
+	copy "%~dp0\EULA.md" "%programFilesPath%\EULA.md"
 		
-	echo %eninf% Copied file: README.md to C:\Program Files\Elypso engine
-	copy "%~dp0\README.md" "C:\Program Files\Elypso engine\README.md"
+	echo %eninf% Copied file: README.md to Program Files\Elypso engine
+	copy "%~dp0\README.md" "%programFilesPath%\README.md"
 	
-	echo %eninf% Copied folder: files to C:\Program Files\Elypso engine
-	xcopy "%~dp0\build\Release\files" "C:\Program Files\Elypso engine\files" /E /I /Y
+	echo %eninf% Copied folder: files to Program Files\Elypso engine
+	xcopy "%~dp0\build\Release\files" "%programFilesPath%\files" /E /I /Y
 )
 
 pause

@@ -11,6 +11,9 @@ set "eninf=[ENGINE_INFO]"
 set "enexc=[ENGINE_EXCEPTION]"
 set "encln=[ENGINE_CLEANUP]"
 
+set "programFilesPath=C:\Program Files\Elypso engine"
+set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
+
 :: Check if the script is running with administrative privileges
 NET SESSION >nul 2>&1
 if %errorlevel% neq 0 (
@@ -96,10 +99,12 @@ echo %eninf% Running reset...
 if not exist out (
 	if not exist .vs (
 		if not exist build (
-			if not exist "C:\Program Files\Elypso engine" (
-				echo %encln% There is nothing to reset.
-				pause
-				goto menu
+			if not exist "%programFilesPath%" (
+				if not exist "%documentsPath%" (
+					echo %encln% There is nothing to reset.
+					pause
+					goto menu
+				)
 			)
 		)
 	)
@@ -117,9 +122,13 @@ if exist build (
 	echo %encln% Deleted folder: build
 	rd /s /q build
 )
-if exist "C:\Program Files\Elypso engine" (
-	echo %encln% Deleted folder: Elypso engine
-	rd /s /q "C:\Program Files\Elypso engine"
+if exist "%programFilesPath%" (
+	echo %encln% Deleted folder: Program Files/Elypso engine
+	rd /s /q "%programFilesPath%"
+)
+if exist "%documentsPath%" (
+	echo %encln% Deleted folder: Documents/Elypso engine
+	rd /s /q "%documentsPath%"
 )
 pause
 goto menu

@@ -15,11 +15,12 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-//engine
-#include "console.hpp"
-
 //external
 #include "magic_enum.hpp"
+
+//engine
+#include "console.hpp"
+#include "searchUtils.hpp"
 
 #include <ctime>
 #include <chrono>
@@ -28,7 +29,7 @@
 #include <system_error>
 
 using std::endl;
-using std::cerr;
+using std::cout;
 using std::error_code;
 using std::errc;
 using std::stringstream;
@@ -43,12 +44,13 @@ using std::chrono::duration_cast;
 using std::chrono::time_point_cast;
 using std::chrono::system_clock;
 
+using Utils::Search;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
-    Logger logger("engine_log.txt");
+    Logger logger(Search::FindDocumentsFolder() + "/" + "engine_log.txt");
 
     string Timestamp::GetCurrentTimestamp()
     {
@@ -131,7 +133,7 @@ namespace Core
             break;
         }
 
-        cerr << msg;
+        cout << msg;
         logger.Log(msg);
     }
 }
