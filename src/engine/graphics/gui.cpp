@@ -196,7 +196,7 @@ namespace Graphics
 		ImVec2 scrollingRegionSize(
 			ImGui::GetContentRegionAvail().x,
 			ImGui::GetContentRegionAvail().y - 25);
-		ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, false, ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, true);
 
 		float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
 		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
@@ -223,15 +223,15 @@ namespace Graphics
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight));
 
 		// Draw the text filter input box
+		ImGui::PushItemWidth(scrollingRegionSize.x);
 		ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
 		ImGui::InputText("##filter", textFilter.InputBuf, IM_ARRAYSIZE(textFilter.InputBuf), flags,
 			[](ImGuiInputTextCallbackData* data)
 			{
-				//example callback to process each character entered in the input box
 				char c = data->EventChar;
 				if (c == '\n' || c == '\r')
 				{
-					//handle Enter/Return key press as needed
+					return 1;
 				}
 				return 0;
 			});
@@ -256,6 +256,8 @@ namespace Graphics
 
 			memset(textFilter.InputBuf, 0, sizeof(textFilter.InputBuf));
 		}
+
+		ImGui::PopItemWidth();
 
 		ImGui::End();
 	}
