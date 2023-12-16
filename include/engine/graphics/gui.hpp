@@ -17,6 +17,9 @@
 
 #pragma once
 
+//external
+#include "imgui.h"
+
 namespace Graphics
 {
 	class GUI
@@ -31,6 +34,15 @@ namespace Graphics
 		void Render();
 		void Shutdown();
 		static GUI& GetInstance();
+
+		static void AddTextToConsole(const string& newText);
+	private:
+		//holds text content
+		static inline ImGuiTextBuffer textBuffer;
+		//text filter for searching
+		static inline ImGuiTextFilter textFilter;
+
+		static inline bool scrollToBottom;
 
 		//rendered ui
 		void RenderDebugMenu();

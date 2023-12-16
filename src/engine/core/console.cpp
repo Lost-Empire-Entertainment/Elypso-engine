@@ -21,6 +21,7 @@
 //engine
 #include "console.hpp"
 #include "searchUtils.hpp"
+#include "gui.hpp"
 
 #include <ctime>
 #include <chrono>
@@ -44,6 +45,7 @@ using std::chrono::duration_cast;
 using std::chrono::time_point_cast;
 using std::chrono::system_clock;
 
+using Graphics::GUI;
 using Utils::Search;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -133,7 +135,7 @@ namespace Core
             break;
         }
 
-        cout << msg;
+        GUI::GetInstance().AddTextToConsole(msg);
         logger.Log(msg);
     }
 }

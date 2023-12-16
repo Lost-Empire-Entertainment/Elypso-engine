@@ -21,6 +21,7 @@
 //engine
 #include "input.hpp"
 #include "timeManager.hpp"
+#include "console.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -30,6 +31,10 @@ using std::cout;
 using std::to_string;
 using std::chrono::microseconds;
 using std::chrono::duration;
+
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
@@ -70,11 +75,16 @@ namespace Core
 			//print FPS to the console if enabled
 			if (Input::inputSettings.printFPSToConsole)
 			{
-				cout << "FPS: " << displayedFPS
-					<< ", Elapsed time: " << elapsed_seconds
-					<< ", TargetDT: " << TimeManager::targetDT
-					<< ", Frame duration: " << frameDuration
-					<< ", Delta Time: " + to_string(deltaTime) << "\n";
+				string msg = 
+					"FPS: " + to_string(displayedFPS) + ", " +
+					"Elapsed time : " + to_string(elapsed_seconds) + ", " +
+					"TargetDT: " + to_string(TimeManager::targetDT) + ", " +
+					"Frame duration: " + to_string(frameDuration.count()) + ", " +
+					"Delta Time: " + to_string(deltaTime) + "\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::DEBUG,
+					msg);
 			}
 		}
 	}

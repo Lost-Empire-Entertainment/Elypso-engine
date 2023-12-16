@@ -34,6 +34,9 @@
 #include <sstream>
 #include <string>
 
+using std::cout;
+using std::endl;
+
 using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
@@ -200,7 +203,7 @@ namespace Graphics
 	{
 		ImVec2 initialPos(365, 505);
 		ImVec2 initialSize(550, 200);
-		ImVec2 minSize(350, 200);
+		ImVec2 minSize(550, 200);
 		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
 		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
 
@@ -208,9 +211,39 @@ namespace Graphics
 
 		ImGui::SetWindowFontScale(1.5);
 
-		ImGui::Text("This is a console!");
+		//text area with scrollable region
+		ImVec2 scrollingRegionSize(
+			ImGui::GetContentRegionAvail().x,
+			ImGui::GetContentRegionAvail().y - 25);
+		ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, false, ImGuiWindowFlags_HorizontalScrollbar);
+
+		float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
+		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
+
+		//display the content of the text buffer
+		ImGui::TextWrapped("%s", textBuffer.begin(), textBuffer.end());
+
+		ImGui::PopTextWrapPos();
+
+		if (scrollToBottom)
+		{
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+			scrollToBottom = false;
+		}
+
+		ImGui::EndChild();
+
+		//text filter input box
+		float textAreaHeight = ImGui::GetContentRegionAvail().y - 25.0f;
+		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight));
+		textFilter.Draw("Filter (inc, -exc)");
 
 		ImGui::End();
+	}
+	void GUI::AddTextToConsole(const string& newText)
+	{
+		textBuffer.appendf("%s\n", newText.c_str());
+		scrollToBottom = true;
 	}
 
 	void GUI::RDM_Info()
