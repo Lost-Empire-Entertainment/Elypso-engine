@@ -29,6 +29,8 @@ namespace Core
 		static inline string name = "Elypso engine";
 		static inline string version = "0.0.6 Prototype";
 
+		static inline bool startedWindowLoop;
+
 		static void InitializeEngine();
 		static void RunEngine();
 	};

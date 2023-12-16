@@ -23,10 +23,12 @@
 #include "shutdown.hpp"
 #include "timeManager.hpp"
 #include "configFile.hpp"
+#include "gui.hpp"
 
 using std::cout;
 
 using Graphics::Render;
+using Graphics::GUI;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -49,6 +51,12 @@ namespace Core
 			Type::INFO,
 			"Entering window loop...\n");
 
+		startedWindowLoop = true;
+		if (!Core::ConsoleManager::storedLogs.empty()) 
+		{
+			Core::ConsoleManager::PrintLogsToBuffer();
+		}
+
 		while (!glfwWindowShouldClose(Render::window))
 		{
 			glfwPollEvents();
@@ -56,6 +64,12 @@ namespace Core
 			TimeManager::UpdateDeltaTime();
 
 			Render::WindowLoop();
+
+			if (!GUI::firstScrollToBottom)
+			{
+				GUI::scrollToBottom = true;
+				GUI::firstScrollToBottom = true;
+			}
 		}
 
 		ConsoleManager::WriteConsoleMessage(

@@ -25,7 +25,12 @@ namespace Graphics
 	class GUI
 	{
 	public:
+		static inline bool firstScrollToBottom;
+		static inline bool scrollToBottom;
 		static inline bool allowScrollToBottom;
+
+		//holds text content
+		static inline ImGuiTextBuffer textBuffer;
 
 		void Initialize();
 
@@ -37,14 +42,11 @@ namespace Graphics
 		void Shutdown();
 		static GUI& GetInstance();
 
-		static void AddTextToConsole(const string& newText);
+		static void AddTextToConsole();
+		static inline string addedText;
 	private:
-		//holds text content
-		static inline ImGuiTextBuffer textBuffer;
 		//text filter for searching
 		static inline ImGuiTextFilter textFilter;
-
-		static inline bool scrollToBottom;
 
 		//rendered ui
 		void RenderDebugMenu();

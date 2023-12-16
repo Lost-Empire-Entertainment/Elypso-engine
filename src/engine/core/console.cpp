@@ -22,6 +22,7 @@
 #include "console.hpp"
 #include "searchUtils.hpp"
 #include "gui.hpp"
+#include "core.hpp"
 
 #include <ctime>
 #include <chrono>
@@ -47,11 +48,14 @@ using std::chrono::system_clock;
 
 using Graphics::GUI;
 using Utils::Search;
+using Core::Engine;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
+    std::vector<std::string> ConsoleManager::storedLogs;
+
     Logger logger(Search::FindDocumentsFolder() + "/" + "engine_log.txt");
 
     string Timestamp::GetCurrentTimestamp()
@@ -115,6 +119,20 @@ namespace Core
         }
     }
 
+    void ConsoleManager::AddLog(const std::string& message)
+    {
+        storedLogs.push_back(message);
+    }
+
+    void ConsoleManager::PrintLogsToBuffer()
+    {
+        for (const auto& log : storedLogs)
+        {
+            GUI::GetInstance().textBuffer.appendf("%s\n", log.c_str());
+        }
+        storedLogs.clear();
+    }
+
     void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message)
     {
         string msg;
@@ -135,7 +153,15 @@ namespace Core
             break;
         }
 
-        GUI::GetInstance().AddTextToConsole(msg);
+        if (Engine::startedWindowLoop)
+        {
+            GUI::GetInstance().addedText = msg;
+            GUI::GetInstance().scrollToBottom = true;
+        }
+        else
+        {
+            Core::ConsoleManager::AddLog(msg);
+        }
         logger.Log(msg);
     }
 }

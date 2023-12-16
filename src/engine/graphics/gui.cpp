@@ -19,6 +19,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 #include "magic_enum.hpp"
 
 //engine
@@ -36,6 +37,7 @@
 
 using std::cout;
 using std::endl;
+using std::to_string;
 
 using Core::Engine;
 using Core::Input;
@@ -58,6 +60,8 @@ namespace Graphics
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
+
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 		static string tempString = Search::FindDocumentsFolder() + "/imgui.ini";
 		const char* customConfigPath = tempString.c_str();
@@ -103,50 +107,14 @@ namespace Graphics
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
 		GUI::RenderDebugMenu();
 		GUI::RenderSlider();
 		GUI::RenderConsole();
 
 		if (Input::inputSettings.printIMGUIToConsole)
 		{
-			/*
-			ImVec2 mousePos = ImGui::GetMousePos();
-			ostringstream messageStream;
-			messageStream <<
-				"Mouse Position: " <<
-				fixed << 
-				setprecision(2) <<
-				mousePos.x << "," <<
-				mousePos.y << "\n";
-			ConsoleManager::WriteConsoleMessage(
-				Caller::IMGUI, 
-				Type::DEBUG, 
-				messageStream.str());
-			
-			if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_W)))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::IMGUI, 
-					Type::DEBUG, 
-					"W key pressed!\n");
-			}
-
-			if (ImGui::IsMousePosValid())
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::IMGUI,
-					Type::DEBUG,
-					"Mouse position is valid!\n");
-			}
-			else
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::IMGUI,
-					Type::DEBUG,
-					"Mouse position is not valid!\n");
-			}
-			*/
-
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -225,11 +193,7 @@ namespace Graphics
 
 		ImGui::PopTextWrapPos();
 
-		if (scrollToBottom)
-		{
-			ImGui::SetScrollY(ImGui::GetScrollMaxY());
-			scrollToBottom = false;
-		}
+		AddTextToConsole();
 
 		ImGui::EndChild();
 
@@ -240,10 +204,16 @@ namespace Graphics
 
 		ImGui::End();
 	}
-	void GUI::AddTextToConsole(const string& newText)
+	void GUI::AddTextToConsole()
 	{
-		textBuffer.appendf("%s\n", newText.c_str());
-		scrollToBottom = true;
+		if (scrollToBottom)
+		{
+			textBuffer.appendf("%s\n", addedText.c_str());
+
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+			scrollToBottom = false;
+		}
 	}
 
 	void GUI::RDM_Info()

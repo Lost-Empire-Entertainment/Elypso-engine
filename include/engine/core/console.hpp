@@ -20,9 +20,11 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 using std::string;
 using std::ofstream;
+using std::vector;
 
 namespace Core
 {
@@ -59,6 +61,12 @@ namespace Core
 		/// <param name="type">What type of a message is this?</param>
 		/// <param name="message">The actual message.</param>
 		static void WriteConsoleMessage(Caller caller, Type type, const string& message);
+
+		static void AddLog(const std::string& message);
+
+		static void PrintLogsToBuffer();
+
+		static vector<string> storedLogs;
 	};
 
 	class Timestamp
