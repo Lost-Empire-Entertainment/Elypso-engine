@@ -220,8 +220,8 @@ namespace File
 						&& ConfigFile::IsValueInRange(name + "Z", lineVariables[2]))
 					{
 						Render::cameraPos.x = stof(lineVariables[0]);
-						Render::cameraPos.y = stof(lineVariables[0]);
-						Render::cameraPos.z = stof(lineVariables[0]);
+						Render::cameraPos.y = stof(lineVariables[1]);
+						Render::cameraPos.z = stof(lineVariables[2]);
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -239,7 +239,7 @@ namespace File
 							"X, Y or Z position for value " + lineVariables[0] + " camera is out of range or not a float! Resetting to default.\n");
 					}
 				}
-				else if (name == "camrot")
+				else if (name == "camRot")
 				{
 					if (ConfigFile::IsValueInRange(name + "X", lineVariables[0])
 						&& ConfigFile::IsValueInRange(name + "Y", lineVariables[1])
