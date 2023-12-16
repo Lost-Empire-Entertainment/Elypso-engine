@@ -64,12 +64,6 @@ namespace Core
 			TimeManager::UpdateDeltaTime();
 
 			Render::WindowLoop();
-
-			if (!GUI::firstScrollToBottom)
-			{
-				GUI::scrollToBottom = true;
-				GUI::firstScrollToBottom = true;
-			}
 		}
 
 		ConsoleManager::WriteConsoleMessage(

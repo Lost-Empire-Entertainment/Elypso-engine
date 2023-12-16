@@ -80,7 +80,7 @@ namespace Graphics
 
 		string filesPath = Search::SearchByParent("files");
 
-		io.Fonts->AddFontFromFileTTF((filesPath + "/fonts/type_wrong_smudged_bold/TypeWrong Smudged Bold.ttf").c_str(), 10.0f);
+		io.Fonts->AddFontFromFileTTF((filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		CustomizeImGuiStyle();
 	}
@@ -211,6 +211,14 @@ namespace Graphics
 
 		ImGui::PopTextWrapPos();
 
+		//scrolls to the bottom if scrolling is allowed
+		//and if user is close to the newest console message
+		if (allowScrollToBottom)
+		{
+			bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
+			if (isNearBottom) ImGui::SetScrollHereY(1.0f);
+		}
+
 		AddTextToConsole();
 
 		ImGui::EndChild();
@@ -218,19 +226,58 @@ namespace Graphics
 		//text filter input box
 		float textAreaHeight = ImGui::GetContentRegionAvail().y - 25.0f;
 		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight));
-		textFilter.Draw("Filter (inc, -exc)");
+
+		// Draw the text filter input box
+		ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
+		ImGui::InputText("##filter", textFilter.InputBuf, IM_ARRAYSIZE(textFilter.InputBuf), flags,
+			[](ImGuiInputTextCallbackData* data)
+			{
+				//example callback to process each character entered in the input box
+				char c = data->EventChar;
+				if (c == '\n' || c == '\r')
+				{
+					//handle Enter/Return key press as needed
+				}
+				return 0;
+			});
+
+		//retrieve the text entered by the user
+		const char* filterText = textFilter.InputBuf;
+
+		//check if Enter/Return was pressed, if so, reset the processed flag and clear the input field
+		if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter)) 
+			|| ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_KeyPadEnter)))
+		{
+			//parse the filter text
+			if (!filterTextProcessed
+				&& filterText
+				&& filterText[0] != '\0')
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					string(filterText) + "\n");
+			}
+
+			memset(textFilter.InputBuf, 0, sizeof(textFilter.InputBuf));
+		}
 
 		ImGui::End();
 	}
 	void GUI::AddTextToConsole()
 	{
-		if (scrollToBottom)
+		if (writeToConsole)
 		{
 			textBuffer.appendf("%s\n", addedText.c_str());
 
-			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+			//second scroll update that scrolls to the bottom if scrolling is allowed
+			//and when any new text is added. top one fully scrolls to the bottom,
+			//this one is used because there is no better way to force scroll to the bottom
+			//when enter is pressed and only using this doesnt fully scroll to the bottom
+			//so this works together with the top scroll update to always scroll to the bottom
+			if (allowScrollToBottom) ImGui::SetScrollHereY(1.0f);
 
-			scrollToBottom = false;
+			writeToConsole = false;
 		}
 	}
 

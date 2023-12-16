@@ -25,11 +25,10 @@ namespace Graphics
 	class GUI
 	{
 	public:
-		static inline bool firstScrollToBottom;
-		static inline bool scrollToBottom;
+		static inline bool writeToConsole;
 		static inline bool allowScrollToBottom = true;
 
-		static inline float fontScale;
+		static inline float fontScale = 1.5f;
 
 		//holds text content
 		static inline ImGuiTextBuffer textBuffer;
@@ -51,6 +50,8 @@ namespace Graphics
 	private:
 		//text filter for searching
 		static inline ImGuiTextFilter textFilter;
+
+		static inline bool filterTextProcessed;
 
 		//rendered ui
 		void RenderDebugMenu();

@@ -156,7 +156,7 @@ namespace Core
         if (Engine::startedWindowLoop)
         {
             GUI::GetInstance().addedText = msg;
-            GUI::GetInstance().scrollToBottom = true;
+            GUI::GetInstance().writeToConsole = true;
         }
         else
         {
