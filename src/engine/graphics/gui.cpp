@@ -79,7 +79,6 @@ namespace Graphics
 		io.Fonts->Clear();
 
 		string filesPath = Search::SearchByParent("files");
-
 		io.Fonts->AddFontFromFileTTF((filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		CustomizeImGuiStyle();
@@ -92,8 +91,10 @@ namespace Graphics
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImGuiIO& io = ImGui::GetIO();
 
-		style.TabRounding = 6.0f;
-		style.FramePadding = ImVec2(6.0f, 2.0f);
+		style.TabRounding = 6;
+		style.FramePadding = ImVec2(6, 2);
+		style.ItemSpacing = ImVec2(0, 5);
+		io.FontGlobalScale = fontScale;
 	}
 
 	int GUI::GetScreenWidth()
@@ -156,8 +157,6 @@ namespace Graphics
 
 		ImGui::Begin("Debug menu");
 
-		ImGui::SetWindowFontScale(fontScale);
-
 		GUI::RDM_Info();
 		GUI::RDM_GeneralKeys();
 		GUI::RDM_DebugButtons();
@@ -176,8 +175,6 @@ namespace Graphics
 
 		ImGui::Begin("Sliders menu");
 
-		ImGui::SetWindowFontScale(fontScale);
-
 		RS_CameraClipRange();
 		RS_MoveSpeedMultiplier();
 		RS_FOV();
@@ -194,8 +191,6 @@ namespace Graphics
 		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
 
 		ImGui::Begin("Console");
-
-		ImGui::SetWindowFontScale(fontScale);
 
 		//text area with scrollable region
 		ImVec2 scrollingRegionSize(
