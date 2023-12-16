@@ -21,6 +21,7 @@
 //engine
 #include "console.hpp"
 #include "searchUtils.hpp"
+#include "stringUtils.hpp"
 #include "gui.hpp"
 #include "core.hpp"
 
@@ -38,6 +39,7 @@ using std::stringstream;
 using std::setw;
 using std::setfill;
 using std::ios;
+using std::to_string;
 using std::filesystem::remove;
 using std::filesystem::exists;
 using std::chrono::milliseconds;
@@ -49,6 +51,7 @@ using std::chrono::system_clock;
 using Graphics::GUI;
 using Utils::Search;
 using Core::Engine;
+using Utils::String;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -162,6 +165,31 @@ namespace Core
         {
             Core::ConsoleManager::AddLog(msg);
         }
+        //cout << msg << endl;
         logger.Log(msg);
+    }
+
+    void ConsoleManager::ParseConsoleCommand(const string& command)
+    {
+        if (command == "") 
+        {
+            return;
+        }
+
+        vector<string> splitCommand = String::Split(command, ' ');
+        size_t count = splitCommand.size();
+
+        string parts;
+        for (const auto& part : splitCommand)
+        {
+            parts += part + "\n";
+        }
+
+        WriteConsoleMessage(
+            Caller::INPUT,
+            Type::DEBUG,
+            "Command:\n" + command  + "\n" +
+            "Count:\n" + to_string(count) + "\n" +
+            "Parts:\n" + parts);
     }
 }

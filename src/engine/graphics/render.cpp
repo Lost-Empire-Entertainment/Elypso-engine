@@ -44,6 +44,7 @@ using glm::radians;
 using Core::Input;
 using Core::TimeManager;
 using Core::ConsoleManager;
+using Core::Engine;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -96,7 +97,7 @@ namespace Graphics
 		window = glfwCreateWindow(
 			SCR_WIDTH,
 			SCR_HEIGHT,
-			"Elypso engine",
+			("Elypso engine " + Engine::version).c_str(),
 			NULL,
 			NULL);
 

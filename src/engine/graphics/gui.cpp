@@ -254,10 +254,7 @@ namespace Graphics
 				&& filterText
 				&& filterText[0] != '\0')
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::INFO,
-					string(filterText) + "\n");
+				ConsoleManager::ParseConsoleCommand(filterText);
 			}
 
 			memset(textFilter.InputBuf, 0, sizeof(textFilter.InputBuf));
@@ -325,40 +322,33 @@ namespace Graphics
 		ImGui::Text("Debug buttons");
 		ImGui::Text("");
 
-		if (ImGui::Button(Render::useMonitorRefreshRate ?
-			"Disable VSync" :
-			"Enable VSync"))
+		ImGui::Text("Enable VSync");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		if (ImGui::Checkbox("##vsync", &Render::useMonitorRefreshRate))
 		{
-			Render::useMonitorRefreshRate = !Render::useMonitorRefreshRate;
 			glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
 		}
 
-		ImGui::Text("");
+		ImGui::Text("Enable FPS messages");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		ImGui::Checkbox("##fpsmsg", &Input::inputSettings.printFPSToConsole);
 
-		if (ImGui::Button(Input::inputSettings.printFPSToConsole ?
-			"Disable FPS messages" :
-			"Enable FPS messages"))
-		{
-			Input::inputSettings.printFPSToConsole = !Input::inputSettings.printFPSToConsole;
-		}
-		if (ImGui::Button(Input::inputSettings.printIMGUIToConsole ?
-			"Disable ImGui messages" :
-			"Enable ImGui messages"))
-		{
-			Input::inputSettings.printIMGUIToConsole = !Input::inputSettings.printIMGUIToConsole;
-		}
-		if (ImGui::Button(Input::inputSettings.printInputToConsole ?
-			"Disable input messages" :
-			"Enable input messages"))
-		{
-			Input::inputSettings.printInputToConsole = !Input::inputSettings.printInputToConsole;
-		}
-		if (ImGui::Button(allowScrollToBottom ?
-			"Disable scroll to bottom" :
-			"Enable scroll to bottom"))
-		{
-			allowScrollToBottom = !allowScrollToBottom;
-		}
+		ImGui::Text("Enable ImGui messages");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		ImGui::Checkbox("##imguimsg", &Input::inputSettings.printIMGUIToConsole);
+
+		ImGui::Text("Enable input messages");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		ImGui::Checkbox("##inputmsg", &Input::inputSettings.printInputToConsole);
+
+		ImGui::Text("Enable console scroll to bottom");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		ImGui::Checkbox("##consolescroll", &allowScrollToBottom);
 	}
 
 	void GUI::RS_CameraClipRange()

@@ -54,6 +54,8 @@ namespace Core
 			EXCEPTION
 		};
 
+		static inline bool sendDebugMessages;
+
 		/// <summary>
 		/// A simple method that prints a message with a message type and timestamp to the console.
 		/// </summary>
@@ -61,6 +63,8 @@ namespace Core
 		/// <param name="type">What type of a message is this?</param>
 		/// <param name="message">The actual message.</param>
 		static void WriteConsoleMessage(Caller caller, Type type, const string& message);
+
+		static void ParseConsoleCommand(const string& command);
 
 		static void AddLog(const std::string& message);
 
