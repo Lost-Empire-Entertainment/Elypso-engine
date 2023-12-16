@@ -26,6 +26,7 @@ namespace Graphics
 	{
 	public:
 		static inline bool writeToConsole;
+		static inline bool firstScrollToBottom;
 		static inline bool allowScrollToBottom = true;
 
 		static inline float fontScale = 1.5f;
