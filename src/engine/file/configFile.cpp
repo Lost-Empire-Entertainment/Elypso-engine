@@ -56,9 +56,9 @@ namespace File
 			"Game documents path: " + filePath + "\n");
 
 		//check if file exists
-		if (exists(filePath + "/configFile.txt"))
+		if (exists(filePath + "/config.txt"))
 		{
-			ifstream configFile(filePath + "/configFile.txt");
+			ifstream configFile(filePath + "/config.txt");
 			if (!configFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -278,9 +278,9 @@ namespace File
 
 	void ConfigFile::SaveDataAtShutdown()
 	{
-		if (exists(filePath + "/configFile.txt"))
+		if (exists(filePath + "/config.txt"))
 		{
-			if (!remove(filePath + "/configFile.txt"))
+			if (!remove(filePath + "/config.txt"))
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
@@ -296,7 +296,7 @@ namespace File
 		}
 
 		//open the file for writing
-		ofstream configFile(filePath + "/configFile.txt");
+		ofstream configFile(filePath + "/config.txt");
 
 		if (!configFile.is_open())
 		{
