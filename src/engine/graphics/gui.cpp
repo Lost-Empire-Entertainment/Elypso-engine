@@ -201,9 +201,9 @@ namespace Graphics
 
 	void GUI::RenderConsole()
 	{
-		ImVec2 initialPos(365, 505);
-		ImVec2 initialSize(550, 200);
-		ImVec2 minSize(550, 200);
+		ImVec2 initialPos(357, 500);
+		ImVec2 initialSize(530, 200);
+		ImVec2 minSize(530, 200);
 		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
 		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
 
@@ -314,6 +314,12 @@ namespace Graphics
 			"Enable input messages"))
 		{
 			Input::inputSettings.printInputToConsole = !Input::inputSettings.printInputToConsole;
+		}
+		if (ImGui::Button(allowScrollToBottom ?
+			"Disable scroll to bottom" :
+			"Enable scroll to bottom"))
+		{
+			allowScrollToBottom = !allowScrollToBottom;
 		}
 	}
 

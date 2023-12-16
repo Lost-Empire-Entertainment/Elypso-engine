@@ -74,7 +74,6 @@ namespace Core
 		~Logger();
 
 		void Log(const string& message);
-
 	private:
 		ofstream logFile;
 	};

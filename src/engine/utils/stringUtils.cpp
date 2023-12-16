@@ -67,10 +67,6 @@ namespace Utils
 		}
 		catch (const exception& e)
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Couldn't convert " + value + " to float!" + e.what());
 			return false;
 		}
 	}
@@ -86,10 +82,6 @@ namespace Utils
 		}
 		catch (const exception& e)
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Couldn't convert " + value + " to int!" + e.what());
 			return false;
 		}
 	}

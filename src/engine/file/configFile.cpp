@@ -24,6 +24,7 @@
 #include "console.hpp"
 #include "stringUtils.hpp"
 #include "searchUtils.hpp"
+#include "gui.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -34,6 +35,7 @@ using std::cout;
 using std::endl;
 using std::to_string;
 using std::ifstream;
+using std::exception;
 using std::filesystem::exists;
 using std::filesystem::remove;
 
@@ -41,6 +43,7 @@ using Graphics::Render;
 using Core::ConsoleManager;
 using Utils::String;
 using Utils::Search;
+using Graphics::GUI;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -121,7 +124,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"Height or width for resolution is out of range or not a float! Resetting to default.\n");
+							"Height or width value " + lineVariables[0] + " for resolution is out of range or not a float! Resetting to default.\n");
 					}
 				}
 				else if (name == "vsync")
@@ -144,7 +147,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"VSync is out of range or not an int! Resetting to default.\n");
+							"VSync value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
 				else if (name == "fov")
@@ -165,7 +168,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"FOV is out of range or not a float! Resetting to default.\n");
+							"FOV value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 					}
 				}
 				else if (name == "camnearclip")
@@ -186,7 +189,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"Camera near clip is out of range or not a float! Resetting to default.\n");
+							"Camera near clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 					}
 				}
 				else if (name == "camfarclip")
@@ -207,7 +210,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"Camera far clip is out of range or not a float! Resetting to default.\n");
+							"Camera far clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 					}
 				}
 				else if (name == "campos")
@@ -233,7 +236,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"X, Y or Z position for camera is out of range or not a float! Resetting to default.\n");
+							"X, Y or Z position for value " + lineVariables[0] + " camera is out of range or not a float! Resetting to default.\n");
 					}
 				}
 				else if (name == "camrot")
@@ -260,9 +263,30 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"X, Y or Z rotation for camera is out of range or not a float! Resetting to default.\n");
+							"X, Y or Z rotation value " + lineVariables[0] + " for camera is out of range or not a float! Resetting to default.\n");
 					}
 				}
+				else if (name == "consoleForceScroll")
+				{
+					if (ConfigFile::IsValueInRange("consoleForceScroll", lineVariables[0]))
+					{
+						GUI::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set console force scroll to " + to_string(GUI::allowScrollToBottom) + ".\n");
+					}
+					else
+					{
+						GUI::allowScrollToBottom = true;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+					}
 				else
 				{
 					ConsoleManager::WriteConsoleMessage(
@@ -336,66 +360,73 @@ namespace File
 
 	bool ConfigFile::IsValueInRange(string type, string value)
 	{
-		if (type == "width")
+		try
 		{
-			float width = stof(value);
-			return (String::CanConvertStringToInt(value)
+			if (type == "width")
+			{
+				float width = stof(value);
+				return (String::CanConvertStringToInt(value)
 					&& width >= 1280
 					&& width <= 7680);
-		}
-		else if (type == "height")
-		{
-			float height = stof(value);
-			return (String::CanConvertStringToInt(value)
+			}
+			else if (type == "height")
+			{
+				float height = stof(value);
+				return (String::CanConvertStringToInt(value)
 					&& height >= 720
 					&& height <= 4320);
-		}
-		else if (type == "vsync")
-		{
-			int vsync = stoi(value);
-			return (String::CanConvertStringToInt(value)
-					&& (vsync == 0 
-					|| vsync == 1));
-		}
-		else if (type == "fov")
-		{
-			float fov = stof(value);
-			return (String::CanConvertStringToFloat(value)
+			}
+			else if (type == "vsync")
+			{
+				int vsync = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (vsync == 0
+						|| vsync == 1));
+			}
+			else if (type == "fov")
+			{
+				float fov = stof(value);
+				return (String::CanConvertStringToFloat(value)
 					&& fov >= 70.0f
 					&& fov <= 110.0f);
+			}
+			else if (type == "camnearclip")
+			{
+				float camnearclip = stof(value);
+				return (String::CanConvertStringToFloat(value)
+					&& camnearclip >= 0.001f
+					&& camnearclip <= 10.0f);
+			}
+			else if (type == "camfarclip")
+			{
+				float camfarclip = stof(value);
+				return (String::CanConvertStringToFloat(value)
+					&& camfarclip >= 10.0f
+					&& camfarclip <= 100.0f);
+			}
+			else if (type == "camposx"
+				|| type == "camposy"
+				|| type == "camposz"
+				|| type == "camrotx"
+				|| type == "camroty"
+				|| type == "camrotz")
+			{
+				float val = stof(value);
+				return (String::CanConvertStringToFloat(value)
+					&& val >= -1000000.0f
+					&& val <= 1000000.0f);
+			}
+			else
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					type + " is not a valid config file variable type!\n");
+				return false;
+			}
 		}
-		else if (type == "camnearclip")
+		catch (const exception& e)
 		{
-			float camnearclip = stof(value);
-			return (String::CanConvertStringToFloat(value)
-				&& camnearclip >= 0.001f
-				&& camnearclip <= 10.0f);
-		}
-		else if (type == "camfarclip")
-		{
-			float camfarclip = stof(value);
-			return (String::CanConvertStringToFloat(value)
-				&& camfarclip >= 10.0f
-				&& camfarclip <= 100.0f);
-		}
-		else if (type == "camposx"
-				 || type == "camposy"
-			     || type == "camposz"
-				 || type == "camrotx"
-				 || type == "camroty"
-				 || type == "camrotz")
-		{
-			float val = stof(value);
-			return (String::CanConvertStringToFloat(value)
-				&& val >= -1000000.0f
-				&& val <= 1000000.0f);
-		}
-		else
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				type + " is not a valid config file variable type!\n");
 			return false;
 		}
 	}

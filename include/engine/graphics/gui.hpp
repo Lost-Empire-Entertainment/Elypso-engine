@@ -25,6 +25,8 @@ namespace Graphics
 	class GUI
 	{
 	public:
+		static inline bool allowScrollToBottom;
+
 		void Initialize();
 
 		int GetScreenWidth();
