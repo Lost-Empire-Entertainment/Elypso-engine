@@ -72,7 +72,7 @@ namespace File
 			}
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
-				Type::INFO,
+				Type::DEBUG,
 				"Reading from config.txt...\n");
 
 			string line;

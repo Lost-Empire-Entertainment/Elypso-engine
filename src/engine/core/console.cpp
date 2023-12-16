@@ -87,10 +87,6 @@ namespace Core
         if (exists(logFileName))
         {
             remove(logFileName);
-            ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
-                Type::CLEANUP,
-                "Deleted file: engine_log.txt\n");
         }
 
         logFile.open(logFileName, ios::out | ios::app);
@@ -139,8 +135,8 @@ namespace Core
     void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage)
     {
         string timeStamp = Timestamp::GetCurrentTimestamp();
-        string theCaller = " " + string(magic_enum::enum_name(caller));
-        string theType = " " + string(magic_enum::enum_name(type));
+        string theCaller = string(magic_enum::enum_name(caller));
+        string theType = string(magic_enum::enum_name(type));
 
         string invalidMsg = timeStamp + " " + theType + " is not a valid error type!";
 
@@ -150,28 +146,31 @@ namespace Core
             "_" + theType + 
             "] " + message;
 
-        string internalConsoleMsg = onlyMessage ? message : timeStamp + message;
-
         string msg;
+        string internalConsoleMsg;
 
         switch (type)
         {
         default:
             msg = invalidMsg;
+            internalConsoleMsg = invalidMsg;
             break;
         case Type::CLEANUP:
         case Type::DEBUG:
             if (sendDebugMessages)
             {
                 msg = onlyMessage ? message : validMsg;
+                internalConsoleMsg = onlyMessage ? message : timeStamp + message;
             }
             break;
         case Type::INFO:
         case Type::SUCCESS:
             msg = onlyMessage ? message : validMsg;
+            internalConsoleMsg = onlyMessage ? message : timeStamp + message;
             break;
         case Type::EXCEPTION:
             msg = onlyMessage ? message : validMsg;
+            internalConsoleMsg = onlyMessage ? message : timeStamp + message;
             break;
         }
 

@@ -25,6 +25,8 @@
 
 #include <filesystem>
 
+using std::cout;
+using std::endl;
 using std::filesystem::exists;
 
 using Core::Engine;
@@ -49,7 +51,9 @@ int main()
 	string trueSendDebugMessages = "consoleDebugMessages: 1";
 	if (exists(configFilePath))
 	{
-		ConsoleManager::sendDebugMessages = String::ContainsString(configFilePath, trueSendDebugMessages);
+		bool containsString = String::ContainsString(configFilePath, trueSendDebugMessages);
+		cout << containsString << endl;
+		ConsoleManager::sendDebugMessages = containsString;
 	}
 	else ConsoleManager::sendDebugMessages = true;
 

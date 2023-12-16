@@ -73,7 +73,7 @@ namespace Graphics
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::GLFW,
-			Type::INFO,
+			Type::DEBUG,
 			"Initializing GLFW...\n");
 
 		glfwInit();
@@ -83,14 +83,14 @@ namespace Graphics
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::GLFW,
-			Type::SUCCESS,
+			Type::DEBUG,
 			"GLFW initialized successfully!\n\n");
 	}
 	void Render::WindowSetup()
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_SETUP,
-			Type::INFO,
+			Type::DEBUG,
 			"Creating window...\n");
 
 		//create a window object holding all the windowing data
@@ -123,14 +123,14 @@ namespace Graphics
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_SETUP,
-			Type::SUCCESS,
+			Type::DEBUG,
 			"Window initialized successfully!\n\n");
 	}
 	void Render::GladSetup()
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::GLAD,
-			Type::INFO,
+			Type::DEBUG,
 			"Initializing GLAD...\n");
 
 		//check if glad is initialized before continuing
@@ -145,7 +145,7 @@ namespace Graphics
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::GLAD,
-			Type::SUCCESS,
+			Type::DEBUG,
 			"GLAD initialized successfully!\n\n");
 	}
 	void Render::ContentSetup()

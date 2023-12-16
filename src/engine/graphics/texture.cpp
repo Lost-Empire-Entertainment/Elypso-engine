@@ -42,7 +42,7 @@ namespace Graphics
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::TEXTURE,
-			Type::INFO,
+			Type::DEBUG,
 			"Initializing texture " + textureName + "...\n");
 
 		unsigned int texture;
@@ -67,7 +67,7 @@ namespace Graphics
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::TEXTURE,
-				Type::SUCCESS,
+				Type::DEBUG,
 				"Texture " + textureName + " initialized successfully!\n\n");
 		}
 		else
