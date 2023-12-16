@@ -91,15 +91,28 @@ namespace File
 				}
 				else lineVariables.push_back(lineSplit[1]);
 
-				//output config file results
-				/*
-				cout << "Name: " << name << endl;
-				for (const auto& variable : lineVariables)
+				if (name == "fontScale")
 				{
-					cout << "  - " << variable << endl;
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::fontScale = stof(lineVariables[0]);
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set font scale to " + to_string(GUI::fontScale) + ".\n");
+					}
+					else
+					{
+						GUI::fontScale = 1.5f;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Font scale value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
+					}
 				}
-				*/
-				if (name == "resolution")
+				else if (name == "resolution")
 				{
 					if (ConfigFile::IsValueInRange("width", lineVariables[0])
 						&& ConfigFile::IsValueInRange("height", lineVariables[1]))
@@ -287,34 +300,6 @@ namespace File
 							"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
-				else if (name == "fontScale")
-				{
-					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
-					{
-						GUI::fontScale = stof(lineVariables[0]);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set font scale to " + to_string(GUI::fontScale) + ".\n");
-					}
-					else
-					{
-						GUI::fontScale = 1.5f;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Font scale value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-					}
-				}
-				else
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						name + " is not a valid config file variable type!\n");
-				}
 			}
 
 			configFile.close();
@@ -353,11 +338,11 @@ namespace File
 		}
 
 		//write config data into the config file
+		configFile << "fontScale: " << GUI::fontScale << endl;
 		int width;
 		int height;
 		glfwGetWindowSize(Render::window, &width, &height);
 		configFile << "resolution: " << width << ", " << height << endl;
-
 		configFile << "vsync: " << Render::useMonitorRefreshRate << endl;
 		configFile << "fov: " << Render::fov << endl;
 		configFile << "camNearClip: " << Render::nearClip << endl;
@@ -371,7 +356,7 @@ namespace File
 			Render::camera.GetCameraRotation().y << ", " <<
 			Render::camera.GetCameraRotation().z << endl;
 		configFile << "consoleForceScroll: " << GUI::allowScrollToBottom << endl;
-		configFile << "fontScale: " << GUI::fontScale << endl;
+		configFile << "consoleDebugMessages: " << ConsoleManager::sendDebugMessages << endl;
 
 		configFile.close();
 
@@ -385,7 +370,14 @@ namespace File
 	{
 		try
 		{
-			if (type == "width")
+			if (type == "fontScale")
+			{
+				float fontScale = stof(value);
+				return (String::CanConvertStringToFloat(value)
+						&& fontScale >= 1.0f
+						&& fontScale <= 2.0f);
+			}
+			else if (type == "width")
 			{
 				float width = stof(value);
 				return (String::CanConvertStringToInt(value)
@@ -451,13 +443,6 @@ namespace File
 				return (String::CanConvertStringToInt(value)
 						&& (consoleForceScroll == 0
 						|| consoleForceScroll == 1));
-			}
-			else if (type == "fontScale")
-			{
-				float fontScale = stof(value);
-				return (String::CanConvertStringToFloat(value)
-						&& fontScale >= 1.0f
-						&& fontScale <= 2.0f);
 			}
 			else
 			{

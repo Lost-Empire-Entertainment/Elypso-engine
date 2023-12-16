@@ -131,41 +131,60 @@ namespace Core
     {
         for (const auto& log : storedLogs)
         {
-            GUI::GetInstance().textBuffer.appendf("%s\n", log.c_str());
+            GUI::GetInstance().textBuffer.appendf("%s", log.c_str());
         }
         storedLogs.clear();
     }
 
-    void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message)
+    void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage)
     {
+        string timeStamp = Timestamp::GetCurrentTimestamp();
+        string theCaller = " " + string(magic_enum::enum_name(caller));
+        string theType = " " + string(magic_enum::enum_name(type));
+
+        string invalidMsg = timeStamp + " " + theType + " is not a valid error type!";
+
+        string validMsg = 
+            timeStamp + 
+            "[" + theCaller + 
+            "_" + theType + 
+            "] " + message;
+
+        string internalConsoleMsg = onlyMessage ? message : timeStamp + message;
+
         string msg;
 
         switch (type)
         {
         default:
-            msg = Timestamp::GetCurrentTimestamp() + string(magic_enum::enum_name(type)) + " is not a valid error type!";
+            msg = invalidMsg;
             break;
         case Type::CLEANUP:
         case Type::DEBUG:
+            if (sendDebugMessages)
+            {
+                msg = onlyMessage ? message : validMsg;
+            }
+            break;
         case Type::INFO:
         case Type::SUCCESS:
-            msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
+            msg = onlyMessage ? message : validMsg;
             break;
         case Type::EXCEPTION:
-            msg = Timestamp::GetCurrentTimestamp() + "[" + string(magic_enum::enum_name(caller)) + "_" + string(magic_enum::enum_name(type)) + "] " + message;
+            msg = onlyMessage ? message : validMsg;
             break;
         }
 
         if (Engine::startedWindowLoop)
         {
-            GUI::GetInstance().addedText = msg;
+            GUI::GetInstance().addedText = internalConsoleMsg;
             GUI::GetInstance().writeToConsole = true;
         }
         else
         {
-            Core::ConsoleManager::AddLog(msg);
+            Core::ConsoleManager::AddLog(internalConsoleMsg);
         }
-        //cout << msg << endl;
+        cout << msg;
         logger.Log(msg);
     }
 

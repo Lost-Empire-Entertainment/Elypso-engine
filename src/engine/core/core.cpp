@@ -36,9 +36,6 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
-		cout << "Copyright(C) < 2023 > < Greenlaser >\n";
-		cout << "Initializing " + name + " " + version + "...\n\n";
-
 		Admin::RunAsAdmin();
 
 		Render::RenderSetup();
@@ -48,7 +45,7 @@ namespace Core
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,
-			Type::INFO,
+			Type::DEBUG,
 			"Entering window loop...\n");
 
 		startedWindowLoop = true;
@@ -68,7 +65,7 @@ namespace Core
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,
-			Type::INFO,
+			Type::DEBUG,
 			"Exiting window loop...\n");
 	}
 }

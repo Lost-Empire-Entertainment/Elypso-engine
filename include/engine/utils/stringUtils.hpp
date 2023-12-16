@@ -45,6 +45,14 @@ namespace Utils
 		/// <returns></returns>
 		static vector<string> Split(const string& input, char delimiter);
 
+		/// <summary>
+		/// Check if the selected file contains the selected string.
+		/// </summary>
+		/// <param name="filePath">Where is the file located?</param>
+		/// <param name="targetString">What is the string you are looking for?</param>
+		/// <returns></returns>
+		static bool ContainsString(const string& filePath, const string& targetString);
+
 		static bool CanConvertStringToFloat(const string& value);
 
 		static bool CanConvertStringToInt(const string& value);

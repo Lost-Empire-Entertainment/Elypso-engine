@@ -17,15 +17,42 @@
 
 //engine
 #include "core.hpp"
+#include "console.hpp"
 #include "shutdown.hpp"
 #include "configFile.hpp"
+#include "stringUtils.hpp"
+#include "searchUtils.hpp"
+
+#include <filesystem>
+
+using std::filesystem::exists;
 
 using Core::Engine;
 using Core::ShutdownManager;
 using File::ConfigFile;
+using Utils::String;
+using Utils::Search;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 int main()
 {
+	ConsoleManager::WriteConsoleMessage(
+		Caller::ENGINE,
+		Type::INFO,
+		"Elypso engine " + Engine::version +"\n" +
+		"Copyright (C) Greenlaser 2023\n\n",
+		true);
+
+	string configFilePath = Search::FindDocumentsFolder() + "/config.txt";
+	string trueSendDebugMessages = "consoleDebugMessages: 1";
+	if (exists(configFilePath))
+	{
+		ConsoleManager::sendDebugMessages = String::ContainsString(configFilePath, trueSendDebugMessages);
+	}
+	else ConsoleManager::sendDebugMessages = true;
+
 	Engine::InitializeEngine();
 
 	ConfigFile::ProcessConfigFile("config.txt");

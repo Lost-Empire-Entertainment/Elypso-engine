@@ -24,6 +24,8 @@
 
 using std::stof;
 using std::stoi;
+using std::ifstream;
+using std::endl;
 using std::exception;
 using std::istringstream;
 using Core::ConsoleManager;
@@ -54,6 +56,28 @@ namespace Utils
 			tokens.push_back(token);
 		}
 		return tokens;
+	}
+
+	bool String::ContainsString(const string& filePath, const string& targetString)
+	{
+		ifstream file(filePath);
+		if (!file.is_open()) 
+		{
+			std::cerr << "Error opening file: " << filePath << endl;
+			return false;
+		}
+
+		string line;
+		while (getline(file, line)) {
+			if (line.find(targetString) != string::npos) 
+			{
+				file.close();
+				return true;
+			}
+		}
+
+		file.close();
+		return false;
 	}
 
 	bool String::CanConvertStringToFloat(const string& value)

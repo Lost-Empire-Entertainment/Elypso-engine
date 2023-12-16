@@ -62,7 +62,8 @@ namespace Core
 		/// <param name="caller">What called this message?</param>
 		/// <param name="type">What type of a message is this?</param>
 		/// <param name="message">The actual message.</param>
-		static void WriteConsoleMessage(Caller caller, Type type, const string& message);
+		/// <param name="onlyMessage">Should we ignore the timestamp and message type and only print the message?</param>
+		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false);
 
 		static void ParseConsoleCommand(const string& command);
 

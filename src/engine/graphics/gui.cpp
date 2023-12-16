@@ -349,6 +349,11 @@ namespace Graphics
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##consolescroll", &allowScrollToBottom);
+
+		ImGui::Text("Enable console debug messages");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
 	}
 
 	void GUI::RS_CameraClipRange()
