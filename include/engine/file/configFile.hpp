@@ -28,6 +28,11 @@ namespace File
 	public:
 		static void ProcessConfigFile(const string& fileName);
 		static void SaveDataAtShutdown();
+
+		//CONSOLE COMMANDS
+		static void Command_Exit();
+		static void Command_SetRenderMode();
+		static void Command_ResetCam();
 	private:
 		static inline string filePath;
 		static inline string documentPath;

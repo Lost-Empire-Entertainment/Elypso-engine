@@ -45,8 +45,8 @@ namespace Core
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,
-			Type::DEBUG,
-			"Entering window loop...\n");
+			Type::SUCCESS,
+			"Reached window loop successfully!\n");
 
 		startedWindowLoop = true;
 		if (!Core::ConsoleManager::storedLogs.empty()) 

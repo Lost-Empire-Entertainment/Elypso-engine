@@ -268,7 +268,7 @@ namespace Graphics
 	{
 		if (writeToConsole)
 		{
-			textBuffer.appendf("%s\n", addedText.c_str());
+			textBuffer.appendf("%s", addedText.c_str());
 
 			//second scroll update that scrolls to the bottom if scrolling is allowed
 			//and when any new text is added. top one fully scrolls to the bottom,

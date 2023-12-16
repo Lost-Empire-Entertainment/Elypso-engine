@@ -24,6 +24,7 @@
 #include "stringUtils.hpp"
 #include "gui.hpp"
 #include "core.hpp"
+#include "shutdown.hpp"
 
 #include <ctime>
 #include <chrono>
@@ -52,6 +53,7 @@ using Graphics::GUI;
 using Utils::Search;
 using Core::Engine;
 using Utils::String;
+using Core::ShutdownManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -146,17 +148,20 @@ namespace Core
             "_" + theType + 
             "] " + message;
 
+        string logMsg;
         string msg;
         string internalConsoleMsg;
 
         switch (type)
         {
         default:
+            logMsg = invalidMsg;
             msg = invalidMsg;
             internalConsoleMsg = invalidMsg;
             break;
         case Type::CLEANUP:
         case Type::DEBUG:
+            logMsg = validMsg;
             if (sendDebugMessages)
             {
                 msg = onlyMessage ? message : validMsg;
@@ -165,10 +170,12 @@ namespace Core
             break;
         case Type::INFO:
         case Type::SUCCESS:
+            logMsg = validMsg;
             msg = onlyMessage ? message : validMsg;
             internalConsoleMsg = onlyMessage ? message : timeStamp + message;
             break;
         case Type::EXCEPTION:
+            logMsg = validMsg;
             msg = onlyMessage ? message : validMsg;
             internalConsoleMsg = onlyMessage ? message : timeStamp + message;
             break;
@@ -183,8 +190,8 @@ namespace Core
         {
             Core::ConsoleManager::AddLog(internalConsoleMsg);
         }
-        cout << msg;
-        logger.Log(msg);
+        cout << logMsg;
+        logger.Log(logMsg);
     }
 
     void ConsoleManager::ParseConsoleCommand(const string& command)
@@ -197,17 +204,70 @@ namespace Core
         vector<string> splitCommand = String::Split(command, ' ');
         size_t count = splitCommand.size();
 
-        string parts;
+        vector<string> cleanedCommands;
         for (const auto& part : splitCommand)
         {
-            parts += part + "\n";
+            string partWithoutSpaces = part;
+            partWithoutSpaces.erase(
+                remove_if(partWithoutSpaces.begin(), partWithoutSpaces.end(), ::isspace),
+                partWithoutSpaces.end());
+
+            if (!partWithoutSpaces.empty())
+            {
+                cleanedCommands.push_back(partWithoutSpaces);
+            }
         }
 
-        WriteConsoleMessage(
-            Caller::INPUT,
-            Type::DEBUG,
-            "Command:\n" + command  + "\n" +
-            "Count:\n" + to_string(count) + "\n" +
-            "Parts:\n" + parts);
+        if (cleanedCommands[0] == "help"
+            && cleanedCommands.size() == 1)
+        {
+            stringstream ss;
+            ss <<
+                "help - lists all console commands\n" <<
+                "qqq - quits the engine\n" <<
+                "setrendermode 'string' - sets a render mode (either normal or wireframe\n" <<
+                "resetcam - resets the camera back to its original position and rotation";
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                ss.str(),
+                true);
+        }
+        else if (cleanedCommands[0] == "qqq"
+                 && cleanedCommands.size() == 1)
+        {
+            ShutdownManager::Shutdown();
+        }
+        else if (cleanedCommands[0] == "setrendermode"
+                 && (cleanedCommands[1] == "normal"
+                 || cleanedCommands[1] == "wireframe")
+                 && cleanedCommands.size() == 2)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::DEBUG,
+                "'" + command + "' was valid!\n");
+        }
+        else if (cleanedCommands[0] == "resetcam"
+                 && cleanedCommands.size() == 1)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::DEBUG,
+                "'" + command + "' was valid!\n");
+        }
+        else if (cleanedCommands[0] == "clean"
+                 && cleanedCommands.size() == 1)
+        {
+            GUI::textBuffer.clear();
+        }
+        else
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::EXCEPTION,
+                "'" + command + "' is not a valid command! Use 'help' to list all commands.\n");
+        }
     }
 }
