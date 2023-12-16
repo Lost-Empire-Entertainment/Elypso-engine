@@ -153,8 +153,8 @@ namespace Graphics
 		string fullPathString = fullPath.generic_string();
 		string filePath = fullPathString + "/files";
 
-		string vertexPath = filePath + "/vertexShader.vert";
-		string fragmentPath = filePath + "/fragmentShader.frag";
+		string vertexPath = filePath + "/shaders/vertexShader.vert";
+		string fragmentPath = filePath + "/shaders/fragmentShader.frag";
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
@@ -241,8 +241,8 @@ namespace Graphics
 		glEnableVertexAttribArray(1);
 
 		Texture tex(filePath);
-		tex.LoadTexture("crate.jpg", false, GL_RGB);
-		tex.LoadTexture("pepe.png", true, GL_RGBA);
+		tex.LoadTexture("textures/crate.jpg", false, GL_RGB);
+		tex.LoadTexture("textures/pepe.png", true, GL_RGBA);
 
 		shader->Use();
 		shader->SetInt("texture1", 0);

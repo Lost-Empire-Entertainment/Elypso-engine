@@ -75,7 +75,25 @@ namespace Graphics
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 
+		//clear default font
+		io.Fonts->Clear();
+
+		string filesPath = Search::SearchByParent("files");
+
+		io.Fonts->AddFontFromFileTTF((filesPath + "/fonts/type_wrong_smudged_bold/TypeWrong Smudged Bold.ttf").c_str(), 10.0f);
+
+		CustomizeImGuiStyle();
+	}
+
+	void GUI::CustomizeImGuiStyle()
+	{
 		ImGui::StyleColorsDark();
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImGuiIO& io = ImGui::GetIO();
+
+		style.TabRounding = 6.0f;
+		style.FramePadding = ImVec2(6.0f, 2.0f);
 	}
 
 	int GUI::GetScreenWidth()
@@ -138,7 +156,7 @@ namespace Graphics
 
 		ImGui::Begin("Debug menu");
 
-		ImGui::SetWindowFontScale(1.5);
+		ImGui::SetWindowFontScale(fontScale);
 
 		GUI::RDM_Info();
 		GUI::RDM_GeneralKeys();
@@ -158,11 +176,11 @@ namespace Graphics
 
 		ImGui::Begin("Sliders menu");
 
-		ImGui::SetWindowFontScale(1.5);
+		ImGui::SetWindowFontScale(fontScale);
 
-		GUI::RS_CameraClipRange();
-		GUI::RS_MoveSpeedMultiplier();
-		GUI::RS_FOV();
+		RS_CameraClipRange();
+		RS_MoveSpeedMultiplier();
+		RS_FOV();
 
 		ImGui::End();
 	}
@@ -177,7 +195,7 @@ namespace Graphics
 
 		ImGui::Begin("Console");
 
-		ImGui::SetWindowFontScale(1.5);
+		ImGui::SetWindowFontScale(fontScale);
 
 		//text area with scrollable region
 		ImVec2 scrollingRegionSize(

@@ -27,7 +27,7 @@ namespace Utils
 	{
 	public:
 		/// <summary>
-		/// A simple search script that goes up one parent at a time until it reaches the desired folder by name, stops at root folder.
+		/// A simple search method that goes up one parent at a time until it reaches the desired folder by name, stops at root folder.
 		/// </summary>
 		/// <param name="targetFolderName">What is the desired folder name we are searching for?</param>
 		/// <returns></returns>

@@ -27,12 +27,16 @@ namespace Graphics
 	public:
 		static inline bool firstScrollToBottom;
 		static inline bool scrollToBottom;
-		static inline bool allowScrollToBottom;
+		static inline bool allowScrollToBottom = true;
+
+		static inline float fontScale;
 
 		//holds text content
 		static inline ImGuiTextBuffer textBuffer;
 
 		void Initialize();
+
+		void CustomizeImGuiStyle();
 
 		int GetScreenWidth();
 		int GetScreenHeight();

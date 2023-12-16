@@ -129,7 +129,7 @@ namespace File
 				}
 				else if (name == "vsync")
 				{
-					if (ConfigFile::IsValueInRange("vsync", lineVariables[0]))
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
 						Render::useMonitorRefreshRate = static_cast<bool>(stoi(lineVariables[0]));
 						glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
@@ -152,7 +152,7 @@ namespace File
 				}
 				else if (name == "fov")
 				{
-					if (ConfigFile::IsValueInRange("fov", lineVariables[0]))
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
 						Render::fov = stof(lineVariables[0]);
 
@@ -171,9 +171,9 @@ namespace File
 							"FOV value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 					}
 				}
-				else if (name == "camnearclip")
+				else if (name == "camNearClip")
 				{
-					if (ConfigFile::IsValueInRange("camnearclip", lineVariables[0]))
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
 						Render::nearClip = stof(lineVariables[0]);
 
@@ -192,9 +192,9 @@ namespace File
 							"Camera near clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 					}
 				}
-				else if (name == "camfarclip")
+				else if (name == "camFarClip")
 				{
-					if (ConfigFile::IsValueInRange("camfarclip", lineVariables[0]))
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
 						Render::farClip = stof(lineVariables[0]);
 
@@ -213,11 +213,11 @@ namespace File
 							"Camera far clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 					}
 				}
-				else if (name == "campos")
+				else if (name == "camPos")
 				{
-					if (ConfigFile::IsValueInRange("camposx", lineVariables[0])
-						&& ConfigFile::IsValueInRange("camposy", lineVariables[1])
-						&& ConfigFile::IsValueInRange("camposz", lineVariables[2]))
+					if (ConfigFile::IsValueInRange(name + "X", lineVariables[0])
+						&& ConfigFile::IsValueInRange(name + "Y", lineVariables[1])
+						&& ConfigFile::IsValueInRange(name + "Z", lineVariables[2]))
 					{
 						Render::cameraPos.x = stof(lineVariables[0]);
 						Render::cameraPos.y = stof(lineVariables[0]);
@@ -241,9 +241,9 @@ namespace File
 				}
 				else if (name == "camrot")
 				{
-					if (ConfigFile::IsValueInRange("camrotx", lineVariables[0])
-						&& ConfigFile::IsValueInRange("camroty", lineVariables[1])
-						&& ConfigFile::IsValueInRange("camrotz", lineVariables[2]))
+					if (ConfigFile::IsValueInRange(name + "X", lineVariables[0])
+						&& ConfigFile::IsValueInRange(name + "Y", lineVariables[1])
+						&& ConfigFile::IsValueInRange(name + "Z", lineVariables[2]))
 					{
 						Render::camera.SetCameraRotation(vec3(
 							stof(lineVariables[0]),
@@ -268,7 +268,7 @@ namespace File
 				}
 				else if (name == "consoleForceScroll")
 				{
-					if (ConfigFile::IsValueInRange("consoleForceScroll", lineVariables[0]))
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
 						GUI::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
 
@@ -286,7 +286,28 @@ namespace File
 							Type::EXCEPTION,
 							"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
+				}
+				else if (name == "fontScale")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::fontScale = stof(lineVariables[0]);
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set font scale to " + to_string(GUI::fontScale) + ".\n");
 					}
+					else
+					{
+						GUI::fontScale = 1.5f;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Font scale value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
+					}
+				}
 				else
 				{
 					ConsoleManager::WriteConsoleMessage(
@@ -339,16 +360,18 @@ namespace File
 
 		configFile << "vsync: " << Render::useMonitorRefreshRate << endl;
 		configFile << "fov: " << Render::fov << endl;
-		configFile << "camnearclip: " << Render::nearClip << endl;
-		configFile << "camfarclip: " << Render::farClip << endl;
-		configFile << "campos: " <<
+		configFile << "camNearClip: " << Render::nearClip << endl;
+		configFile << "camFarClip: " << Render::farClip << endl;
+		configFile << "camPos: " <<
 			Render::cameraPos.x << ", " <<
 			Render::cameraPos.y << ", " <<
 			Render::cameraPos.z << endl;
-		configFile << "camrot: " <<
+		configFile << "camRot: " <<
 			Render::camera.GetCameraRotation().x << ", " <<
 			Render::camera.GetCameraRotation().y << ", " <<
 			Render::camera.GetCameraRotation().z << endl;
+		configFile << "consoleForceScroll: " << GUI::allowScrollToBottom << endl;
+		configFile << "fontScale: " << GUI::fontScale << endl;
 
 		configFile.close();
 
@@ -366,55 +389,75 @@ namespace File
 			{
 				float width = stof(value);
 				return (String::CanConvertStringToInt(value)
-					&& width >= 1280
-					&& width <= 7680);
+						&& width >= 1280
+						&& width <= 7680);
 			}
 			else if (type == "height")
 			{
 				float height = stof(value);
 				return (String::CanConvertStringToInt(value)
-					&& height >= 720
-					&& height <= 4320);
+						&& height >= 720
+						&& height <= 4320);
 			}
 			else if (type == "vsync")
 			{
 				int vsync = stoi(value);
 				return (String::CanConvertStringToInt(value)
-					&& (vsync == 0
+						&& (vsync == 0
 						|| vsync == 1));
 			}
 			else if (type == "fov")
 			{
 				float fov = stof(value);
 				return (String::CanConvertStringToFloat(value)
-					&& fov >= 70.0f
-					&& fov <= 110.0f);
+						&& fov >= 70.0f
+						&& fov <= 110.0f);
 			}
-			else if (type == "camnearclip")
+			else if (type == "camNearClip")
 			{
 				float camnearclip = stof(value);
 				return (String::CanConvertStringToFloat(value)
-					&& camnearclip >= 0.001f
-					&& camnearclip <= 10.0f);
+						&& camnearclip >= 0.001f
+						&& camnearclip <= 10.0f);
 			}
-			else if (type == "camfarclip")
+			else if (type == "camFarClip")
 			{
 				float camfarclip = stof(value);
 				return (String::CanConvertStringToFloat(value)
-					&& camfarclip >= 10.0f
-					&& camfarclip <= 100.0f);
+						&& camfarclip >= 10.0f
+						&& camfarclip <= 100.0f);
 			}
-			else if (type == "camposx"
-				|| type == "camposy"
-				|| type == "camposz"
-				|| type == "camrotx"
-				|| type == "camroty"
-				|| type == "camrotz")
+			else if (type == "camPosX"
+					 || type == "camPosY"
+					 || type == "camPosZ")
 			{
 				float val = stof(value);
 				return (String::CanConvertStringToFloat(value)
-					&& val >= -1000000.0f
-					&& val <= 1000000.0f);
+						&& val >= -1000000.0f
+						&& val <= 1000000.0f);
+			}
+			else if (type == "camRotX"
+					 || type == "camRotY"
+					 || type == "camRotZ")
+			{
+				float val = stof(value);
+				return (String::CanConvertStringToFloat(value)
+					&& val >= -360.0f
+					&& val <= 360.0f);
+			}
+			else if (type == "consoleForceScroll")
+			{
+				int consoleForceScroll = stoi(value);
+				return (String::CanConvertStringToInt(value)
+						&& (consoleForceScroll == 0
+						|| consoleForceScroll == 1));
+			}
+			else if (type == "fontScale")
+			{
+				float fontScale = stof(value);
+				return (String::CanConvertStringToFloat(value)
+						&& fontScale >= 1.0f
+						&& fontScale <= 2.0f);
 			}
 			else
 			{

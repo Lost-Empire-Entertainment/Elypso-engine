@@ -14,7 +14,13 @@ This EULA entitles you to install as many copies of the Software, including its 
 
 You acknowledge and agree that the Software, including its source code and associated files, is distributed under the terms of the GNU General Public License, Version 3 (GPL-3.0). Any modifications you make to the Software, or any distribution of the Software, whether modified or not, must comply with the terms of the GPL-3.0. This includes, but is not limited to, ensuring that the source code of any modified version is made freely available, and that any distributed versions are also distributed under the terms of the GPL-3.0.
 
-Lost Empire Entertainment grants you the right to access, modify, and distribute both the source code and associated files of the Software for your personal or internal use, subject to the rights and permissions granted for the Software under this EULA.
+Files within the following directories are exempt from the terms of this EULA and are subject to their respective creators' licenses:
+
+- `src/external`
+- `include/external`
+- `files/fonts`
+
+You are responsible for ensuring compliance with the creators' licenses for these specific files. Lost Empire Entertainment grants you the right to access, modify, and distribute both the source code and associated files of the Software for your personal or internal use, subject to the rights and permissions granted for the Software under this EULA.
 
 ### Your Creations
 
