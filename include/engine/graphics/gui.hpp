@@ -27,9 +27,16 @@ namespace Graphics
 	public:
 		static inline bool writeToConsole;
 		static inline bool firstScrollToBottom;
-		static inline bool allowScrollToBottom = true;
+		static inline bool allowScrollToBottom;
 
-		static inline float fontScale = 1.5f;
+		static inline bool showAboutMenu;
+		static inline bool showKeybindsMenu;
+		static inline bool showDebugMenu;
+		static inline bool showConsole;
+		static inline bool showVersionWindow;
+		static inline bool outdatedVersion;
+
+		static inline float fontScale;
 
 		//holds text content
 		static inline ImGuiTextBuffer textBuffer;
@@ -54,19 +61,24 @@ namespace Graphics
 
 		static inline bool filterTextProcessed;
 
-		//rendered ui
+		void RenderTopBar();
+
+		//top bar interactions
+		void TB_CheckVersion();
+		void TB_ReportIssue();
+
+		//rendered windows
+		void RenderKeybindsMenu();
 		void RenderDebugMenu();
-		void RenderSlider();
 		void RenderConsole();
 
-		//debug groups
-		void RDM_Info();
-		void RDM_GeneralKeys();
-		void RDM_DebugButtons();
+		//top bar rendered windows
+		void RenderVersionCheckWindow();
+		static inline string versionCompare;
+		static inline string versionConfirm;
 
-		//slider groups
-		void RS_CameraClipRange();
-		void RS_MoveSpeedMultiplier();
-		void RS_FOV();
+		//rendered debug window parts
+		void RWPart_DebugMenuInfo();
+		void RWPart_Interactions();
 	};
 }

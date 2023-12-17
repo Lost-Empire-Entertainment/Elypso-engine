@@ -21,11 +21,13 @@
 
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 using std::stof;
 using std::stoi;
 using std::ifstream;
 using std::endl;
+using std::cerr;
 using std::exception;
 using std::istringstream;
 using Core::ConsoleManager;
@@ -58,12 +60,56 @@ namespace Utils
 		return tokens;
 	}
 
+	vector<string> String::RemoveExcept(const vector<string>& originalVector, const string& instance)
+	{
+		auto containsInstance = [&instance](const string& s) 
+		{
+			return s.find(instance) != string::npos;
+		};
+
+		//check if any element contains the specified instance
+		bool foundInstance = any_of(originalVector.begin(), originalVector.end(), containsInstance);
+
+		if (!foundInstance) 
+		{
+			return originalVector;
+		}
+
+		//create a new vector with elements not containing the specified instance
+		vector<string> modifiedVector;
+		copy_if(
+			originalVector.begin(),
+			originalVector.end(),
+			back_inserter(modifiedVector),
+			containsInstance);
+		{
+			return modifiedVector;
+		};
+	}
+
+	vector<string> String::RemoveDuplicates(const vector<string>& originalVector)
+	{
+		//create a copy of the original vector
+		vector<string> modifiedVector = originalVector;
+
+		//sort the vector to bring duplicates together
+		sort(modifiedVector.begin(), modifiedVector.end());
+
+		//remove adjacent duplicates
+		modifiedVector.erase(
+			unique(modifiedVector.begin(), 
+			modifiedVector.end()), 
+			modifiedVector.end());
+
+		return modifiedVector;
+	}
+
 	bool String::ContainsString(const string& filePath, const string& targetString)
 	{
 		ifstream file(filePath);
 		if (!file.is_open()) 
 		{
-			std::cerr << "Error opening file: " << filePath << endl;
+			cerr << "Error opening file: " << filePath << endl;
 			return false;
 		}
 

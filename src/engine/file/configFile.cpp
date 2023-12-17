@@ -25,6 +25,7 @@
 #include "stringUtils.hpp"
 #include "searchUtils.hpp"
 #include "gui.hpp"
+#include "core.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -38,7 +39,9 @@ using std::ifstream;
 using std::exception;
 using std::filesystem::exists;
 using std::filesystem::remove;
+using std::filesystem::current_path;
 
+using Core::Engine;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Utils::String;
@@ -49,19 +52,86 @@ using Type = Core::ConsoleManager::Type;
 
 namespace File
 {
+	void ConfigFile::SetConfigValuesToDefaultValues()
+	{
+		GUI::fontScale = 1.5f;
+		//Render::SCR_WIDTH = 1280; //do not uncomment! edit in render.hpp instead!
+		//Render::SCR_WIDTH = 720; //do not uncomment! edit in render.hpp instead!
+		Render::useMonitorRefreshRate = true;
+		Render::fov = 90.0f;
+		Render::nearClip = 0.001f;
+		Render::farClip = 100.0f;
+		Render::cameraPos = vec3(0.0f, 0.0f, 3.0f);
+		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
+		GUI::allowScrollToBottom = true;
+		ConsoleManager::sendDebugMessages = true;
+		GUI::showAboutMenu = false;
+		GUI::showKeybindsMenu = false;
+		GUI::showDebugMenu = false;
+		GUI::showConsole = false;
+		Engine::docsPath = Search::FindDocumentsFolder();
+		Engine::filesPath = current_path().generic_string() + "/files";
+	}
+
+	void ConfigFile::ProcessFirstConfigValues()
+	{
+		string configFilePath = Search::FindDocumentsFolder() + "/config.txt";
+		string debugMessagesCheck = "consoleDebugMessages";
+		string fontScale = "fontScale";
+
+		SetConfigValuesToDefaultValues();
+
+		if (!exists(configFilePath))
+		{
+			return;
+		}
+
+		ifstream configFileStream(configFilePath);
+
+		if (!configFileStream.is_open())
+		{
+			cout << "Error opening config file at " << configFilePath << endl;
+			return;
+		}
+
+		cout << "Success opening config file!";
+
+		string line;
+		while (getline(configFileStream, line))
+		{
+			vector<string> splitLine = String::Split(line, ' ');
+			string cleanedVariable = String::Replace(splitLine[0], ":", "");
+			string cleanedValue = splitLine[1];
+			if (cleanedVariable == debugMessagesCheck
+				&& String::CanConvertStringToInt(cleanedValue)
+				&& (stoi(cleanedValue) == 0
+				|| stoi(cleanedValue) == 1))
+			{
+				ConsoleManager::sendDebugMessages = stoi(cleanedValue) == 1;
+			}
+			else if (cleanedVariable == fontScale
+					 && String::CanConvertStringToFloat(cleanedValue) 
+					 && stof(cleanedValue) >= 1.0f
+					 && stof(cleanedValue) <= 2.0f)
+			{
+				GUI::fontScale = stof(cleanedValue);
+			}
+		}
+
+		configFileStream.close();
+	}
+
 	void ConfigFile::ProcessConfigFile(const string& fileName)
 	{
-		filePath = Search::FindDocumentsFolder();
-
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
-			"Game documents path: " + filePath + "\n");
+			"Game documents path: " + Engine::docsPath + "\n");
 
 		//check if file exists
-		if (exists(filePath + "/config.txt"))
+		if (exists(Engine::docsPath + "/config.txt"))
 		{
-			ifstream configFile(filePath + "/config.txt");
+			ifstream configFile(Engine::docsPath + "/config.txt");
 			if (!configFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -300,6 +370,90 @@ namespace File
 							"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
+				else if (name == "showAboutMenu")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showAboutMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show about menu to " + to_string(GUI::showAboutMenu) + ".\n");
+					}
+					else
+					{
+						GUI::showAboutMenu = false;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show about menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "showKeybindsMenu")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showKeybindsMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show keybinds menu to " + to_string(GUI::allowScrollToBottom) + ".\n");
+					}
+					else
+					{
+						GUI::showKeybindsMenu = false;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show keybinds menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "showDebugMenu")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show debug menu to " + to_string(GUI::allowScrollToBottom) + ".\n");
+					}
+					else
+					{
+						GUI::showDebugMenu = true;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show debug menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "showConsole")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showConsole = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show console to " + to_string(GUI::allowScrollToBottom) + ".\n");
+					}
+					else
+					{
+						GUI::showConsole = true;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
 			}
 
 			configFile.close();
@@ -308,9 +462,9 @@ namespace File
 
 	void ConfigFile::SaveDataAtShutdown()
 	{
-		if (exists(filePath + "/config.txt"))
+		if (exists(Engine::docsPath + "/config.txt"))
 		{
-			if (!remove(filePath + "/config.txt"))
+			if (!remove(Engine::docsPath + "/config.txt"))
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
@@ -326,7 +480,7 @@ namespace File
 		}
 
 		//open the file for writing
-		ofstream configFile(filePath + "/config.txt");
+		ofstream configFile(Engine::docsPath + "/config.txt");
 
 		if (!configFile.is_open())
 		{
@@ -357,6 +511,10 @@ namespace File
 			Render::camera.GetCameraRotation().z << endl;
 		configFile << "consoleForceScroll: " << GUI::allowScrollToBottom << endl;
 		configFile << "consoleDebugMessages: " << ConsoleManager::sendDebugMessages << endl;
+		configFile << "showAboutMenu: " << GUI::showAboutMenu << endl;
+		configFile << "showKeybindsMenu: " << GUI::showKeybindsMenu << endl;
+		configFile << "showDebugMenu: " << GUI::showDebugMenu << endl;
+		configFile << "showConsole: " << GUI::showConsole << endl;
 
 		configFile.close();
 
@@ -443,6 +601,34 @@ namespace File
 				return (String::CanConvertStringToInt(value)
 						&& (consoleForceScroll == 0
 						|| consoleForceScroll == 1));
+			}
+			else if (type == "showAboutMenu")
+			{
+				int showAboutMenu = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showAboutMenu == 0
+						|| showAboutMenu == 1));
+			}
+			else if (type == "showKeybindsMenu")
+			{
+				int showKeybindsMenu = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showKeybindsMenu == 0
+						|| showKeybindsMenu == 1));
+			}
+			else if (type == "showDebugMenu")
+			{
+				int showDebugMenu = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showDebugMenu == 0
+						|| showDebugMenu == 1));
+			}
+			else if (type == "showConsole")
+			{
+				int showConsole = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showConsole == 0
+						|| showConsole == 1));
 			}
 			else
 			{

@@ -34,10 +34,7 @@
 
 #include <string>
 #include <iostream>
-#include <filesystem>
 
-using std::filesystem::path;
-using std::filesystem::current_path;
 using glm::perspective;
 using glm::radians;
 
@@ -150,17 +147,13 @@ namespace Graphics
 	}
 	void Render::ContentSetup()
 	{
-		path fullPath = current_path();
-		string fullPathString = fullPath.generic_string();
-		string filePath = fullPathString + "/files";
-
-		string vertexPath = filePath + "/shaders/vertexShader.vert";
-		string fragmentPath = filePath + "/shaders/fragmentShader.frag";
-
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
-			"Game files path: " + filePath + "\n");
+			"Game files path: " + Engine::filesPath + "\n");
+
+		string vertexPath = Engine::filesPath + "/shaders/vertexShader.vert";
+		string fragmentPath = Engine::filesPath + "/shaders/fragmentShader.frag";
 
 		glEnable(GL_DEPTH_TEST);
 
@@ -241,7 +234,7 @@ namespace Graphics
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
-		Texture tex(filePath);
+		Texture tex(Engine::filesPath);
 		tex.LoadTexture("textures/crate.jpg", false, GL_RGB);
 		tex.LoadTexture("textures/pepe.png", true, GL_RGBA);
 
