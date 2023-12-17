@@ -29,13 +29,15 @@ RUN_ME.bat has useful mechanics:
 - reset (if visual studio breaks or you just want a clean sheet)
 ```
 
-### Logs
+### Logs and configuration files
 
 ```
 - cmake configuration log is found at build\logs\cmake_log.txt
 - build generation log is found at build\logs\build_log.txt
 - cpack log is found at build\logs\cpack_log.txt
-- engine log is found where you run the engine exe
+- engine log is found at Documents\Elypso engine\engine_log.txt
+- config file is found at Documents\Elypso engine\config.txt
+- imgui ini file is found at Documents\Elypso engine\imgui.imi
 ```
 
 ## Built with
