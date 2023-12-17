@@ -19,21 +19,9 @@
 #include "core.hpp"
 #include "console.hpp"
 #include "shutdown.hpp"
-#include "configFile.hpp"
-#include "stringUtils.hpp"
-#include "searchUtils.hpp"
-
-#include <filesystem>
-
-using std::cout;
-using std::endl;
-using std::filesystem::exists;
 
 using Core::Engine;
 using Core::ShutdownManager;
-using File::ConfigFile;
-using Utils::String;
-using Utils::Search;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -47,23 +35,9 @@ int main()
 		"Copyright (C) Greenlaser 2023\n\n",
 		true);
 
-	string configFilePath = Search::FindDocumentsFolder() + "/config.txt";
-	string trueSendDebugMessages = "consoleDebugMessages: 1";
-	if (exists(configFilePath))
-	{
-		bool containsString = String::ContainsString(configFilePath, trueSendDebugMessages);
-		cout << containsString << endl;
-		ConsoleManager::sendDebugMessages = containsString;
-	}
-	else ConsoleManager::sendDebugMessages = true;
-
 	Engine::InitializeEngine();
 
-	ConfigFile::ProcessConfigFile("config.txt");
-
 	Engine::RunEngine();
-
-	ConfigFile::SaveDataAtShutdown();
 
 	ShutdownManager::Shutdown();
 	return 0;

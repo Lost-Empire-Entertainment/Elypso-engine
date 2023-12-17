@@ -214,7 +214,7 @@ namespace Graphics
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(50);
+		ImGui::SameLine(50 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Edit"))
 		{
@@ -261,7 +261,7 @@ namespace Graphics
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(100);
+		ImGui::SameLine(100 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Window"))
 		{
@@ -283,7 +283,7 @@ namespace Graphics
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(180);
+		ImGui::SameLine(180 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Help"))
 		{

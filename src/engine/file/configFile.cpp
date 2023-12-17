@@ -49,6 +49,73 @@ using Type = Core::ConsoleManager::Type;
 
 namespace File
 {
+	void ConfigFile::SetConfigValuesToDefaultValues()
+	{
+		GUI::fontScale = 1.5f;
+		//Render::SCR_WIDTH = 1280; //do not uncomment! edit in render.hpp instead!
+		//Render::SCR_WIDTH = 720; //do not uncomment! edit in render.hpp instead!
+		Render::useMonitorRefreshRate = true;
+		Render::fov = 90.0f;
+		Render::nearClip = 0.001f;
+		Render::farClip = 100.0f;
+		Render::cameraPos = vec3(0.0f, 0.0f, 3.0f);
+		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
+		GUI::allowScrollToBottom = true;
+		ConsoleManager::sendDebugMessages = true;
+		GUI::showAboutMenu = false;
+		GUI::showKeybindsMenu = false;
+		GUI::showDebugMenu = false;
+		GUI::showConsole = false;
+	}
+
+	void ConfigFile::ProcessFirstConfigValues()
+	{
+		string configFilePath = Search::FindDocumentsFolder() + "/config.txt";
+		string debugMessagesCheck = "consoleDebugMessages";
+		string fontScale = "fontScale";
+
+		SetConfigValuesToDefaultValues();
+
+		if (!exists(configFilePath))
+		{
+			return;
+		}
+
+		ifstream configFileStream(configFilePath);
+
+		if (!configFileStream.is_open())
+		{
+			cout << "Error opening config file at " << configFilePath << endl;
+			return;
+		}
+
+		cout << "Success opening config file!";
+
+		string line;
+		while (getline(configFileStream, line))
+		{
+			vector<string> splitLine = String::Split(line, ' ');
+			string cleanedVariable = String::Replace(splitLine[0], ":", "");
+			string cleanedValue = splitLine[1];
+			if (cleanedVariable == debugMessagesCheck
+				&& String::CanConvertStringToInt(cleanedValue)
+				&& (stoi(cleanedValue) == 0
+				|| stoi(cleanedValue) == 1))
+			{
+				ConsoleManager::sendDebugMessages = stoi(cleanedValue) == 1;
+			}
+			else if (cleanedVariable == fontScale
+					 && String::CanConvertStringToFloat(cleanedValue) 
+					 && stof(cleanedValue) >= 1.0f
+					 && stof(cleanedValue) <= 2.0f)
+			{
+				GUI::fontScale = stof(cleanedValue);
+			}
+		}
+
+		configFileStream.close();
+	}
+
 	void ConfigFile::ProcessConfigFile(const string& fileName)
 	{
 		filePath = Search::FindDocumentsFolder();

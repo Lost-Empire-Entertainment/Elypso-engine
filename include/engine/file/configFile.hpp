@@ -26,17 +26,14 @@ namespace File
 	class ConfigFile
 	{
 	public:
+		static void ProcessFirstConfigValues();
 		static void ProcessConfigFile(const string& fileName);
 		static void SaveDataAtShutdown();
-
-		//CONSOLE COMMANDS
-		static void Command_Exit();
-		static void Command_SetRenderMode();
-		static void Command_ResetCam();
 	private:
 		static inline string filePath;
 		static inline string documentPath;
 
 		static bool IsValueInRange(string type, string value);
+		static void SetConfigValuesToDefaultValues();
 	};
 }

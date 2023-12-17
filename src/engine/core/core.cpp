@@ -27,6 +27,7 @@
 
 using std::cout;
 
+using File::ConfigFile;
 using Graphics::Render;
 using Graphics::GUI;
 using Caller = Core::ConsoleManager::Caller;
@@ -38,7 +39,11 @@ namespace Core
 	{
 		Admin::RunAsAdmin();
 
+		ConfigFile::ProcessFirstConfigValues();
+
 		Render::RenderSetup();
+
+		ConfigFile::ProcessConfigFile("config.txt");
 	}
 
 	void Engine::RunEngine()
@@ -62,6 +67,8 @@ namespace Core
 
 			Render::WindowLoop();
 		}
+
+		ConfigFile::SaveDataAtShutdown();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,

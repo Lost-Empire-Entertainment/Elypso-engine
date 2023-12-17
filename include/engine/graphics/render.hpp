@@ -32,19 +32,19 @@ namespace Graphics
 		static inline unsigned int VBO, VAO, EBO;
 
 		static inline float cameraSpeed;
-		static inline vec3 cameraPos = vec3(0.0f, 0.0f, 3.0f);
+		static inline vec3 cameraPos; //= vec3(0.0f, 0.0f, 3.0f);
 		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 		static inline bool useMonitorRefreshRate = true;
 
 		static inline GLFWwindow* window;
-		static inline float fov = 90;
+		static inline float fov;
 		static inline float aspectRatio;
 		static inline int windowedWidth;
 		static inline int windowedHeight;
-		static inline float nearClip = 0.001f;
-		static inline float farClip = 100.0f;
+		static inline float nearClip;
+		static inline float farClip;
 
 		static Core::Input camera;
 

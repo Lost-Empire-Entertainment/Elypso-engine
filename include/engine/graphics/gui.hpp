@@ -27,7 +27,7 @@ namespace Graphics
 	public:
 		static inline bool writeToConsole;
 		static inline bool firstScrollToBottom;
-		static inline bool allowScrollToBottom = true;
+		static inline bool allowScrollToBottom;
 
 		static inline bool showAboutMenu;
 		static inline bool showKeybindsMenu;
@@ -36,7 +36,7 @@ namespace Graphics
 		static inline bool showVersionWindow;
 		static inline bool outdatedVersion;
 
-		static inline float fontScale = 1.5f;
+		static inline float fontScale;
 
 		//holds text content
 		static inline ImGuiTextBuffer textBuffer;
