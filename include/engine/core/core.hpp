@@ -28,6 +28,8 @@ namespace Core
 	public:
 		static inline string name = "Elypso engine";
 		static inline string version = "0.0.8 Prototype";
+		static inline string docsPath;
+		static inline string filesPath;
 
 		static inline bool startedWindowLoop;
 

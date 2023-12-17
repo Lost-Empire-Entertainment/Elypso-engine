@@ -25,6 +25,7 @@
 #include "stringUtils.hpp"
 #include "searchUtils.hpp"
 #include "gui.hpp"
+#include "core.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -38,7 +39,9 @@ using std::ifstream;
 using std::exception;
 using std::filesystem::exists;
 using std::filesystem::remove;
+using std::filesystem::current_path;
 
+using Core::Engine;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Utils::String;
@@ -66,6 +69,8 @@ namespace File
 		GUI::showKeybindsMenu = false;
 		GUI::showDebugMenu = false;
 		GUI::showConsole = false;
+		Engine::docsPath = Search::FindDocumentsFolder();
+		Engine::filesPath = current_path().generic_string() + "/files";
 	}
 
 	void ConfigFile::ProcessFirstConfigValues()
@@ -118,17 +123,15 @@ namespace File
 
 	void ConfigFile::ProcessConfigFile(const string& fileName)
 	{
-		filePath = Search::FindDocumentsFolder();
-
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
-			"Game documents path: " + filePath + "\n");
+			"Game documents path: " + Engine::docsPath + "\n");
 
 		//check if file exists
-		if (exists(filePath + "/config.txt"))
+		if (exists(Engine::docsPath + "/config.txt"))
 		{
-			ifstream configFile(filePath + "/config.txt");
+			ifstream configFile(Engine::docsPath + "/config.txt");
 			if (!configFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -459,9 +462,9 @@ namespace File
 
 	void ConfigFile::SaveDataAtShutdown()
 	{
-		if (exists(filePath + "/config.txt"))
+		if (exists(Engine::docsPath + "/config.txt"))
 		{
-			if (!remove(filePath + "/config.txt"))
+			if (!remove(Engine::docsPath + "/config.txt"))
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
@@ -477,7 +480,7 @@ namespace File
 		}
 
 		//open the file for writing
-		ofstream configFile(filePath + "/config.txt");
+		ofstream configFile(Engine::docsPath + "/config.txt");
 
 		if (!configFile.is_open())
 		{

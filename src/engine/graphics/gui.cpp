@@ -43,8 +43,6 @@ using std::stoi;
 using std::to_string;
 using std::exception;
 using std::filesystem::exists;
-using std::filesystem::path;
-using std::filesystem::current_path;
 
 using Core::Engine;
 using Core::Input;
@@ -74,7 +72,7 @@ namespace Graphics
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		static string tempString = Search::FindDocumentsFolder() + "/imgui.ini";
+		static string tempString = Engine::docsPath + "/imgui.ini";
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
@@ -305,8 +303,7 @@ namespace Graphics
 
 	void GUI::TB_CheckVersion()
 	{
-		string fullPathString = current_path().generic_string();
-		string batFilePath = fullPathString + "/files/bat scripts/checkVersion.bat";
+		string batFilePath = Engine::filesPath + "/files/bat scripts/checkVersion.bat";
 
 		if (exists(batFilePath))
 		{
