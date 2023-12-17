@@ -65,7 +65,6 @@ namespace File
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
 		GUI::allowScrollToBottom = true;
 		ConsoleManager::sendDebugMessages = true;
-		GUI::showAboutMenu = false;
 		GUI::showKeybindsMenu = false;
 		GUI::showDebugMenu = false;
 		GUI::showConsole = false;
@@ -370,27 +369,6 @@ namespace File
 							"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
-				else if (name == "showAboutMenu")
-				{
-					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
-					{
-						GUI::showAboutMenu = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set show about menu to " + to_string(GUI::showAboutMenu) + ".\n");
-					}
-					else
-					{
-						GUI::showAboutMenu = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Show about menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
 				else if (name == "showKeybindsMenu")
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
@@ -511,7 +489,6 @@ namespace File
 			Render::camera.GetCameraRotation().z << endl;
 		configFile << "consoleForceScroll: " << GUI::allowScrollToBottom << endl;
 		configFile << "consoleDebugMessages: " << ConsoleManager::sendDebugMessages << endl;
-		configFile << "showAboutMenu: " << GUI::showAboutMenu << endl;
 		configFile << "showKeybindsMenu: " << GUI::showKeybindsMenu << endl;
 		configFile << "showDebugMenu: " << GUI::showDebugMenu << endl;
 		configFile << "showConsole: " << GUI::showConsole << endl;
@@ -601,13 +578,6 @@ namespace File
 				return (String::CanConvertStringToInt(value)
 						&& (consoleForceScroll == 0
 						|| consoleForceScroll == 1));
-			}
-			else if (type == "showAboutMenu")
-			{
-				int showAboutMenu = stoi(value);
-				return (String::CanConvertStringToInt(value)
-					&& (showAboutMenu == 0
-						|| showAboutMenu == 1));
 			}
 			else if (type == "showKeybindsMenu")
 			{

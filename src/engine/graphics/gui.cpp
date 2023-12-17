@@ -84,11 +84,8 @@ namespace Graphics
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 
-		//clear default font
 		io.Fonts->Clear();
-
-		string filesPath = Search::SearchByParent("files");
-		io.Fonts->AddFontFromFileTTF((filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		CustomizeImGuiStyle();
 	}
@@ -303,7 +300,7 @@ namespace Graphics
 
 	void GUI::TB_CheckVersion()
 	{
-		string batFilePath = Engine::filesPath + "/files/bat scripts/checkVersion.bat";
+		string batFilePath = Engine::filesPath + "/bat scripts/checkVersion.bat";
 
 		if (exists(batFilePath))
 		{
@@ -381,7 +378,7 @@ namespace Graphics
 			&& ImGui::Begin("Keybinds", NULL, windowFlags))
 		{
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 30);
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
 				showKeybindsMenu = false;
@@ -419,6 +416,13 @@ namespace Graphics
 		if (showDebugMenu
 			&& ImGui::Begin("Debug menu", NULL, windowFlags))
 		{
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				showDebugMenu = false;
+			}
+
 			if (ImGui::BeginTabBar("Debug"))
 			{
 				if (ImGui::BeginTabItem("Debug info"))
@@ -432,13 +436,6 @@ namespace Graphics
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
-			}
-
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 25);
-			if (ImGui::Button("X"))
-			{
-				showDebugMenu = false;
 			}
 
 			ImGui::End();
@@ -574,7 +571,7 @@ namespace Graphics
 			&& ImGui::Begin("Version", NULL, windowFlags))
 		{
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 30);
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
 				showVersionWindow = false;

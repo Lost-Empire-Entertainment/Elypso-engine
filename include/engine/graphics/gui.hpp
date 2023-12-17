@@ -29,7 +29,6 @@ namespace Graphics
 		static inline bool firstScrollToBottom;
 		static inline bool allowScrollToBottom;
 
-		static inline bool showAboutMenu;
 		static inline bool showKeybindsMenu;
 		static inline bool showDebugMenu;
 		static inline bool showConsole;

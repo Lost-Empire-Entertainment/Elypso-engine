@@ -67,7 +67,7 @@ namespace Core
 {
     std::vector<std::string> ConsoleManager::storedLogs;
 
-    Logger logger(Search::FindDocumentsFolder() + "/" + "engine_log.txt");
+    Logger logger(Search::FindDocumentsFolder() + "/engine_log.txt");
 
     string Timestamp::GetCurrentTimestamp()
     {
