@@ -32,9 +32,6 @@ for /f "tokens=* delims=" %%a in ('type "%tempFile%"') do (
     set "line=!line:*<h2>=!"
     for /f "tokens=1,* delims=<>" %%b in ("!line!") do set "line=%%b"
 
-    :: Remove unwanted /li
-    set "line=!line:/li=!"
-
     :: Remove leading and trailing spaces
     for /f "tokens=* delims=" %%c in ("!line!") do set "line=%%c"
 

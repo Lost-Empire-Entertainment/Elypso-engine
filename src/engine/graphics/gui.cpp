@@ -293,19 +293,21 @@ namespace Graphics
 			string currentVersion = String::Replace(Engine::version, " Prototype", "");
 
 			int versionNumber = stoi(String::Split(currentVersion, '.')[2]);
-			int currentVersionNumber = versionNumber;
+			int currentVersionNumber = 0;
 			for (const auto& part : sortedOutput)
 			{
 				int partVersionNumber = stoi(String::Split(part, '.')[2]);
-				if (partVersionNumber > versionNumber)
+				if (partVersionNumber > currentVersionNumber)
 				{
 					currentVersionNumber = partVersionNumber;
-					outdatedVersion = true;
 				}
 			}
 
-			versionCompare = "Latest version: 0.0." + to_string(currentVersionNumber) + "\n" +
-					 " Your version: " + currentVersion;
+			if (currentVersionNumber > versionNumber) outdatedVersion = true;
+
+			versionCompare = 
+				"Latest version: 0.0." + to_string(currentVersionNumber) + "\n" +
+				" Your version: " + currentVersion;
 
 			versionConfirm += outdatedVersion ?
 				"\n\nYour version is out of date!" :
@@ -635,7 +637,6 @@ namespace Graphics
 
 	void GUI::RWPart_DebugMenuInfo()
 	{
-		ImGui::Text("Version: %s", Engine::version);
 		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 		ImGui::Text(
 			"Position: %.2f, %.2f, %.2f",
