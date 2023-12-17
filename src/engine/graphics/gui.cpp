@@ -387,7 +387,7 @@ namespace Graphics
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 30);
 			if (ImGui::Button("X"))
 			{
-				showConsole = false;
+				showKeybindsMenu = false;
 			}
 
 			ImGui::Text("General keys");
@@ -561,7 +561,7 @@ namespace Graphics
 
 	void GUI::RenderVersionCheckWindow()
 	{
-		ImVec2 initialPos(800, 400);
+		ImVec2 initialPos(400, 200);
 		ImVec2 initialSize(400, 400);
 		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
 		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
@@ -577,7 +577,7 @@ namespace Graphics
 			&& ImGui::Begin("Version", NULL, windowFlags))
 		{
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 30);
 			if (ImGui::Button("X"))
 			{
 				showVersionWindow = false;
