@@ -17,6 +17,9 @@
 
 //external
 #include "magic_enum.hpp"
+#include "glad.h"
+#include "glfw3.h"
+#include "glm.hpp"
 
 //engine
 #include "console.hpp"
@@ -25,6 +28,7 @@
 #include "gui.hpp"
 #include "core.hpp"
 #include "shutdown.hpp"
+#include "render.hpp"
 
 #include <ctime>
 #include <chrono>
@@ -48,12 +52,14 @@ using std::chrono::microseconds;
 using std::chrono::duration_cast;
 using std::chrono::time_point_cast;
 using std::chrono::system_clock;
+using glm::vec3;
 
 using Graphics::GUI;
 using Utils::Search;
 using Core::Engine;
 using Utils::String;
 using Core::ShutdownManager;
+using Graphics::Render;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -225,8 +231,9 @@ namespace Core
             ss <<
                 "help - lists all console commands\n" <<
                 "qqq - quits the engine\n" <<
-                "setrendermode 'string' - sets a render mode (either normal or wireframe\n" <<
-                "resetcam - resets the camera back to its original position and rotation";
+                "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n" <<
+                "rc - resets the camera back to its original position and rotation\n" <<
+                "ccc - cleans the console\n";
 
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
@@ -237,27 +244,42 @@ namespace Core
         else if (cleanedCommands[0] == "qqq"
                  && cleanedCommands.size() == 1)
         {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "User closed engine with 'qqq' console command.\n");
             ShutdownManager::Shutdown();
         }
-        else if (cleanedCommands[0] == "setrendermode"
-                 && (cleanedCommands[1] == "normal"
-                 || cleanedCommands[1] == "wireframe")
+        else if (cleanedCommands[0] == "srm"
+                 && (cleanedCommands[1] == "1"
+                 || cleanedCommands[1] == "2")
                  && cleanedCommands.size() == 2)
         {
+            wireframeMode = cleanedCommands[1] != "1";
+            glPolygonMode(GL_FRONT_AND_BACK, wireframeMode ? GL_LINE : GL_FILL);
+
+            string wireframeModeValue = cleanedCommands[1] == "1" ?
+                "shaded" :
+                "wireframe";
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
-                Type::DEBUG,
-                "'" + command + "' was valid!\n");
+                Type::INFO,
+                "Set wireframe mode to " + wireframeModeValue + ".\n");
         }
-        else if (cleanedCommands[0] == "resetcam"
+        else if (cleanedCommands[0] == "rc"
                  && cleanedCommands.size() == 1)
         {
+            Render::cameraPos.x = 0;
+            Render::cameraPos.y = 0;
+            Render::cameraPos.z = 3;
+            Render::camera.SetCameraRotation(vec3(-90, 0, 0));
+
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
-                Type::DEBUG,
-                "'" + command + "' was valid!\n");
+                Type::INFO,
+                "Reset camera position and rotation.\n");
         }
-        else if (cleanedCommands[0] == "clean"
+        else if (cleanedCommands[0] == "ccc"
                  && cleanedCommands.size() == 1)
         {
             GUI::textBuffer.clear();
@@ -267,7 +289,7 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
                 Type::EXCEPTION,
-                "'" + command + "' is not a valid command! Use 'help' to list all commands.\n");
+                "'" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
         }
     }
 }

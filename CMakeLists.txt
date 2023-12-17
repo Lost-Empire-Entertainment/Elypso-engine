@@ -112,16 +112,16 @@ target_include_directories(Elypso_engine PRIVATE
 target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
 
 # Set the subsystem to WINDOWS
-# set_target_properties(Elypso_engine PROPERTIES
-#     WIN32_EXECUTABLE TRUE
-# )
+set_target_properties(Elypso_engine PROPERTIES
+    WIN32_EXECUTABLE TRUE
+)
 
 # Set the entry point (MSVC-specific)
-# if (MSVC)
-#     set_target_properties(Elypso_engine PROPERTIES
-#         LINK_FLAGS "/ENTRY:mainCRTStartup"
-#     )
-# endif()
+if (MSVC)
+    set_target_properties(Elypso_engine PROPERTIES
+        LINK_FLAGS "/ENTRY:mainCRTStartup"
+    )
+endif()
 
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)

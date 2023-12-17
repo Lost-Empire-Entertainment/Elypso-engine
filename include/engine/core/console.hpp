@@ -72,6 +72,8 @@ namespace Core
 		static void PrintLogsToBuffer();
 
 		static vector<string> storedLogs;
+	private:
+		static inline bool wireframeMode;
 	};
 
 	class Timestamp
