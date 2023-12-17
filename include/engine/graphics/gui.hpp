@@ -68,8 +68,6 @@ namespace Graphics
 		void TB_ReportIssue();
 
 		//rendered windows
-		void RenderAboutMenu();
-		static inline string aboutText;
 		void RenderKeybindsMenu();
 		void RenderDebugMenu();
 		void RenderConsole();

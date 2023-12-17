@@ -32,8 +32,8 @@
 #include "searchUtils.hpp"
 #include "fileUtils.hpp"
 #include "browserUtils.hpp"
+#include "shutdown.hpp"
 
-#include <sstream>
 #include <string>
 #include <filesystem>
 
@@ -50,6 +50,7 @@ using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
 using Core::TimeManager;
+using Core::ShutdownManager;
 using Utils::Search;
 using Utils::File;
 using Utils::Browser;
@@ -142,7 +143,6 @@ namespace Graphics
 
 		RenderTopBar();
 
-		RenderAboutMenu();
 		RenderKeybindsMenu();
 		RenderDebugMenu();
 		RenderConsole();
@@ -172,27 +172,43 @@ namespace Graphics
 		{
 			if (ImGui::MenuItem("Open"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Open is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("Save"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Save is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("Save As"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Save As is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("New Project"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"New Project is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("Exit"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"User closed engine exit button.\n");
+				ShutdownManager::Shutdown();
 			}
 
 			ImGui::EndMenu();
@@ -204,27 +220,42 @@ namespace Graphics
 		{
 			if (ImGui::MenuItem("Undo"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Undo is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("Redo"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Redo is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("Cut"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Cut is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("Copy"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Copy is a placeholder button and does not yet have any functions.\n");
 			}
 
 			if (ImGui::MenuItem("Paste"))
 			{
-
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::DEBUG,
+					"Paste is a placeholder button and does not yet have any functions.");
 			}
 
 			ImGui::EndMenu();
@@ -256,11 +287,6 @@ namespace Graphics
 
 		if (ImGui::BeginMenu("Help"))
 		{
-			if (ImGui::MenuItem("About"))
-			{
-				showAboutMenu = true;
-			}
-
 			if (ImGui::MenuItem("Check for Updates"))
 			{
 				TB_CheckVersion();
@@ -343,39 +369,6 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RenderAboutMenu()
-	{
-		ImVec2 initialPos(800, 400);
-		ImVec2 initialSize(400, 400);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoDocking |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoSavedSettings;
-
-		if (showAboutMenu
-			&& ImGui::Begin("About", NULL, windowFlags))
-		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-			if (ImGui::Button("X"))
-			{
-				showAboutMenu = false;
-			}
-
-			//move text to center
-			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(aboutText.c_str()).x) * 0.4f);
-			ImGui::SetCursorPosY((ImGui::GetWindowHeight() - ImGui::CalcTextSize(aboutText.c_str()).y) * 0.4f);
-
-			ImGui::Text("");
-
-			ImGui::End();
-		}
-	}
 	void GUI::RenderKeybindsMenu()
 	{
 		ImVec2 initialPos(5, 5);

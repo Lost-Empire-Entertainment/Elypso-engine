@@ -246,7 +246,7 @@ namespace Core
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
-                Type::INFO,
+                Type::DEBUG,
                 "User closed engine with 'qqq' console command.\n");
             ShutdownManager::Shutdown();
         }
