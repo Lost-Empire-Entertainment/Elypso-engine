@@ -16,10 +16,9 @@
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
 //external
-#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
+#include <imgui_internal.h>
 #include "magic_enum.hpp"
 
 //engine
@@ -31,19 +30,30 @@
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
 #include "searchUtils.hpp"
+#include "fileUtils.hpp"
+#include "browserUtils.hpp"
 
 #include <sstream>
 #include <string>
+#include <filesystem>
 
 using std::cout;
 using std::endl;
+using std::stoi;
 using std::to_string;
+using std::exception;
+using std::filesystem::exists;
+using std::filesystem::path;
+using std::filesystem::current_path;
 
 using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
 using Core::TimeManager;
 using Utils::Search;
+using Utils::File;
+using Utils::Browser;
+using Utils::String;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -128,9 +138,16 @@ namespace Graphics
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
-		GUI::RenderDebugMenu();
-		GUI::RenderSlider();
-		GUI::RenderConsole();
+		ImGui::End();
+
+		RenderTopBar();
+
+		RenderAboutMenu();
+		RenderKeybindsMenu();
+		RenderDebugMenu();
+		RenderConsole();
+
+		RenderVersionCheckWindow();
 
 		if (Input::inputSettings.printIMGUIToConsole)
 		{
@@ -147,122 +164,388 @@ namespace Graphics
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
+	void GUI::RenderTopBar()
+	{
+		ImGui::BeginMainMenuBar();
+
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Save"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Save As"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("New Project"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Exit"))
+			{
+
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::SameLine(50);
+
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Undo"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Redo"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Cut"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Copy"))
+			{
+
+			}
+
+			if (ImGui::MenuItem("Paste"))
+			{
+
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::SameLine(100);
+
+		if (ImGui::BeginMenu("Window"))
+		{
+			if (ImGui::MenuItem("Keybinds"))
+			{
+				showKeybindsMenu = true;
+			}
+
+			if (ImGui::MenuItem("Debug menu"))
+			{
+				showDebugMenu = true;
+			}
+
+			if (ImGui::MenuItem("Console"))
+			{
+				showConsole = true;
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::SameLine(180);
+
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("About"))
+			{
+				showAboutMenu = true;
+			}
+
+			if (ImGui::MenuItem("Check for Updates"))
+			{
+				TB_CheckVersion();
+			}
+
+			if (ImGui::MenuItem("Report an Issue"))
+			{
+				TB_ReportIssue();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+
+	void GUI::TB_CheckVersion()
+	{
+		string fullPathString = current_path().generic_string();
+		string batFilePath = fullPathString + "/files/bat scripts/checkVersion.bat";
+
+		if (exists(batFilePath))
+		{
+			string batOutput = File::GetOutputFromBatFile((batFilePath).c_str());
+
+			vector<string>splitOutput = String::Split(batOutput, ' ');
+			vector<string>cleanedOutput = String::RemoveExcept(splitOutput, "0.0.");
+			vector<string>sortedOutput = String::RemoveDuplicates(cleanedOutput);
+
+			string currentVersion = String::Replace(Engine::version, " Prototype", "");
+
+			int versionNumber = stoi(String::Split(currentVersion, '.')[2]);
+			int currentVersionNumber = versionNumber;
+			for (const auto& part : sortedOutput)
+			{
+				int partVersionNumber = stoi(String::Split(part, '.')[2]);
+				if (partVersionNumber > versionNumber)
+				{
+					currentVersionNumber = partVersionNumber;
+					outdatedVersion = true;
+				}
+			}
+
+			versionCompare = "Latest version: 0.0." + to_string(currentVersionNumber) + "\n" +
+					 " Your version: " + currentVersion;
+
+			versionConfirm += outdatedVersion ?
+				"\n\nYour version is out of date!" :
+				"\n\nYour version is up to date!";
+
+			showVersionWindow = true;
+		}
+		else
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::EXCEPTION,
+				"Error: Path " + batFilePath + " does not exist!");
+		}
+	}
+
+	void GUI::TB_ReportIssue()
+	{
+		try
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::DEBUG,
+				"User opened link to Github repository issues page.\n");
+			Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine/issues");
+		}
+		catch (const exception& e)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::EXCEPTION,
+				"Error: Failed to open link to Github repository issues page! " + string(e.what()) + "\n");
+		}
+	}
+
+	void GUI::RenderAboutMenu()
+	{
+		ImVec2 initialPos(800, 400);
+		ImVec2 initialSize(400, 400);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoSavedSettings;
+
+		if (showAboutMenu
+			&& ImGui::Begin("About", NULL, windowFlags))
+		{
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				showAboutMenu = false;
+			}
+
+			//move text to center
+			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(aboutText.c_str()).x) * 0.4f);
+			ImGui::SetCursorPosY((ImGui::GetWindowHeight() - ImGui::CalcTextSize(aboutText.c_str()).y) * 0.4f);
+
+			ImGui::Text("");
+
+			ImGui::End();
+		}
+	}
+	void GUI::RenderKeybindsMenu()
+	{
+		ImVec2 initialPos(5, 5);
+		ImVec2 initialSize(350, 700);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags = 
+			ImGuiWindowFlags_NoCollapse;
+
+		if (showKeybindsMenu
+			&& ImGui::Begin("Keybinds", NULL, windowFlags))
+		{
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 30);
+			if (ImGui::Button("X"))
+			{
+				showConsole = false;
+			}
+
+			ImGui::Text("General keys");
+			ImGui::Text("");
+			ImGui::Text("Forwards: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraForwards])));
+			ImGui::Text("Backwards: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraBackwards])));
+			ImGui::Text("Left: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraLeft])));
+			ImGui::Text("Right: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraRight])));
+			ImGui::Text("Up: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraUp])));
+			ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraDown])));
+			ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraSprint])));
+			string cameraEnabledText = (Input::inputSettings.cameraEnabled) ?
+				"(true)" :
+				"(false)";
+			ImGui::Text("Toggle camera: Escape %s", cameraEnabledText);
+
+			ImGui::End();
+		}
+	}
+
 	void GUI::RenderDebugMenu()
 	{
 		ImVec2 initialPos(5, 5);
 		ImVec2 initialSize(350, 700);
-		ImVec2 minSize(350, 600);
-		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
 		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
 
-		ImGui::Begin("Debug menu");
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse;
 
-		GUI::RDM_Info();
-		GUI::RDM_GeneralKeys();
-		GUI::RDM_DebugButtons();
+		if (showDebugMenu
+			&& ImGui::Begin("Debug menu", NULL, windowFlags))
+		{
+			if (ImGui::BeginTabBar("Debug"))
+			{
+				if (ImGui::BeginTabItem("Debug info"))
+				{
+					RWPart_DebugMenuInfo();
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Debug interactions"))
+				{
+					RWPart_Interactions();
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
 
-		ImGui::End();
-	}
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 25);
+			if (ImGui::Button("X"))
+			{
+				showDebugMenu = false;
+			}
 
-	// render sliders menu at the top right corner like RenderDebugMenu()
-	void GUI::RenderSlider()
-	{
-		ImVec2 initialPos(925, 5);
-		ImVec2 initialSize(350, 700);
-		ImVec2 minSize(350, 600);
-		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGui::Begin("Sliders menu");
-
-		RS_CameraClipRange();
-		RS_MoveSpeedMultiplier();
-		RS_FOV();
-
-		ImGui::End();
+			ImGui::End();
+		}
 	}
 
 	void GUI::RenderConsole()
 	{
 		ImVec2 initialPos(357, 500);
 		ImVec2 initialSize(530, 200);
-		ImVec2 minSize(530, 200);
-		ImGui::SetNextWindowSizeConstraints(initialSize, ImVec2(INT_MAX, INT_MAX));
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
 		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
 
-		ImGui::Begin("Console");
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse;
 
-		//text area with scrollable region
-		ImVec2 scrollingRegionSize(
-			ImGui::GetContentRegionAvail().x,
-			ImGui::GetContentRegionAvail().y - 25);
-		ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, true);
-
-		float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
-		ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
-
-		//display the content of the text buffer
-		ImGui::TextWrapped("%s", textBuffer.begin(), textBuffer.end());
-
-		ImGui::PopTextWrapPos();
-
-		//scrolls to the bottom if scrolling is allowed
-		//and if user is close to the newest console message
-		if (allowScrollToBottom)
+		if (showConsole
+			&& ImGui::Begin("Console", NULL, windowFlags))
 		{
-			bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
-			if (isNearBottom
-				|| (!firstScrollToBottom
-				&& Engine::startedWindowLoop))
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
 			{
-				ImGui::SetScrollHereY(1.0f);
-				firstScrollToBottom = true;
+				showConsole = false;
 			}
-		}
 
-		AddTextToConsole();
+			//text area with scrollable region
+			ImVec2 scrollingRegionSize(
+				ImGui::GetContentRegionAvail().x,
+				ImGui::GetContentRegionAvail().y - 25);
+			ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, true);
 
-		ImGui::EndChild();
+			float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
+			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
 
-		//text filter input box
-		float textAreaHeight = ImGui::GetContentRegionAvail().y - 25.0f;
-		ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight));
+			//display the content of the text buffer
+			ImGui::TextWrapped("%s", textBuffer.begin(), textBuffer.end());
 
-		// Draw the text filter input box
-		ImGui::PushItemWidth(scrollingRegionSize.x);
-		ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
-		ImGui::InputText("##filter", textFilter.InputBuf, IM_ARRAYSIZE(textFilter.InputBuf), flags,
-			[](ImGuiInputTextCallbackData* data)
+			ImGui::PopTextWrapPos();
+
+			//scrolls to the bottom if scrolling is allowed
+			//and if user is close to the newest console message
+			if (allowScrollToBottom)
 			{
-				char c = data->EventChar;
-				if (c == '\n' || c == '\r')
+				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
+				if (isNearBottom
+					|| (!firstScrollToBottom
+						&& Engine::startedWindowLoop))
 				{
-					return 1;
+					ImGui::SetScrollHereY(1.0f);
+					firstScrollToBottom = true;
 				}
-				return 0;
-			});
-
-		//retrieve the text entered by the user
-		const char* filterText = textFilter.InputBuf;
-
-		//check if Enter/Return was pressed, if so, reset the processed flag and clear the input field
-		if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter)) 
-			|| ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_KeyPadEnter)))
-		{
-			//parse the filter text
-			if (!filterTextProcessed
-				&& filterText
-				&& filterText[0] != '\0')
-			{
-				ConsoleManager::ParseConsoleCommand(filterText);
 			}
 
-			memset(textFilter.InputBuf, 0, sizeof(textFilter.InputBuf));
+			AddTextToConsole();
+
+			ImGui::EndChild();
+
+			//text filter input box
+			float textAreaHeight = ImGui::GetContentRegionAvail().y - 25.0f;
+			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight));
+
+			// Draw the text filter input box
+			ImGui::PushItemWidth(scrollingRegionSize.x);
+			ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
+			ImGui::InputText("##filter", textFilter.InputBuf, IM_ARRAYSIZE(textFilter.InputBuf), flags,
+				[](ImGuiInputTextCallbackData* data)
+				{
+					char c = data->EventChar;
+					if (c == '\n' || c == '\r')
+					{
+						return 1;
+					}
+					return 0;
+				});
+
+			//retrieve the text entered by the user
+			const char* filterText = textFilter.InputBuf;
+
+			//check if Enter/Return was pressed, if so, reset the processed flag and clear the input field
+			if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter))
+				|| ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_KeyPadEnter)))
+			{
+				//parse the filter text
+				if (!filterTextProcessed
+					&& filterText
+					&& filterText[0] != '\0')
+				{
+					ConsoleManager::ParseConsoleCommand(filterText);
+				}
+
+				memset(textFilter.InputBuf, 0, sizeof(textFilter.InputBuf));
+			}
+
+			ImGui::PopItemWidth();
+
+			ImGui::End();
 		}
-
-		ImGui::PopItemWidth();
-
-		ImGui::End();
 	}
 	void GUI::AddTextToConsole()
 	{
@@ -281,7 +564,76 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RDM_Info()
+	void GUI::RenderVersionCheckWindow()
+	{
+		ImVec2 initialPos(800, 400);
+		ImVec2 initialSize(400, 400);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoSavedSettings;
+
+		if (showVersionWindow
+			&& ImGui::Begin("Version", NULL, windowFlags))
+		{
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				showVersionWindow = false;
+			}
+
+			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(versionCompare.c_str()).x) * 0.48f);
+			ImGui::SetCursorPosY((ImGui::GetWindowHeight() - ImGui::CalcTextSize(versionCompare.c_str()).y) * 0.35f);
+			ImGui::Text(versionCompare.c_str());
+
+			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(versionConfirm.c_str()).x) * 0.48f);
+			ImGui::SetCursorPosY((ImGui::GetWindowHeight() - ImGui::CalcTextSize(versionConfirm.c_str()).y) * 0.45f);
+			ImGui::Text(versionConfirm.c_str());
+
+			if (outdatedVersion)
+			{
+				ImVec2 buttonSize(200, 50);
+
+				//move button to center and slightly down
+				ImVec2 buttonPos
+				(
+					(ImGui::GetWindowWidth() - buttonSize.x) * 0.5f,
+					(ImGui::GetWindowHeight() - buttonSize.y) * 0.7f
+				);
+
+				ImGui::SetCursorPos(buttonPos);
+
+				if (ImGui::Button("Get the latest version", buttonSize))
+				{
+					try
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::DEBUG,
+							"User opened link to Github repository releases page.\n");
+						Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine/releases");
+					}
+					catch (const exception& e)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Failed to open link to Github repository releases page! " + string(e.what()) + "\n");
+					}
+				}
+			}
+
+			ImGui::End();
+		}
+	}
+
+	void GUI::RWPart_DebugMenuInfo()
 	{
 		ImGui::Text("Version: %s", Engine::version);
 		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
@@ -297,28 +649,8 @@ namespace Graphics
 			Render::camera.GetCameraRotation().z);
 		ImGui::Text("FOV: %.0f", Graphics::Render::fov);
 	}
-	void GUI::RDM_GeneralKeys()
+	void GUI::RWPart_Interactions()
 	{
-		ImGui::Separator();
-
-		ImGui::Text("General keys");
-		ImGui::Text("");
-		ImGui::Text("Forwards: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraForwards])));
-		ImGui::Text("Backwards: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraBackwards])));
-		ImGui::Text("Left: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraLeft])));
-		ImGui::Text("Right: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraRight])));
-		ImGui::Text("Up: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraUp])));
-		ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraDown])));
-		ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraSprint])));
-		string cameraEnabledText = (Input::inputSettings.cameraEnabled) ?
-			"(true)" :
-			"(false)";
-		ImGui::Text("Toggle camera: Escape %s", cameraEnabledText);
-	}
-	void GUI::RDM_DebugButtons()
-	{
-		ImGui::Separator();
-
 		ImGui::Text("Debug buttons");
 		ImGui::Text("");
 
@@ -354,10 +686,13 @@ namespace Graphics
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
-	}
 
-	void GUI::RS_CameraClipRange()
-	{
+		//
+		//CAMERA CLIP RANGE
+		//
+
+		ImGui::Separator();
+
 		ImGui::Text("Camera clip range");
 		ImGui::Text("");
 
@@ -384,9 +719,11 @@ namespace Graphics
 		{
 			Render::farClip = 100.0f;
 		}
-	}
-	void GUI::RS_MoveSpeedMultiplier()
-	{
+
+		//
+		//MOVE SPEED MULTIPLIER
+		//
+
 		ImGui::Separator();
 
 		ImGui::Text("Move speed multiplier");
@@ -401,9 +738,11 @@ namespace Graphics
 		{
 			Input::inputSettings.moveSpeedMultiplier = 1.0f;
 		}
-	}
-	void GUI::RS_FOV()
-	{
+
+		//
+		//FOV
+		//
+
 		ImGui::Separator();
 
 		ImGui::Text("FOV");

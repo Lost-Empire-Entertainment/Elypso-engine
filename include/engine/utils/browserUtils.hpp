@@ -15,23 +15,11 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-#pragma once
-
-#include <string>
-
-using std::string;
-
-namespace Core
+namespace Utils
 {
-	class Engine
+	class Browser 
 	{
 	public:
-		static inline string name = "Elypso engine";
-		static inline string version = "0.0.8 Prototype";
-
-		static inline bool startedWindowLoop;
-
-		static void InitializeEngine();
-		static void RunEngine();
+		static void OpenLink(const char* link);
 	};
 }

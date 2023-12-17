@@ -67,6 +67,7 @@ goto menu
 :cmake
 echo %eninf% Running CMake configuration...
 start /wait build.bat cmake_config
+pause
 goto menu
 
 :build

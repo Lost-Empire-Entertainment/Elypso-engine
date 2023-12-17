@@ -17,7 +17,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(PROJECT_MAJOR_VERSION 0)
 set(PROJECT_MINOR_VERSION 0)
-set(PROJECT_PATCH_VERSION 7)
+set(PROJECT_PATCH_VERSION 8)
 set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
 
 project("Elypso engine" VERSION ${PROJECT_VERSION})
@@ -67,6 +67,8 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/render.cpp
 	${SRC_GRAPHICS_DIR}/shader.cpp
 	${SRC_GRAPHICS_DIR}/texture.cpp
+	${SRC_UTILS_DIR}/browserUtils.cpp
+	${SRC_UTILS_DIR}/fileUtils.cpp
 	${SRC_UTILS_DIR}/searchUtils.cpp
 	${SRC_UTILS_DIR}/stringUtils.cpp
 )
@@ -112,16 +114,16 @@ target_include_directories(Elypso_engine PRIVATE
 target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
 
 # Set the subsystem to WINDOWS
-set_target_properties(Elypso_engine PROPERTIES
-    WIN32_EXECUTABLE TRUE
-)
+# set_target_properties(Elypso_engine PROPERTIES
+#     WIN32_EXECUTABLE TRUE
+# )
 
 # Set the entry point (MSVC-specific)
-if (MSVC)
-    set_target_properties(Elypso_engine PROPERTIES
-        LINK_FLAGS "/ENTRY:mainCRTStartup"
-    )
-endif()
+# if (MSVC)
+#     set_target_properties(Elypso_engine PROPERTIES
+#         LINK_FLAGS "/ENTRY:mainCRTStartup"
+#     )
+# endif()
 
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)

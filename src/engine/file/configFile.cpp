@@ -300,6 +300,90 @@ namespace File
 							"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
+				else if (name == "showAboutMenu")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showAboutMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show about menu to " + to_string(GUI::showAboutMenu) + ".\n");
+					}
+					else
+					{
+						GUI::showAboutMenu = false;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show about menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "showKeybindsMenu")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showKeybindsMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show keybinds menu to " + to_string(GUI::allowScrollToBottom) + ".\n");
+					}
+					else
+					{
+						GUI::showKeybindsMenu = false;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show keybinds menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "showDebugMenu")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show debug menu to " + to_string(GUI::allowScrollToBottom) + ".\n");
+					}
+					else
+					{
+						GUI::showDebugMenu = true;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show debug menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "showConsole")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showConsole = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show console to " + to_string(GUI::allowScrollToBottom) + ".\n");
+					}
+					else
+					{
+						GUI::showConsole = true;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
 			}
 
 			configFile.close();
@@ -357,6 +441,10 @@ namespace File
 			Render::camera.GetCameraRotation().z << endl;
 		configFile << "consoleForceScroll: " << GUI::allowScrollToBottom << endl;
 		configFile << "consoleDebugMessages: " << ConsoleManager::sendDebugMessages << endl;
+		configFile << "showAboutMenu: " << GUI::showAboutMenu << endl;
+		configFile << "showKeybindsMenu: " << GUI::showKeybindsMenu << endl;
+		configFile << "showDebugMenu: " << GUI::showDebugMenu << endl;
+		configFile << "showConsole: " << GUI::showConsole << endl;
 
 		configFile.close();
 
@@ -443,6 +531,34 @@ namespace File
 				return (String::CanConvertStringToInt(value)
 						&& (consoleForceScroll == 0
 						|| consoleForceScroll == 1));
+			}
+			else if (type == "showAboutMenu")
+			{
+				int showAboutMenu = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showAboutMenu == 0
+						|| showAboutMenu == 1));
+			}
+			else if (type == "showKeybindsMenu")
+			{
+				int showKeybindsMenu = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showKeybindsMenu == 0
+						|| showKeybindsMenu == 1));
+			}
+			else if (type == "showDebugMenu")
+			{
+				int showDebugMenu = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showDebugMenu == 0
+						|| showDebugMenu == 1));
+			}
+			else if (type == "showConsole")
+			{
+				int showConsole = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showConsole == 0
+						|| showConsole == 1));
 			}
 			else
 			{

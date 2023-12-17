@@ -46,6 +46,21 @@ namespace Utils
 		static vector<string> Split(const string& input, char delimiter);
 
 		/// <summary>
+		/// Remove everything except the selected instances.
+		/// </summary>
+		/// <param name="originalVector">The original vector we are editing</param>
+		/// <param name="instance">The part that should be kept.</param>
+		/// <returns></returns>
+		static vector<string> RemoveExcept(const vector<string>& originalVector, const string& instance);
+
+		/// <summary>
+		/// Find and remove all duplicates of already existing strings in the string vector.
+		/// </summary>
+		/// <param name="originalVector">The original vector we are editing.</param>
+		/// <returns></returns>
+		static vector<string> RemoveDuplicates(const vector<string>& originalVector);
+
+		/// <summary>
 		/// Check if the selected file contains the selected string.
 		/// </summary>
 		/// <param name="filePath">Where is the file located?</param>

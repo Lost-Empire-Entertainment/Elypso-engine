@@ -15,23 +15,44 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-#pragma once
+#include "fileUtils.hpp"
+#include "searchUtils.hpp"
 
+#include <iostream>
+#include <cstdio>
+#include <memory>
+#include <stdexcept>
 #include <string>
 
-using std::string;
+using Utils::Search;
+using std::runtime_error;
 
-namespace Core
+namespace Utils
 {
-	class Engine
+	string File::GetOutputFromBatFile(const char* file)
 	{
-	public:
-		static inline string name = "Elypso engine";
-		static inline string version = "0.0.8 Prototype";
+        char buffer[128];
+        string result = "";
+        string command = "\"" + string(file) + "\"";
+        FILE* pipe = _popen(command.c_str(), "r");
 
-		static inline bool startedWindowLoop;
+        if (!pipe) throw runtime_error("popen() failed!");
 
-		static void InitializeEngine();
-		static void RunEngine();
-	};
+        try
+        {
+            while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+            {
+                result += buffer;
+            }
+        }
+        catch (...)
+        {
+            _pclose(pipe);
+            throw;
+        }
+
+        _pclose(pipe);
+
+        return result;
+	}
 }

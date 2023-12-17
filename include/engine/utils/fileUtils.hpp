@@ -21,17 +21,16 @@
 
 using std::string;
 
-namespace Core
+namespace Utils
 {
-	class Engine
+	class File
 	{
 	public:
-		static inline string name = "Elypso engine";
-		static inline string version = "0.0.8 Prototype";
-
-		static inline bool startedWindowLoop;
-
-		static void InitializeEngine();
-		static void RunEngine();
+		/// <summary>
+		/// Return the output from a bat file as a string.
+		/// </summary>
+		/// <param name="file">Where is the file located at?</param>
+		/// <returns></returns>
+		static string GetOutputFromBatFile(const char* file);
 	};
 }
