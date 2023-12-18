@@ -52,9 +52,13 @@ RUN_ME.bat has useful mechanics:
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
 * [Dear ImGui](https://github.com/ocornut/imgui) - open source immediate mode graphic user library
 
-## Authors
+## Team
 
 * [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
+
+## Testers
+
+* [JonesyB](https://jonesyb.com/)
 
 ## Licenses
 
