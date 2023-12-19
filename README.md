@@ -20,6 +20,8 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 ### Setup
 
 ```
+- the recommended path to download the repository to is C:\Documents\Cpp projects\Elypso engine, you can name Cpp projects to whatever you like. Other paths are untested and might not work.
+
 - source code can be edited by right-clicking the Elypso engine folder and opening with visual Studio
 
 RUN_ME.bat has useful mechanics:
@@ -50,9 +52,13 @@ RUN_ME.bat has useful mechanics:
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
 * [Dear ImGui](https://github.com/ocornut/imgui) - open source immediate mode graphic user library
 
-## Authors
+## Team
 
 * [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
+
+## Testers
+
+* [JonesyB](https://jonesyb.com/)
 
 ## Licenses
 
