@@ -65,10 +65,12 @@ if "%1" == "cmake_config" (
 )
 
 ::
-:: START BUILD WITH "build.bat build" COMMAND
+:: START INSTALL WITH "build.bat install" COMMAND
 ::
 
-if "%1" == "build" (
+if "%1" == "install" (
+	cd /d "C:\Program Files"
+	
 	:: Change to the script directory
 	cd /d "%~dp0\build"
 
@@ -80,41 +82,33 @@ if "%1" == "build" (
 		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly. Check build/logs/build_log.txt for more details.
 	) else (
 		echo %cmsuc% Build succeeded! Created log file at build/logs/build_log.txt.
-	)
-)
-
-::
-:: START INSTALL WITH "build.bat install" COMMAND
-::
-
-if "%1" == "install" (
-	cd /d "C:\Program Files"
-	
-	if exist "%programFilesPath%" (
+		
+		if exist "%programFilesPath%" (
 		echo %encln% Deleted folder: Program Files/Elypso engine
 		rd /s /q "%programFilesPath%"
-	)
-	mkdir "%programFilesPath%"
-	if exist "%documentsPath%" (
+		)
+		mkdir "%programFilesPath%"
+		if exist "%documentsPath%" (
 		echo %encln% Deleted folder: Documents/Elypso engine
 		rd /s /q "%documentsPath%"
+		)
+		mkdir "%documentsPath%"
+	
+		echo %eninf% Copied file: Elypso_engine.exe to Program Files\Elypso engine
+		copy "%~dp0\build\Release\Elypso_engine.exe" "%programFilesPath%\Elypso_engine.exe"
+		
+		echo %eninf% Copied file: LICENSE.md to Program Files\Elypso engine
+		copy "%~dp0\LICENSE.md" "%programFilesPath%\LICENSE.md"
+		
+		echo %eninf% Copied file: EULA.md to Program Files\Elypso engine
+		copy "%~dp0\EULA.md" "%programFilesPath%\EULA.md"
+		
+		echo %eninf% Copied file: README.md to Program Files\Elypso engine
+		copy "%~dp0\README.md" "%programFilesPath%\README.md"
+	
+		echo %eninf% Copied folder: files to Program Files\Elypso engine
+		xcopy "%~dp0\build\Release\files" "%programFilesPath%\files" /E /I /Y
 	)
-	mkdir "%documentsPath%"
-	
-	echo %eninf% Copied file: Elypso_engine.exe to Program Files\Elypso engine
-	copy "%~dp0\build\Release\Elypso_engine.exe" "%programFilesPath%\Elypso_engine.exe"
-		
-	echo %eninf% Copied file: LICENSE.md to Program Files\Elypso engine
-	copy "%~dp0\LICENSE.md" "%programFilesPath%\LICENSE.md"
-		
-	echo %eninf% Copied file: EULA.md to Program Files\Elypso engine
-	copy "%~dp0\EULA.md" "%programFilesPath%\EULA.md"
-		
-	echo %eninf% Copied file: README.md to Program Files\Elypso engine
-	copy "%~dp0\README.md" "%programFilesPath%\README.md"
-	
-	echo %eninf% Copied folder: files to Program Files\Elypso engine
-	xcopy "%~dp0\build\Release\files" "%programFilesPath%\files" /E /I /Y
 )
 
 pause

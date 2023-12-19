@@ -45,20 +45,20 @@ echo.
 echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake
-echo 2. Generate build files
-echo 3. Install engine (creates a fresh install to C:\Program Files\Elypso engine)
-echo 4. Exit
+echo 2. Install
+echo 3. Exit
 echo.
-echo 0. Reset (DELETES OUT, .VS, BUILD AND ENGINE FOLDERS)
+echo 9. Clean Visual Studio (DELETES OUT AND .VS FOLDERS)
+echo 0. Clean Engine (DELETES ENGINE PROGRAM FILES AND DOCUMENTS FOLDERS)
 echo.
 set /p choice="Choice: "
 
 :: Process user input
 if "%choice%"=="1" goto cmake
-if "%choice%"=="2" goto build
-if "%choice%"=="3" goto install
-if "%choice%"=="4" goto end
-if "%choice%"=="0" goto reset
+if "%choice%"=="2" goto install
+if "%choice%"=="3" goto exit
+if "%choice%"=="9" goto cleanvs
+if "%choice%"=="0" goto cleanen
 
 echo %enexc% Invalid choice! Please enter a valid number.
 pause
@@ -66,48 +66,34 @@ goto menu
 
 :cmake
 echo %eninf% Running CMake configuration...
+
 start /wait build.bat cmake_config
-pause
-goto menu
 
-:build
-echo %eninf% Running build generation...
-
-if not exist build (
-	echo %enexc% Did not find build folder. Please run CMake Configuration.
-	pause
-) else (
-	start /wait build.bat build
-)
 pause
 goto menu
 
 :install
-echo %eninf% Installing engine...
+echo %eninf% Running engine install...
 
-if not exist build\Release\Elypso_engine.exe (
-	echo %enexc% Did not find executable. Please run CMake Configuration and build generation.
-	pause
-) else (
+if exist build (
 	start /wait build.bat install
+	pause
+	goto menu
+) else (
+	echo %enexc% Did not find build folder. Please run CMake Configuration.
+	pause
 )
+
 pause
 goto menu
 
-
-:reset
-echo %eninf% Running reset...
+:cleanvs
+echo %eninf% Running vs clean...
 if not exist out (
 	if not exist .vs (
-		if not exist build (
-			if not exist "%programFilesPath%" (
-				if not exist "%documentsPath%" (
-					echo %encln% There is nothing to reset.
-					pause
-					goto menu
-				)
-			)
-		)
+		echo %encln% There is nothing to reset.
+		pause
+		goto menu
 	)
 )
 
@@ -119,6 +105,22 @@ if exist .vs (
 	echo %encln% Deleted folder: .vs
 	rd /s /q .vs
 )
+
+pause
+goto menu
+
+:cleanen
+
+if not exist build (
+	if not exist "%programFilesPath%" (
+		if not exist "%documentsPath%" (
+			echo %encln% There is nothing to reset.
+			pause
+			goto menu
+		)
+	)
+)
+
 if exist build (
 	echo %encln% Deleted folder: build
 	rd /s /q build
@@ -131,6 +133,7 @@ if exist "%documentsPath%" (
 	echo %encln% Deleted folder: Documents/Elypso engine
 	rd /s /q "%documentsPath%"
 )
+
 pause
 goto menu
 
