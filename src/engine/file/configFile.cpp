@@ -34,12 +34,14 @@
 using glm::vec3;
 using std::cout;
 using std::endl;
+using std::cerr;
 using std::to_string;
 using std::ifstream;
 using std::exception;
 using std::filesystem::exists;
 using std::filesystem::remove;
 using std::filesystem::current_path;
+using std::filesystem::create_directory;
 
 using Core::Engine;
 using Graphics::Render;
@@ -68,8 +70,21 @@ namespace File
 		GUI::showKeybindsMenu = false;
 		GUI::showDebugMenu = false;
 		GUI::showConsole = false;
+
 		Engine::docsPath = Search::FindDocumentsFolder();
 		Engine::filesPath = current_path().generic_string() + "/files";
+
+		if (!exists(Engine::docsPath))
+		{
+			try
+			{
+				create_directory(Engine::docsPath);
+			}
+			catch (const std::exception& e)
+			{
+				cerr << "Error creating path: " << e.what() << endl;
+			}
+		}
 	}
 
 	void ConfigFile::ProcessFirstConfigValues()
@@ -92,8 +107,6 @@ namespace File
 			cout << "Error opening config file at " << configFilePath << endl;
 			return;
 		}
-
-		cout << "Success opening config file!";
 
 		string line;
 		while (getline(configFileStream, line))
@@ -122,11 +135,6 @@ namespace File
 
 	void ConfigFile::ProcessConfigFile(const string& fileName)
 	{
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::DEBUG,
-			"Game documents path: " + Engine::docsPath + "\n");
-
 		//check if file exists
 		if (exists(Engine::docsPath + "/config.txt"))
 		{

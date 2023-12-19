@@ -85,11 +85,10 @@ namespace Core
 	class Logger
 	{
 	public:
-		Logger(const string& logFileName);
-		~Logger();
-
-		void Log(const string& message);
+		static void InitializeLogger();
+		static void CloseLogger();
+		static void AddLog(const string& message);
 	private:
-		ofstream logFile;
+		static ofstream logFile;
 	};
 }

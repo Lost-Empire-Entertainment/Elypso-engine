@@ -39,6 +39,8 @@ namespace Core
 	{
 		ConfigFile::ProcessFirstConfigValues();
 
+		Logger::InitializeLogger();
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
@@ -47,7 +49,7 @@ namespace Core
 			true);
 
 		cout << "Game documents path: " << Engine::docsPath << endl;
-		cout << "Game files path: " << Engine::filesPath << endl;
+		cout << "Game files path: " << Engine::filesPath << "\n\n";
 
 		Render::RenderSetup();
 

@@ -147,11 +147,6 @@ namespace Graphics
 	}
 	void Render::ContentSetup()
 	{
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::DEBUG,
-			"Game files path: " + Engine::filesPath + "\n");
-
 		string vertexPath = Engine::filesPath + "/shaders/vertexShader.vert";
 		string fragmentPath = Engine::filesPath + "/shaders/fragmentShader.frag";
 

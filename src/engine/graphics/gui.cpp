@@ -77,11 +77,6 @@ namespace Graphics
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::IMGUI,
-			Type::DEBUG,
-			"Imgui.ini path: " + tempString + ".\n");
-
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 

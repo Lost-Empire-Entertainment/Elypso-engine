@@ -52,5 +52,7 @@ namespace Core
 			Caller::SHUTDOWN,
 			Type::SUCCESS,
 			"Shutdown complete!\n");
+
+		Logger::CloseLogger();
 	}
 }

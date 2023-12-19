@@ -67,7 +67,7 @@ namespace Core
 {
     std::vector<std::string> ConsoleManager::storedLogs;
 
-    Logger logger(Search::FindDocumentsFolder() + "/engine_log.txt");
+    ofstream Logger::logFile;
 
     string Timestamp::GetCurrentTimestamp()
     {
@@ -90,14 +90,15 @@ namespace Core
         return ss.str();
     }
 
-    Logger::Logger(const string& logFileName)
+    void Logger::InitializeLogger()
     {
-        if (exists(logFileName))
+        if (!exists(Engine::docsPath))
         {
-            remove(logFileName);
+            cout << Engine::docsPath << " does not exist!" << endl;
+            return;
         }
-
-        logFile.open(logFileName, ios::out | ios::app);
+        
+        logFile.open(Engine::docsPath + "/engine_log.txt");
         if (!logFile.is_open())
         {
             error_code ec = make_error_code(static_cast<errc>(errno));
@@ -105,12 +106,11 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
-                "Failed to open log file " + logFileName + "! Reason: " +
+                "Failed to open log file! Reason: " +
                 ec.message() + "\n\n");
         }
     }
-
-    Logger::~Logger()
+    void Logger::CloseLogger()
     {
         if (logFile.is_open())
         {
@@ -118,7 +118,7 @@ namespace Core
         }
     }
 
-    void Logger::Log(const string& message)
+    void Logger::AddLog(const string& message)
     {
         if (logFile.is_open())
         {
@@ -194,10 +194,10 @@ namespace Core
         }
         else
         {
-            Core::ConsoleManager::AddLog(internalConsoleMsg);
+            ConsoleManager::AddLog(internalConsoleMsg);
         }
         cout << logMsg;
-        logger.Log(logMsg);
+        Logger::AddLog(logMsg);
     }
 
     void ConsoleManager::ParseConsoleCommand(const string& command)
