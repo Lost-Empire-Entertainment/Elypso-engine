@@ -380,17 +380,14 @@ namespace Graphics
 
 			ImGui::Text("General keys");
 			ImGui::Text("");
-			ImGui::Text("Forwards: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraForwards])));
-			ImGui::Text("Backwards: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraBackwards])));
-			ImGui::Text("Left: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraLeft])));
-			ImGui::Text("Right: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraRight])));
-			ImGui::Text("Up: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraUp])));
-			ImGui::Text("Down: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraDown])));
-			ImGui::Text("Sprint: %s", string(magic_enum::enum_name(Input::key[Input::Action::CameraSprint])));
-			string cameraEnabledText = (Input::inputSettings.cameraEnabled) ?
-				"(true)" :
-				"(false)";
-			ImGui::Text("Toggle camera: Escape %s", cameraEnabledText);
+			ImGui::Text("Forwards: W");
+			ImGui::Text("Backwards: S");
+			ImGui::Text("Left: A");
+			ImGui::Text("Right: D");
+			ImGui::Text("Up: Space");
+			ImGui::Text("Down: Left Control");
+			ImGui::Text("Sprint: Left Shift");
+			ImGui::Text("Toggle camera: Escape");
 
 			ImGui::End();
 		}

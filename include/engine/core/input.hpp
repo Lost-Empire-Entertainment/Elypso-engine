@@ -37,27 +37,6 @@ namespace Core
     class Input
     {
     public:
-        enum Action
-        {
-            CameraForwards,
-            CameraBackwards,
-            CameraLeft,
-            CameraRight,
-            CameraUp,
-            CameraDown,
-            CameraSprint
-        };
-        enum Key
-        {
-			W,
-			A,
-			S,
-			D,
-			Space,
-			Left_control,
-			Left_shift
-		};
-
         struct InputSettings
         {
             float moveSpeedMultiplier = 1.0f;
@@ -68,9 +47,6 @@ namespace Core
             bool printInputToConsole = false;
         };
         static inline InputSettings inputSettings;
-
-        static inline unordered_map<Action, Key> key;
-        static inline unordered_map<Action, int> glfwKey;
 
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;

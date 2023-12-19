@@ -49,14 +49,6 @@ namespace Core
 {
     void Input::InputSetup()
     {
-        key[Action::CameraForwards] = Key::W; glfwKey[Action::CameraForwards] = GLFW_KEY_W;
-        key[Action::CameraBackwards] = Key::S; glfwKey[Action::CameraBackwards] = GLFW_KEY_S;
-        key[Action::CameraLeft] = Key::A; glfwKey[Action::CameraLeft] = GLFW_KEY_A;
-        key[Action::CameraRight] = Key::D; glfwKey[Action::CameraRight] = GLFW_KEY_D;
-        key[Action::CameraUp] = Key::Space; glfwKey[Action::CameraUp] = GLFW_KEY_SPACE;
-        key[Action::CameraDown] = Key::Left_control; glfwKey[Action::CameraDown] = GLFW_KEY_LEFT_CONTROL;
-        key[Action::CameraSprint] = Key::Left_shift; glfwKey[Action::CameraSprint] = GLFW_KEY_LEFT_SHIFT;
-
         ImGuiIO& io = ImGui::GetIO();
     }
 
@@ -121,7 +113,7 @@ namespace Core
     {
         if (inputSettings.cameraEnabled)
         {
-            bool isLeftShiftPressed = glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraSprint])) == GLFW_PRESS;
+            bool isLeftShiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
             float currentSpeed = Render::cameraSpeed;
             if (isLeftShiftPressed) currentSpeed = 2.0f * inputSettings.moveSpeedMultiplier;
             else                    currentSpeed = 1.0f * inputSettings.moveSpeedMultiplier;
@@ -130,32 +122,32 @@ namespace Core
             vec3 right = Render::camera.GetRight();
 
             //camera forwards
-            if (glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraForwards])) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             {
                 Render::cameraPos += Render::cameraSpeed * currentSpeed * front;
             }
             //camera backwards
-            if (glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraBackwards])) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             {
                 Render::cameraPos -= Render::cameraSpeed * currentSpeed * front;
             }
             //camera left
-            if (glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraLeft])) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             {
                 Render::cameraPos -= Render::cameraSpeed * currentSpeed * right;
             }
             //camera right
-            if (glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraRight])) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             {
                 Render::cameraPos += Render::cameraSpeed * currentSpeed * right;
             }
             //camera up
-            if (glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraUp])) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
             {
                 Render::cameraPos += Render::cameraUp * Render::cameraSpeed * currentSpeed;
             }
             //camera down
-            if (glfwGetKey(window, static_cast<int>(glfwKey[Action::CameraDown])) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
             {
                 Render::cameraPos -= Render::cameraUp * Render::cameraSpeed * currentSpeed;
             }
