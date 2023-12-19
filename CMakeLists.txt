@@ -5,10 +5,6 @@
 
 cmake_minimum_required(VERSION 3.27)
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
-endif()
-
 set(CMAKE_INSTALL_PREFIX "C:/Program Files" CACHE PATH "Install path prefix, prepended onto install directories.")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -56,7 +52,6 @@ target_link_libraries(external_libs INTERFACE glad magic_enum)
 # Add your source files
 set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
-	${SRC_CORE_DIR}/admin.cpp
 	${SRC_CORE_DIR}/console.cpp
 	${SRC_CORE_DIR}/core.cpp
 	${SRC_CORE_DIR}/input.cpp

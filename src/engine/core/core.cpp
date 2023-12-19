@@ -16,7 +16,6 @@
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
 //engine
-#include "admin.hpp"
 #include "console.hpp"
 #include "core.hpp"
 #include "render.hpp"
@@ -26,6 +25,7 @@
 #include "gui.hpp"
 
 using std::cout;
+using std::endl;
 
 using File::ConfigFile;
 using Graphics::Render;
@@ -37,9 +37,17 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
-		Admin::RunAsAdmin();
-
 		ConfigFile::ProcessFirstConfigValues();
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"Elypso engine " + Engine::version + "\n" +
+			"Copyright (C) Greenlaser 2023\n\n",
+			true);
+
+		cout << "Game documents path: " << Engine::docsPath << endl;
+		cout << "Game files path: " << Engine::filesPath << endl;
 
 		Render::RenderSetup();
 

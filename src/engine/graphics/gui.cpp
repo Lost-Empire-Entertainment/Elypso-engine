@@ -68,6 +68,7 @@ namespace Graphics
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
+		ImGui::SetCurrentContext(ImGui::GetCurrentContext());
 		ImGuiIO& io = ImGui::GetIO();
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -133,8 +134,6 @@ namespace Graphics
 		ImGui::NewFrame();
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-
-		ImGui::End();
 
 		RenderTopBar();
 

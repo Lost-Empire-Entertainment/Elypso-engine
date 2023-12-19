@@ -52,15 +52,15 @@ namespace Graphics
 
 	void Render::RenderSetup()
 	{
-		Input::InputSetup();
-
 		Render::GLFWSetup();
 		Render::WindowSetup();
 		Render::GladSetup();
 
+		Render::ContentSetup();
+
 		GUI::GetInstance().Initialize();
 
-		Render::ContentSetup();
+		Input::InputSetup();
 
 		TimeManager::targetDT = 1.0f / Graphics::GUI::GetScreenRefreshRate();
 		TimeManager::lastTime = high_resolution_clock::now();

@@ -17,24 +17,13 @@
 
 //engine
 #include "core.hpp"
-#include "console.hpp"
 #include "shutdown.hpp"
 
 using Core::Engine;
 using Core::ShutdownManager;
-using Core::ConsoleManager;
-using Caller = Core::ConsoleManager::Caller;
-using Type = Core::ConsoleManager::Type;
 
 int main()
 {
-	ConsoleManager::WriteConsoleMessage(
-		Caller::ENGINE,
-		Type::INFO,
-		"Elypso engine " + Engine::version +"\n" +
-		"Copyright (C) Greenlaser 2023\n\n",
-		true);
-
 	Engine::InitializeEngine();
 
 	Engine::RunEngine();
