@@ -49,7 +49,7 @@ namespace Graphics
 		static float GetScreenRefreshRate();
 
 		void Render();
-		void Shutdown();
+		static void Shutdown();
 		static GUI& GetInstance();
 
 		static void AddTextToConsole();

@@ -25,6 +25,7 @@
 #include "render.hpp"
 #include "shutdown.hpp"
 
+using Graphics::GUI;
 using Graphics::Render;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -37,6 +38,8 @@ namespace Core
 			Caller::SHUTDOWN,
 			Type::INFO,
 			"Cleaning up resources...\n");
+
+		GUI::GetInstance().Shutdown();
 
 		Render::Shutdown();
 

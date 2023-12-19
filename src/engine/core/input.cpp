@@ -89,22 +89,28 @@ namespace Core
 
         if (inputSettings.printInputToConsole)
         {
-            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS 
+                && !printCheck)
             {
                 double mouseX, mouseY;
                 glfwGetCursorPos(window, &mouseX, &mouseY);
                 ostringstream messageStream;
-                messageStream << 
-                    "Left mouse button pressed at (" << 
-                    fixed << 
-                    setprecision(2) << 
-                    mouseX << ", " << 
-                    mouseY << ")\n";
+                messageStream 
+                    << "Left mouse button pressed at (" 
+                    << fixed 
+                    << setprecision(2)
+                    << mouseX 
+                    << ", " 
+                    << mouseY 
+                    << ")\n";
 
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::DEBUG,
-                    messageStream.str());
+                ConsoleManager::WriteConsoleMessage(Caller::INPUT, Type::DEBUG, messageStream.str());
+
+                printCheck = true;
+            }
+            else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+            {
+                printCheck = false;
             }
         }
 	}

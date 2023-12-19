@@ -251,8 +251,6 @@ namespace Graphics
 
 	void Render::Shutdown()
 	{
-		GUI::GetInstance().Shutdown();
-
 		delete shader;
 		shader = nullptr;
 	}
