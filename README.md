@@ -24,12 +24,11 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 
 - source code can be edited by right-clicking the Elypso engine folder and opening with visual Studio
 
-RUN_ME.bat has useful mechanics:
-- reconfigure cmake (if something breaks or if you change file hierarchy or add new files)
-- generate build files (must do this step before install so the necessary files are generated for installation)
-- install engine (only handles the copying of the files to the final path and cleans old files if any exist)
-- reset (if visual studio breaks or you just want a clean sheet)
-```
+how to use RUN_ME.bat:
+- reconfigure cmake (always run this when first opening the visual studio project or if you add or remove source or header files)
+- install (builds the executable and copies all necessary files over to program files)
+- clean visual studio (deletes .vs and out folders)
+- clean engine (deletes build, program files engine folder and documents engine folder)
 
 ### Logs and configuration files
 
