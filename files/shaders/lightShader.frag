@@ -15,38 +15,13 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-//engine
-#include "searchUtils.hpp"
-#include "stringUtils.hpp"
+#version 330 core
+out vec4 FragColor;
+  
+uniform vec3 objectColor;
+uniform vec3 lightColor;
 
-#include <Windows.h>
-#include <ShlObj.h>
-#include <filesystem>
-
-using std::wstring;
-using std::filesystem::path;
-using std::filesystem::current_path;
-
-namespace Utils
+void main()
 {
-	string Search::FindCurrentPath()
-	{
-		return current_path().string();
-	}
-
-	string Search::FindDocumentsFolder()
-	{
-		PWSTR path;
-		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &path);
-		if (SUCCEEDED(result))
-		{
-			wstring wPath(path);
-			CoTaskMemFree(path); //free the allocated memory
-
-			return String::Replace(
-				string(wPath.begin(), wPath.end()), "\\", "/") + 
-				"/" + "Elypso engine";
-		}
-		else return "";
-	}
+    FragColor = vec4(lightColor * objectColor, 1.0);
 }

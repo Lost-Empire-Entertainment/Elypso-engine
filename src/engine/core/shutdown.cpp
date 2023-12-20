@@ -44,7 +44,8 @@ namespace Core
 		Render::Shutdown();
 
 		//de-allocate all resources once they've outlived their purpose
-		glDeleteVertexArrays(1, &Render::VAO);
+		glDeleteVertexArrays(1, &Render::lightCubeVAO);
+		glDeleteVertexArrays(1, &Render::cubeVAO);
 		glDeleteBuffers(1, &Render::VBO);
 		glDeleteBuffers(1, &Render::EBO);
 

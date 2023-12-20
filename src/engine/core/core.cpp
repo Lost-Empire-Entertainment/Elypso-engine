@@ -71,8 +71,6 @@ namespace Core
 
 		while (!glfwWindowShouldClose(Render::window))
 		{
-			glfwPollEvents();
-
 			TimeManager::UpdateDeltaTime();
 
 			Render::WindowLoop();

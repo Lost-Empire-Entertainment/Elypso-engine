@@ -31,24 +31,34 @@
 #include "shutdown.hpp"
 #include "texture.hpp"
 #include "timeManager.hpp"
+#include "searchUtils.hpp"
 
 #include <string>
 #include <iostream>
+#include <filesystem>
 
 using glm::perspective;
 using glm::radians;
+using glm::translate;
+using std::filesystem::exists;
+using std::filesystem::current_path;
+using std::cout;
+using std::endl;
 
 using Core::Input;
 using Core::TimeManager;
 using Core::ConsoleManager;
 using Core::Engine;
+using Utils::Search;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-	Shader* Render::shader;
+	Shader* Render::lightShader;
+	Shader* Render::lightCubeShader;
 	Input Render::camera(Render::window);
+	vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 	void Render::RenderSetup()
 	{
@@ -147,95 +157,79 @@ namespace Graphics
 	}
 	void Render::ContentSetup()
 	{
-		string vertexPath = Engine::filesPath + "/shaders/vertexShader.vert";
-		string fragmentPath = Engine::filesPath + "/shaders/fragmentShader.frag";
-
 		glEnable(GL_DEPTH_TEST);
 
-		shader = new Shader(vertexPath, fragmentPath);
+		string currentPath = Search::FindCurrentPath();
+		lightShader = new Shader(
+			currentPath + "/files/shaders/lightShader.vert", 
+			currentPath + "/files/shaders/lightShader.frag");
+		lightCubeShader = new Shader(
+			currentPath + "/files/shaders/lightCubeShader.vert", 
+			currentPath + "/files/shaders/lightCubeShader.frag");
 
-		float vertices[] =
+		float vertices[] = 
 		{
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
 
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
 
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
 
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
 
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+			-0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
 		};
-		//cube world space positions
-		cubePositions[0] = vec3(0.0f, 0.0f, 0.0f);
-		cubePositions[1] = vec3(2.0f, 5.0f, -15.0f);
-		cubePositions[2] = vec3(-1.5f, -2.2f, -2.5f);
-		cubePositions[3] = vec3(-3.8f, -2.0f, -12.3f);
-		cubePositions[4] = vec3(2.4f, -0.4f, -3.5f);
-		cubePositions[5] = vec3(-1.7f, 3.0f, -7.5f);
-		cubePositions[6] = vec3(1.3f, -2.0f, -2.5f);
-		cubePositions[7] = vec3(1.5f, 2.0f, -2.5f);
-		cubePositions[8] = vec3(1.5f, 0.2f, -1.5f);
-		cubePositions[9] = vec3(-1.3f, 1.0f, -1.5f);
 
-		glGenVertexArrays(1, &VAO);
+		glGenVertexArrays(1, &cubeVAO);
 		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBindVertexArray(cubeVAO);
 
-		//position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
-		//texture coord attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
 
-		Texture tex(Engine::filesPath);
-		tex.LoadTexture("textures/crate.jpg", false, GL_RGB);
-		tex.LoadTexture("textures/pepe.png", true, GL_RGBA);
+		glGenVertexArrays(1, &lightCubeVAO);
+		glBindVertexArray(lightCubeVAO);
 
-		shader->Use();
-		shader->SetInt("texture1", 0);
-		shader->SetInt("texture2", 1);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
@@ -251,57 +245,59 @@ namespace Graphics
 
 	void Render::Shutdown()
 	{
-		delete shader;
-		shader = nullptr;
+		delete lightShader;
+		delete lightCubeShader;
+		lightShader = nullptr;
+		lightCubeShader = nullptr;
 	}
 
 	void Render::WindowLoop()
 	{
 		//clear the background to dark green
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		//clear color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//bind texture
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
 		
 		//activate shader
-		shader->Use();
+		lightShader->Use();
+		lightShader->SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		lightShader->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
-		//camera/view transformation
+		//camera transformation
 		Input::ProcessInput(Render::window);
-		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		shader->SetMat4("view", view);
-
-		//Calculate the new projection matrix
 		mat4 projection = perspective(
 			radians(fov),
 			aspectRatio,
 			nearClip,
 			farClip);
-		shader->SetMat4("projection", projection);
+		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		lightShader->SetMat4("projection", projection);
+		lightShader->SetMat4("view", view);
 
-		//render boxes
-		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			//calculate the model matrix for each object
-			//and pass it to the shader before drawing
-			mat4 model = mat4(1.0f);
-			model = translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = rotate(model, radians(angle), vec3(1.0f, 0.3f, 0.5f));
-			shader->SetMat4("model", model);
+		//world transformation
+		mat4 model = mat4(1.0f);
+		lightShader->SetMat4("model", model);
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		//render cube
+		glBindVertexArray(cubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//render light object
+		lightCubeShader->Use();
+		lightCubeShader->SetMat4("projection", projection);
+		lightCubeShader->SetMat4("view", view);
+		model = mat4(1.0f);
+		model = translate(model, lightPos);
+		model = scale(model, vec3(0.2f));
+		lightCubeShader->SetMat4("model", model);
+
+		glBindVertexArray(lightCubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		GUI::GetInstance().Render();
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 }

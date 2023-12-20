@@ -15,38 +15,14 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/greeenlaser/Elypso-engine >.
 
-//engine
-#include "searchUtils.hpp"
-#include "stringUtils.hpp"
+#version 330 core
+layout (location = 0) in vec3 aPos;
 
-#include <Windows.h>
-#include <ShlObj.h>
-#include <filesystem>
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
-using std::wstring;
-using std::filesystem::path;
-using std::filesystem::current_path;
-
-namespace Utils
+void main()
 {
-	string Search::FindCurrentPath()
-	{
-		return current_path().string();
-	}
-
-	string Search::FindDocumentsFolder()
-	{
-		PWSTR path;
-		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &path);
-		if (SUCCEEDED(result))
-		{
-			wstring wPath(path);
-			CoTaskMemFree(path); //free the allocated memory
-
-			return String::Replace(
-				string(wPath.begin(), wPath.end()), "\\", "/") + 
-				"/" + "Elypso engine";
-		}
-		else return "";
-	}
+	gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
