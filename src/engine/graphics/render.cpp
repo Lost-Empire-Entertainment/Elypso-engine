@@ -13,7 +13,7 @@
 //
 //    You should have received a copy of the GNU General Public License in LICENCE.md
 //    and a copy of the EULA in EULA.md along with this program. 
-//    If not, see < https://github.com/greeenlaser/Elypso-engine >.
+//    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 //external
 #include "glad.h"
@@ -253,12 +253,9 @@ namespace Graphics
 
 	void Render::WindowLoop()
 	{
-		//clear the background to dark green
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		//clear color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		//activate shader
+
 		lightShader->Use();
 		lightShader->SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
 		lightShader->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
@@ -278,11 +275,12 @@ namespace Graphics
 		mat4 model = mat4(1.0f);
 		lightShader->SetMat4("model", model);
 
-		//render cube
+		//render the cube
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//render light object
+
+		//render the lamp object
 		lightCubeShader->Use();
 		lightCubeShader->SetMat4("projection", projection);
 		lightCubeShader->SetMat4("view", view);
