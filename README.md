@@ -2,11 +2,13 @@
 
 Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is entirely "codeless" where the end user does not need to write a single line of code to make games with the engine. Everything is handled by the engine itself and the user only needs to know how to use the available packages. Packages are parts of the engine the end user can add and remove to change parts of the engine. Packages are completely optional and none of them need to be activated to run the engine itself but adding new packages or removing existing ones will modify what can be used to make games with in the engine.
 
-[Join the community server](https://discord.gg/wPYCSSenX2)
+[Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
+
+[Join the discord community server](https://discord.gg/wPYCSSenX2)
 
 [Check out the trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
 
-[Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
+[Check out the documentation](https://drive.google.com/drive/folders/17P6LjHi12q1vsdi76E6SBgLz9tZ8SwHp?usp=sharing)
 
 ### Prerequisites
 
@@ -26,14 +28,13 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 
 how to use RUN_ME.bat:
 - reconfigure cmake (always run this when first opening the visual studio project or if you add or remove source or header files)
-- install (builds the executable and copies all necessary files over to program files)
+- install (builds the executable and copies all necessary files over to the program files folder)
 - clean visual studio (deletes .vs and out folders)
 - clean engine (deletes build, program files engine folder and documents engine folder)
 
 ### Logs and configuration files
 
 ```
-- cmake configuration log is found at build\logs\cmake_log.txt
 - build generation log is found at build\logs\build_log.txt
 - cpack log is found at build\logs\cpack_log.txt
 - engine log is found at Documents\Elypso engine\engine_log.txt
