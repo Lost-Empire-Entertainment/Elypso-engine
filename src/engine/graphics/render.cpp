@@ -55,10 +55,12 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-	Shader* Render::lightShader;
-	Shader* Render::lightCubeShader;
 	Input Render::camera(Render::window);
-	vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+	Shader* Render::texShader;
+	//Shader* Render::lightShader;
+	//Shader* Render::lightCubeShader;
+	//vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 	void Render::RenderSetup()
 	{
@@ -160,76 +162,111 @@ namespace Graphics
 		glEnable(GL_DEPTH_TEST);
 
 		string currentPath = Search::FindCurrentPath();
+		texShader = new Shader(
+			currentPath + "/files/shaders/texShader.vert",
+			currentPath + "/files/shaders/texShader.frag");
+		/*
 		lightShader = new Shader(
 			currentPath + "/files/shaders/lightShader.vert", 
 			currentPath + "/files/shaders/lightShader.frag");
 		lightCubeShader = new Shader(
 			currentPath + "/files/shaders/lightCubeShader.vert", 
 			currentPath + "/files/shaders/lightCubeShader.frag");
-
-		float vertices[] = 
+		*/
+		
+		float vertices[] =
 		{
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
 
-		glGenVertexArrays(1, &cubeVAO);
+		//cube world space positions
+		cubePositions[0] = vec3(0.0f, 0.0f, 0.0f);
+		cubePositions[1] = vec3(2.0f, 5.0f, -15.0f);
+		cubePositions[2] = vec3(-1.5f, -2.2f, -2.5f);
+		cubePositions[3] = vec3(-3.8f, -2.0f, -12.3f);
+		cubePositions[4] = vec3(2.4f, -0.4f, -3.5f);
+		cubePositions[5] = vec3(-1.7f, 3.0f, -7.5f);
+		cubePositions[6] = vec3(1.3f, -2.0f, -2.5f);
+		cubePositions[7] = vec3(1.5f, 2.0f, -2.5f);
+		cubePositions[8] = vec3(1.5f, 0.2f, -1.5f);
+		cubePositions[9] = vec3(-1.3f, 1.0f, -1.5f);
+
+		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindVertexArray(VAO);
+		//glGenVertexArrays(1, &cubeVAO);
+		//glGenBuffers(1, &VBO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glBindVertexArray(cubeVAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		//glBindVertexArray(cubeVAO);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		//position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
+		//texture coord attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
 
-		glGenVertexArrays(1, &lightCubeVAO);
-		glBindVertexArray(lightCubeVAO);
+		Texture tex(Engine::filesPath);
+		tex.LoadTexture("textures/crate.jpg", false, GL_RGB);
+		tex.LoadTexture("textures/pepe.png", true, GL_RGBA);
+		//glGenVertexArrays(1, &lightCubeVAO);
+		//glBindVertexArray(lightCubeVAO);
 
+		texShader->Use();
+		texShader->SetInt("texture1", 0);
+		texShader->SetInt("texture2", 1);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		//glEnableVertexAttribArray(0);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
@@ -245,40 +282,69 @@ namespace Graphics
 
 	void Render::Shutdown()
 	{
-		delete lightShader;
-		delete lightCubeShader;
-		lightShader = nullptr;
-		lightCubeShader = nullptr;
+		delete texShader;
+		texShader = nullptr;
+
+		//delete lightShader;
+		//delete lightCubeShader;
+		//lightShader = nullptr;
+		//lightCubeShader = nullptr;
 	}
 
 	void Render::WindowLoop()
 	{
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		lightShader->Use();
-		lightShader->SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightShader->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		//bind texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
+
+		//activate shader
+		texShader->Use();
+		//lightShader->Use();
+		//lightShader->SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		//lightShader->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
 		//camera transformation
 		Input::ProcessInput(Render::window);
+		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		texShader->SetMat4("view", view);
+
+		//Calculate the new projection matrix
 		mat4 projection = perspective(
 			radians(fov),
 			aspectRatio,
 			nearClip,
 			farClip);
-		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		lightShader->SetMat4("projection", projection);
-		lightShader->SetMat4("view", view);
 
-		//world transformation
-		mat4 model = mat4(1.0f);
-		lightShader->SetMat4("model", model);
+		texShader->SetMat4("projection", projection);
+		//mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		//lightShader->SetMat4("projection", projection);
+		//lightShader->SetMat4("view", view);
 
+		//render boxes
+		glBindVertexArray(VAO);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			//calculate the model matrix for each object
+			//and pass it to the shader before drawing
+			mat4 model = mat4(1.0f);
+			model = translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = rotate(model, radians(angle), vec3(1.0f, 0.3f, 0.5f));
+			texShader->SetMat4("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		/*
 		//render the cube
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
 
 		//render the lamp object
 		lightCubeShader->Use();
@@ -291,6 +357,7 @@ namespace Graphics
 
 		glBindVertexArray(lightCubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+		*/
 
 		GUI::GetInstance().Render();
 

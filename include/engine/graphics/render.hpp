@@ -31,7 +31,7 @@ namespace Graphics
 		static inline unsigned int SCR_WIDTH = 1280;
 		static inline unsigned int SCR_HEIGHT = 720;
 
-		static inline unsigned int VBO, cubeVAO, lightCubeVAO, EBO;
+		static inline unsigned int VBO, VAO, cubeVAO, lightCubeVAO, EBO;
 
 		static inline float cameraSpeed;
 		static inline vec3 cameraPos; //= vec3(0.0f, 0.0f, 3.0f);
@@ -55,8 +55,10 @@ namespace Graphics
 		static void Shutdown();
 		static void WindowLoop();
 	private:
-		static Shader* lightShader;
-		static Shader* lightCubeShader;
+		static Shader* texShader;
+		//static Shader* lightShader;
+		//static Shader* lightCubeShader;
+		static inline vec3 cubePositions[10];
 
 		static inline int SCR_POS_X;
 		static inline int SCR_POS_Y;
