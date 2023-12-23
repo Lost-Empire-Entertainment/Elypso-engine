@@ -94,7 +94,7 @@ namespace Core
     {
         if (!exists(Engine::docsPath))
         {
-            cout << Engine::docsPath << " does not exist!" << endl;
+            cout << "Error: Documents path " << Engine::docsPath << " does not exist!" << endl;
             return;
         }
         

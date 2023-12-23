@@ -80,7 +80,7 @@ namespace File
 			{
 				create_directory(Engine::docsPath);
 			}
-			catch (const std::exception& e)
+			catch (const exception& e)
 			{
 				cerr << "Error creating path: " << e.what() << endl;
 			}

@@ -34,7 +34,7 @@ namespace Graphics
 		static inline unsigned int VBO, VAO, cubeVAO, lightCubeVAO, EBO;
 
 		static inline float cameraSpeed;
-		static inline vec3 cameraPos; //= vec3(0.0f, 0.0f, 3.0f);
+		static inline vec3 cameraPos;
 		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
@@ -52,13 +52,10 @@ namespace Graphics
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
-		static void Shutdown();
 		static void WindowLoop();
 	private:
-		static Shader* texShader;
-		//static Shader* lightShader;
-		//static Shader* lightCubeShader;
-		static inline vec3 cubePositions[10];
+		//static inline vec3 cubePositions[10];
+		static inline vec3 lightPos = vec3(1.2f, 1.0f, 2.0f);
 
 		static inline int SCR_POS_X;
 		static inline int SCR_POS_Y;

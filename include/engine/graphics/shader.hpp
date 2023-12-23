@@ -31,9 +31,9 @@ namespace Graphics
 	class Shader
 	{
 	public:
-		static inline unsigned int ID;
+		unsigned int ID;
 
-		Shader(const string& vertexPath, const string& fragmentPath);
+		Shader(const string& vertexPath = "", const string& fragmentPath = "");
 
 		void Use() const;
 

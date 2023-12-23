@@ -21,15 +21,25 @@
 //engine
 #include "console.hpp"
 #include "shader.hpp"
+#include "stringUtils.hpp"
 
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
+#include <vector>
 
+using std::cout;
+using std::endl;
+using std::ios_base;
 using std::ifstream;
 using std::stringstream;
+using std::filesystem::absolute;
+using std::to_string;
+using std::vector;
 
+using Utils::String;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -38,60 +48,91 @@ namespace Graphics
 {
 	Shader::Shader(const string& vertexPath, const string& fragmentPath)
 	{
-        string vertexCode;
-        string fragmentCode;
-        ifstream vShaderFile;
-        ifstream fShaderFile;
-        //ensure ifstream objects can throw exceptions:
-        vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
-        fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
-        try
+        if (vertexPath != ""
+            && fragmentPath != "")
         {
-            //open files
-            vShaderFile.open(vertexPath);
-            fShaderFile.open(fragmentPath);
-            stringstream vShaderStream, fShaderStream;
-            //read file's buffer contents into streams
-            vShaderStream << vShaderFile.rdbuf();
-            fShaderStream << fShaderFile.rdbuf();
-            //close file handlers
-            vShaderFile.close();
-            fShaderFile.close();
-            //convert stream into string
-            vertexCode = vShaderStream.str();
-            fragmentCode = fShaderStream.str();
-        }
-        catch (ifstream::failure& e)
-        {
+            vector<string> vertSplit = String::Split(vertexPath, '/');
+            vector<string> fragSplit = String::Split(fragmentPath, '/');
+
             ConsoleManager::WriteConsoleMessage(
                 Caller::SHADER,
-                Type::EXCEPTION,
-                "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " +
-                string(e.what()) + "\n\n");
+                Type::DEBUG,
+                "Initializing " + vertSplit.back() + " and " + fragSplit.back() + ".\n");
+
+            string vertexCode;
+            string fragmentCode;
+            ifstream vShaderFile;
+            ifstream fShaderFile;
+            //ensure ifstream objects can throw exceptions:
+            vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+            fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+            try
+            {
+                //open files
+                vShaderFile.open(absolute(vertexPath).string());
+                fShaderFile.open(absolute(fragmentPath).string());
+
+                if (!vShaderFile.is_open()
+                    || !fShaderFile.is_open())
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::SHADER,
+                        Type::EXCEPTION,
+                        "ERROR::SHADER::FILE_NOT_OPEN: \nVertex: " + absolute(vertexPath).string() +
+                        "\nFragment: " + absolute(fragmentPath).string() + "\n\n");
+                    return;
+                }
+
+                stringstream vShaderStream, fShaderStream;
+                //read file's buffer contents into streams
+                vShaderStream << vShaderFile.rdbuf();
+                fShaderStream << fShaderFile.rdbuf();
+                //close file handlers
+                vShaderFile.close();
+                fShaderFile.close();
+                //convert stream into string
+                vertexCode = vShaderStream.str();
+                fragmentCode = fShaderStream.str();
+            }
+            catch (const ios_base::failure& e)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::SHADER,
+                    Type::EXCEPTION,
+                    "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " +
+                    to_string(e.code().value()) +
+                    "\nVertex: " + absolute(vertexPath).string() +
+                    "\nFragment: " + absolute(fragmentPath).string() + "\n\n");
+            }
+            const char* vShaderCode = vertexCode.c_str();
+            const char* fShaderCode = fragmentCode.c_str();
+            //compile shaders
+            unsigned int vertex, fragment;
+            //vertex shader
+            vertex = glCreateShader(GL_VERTEX_SHADER);
+            glShaderSource(vertex, 1, &vShaderCode, NULL);
+            glCompileShader(vertex);
+            CheckCompileErrors(vertex, "VERTEX");
+            //fragment shader
+            fragment = glCreateShader(GL_FRAGMENT_SHADER);
+            glShaderSource(fragment, 1, &fShaderCode, NULL);
+            glCompileShader(fragment);
+            CheckCompileErrors(fragment, "FRAGMENT");
+            //shader program
+            ID = glCreateProgram();
+            glAttachShader(ID, vertex);
+            glAttachShader(ID, fragment);
+            glLinkProgram(ID);
+            CheckCompileErrors(ID, "PROGRAM");
+            //delete shaders as they are no longer needed
+            glDeleteShader(vertex);
+            glDeleteShader(fragment);
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::SHADER,
+                Type::DEBUG,
+                "Successfully initialized " + vertSplit.back() + " and " + fragSplit.back() + " with ID " + to_string(ID) + "!\n\n");
         }
-        const char* vShaderCode = vertexCode.c_str();
-        const char* fShaderCode = fragmentCode.c_str();
-        //compile shaders
-        unsigned int vertex, fragment;
-        //vertex shader
-        vertex = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertex, 1, &vShaderCode, NULL);
-        glCompileShader(vertex);
-        CheckCompileErrors(vertex, "VERTEX");
-        //fragment shader
-        fragment = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragment, 1, &fShaderCode, NULL);
-        glCompileShader(fragment);
-        CheckCompileErrors(fragment, "FRAGMENT");
-        //shader program
-        ID = glCreateProgram();
-        glAttachShader(ID, vertex);
-        glAttachShader(ID, fragment);
-        glLinkProgram(ID);
-        CheckCompileErrors(ID, "PROGRAM");
-        //delete shaders as they are no longer needed
-        glDeleteShader(vertex);
-        glDeleteShader(fragment);
 	}
 
 	void Shader::Use() const

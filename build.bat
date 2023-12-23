@@ -84,15 +84,10 @@ if "%1" == "install" (
 		echo %cmsuc% Build succeeded! Created log file at build/logs/build_log.txt.
 		
 		if exist "%programFilesPath%" (
-		echo %encln% Deleted folder: Program Files/Elypso engine
-		rd /s /q "%programFilesPath%"
+			echo %encln% Deleted folder: Program Files/Elypso engine
+			rd /s /q "%programFilesPath%"
 		)
 		mkdir "%programFilesPath%"
-		if exist "%documentsPath%" (
-		echo %encln% Deleted folder: Documents/Elypso engine
-		rd /s /q "%documentsPath%"
-		)
-		mkdir "%documentsPath%"
 	
 		echo %eninf% Copied file: Elypso_engine.exe to Program Files\Elypso engine
 		copy "%~dp0\build\Release\Elypso_engine.exe" "%programFilesPath%\Elypso_engine.exe"
