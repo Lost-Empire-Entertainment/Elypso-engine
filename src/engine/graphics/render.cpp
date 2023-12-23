@@ -166,100 +166,72 @@ namespace Graphics
 			Engine::filesPath + "/shaders/lightCubeShader.vert",
 			Engine::filesPath + "/shaders/lightCubeShader.frag");
 
-		float vertices[] =
+		float vertices[] = 
 		{
-			-0.5f, -0.5f, -0.5f,  //0.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f,  //1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  //0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-			-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  //1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  //1.0f, 1.0f,
-			-0.5f,  0.5f,  0.5f,  //0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-			-0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-			 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-			-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
-			 0.5f, -0.5f, -0.5f,  //1.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
-			 0.5f, -0.5f,  0.5f,  //1.0f, 0.0f,
-			-0.5f, -0.5f,  0.5f,  //0.0f, 0.0f,
-			-0.5f, -0.5f, -0.5f,  //0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-			-0.5f,  0.5f, -0.5f,  //0.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f,  //1.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-			 0.5f,  0.5f,  0.5f,  //1.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f,  //0.0f, 0.0f,
-			-0.5f,  0.5f, -0.5f  //0.0f, 1.0f
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
-		/*
-		//cube world space positions
-		cubePositions[0] = vec3(0.0f, 0.0f, 0.0f);
-		cubePositions[1] = vec3(2.0f, 5.0f, -15.0f);
-		cubePositions[2] = vec3(-1.5f, -2.2f, -2.5f);
-		cubePositions[3] = vec3(-3.8f, -2.0f, -12.3f);
-		cubePositions[4] = vec3(2.4f, -0.4f, -3.5f);
-		cubePositions[5] = vec3(-1.7f, 3.0f, -7.5f);
-		cubePositions[6] = vec3(1.3f, -2.0f, -2.5f);
-		cubePositions[7] = vec3(1.5f, 2.0f, -2.5f);
-		cubePositions[8] = vec3(1.5f, 0.2f, -1.5f);
-		cubePositions[9] = vec3(-1.3f, 1.0f, -1.5f);
-		*/
-
-		//glGenVertexArrays(1, &VAO);
-		//glGenBuffers(1, &VBO);
-		//glGenBuffers(1, &EBO);
-
-		//glBindVertexArray(VAO);
 		glGenVertexArrays(1, &cubeVAO);
 		glGenBuffers(1, &VBO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		glBindVertexArray(cubeVAO);
 
 		//position attribute
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
-		//texture coord attribute
-		//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		//glEnableVertexAttribArray(1);
+		//normal attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
 
-		//Texture tex(Engine::filesPath);
-		//tex.LoadTexture("textures/crate.jpg", false, GL_RGB);
-		//tex.LoadTexture("textures/pepe.png", true, GL_RGBA);
 		glGenVertexArrays(1, &lightCubeVAO);
 		glBindVertexArray(lightCubeVAO);
 
-		//texShader.Use();
-		//texShader.SetInt("texture1", 0);
-		//texShader.SetInt("texture2", 1);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
@@ -276,15 +248,8 @@ namespace Graphics
 
 	void Render::WindowLoop()
 	{
-		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//bind texture
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
 
 		//camera transformation
 		Input::ProcessInput(Render::window);
@@ -299,31 +264,11 @@ namespace Graphics
 		//update the camera
 		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		//texShader.Use();
-		//texShader.SetMat4("view", view);
-		//texShader.SetMat4("projection", projection);
-
-		//render boxes
-		/*
-		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			//calculate the model matrix for each object
-			//and pass it to the shader before drawing
-			mat4 model = mat4(1.0f);
-			model = translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = rotate(model, radians(angle), vec3(1.0f, 0.3f, 0.5f));
-			texShader.SetMat4("model", model);
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-		*/
-
 		//render the cube
 		lightShader.Use();
 		lightShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
 		lightShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		lightShader.SetVec3("lightPos", lightPos);
 		lightShader.SetMat4("projection", projection);
 		lightShader.SetMat4("view", view);
 		mat4 model = mat4(1.0f);

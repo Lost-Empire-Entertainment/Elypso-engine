@@ -54,7 +54,6 @@ namespace Graphics
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 		static void WindowLoop();
 	private:
-		//static inline vec3 cubePositions[10];
 		static inline vec3 lightPos = vec3(1.2f, 1.0f, 2.0f);
 
 		static inline int SCR_POS_X;
