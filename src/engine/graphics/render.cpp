@@ -57,7 +57,7 @@ using Type = Core::ConsoleManager::Type;
 namespace Graphics
 {
 	Input Render::camera(Render::window);
-	Shader lightShader;
+	Shader cubeShader;
 	Shader lightCubeShader;
 
 	void Render::RenderSetup()
@@ -159,9 +159,9 @@ namespace Graphics
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		lightShader = Shader(
-			Engine::filesPath + "/shaders/lightShader.vert",
-			Engine::filesPath + "/shaders/lightShader.frag");
+		cubeShader = Shader(
+			Engine::filesPath + "/shaders/cubeShader.vert",
+			Engine::filesPath + "/shaders/cubeShader.frag");
 		lightCubeShader = Shader(
 			Engine::filesPath + "/shaders/lightCubeShader.vert",
 			Engine::filesPath + "/shaders/lightCubeShader.frag");
@@ -265,14 +265,15 @@ namespace Graphics
 		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		//render the cube
-		lightShader.Use();
-		lightShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
-		lightShader.SetVec3("lightPos", lightPos);
-		lightShader.SetMat4("projection", projection);
-		lightShader.SetMat4("view", view);
+		cubeShader.Use();
+		cubeShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
+		cubeShader.SetVec3("lightPos", lightPos);
+		cubeShader.SetVec3("viewPos", cameraPos);
+		cubeShader.SetMat4("projection", projection);
+		cubeShader.SetMat4("view", view);
 		mat4 model = mat4(1.0f);
-		lightShader.SetMat4("model", model);
+		cubeShader.SetMat4("model", model);
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
