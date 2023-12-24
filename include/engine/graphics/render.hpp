@@ -38,6 +38,9 @@ namespace Graphics
 		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
+		static inline vec4 backgroundColor = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+		static inline vec3 cubeColor = vec3(1.0f, 1.0f, 1.0f);
+
 		static inline bool useMonitorRefreshRate = true;
 
 		static inline GLFWwindow* window;

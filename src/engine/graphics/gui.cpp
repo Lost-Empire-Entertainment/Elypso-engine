@@ -58,6 +58,9 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
+	static ImVec4 bgrColor = ImVec4(0.2f, 0.5f, 0.2f, 1.0f);
+	static ImVec4 cubeColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	GUI& GUI::GetInstance()
 	{
 		static GUI instance;
@@ -82,6 +85,9 @@ namespace Graphics
 
 		io.Fonts->Clear();
 		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+
+		Render::backgroundColor = vec4(bgrColor.x, bgrColor.y, bgrColor.z, bgrColor.w);
+		Render::cubeColor = vec3(cubeColor.x, cubeColor.y, cubeColor.z);
 
 		CustomizeImGuiStyle();
 	}
@@ -571,9 +577,58 @@ namespace Graphics
 				showLightsMenu = false;
 			}
 
-			
+			ImGui::Text("Background color");
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
+			ImGui::ColorButton("Background color", bgrColor);
+			RWPart_BackgroundColor();
+
+			ImGui::Text("Cube color");
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
+			ImGui::ColorButton("Cube color", cubeColor);
+			RWPart_CubeColor();
 
 			ImGui::End();
+		}
+	}
+	void GUI::RWPart_BackgroundColor()
+	{
+		if (ImGui::IsItemClicked())
+		{
+			ImGui::OpenPopup("Background color");
+		}
+
+		if (ImGui::BeginPopup("Background color"))
+		{
+			if (ImGui::ColorPicker4("##bgrcol", (float*)&bgrColor))
+			{
+				Render::backgroundColor.x = bgrColor.x;
+				Render::backgroundColor.y = bgrColor.y;
+				Render::backgroundColor.z = bgrColor.z;
+				Render::backgroundColor.w = bgrColor.w;
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+	void GUI::RWPart_CubeColor()
+	{
+		if (ImGui::IsItemClicked())
+		{
+			ImGui::OpenPopup("Cube color");
+		}
+
+		if (ImGui::BeginPopup("Cube color"))
+		{
+			if (ImGui::ColorPicker3("##cubecol", (float*)&cubeColor))
+			{
+				Render::cubeColor.x = cubeColor.x;
+				Render::cubeColor.y = cubeColor.y;
+				Render::cubeColor.z = cubeColor.z;
+			}
+
+			ImGui::EndPopup();
 		}
 	}
 

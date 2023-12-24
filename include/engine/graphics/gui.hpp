@@ -67,19 +67,23 @@ namespace Graphics
 		void TB_CheckVersion();
 		void TB_ReportIssue();
 
+		//top bar rendered windows
+		void RenderVersionCheckWindow();
+		static inline string versionCompare;
+		static inline string versionConfirm;
+
 		//rendered windows
 		void RenderKeybindsMenu();
 		void RenderDebugMenu();
 		void RenderConsole();
 		void RenderLightsMenu();
 
-		//top bar rendered windows
-		void RenderVersionCheckWindow();
-		static inline string versionCompare;
-		static inline string versionConfirm;
-
 		//rendered debug window parts
 		void RWPart_DebugMenuInfo();
 		void RWPart_Interactions();
+
+		//lights menu popups
+		void RWPart_BackgroundColor();
+		void RWPart_CubeColor();
 	};
 }

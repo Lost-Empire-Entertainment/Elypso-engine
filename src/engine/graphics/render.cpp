@@ -248,7 +248,11 @@ namespace Graphics
 
 	void Render::WindowLoop()
 	{
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(
+			backgroundColor.x,
+			backgroundColor.y,
+			backgroundColor.z,
+			backgroundColor.w);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//camera transformation
@@ -266,7 +270,7 @@ namespace Graphics
 
 		//render the cube
 		cubeShader.Use();
-		cubeShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		cubeShader.SetVec3("objectColor", cubeColor.x, cubeColor.y, cubeColor.z);
 		cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		cubeShader.SetVec3("lightPos", lightPos);
 		cubeShader.SetVec3("viewPos", cameraPos);
