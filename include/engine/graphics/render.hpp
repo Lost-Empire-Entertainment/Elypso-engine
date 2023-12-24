@@ -44,6 +44,11 @@ namespace Graphics
 		static inline float specularStrength = 0.5f;
 		static inline float roughness = 32;
 
+		static inline float cubeSpeedMultiplier = 0.005f;
+		static inline float lampOrbitRange = 3;
+		static inline float cubeWiggleHeight = 2;
+		static inline float cubeWiggleSpeed = 5;
+
 		static inline bool useMonitorRefreshRate = true;
 
 		static inline GLFWwindow* window;

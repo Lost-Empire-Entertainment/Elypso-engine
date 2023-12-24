@@ -625,6 +625,56 @@ namespace Graphics
 				Render::roughness = 32;
 			}
 
+			ImGui::Separator();
+
+			ImGui::Text("Cube speed multiplier");
+			ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.001f, 0.1f);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Adjust the overall cube speed multiplier.");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##cubespeedmult"))
+			{
+				Render::cubeSpeedMultiplier = 0.005f;
+			}
+
+			ImGui::Text("Lamp orbit range");
+			ImGui::SliderFloat("##lamporbitrange", &Render::lampOrbitRange, 2.0f, 10.0f);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Adjust how far the cube should orbit from the lamp.");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##lamporbitrange"))
+			{
+				Render::lampOrbitRange = 3.0f;
+			}
+
+			ImGui::Text("Cube wiggle height");
+			ImGui::SliderFloat("##cubewheight", &Render::cubeWiggleHeight, 0.0f, 5.0f);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Adjust how high and low the cube should wiggle.");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##cubewheight"))
+			{
+				Render::cubeWiggleHeight = 2.0f;
+			}
+
+			ImGui::Text("Cube wiggle speed");
+			ImGui::SliderFloat("##cubewspeed", &Render::cubeWiggleSpeed, 0.0f, 10.0f);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Adjust how fast the cube should wiggle.");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##cubewspeed"))
+			{
+				Render::cubeWiggleSpeed = 5.0f;
+			}
+
 			ImGui::End();
 		}
 	}

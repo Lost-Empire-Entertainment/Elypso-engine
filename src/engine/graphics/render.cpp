@@ -40,6 +40,7 @@
 using glm::perspective;
 using glm::radians;
 using glm::translate;
+using glm::rotate;
 using std::filesystem::exists;
 using std::filesystem::current_path;
 using std::cout;
@@ -283,6 +284,15 @@ namespace Graphics
 		cubeShader.SetMat4("projection", projection);
 		cubeShader.SetMat4("view", view);
 		mat4 model = mat4(1.0f);
+
+		static float cubeRotAngle = 0.0f;
+		cubeRotAngle += cubeSpeedMultiplier;
+		float cubeX = lightPos.x + lampOrbitRange * cos(cubeRotAngle);
+		float cubeZ = lightPos.z;
+		float cubeY = lightPos.y + lampOrbitRange * sin(cubeRotAngle);
+		float yOffset = cubeWiggleHeight * sin(cubeRotAngle * cubeWiggleSpeed);
+		model = translate(model, vec3(cubeX, lightPos.y + yOffset, cubeY));
+
 		cubeShader.SetMat4("model", model);
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
