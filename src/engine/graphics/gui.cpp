@@ -135,6 +135,7 @@ namespace Graphics
 		RenderKeybindsMenu();
 		RenderDebugMenu();
 		RenderConsole();
+		RenderLightsMenu();
 
 		RenderVersionCheckWindow();
 
@@ -267,6 +268,11 @@ namespace Graphics
 			if (ImGui::MenuItem("Console"))
 			{
 				showConsole = true;
+			}
+
+			if (ImGui::MenuItem("Lights"))
+			{
+				showLightsMenu = true;
 			}
 
 			ImGui::EndMenu();
@@ -555,14 +561,14 @@ namespace Graphics
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
 
-		if (showDebugMenu
+		if (showLightsMenu
 			&& ImGui::Begin("Lights", NULL, windowFlags))
 		{
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				showDebugMenu = false;
+				showLightsMenu = false;
 			}
 
 			
