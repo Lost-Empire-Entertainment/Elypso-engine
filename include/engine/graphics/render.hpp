@@ -39,12 +39,11 @@ namespace Graphics
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 		static inline vec4 backgroundColor = vec4(0.1f, 0.1f, 0.1f, 1.0f);
-		/*
-		static inline vec3 cubeColor = vec3(1.0f, 1.0f, 1.0f);
-		static inline float ambientStrength = 0.1f;
-		static inline float specularStrength = 0.5f;
-		static inline float roughness = 32;
-		*/
+		static inline vec3 cubeColor = vec3(1.0f, 0.0f, 0.0f);
+		static inline float cubeColorStrength = 0.5f;
+		static inline float ambientColorStrength = 0.2f;
+		static inline vec3 specularColor = vec3(1.0f, 1.0f, 1.0f);
+		static inline float shininess = 32;
 
 		static inline float cubeSpeedMultiplier = 0.005f;
 		static inline float lampOrbitRange = 3;

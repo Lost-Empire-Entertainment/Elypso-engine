@@ -85,5 +85,6 @@ namespace Graphics
 		//lights menu popups
 		void RWPart_BackgroundColor();
 		void RWPart_CubeColor();
+		void RWPart_SpecularColor();
 	};
 }

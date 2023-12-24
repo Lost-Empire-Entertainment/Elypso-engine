@@ -58,8 +58,9 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-	static ImVec4 bgrColor = ImVec4(0.2f, 0.5f, 0.2f, 1.0f);
-	static ImVec4 cubeColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	static ImVec4 bgrColor;
+	static ImVec4 cubeColor;
+	static ImVec4 specularColor;
 
 	GUI& GUI::GetInstance()
 	{
@@ -86,8 +87,20 @@ namespace Graphics
 		io.Fonts->Clear();
 		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
-		Render::backgroundColor = vec4(bgrColor.x, bgrColor.y, bgrColor.z, bgrColor.w);
-		//Render::cubeColor = vec3(cubeColor.x, cubeColor.y, cubeColor.z);
+		bgrColor.x = Render::backgroundColor.x;
+		bgrColor.y = Render::backgroundColor.y;
+		bgrColor.z = Render::backgroundColor.z;
+		bgrColor.w = 1.0f;
+
+		cubeColor.x = Render::cubeColor.x;
+		cubeColor.y = Render::cubeColor.y;
+		cubeColor.z = Render::cubeColor.z;
+		cubeColor.w = 1.0f;
+
+		specularColor.x = Render::specularColor.x;
+		specularColor.y = Render::specularColor.y;
+		specularColor.z = Render::specularColor.z;
+		specularColor.w = 1.0f;
 
 		CustomizeImGuiStyle();
 	}
@@ -583,54 +596,59 @@ namespace Graphics
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
 			ImGui::ColorButton("Background color", bgrColor);
 			RWPart_BackgroundColor();
-			/*
+			
 			ImGui::Text("Cube color");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
 			ImGui::ColorButton("Cube color", cubeColor);
 			RWPart_CubeColor();
-
-			ImGui::Text("Ambient strength");
-			ImGui::SliderFloat("##ambstrength", &Render::ambientStrength, 0.0f, 1.0f);
+			
+			ImGui::Text("Specular color");
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
+			ImGui::ColorButton("Specular color", specularColor);
+			RWPart_SpecularColor();
+			
+			ImGui::Text("Cube color intensity");
+			ImGui::SliderFloat("##cubecolint", &Render::cubeColorStrength, 0.0f, 1.0f);
 			if (ImGui::IsItemHovered())
 			{
-				ImGui::SetTooltip("Adjust the overall ambient strength.");
+				ImGui::SetTooltip("Adjust how intense the cube color should be.");
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##ambstrength"))
+			if (ImGui::Button("Reset##cubecolint"))
 			{
-				Render::ambientStrength = 0.1f;
+				Render::cubeColorStrength = 0.5f;
 			}
 
-			ImGui::Text("Specular strength");
-			ImGui::SliderFloat("##specstrength", &Render::specularStrength, 0.0f, 1.0f);
+			ImGui::Text("Ambient color intensity");
+			ImGui::SliderFloat("##ambcolint", &Render::ambientColorStrength, 0.0f, 1.0f);
 			if (ImGui::IsItemHovered())
 			{
-				ImGui::SetTooltip("Adjust the light source specular strength.");
+				ImGui::SetTooltip("Adjust how intense the ambient color should be.");
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##specstrength"))
+			if (ImGui::Button("Reset##ambcolint"))
 			{
-				Render::specularStrength = 0.5f;
+				Render::ambientColorStrength = 0.2f;
 			}
 
-			ImGui::Text("Roughness");
-			ImGui::SliderFloat("##roughness", &Render::roughness, 6.0f, 128.0f);
+			ImGui::Text("Shininess");
+			ImGui::SliderFloat("##shininess", &Render::shininess, 3.0f, 128.0f);
 			if (ImGui::IsItemHovered())
 			{
-				ImGui::SetTooltip("Adjust the cube roughness.");
+				ImGui::SetTooltip("Adjust how intense the material shininess should be.");
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##roughness"))
+			if (ImGui::Button("Reset##shininess"))
 			{
-				Render::roughness = 32;
+				Render::shininess = 32.0f;
 			}
-
+			
 			ImGui::Separator();
-			*/
 
 			ImGui::Text("Cube speed multiplier");
-			ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.001f, 0.1f);
+			ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 0.1f);
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetTooltip("Adjust the overall cube speed multiplier.");
@@ -701,7 +719,6 @@ namespace Graphics
 			ImGui::EndPopup();
 		}
 	}
-	/*
 	void GUI::RWPart_CubeColor()
 	{
 		if (ImGui::IsItemClicked())
@@ -721,7 +738,25 @@ namespace Graphics
 			ImGui::EndPopup();
 		}
 	}
-	*/
+	void GUI::RWPart_SpecularColor()
+	{
+		if (ImGui::IsItemClicked())
+		{
+			ImGui::OpenPopup("Specular color");
+		}
+
+		if (ImGui::BeginPopup("Specular color"))
+		{
+			if (ImGui::ColorPicker3("##speccol", (float*)&specularColor))
+			{
+				Render::specularColor.x = specularColor.x;
+				Render::specularColor.y = specularColor.y;
+				Render::specularColor.z = specularColor.z;
+			}
+
+			ImGui::EndPopup();
+		}
+	}
 
 	void GUI::RenderVersionCheckWindow()
 	{
