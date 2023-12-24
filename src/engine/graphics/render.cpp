@@ -271,6 +271,7 @@ namespace Graphics
 
 		//render the cube
 		cubeShader.Use();
+		/*
 		GLint ambientStrengthLoc = glGetUniformLocation(cubeShader.ID, "ambientStrength");
 		glUniform1f(ambientStrengthLoc, ambientStrength);
 		GLint specularStrengthLoc = glGetUniformLocation(cubeShader.ID, "specularStrength");
@@ -281,6 +282,27 @@ namespace Graphics
 		cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		cubeShader.SetVec3("lightPos", lightPos);
 		cubeShader.SetVec3("viewPos", cameraPos);
+		*/
+		cubeShader.Use();
+		cubeShader.SetVec3("light.position", lightPos);
+		cubeShader.SetVec3("viewPos", cameraPos);
+
+		//light properties
+		vec3 lightColor;
+		lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
+		lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
+		lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
+		vec3 diffuseColor = lightColor * vec3(0.5f); // decrease the influence
+		vec3 ambientColor = diffuseColor * vec3(0.2f); // low influence
+		cubeShader.SetVec3("light.ambient", ambientColor);
+		cubeShader.SetVec3("light.diffuse", diffuseColor);
+		cubeShader.SetVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+		//material properties
+		cubeShader.SetVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		cubeShader.SetVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		cubeShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
+		cubeShader.SetFloat("material.shininess", 32.0f);
 		cubeShader.SetMat4("projection", projection);
 		cubeShader.SetMat4("view", view);
 		mat4 model = mat4(1.0f);

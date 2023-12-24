@@ -87,7 +87,7 @@ namespace Graphics
 		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		Render::backgroundColor = vec4(bgrColor.x, bgrColor.y, bgrColor.z, bgrColor.w);
-		Render::cubeColor = vec3(cubeColor.x, cubeColor.y, cubeColor.z);
+		//Render::cubeColor = vec3(cubeColor.x, cubeColor.y, cubeColor.z);
 
 		CustomizeImGuiStyle();
 	}
@@ -577,12 +577,13 @@ namespace Graphics
 				showLightsMenu = false;
 			}
 
+			
 			ImGui::Text("Background color");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
 			ImGui::ColorButton("Background color", bgrColor);
 			RWPart_BackgroundColor();
-
+			/*
 			ImGui::Text("Cube color");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
@@ -626,6 +627,7 @@ namespace Graphics
 			}
 
 			ImGui::Separator();
+			*/
 
 			ImGui::Text("Cube speed multiplier");
 			ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.001f, 0.1f);
@@ -678,6 +680,7 @@ namespace Graphics
 			ImGui::End();
 		}
 	}
+	
 	void GUI::RWPart_BackgroundColor()
 	{
 		if (ImGui::IsItemClicked())
@@ -698,6 +701,7 @@ namespace Graphics
 			ImGui::EndPopup();
 		}
 	}
+	/*
 	void GUI::RWPart_CubeColor()
 	{
 		if (ImGui::IsItemClicked())
@@ -717,6 +721,7 @@ namespace Graphics
 			ImGui::EndPopup();
 		}
 	}
+	*/
 
 	void GUI::RenderVersionCheckWindow()
 	{
