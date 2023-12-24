@@ -114,7 +114,7 @@ target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PA
 # Set the entry point (MSVC-specific)
 # if (MSVC)
 #     set_target_properties(Elypso_engine PROPERTIES
-#         LINK_FLAGS "/ENTRY:mainCRTStartup"
+#        LINK_FLAGS "/ENTRY:mainCRTStartup"
 #     )
 # endif()
 
@@ -124,16 +124,10 @@ install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Copy "files" directory to the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:Elypso_engine>/files
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_engine>/files
-)
-# Copy "README.md", "LICENSE.md", and "EULA.md" files to the install directory after build
-add_custom_command(TARGET Elypso_engine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/README.md
-    ${CMAKE_SOURCE_DIR}/LICENSE.md
-    ${CMAKE_SOURCE_DIR}/EULA.md
-    $<TARGET_FILE_DIR:Elypso_engine>/
 )
 
 # Include CPack to enable packaging
