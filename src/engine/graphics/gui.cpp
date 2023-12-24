@@ -668,7 +668,7 @@ namespace Graphics
 			ImGui::SameLine();
 			if (ImGui::Button("Reset##lamporbitrange"))
 			{
-				Render::lampOrbitRange = 3.0f;
+				Render::lampOrbitRange = 5.0f;
 			}
 
 			ImGui::Text("Cube wiggle height");
@@ -692,7 +692,7 @@ namespace Graphics
 			ImGui::SameLine();
 			if (ImGui::Button("Reset##cubewspeed"))
 			{
-				Render::cubeWiggleSpeed = 5.0f;
+				Render::cubeWiggleSpeed = 1.0f;
 			}
 
 			ImGui::End();
