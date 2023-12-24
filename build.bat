@@ -19,6 +19,7 @@ set "cpsuc=[CPACK_SUCCESS]"
 
 set "programFilesPath=C:\Program Files\Elypso engine"
 set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
+set "logsPath=%~dp0logs"
 
 :: Can not run build.bat if no command was inserted
 if "%1%" == "" (
@@ -54,13 +55,13 @@ if "%1" == "cmake_config" (
 	echo %cminf% Started CMake configuration.
 
 	:: Configure the project (Release build)
-	if not exist logs mkdir logs
-	cmake -DCMAKE_BUILD_TYPE=Release .. >> logs\cmake_log.txt 2>&1
+	if not exist "%logsPath%" mkdir "%logsPath%"
+	cmake -DCMAKE_BUILD_TYPE=Release .. >> "%logsPath%\cmake_log.txt" 2>&1
 
 	if %errorlevel% neq 0 (
-		echo %cmerr% CMake configuration failed. Check build/logs/build_log.txt for more details.
+		echo %cmerr% CMake configuration failed. Check logs/build_log.txt for more details.
 	) else (
-		echo %cmsuc% Cmake configuration succeeded! Created log file at build/logs/cmake_log.txt.
+		echo %cmsuc% Cmake configuration succeeded! Created log file at logs/cmake_log.txt.
 	)
 )
 
@@ -76,12 +77,13 @@ if "%1" == "install" (
 
 	:: Build the project
 	echo %cminf% Started build generation.
-	cmake --build . --config Release > logs\build_log.txt 2>&1
+	if not exist "%logsPath%" mkdir "%logsPath%"
+	cmake --build . --config Release > "%logsPath%\build_log.txt" 2>&1
 	
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly. Check build/logs/build_log.txt for more details.
+		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly. Check logs/build_log.txt for more details.
 	) else (
-		echo %cmsuc% Build succeeded! Created log file at build/logs/build_log.txt.
+		echo %cmsuc% Build succeeded! Created log file at logs/build_log.txt.
 		
 		if exist "%programFilesPath%" (
 			echo %encln% Deleted folder: Program Files/Elypso engine
@@ -103,6 +105,11 @@ if "%1" == "install" (
 	
 		echo %eninf% Copied folder: files to Program Files\Elypso engine
 		xcopy "%~dp0\build\Release\files" "%programFilesPath%\files" /E /I /Y
+		
+		cd /d "%~dp0
+		
+		echo %encln% Deleted folder: build
+		rd /s /q "%~dp0\build"
 	)
 )
 

@@ -386,7 +386,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show keybinds menu to " + to_string(GUI::allowScrollToBottom) + ".\n");
+							"Set show keybinds menu to " + to_string(GUI::showKeybindsMenu) + ".\n");
 					}
 					else
 					{
@@ -407,7 +407,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show debug menu to " + to_string(GUI::allowScrollToBottom) + ".\n");
+							"Set show debug menu to " + to_string(GUI::showDebugMenu) + ".\n");
 					}
 					else
 					{
@@ -428,7 +428,7 @@ namespace File
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show console to " + to_string(GUI::allowScrollToBottom) + ".\n");
+							"Set show console to " + to_string(GUI::showConsole) + ".\n");
 					}
 					else
 					{
@@ -438,6 +438,27 @@ namespace File
 							Caller::ENGINE,
 							Type::EXCEPTION,
 							"Show console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "showLightsMenu")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						GUI::showLightsMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show lights menu to " + to_string(GUI::showLightsMenu) + ".\n");
+					}
+					else
+					{
+						GUI::showLightsMenu = true;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show lights menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
 			}
@@ -500,6 +521,7 @@ namespace File
 		configFile << "showKeybindsMenu: " << GUI::showKeybindsMenu << endl;
 		configFile << "showDebugMenu: " << GUI::showDebugMenu << endl;
 		configFile << "showConsole: " << GUI::showConsole << endl;
+		configFile << "showLightsMenu: " << GUI::showLightsMenu << endl;
 
 		configFile.close();
 
@@ -607,6 +629,13 @@ namespace File
 				return (String::CanConvertStringToInt(value)
 					&& (showConsole == 0
 						|| showConsole == 1));
+			}
+			else if (type == "showLightsMenu")
+			{
+				int showLightsMenu = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showLightsMenu == 0
+						|| showLightsMenu == 1));
 			}
 			else
 			{

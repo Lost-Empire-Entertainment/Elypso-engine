@@ -544,6 +544,33 @@ namespace Graphics
 		}
 	}
 
+	void GUI::RenderLightsMenu()
+	{
+		ImVec2 initialPos(5, 5);
+		ImVec2 initialSize(350, 700);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse;
+
+		if (showDebugMenu
+			&& ImGui::Begin("Lights", NULL, windowFlags))
+		{
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				showDebugMenu = false;
+			}
+
+			
+
+			ImGui::End();
+		}
+	}
+
 	void GUI::RenderVersionCheckWindow()
 	{
 		ImVec2 initialPos(400, 200);

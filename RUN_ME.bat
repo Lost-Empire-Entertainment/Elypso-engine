@@ -69,20 +69,18 @@ echo %eninf% Running CMake configuration...
 
 start /wait build.bat cmake_config
 
+echo %encln% Deleted folder: build
+rd /s /q build
+
 pause
 goto menu
 
 :install
 echo %eninf% Running engine install...
 
-if exist build (
-	start /wait build.bat install
-	pause
-	goto menu
-) else (
-	echo %enexc% Did not find build folder. Please run CMake Configuration.
-	pause
-)
+start /wait build.bat cmake_config
+
+start /wait build.bat install
 
 pause
 goto menu
