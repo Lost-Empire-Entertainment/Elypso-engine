@@ -270,6 +270,8 @@ namespace Graphics
 
 		//render the cube
 		cubeShader.Use();
+		GLint ambientStrengthLoc = glGetUniformLocation(cubeShader.ID, "ambientStrength");
+		glUniform1f(ambientStrengthLoc, ambientStrength);
 		GLint specularStrengthLoc = glGetUniformLocation(cubeShader.ID, "specularStrength");
 		glUniform1f(specularStrengthLoc, specularStrength);
 		cubeShader.SetVec3("objectColor", cubeColor.x, cubeColor.y, cubeColor.z);

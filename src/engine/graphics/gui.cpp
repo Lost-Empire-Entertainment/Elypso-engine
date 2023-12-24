@@ -589,6 +589,18 @@ namespace Graphics
 			ImGui::ColorButton("Cube color", cubeColor);
 			RWPart_CubeColor();
 
+			ImGui::Text("Ambient strength");
+			ImGui::SliderFloat("##ambstrength", &Render::ambientStrength, 0.0f, 1.0f);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Adjust the overall ambient strength.");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##ambstrength"))
+			{
+				Render::ambientStrength = 0.1f;
+			}
+
 			ImGui::Text("Specular strength");
 			ImGui::SliderFloat("##specstrength", &Render::specularStrength, 0.0f, 1.0f);
 			if (ImGui::IsItemHovered())
