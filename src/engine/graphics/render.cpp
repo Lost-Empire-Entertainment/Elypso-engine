@@ -274,6 +274,8 @@ namespace Graphics
 		glUniform1f(ambientStrengthLoc, ambientStrength);
 		GLint specularStrengthLoc = glGetUniformLocation(cubeShader.ID, "specularStrength");
 		glUniform1f(specularStrengthLoc, specularStrength);
+		GLint roughnessLoc = glGetUniformLocation(cubeShader.ID, "roughness");
+		glUniform1f(roughnessLoc, roughness);
 		cubeShader.SetVec3("objectColor", cubeColor.x, cubeColor.y, cubeColor.z);
 		cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		cubeShader.SetVec3("lightPos", lightPos);

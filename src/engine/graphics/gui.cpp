@@ -613,6 +613,18 @@ namespace Graphics
 				Render::specularStrength = 0.5f;
 			}
 
+			ImGui::Text("Roughness");
+			ImGui::SliderFloat("##roughness", &Render::roughness, 6.0f, 128.0f);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Adjust the cube roughness.");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##roughness"))
+			{
+				Render::roughness = 32;
+			}
+
 			ImGui::End();
 		}
 	}

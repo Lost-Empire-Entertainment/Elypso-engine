@@ -42,6 +42,7 @@ namespace Graphics
 		static inline vec3 cubeColor = vec3(1.0f, 1.0f, 1.0f);
 		static inline float ambientStrength = 0.1f;
 		static inline float specularStrength = 0.5f;
+		static inline float roughness = 32;
 
 		static inline bool useMonitorRefreshRate = true;
 
