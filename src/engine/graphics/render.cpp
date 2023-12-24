@@ -241,9 +241,11 @@ namespace Graphics
 
 		Texture tex(Engine::filesPath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
+		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 
 		cubeShader.Use();
 		cubeShader.SetInt("material.diffuse", 0);
+		cubeShader.SetInt("material.specular", 1);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
@@ -269,16 +271,6 @@ namespace Graphics
 		//camera transformation
 		Input::ProcessInput(Render::window);
 
-		//calculate the new projection matrix
-		mat4 projection = perspective(
-			radians(fov),
-			aspectRatio,
-			nearClip,
-			farClip);
-
-		//update the camera
-		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
 		//render the cube
 		cubeShader.Use();
 		cubeShader.SetVec3("light.position", lightPos);
@@ -292,6 +284,17 @@ namespace Graphics
 		//material properties
 		cubeShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		cubeShader.SetFloat("material.shininess", shininess);
+
+		//calculate the new projection matrix
+		mat4 projection = perspective(
+			radians(fov),
+			aspectRatio,
+			nearClip,
+			farClip);
+
+		//update the camera
+		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
 		cubeShader.SetMat4("projection", projection);
 		cubeShader.SetMat4("view", view);
 		mat4 model = mat4(1.0f);
@@ -299,6 +302,9 @@ namespace Graphics
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
+		//bind specular map
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
 
 		static float cubeRotAngle = 0.0f;
 		cubeRotAngle += cubeSpeedMultiplier;
