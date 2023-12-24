@@ -589,6 +589,18 @@ namespace Graphics
 			ImGui::ColorButton("Cube color", cubeColor);
 			RWPart_CubeColor();
 
+			ImGui::Text("Specular strength");
+			ImGui::SliderFloat("##specstrength", &Render::specularStrength, 0.0f, 1.0f);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Adjust the light source specular strength.");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##specstrength"))
+			{
+				Render::specularStrength = 0.5f;
+			}
+
 			ImGui::End();
 		}
 	}
