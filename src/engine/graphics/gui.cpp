@@ -217,7 +217,7 @@ namespace Graphics
 					Caller::INPUT,
 					Type::DEBUG,
 					"User closed engine exit button.\n");
-				ShutdownManager::Shutdown();
+				ShutdownManager::shouldShutDown = true;
 			}
 
 			ImGui::EndMenu();
@@ -954,6 +954,18 @@ namespace Graphics
 
 	void GUI::Shutdown()
 	{
+		//close any remaining open ImGui windows
+		for (ImGuiWindow* window : ImGui::GetCurrentContext()->Windows)
+		{
+			if (window->WasActive)
+			{
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		ImGui::StyleColorsDark();
+		ImGui::GetIO().IniFilename = nullptr;
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();

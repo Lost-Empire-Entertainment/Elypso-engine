@@ -27,6 +27,7 @@
 using std::cout;
 using std::endl;
 
+using Core::ShutdownManager;
 using File::ConfigFile;
 using Graphics::Render;
 using Graphics::GUI;
@@ -69,7 +70,8 @@ namespace Core
 			Core::ConsoleManager::PrintLogsToBuffer();
 		}
 
-		while (!glfwWindowShouldClose(Render::window))
+		while (!glfwWindowShouldClose(Render::window)
+			   && !ShutdownManager::shouldShutDown)
 		{
 			TimeManager::UpdateDeltaTime();
 
