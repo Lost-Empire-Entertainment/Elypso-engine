@@ -13,7 +13,7 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 ### Prerequisites
 
 ```
-- Windows 11 (untested on older versions but Windows 10 should work fine too)
+- Windows 10/11 (untested on older versions)
 - gpu with openGL 4.6 support
 - Visual Studio 17 2022 (untested on older VS versions and other IDEs)
 - CMake downloaded and set up with CMake/bin folder added to environment path
@@ -22,15 +22,15 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 ### Setup
 
 ```
-- the recommended path to download the repository to is C:\Documents\Cpp projects\Elypso engine, you can name Cpp projects to whatever you like. Other paths are untested and might not work.
+- the current required path to download the repository to is C:\Documents\*\Elypso engine, you can name '*' to whatever you like. Other paths are untested and might not work.
 
 - source code can be edited by right-clicking the Elypso engine folder and opening with visual Studio
 
 how to use RUN_ME.bat:
-- reconfigure cmake (always run this when first opening the visual studio project or if you add or remove source or header files)
-- install (builds the executable and copies all necessary files over to the program files folder)
-- clean visual studio (deletes .vs and out folders)
-- clean engine (deletes build, program files engine folder and documents engine folder)
+- Reconfigure CMake - always run this when you add or remove source or header files
+- Build engine - builds the executable into the build folder
+- Clean Visual Studio - simple command to delete .vs and out folders
+- clean engine - simple command to delete build and engine documents folders
 ```
 
 ### Logs and configuration files
@@ -38,6 +38,7 @@ how to use RUN_ME.bat:
 ```
 - build generation log is found at build\logs\build_log.txt
 - cpack log is found at build\logs\cpack_log.txt
+
 - engine log is found at Documents\Elypso engine\engine_log.txt
 - config file is found at Documents\Elypso engine\config.txt
 - imgui ini file is found at Documents\Elypso engine\imgui.imi
