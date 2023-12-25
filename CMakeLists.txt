@@ -130,5 +130,26 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
     ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_engine>/files
 )
 
+# Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
+add_custom_command(TARGET Elypso_engine POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Elypso_engine>/EULA.md
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/EULA.md
+    $<TARGET_FILE_DIR:Elypso_engine>/EULA.md
+	
+	COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
+	COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/LICENSE.md
+    $<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
+	
+	COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Elypso_engine>/README.md
+	COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/README.md
+    $<TARGET_FILE_DIR:Elypso_engine>/README.md
+)
+
 # Include CPack to enable packaging
 include(CPack)

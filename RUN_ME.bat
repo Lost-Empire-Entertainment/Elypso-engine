@@ -11,7 +11,6 @@ set "eninf=[ENGINE_INFO]"
 set "enexc=[ENGINE_EXCEPTION]"
 set "encln=[ENGINE_CLEANUP]"
 
-set "programFilesPath=C:\Program Files\Elypso engine"
 set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
 
 :: Check if the script is running with administrative privileges
@@ -45,17 +44,17 @@ echo.
 echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake
-echo 2. Install
+echo 2. Build engine
 echo 3. Exit
 echo.
-echo 9. Clean Visual Studio (DELETES OUT AND .VS FOLDERS)
-echo 0. Clean Engine (DELETES ENGINE PROGRAM FILES AND DOCUMENTS FOLDERS)
+echo 9. Clean Visual Studio (DELETES OUT FOLDER AND .VS FOLDER)
+echo 0. Clean Engine (DELETES BUILD FOLDER AND ENGINE DOCUMENTS FOLDER)
 echo.
 set /p choice="Choice: "
 
 :: Process user input
 if "%choice%"=="1" goto cmake
-if "%choice%"=="2" goto install
+if "%choice%"=="2" goto build
 if "%choice%"=="3" goto exit
 if "%choice%"=="9" goto cleanvs
 if "%choice%"=="0" goto cleanen
@@ -69,18 +68,17 @@ echo %eninf% Running CMake configuration...
 
 start /wait build.bat cmake_config
 
-echo %encln% Deleted folder: build
-rd /s /q build
-
 pause
 goto menu
 
-:install
-echo %eninf% Running engine install...
+:build
+echo %eninf% Building engine...
 
-start /wait build.bat cmake_config
-
-start /wait build.bat install
+if not exist build (
+	echo Did not find build folder. Please run 'Reconfigure CMake' before building.
+) else (
+	start /wait build.bat build
+)
 
 pause
 goto menu
@@ -110,22 +108,16 @@ goto menu
 :cleanen
 
 if not exist build (
-	if not exist "%programFilesPath%" (
-		if not exist "%documentsPath%" (
-			echo %encln% There is nothing to reset.
-			pause
-			goto menu
-		)
+	if not exist "%documentsPath%" (
+		echo %encln% There is nothing to reset.
+		pause
+		goto menu
 	)
 )
 
 if exist build (
 	echo %encln% Deleted folder: build
 	rd /s /q build
-)
-if exist "%programFilesPath%" (
-	echo %encln% Deleted folder: Program Files/Elypso engine
-	rd /s /q "%programFilesPath%"
 )
 if exist "%documentsPath%" (
 	echo %encln% Deleted folder: Documents/Elypso engine

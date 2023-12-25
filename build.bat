@@ -17,8 +17,6 @@ set "cpinf=[CPACK_INFO]"
 set "cperr=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
-set "programFilesPath=C:\Program Files\Elypso engine"
-set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
 set "logsPath=%~dp0logs"
 
 :: Can not run build.bat if no command was inserted
@@ -66,10 +64,10 @@ if "%1" == "cmake_config" (
 )
 
 ::
-:: START INSTALL WITH "build.bat install" COMMAND
+:: START BUILD WITH "build.bat build" COMMAND
 ::
 
-if "%1" == "install" (
+if "%1" == "build" (
 	cd /d "C:\Program Files"
 	
 	:: Change to the script directory
@@ -84,32 +82,6 @@ if "%1" == "install" (
 		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly. Check logs/build_log.txt for more details.
 	) else (
 		echo %cmsuc% Build succeeded! Created log file at logs/build_log.txt.
-		
-		if exist "%programFilesPath%" (
-			echo %encln% Deleted folder: Program Files/Elypso engine
-			rd /s /q "%programFilesPath%"
-		)
-		mkdir "%programFilesPath%"
-	
-		echo %eninf% Copied file: Elypso_engine.exe to Program Files\Elypso engine
-		copy "%~dp0\build\Release\Elypso_engine.exe" "%programFilesPath%\Elypso_engine.exe"
-		
-		echo %eninf% Copied file: LICENSE.md to Program Files\Elypso engine
-		copy "%~dp0\LICENSE.md" "%programFilesPath%\LICENSE.md"
-		
-		echo %eninf% Copied file: EULA.md to Program Files\Elypso engine
-		copy "%~dp0\EULA.md" "%programFilesPath%\EULA.md"
-		
-		echo %eninf% Copied file: README.md to Program Files\Elypso engine
-		copy "%~dp0\README.md" "%programFilesPath%\README.md"
-	
-		echo %eninf% Copied folder: files to Program Files\Elypso engine
-		xcopy "%~dp0\build\Release\files" "%programFilesPath%\files" /E /I /Y
-		
-		cd /d "%~dp0
-		
-		echo %encln% Deleted folder: build
-		rd /s /q "%~dp0\build"
 	)
 )
 
