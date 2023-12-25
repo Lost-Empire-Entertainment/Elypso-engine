@@ -440,25 +440,25 @@ namespace File
 							"Show console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
-				else if (name == "showLightsMenu")
+				else if (name == "showSceneMenu")
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						GUI::showLightsMenu = static_cast<bool>(stoi(lineVariables[0]));
+						GUI::showSceneMenu = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show lights menu to " + to_string(GUI::showLightsMenu) + ".\n");
+							"Set show scene menu to " + to_string(GUI::showSceneMenu) + ".\n");
 					}
 					else
 					{
-						GUI::showLightsMenu = true;
+						GUI::showSceneMenu = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"Show lights menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+							"Show scene menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
 			}
@@ -521,7 +521,7 @@ namespace File
 		configFile << "showKeybindsMenu: " << GUI::showKeybindsMenu << endl;
 		configFile << "showDebugMenu: " << GUI::showDebugMenu << endl;
 		configFile << "showConsole: " << GUI::showConsole << endl;
-		configFile << "showLightsMenu: " << GUI::showLightsMenu << endl;
+		configFile << "showSceneMenu: " << GUI::showSceneMenu << endl;
 
 		configFile.close();
 
@@ -630,12 +630,12 @@ namespace File
 					&& (showConsole == 0
 						|| showConsole == 1));
 			}
-			else if (type == "showLightsMenu")
+			else if (type == "showSceneMenu")
 			{
-				int showLightsMenu = stoi(value);
+				int showSceneMenu = stoi(value);
 				return (String::CanConvertStringToInt(value)
-					&& (showLightsMenu == 0
-						|| showLightsMenu == 1));
+					&& (showSceneMenu == 0
+						|| showSceneMenu == 1));
 			}
 			else
 			{

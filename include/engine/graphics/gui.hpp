@@ -32,7 +32,7 @@ namespace Graphics
 		static inline bool showKeybindsMenu;
 		static inline bool showDebugMenu;
 		static inline bool showConsole;
-		static inline bool showLightsMenu;
+		static inline bool showSceneMenu;
 		static inline bool showVersionWindow;
 		static inline bool outdatedVersion;
 
@@ -76,7 +76,7 @@ namespace Graphics
 		void RenderKeybindsMenu();
 		void RenderDebugMenu();
 		void RenderConsole();
-		void RenderLightsMenu();
+		void RenderSceneMenu();
 
 		//rendered debug window parts
 		void RWPart_DebugMenuInfo();

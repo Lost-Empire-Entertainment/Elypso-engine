@@ -154,7 +154,7 @@ namespace Graphics
 		RenderKeybindsMenu();
 		RenderDebugMenu();
 		RenderConsole();
-		RenderLightsMenu();
+		RenderSceneMenu();
 
 		RenderVersionCheckWindow();
 
@@ -289,9 +289,9 @@ namespace Graphics
 				showConsole = true;
 			}
 
-			if (ImGui::MenuItem("Lights"))
+			if (ImGui::MenuItem("Scene menu"))
 			{
-				showLightsMenu = true;
+				showSceneMenu = true;
 			}
 
 			ImGui::EndMenu();
@@ -569,7 +569,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RenderLightsMenu()
+	void GUI::RenderSceneMenu()
 	{
 		ImVec2 initialPos(5, 5);
 		ImVec2 initialSize(350, 700);
@@ -580,14 +580,14 @@ namespace Graphics
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
 
-		if (showLightsMenu
-			&& ImGui::Begin("Lights", NULL, windowFlags))
+		if (showSceneMenu
+			&& ImGui::Begin("Scene menu", NULL, windowFlags))
 		{
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				showLightsMenu = false;
+				showSceneMenu = false;
 			}
 
 			
