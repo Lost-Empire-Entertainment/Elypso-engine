@@ -273,8 +273,9 @@ namespace Graphics
 
 		//render the GameObject
 		GameObjectShader.Use();
-		GameObjectShader.SetVec3("light.position", lightPos); //local light
-		//GameObjectShader.SetVec3("light.direction", directionalLightAngle); //directional light
+		GameObjectShader.SetVec3("light.position", cameraPos);
+		GameObjectShader.SetVec3("light.direction", camera.GetFront());
+		GameObjectShader.SetFloat("light.cutOff", cos(radians(12.5f)));
 		GameObjectShader.SetVec3("viewPos", cameraPos);
 
 		//light properties
@@ -323,15 +324,15 @@ namespace Graphics
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//render the light source
-		TestLightShader.Use();
-		TestLightShader.SetMat4("projection", projection);
-		TestLightShader.SetMat4("view", view);
-		model = mat4(1.0f);
-		model = translate(model, lightPos);
-		model = scale(model, vec3(0.2f));
-		TestLightShader.SetMat4("model", model);
-		glBindVertexArray(lightCubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//TestLightShader.Use();
+		//TestLightShader.SetMat4("projection", projection);
+		//TestLightShader.SetMat4("view", view);
+		//model = mat4(1.0f);
+		//model = translate(model, lightPos);
+		//model = scale(model, vec3(0.2f));
+		//TestLightShader.SetMat4("model", model);
+		//glBindVertexArray(lightCubeVAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		GUI::GetInstance().Render();
 
