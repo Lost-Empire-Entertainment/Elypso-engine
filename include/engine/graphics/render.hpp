@@ -38,6 +38,8 @@ namespace Graphics
 		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
+		static inline vec3 directionalLightAngle = vec3(-0.2f, -0.2f, -0.2f);
+
 		static inline vec4 backgroundColor = vec4(0.6f, 0.6f, 1.0f, 1.0f);
 
 		static inline vec3 cubeColor = vec3(1.0f, 1.0f, 1.0f);

@@ -58,8 +58,9 @@ using Type = Core::ConsoleManager::Type;
 namespace Graphics
 {
 	Input Render::camera(Render::window);
-	Shader cubeShader;
-	Shader lightCubeShader;
+	Shader GameObjectShader;
+	//Shader TestLightShader;
+	Shader DirectionalLightShader;
 
 	void Render::RenderSetup()
 	{
@@ -160,12 +161,12 @@ namespace Graphics
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		cubeShader = Shader(
-			Engine::filesPath + "/shaders/cubeShader.vert",
-			Engine::filesPath + "/shaders/cubeShader.frag");
-		lightCubeShader = Shader(
-			Engine::filesPath + "/shaders/lightCubeShader.vert",
-			Engine::filesPath + "/shaders/lightCubeShader.frag");
+		GameObjectShader = Shader(
+			Engine::filesPath + "/shaders/GameObject.vert",
+			Engine::filesPath + "/shaders/GameObject.frag");
+		DirectionalLightShader = Shader(
+			Engine::filesPath + "/shaders/Light_Directional.vert",
+			Engine::filesPath + "/shaders/Light_Directional.frag");
 
 		float vertices[] = 
 		{
@@ -243,9 +244,9 @@ namespace Graphics
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 
-		cubeShader.Use();
-		cubeShader.SetInt("material.diffuse", 0);
-		cubeShader.SetInt("material.specular", 1);
+		GameObjectShader.Use();
+		GameObjectShader.SetInt("material.diffuse", 0);
+		GameObjectShader.SetInt("material.specular", 1);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
@@ -269,21 +270,22 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//camera transformation
-		Input::ProcessInput(Render::window);
+		Input::ProcessInput(window);
 
-		//render the cube
-		cubeShader.Use();
-		cubeShader.SetVec3("light.position", lightPos);
-		cubeShader.SetVec3("viewPos", cameraPos);
+		//render the GameObject
+		GameObjectShader.Use();
+		//GameObjectShader.SetVec3("light.position", lightPos);
+		GameObjectShader.SetVec3("light.direction", directionalLightAngle);
+		GameObjectShader.SetVec3("viewPos", cameraPos);
 
 		//light properties
-		cubeShader.SetVec3("light.ambient", ambientColor * ambientColorStrength);
-		cubeShader.SetVec3("light.diffuse", cubeColor * cubeColorStrength);
-		cubeShader.SetVec3("light.specular", specularColor);
+		GameObjectShader.SetVec3("light.ambient", ambientColor * ambientColorStrength);
+		GameObjectShader.SetVec3("light.diffuse", cubeColor * cubeColorStrength);
+		GameObjectShader.SetVec3("light.specular", specularColor);
 
 		//material properties
-		cubeShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
-		cubeShader.SetFloat("material.shininess", shininess);
+		GameObjectShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
+		GameObjectShader.SetFloat("material.shininess", shininess);
 
 		//calculate the new projection matrix
 		mat4 projection = perspective(
@@ -295,8 +297,8 @@ namespace Graphics
 		//update the camera
 		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-		cubeShader.SetMat4("projection", projection);
-		cubeShader.SetMat4("view", view);
+		GameObjectShader.SetMat4("projection", projection);
+		GameObjectShader.SetMat4("view", view);
 		mat4 model = mat4(1.0f);
 
 		//bind diffuse map
@@ -314,20 +316,20 @@ namespace Graphics
 		float yOffset = cubeWiggleHeight * sin(cubeRotAngle * cubeWiggleSpeed);
 		model = translate(model, vec3(cubeX, lightPos.y + yOffset, cubeY));
 
-		cubeShader.SetMat4("model", model);
+		GameObjectShader.SetMat4("model", model);
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//render the lamp object
-		lightCubeShader.Use();
-		lightCubeShader.SetMat4("projection", projection);
-		lightCubeShader.SetMat4("view", view);
-		model = mat4(1.0f);
-		model = translate(model, lightPos);
-		model = scale(model, vec3(0.2f));
-		lightCubeShader.SetMat4("model", model);
-		glBindVertexArray(lightCubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//render the light source
+		//DirectionalLightShader.Use();
+		//DirectionalLightShader.SetMat4("projection", projection);
+		//DirectionalLightShader.SetMat4("view", view);
+		//model = mat4(1.0f);
+		//model = translate(model, lightPos);
+		//model = scale(model, vec3(0.2f));
+		//DirectionalLightShader.SetMat4("model", model);
+		//glBindVertexArray(lightCubeVAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		GUI::GetInstance().Render();
 

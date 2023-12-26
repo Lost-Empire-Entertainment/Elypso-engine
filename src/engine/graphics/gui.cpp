@@ -43,6 +43,7 @@ using std::stoi;
 using std::to_string;
 using std::exception;
 using std::filesystem::exists;
+using glm::clamp;
 
 using Core::Engine;
 using Core::Input;
@@ -589,8 +590,25 @@ namespace Graphics
 			{
 				showSceneMenu = false;
 			}
-
 			
+			ImGui::Text("Directional light angle");
+			ImGui::PushItemWidth(100);
+			ImGui::Text("   x   ");
+			ImGui::SameLine();
+			ImGui::SliderFloat("##dirlightX", &Render::directionalLightAngle.x, -1.0f, 1.0f);
+			Render::directionalLightAngle.x = clamp(Render::directionalLightAngle.x, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::Text("   y   ");
+			ImGui::SameLine();
+			ImGui::SliderFloat("##dirlightY", &Render::directionalLightAngle.y, -1.0f, 1.0f);
+			Render::directionalLightAngle.y = clamp(Render::directionalLightAngle.y, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::Text("   z   ");
+			ImGui::SameLine();
+			ImGui::SliderFloat("##dirlightZ", &Render::directionalLightAngle.z, -1.0f, 1.0f);
+			Render::directionalLightAngle.z = clamp(Render::directionalLightAngle.z, -1.0f, 1.0f);
+			ImGui::PopItemWidth();
+
 			ImGui::Text("Background color");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
