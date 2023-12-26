@@ -591,23 +591,41 @@ namespace Graphics
 				showSceneMenu = false;
 			}
 			
+			/*
 			ImGui::Text("Directional light angle");
 			ImGui::PushItemWidth(100);
 			ImGui::Text("   x   ");
 			ImGui::SameLine();
-			ImGui::SliderFloat("##dirlightX", &Render::directionalLightAngle.x, -1.0f, 1.0f);
+			ImGui::InputFloat("##dirlightangleX", &Render::directionalLightAngle.x);
 			Render::directionalLightAngle.x = clamp(Render::directionalLightAngle.x, -1.0f, 1.0f);
 			ImGui::SameLine();
 			ImGui::Text("   y   ");
 			ImGui::SameLine();
-			ImGui::SliderFloat("##dirlightY", &Render::directionalLightAngle.y, -1.0f, 1.0f);
+			ImGui::InputFloat("##dirlightangleY", &Render::directionalLightAngle.y);
 			Render::directionalLightAngle.y = clamp(Render::directionalLightAngle.y, -1.0f, 1.0f);
 			ImGui::SameLine();
 			ImGui::Text("   z   ");
 			ImGui::SameLine();
-			ImGui::SliderFloat("##dirlightZ", &Render::directionalLightAngle.z, -1.0f, 1.0f);
+			ImGui::InputFloat("##dirlightangleZ", &Render::directionalLightAngle.z);
 			Render::directionalLightAngle.z = clamp(Render::directionalLightAngle.z, -1.0f, 1.0f);
 			ImGui::PopItemWidth();
+			*/
+
+			ImGui::Text("Light linear");
+			ImGui::SliderFloat("##lightLin", &Render::lightLinear, 0.0f, 1.0f);
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##lightLin"))
+			{
+				Render::lightLinear = 0.09f;
+			}
+			ImGui::Text("Light quadratic");
+			ImGui::SliderFloat("##lightQuad", &Render::lightQuadratic, 0.0f, 1.0f);
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##lightQuad"))
+			{
+				Render::lightQuadratic = 0.032f;
+			}
+			ImGui::Separator();
 
 			ImGui::Text("Background color");
 			ImGui::SameLine();
@@ -731,7 +749,6 @@ namespace Graphics
 				Render::backgroundColor.x = bgrColor.x;
 				Render::backgroundColor.y = bgrColor.y;
 				Render::backgroundColor.z = bgrColor.z;
-				Render::backgroundColor.w = bgrColor.w;
 			}
 
 			ImGui::EndPopup();

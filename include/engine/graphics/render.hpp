@@ -39,8 +39,11 @@ namespace Graphics
 		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
 		static inline vec3 directionalLightAngle = vec3(-0.2f, -0.2f, -0.2f);
+		static inline float lightConstant = 1.0f;
+		static inline float lightLinear = 0.09f;
+		static inline float lightQuadratic = 0.032f;
 
-		static inline vec4 backgroundColor = vec4(0.6f, 0.6f, 1.0f, 1.0f);
+		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
 		static inline vec3 cubeColor = vec3(1.0f, 1.0f, 1.0f);
 		static inline float cubeColorStrength = 1.0f;
