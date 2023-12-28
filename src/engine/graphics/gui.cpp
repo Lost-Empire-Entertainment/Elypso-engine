@@ -626,12 +626,19 @@ namespace Graphics
 			}
 			*/
 
-			ImGui::Text("Spotlight angle");
-			ImGui::SliderFloat("##spotangle", &Render::spotlightAngle, 0.0f, 50.0f);
+			ImGui::Text("Spotlight inner angle");
+			ImGui::SliderFloat("##spotinnerangle", &Render::spotlightInnerAngle, 0.0f, Render::spotlightOuterAngle - 0.01f);
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##spotangle"))
+			if (ImGui::Button("Reset##spotinnerangle"))
 			{
-				Render::spotlightAngle = 12.5f;
+				Render::spotlightInnerAngle = 12.5f;
+			}
+			ImGui::Text("Spotlight outer angle");
+			ImGui::SliderFloat("##spotouterangle", &Render::spotlightOuterAngle, Render::spotlightInnerAngle + 0.01f, 50.0f);
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##spotouterangle"))
+			{
+				Render::spotlightOuterAngle = 17.5f;
 			}
 
 			ImGui::Separator();

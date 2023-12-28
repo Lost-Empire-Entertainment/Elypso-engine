@@ -37,7 +37,8 @@ namespace Graphics
 		static inline float lightConstant = 1.0f;
 		static inline float lightLinear = 0.09f;
 		static inline float lightQuadratic = 0.032f;
-		static inline float spotlightAngle = 12.5f;
+		static inline float spotlightInnerAngle = 12.5f;
+		static inline float spotlightOuterAngle = 17.5f;
 
 		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
