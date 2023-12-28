@@ -1,6 +1,3 @@
-# Main folder ignored files and folders
-logs/
-
 # Engine ignored files and folders
 Engine/build/
 Engine/.vs/
