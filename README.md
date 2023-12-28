@@ -26,19 +26,13 @@ Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is
 
 - source code can be edited by right-clicking the Elypso engine folder and opening with visual Studio
 
-how to use RUN_ME.bat:
-- Reconfigure CMake - always run this when you add or remove source or header files
-- Build engine - builds the executable into the build folder
-- Clean Visual Studio - simple command to delete .vs and out folders
-- clean engine - simple command to delete build and engine documents folders
+- if you wish to compile the source manager yourself then you can use setup.bat and first Reconfigure CMake and then build which will create a new build folder and inside it is Release where the executable will be built
+- follow the instructions in Source manager.exe to learn how to compile the engine yourself
 ```
 
 ### Logs and configuration files
 
 ```
-- build generation log is found at build\logs\build_log.txt
-- cpack log is found at build\logs\cpack_log.txt
-
 - engine log is found at Documents\Elypso engine\engine_log.txt
 - config file is found at Documents\Elypso engine\config.txt
 - imgui ini file is found at Documents\Elypso engine\imgui.imi

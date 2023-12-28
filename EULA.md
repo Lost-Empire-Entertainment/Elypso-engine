@@ -16,9 +16,13 @@ You acknowledge and agree that the Software, including its source code and assoc
 
 Files within the following directories are exempt from the terms of this EULA and are subject to their respective creators' licenses:
 
-- `src/external`
-- `include/external`
-- `files/fonts`
+- `Engine/src/external`
+- `Engine/include/external`
+- `Engine/lib`
+- `Engine/files/fonts`
+- `Source manager/src/external`
+- `Source manager/include/external`
+- `Source manager/lib`
 
 You are responsible for ensuring compliance with the creators' licenses for these specific files. Lost Empire Entertainment grants you the right to access, modify, and distribute both the source code and associated files of the Software for your personal or internal use, subject to the rights and permissions granted for the Software under this EULA.
 
