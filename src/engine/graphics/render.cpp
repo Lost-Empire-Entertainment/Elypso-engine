@@ -275,7 +275,7 @@ namespace Graphics
 		GameObjectShader.Use();
 		GameObjectShader.SetVec3("light.position", camera.GetCameraPosition());
 		GameObjectShader.SetVec3("light.direction", camera.GetFront());
-		GameObjectShader.SetFloat("light.cutOff", cos(radians(12.5f)));
+		GameObjectShader.SetFloat("light.cutOff", cos(radians(spotlightAngle)));
 		GameObjectShader.SetVec3("viewPos", camera.GetCameraPosition());
 
 		//light properties

@@ -609,8 +609,7 @@ namespace Graphics
 			ImGui::InputFloat("##dirlightangleZ", &Render::directionalLightAngle.z);
 			Render::directionalLightAngle.z = clamp(Render::directionalLightAngle.z, -1.0f, 1.0f);
 			ImGui::PopItemWidth();
-			*/
-
+			
 			ImGui::Text("Light linear");
 			ImGui::SliderFloat("##lightLin", &Render::lightLinear, 0.0f, 1.0f);
 			ImGui::SameLine();
@@ -625,6 +624,16 @@ namespace Graphics
 			{
 				Render::lightQuadratic = 0.032f;
 			}
+			*/
+
+			ImGui::Text("Spotlight angle");
+			ImGui::SliderFloat("##spotangle", &Render::spotlightAngle, 0.0f, 50.0f);
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##spotangle"))
+			{
+				Render::spotlightAngle = 12.5f;
+			}
+
 			ImGui::Separator();
 
 			ImGui::Text("Background color");
