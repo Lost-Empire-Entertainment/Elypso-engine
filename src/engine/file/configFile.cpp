@@ -63,7 +63,8 @@ namespace File
 		Render::fov = 90.0f;
 		Render::nearClip = 0.001f;
 		Render::farClip = 100.0f;
-		Render::cameraPos = vec3(0.0f, 0.0f, 3.0f);
+		vec3 newPosition = vec3(0.0f, 0.0f, 3.0f);
+		Render::camera.SetCameraPosition(newPosition);
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
 		GUI::allowScrollToBottom = true;
 		ConsoleManager::sendDebugMessages = true;
@@ -309,17 +310,19 @@ namespace File
 						&& ConfigFile::IsValueInRange(name + "Y", lineVariables[1])
 						&& ConfigFile::IsValueInRange(name + "Z", lineVariables[2]))
 					{
-						Render::cameraPos.x = stof(lineVariables[0]);
-						Render::cameraPos.y = stof(lineVariables[1]);
-						Render::cameraPos.z = stof(lineVariables[2]);
+						vec3 newPosition = vec3(
+							stof(lineVariables[0]),
+							stof(lineVariables[1]),
+							stof(lineVariables[2]));
+						Render::camera.SetCameraPosition(newPosition);
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
 							"Set camera position to to " + 
-							to_string(Render::cameraPos.x) + ", " + 
-							to_string(Render::cameraPos.y) + ", " +
-							to_string(Render::cameraPos.z) + ".\n");
+							to_string(Render::camera.GetCameraPosition().x) + ", " + 
+							to_string(Render::camera.GetCameraPosition().y) + ", " +
+							to_string(Render::camera.GetCameraPosition().z) + ".\n");
 					}
 					else
 					{
@@ -509,9 +512,9 @@ namespace File
 		configFile << "camNearClip: " << Render::nearClip << endl;
 		configFile << "camFarClip: " << Render::farClip << endl;
 		configFile << "camPos: " <<
-			Render::cameraPos.x << ", " <<
-			Render::cameraPos.y << ", " <<
-			Render::cameraPos.z << endl;
+			Render::camera.GetCameraPosition().x << ", " <<
+			Render::camera.GetCameraPosition().y << ", " <<
+			Render::camera.GetCameraPosition().z << endl;
 		configFile << "camRot: " <<
 			Render::camera.GetCameraRotation().x << ", " <<
 			Render::camera.GetCameraRotation().y << ", " <<

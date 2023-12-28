@@ -33,11 +33,6 @@ namespace Graphics
 
 		static inline unsigned int VBO, VAO, cubeVAO, lightCubeVAO, EBO;
 
-		static inline float cameraSpeed;
-		static inline vec3 cameraPos;
-		static inline vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
-		static inline vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
-
 		static inline vec3 directionalLightAngle = vec3(-0.2f, -0.2f, -0.2f);
 		static inline float lightConstant = 1.0f;
 		static inline float lightLinear = 0.09f;

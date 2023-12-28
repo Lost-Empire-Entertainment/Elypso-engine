@@ -39,6 +39,9 @@ namespace Core
     public:
         struct InputSettings
         {
+            float cameraSpeed;
+            vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+            vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
             float moveSpeedMultiplier = 1.0f;
             bool cameraEnabled = false;
 
@@ -54,6 +57,8 @@ namespace Core
         static void InputSetup();
         static void ProcessInput(GLFWwindow* window);
 
+        vec3 GetCameraPosition() const { return cameraPos; }
+        void SetCameraPosition(const vec3& newPosition) { cameraPos = newPosition; }
         vec3 GetFront() const { return cameraFront; }
         vec3 GetRight() const { return normalize(cross(cameraFront, cameraUp)); }
         vec3 GetCameraRotation() const { return vec3(yaw, pitch, 0); }

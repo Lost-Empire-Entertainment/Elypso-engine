@@ -867,9 +867,9 @@ namespace Graphics
 		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 		ImGui::Text(
 			"Position: %.2f, %.2f, %.2f",
-			Render::cameraPos.x,
-			Render::cameraPos.y,
-			Render::cameraPos.z);
+			Render::camera.GetCameraPosition().x,
+			Render::camera.GetCameraPosition().y,
+			Render::camera.GetCameraPosition().z);
 		ImGui::Text(
 			"Angle: %.2f, %.2f, %.2f",
 			Render::camera.GetCameraRotation().x,

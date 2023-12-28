@@ -273,10 +273,10 @@ namespace Graphics
 
 		//render the GameObject
 		GameObjectShader.Use();
-		GameObjectShader.SetVec3("light.position", cameraPos);
+		GameObjectShader.SetVec3("light.position", camera.GetCameraPosition());
 		GameObjectShader.SetVec3("light.direction", camera.GetFront());
 		GameObjectShader.SetFloat("light.cutOff", cos(radians(12.5f)));
-		GameObjectShader.SetVec3("viewPos", cameraPos);
+		GameObjectShader.SetVec3("viewPos", camera.GetCameraPosition());
 
 		//light properties
 		GameObjectShader.SetVec3("light.ambient", ambientColor * ambientColorStrength);
@@ -298,7 +298,7 @@ namespace Graphics
 			farClip);
 
 		//update the camera
-		mat4 view = camera.GetViewMatrix() * lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		mat4 view = camera.GetViewMatrix();
 
 		GameObjectShader.SetMat4("projection", projection);
 		GameObjectShader.SetMat4("view", view);

@@ -73,7 +73,7 @@ namespace Core
             {
                 Render::camera.ProcessMouseMovement(xpos, ypos);
             });
-            Render::cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
+            inputSettings.cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
@@ -120,7 +120,7 @@ namespace Core
         if (inputSettings.cameraEnabled)
         {
             bool isLeftShiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-            float currentSpeed = Render::cameraSpeed;
+            float currentSpeed = inputSettings.cameraSpeed;
             if (isLeftShiftPressed) currentSpeed = 2.0f * inputSettings.moveSpeedMultiplier;
             else                    currentSpeed = 1.0f * inputSettings.moveSpeedMultiplier;
 
@@ -130,32 +130,38 @@ namespace Core
             //camera forwards
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             {
-                Render::cameraPos += Render::cameraSpeed * currentSpeed * front;
+                Render::camera.SetCameraPosition(
+                    Render::camera.cameraPos += inputSettings.cameraSpeed * currentSpeed * front);
             }
             //camera backwards
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             {
-                Render::cameraPos -= Render::cameraSpeed * currentSpeed * front;
+                Render::camera.SetCameraPosition(
+                    Render::camera.cameraPos -= inputSettings.cameraSpeed * currentSpeed * front);
             }
             //camera left
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             {
-                Render::cameraPos -= Render::cameraSpeed * currentSpeed * right;
+                Render::camera.SetCameraPosition(
+                    Render::camera.cameraPos -= inputSettings.cameraSpeed * currentSpeed * right);
             }
             //camera right
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             {
-                Render::cameraPos += Render::cameraSpeed * currentSpeed * right;
+                Render::camera.SetCameraPosition(
+                    Render::camera.cameraPos += inputSettings.cameraSpeed * currentSpeed * right);
             }
             //camera up
             if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
             {
-                Render::cameraPos += Render::cameraUp * Render::cameraSpeed * currentSpeed;
+                Render::camera.SetCameraPosition(
+                    Render::camera.cameraPos += inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
             }
             //camera down
             if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
             {
-                Render::cameraPos -= Render::cameraUp * Render::cameraSpeed * currentSpeed;
+                Render::camera.SetCameraPosition(
+                    Render::camera.cameraPos -= inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
             }
         }
     }
@@ -217,6 +223,6 @@ namespace Core
 
     mat4 Input::GetViewMatrix() const
     {
-        return lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        return lookAt(Render::camera.GetCameraPosition(), Render::camera.GetCameraPosition() + Render::camera.GetFront(), cameraUp);
     }
 }
