@@ -42,6 +42,7 @@ set(SOURCE_FILES
 
 # Add your external files
 list(APPEND SOURCE_FILES
+	${EXTERNAL_DIR}/glad/glad.c
 	${EXTERNAL_DIR}/imgui/imgui.cpp
 	${EXTERNAL_DIR}/imgui/imgui_demo.cpp
 	${EXTERNAL_DIR}/imgui/imgui_draw.cpp
@@ -56,6 +57,7 @@ add_executable (Source_manager ${SOURCE_FILES})
 
 target_include_directories(Source_manager PRIVATE 
 	${INCLUDE_DIR}/program
+	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/imgui
 )
