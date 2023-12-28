@@ -3,7 +3,13 @@
 # This is free software, and you are welcome to redistribute it under certain conditions.
 # Read LICENSE.md and EULA.md for more information.
 
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required (VERSION 3.8)
+
+# Enable Hot Reload for MSVC compilers if supported.
+if (POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,6 +26,9 @@ project("Elypso engine" VERSION ${PROJECT_VERSION})
 set(eninf "[ENGINE_INFO]")
 
 # Paths to frequently used directories
+get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
+set(PARENT_DIR_PATH "${PARENT_DIR}")
+
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -135,19 +144,19 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_engine>/EULA.md
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/EULA.md
+    ${PARENT_DIR_PATH}/EULA.md
     $<TARGET_FILE_DIR:Elypso_engine>/EULA.md
 	
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/LICENSE.md
+    ${PARENT_DIR_PATH}/LICENSE.md
     $<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
 	
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_engine>/README.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/README.md
+    ${PARENT_DIR_PATH}/README.md
     $<TARGET_FILE_DIR:Elypso_engine>/README.md
 )
 

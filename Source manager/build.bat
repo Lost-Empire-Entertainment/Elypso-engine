@@ -4,12 +4,12 @@
 :: Read LICENSE.md and EULA.md for more information.
 
 @echo off
-:: Batch script to build the executable and create the installer for the engine
+:: Batch script that handles CMake configuration and executable creation for the Elypso engine Source manager
 
 :: Reusable message types printed to console
-set "enexc=[ENGINE_EXCEPTION]"
-set "eninf=[ENGINE_INFO]"
-set "encln=[ENGINE_CLEANUP]"
+set "prexc=[PROGRAM_EXCEPTION]"
+set "prinf=[PROGRAM_INFO]"
+set "prcln=[PROGRAM_CLEANUP]"
 set "cminf=[CMAKE_INFO]"
 set "cmerr=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
@@ -21,7 +21,7 @@ set "logsPath=%~dp0logs"
 
 :: Can not run build.bat if no command was inserted
 if "%1%" == "" (
-	echo %enexc% Please run RUN_ME.bat to choose what actions to do with this project.
+	echo %prexc% Please run setup.bat to choose what actions to do with this project.
 	pause
 	exit
 )
@@ -29,7 +29,7 @@ if "%1%" == "" (
 :: Check if the script is running with administrative privileges
 NET SESSION >nul 2>&1
 if %errorlevel% neq 0 (
-    echo %enexc% This script requires administrative privileges. Please run as administrator.
+    echo %prexc% This script requires administrative privileges. Please run as administrator.
     pause
     exit /b 1
 )
@@ -44,7 +44,7 @@ if "%1" == "cmake_config" (
 
 	:: Clean the build directory before configuration
 	if exist "build" (
-		echo %encln% Deleted folder: build
+		echo %prcln% Deleted folder: build
 		rd /s /q build
 	)
 	mkdir build
@@ -53,13 +53,12 @@ if "%1" == "cmake_config" (
 	echo %cminf% Started CMake configuration.
 
 	:: Configure the project (Release build)
-	if not exist "%logsPath%" mkdir "%logsPath%"
-	cmake -DCMAKE_BUILD_TYPE=Release .. >> "%logsPath%\cmake_log.txt" 2>&1
+	cmake -DCMAKE_BUILD_TYPE=Release ..
 
 	if %errorlevel% neq 0 (
-		echo %cmerr% CMake configuration failed. Check logs/build_log.txt for more details.
+		echo %cmerr% CMake configuration failed.
 	) else (
-		echo %cmsuc% Cmake configuration succeeded! Created log file at logs/cmake_log.txt.
+		echo %cmsuc% Cmake configuration succeeded!
 	)
 )
 
@@ -75,11 +74,10 @@ if "%1" == "build" (
 
 	:: Build the project
 	echo %cminf% Started build generation.
-	if not exist "%logsPath%" mkdir "%logsPath%"
-	cmake --build . --config Release > "%logsPath%\build_log.txt" 2>&1
+	cmake --build . --config Release
 	
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly. Check logs/build_log.txt for more details.
+		echo %cmerr% Build failed because Source_manager.exe did not get generated properly. Check logs/build_log.txt for more details.
 	) else (
 		echo %cmsuc% Build succeeded! Created log file at logs/build_log.txt.
 	)

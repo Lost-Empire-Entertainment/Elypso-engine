@@ -1,6 +1,12 @@
-# Files and folders not needed for sharing the project
-.vs/
-build/
-install/
-out/
+# Main folder ignored files and folders
 logs/
+
+# Engine ignored files and folders
+Engine/build/
+Engine/.vs/
+Engine/out/
+
+# Source manager ignored files and folders
+Source manager/build/
+Source manager/.vs/
+Source manager/out/
