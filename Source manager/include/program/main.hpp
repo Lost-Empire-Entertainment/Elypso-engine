@@ -45,6 +45,10 @@ namespace Core
 
 		static void Shutdown();
 	private:
+		static inline bool isHowToUseOpen;
+		static inline bool isCleanVSConfirmOpen;
+		static inline bool isCleanEngineConfirmOpen;
+
 		static inline unsigned int width = 1280;
 		static inline unsigned int height = 720;
 		static inline string programName = "Elypso engine source manager v1.0.0";
@@ -61,9 +65,16 @@ namespace Core
 		static bool IsPathAccessible(const string& path);
 		static bool ContainsProtectedPath(const path& fullPath);
 
+		static void MainWindow_HowToUse();
 		static void MainWindow_Reconfigure_CMake();
 		static void MainWindow_InstallEngine();
+		static void MainWindow_CleanVS();
+		static void MainWindow_CleanEngine();
 		static void MainWindow_InputField();
+
+		static void MainWindow_HowToUse_HowToUse();
+		static void MainWindow_CleanVS_Confirm();
+		static void MainWindow_CleanEngine_Confirm();
 
 		static void ConsoleWindow_ParseInput(const string& message);
 		static void ConsoleWindow_WriteToConsole(const string& message, bool printToConsole = false);

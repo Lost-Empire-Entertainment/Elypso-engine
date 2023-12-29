@@ -199,11 +199,87 @@ namespace Core
 
 		ImGui::Begin("Main", NULL, windowFlags);
 
+		MainWindow_HowToUse();
+		MainWindow_HowToUse_HowToUse();
 		MainWindow_Reconfigure_CMake();
 		MainWindow_InstallEngine();
+		MainWindow_CleanVS();
+		MainWindow_CleanVS_Confirm();
+		MainWindow_CleanEngine();
+		MainWindow_CleanEngine_Confirm();
 		MainWindow_InputField();
 
 		ImGui::End();
+	}
+	void Render::MainWindow_HowToUse()
+	{
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 buttonSize(200, 60);
+		ImVec2 buttonPos(
+			(windowSize.x - buttonSize.x) * 0.5f,
+			(windowSize.y - 400 - buttonSize.y) * 0.5f);
+
+		ImGui::SetCursorPos(buttonPos);
+
+		if (ImGui::Button("How to use", buttonSize))
+		{
+			ConsoleWindow_WriteToConsole("Start 'How to use'");
+			isHowToUseOpen = true;
+		}
+	}
+	void Render::MainWindow_HowToUse_HowToUse()
+	{
+		ImVec2 initialPos(400, 200);
+		ImVec2 initialSize(400, 500);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoSavedSettings;
+
+		if (isHowToUseOpen
+			&& ImGui::Begin("How to use", NULL, windowFlags))
+		{
+			ImGui::Text("Configure CMake:");
+			ImGui::TextWrapped("Sets up engine installer, also required to run when source or header files are added or removed.");
+
+			ImGui::Text("");
+
+			ImGui::Text("Install engine:");
+			ImGui::Text("Installs the engine to the chosen path. Must insert a valid path to the input field.");
+
+			ImGui::Text("");
+
+			ImGui::Text("Clean engine:");
+			ImGui::Text("Finds and deletes the engine executable parent folder and the engine documents folder.");
+
+			ImGui::Text("");
+
+			ImGui::Text("Clean Visual Studio:");
+			ImGui::Text("Finds and deletes Visual Studio generated files.");
+
+			ImVec2 windowSize = ImGui::GetWindowSize();
+
+			ImVec2 buttonSize(120, 30);
+			ImVec2 buttonPos(
+				(windowSize.x - buttonSize.x) * 0.5f,
+				(windowSize.y + 400 - buttonSize.y) * 0.5f);
+
+			ImGui::SetCursorPos(buttonPos);
+
+			if (ImGui::Button("Close", buttonSize))
+			{
+				ConsoleWindow_WriteToConsole("Close 'How to use'");
+				isHowToUseOpen = false;
+			}
+
+			ImGui::End();
+		}
 	}
 	void Render::MainWindow_Reconfigure_CMake()
 	{
@@ -212,17 +288,13 @@ namespace Core
 		ImVec2 buttonSize(200, 60);
 		ImVec2 buttonPos(
 			(windowSize.x - buttonSize.x) * 0.5f, 
-			(windowSize.y - 100 - buttonSize.y) * 0.5f);
+			(windowSize.y - 150 - buttonSize.y) * 0.5f);
 
 		ImGui::SetCursorPos(buttonPos);
 
 		if (ImGui::Button("Reconfigure CMake", buttonSize))
 		{
-			ConsoleWindow_WriteToConsole("Reconfigure CMake", true);
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Needs to be ran every time an engine source or header file is added or removed.");
+			ConsoleWindow_WriteToConsole("Start 'Reconfigure CMake'");
 		}
 	}
 	void Render::MainWindow_InstallEngine()
@@ -238,11 +310,139 @@ namespace Core
 
 		if (ImGui::Button("Install engine", buttonSize))
 		{
-			ConsoleWindow_WriteToConsole("Install engine", true);
+			ConsoleWindow_WriteToConsole("Start 'Install engine'");
 		}
-		if (ImGui::IsItemHovered())
+	}
+	void Render::MainWindow_CleanVS()
+	{
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 buttonSize(200, 60);
+		ImVec2 buttonPos(
+			(windowSize.x + 225 - buttonSize.x) * 0.5f,
+			(windowSize.y + 350 - buttonSize.y) * 0.5f);
+
+		ImGui::SetCursorPos(buttonPos);
+
+		if (ImGui::Button("Clean Visual Studio", buttonSize))
 		{
-			ImGui::SetTooltip("Install the engine to your desired location.");
+			ConsoleWindow_WriteToConsole("Start 'Clean Visual Studio'");
+			isCleanVSConfirmOpen = true;
+		}
+	}
+	void Render::MainWindow_CleanVS_Confirm()
+	{
+		ImVec2 initialPos(400, 200);
+		ImVec2 initialSize(300, 300);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoSavedSettings;
+
+		if (isCleanVSConfirmOpen
+			&& ImGui::Begin("Clean Visual Studio folders", NULL, windowFlags))
+		{
+			ImGui::Text("Are you sure you want to clean the Visual Studio folders?");
+
+			ImVec2 windowSize = ImGui::GetWindowSize();
+
+			ImVec2 buttonSize(120, 30);
+			ImVec2 confirmButtonPos(
+				(windowSize.x - 225 - buttonSize.x) * 0.5f,
+				(windowSize.y + 225 - buttonSize.y) * 0.5f);
+
+			ImGui::SetCursorPos(confirmButtonPos);
+
+			if (ImGui::Button("Confirm", buttonSize))
+			{
+				ConsoleWindow_WriteToConsole("Confirm 'Clean Visual Studio'");
+				isCleanVSConfirmOpen = false;
+			}
+
+			ImVec2 declineButtonPos(
+				(windowSize.x + 225 - buttonSize.x) * 0.5f,
+				(windowSize.y + 225 - buttonSize.y) * 0.5f);
+
+			ImGui::SetCursorPos(declineButtonPos);
+
+			if (ImGui::Button("Decline", buttonSize))
+			{
+				ConsoleWindow_WriteToConsole("Decline 'Clean Visual Studio'");
+				isCleanVSConfirmOpen = false;
+			}
+
+			ImGui::End();
+		}
+	}
+	void Render::MainWindow_CleanEngine()
+	{
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 buttonSize(200, 60);
+		ImVec2 buttonPos(
+			(windowSize.x - 225- buttonSize.x) * 0.5f,
+			(windowSize.y + 350 - buttonSize.y) * 0.5f);
+
+		ImGui::SetCursorPos(buttonPos);
+
+		if (ImGui::Button("Clean engine", buttonSize))
+		{
+			ConsoleWindow_WriteToConsole("Start 'Clean engine'");
+			isCleanEngineConfirmOpen = true;
+		}
+	}
+	void Render::MainWindow_CleanEngine_Confirm()
+	{
+		ImVec2 initialPos(400, 200);
+		ImVec2 initialSize(300, 300);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoSavedSettings;
+
+		if (isCleanEngineConfirmOpen
+			&& ImGui::Begin("Clean engine folders", NULL, windowFlags))
+		{
+			ImGui::Text("Are you sure you want to clean the engine folders?");
+
+			ImVec2 windowSize = ImGui::GetWindowSize();
+
+			ImVec2 buttonSize(120, 30);
+			ImVec2 confirmButtonPos(
+				(windowSize.x - 225 - buttonSize.x) * 0.5f,
+				(windowSize.y + 225 - buttonSize.y) * 0.5f);
+
+			ImGui::SetCursorPos(confirmButtonPos);
+
+			if (ImGui::Button("Confirm", buttonSize))
+			{
+				ConsoleWindow_WriteToConsole("Confirm 'Clean engine'");
+				isCleanEngineConfirmOpen = false;
+			}
+
+			ImVec2 declineButtonPos(
+				(windowSize.x + 225 - buttonSize.x) * 0.5f,
+				(windowSize.y + 225 - buttonSize.y) * 0.5f);
+
+			ImGui::SetCursorPos(declineButtonPos);
+
+			if (ImGui::Button("Decline", buttonSize))
+			{
+				ConsoleWindow_WriteToConsole("Decline 'Clean engine'");
+				isCleanEngineConfirmOpen = false;
+			}
+
+			ImGui::End();
 		}
 	}
 	void Render::MainWindow_InputField()
@@ -315,6 +515,12 @@ namespace Core
 		for (const auto& message : consoleMessages)
 		{
 			ImGui::TextWrapped("%s", message.c_str());
+		}
+
+		bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
+		if (isNearBottom)
+		{
+			ImGui::SetScrollHereY(1.0f);
 		}
 
 		ImGui::End();
