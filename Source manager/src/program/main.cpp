@@ -231,7 +231,7 @@ namespace Core
 	void Render::MainWindow_HowToUse_HowToUse()
 	{
 		ImVec2 initialPos(400, 200);
-		ImVec2 initialSize(400, 500);
+		ImVec2 initialSize(600, 600);
 		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
 		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
 		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
@@ -251,17 +251,17 @@ namespace Core
 			ImGui::Text("");
 
 			ImGui::Text("Install engine:");
-			ImGui::Text("Installs the engine to the chosen path. Must insert a valid path to the input field.");
+			ImGui::TextWrapped("Installs the engine to the chosen path. Leave blank if you want to install to build/Release in project folder.");
 
 			ImGui::Text("");
 
 			ImGui::Text("Clean engine:");
-			ImGui::Text("Finds and deletes the engine executable parent folder and the engine documents folder.");
+			ImGui::TextWrapped("Finds and deletes the engine executable parent folder and the engine documents folder.");
 
 			ImGui::Text("");
 
 			ImGui::Text("Clean Visual Studio:");
-			ImGui::Text("Finds and deletes Visual Studio generated files.");
+			ImGui::TextWrapped("Finds and deletes Visual Studio generated files.");
 
 			ImVec2 windowSize = ImGui::GetWindowSize();
 
