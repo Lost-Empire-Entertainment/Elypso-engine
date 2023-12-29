@@ -26,11 +26,23 @@
 //program
 #include "main.hpp"
 
-#include <filesystem>
+#include <cctype>
+#include <algorithm>
 
 using std::cout;
 using std::endl;
+using std::isspace;
+using std::transform;
+using std::replace;
+using std::exception;
 using std::filesystem::current_path;
+using std::filesystem::exists;
+using std::filesystem::status;
+using std::filesystem::perms;
+using std::filesystem::is_directory;
+using std::filesystem::is_regular_file;
+using std::filesystem::file_status;
+using std::filesystem::status;
 
 using Core::Render;
 
@@ -40,6 +52,8 @@ int main()
 	Render::WindowSetup();
 	Render::GladSetup();
 	Render::GUISetup();
+
+	Render::AddProtectedPaths();
 
 	Render::WindowLoop();
 
@@ -52,19 +66,26 @@ namespace Core
 {
 	void Render::GLFWSetup()
 	{
-		cout << "Initializing GLFW..." << endl;
+		string output1 = programName;
+		ConsoleWindow_WriteToConsole(output1, true);
+		string output2 = "Copyright (C) Greenlaser 2023";
+		ConsoleWindow_WriteToConsole(output2, true);
+
+		ConsoleWindow_WriteToConsole("");
+
+		ConsoleWindow_WriteToConsole("Initializing GLFW...");
 
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		cout << "GLFW initialized successfully!" << endl;
+		ConsoleWindow_WriteToConsole("GLFW initialized successfully!");
 	}
 
 	void Render::WindowSetup()
 	{
-		cout << "Creating window..." << endl;
+		ConsoleWindow_WriteToConsole("Creating window...");
 
 		window = glfwCreateWindow(
 			width,
@@ -75,7 +96,7 @@ namespace Core
 
 		if (window == NULL)
 		{
-			cout << "Error: Failed to created GLFW window!" << endl;
+			ConsoleWindow_WriteToConsole("Error: Failed to create window!");
 			return;
 		}
 
@@ -88,20 +109,20 @@ namespace Core
 		//glfwSetScrollCallback(window, Input::ScrollCallback);
 		//glfwSetKeyCallback(window, Input::KeyCallback);
 
-		cout << "Window initialized successfully!" << endl;
+		ConsoleWindow_WriteToConsole("Window created successfully!");
 	}
 
 	void Render::GladSetup()
 	{
-		cout << "Initializing glad..." << endl;
+		ConsoleWindow_WriteToConsole("Initializing Glad...");
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
-			cout << "Error: Failed to initialize GLAD!" << endl;
+			ConsoleWindow_WriteToConsole("Error: Failed to initialize Glad!");
 			return;
 		}
 
-		cout << "GLAD initialized successfully!" << endl;
+		ConsoleWindow_WriteToConsole("Glad initialized successfully!");
 	}
 
 	void Render::GUISetup()
@@ -121,7 +142,8 @@ namespace Core
 		string fontPath = current_path().generic_string() + "/files/fonts/coda/Coda-Regular.ttf";
 		io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 16.0f);
 
-		cout << "Successfully loaded font from '" << fontPath << "'!" << endl;
+		string output = "Successfully loaded font from '" + fontPath + "'!";
+		ConsoleWindow_WriteToConsole(output);
 
 		ImGui::StyleColorsDark();
 
@@ -133,9 +155,21 @@ namespace Core
 		io.FontGlobalScale = fontScale;
 	}
 
+	void Render::AddProtectedPaths()
+	{
+		protectedPaths.push_back("C://Windows");
+		protectedPaths.push_back("C://ProgramData");
+		protectedPaths.push_back("C://Boot");
+		protectedPaths.push_back("C://EFI");
+		protectedPaths.push_back("C://Recovery");
+		protectedPaths.push_back("C:$Recycle.Bin");
+		protectedPaths.push_back("C://System Volume Information");
+	}
+
 	void Render::WindowLoop()
 	{
-		cout << "\nEntering window loop..." << endl;
+		ConsoleWindow_WriteToConsole("");
+		ConsoleWindow_WriteToConsole("Entering window loop...");
 
 		while (!glfwWindowShouldClose(Render::window))
 		{
@@ -191,7 +225,7 @@ namespace Core
 
 		if (ImGui::Button("Reconfigure CMake", buttonSize))
 		{
-			cout << "Reconfigure CMake" << endl;
+			ConsoleWindow_WriteToConsole("Reconfigure CMake");
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -211,7 +245,7 @@ namespace Core
 
 		if (ImGui::Button("Install engine", buttonSize))
 		{
-			cout << "Install engine" << endl;
+			ConsoleWindow_WriteToConsole("Install engine");
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -265,7 +299,7 @@ namespace Core
 				return 0;
 			}))
 		{
-			ConsoleWindow_WriteToConsole(inputTextBuffer);
+			ConsoleWindow_ParseInput(inputTextBuffer);
 			memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
 		}
 
@@ -292,15 +326,105 @@ namespace Core
 
 		ImGui::End();
 	}
-	void Render::ConsoleWindow_WriteToConsole(const string& message)
+	void Render::ConsoleWindow_ParseInput(const string& message)
 	{
-		consoleMessages.push_back(message);
+		if (IsWhiteSpaceOrEmpty(message)) return;
+
+		if (!IsPathAccessible(message)) return;
+
+		string output = "'" + message + "' is a valid path!";
+		ConsoleWindow_WriteToConsole(output, true);
+	}
+	void Render::ConsoleWindow_WriteToConsole(const string& message, bool printToConsole)
+	{
+		if (printToConsole) consoleMessages.push_back(message);
+		cout << message << endl;
 
 		//erases the first added message if a new one was added and count exceeded max count
 		while (consoleMessages.size() > maxConsoleMessages)
 		{
 			consoleMessages.erase(consoleMessages.begin());
 		}
+	}
+
+	bool Render::IsWhiteSpaceOrEmpty(const string& message)
+	{
+		for (char c : message)
+		{
+			if (!isspace(static_cast<unsigned char>(c)))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	bool Render::IsPathAccessible(const string& path)
+	{
+		string output;
+
+		try
+		{
+			file_status fileStatus = status(path);
+
+			if (!is_directory(path))
+			{
+				output = "Error: '" + path + "' is not a directory! Please insert a valid path.";
+				ConsoleWindow_WriteToConsole(output, true);
+				return false;
+			}
+
+			perms requiredPermissions = perms::owner_all;
+			if ((fileStatus.permissions() & requiredPermissions) != requiredPermissions)
+			{
+				output = "Error: Insufficient permissions to install engine to '" + path + "'! Please insert a path you have read, write and execution permissions for.";
+				ConsoleWindow_WriteToConsole(output, true);
+				return false;
+			}
+
+			if (ContainsProtectedPath(path))
+			{
+				output = "Error: '" + path + "' is a protected system path and should not be written to! Please insert a valid path.";
+				ConsoleWindow_WriteToConsole(output, true);
+				return false;
+			}
+
+			return true;
+		}
+		catch (const exception& e)
+		{
+			output = "Error: " + string(e.what());
+			ConsoleWindow_WriteToConsole(output, true);
+			return false;
+		}
+	}
+	bool Render::ContainsProtectedPath(const string& fullPath)
+	{
+		string normalizedFullPath = fullPath;
+		//convert to lowercase
+		transform(normalizedFullPath.begin(), normalizedFullPath.end(), normalizedFullPath.begin(), ::tolower);
+		//replace '\\' with '/'
+		replace(normalizedFullPath.begin(), normalizedFullPath.end(), '\\', '/');
+
+		ConsoleWindow_WriteToConsole(normalizedFullPath, true);
+
+		for (const auto& protectedPath : protectedPaths)
+		{
+			string normalizedProtectedPath = protectedPath.string();
+			//convert to lowercase
+			transform(normalizedProtectedPath.begin(), normalizedProtectedPath.end(), normalizedProtectedPath.begin(), ::tolower);
+			//replace '\\' with '/'
+			replace(normalizedProtectedPath.begin(), normalizedProtectedPath.end(), '\\', '/');
+
+			ConsoleWindow_WriteToConsole(normalizedProtectedPath, true);
+
+			if (normalizedFullPath.find(normalizedProtectedPath) != string::npos)
+			{
+				cout << "bruh bro" << endl;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	void Render::Shutdown()

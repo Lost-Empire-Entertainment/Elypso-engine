@@ -17,12 +17,14 @@
 
 #pragma once
 
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
+using std::filesystem::path;
 
 namespace Core
 {
@@ -33,6 +35,8 @@ namespace Core
 		static void WindowSetup();
 		static void GladSetup();
 		static void GUISetup();
+
+		static void AddProtectedPaths();
 
 		static void WindowLoop();
 
@@ -49,13 +53,19 @@ namespace Core
 
 		static inline char inputTextBuffer[128];
 
+		static inline vector<path> protectedPaths;
 		static inline vector<string> consoleMessages;
 		static inline const int maxConsoleMessages = 100;
+
+		static bool IsWhiteSpaceOrEmpty(const string& message);
+		static bool IsPathAccessible(const string& path);
+		static bool ContainsProtectedPath(const string& fullPath);
 
 		static void MainWindow_Reconfigure_CMake();
 		static void MainWindow_InstallEngine();
 		static void MainWindow_InputField();
 
-		static void ConsoleWindow_WriteToConsole(const string& message);
+		static void ConsoleWindow_ParseInput(const string& message);
+		static void ConsoleWindow_WriteToConsole(const string& message, bool printToConsole = false);
 	};
 }
