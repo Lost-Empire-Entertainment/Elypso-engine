@@ -59,7 +59,7 @@ namespace Core
 
 		static bool IsWhiteSpaceOrEmpty(const string& message);
 		static bool IsPathAccessible(const string& path);
-		static bool ContainsProtectedPath(const string& fullPath);
+		static bool ContainsProtectedPath(const path& fullPath);
 
 		static void MainWindow_Reconfigure_CMake();
 		static void MainWindow_InstallEngine();

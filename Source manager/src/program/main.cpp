@@ -32,8 +32,6 @@
 using std::cout;
 using std::endl;
 using std::isspace;
-using std::transform;
-using std::replace;
 using std::exception;
 using std::filesystem::current_path;
 using std::filesystem::exists;
@@ -71,7 +69,7 @@ namespace Core
 		string output2 = "Copyright (C) Greenlaser 2023";
 		ConsoleWindow_WriteToConsole(output2, true);
 
-		ConsoleWindow_WriteToConsole("");
+		ConsoleWindow_WriteToConsole("", true);
 
 		ConsoleWindow_WriteToConsole("Initializing GLFW...");
 
@@ -105,9 +103,6 @@ namespace Core
 		glfwSwapInterval(1);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		//glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
-		//glfwSetScrollCallback(window, Input::ScrollCallback);
-		//glfwSetKeyCallback(window, Input::KeyCallback);
 
 		ConsoleWindow_WriteToConsole("Window created successfully!");
 	}
@@ -157,13 +152,11 @@ namespace Core
 
 	void Render::AddProtectedPaths()
 	{
-		protectedPaths.push_back("C://Windows");
-		protectedPaths.push_back("C://ProgramData");
-		protectedPaths.push_back("C://Boot");
-		protectedPaths.push_back("C://EFI");
-		protectedPaths.push_back("C://Recovery");
-		protectedPaths.push_back("C:$Recycle.Bin");
-		protectedPaths.push_back("C://System Volume Information");
+		protectedPaths.push_back("C:\\$WinREAgent");
+		protectedPaths.push_back("C:\\PerfLogs");
+		protectedPaths.push_back("C:\\ProgramData");
+		protectedPaths.push_back("C:\\Recovery");
+		protectedPaths.push_back("C:\\Windows");
 	}
 
 	void Render::WindowLoop()
@@ -225,7 +218,7 @@ namespace Core
 
 		if (ImGui::Button("Reconfigure CMake", buttonSize))
 		{
-			ConsoleWindow_WriteToConsole("Reconfigure CMake");
+			ConsoleWindow_WriteToConsole("Reconfigure CMake", true);
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -245,7 +238,7 @@ namespace Core
 
 		if (ImGui::Button("Install engine", buttonSize))
 		{
-			ConsoleWindow_WriteToConsole("Install engine");
+			ConsoleWindow_WriteToConsole("Install engine", true);
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -368,7 +361,7 @@ namespace Core
 
 			if (!is_directory(path))
 			{
-				output = "Error: '" + path + "' is not a directory! Please insert a valid path.";
+				output = "Error: ' " + path + " ' is not a directory! Please insert a valid path.";
 				ConsoleWindow_WriteToConsole(output, true);
 				return false;
 			}
@@ -376,14 +369,21 @@ namespace Core
 			perms requiredPermissions = perms::owner_all;
 			if ((fileStatus.permissions() & requiredPermissions) != requiredPermissions)
 			{
-				output = "Error: Insufficient permissions to install engine to '" + path + "'! Please insert a path you have read, write and execution permissions for.";
+				output = "Error: Insufficient permissions to install engine to ' " + path + " '! Please insert a path you have read, write and execution permissions for.";
+				ConsoleWindow_WriteToConsole(output, true);
+				return false;
+			}
+
+			if (path.find('/') != string::npos)
+			{
+				output = "Error: Invalid path format for ' " + path + " '! Please use backslashes, not forward slashes!";
 				ConsoleWindow_WriteToConsole(output, true);
 				return false;
 			}
 
 			if (ContainsProtectedPath(path))
 			{
-				output = "Error: '" + path + "' is a protected system path and should not be written to! Please insert a valid path.";
+				output = "Error: ' " + path + " ' is an important system path and should not be written to! Please insert a valid path.";
 				ConsoleWindow_WriteToConsole(output, true);
 				return false;
 			}
@@ -397,33 +397,17 @@ namespace Core
 			return false;
 		}
 	}
-	bool Render::ContainsProtectedPath(const string& fullPath)
+	bool Render::ContainsProtectedPath(const path& fullPath)
 	{
-		string normalizedFullPath = fullPath;
-		//convert to lowercase
-		transform(normalizedFullPath.begin(), normalizedFullPath.end(), normalizedFullPath.begin(), ::tolower);
-		//replace '\\' with '/'
-		replace(normalizedFullPath.begin(), normalizedFullPath.end(), '\\', '/');
-
-		ConsoleWindow_WriteToConsole(normalizedFullPath, true);
-
 		for (const auto& protectedPath : protectedPaths)
 		{
-			string normalizedProtectedPath = protectedPath.string();
-			//convert to lowercase
-			transform(normalizedProtectedPath.begin(), normalizedProtectedPath.end(), normalizedProtectedPath.begin(), ::tolower);
-			//replace '\\' with '/'
-			replace(normalizedProtectedPath.begin(), normalizedProtectedPath.end(), '\\', '/');
-
-			ConsoleWindow_WriteToConsole(normalizedProtectedPath, true);
-
-			if (normalizedFullPath.find(normalizedProtectedPath) != string::npos)
+			//check if fullPath is inside or equal to a protected path
+			if (exists(protectedPath)
+				&& fullPath.native().find(protectedPath.native()) == 0)
 			{
-				cout << "bruh bro" << endl;
 				return true;
 			}
 		}
-
 		return false;
 	}
 
