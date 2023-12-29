@@ -65,13 +65,13 @@ target_include_directories(Source_manager PRIVATE
 target_link_libraries(Source_manager PRIVATE ${GLFW_LIBRARY_PATH})
 
 # Set the subsystem to WINDOWS
-# set_target_properties(Elypso_engine PROPERTIES
+# set_target_properties(Source_manager PROPERTIES
 #     WIN32_EXECUTABLE TRUE
 # )
 
 # Set the entry point (MSVC-specific)
 # if (MSVC)
-#     set_target_properties(Elypso_engine PROPERTIES
+#     set_target_properties(Source_manager PROPERTIES
 #        LINK_FLAGS "/ENTRY:mainCRTStartup"
 #     )
 # endif()
@@ -79,6 +79,14 @@ target_link_libraries(Source_manager PRIVATE ${GLFW_LIBRARY_PATH})
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Source_manager DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Copy "files" directory to the install directory after build
+add_custom_command(TARGET Source_manager POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:Source_manager>/files
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Source_manager>/files
+)
 
 # Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
 add_custom_command(TARGET Source_manager POST_BUILD

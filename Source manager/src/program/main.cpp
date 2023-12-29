@@ -16,14 +16,20 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 //external
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <imgui_internal.h>
 #include "glad.h"
 #include "glfw3.h"
 
 //program
 #include "main.hpp"
 
+#include <filesystem>
+
 using std::cout;
 using std::endl;
+using std::filesystem::current_path;
 
 using Core::Render;
 
@@ -62,7 +68,7 @@ namespace Core
 		window = glfwCreateWindow(
 			width,
 			height,
-			"Source manager",
+			programName.c_str(),
 			NULL,
 			NULL);
 
@@ -99,25 +105,181 @@ namespace Core
 
 	void Render::GUISetup()
 	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui::SetCurrentContext(ImGui::GetCurrentContext());
+		ImGuiIO& io = ImGui::GetIO();
 
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init("#version 330");
+
+		io.Fonts->Clear();
+
+		string fontPath = current_path().generic_string() + "/files/fonts/coda/Coda-Regular.ttf";
+		io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 16.0f);
+
+		cout << "Successfully loaded font from '" << fontPath << "'!" << endl;
+
+		ImGui::StyleColorsDark();
+
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		style.TabRounding = 6;
+		style.FramePadding = ImVec2(6, 2);
+		style.ItemSpacing = ImVec2(0, 5);
+		io.FontGlobalScale = fontScale;
 	}
 
 	void Render::WindowLoop()
 	{
-		cout << "Entering window loop..." << endl;
+		cout << "\nEntering window loop..." << endl;
 
 		while (!glfwWindowShouldClose(Render::window))
 		{
 			glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
+			Window_Main();
+			Window_Console();
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
 	}
 
-	void Render::Shutdown()
+	void Render::Window_Main()
+	{
+		ImVec2 initialPos(5, 5);
+		ImVec2 initialSize(350, 700);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse;
+
+		ImGui::Begin("Main", NULL, windowFlags);
+
+		MainWindow_Reconfigure_CMake();
+		MainWindow_InstallEngine();
+		MainWindow_InputField();
+
+		ImGui::End();
+	}
+	void Render::MainWindow_Reconfigure_CMake()
+	{
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 buttonSize(200, 60);
+		ImVec2 buttonPos(
+			(windowSize.x - buttonSize.x) * 0.5f, 
+			(windowSize.y - 100 - buttonSize.y) * 0.5f);
+
+		ImGui::SetCursorPos(buttonPos);
+
+		if (ImGui::Button("Reconfigure CMake", buttonSize))
+		{
+			cout << "Reconfigure CMake" << endl;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Needs to be ran every time an engine source or header file is added or removed.");
+		}
+	}
+	void Render::MainWindow_InstallEngine()
+	{
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 buttonSize(200, 60);
+		ImVec2 buttonPos(
+			(windowSize.x - buttonSize.x) * 0.5f,
+			(windowSize.y + 100 - buttonSize.y) * 0.5f);
+
+		ImGui::SetCursorPos(buttonPos);
+
+		if (ImGui::Button("Install engine", buttonSize))
+		{
+			cout << "Install engine" << endl;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Install the engine to your desired location.");
+		}
+	}
+	void Render::MainWindow_InputField()
+	{
+		//move the input field to the bottom of the window
+		ImGui::SetCursorPosY(
+			ImGui::GetWindowHeight() - 
+			ImGui::GetStyle().ItemSpacing.y - 30 -
+			ImGui::GetFrameHeightWithSpacing());
+
+		ImGui::Text("Install path");
+
+		ImVec2 inputFieldWidth = ImGui::GetContentRegionAvail();
+
+		ImGui::PushItemWidth(inputFieldWidth.x);
+
+		ImGui::InputText(
+			"##inputfield", 
+			inputTextBuffer, 
+			sizeof(inputTextBuffer), 
+			ImGuiInputTextFlags_EnterReturnsTrue, 
+			NULL,
+			NULL);
+
+		ImGui::PopItemWidth();
+	}
+
+	void Render::Window_Console()
+	{
+		ImVec2 initialPos(5, 5);
+		ImVec2 initialSize(350, 700);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse;
+
+		ImGui::Begin("Console", NULL, windowFlags);
+
+		ImGui::End();
+	}
+	void Render::ConsoleWindow_WriteToConsole(const string& message)
 	{
 
+	}
+
+	void Render::Shutdown()
+	{
+		//close any remaining open ImGui windows
+		for (ImGuiWindow* window : ImGui::GetCurrentContext()->Windows)
+		{
+			if (window->WasActive)
+			{
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		ImGui::StyleColorsDark();
+		ImGui::GetIO().IniFilename = nullptr;
+
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+
+		glfwTerminate();
 	}
 }

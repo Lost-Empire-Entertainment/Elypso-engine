@@ -18,16 +18,15 @@
 #pragma once
 
 #include <iostream>
+#include <string>
+
+using std::string;
 
 namespace Core
 {
 	class Render
 	{
 	public:
-		static inline unsigned int width = 1280;
-		static inline unsigned int height = 720;
-		static inline GLFWwindow* window;
-
 		static void GLFWSetup();
 		static void WindowSetup();
 		static void GladSetup();
@@ -35,6 +34,23 @@ namespace Core
 
 		static void WindowLoop();
 
+		static void Window_Main();
+		static void Window_Console();
+
 		static void Shutdown();
+	private:
+		static inline unsigned int width = 1280;
+		static inline unsigned int height = 720;
+		static inline string programName = "Elypso engine source manager v1.0.0";
+		static inline GLFWwindow* window;
+		static inline float fontScale = 1.5f;
+
+		static inline char inputTextBuffer[256];
+
+		static void MainWindow_Reconfigure_CMake();
+		static void MainWindow_InstallEngine();
+		static void MainWindow_InputField();
+
+		static void ConsoleWindow_WriteToConsole(const string& message);
 	};
 }
