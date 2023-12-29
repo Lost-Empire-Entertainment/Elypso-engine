@@ -19,8 +19,10 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 namespace Core
 {
@@ -45,7 +47,10 @@ namespace Core
 		static inline GLFWwindow* window;
 		static inline float fontScale = 1.5f;
 
-		static inline char inputTextBuffer[256];
+		static inline char inputTextBuffer[128];
+
+		static inline vector<string> consoleMessages;
+		static inline const int maxConsoleMessages = 100;
 
 		static void MainWindow_Reconfigure_CMake();
 		static void MainWindow_InstallEngine();

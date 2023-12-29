@@ -16,6 +16,7 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 //external
+#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <imgui_internal.h>
@@ -222,22 +223,51 @@ namespace Core
 		//move the input field to the bottom of the window
 		ImGui::SetCursorPosY(
 			ImGui::GetWindowHeight() - 
-			ImGui::GetStyle().ItemSpacing.y - 30 -
+			ImGui::GetStyle().ItemSpacing.y -
 			ImGui::GetFrameHeightWithSpacing());
-
-		ImGui::Text("Install path");
 
 		ImVec2 inputFieldWidth = ImGui::GetContentRegionAvail();
 
 		ImGui::PushItemWidth(inputFieldWidth.x);
 
-		ImGui::InputText(
-			"##inputfield", 
-			inputTextBuffer, 
-			sizeof(inputTextBuffer), 
-			ImGuiInputTextFlags_EnterReturnsTrue, 
-			NULL,
-			NULL);
+		ImGuiInputTextFlags inputFieldTextFlags =
+			ImGuiInputTextFlags_EnterReturnsTrue;
+
+		//press enter to insert install path
+		if (ImGui::InputTextWithHint(
+			"##inputfield",
+			"Enter install path...",
+			inputTextBuffer,
+			sizeof(inputTextBuffer),
+			inputFieldTextFlags,
+			[](ImGuiInputTextCallbackData* data) -> int
+			{
+				//allow inserting text with Ctrl+V
+				if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_V)) &&
+					ImGui::GetIO().KeyCtrl)
+				{
+					const char* clipboardText = glfwGetClipboardString(Render::window);
+					if (clipboardText)
+					{
+						//insert clipboard text into the input buffer
+						int textLength = strlen(clipboardText);
+						int availableSpace = data->BufSize - data->BufTextLen;
+						int copyLength = ImMin(textLength, availableSpace - 1); //leave space for null terminator
+						if (copyLength > 0)
+						{
+							memcpy(data->Buf + data->CursorPos, clipboardText, copyLength);
+							data->CursorPos += copyLength;
+							data->BufTextLen += copyLength;
+							data->Buf[data->CursorPos] = '\0'; 
+						}
+					}
+				}
+				return 0;
+			}))
+		{
+			ConsoleWindow_WriteToConsole(inputTextBuffer);
+			memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
+		}
 
 		ImGui::PopItemWidth();
 	}
@@ -255,11 +285,22 @@ namespace Core
 
 		ImGui::Begin("Console", NULL, windowFlags);
 
+		for (const auto& message : consoleMessages)
+		{
+			ImGui::TextWrapped("%s", message.c_str());
+		}
+
 		ImGui::End();
 	}
 	void Render::ConsoleWindow_WriteToConsole(const string& message)
 	{
+		consoleMessages.push_back(message);
 
+		//erases the first added message if a new one was added and count exceeded max count
+		while (consoleMessages.size() > maxConsoleMessages)
+		{
+			consoleMessages.erase(consoleMessages.begin());
+		}
 	}
 
 	void Render::Shutdown()
