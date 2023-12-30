@@ -59,7 +59,7 @@ namespace Core
 
 		static inline vector<path> protectedPaths;
 		static inline vector<string> consoleMessages;
-		static inline const int maxConsoleMessages = 100;
+		static inline const int maxConsoleMessages = 1000;
 
 		static bool IsWhiteSpaceOrEmpty(const string& message);
 		static bool IsPathAccessible(const string& path);

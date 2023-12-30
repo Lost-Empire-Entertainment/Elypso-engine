@@ -675,12 +675,15 @@ namespace Core
 
 	void Render::RunBatFile(string filePath, string command)
 	{
+		string modifiedCommand = command + " 2>&1";
+
 		SHELLEXECUTEINFO sei = { sizeof(sei) };
 
 		sei.lpVerb = "runas"; //triggers elevation prompt
 		sei.lpFile = filePath.c_str();
-		sei.lpParameters = command.c_str();
+		sei.lpParameters = modifiedCommand.c_str();
 		sei.nShow = SW_NORMAL;
+		sei.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 		if (!ShellExecuteEx(&sei))
 		{
