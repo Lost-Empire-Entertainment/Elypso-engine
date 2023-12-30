@@ -328,7 +328,7 @@ namespace Graphics
 		//point light 4
 		GameObjectShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
 		GameObjectShader.SetVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[3].diffuse", pointDiffuse);
+		GameObjectShader.SetVec3("pointLights[3].diffuse", 1.0f, 1.0f, 1.0f);
 		GameObjectShader.SetVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
 		GameObjectShader.SetFloat("pointLights[3].constant", 1.0f);
 		GameObjectShader.SetFloat("pointLights[3].linear", 0.09f);
@@ -388,6 +388,7 @@ namespace Graphics
 		TestLightShader.Use();
 		TestLightShader.SetMat4("projection", projection);
 		TestLightShader.SetMat4("view", view);
+		TestLightShader.SetVec3("lightColor", pointDiffuse);
 
 		glBindVertexArray(lightCubeVAO);
 		for (unsigned int i = 0; i < 4; i++)
