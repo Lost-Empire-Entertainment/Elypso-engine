@@ -28,11 +28,16 @@
 
 #include <cctype>
 #include <algorithm>
+#include <cstdlib>
+#include <Windows.h>
+#include <locale>
+#include <codecvt>
 
 using std::cout;
 using std::endl;
 using std::isspace;
 using std::exception;
+using std::system;
 using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::status;
@@ -294,7 +299,58 @@ namespace Core
 
 		if (ImGui::Button("Reconfigure CMake", buttonSize))
 		{
+			string output;
+
 			ConsoleWindow_WriteToConsole("Start 'Reconfigure CMake'");
+
+			string currentFolder = current_path().stem().string();
+			output = "Current folder name: " + currentFolder;
+			ConsoleWindow_WriteToConsole(output);
+			if (currentFolder != "build"
+				&& currentFolder != "x64-debug"
+				&& currentFolder != "x64-release")
+			{
+				ConsoleWindow_WriteToConsole("Error: Tried to run 'Reconfigure CMake' from an unknown path!", true);
+				return;
+			}
+
+			//go to the Engine folder, assuming the structure is the same as the repository
+			path engineFolderPath;
+
+			if (currentFolder == "build")
+			{
+				engineFolderPath = current_path().parent_path().parent_path().parent_path() / "Engine";
+			}
+			else if (currentFolder == "x64-debug"
+					 || currentFolder == "x64-release")
+			{
+				engineFolderPath = current_path().parent_path().parent_path().parent_path().parent_path() / "Engine";
+			}
+
+			output = "Attempting to find ' " + engineFolderPath.string() + " '...";
+			ConsoleWindow_WriteToConsole(output, true);
+			if (!exists(engineFolderPath))
+			{
+				ConsoleWindow_WriteToConsole("Error: Did not find engine folder! Did you reorganize the repository structure?", true);
+				return;
+			}
+
+			ConsoleWindow_WriteToConsole("Found engine folder! Starting CMake configuration...", true);
+
+			string buildBatPath = engineFolderPath.string() + "\\build.bat";
+			output = "Attempting to find ' " + buildBatPath + " ' ...";
+			ConsoleWindow_WriteToConsole(output, true);
+			if (!exists(buildBatPath))
+			{
+				ConsoleWindow_WriteToConsole("Error: Did not find build.bat! Stopping CMake configuration.", true);
+				return;
+			}
+
+			ConsoleWindow_WriteToConsole("Found build.bat!", true);
+
+			ConsoleWindow_WriteToConsole("Attempting to run build.bat with command 'cmake'...", true);
+
+			RunBatFile(buildBatPath, "cmake");
 		}
 	}
 	void Render::MainWindow_InstallEngine()
@@ -615,6 +671,24 @@ namespace Core
 			}
 		}
 		return false;
+	}
+
+	void Render::RunBatFile(string filePath, string command)
+	{
+		SHELLEXECUTEINFO sei = { sizeof(sei) };
+
+		sei.lpVerb = "runas"; //triggers elevation prompt
+		sei.lpFile = filePath.c_str();
+		sei.lpParameters = command.c_str();
+		sei.nShow = SW_NORMAL;
+
+		if (!ShellExecuteEx(&sei))
+		{
+			//MessageBox(NULL, "Error running script", "Error", MB_OK | MB_ICONERROR);
+
+			string output = "Did not get permission from the user to run " + filePath + "!";
+			ConsoleWindow_WriteToConsole(output, true);
+		}
 	}
 
 	void Render::Shutdown()
