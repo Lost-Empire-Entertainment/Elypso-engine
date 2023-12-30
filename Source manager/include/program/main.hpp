@@ -65,11 +65,11 @@ namespace Core
 		static bool IsPathAccessible(const string& path);
 		static bool ContainsProtectedPath(const path& fullPath);
 
-		static void RunBatFile(string filePath, string command);
+		static void RunBatFile(string command);
 
 		static void MainWindow_HowToUse();
 		static void MainWindow_Reconfigure_CMake();
-		static void MainWindow_InstallEngine();
+		static void MainWindow_BuildEngine();
 		static void MainWindow_CleanVS();
 		static void MainWindow_CleanEngine();
 		static void MainWindow_InputField();

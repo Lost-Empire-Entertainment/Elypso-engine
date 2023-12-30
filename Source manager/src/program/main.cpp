@@ -74,8 +74,6 @@ namespace Core
 		string output2 = "Copyright (C) Greenlaser 2023";
 		ConsoleWindow_WriteToConsole(output2, true);
 
-		ConsoleWindow_WriteToConsole("", true);
-
 		ConsoleWindow_WriteToConsole("Initializing GLFW...");
 
 		glfwInit();
@@ -207,7 +205,7 @@ namespace Core
 		MainWindow_HowToUse();
 		MainWindow_HowToUse_HowToUse();
 		MainWindow_Reconfigure_CMake();
-		MainWindow_InstallEngine();
+		MainWindow_BuildEngine();
 		MainWindow_CleanVS();
 		MainWindow_CleanVS_Confirm();
 		MainWindow_CleanEngine();
@@ -299,61 +297,13 @@ namespace Core
 
 		if (ImGui::Button("Reconfigure CMake", buttonSize))
 		{
-			string output;
-
 			ConsoleWindow_WriteToConsole("Start 'Reconfigure CMake'");
+			ConsoleWindow_WriteToConsole("", true);
 
-			string currentFolder = current_path().stem().string();
-			output = "Current folder name: " + currentFolder;
-			ConsoleWindow_WriteToConsole(output);
-			if (currentFolder != "build"
-				&& currentFolder != "x64-debug"
-				&& currentFolder != "x64-release")
-			{
-				ConsoleWindow_WriteToConsole("Error: Tried to run 'Reconfigure CMake' from an unknown path!", true);
-				return;
-			}
-
-			//go to the Engine folder, assuming the structure is the same as the repository
-			path engineFolderPath;
-
-			if (currentFolder == "build")
-			{
-				engineFolderPath = current_path().parent_path().parent_path().parent_path() / "Engine";
-			}
-			else if (currentFolder == "x64-debug"
-					 || currentFolder == "x64-release")
-			{
-				engineFolderPath = current_path().parent_path().parent_path().parent_path().parent_path() / "Engine";
-			}
-
-			output = "Attempting to find ' " + engineFolderPath.string() + " '...";
-			ConsoleWindow_WriteToConsole(output, true);
-			if (!exists(engineFolderPath))
-			{
-				ConsoleWindow_WriteToConsole("Error: Did not find engine folder! Did you reorganize the repository structure?", true);
-				return;
-			}
-
-			ConsoleWindow_WriteToConsole("Found engine folder! Starting CMake configuration...", true);
-
-			string buildBatPath = engineFolderPath.string() + "\\build.bat";
-			output = "Attempting to find ' " + buildBatPath + " ' ...";
-			ConsoleWindow_WriteToConsole(output, true);
-			if (!exists(buildBatPath))
-			{
-				ConsoleWindow_WriteToConsole("Error: Did not find build.bat! Stopping CMake configuration.", true);
-				return;
-			}
-
-			ConsoleWindow_WriteToConsole("Found build.bat!", true);
-
-			ConsoleWindow_WriteToConsole("Attempting to run build.bat with command 'cmake'...", true);
-
-			RunBatFile(buildBatPath, "cmake");
+			RunBatFile("cmake");
 		}
 	}
-	void Render::MainWindow_InstallEngine()
+	void Render::MainWindow_BuildEngine()
 	{
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
@@ -364,9 +314,12 @@ namespace Core
 
 		ImGui::SetCursorPos(buttonPos);
 
-		if (ImGui::Button("Install engine", buttonSize))
+		if (ImGui::Button("Build engine", buttonSize))
 		{
-			ConsoleWindow_WriteToConsole("Start 'Install engine'");
+			ConsoleWindow_WriteToConsole("Start 'Build engine'");
+			ConsoleWindow_WriteToConsole("", true);
+
+			RunBatFile("build");
 		}
 	}
 	void Render::MainWindow_CleanVS()
@@ -417,6 +370,9 @@ namespace Core
 			if (ImGui::Button("Confirm", buttonSize))
 			{
 				ConsoleWindow_WriteToConsole("Confirm 'Clean Visual Studio'");
+				ConsoleWindow_WriteToConsole("", true);
+
+				RunBatFile("cleanvs");
 				isCleanVSConfirmOpen = false;
 			}
 
@@ -483,6 +439,9 @@ namespace Core
 			if (ImGui::Button("Confirm", buttonSize))
 			{
 				ConsoleWindow_WriteToConsole("Confirm 'Clean engine'");
+				ConsoleWindow_WriteToConsole("", true);
+
+				RunBatFile("cleanen");
 				isCleanEngineConfirmOpen = false;
 			}
 
@@ -673,15 +632,56 @@ namespace Core
 		return false;
 	}
 
-	void Render::RunBatFile(string filePath, string command)
+	void Render::RunBatFile(string command)
 	{
-		string modifiedCommand = command + " 2>&1";
+		string output;
+
+		string currentFolder = current_path().stem().string();
+		output = "Current folder name: " + currentFolder;
+		ConsoleWindow_WriteToConsole(output);
+		if (currentFolder != "build"
+			&& currentFolder != "x64-debug"
+			&& currentFolder != "x64-release")
+		{
+			ConsoleWindow_WriteToConsole("Error: Tried to run build.bat from an unknown path! Did you reorganize the repository structure?", true);
+			return;
+		}
+
+		//find build.bat, assuming the structure is the same as the repository
+		path batPath;
+		if (currentFolder == "build")
+		{
+			batPath = current_path().parent_path().parent_path().parent_path() / "Engine\\build.bat";
+		}
+		else if (currentFolder == "x64-debug"
+			     || currentFolder == "x64-release")
+		{
+			batPath = current_path().parent_path().parent_path().parent_path().parent_path() / "Engine\\build.bat" ;
+		}
+
+
+		output = "Attempting to find ' " + batPath.string() + " '...";
+		ConsoleWindow_WriteToConsole(output);
+		if (!exists(batPath))
+		{
+			ConsoleWindow_WriteToConsole("Error: Did not find build.bat! Did you reorganize the repository structure?", true);
+			return;
+		}
+
+		output = "Found build.bat! Starting '" + command + "'...";
+		ConsoleWindow_WriteToConsole(output, true);
+
+		output = "Attempting to run build.bat with command " + command + "...";
+		ConsoleWindow_WriteToConsole(output);
+
+		//string modifiedCommand = command + " 2>&1";
+		string batPathString = batPath.string();
 
 		SHELLEXECUTEINFO sei = { sizeof(sei) };
 
 		sei.lpVerb = "runas"; //triggers elevation prompt
-		sei.lpFile = filePath.c_str();
-		sei.lpParameters = modifiedCommand.c_str();
+		sei.lpFile = batPathString.c_str();
+		sei.lpParameters = command.c_str();
 		sei.nShow = SW_NORMAL;
 		sei.fMask = SEE_MASK_NOCLOSEPROCESS;
 
@@ -689,7 +689,7 @@ namespace Core
 		{
 			//MessageBox(NULL, "Error running script", "Error", MB_OK | MB_ICONERROR);
 
-			string output = "Did not get permission from the user to run " + filePath + "!";
+			string output = "Did not get permission from the user to run " + batPath.string() + "!";
 			ConsoleWindow_WriteToConsole(output, true);
 		}
 	}
