@@ -29,10 +29,11 @@ if %errorlevel% neq 0 (
 	pause
 	exit /b 1
 ) else (
-	cd /d "%~dp0"
-
 	:: Configures CMake and creates the build folder
 	if "%1" == "cmake" (
+		:: Change to the script directory
+		cd /d "%~dp0"
+	
 		:: Clean the build directory before configuration
 		if exist "%buildPath%" (
 			echo %encln% Deleted folder: build
@@ -47,9 +48,9 @@ if %errorlevel% neq 0 (
 		cmake -DCMAKE_BUILD_TYPE=Release ..
 
 		if %errorlevel% neq 0 (
-			echo %cmerr% CMake configuration failed. Check logs/build_log.txt for more details.
+			echo %cmerr% CMake configuration failed.
 		) else (
-			echo %cmsuc% Cmake configuration succeeded! Created log file at logs/cmake_log.txt.
+			echo %cmsuc% Cmake configuration succeeded!
 		)
 	
 		pause
@@ -58,6 +59,9 @@ if %errorlevel% neq 0 (
 
 	:: Creates the executable to build\Release
 	if "%1" == "build" (
+		:: Change to the script directory
+		cd /d "%~dp0"
+	
 		if not exist "%buildPath%" (
 			echo Did not find build folder. Please run 'Reconfigure CMake' before building.
 			pause
@@ -70,9 +74,9 @@ if %errorlevel% neq 0 (
 			cmake --build . --config Release
 	
 			if %errorlevel% neq 0 (
-				echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly. Check 'logs/build_log.txt' for more details.
+				echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly.
 			) else (
-				echo %cmsuc% Build succeeded! Created log file at 'logs/build_log.txt'.
+				echo %cmsuc% Build succeeded!
 			)
 		
 			pause
@@ -82,6 +86,9 @@ if %errorlevel% neq 0 (
 
 	:: Deletes Visual Studio .vs and out folders
 	if "%1" == "cleanvs" (
+		:: Change to the script directory
+		cd /d "%~dp0"
+	
 		echo %eninf% Running vs clean...
 		if not exist "%vsPath%" (
 			if not exist "%outPath%" (
@@ -106,6 +113,9 @@ if %errorlevel% neq 0 (
 
 	:: Deletes engine build and engine documents folders
 	if "%1" == "cleanen" (
+		:: Change to the script directory
+		cd /d "%~dp0"
+	
 		if not exist "%buildPath%" (
 			if not exist "%documentsPath%" (
 				echo %encln% There are no engine folders to remove.
@@ -128,7 +138,7 @@ if %errorlevel% neq 0 (
 	)
 )
 
-echo "%enexc%" You probably ran with a command that doesn't exist. Try running 'cmake', 'build', 'cleanvs' or 'cleanen'.
+echo %enexc% Please run Source_manager.exe to use the mechanics of this bat script.
 
 pause
 exit

@@ -639,7 +639,7 @@ namespace Core
 		string currentFolder = current_path().stem().string();
 		output = "Current folder name: " + currentFolder;
 		ConsoleWindow_WriteToConsole(output);
-		if (currentFolder != "build"
+		if (currentFolder != "Release"
 			&& currentFolder != "x64-debug"
 			&& currentFolder != "x64-release")
 		{
@@ -649,7 +649,7 @@ namespace Core
 
 		//find build.bat, assuming the structure is the same as the repository
 		path batPath;
-		if (currentFolder == "build")
+		if (currentFolder == "Release")
 		{
 			batPath = current_path().parent_path().parent_path().parent_path() / "Engine\\build.bat";
 		}
