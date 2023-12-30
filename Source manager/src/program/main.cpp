@@ -478,7 +478,7 @@ namespace Core
 		//press enter to insert install path
 		if (ImGui::InputTextWithHint(
 			"##inputfield",
-			"Enter install path...",
+			"Enter build path...",
 			inputTextBuffer,
 			sizeof(inputTextBuffer),
 			inputFieldTextFlags,
@@ -671,15 +671,11 @@ namespace Core
 		output = "Found build.bat! Starting '" + command + "'...";
 		ConsoleWindow_WriteToConsole(output, true);
 
-		output = "Attempting to run build.bat with command " + command + "...";
-		ConsoleWindow_WriteToConsole(output);
-
-		//string modifiedCommand = command + " 2>&1";
 		string batPathString = batPath.string();
 
 		SHELLEXECUTEINFO sei = { sizeof(sei) };
 
-		sei.lpVerb = "runas"; //triggers elevation prompt
+		sei.lpVerb = "runas"; // triggers elevation prompt
 		sei.lpFile = batPathString.c_str();
 		sei.lpParameters = command.c_str();
 		sei.nShow = SW_NORMAL;
