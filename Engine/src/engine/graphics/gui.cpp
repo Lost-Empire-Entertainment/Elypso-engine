@@ -516,7 +516,7 @@ namespace Graphics
 			//press enter to insert install path
 			if (ImGui::InputTextWithHint(
 				"##inputfield",
-				"Enter build path...",
+				"Enter command...",
 				inputTextBuffer,
 				sizeof(inputTextBuffer),
 				inputFieldTextFlags,
