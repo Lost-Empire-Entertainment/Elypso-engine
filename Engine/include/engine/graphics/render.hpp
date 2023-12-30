@@ -33,23 +33,22 @@ namespace Graphics
 
 		static inline unsigned int VBO, VAO, cubeVAO, lightCubeVAO, EBO;
 
-		static inline vec3 directionalLightAngle = vec3(-0.2f, -0.2f, -0.2f);
-		static inline float lightConstant = 1.0f;
-		static inline float lightLinear = 0.09f;
-		static inline float lightQuadratic = 0.032f;
-		static inline float spotlightInnerAngle = 12.5f;
-		static inline float spotlightOuterAngle = 17.5f;
-
 		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
-
-		static inline vec3 cubeColor = vec3(1.0f, 1.0f, 1.0f);
-		static inline float cubeColorStrength = 1.0f;
-
-		static inline vec3 ambientColor = vec3(0.2f, 0.2f, 0.2f);
-		static inline float ambientColorStrength = 0.2f;
-
-		static inline vec3 specularColor = vec3(1.0f, 1.0f, 1.0f);
 		static inline float shininess = 32;
+
+		static inline vec3 directionalDirection = vec3(-0.2f, -1.0f, -0.3f);
+		static inline vec3 directionalDiffuse = vec3(0.4f, 0.4f, 0.4f);
+		static inline float directionalIntensity = 1.0f;
+
+		static inline vec3 spotDiffuse = vec3(1.0f, 1.0f, 1.0f);
+		static inline float spotIntensity = 1.0f;
+		static inline float spotDistance = 1.0f;
+		static inline float spotInnerAngle = 12.5f;
+		static inline float spotOuterAngle = 17.5f;
+
+		static inline vec3 pointDiffuse = vec3(0.8f, 0.8f, 0.8f);
+		static inline float pointIntensity = 1.0f;
+		static inline float pointDistance = 1.0f;
 
 		static inline float cubeSpeedMultiplier = 1.0f;
 		static inline float lampOrbitRange = 5;

@@ -83,12 +83,13 @@ namespace Graphics
 		void RenderSceneMenu();
 
 		//rendered debug window parts
-		void RWPart_DebugMenuInfo();
-		void RWPart_Interactions();
+		void RD_DebugMenuInfo();
+		void RD_Interactions();
 
-		//lights menu popups
-		void RWPart_BackgroundColor();
-		void RWPart_CubeColor();
-		void RWPart_SpecularColor();
+		//rendered scene menu parts
+		void RSM_Main();
+		void RSM_Spot();
+		void RSM_Point();
+		void RSM_Cube();
 	};
 }

@@ -20,6 +20,7 @@
 #include "imgui_impl_opengl3.h"
 #include <imgui_internal.h>
 #include "magic_enum.hpp"
+#include "type_ptr.hpp"
 
 //engine
 #include "console.hpp"
@@ -92,16 +93,6 @@ namespace Graphics
 		bgrColor.y = Render::backgroundColor.y;
 		bgrColor.z = Render::backgroundColor.z;
 		bgrColor.w = 1.0f;
-
-		cubeColor.x = Render::cubeColor.x;
-		cubeColor.y = Render::cubeColor.y;
-		cubeColor.z = Render::cubeColor.z;
-		cubeColor.w = 1.0f;
-
-		specularColor.x = Render::specularColor.x;
-		specularColor.y = Render::specularColor.y;
-		specularColor.z = Render::specularColor.z;
-		specularColor.w = 1.0f;
 
 		CustomizeImGuiStyle();
 	}
@@ -414,6 +405,7 @@ namespace Graphics
 			ImGui::Text("Down: Left Control");
 			ImGui::Text("Sprint: Left Shift");
 			ImGui::Text("Toggle camera: Escape");
+			ImGui::Text("Toggle spotlight: F");
 
 			ImGui::End();
 		}
@@ -444,12 +436,12 @@ namespace Graphics
 			{
 				if (ImGui::BeginTabItem("Debug info"))
 				{
-					RWPart_DebugMenuInfo();
+					RD_DebugMenuInfo();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Debug interactions"))
 				{
-					RWPart_Interactions();
+					RD_Interactions();
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -595,222 +587,204 @@ namespace Graphics
 			{
 				showSceneMenu = false;
 			}
-			
-			/*
-			ImGui::Text("Directional light angle");
-			ImGui::PushItemWidth(100);
-			ImGui::Text("   x   ");
-			ImGui::SameLine();
-			ImGui::InputFloat("##dirlightangleX", &Render::directionalLightAngle.x);
-			Render::directionalLightAngle.x = clamp(Render::directionalLightAngle.x, -1.0f, 1.0f);
-			ImGui::SameLine();
-			ImGui::Text("   y   ");
-			ImGui::SameLine();
-			ImGui::InputFloat("##dirlightangleY", &Render::directionalLightAngle.y);
-			Render::directionalLightAngle.y = clamp(Render::directionalLightAngle.y, -1.0f, 1.0f);
-			ImGui::SameLine();
-			ImGui::Text("   z   ");
-			ImGui::SameLine();
-			ImGui::InputFloat("##dirlightangleZ", &Render::directionalLightAngle.z);
-			Render::directionalLightAngle.z = clamp(Render::directionalLightAngle.z, -1.0f, 1.0f);
-			ImGui::PopItemWidth();
-			
-			ImGui::Text("Light linear");
-			ImGui::SliderFloat("##lightLin", &Render::lightLinear, 0.0f, 1.0f);
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##lightLin"))
-			{
-				Render::lightLinear = 0.09f;
-			}
-			ImGui::Text("Light quadratic");
-			ImGui::SliderFloat("##lightQuad", &Render::lightQuadratic, 0.0f, 1.0f);
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##lightQuad"))
-			{
-				Render::lightQuadratic = 0.032f;
-			}
-			*/
 
-			ImGui::Text("Spotlight inner angle");
-			ImGui::SliderFloat("##spotinnerangle", &Render::spotlightInnerAngle, 0.0f, Render::spotlightOuterAngle - 0.01f);
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##spotinnerangle"))
+			if (ImGui::BeginTabBar("Scene"))
 			{
-				Render::spotlightInnerAngle = 12.5f;
-			}
-			ImGui::Text("Spotlight outer angle");
-			ImGui::SliderFloat("##spotouterangle", &Render::spotlightOuterAngle, Render::spotlightInnerAngle + 0.01f, 50.0f);
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##spotouterangle"))
-			{
-				Render::spotlightOuterAngle = 17.5f;
-			}
-
-			ImGui::Separator();
-
-			ImGui::Text("Background color");
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
-			ImGui::ColorButton("Background color", bgrColor);
-			RWPart_BackgroundColor();
-			
-			ImGui::Text("Cube color");
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
-			ImGui::ColorButton("Cube color", cubeColor);
-			RWPart_CubeColor();
-			
-			ImGui::Text("Specular color");
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
-			ImGui::ColorButton("Specular color", specularColor);
-			RWPart_SpecularColor();
-			
-			ImGui::Text("Cube color intensity");
-			ImGui::SliderFloat("##cubecolint", &Render::cubeColorStrength, 0.0f, 1.0f);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Adjust how intense the cube color should be.");
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##cubecolint"))
-			{
-				Render::cubeColorStrength = 0.5f;
-			}
-
-			ImGui::Text("Ambient color intensity");
-			ImGui::SliderFloat("##ambcolint", &Render::ambientColorStrength, 0.0f, 1.0f);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Adjust how intense the ambient color should be.");
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##ambcolint"))
-			{
-				Render::ambientColorStrength = 0.2f;
-			}
-
-			ImGui::Text("Shininess");
-			ImGui::SliderFloat("##shininess", &Render::shininess, 3.0f, 128.0f);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Adjust how intense the material shininess should be.");
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##shininess"))
-			{
-				Render::shininess = 32.0f;
-			}
-			
-			ImGui::Separator();
-
-			ImGui::Text("Cube speed multiplier");
-			ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 10.0f);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Adjust the overall cube speed multiplier.");
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##cubespeedmult"))
-			{
-				Render::cubeSpeedMultiplier = 0.005f;
-			}
-
-			ImGui::Text("Lamp orbit range");
-			ImGui::SliderFloat("##lamporbitrange", &Render::lampOrbitRange, 2.0f, 10.0f);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Adjust how far the cube should orbit from the lamp.");
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##lamporbitrange"))
-			{
-				Render::lampOrbitRange = 5.0f;
-			}
-
-			ImGui::Text("Cube wiggle height");
-			ImGui::SliderFloat("##cubewheight", &Render::cubeWiggleHeight, 0.0f, 5.0f);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Adjust how high and low the cube should wiggle.");
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##cubewheight"))
-			{
-				Render::cubeWiggleHeight = 2.0f;
-			}
-
-			ImGui::Text("Cube wiggle speed");
-			ImGui::SliderFloat("##cubewspeed", &Render::cubeWiggleSpeed, 0.0f, 10.0f);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::SetTooltip("Adjust how fast the cube should wiggle.");
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##cubewspeed"))
-			{
-				Render::cubeWiggleSpeed = 1.0f;
+				if (ImGui::BeginTabItem("Main"))
+				{
+					RSM_Main();
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Spotlight"))
+				{
+					RSM_Spot();
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Point light"))
+				{
+					RSM_Point();
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Cube"))
+				{
+					RSM_Cube();
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
 			}
 
 			ImGui::End();
 		}
 	}
-	
-	void GUI::RWPart_BackgroundColor()
+	void GUI::RSM_Main()
 	{
-		if (ImGui::IsItemClicked())
+		ImGui::Text("Background color");
+		ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor));
+
+		ImGui::Text("Directional light direction");
+		ImGui::Text("x  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##dirX", &Render::directionalDirection.x, -360.0f, 360.0f);
+		ImGui::SameLine();
+		ImGui::Text("  y  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##dirY", &Render::directionalDirection.y, -360.0f, 360.0f);
+		ImGui::SameLine();
+		ImGui::Text("  z  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##dirZ", &Render::directionalDirection.z, -360.0f, 360.0f);
+
+		ImGui::Text("Directional light diffuse");
+		ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse));
+
+		ImGui::Text("Directional light intensity");
+		ImGui::SliderFloat("##dirint", &Render::directionalIntensity, 0.0f, 25.0f);
+		if (ImGui::IsItemHovered())
 		{
-			ImGui::OpenPopup("Background color");
+			ImGui::SetTooltip("Adjust how strong the directional light intensity is.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##dirint"))
+		{
+			Render::directionalIntensity = 1.0f;
 		}
 
-		if (ImGui::BeginPopup("Background color"))
+		ImGui::Text("Shininess");
+		ImGui::SliderFloat("##shininess", &Render::shininess, 3.0f, 128.0f);
+		if (ImGui::IsItemHovered())
 		{
-			if (ImGui::ColorPicker4("##bgrcol", (float*)&bgrColor))
-			{
-				Render::backgroundColor.x = bgrColor.x;
-				Render::backgroundColor.y = bgrColor.y;
-				Render::backgroundColor.z = bgrColor.z;
-			}
-
-			ImGui::EndPopup();
+			ImGui::SetTooltip("Adjust how intense the material shininess should be.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##shininess"))
+		{
+			Render::shininess = 32.0f;
 		}
 	}
-	void GUI::RWPart_CubeColor()
+	void GUI::RSM_Spot()
 	{
-		if (ImGui::IsItemClicked())
+		ImGui::Text("Spotlight diffuse");
+		ImGui::ColorEdit3("##spotdiff", value_ptr(Render::spotDiffuse));
+
+		ImGui::Text("Spotlight intensity");
+		ImGui::SliderFloat("##spotint", &Render::spotIntensity, 0.0f, 25.0f);
+		if (ImGui::IsItemHovered())
 		{
-			ImGui::OpenPopup("Cube color");
+			ImGui::SetTooltip("Adjust how strong the spotlight intensity is.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##spotint"))
+		{
+			Render::spotIntensity = 1.0f;
 		}
 
-		if (ImGui::BeginPopup("Cube color"))
+		ImGui::Text("Spotlight distance");
+		ImGui::SliderFloat("##spotdist", &Render::spotDistance, 0.0f, 25.0f);
+		if (ImGui::IsItemHovered())
 		{
-			if (ImGui::ColorPicker3("##cubecol", (float*)&cubeColor))
-			{
-				Render::cubeColor.x = cubeColor.x;
-				Render::cubeColor.y = cubeColor.y;
-				Render::cubeColor.z = cubeColor.z;
-			}
+			ImGui::SetTooltip("Adjust how far the spotlight can cast.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##spotdist"))
+		{
+			Render::spotDistance = 1.0f;
+		}
 
-			ImGui::EndPopup();
+		ImGui::Text("Spotlight inner angle");
+		ImGui::SliderFloat("##spotinnerangle", &Render::spotInnerAngle, 0.0f, Render::spotOuterAngle - 0.01f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##spotinnerangle"))
+		{
+			Render::spotInnerAngle = 12.5f;
+		}
+		ImGui::Text("Spotlight outer angle");
+		ImGui::SliderFloat("##spotouterangle", &Render::spotOuterAngle, Render::spotInnerAngle + 0.01f, 50.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##spotouterangle"))
+		{
+			Render::spotOuterAngle = 17.5f;
 		}
 	}
-	void GUI::RWPart_SpecularColor()
+	void GUI::RSM_Point()
 	{
-		if (ImGui::IsItemClicked())
+		ImGui::Text("Point light diffuse");
+		ImGui::ColorEdit3("##pointdiff", value_ptr(Render::pointDiffuse));
+
+		ImGui::Text("Point light intensity");
+		ImGui::SliderFloat("##pointint", &Render::pointIntensity, 0.0f, 25.0f);
+		if (ImGui::IsItemHovered())
 		{
-			ImGui::OpenPopup("Specular color");
+			ImGui::SetTooltip("Adjust how strong the point light intensity is.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pointint"))
+		{
+			Render::pointIntensity = 1.0f;
 		}
 
-		if (ImGui::BeginPopup("Specular color"))
+		ImGui::Text("Point light distance");
+		ImGui::SliderFloat("##pointdist", &Render::pointDistance, 0.0f, 25.0f);
+		if (ImGui::IsItemHovered())
 		{
-			if (ImGui::ColorPicker3("##speccol", (float*)&specularColor))
-			{
-				Render::specularColor.x = specularColor.x;
-				Render::specularColor.y = specularColor.y;
-				Render::specularColor.z = specularColor.z;
-			}
+			ImGui::SetTooltip("Adjust how far the point light can cast.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pointdist"))
+		{
+			Render::pointDistance = 1.0f;
+		}
+	}
+	void GUI::RSM_Cube()
+	{
+		ImGui::Text("Cube speed multiplier");
+		ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 10.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust the overall cube speed multiplier.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##cubespeedmult"))
+		{
+			Render::cubeSpeedMultiplier = 0.005f;
+		}
 
-			ImGui::EndPopup();
+		ImGui::Text("Lamp orbit range");
+		ImGui::SliderFloat("##lamporbitrange", &Render::lampOrbitRange, 2.0f, 10.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust how far the cube should orbit from the lamp.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##lamporbitrange"))
+		{
+			Render::lampOrbitRange = 5.0f;
+		}
+
+		ImGui::Text("Cube wiggle height");
+		ImGui::SliderFloat("##cubewheight", &Render::cubeWiggleHeight, 0.0f, 5.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust how high and low the cube should wiggle.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##cubewheight"))
+		{
+			Render::cubeWiggleHeight = 2.0f;
+		}
+
+		ImGui::Text("Cube wiggle speed");
+		ImGui::SliderFloat("##cubewspeed", &Render::cubeWiggleSpeed, 0.0f, 10.0f);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetTooltip("Adjust how fast the cube should wiggle.");
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##cubewspeed"))
+		{
+			Render::cubeWiggleSpeed = 1.0f;
 		}
 	}
 
@@ -883,7 +857,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RWPart_DebugMenuInfo()
+	void GUI::RD_DebugMenuInfo()
 	{
 		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 		ImGui::Text(
@@ -898,7 +872,7 @@ namespace Graphics
 			Render::camera.GetCameraRotation().z);
 		ImGui::Text("FOV: %.0f", Graphics::Render::fov);
 	}
-	void GUI::RWPart_Interactions()
+	void GUI::RD_Interactions()
 	{
 		ImGui::Text("Debug buttons");
 		ImGui::Text("");

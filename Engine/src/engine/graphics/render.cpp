@@ -287,57 +287,67 @@ namespace Graphics
 
 		GameObjectShader.Use();
 		GameObjectShader.SetVec3("viewPos", camera.GetCameraPosition());
-		GameObjectShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		GameObjectShader.SetFloat("material.shininess", shininess);
 
 		//directional light
-		GameObjectShader.SetVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		GameObjectShader.SetVec3("dirLight.direction", directionalDirection);
 		GameObjectShader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		GameObjectShader.SetVec3("dirLight.diffuse", directionalDiffuse);
 		GameObjectShader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+		GameObjectShader.SetFloat("dirLight.intensity", directionalIntensity);
 		//point light 1
 		GameObjectShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
 		GameObjectShader.SetVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[0].diffuse", pointDiffuse);
 		GameObjectShader.SetVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
 		GameObjectShader.SetFloat("pointLights[0].constant", 1.0f);
 		GameObjectShader.SetFloat("pointLights[0].linear", 0.09f);
 		GameObjectShader.SetFloat("pointLights[0].quadratic", 0.032f);
+		GameObjectShader.SetFloat("pointLights[0].intensity", pointIntensity);
+		GameObjectShader.SetFloat("pointLights[0].distance", pointDistance);
 		//point light 2
 		GameObjectShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
 		GameObjectShader.SetVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[1].diffuse", pointDiffuse);
 		GameObjectShader.SetVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
 		GameObjectShader.SetFloat("pointLights[1].constant", 1.0f);
 		GameObjectShader.SetFloat("pointLights[1].linear", 0.09f);
 		GameObjectShader.SetFloat("pointLights[1].quadratic", 0.032f);
+		GameObjectShader.SetFloat("pointLights[1].intensity", pointIntensity);
+		GameObjectShader.SetFloat("pointLights[1].distance", pointDistance);
 		//point light 3
 		GameObjectShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
 		GameObjectShader.SetVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[2].diffuse", pointDiffuse);
 		GameObjectShader.SetVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
 		GameObjectShader.SetFloat("pointLights[2].constant", 1.0f);
 		GameObjectShader.SetFloat("pointLights[2].linear", 0.09f);
 		GameObjectShader.SetFloat("pointLights[2].quadratic", 0.032f);
+		GameObjectShader.SetFloat("pointLights[2].intensity", pointIntensity);
+		GameObjectShader.SetFloat("pointLights[2].distance", pointDistance);
 		//point light 4
 		GameObjectShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
 		GameObjectShader.SetVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[3].diffuse", pointDiffuse);
 		GameObjectShader.SetVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
 		GameObjectShader.SetFloat("pointLights[3].constant", 1.0f);
 		GameObjectShader.SetFloat("pointLights[3].linear", 0.09f);
 		GameObjectShader.SetFloat("pointLights[3].quadratic", 0.032f);
+		GameObjectShader.SetFloat("pointLights[3].intensity", pointIntensity);
+		GameObjectShader.SetFloat("pointLights[3].distance", pointDistance);
 		//spotLight
 		GameObjectShader.SetVec3("spotLight.position", camera.GetCameraPosition());
 		GameObjectShader.SetVec3("spotLight.direction", camera.GetFront());
+		GameObjectShader.SetFloat("spotLight.intensity", spotIntensity);
+		GameObjectShader.SetFloat("spotLight.distance", spotDistance);
 		GameObjectShader.SetVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-		GameObjectShader.SetVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+		GameObjectShader.SetVec3("spotLight.diffuse", spotDiffuse);
 		GameObjectShader.SetVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
 		GameObjectShader.SetFloat("spotLight.constant", 1.0f);
 		GameObjectShader.SetFloat("spotLight.linear", 0.09f);
 		GameObjectShader.SetFloat("spotLight.quadratic", 0.032f);
-		GameObjectShader.SetFloat("spotLight.cutOff", cos(radians(spotlightInnerAngle)));
-		GameObjectShader.SetFloat("spotLight.outerCutOff", cos(radians(spotlightOuterAngle)));
+		GameObjectShader.SetFloat("spotLight.cutOff", cos(radians(spotInnerAngle)));
+		GameObjectShader.SetFloat("spotLight.outerCutOff", cos(radians(spotOuterAngle)));
 
 		//calculate the new projection matrix
 		mat4 projection = perspective(
@@ -363,7 +373,6 @@ namespace Graphics
 
 		static float cubeRotAngle = 0.0f;
 		cubeRotAngle += cubeSpeedMultiplier / 500;
-		cout << cubeRotAngle << endl;
 		float cubeX = lightPos.x + lampOrbitRange * cos(cubeRotAngle);
 		float cubeZ = lightPos.z;
 		float cubeY = lightPos.y + lampOrbitRange * sin(cubeRotAngle);

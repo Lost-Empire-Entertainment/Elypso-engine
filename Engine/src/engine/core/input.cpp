@@ -39,6 +39,7 @@ using glm::lookAt;
 using std::ostringstream;
 using std::fixed;
 using std::setprecision;
+using std::to_string;
 
 using Graphics::Render;
 using Core::ConsoleManager;
