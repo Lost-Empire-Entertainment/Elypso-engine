@@ -212,6 +212,10 @@ namespace Graphics
 			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 		};
+		pointLightPositions[0] = vec3(1.5f, 0.0f, 1.5f);
+		pointLightPositions[1] = vec3(1.5f, 0.0f, -1.5f);
+		pointLightPositions[2] = vec3(-1.5f, 0.0f, 1.5f);
+		pointLightPositions[3] = vec3(-1.5f, 0.0f, -1.5f);
 
 		glGenVertexArrays(1, &cubeVAO);
 		glGenBuffers(1, &VBO);
@@ -268,28 +272,72 @@ namespace Graphics
 			1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		WindowContentLoop();
+
+		GUI::GetInstance().Render();
+
+		//swap the front and back buffers
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+	void Render::WindowContentLoop()
+	{
 		//camera transformation
 		Input::ProcessInput(window);
 
-		//render the GameObject
 		GameObjectShader.Use();
-		GameObjectShader.SetVec3("light.position", camera.GetCameraPosition());
-		GameObjectShader.SetVec3("light.direction", camera.GetFront());
-		GameObjectShader.SetFloat("light.cutOff", cos(radians(spotlightInnerAngle)));
-		GameObjectShader.SetFloat("light.outerCutOff", cos(radians(spotlightOuterAngle)));
 		GameObjectShader.SetVec3("viewPos", camera.GetCameraPosition());
-
-		//light properties
-		GameObjectShader.SetVec3("light.ambient", ambientColor * ambientColorStrength);
-		GameObjectShader.SetVec3("light.diffuse", cubeColor * cubeColorStrength);
-		GameObjectShader.SetVec3("light.specular", specularColor);
-		GameObjectShader.SetFloat("light.constant", lightConstant);
-		GameObjectShader.SetFloat("light.linear", lightLinear);
-		GameObjectShader.SetFloat("light.quadratic", lightQuadratic);
-
-		//material properties
 		GameObjectShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		GameObjectShader.SetFloat("material.shininess", shininess);
+
+		//directional light
+		GameObjectShader.SetVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		GameObjectShader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		GameObjectShader.SetVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+		GameObjectShader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+		//point light 1
+		GameObjectShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
+		GameObjectShader.SetVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+		GameObjectShader.SetVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+		GameObjectShader.SetFloat("pointLights[0].constant", 1.0f);
+		GameObjectShader.SetFloat("pointLights[0].linear", 0.09f);
+		GameObjectShader.SetFloat("pointLights[0].quadratic", 0.032f);
+		//point light 2
+		GameObjectShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
+		GameObjectShader.SetVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+		GameObjectShader.SetVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+		GameObjectShader.SetFloat("pointLights[1].constant", 1.0f);
+		GameObjectShader.SetFloat("pointLights[1].linear", 0.09f);
+		GameObjectShader.SetFloat("pointLights[1].quadratic", 0.032f);
+		//point light 3
+		GameObjectShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
+		GameObjectShader.SetVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+		GameObjectShader.SetVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+		GameObjectShader.SetFloat("pointLights[2].constant", 1.0f);
+		GameObjectShader.SetFloat("pointLights[2].linear", 0.09f);
+		GameObjectShader.SetFloat("pointLights[2].quadratic", 0.032f);
+		//point light 4
+		GameObjectShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
+		GameObjectShader.SetVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+		GameObjectShader.SetVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+		GameObjectShader.SetVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+		GameObjectShader.SetFloat("pointLights[3].constant", 1.0f);
+		GameObjectShader.SetFloat("pointLights[3].linear", 0.09f);
+		GameObjectShader.SetFloat("pointLights[3].quadratic", 0.032f);
+		//spotLight
+		GameObjectShader.SetVec3("spotLight.position", camera.GetCameraPosition());
+		GameObjectShader.SetVec3("spotLight.direction", camera.GetFront());
+		GameObjectShader.SetVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+		GameObjectShader.SetVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+		GameObjectShader.SetVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+		GameObjectShader.SetFloat("spotLight.constant", 1.0f);
+		GameObjectShader.SetFloat("spotLight.linear", 0.09f);
+		GameObjectShader.SetFloat("spotLight.quadratic", 0.032f);
+		GameObjectShader.SetFloat("spotLight.cutOff", cos(radians(spotlightInnerAngle)));
+		GameObjectShader.SetFloat("spotLight.outerCutOff", cos(radians(spotlightOuterAngle)));
 
 		//calculate the new projection matrix
 		mat4 projection = perspective(
@@ -303,6 +351,7 @@ namespace Graphics
 
 		GameObjectShader.SetMat4("projection", projection);
 		GameObjectShader.SetMat4("view", view);
+
 		mat4 model = mat4(1.0f);
 
 		//bind diffuse map
@@ -313,32 +362,32 @@ namespace Graphics
 		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
 
 		static float cubeRotAngle = 0.0f;
-		cubeRotAngle += cubeSpeedMultiplier;
+		cubeRotAngle += cubeSpeedMultiplier / 500;
+		cout << cubeRotAngle << endl;
 		float cubeX = lightPos.x + lampOrbitRange * cos(cubeRotAngle);
 		float cubeZ = lightPos.z;
 		float cubeY = lightPos.y + lampOrbitRange * sin(cubeRotAngle);
 		float yOffset = cubeWiggleHeight * sin(cubeRotAngle * cubeWiggleSpeed);
 		model = translate(model, vec3(cubeX, lightPos.y + yOffset, cubeY));
-
+		//model = rotate(model, cubeRotAngle, vec3(0.0f, 1.0f, 0.0f));
+		
 		GameObjectShader.SetMat4("model", model);
 		glBindVertexArray(cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//render the light source
-		//TestLightShader.Use();
-		//TestLightShader.SetMat4("projection", projection);
-		//TestLightShader.SetMat4("view", view);
-		//model = mat4(1.0f);
-		//model = translate(model, lightPos);
-		//model = scale(model, vec3(0.2f));
-		//TestLightShader.SetMat4("model", model);
-		//glBindVertexArray(lightCubeVAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		//draw light sources
+		TestLightShader.Use();
+		TestLightShader.SetMat4("projection", projection);
+		TestLightShader.SetMat4("view", view);
 
-		GUI::GetInstance().Render();
-
-		//swap the front and back buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		glBindVertexArray(lightCubeVAO);
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			model = mat4(1.0f);
+			model = translate(model, pointLightPositions[i]);
+			model = scale(model, vec3(0.2f));
+			TestLightShader.SetMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 	}
 }

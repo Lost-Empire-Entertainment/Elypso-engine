@@ -19,7 +19,7 @@ set "cpsuc=[CPACK_SUCCESS]"
 
 set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
 set "outPath=%~dp0out"
-set ".vsPath=%~dp0.vs"
+set "vsPath=%~dp0.vs"
 set "buildPath=%~dp0build"
 
 :: Can not run build.bat without administrative privileges
@@ -99,11 +99,12 @@ if %errorlevel% neq 0 (
 		)
 
 		if exist "%vsPath%" (
-			echo %encln% Deleted folder: out
+			echo %encln% Deleted folder: .vs
 			rd /s /q "%vsPath%"
 		)
+		echo "%outPath%"
 		if exist "%outPath%" (
-			echo %encln% Deleted folder: .vs
+			echo %encln% Deleted folder: out
 			rd /s /q "%outPath%"
 		)
 	

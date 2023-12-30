@@ -51,7 +51,7 @@ namespace Graphics
 		static inline vec3 specularColor = vec3(1.0f, 1.0f, 1.0f);
 		static inline float shininess = 32;
 
-		static inline float cubeSpeedMultiplier = 0.005f;
+		static inline float cubeSpeedMultiplier = 1.0f;
 		static inline float lampOrbitRange = 5;
 		static inline float cubeWiggleHeight = 2;
 		static inline float cubeWiggleSpeed = 1;
@@ -72,7 +72,8 @@ namespace Graphics
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 		static void WindowLoop();
 	private:
-		static inline vec3 lightPos = vec3(1.2f, 1.0f, 2.0f);
+		static inline vec3 pointLightPositions[4];
+		static inline vec3 lightPos = vec3(0.0f, 0.0f, 0.0f);
 
 		static inline int SCR_POS_X;
 		static inline int SCR_POS_Y;
@@ -81,5 +82,7 @@ namespace Graphics
 		static void WindowSetup();
 		static void GladSetup();
 		static void ContentSetup();
+
+		static void WindowContentLoop();
 	};
 }

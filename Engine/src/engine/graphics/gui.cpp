@@ -705,7 +705,7 @@ namespace Graphics
 			ImGui::Separator();
 
 			ImGui::Text("Cube speed multiplier");
-			ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 0.1f);
+			ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 10.0f);
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetTooltip("Adjust the overall cube speed multiplier.");
