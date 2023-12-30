@@ -134,7 +134,7 @@ namespace Graphics
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
-		ImGui::End();
+		//ImGui::End();
 
 		RenderTopBar();
 

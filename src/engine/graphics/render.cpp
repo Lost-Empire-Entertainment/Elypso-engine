@@ -52,13 +52,13 @@ namespace Graphics
 
 	void Render::RenderSetup()
 	{
-		Input::InputSetup();
-
 		Render::GLFWSetup();
 		Render::WindowSetup();
 		Render::GladSetup();
 
 		GUI::GetInstance().Initialize();
+
+		Input::InputSetup();
 
 		Render::ContentSetup();
 
