@@ -26,26 +26,12 @@
 //program
 #include "main.hpp"
 
-#include <cctype>
-#include <algorithm>
-#include <cstdlib>
 #include <Windows.h>
-#include <locale>
-#include <codecvt>
 
 using std::cout;
 using std::endl;
-using std::isspace;
-using std::exception;
-using std::system;
 using std::filesystem::current_path;
 using std::filesystem::exists;
-using std::filesystem::status;
-using std::filesystem::perms;
-using std::filesystem::is_directory;
-using std::filesystem::is_regular_file;
-using std::filesystem::file_status;
-using std::filesystem::status;
 
 using Core::Render;
 
@@ -55,8 +41,6 @@ int main()
 	Render::WindowSetup();
 	Render::GladSetup();
 	Render::GUISetup();
-
-	Render::AddProtectedPaths();
 
 	Render::WindowLoop();
 
@@ -153,15 +137,6 @@ namespace Core
 		io.FontGlobalScale = fontScale;
 	}
 
-	void Render::AddProtectedPaths()
-	{
-		protectedPaths.push_back("C:\\$WinREAgent");
-		protectedPaths.push_back("C:\\PerfLogs");
-		protectedPaths.push_back("C:\\ProgramData");
-		protectedPaths.push_back("C:\\Recovery");
-		protectedPaths.push_back("C:\\Windows");
-	}
-
 	void Render::WindowLoop()
 	{
 		ConsoleWindow_WriteToConsole("");
@@ -210,7 +185,6 @@ namespace Core
 		MainWindow_CleanVS_Confirm();
 		MainWindow_CleanEngine();
 		MainWindow_CleanEngine_Confirm();
-		MainWindow_InputField();
 
 		ImGui::End();
 	}
@@ -460,59 +434,6 @@ namespace Core
 			ImGui::End();
 		}
 	}
-	void Render::MainWindow_InputField()
-	{
-		//move the input field to the bottom of the window
-		ImGui::SetCursorPosY(
-			ImGui::GetWindowHeight() - 
-			ImGui::GetStyle().ItemSpacing.y -
-			ImGui::GetFrameHeightWithSpacing());
-
-		ImVec2 inputFieldWidth = ImGui::GetContentRegionAvail();
-
-		ImGui::PushItemWidth(inputFieldWidth.x);
-
-		ImGuiInputTextFlags inputFieldTextFlags =
-			ImGuiInputTextFlags_EnterReturnsTrue;
-
-		//press enter to insert install path
-		if (ImGui::InputTextWithHint(
-			"##inputfield",
-			"Enter build path...",
-			inputTextBuffer,
-			sizeof(inputTextBuffer),
-			inputFieldTextFlags,
-			[](ImGuiInputTextCallbackData* data) -> int
-			{
-				//allow inserting text with Ctrl+V
-				if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_V)) &&
-					ImGui::GetIO().KeyCtrl)
-				{
-					const char* clipboardText = glfwGetClipboardString(Render::window);
-					if (clipboardText)
-					{
-						//insert clipboard text into the input buffer
-						int textLength = strlen(clipboardText);
-						int availableSpace = data->BufSize - data->BufTextLen;
-						int copyLength = ImMin(textLength, availableSpace - 1); //leave space for null terminator
-						if (copyLength > 0)
-						{
-							memcpy(data->Buf + data->CursorPos, clipboardText, copyLength);
-							data->CursorPos += copyLength;
-							data->BufTextLen += copyLength;
-							data->Buf[data->CursorPos] = '\0'; 
-						}
-					}
-				}
-				return 0;
-			}))
-		{
-			ConsoleWindow_ParseInput(inputTextBuffer);
-			memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
-		}
-
-		ImGui::PopItemWidth();
-	}
 
 	void Render::Window_Console()
 	{
@@ -540,15 +461,6 @@ namespace Core
 
 		ImGui::End();
 	}
-	void Render::ConsoleWindow_ParseInput(const string& message)
-	{
-		if (IsWhiteSpaceOrEmpty(message)) return;
-
-		if (!IsPathAccessible(message)) return;
-
-		string output = "'" + message + "' is a valid path!";
-		ConsoleWindow_WriteToConsole(output, true);
-	}
 	void Render::ConsoleWindow_WriteToConsole(const string& message, bool printToConsole)
 	{
 		if (printToConsole) consoleMessages.push_back(message);
@@ -561,83 +473,10 @@ namespace Core
 		}
 	}
 
-	bool Render::IsWhiteSpaceOrEmpty(const string& message)
-	{
-		for (char c : message)
-		{
-			if (!isspace(static_cast<unsigned char>(c)))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	bool Render::IsPathAccessible(const string& path)
-	{
-		string output;
-
-		try
-		{
-			file_status fileStatus = status(path);
-
-			if (!is_directory(path))
-			{
-				output = "Error: ' " + path + " ' is not a directory! Please insert a valid path.";
-				ConsoleWindow_WriteToConsole(output, true);
-				return false;
-			}
-
-			perms requiredPermissions = perms::owner_all;
-			if ((fileStatus.permissions() & requiredPermissions) != requiredPermissions)
-			{
-				output = "Error: Insufficient permissions to install engine to ' " + path + " '! Please insert a path you have read, write and execution permissions for.";
-				ConsoleWindow_WriteToConsole(output, true);
-				return false;
-			}
-
-			if (path.find('/') != string::npos)
-			{
-				output = "Error: Invalid path format for ' " + path + " '! Please use backslashes, not forward slashes!";
-				ConsoleWindow_WriteToConsole(output, true);
-				return false;
-			}
-
-			if (ContainsProtectedPath(path))
-			{
-				output = "Error: ' " + path + " ' is an important system path and should not be written to! Please insert a valid path.";
-				ConsoleWindow_WriteToConsole(output, true);
-				return false;
-			}
-
-			return true;
-		}
-		catch (const exception& e)
-		{
-			output = "Error: " + string(e.what());
-			ConsoleWindow_WriteToConsole(output, true);
-			return false;
-		}
-	}
-	bool Render::ContainsProtectedPath(const path& fullPath)
-	{
-		for (const auto& protectedPath : protectedPaths)
-		{
-			//check if fullPath is inside or equal to a protected path
-			if (exists(protectedPath)
-				&& fullPath.native().find(protectedPath.native()) == 0)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	void Render::RunBatFile(string command)
 	{
-		string output;
-
 		string currentFolder = current_path().stem().string();
-		output = "Current folder name: " + currentFolder;
+		string output = "Current folder name: " + currentFolder;
 		ConsoleWindow_WriteToConsole(output);
 		if (currentFolder != "Release"
 			&& currentFolder != "x64-debug"
@@ -675,8 +514,8 @@ namespace Core
 
 		SHELLEXECUTEINFO sei = { sizeof(sei) };
 
-		sei.lpVerb = "runas"; // triggers elevation prompt
-		sei.lpFile = batPathString.c_str();
+		sei.lpVerb = "runas"; //triggers elevation prompt
+		sei.lpFile = batPathString.c_str(); //bat file command + optional user-inserted path
 		sei.lpParameters = command.c_str();
 		sei.nShow = SW_NORMAL;
 		sei.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -685,7 +524,7 @@ namespace Core
 		{
 			//MessageBox(NULL, "Error running script", "Error", MB_OK | MB_ICONERROR);
 
-			string output = "Did not get permission from the user to run " + batPath.string() + "!";
+			string output = "Error: Did not get permission from the user to run build.bat!";
 			ConsoleWindow_WriteToConsole(output, true);
 		}
 	}

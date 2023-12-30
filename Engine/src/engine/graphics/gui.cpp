@@ -490,7 +490,10 @@ namespace Graphics
 			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
 
 			//display the content of the text buffer
-			ImGui::TextWrapped("%s", textBuffer.begin(), textBuffer.end());
+			for (const auto& message : consoleMessages)
+			{
+				ImGui::TextWrapped("%s", message.c_str());
+			}
 
 			ImGui::PopTextWrapPos();
 
@@ -508,8 +511,6 @@ namespace Graphics
 				}
 			}
 
-			AddTextToConsole();
-
 			ImGui::EndChild();
 
 			//text filter input box
@@ -518,34 +519,44 @@ namespace Graphics
 
 			// Draw the text filter input box
 			ImGui::PushItemWidth(scrollingRegionSize.x);
-			ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackCharFilter;
-			ImGui::InputText("##filter", textFilter.InputBuf, IM_ARRAYSIZE(textFilter.InputBuf), flags,
-				[](ImGuiInputTextCallbackData* data)
+			ImGuiInputTextFlags inputFieldTextFlags =
+				ImGuiInputTextFlags_EnterReturnsTrue;
+
+			//press enter to insert install path
+			if (ImGui::InputTextWithHint(
+				"##inputfield",
+				"Enter build path...",
+				inputTextBuffer,
+				sizeof(inputTextBuffer),
+				inputFieldTextFlags,
+				[](ImGuiInputTextCallbackData* data) -> int
 				{
-					char c = data->EventChar;
-					if (c == '\n' || c == '\r')
+					//allow inserting text with Ctrl+V
+					if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_V)) &&
+						ImGui::GetIO().KeyCtrl)
 					{
-						return 1;
+						const char* clipboardText = glfwGetClipboardString(Render::window);
+						if (clipboardText)
+						{
+							//insert clipboard text into the input buffer
+							int textLength = strlen(clipboardText);
+							int availableSpace = data->BufSize - data->BufTextLen;
+							int copyLength = ImMin(textLength, availableSpace - 1); //leave space for null terminator
+							if (copyLength > 0)
+							{
+								memcpy(data->Buf + data->CursorPos, clipboardText, copyLength);
+								data->CursorPos += copyLength;
+								data->BufTextLen += copyLength;
+								data->Buf[data->CursorPos] = '\0';
+							}
+						}
 					}
 					return 0;
-				});
-
-			//retrieve the text entered by the user
-			const char* filterText = textFilter.InputBuf;
-
-			//check if Enter/Return was pressed, if so, reset the processed flag and clear the input field
-			if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter))
-				|| ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_KeyPadEnter)))
+				}))
 			{
-				//parse the filter text
-				if (!filterTextProcessed
-					&& filterText
-					&& filterText[0] != '\0')
-				{
-					ConsoleManager::ParseConsoleCommand(filterText);
-				}
-
-				memset(textFilter.InputBuf, 0, sizeof(textFilter.InputBuf));
+				ConsoleManager::ParseConsoleCommand(inputTextBuffer);
+				if (allowScrollToBottom) ImGui::SetScrollHereY(1.0f);
+				memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
 			}
 
 			ImGui::PopItemWidth();
@@ -553,20 +564,14 @@ namespace Graphics
 			ImGui::End();
 		}
 	}
-	void GUI::AddTextToConsole()
+	void GUI::AddTextToConsole(const string& message)
 	{
-		if (writeToConsole)
+		consoleMessages.push_back(message);
+
+		//erases the first added message if a new one was added and count exceeded max count
+		while (consoleMessages.size() > maxConsoleMessages)
 		{
-			textBuffer.appendf("%s", addedText.c_str());
-
-			//second scroll update that scrolls to the bottom if scrolling is allowed
-			//and when any new text is added. top one fully scrolls to the bottom,
-			//this one is used because there is no better way to force scroll to the bottom
-			//when enter is pressed and only using this doesnt fully scroll to the bottom
-			//so this works together with the top scroll update to always scroll to the bottom
-			if (allowScrollToBottom) ImGui::SetScrollHereY(1.0f);
-
-			writeToConsole = false;
+			consoleMessages.erase(consoleMessages.begin());
 		}
 	}
 

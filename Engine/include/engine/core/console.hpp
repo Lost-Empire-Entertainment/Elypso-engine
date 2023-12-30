@@ -56,6 +56,8 @@ namespace Core
 
 		static inline bool sendDebugMessages;
 
+		static vector<string> storedLogs;
+
 		/// <summary>
 		/// A simple method that prints a message with a message type and timestamp to the console.
 		/// </summary>
@@ -70,8 +72,6 @@ namespace Core
 		static void AddLog(const std::string& message);
 
 		static void PrintLogsToBuffer();
-
-		static vector<string> storedLogs;
 	private:
 		static inline bool wireframeMode;
 	};

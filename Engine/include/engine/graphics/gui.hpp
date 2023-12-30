@@ -20,6 +20,10 @@
 //external
 #include "imgui.h"
 
+#include <vector>
+
+using std::vector;
+
 namespace Graphics
 {
 	class GUI
@@ -38,8 +42,9 @@ namespace Graphics
 
 		static inline float fontScale;
 
-		//holds text content
-		static inline ImGuiTextBuffer textBuffer;
+		static inline char inputTextBuffer[128];
+		static inline vector<string> consoleMessages;
+		static inline const int maxConsoleMessages = 1000;
 
 		void Initialize();
 
@@ -53,8 +58,7 @@ namespace Graphics
 		static void Shutdown();
 		static GUI& GetInstance();
 
-		static void AddTextToConsole();
-		static inline string addedText;
+		static void AddTextToConsole(const string& message);
 	private:
 		//text filter for searching
 		static inline ImGuiTextFilter textFilter;

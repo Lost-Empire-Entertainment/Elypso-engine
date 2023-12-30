@@ -78,7 +78,7 @@ if %errorlevel% neq 0 (
 			) else (
 				echo %cmsuc% Build succeeded!
 			)
-		
+			
 			pause
 			exit
 		)

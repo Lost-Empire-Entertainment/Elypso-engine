@@ -135,7 +135,7 @@ namespace Core
     {
         for (const auto& log : storedLogs)
         {
-            GUI::GetInstance().textBuffer.appendf("%s", log.c_str());
+            GUI::GetInstance().AddTextToConsole(log);
         }
         storedLogs.clear();
     }
@@ -189,8 +189,7 @@ namespace Core
 
         if (Engine::startedWindowLoop)
         {
-            GUI::GetInstance().addedText = internalConsoleMsg;
-            GUI::GetInstance().writeToConsole = true;
+            GUI::GetInstance().AddTextToConsole(internalConsoleMsg);
         }
         else
         {
@@ -281,7 +280,7 @@ namespace Core
         else if (cleanedCommands[0] == "ccc"
                  && cleanedCommands.size() == 1)
         {
-            GUI::textBuffer.clear();
+            GUI::consoleMessages.clear();
         }
         else
         {

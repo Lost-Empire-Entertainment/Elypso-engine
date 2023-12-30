@@ -36,8 +36,6 @@ namespace Core
 		static void GladSetup();
 		static void GUISetup();
 
-		static void AddProtectedPaths();
-
 		static void WindowLoop();
 
 		static void Window_Main();
@@ -55,15 +53,8 @@ namespace Core
 		static inline GLFWwindow* window;
 		static inline float fontScale = 1.5f;
 
-		static inline char inputTextBuffer[128];
-
-		static inline vector<path> protectedPaths;
 		static inline vector<string> consoleMessages;
 		static inline const int maxConsoleMessages = 1000;
-
-		static bool IsWhiteSpaceOrEmpty(const string& message);
-		static bool IsPathAccessible(const string& path);
-		static bool ContainsProtectedPath(const path& fullPath);
 
 		static void RunBatFile(string command);
 
@@ -72,13 +63,11 @@ namespace Core
 		static void MainWindow_BuildEngine();
 		static void MainWindow_CleanVS();
 		static void MainWindow_CleanEngine();
-		static void MainWindow_InputField();
 
 		static void MainWindow_HowToUse_HowToUse();
 		static void MainWindow_CleanVS_Confirm();
 		static void MainWindow_CleanEngine_Confirm();
 
-		static void ConsoleWindow_ParseInput(const string& message);
 		static void ConsoleWindow_WriteToConsole(const string& message, bool printToConsole = false);
 	};
 }
