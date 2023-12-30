@@ -405,7 +405,6 @@ namespace Graphics
 			ImGui::Text("Down: Left Control");
 			ImGui::Text("Sprint: Left Shift");
 			ImGui::Text("Toggle camera: Escape");
-			ImGui::Text("Toggle spotlight: F");
 
 			ImGui::End();
 		}
