@@ -49,7 +49,7 @@ namespace Core
 
 		static inline unsigned int width = 1280;
 		static inline unsigned int height = 720;
-		static inline string programName = "Elypso engine source manager v1.0.0";
+		static inline string programName = "Elypso engine source manager v2.0.0";
 		static inline GLFWwindow* window;
 		static inline float fontScale = 1.5f;
 

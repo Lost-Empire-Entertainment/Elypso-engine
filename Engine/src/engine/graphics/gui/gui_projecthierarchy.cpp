@@ -25,15 +25,13 @@
 #include "gui_projecthierarchy.hpp"
 #include "console.hpp"
 
-using std::filesystem::exists;
-
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
-	void GUIProjectHierarchy::RenderProjectHierarchy(path rootPath)
+	void GUIProjectHierarchy::RenderProjectHierarchy()
 	{
 		ImVec2 initialPos(5, 5);
 		ImVec2 initialSize(350, 700);
@@ -43,21 +41,6 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
-
-		if (!checkedForValidPath)
-		{
-			if (!exists(rootPath))
-			{
-				string output;
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					output);
-			}
-			else rootPathExists = true;
-
-			checkedForValidPath = true;
-		}
 
 		if (renderProjectHierarchy
 			&& ImGui::Begin("Project hierarchy", NULL, windowFlags))
@@ -69,16 +52,7 @@ namespace Graphics::GUI
 				renderProjectHierarchy = false;
 			}
 
-			if (!rootPathExists)
-			{
-				ImGui::Text("Error: Couldn't load root path!");
-
-				ImGui::End();
-				return;
-			}
-
-			string output = "Root path " + (rootPath).string() + " is valid!";
-			ImGui::TextWrapped(output.c_str());
+			
 
 			ImGui::End();
 		}

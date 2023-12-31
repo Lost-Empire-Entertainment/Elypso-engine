@@ -17,17 +17,13 @@
 
 #pragma once
 
-#include <filesystem>
-
-using std::filesystem::path;
-
 namespace Graphics::GUI
 {
 	class GUIProjectHierarchy
 	{
 	public:
 		static inline bool renderProjectHierarchy;
-		static void RenderProjectHierarchy(path rootPath);
+		static void RenderProjectHierarchy();
 	private:
 		static inline bool rootPathExists;
 		static inline bool checkedForValidPath;

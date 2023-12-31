@@ -515,15 +515,13 @@ namespace Core
 		SHELLEXECUTEINFO sei = { sizeof(sei) };
 
 		sei.lpVerb = "runas"; //triggers elevation prompt
-		sei.lpFile = batPathString.c_str(); //bat file command + optional user-inserted path
-		sei.lpParameters = command.c_str();
+		sei.lpFile = batPathString.c_str(); //path to build.bat
+		sei.lpParameters = command.c_str(); //the build.bat command that is run
 		sei.nShow = SW_NORMAL;
 		sei.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 		if (!ShellExecuteEx(&sei))
 		{
-			//MessageBox(NULL, "Error running script", "Error", MB_OK | MB_ICONERROR);
-
 			string output = "Error: Did not get permission from the user to run build.bat!";
 			ConsoleWindow_WriteToConsole(output, true);
 		}

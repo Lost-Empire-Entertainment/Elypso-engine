@@ -43,6 +43,7 @@ using std::cerr;
 using std::to_string;
 using std::ifstream;
 using std::exception;
+using std::filesystem::path;
 using std::filesystem::exists;
 using std::filesystem::remove;
 using std::filesystem::current_path;

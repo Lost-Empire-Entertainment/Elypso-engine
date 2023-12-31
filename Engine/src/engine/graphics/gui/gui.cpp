@@ -152,7 +152,7 @@ namespace Graphics::GUI
 		GUIConsole::RenderConsole();
 		GUIDebugMenu::RenderDebugMenu();
 		GUIInspector::RenderInspector();
-		GUIProjectHierarchy::RenderProjectHierarchy(Engine::filesPath);
+		GUIProjectHierarchy::RenderProjectHierarchy();
 
 		RenderVersionCheckWindow();
 

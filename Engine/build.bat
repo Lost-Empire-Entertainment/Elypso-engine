@@ -49,8 +49,6 @@ if %errorlevel% neq 0 (
 
 		if %errorlevel% neq 0 (
 			echo %cmerr% CMake configuration failed.
-		) else (
-			echo %cmsuc% Cmake configuration succeeded!
 		)
 	
 		pause
@@ -75,8 +73,6 @@ if %errorlevel% neq 0 (
 	
 			if %errorlevel% neq 0 (
 				echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly.
-			) else (
-				echo %cmsuc% Build succeeded!
 			)
 			
 			pause
