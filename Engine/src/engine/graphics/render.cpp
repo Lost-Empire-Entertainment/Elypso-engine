@@ -52,6 +52,7 @@ using Core::TimeManager;
 using Core::ConsoleManager;
 using Core::Engine;
 using Utils::Search;
+using Graphics::GUI::EngineGUI;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -69,11 +70,11 @@ namespace Graphics
 
 		Render::ContentSetup();
 
-		GUI::GetInstance().Initialize();
+		EngineGUI::GetInstance().Initialize();
 
 		Input::InputSetup();
 
-		TimeManager::targetDT = 1.0f / Graphics::GUI::GetScreenRefreshRate();
+		TimeManager::targetDT = 1.0f / EngineGUI::GetScreenRefreshRate();
 		TimeManager::lastTime = high_resolution_clock::now();
 	}
 
@@ -274,7 +275,7 @@ namespace Graphics
 
 		WindowContentLoop();
 
-		GUI::GetInstance().Render();
+		EngineGUI::GetInstance().Render();
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);

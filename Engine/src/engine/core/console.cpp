@@ -54,7 +54,7 @@ using std::chrono::time_point_cast;
 using std::chrono::system_clock;
 using glm::vec3;
 
-using Graphics::GUI;
+using Graphics::GUI::EngineGUI;
 using Utils::Search;
 using Core::Engine;
 using Utils::String;
@@ -135,7 +135,7 @@ namespace Core
     {
         for (const auto& log : storedLogs)
         {
-            GUI::GetInstance().AddTextToConsole(log);
+            EngineGUI::GetInstance().AddTextToConsole(log);
         }
         storedLogs.clear();
     }
@@ -189,7 +189,7 @@ namespace Core
 
         if (Engine::startedWindowLoop)
         {
-            GUI::GetInstance().AddTextToConsole(internalConsoleMsg);
+            EngineGUI::GetInstance().AddTextToConsole(internalConsoleMsg);
         }
         else
         {
@@ -280,7 +280,7 @@ namespace Core
         else if (cleanedCommands[0] == "ccc"
                  && cleanedCommands.size() == 1)
         {
-            GUI::consoleMessages.clear();
+            EngineGUI::consoleMessages.clear();
         }
         else
         {

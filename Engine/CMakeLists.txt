@@ -65,7 +65,11 @@ set(SOURCE_FILES
 	${SRC_CORE_DIR}/shutdown.cpp
 	${SRC_CORE_DIR}/timeManager.cpp
 	${SRC_FILE_DIR}/configFile.cpp
-	${SRC_GRAPHICS_DIR}/gui.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_console.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_debugmenu.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_projecthierarchy.cpp
 	${SRC_GRAPHICS_DIR}/render.cpp
 	${SRC_GRAPHICS_DIR}/shader.cpp
 	${SRC_GRAPHICS_DIR}/texture.cpp
@@ -98,6 +102,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/engine/core
 	${INCLUDE_DIR}/engine/file
 	${INCLUDE_DIR}/engine/graphics
+	${INCLUDE_DIR}/engine/graphics/gui
 	${INCLUDE_DIR}/engine/utils
 	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad

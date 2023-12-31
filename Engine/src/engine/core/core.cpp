@@ -30,7 +30,6 @@ using std::endl;
 using Core::ShutdownManager;
 using File::ConfigFile;
 using Graphics::Render;
-using Graphics::GUI;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 

@@ -25,7 +25,7 @@
 #include "render.hpp"
 #include "shutdown.hpp"
 
-using Graphics::GUI;
+using Graphics::GUI::EngineGUI;
 using Graphics::Render;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -39,7 +39,7 @@ namespace Core
 			Type::INFO,
 			"Cleaning up resources...\n");
 
-		GUI::GetInstance().Shutdown();
+		EngineGUI::GetInstance().Shutdown();
 
 		//de-allocate all resources once they've outlived their purpose
 		//glDeleteBuffers(1, &Render::VAO);

@@ -26,6 +26,10 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "gui.hpp"
+#include "gui_console.hpp"
+#include "gui_debugmenu.hpp"
+#include "gui_inspector.hpp"
+#include "gui_projecthierarchy.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -36,7 +40,6 @@
 #include "shutdown.hpp"
 
 #include <string>
-#include <filesystem>
 
 using std::cout;
 using std::endl;
@@ -58,19 +61,19 @@ using Utils::String;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
-namespace Graphics
+namespace Graphics::GUI
 {
 	static ImVec4 bgrColor;
 	static ImVec4 cubeColor;
 	static ImVec4 specularColor;
 
-	GUI& GUI::GetInstance()
+	EngineGUI& EngineGUI::GetInstance()
 	{
-		static GUI instance;
+		static EngineGUI instance;
 		return instance;
 	}
 
-	void GUI::Initialize()
+	void EngineGUI::Initialize()
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -94,10 +97,20 @@ namespace Graphics
 		bgrColor.z = Render::backgroundColor.z;
 		bgrColor.w = 1.0f;
 
+		static path rootPath = Search::FindCurrentPath() + "\\files";
+		if (exists(rootPath))
+		{
+			string output = "Successfully found root path: " + (rootPath).string() + "\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				output);
+		}
+
 		CustomizeImGuiStyle();
 	}
 
-	void GUI::CustomizeImGuiStyle()
+	void EngineGUI::CustomizeImGuiStyle()
 	{
 		ImGui::StyleColorsDark();
 
@@ -110,21 +123,21 @@ namespace Graphics
 		io.FontGlobalScale = fontScale;
 	}
 
-	int GUI::GetScreenWidth()
+	int EngineGUI::GetScreenWidth()
 	{
 		int width, height;
 		glfwGetFramebufferSize(Render::window, &width, &height);
 		return width;
 	}
 
-	int GUI::GetScreenHeight()
+	int EngineGUI::GetScreenHeight()
 	{
 		int width, height;
 		glfwGetFramebufferSize(Render::window, &width, &height);
 		return height;
 	}
 
-	float GUI::GetScreenRefreshRate()
+	float EngineGUI::GetScreenRefreshRate()
 	{
 		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
 
@@ -133,7 +146,7 @@ namespace Graphics
 		return static_cast<float>(videoMode->refreshRate);
 	}
 
-	void GUI::Render()
+	void EngineGUI::Render()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -143,10 +156,10 @@ namespace Graphics
 
 		RenderTopBar();
 
-		RenderKeybindsMenu();
 		RenderDebugMenu();
 		RenderConsole();
 		RenderSceneMenu();
+		RenderProjectHierarchyWindow();
 
 		RenderVersionCheckWindow();
 
@@ -165,7 +178,7 @@ namespace Graphics
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
-	void GUI::RenderTopBar()
+	void EngineGUI::RenderTopBar()
 	{
 		ImGui::BeginMainMenuBar();
 
@@ -266,11 +279,6 @@ namespace Graphics
 
 		if (ImGui::BeginMenu("Window"))
 		{
-			if (ImGui::MenuItem("Keybinds"))
-			{
-				showKeybindsMenu = true;
-			}
-
 			if (ImGui::MenuItem("Debug menu"))
 			{
 				showDebugMenu = true;
@@ -284,6 +292,11 @@ namespace Graphics
 			if (ImGui::MenuItem("Scene menu"))
 			{
 				showSceneMenu = true;
+			}
+
+			if (ImGui::MenuItem("Project hierarchy"))
+			{
+				showProjectHierarchyWindow = true;
 			}
 
 			ImGui::EndMenu();
@@ -309,7 +322,7 @@ namespace Graphics
 		ImGui::EndMainMenuBar();
 	}
 
-	void GUI::TB_CheckVersion()
+	void EngineGUI::TB_CheckVersion()
 	{
 		string batFilePath = Engine::filesPath + "/bat scripts/checkVersion.bat";
 
@@ -355,7 +368,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::TB_ReportIssue()
+	void EngineGUI::TB_ReportIssue()
 	{
 		try
 		{
@@ -374,43 +387,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RenderKeybindsMenu()
-	{
-		ImVec2 initialPos(5, 5);
-		ImVec2 initialSize(350, 700);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags = 
-			ImGuiWindowFlags_NoCollapse;
-
-		if (showKeybindsMenu
-			&& ImGui::Begin("Keybinds", NULL, windowFlags))
-		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-			if (ImGui::Button("X"))
-			{
-				showKeybindsMenu = false;
-			}
-
-			ImGui::Text("General keys");
-			ImGui::Text("");
-			ImGui::Text("Forwards: W");
-			ImGui::Text("Backwards: S");
-			ImGui::Text("Left: A");
-			ImGui::Text("Right: D");
-			ImGui::Text("Up: Space");
-			ImGui::Text("Down: Left Control");
-			ImGui::Text("Sprint: Left Shift");
-			ImGui::Text("Toggle camera: Escape");
-
-			ImGui::End();
-		}
-	}
-
-	void GUI::RenderDebugMenu()
+	void EngineGUI::RenderDebugMenu()
 	{
 		ImVec2 initialPos(5, 5);
 		ImVec2 initialSize(350, 700);
@@ -450,7 +427,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RenderConsole()
+	void EngineGUI::RenderConsole()
 	{
 		ImVec2 initialPos(357, 500);
 		ImVec2 initialSize(530, 200);
@@ -555,7 +532,7 @@ namespace Graphics
 			ImGui::End();
 		}
 	}
-	void GUI::AddTextToConsole(const string& message)
+	void EngineGUI::AddTextToConsole(const string& message)
 	{
 		consoleMessages.push_back(message);
 
@@ -566,7 +543,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RenderSceneMenu()
+	void EngineGUI::RenderSceneMenu()
 	{
 		ImVec2 initialPos(5, 5);
 		ImVec2 initialSize(350, 700);
@@ -615,7 +592,7 @@ namespace Graphics
 			ImGui::End();
 		}
 	}
-	void GUI::RSM_Main()
+	void EngineGUI::RSM_Main()
 	{
 		ImGui::Text("Background color");
 		ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor));
@@ -663,7 +640,7 @@ namespace Graphics
 			Render::shininess = 32.0f;
 		}
 	}
-	void GUI::RSM_Spot()
+	void EngineGUI::RSM_Spot()
 	{
 		ImGui::Text("Spotlight diffuse");
 		ImGui::ColorEdit3("##spotdiff", value_ptr(Render::spotDiffuse));
@@ -707,7 +684,7 @@ namespace Graphics
 			Render::spotOuterAngle = 17.5f;
 		}
 	}
-	void GUI::RSM_Point()
+	void EngineGUI::RSM_Point()
 	{
 		ImGui::Text("Point light diffuse");
 		ImGui::ColorEdit3("##pointdiff", value_ptr(Render::pointDiffuse));
@@ -736,7 +713,7 @@ namespace Graphics
 			Render::pointDistance = 1.0f;
 		}
 	}
-	void GUI::RSM_Cube()
+	void EngineGUI::RSM_Cube()
 	{
 		ImGui::Text("Cube speed multiplier");
 		ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 10.0f);
@@ -787,7 +764,34 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RenderVersionCheckWindow()
+	void EngineGUI::RenderProjectHierarchyWindow()
+	{
+		ImVec2 initialPos(5, 5);
+		ImVec2 initialSize(350, 700);
+		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
+		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
+		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse;
+
+		if (showProjectHierarchyWindow
+			&& ImGui::Begin("Project hierarchy", NULL, windowFlags))
+		{
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				showProjectHierarchyWindow = false;
+			}
+
+			
+
+			ImGui::End();
+		}
+	}
+
+	void EngineGUI::RenderVersionCheckWindow()
 	{
 		ImVec2 initialPos(400, 200);
 		ImVec2 initialSize(400, 400);
@@ -856,7 +860,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::RD_DebugMenuInfo()
+	void EngineGUI::RD_DebugMenuInfo()
 	{
 		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 		ImGui::Text(
@@ -870,8 +874,19 @@ namespace Graphics
 			Render::camera.GetCameraRotation().y,
 			Render::camera.GetCameraRotation().z);
 		ImGui::Text("FOV: %.0f", Graphics::Render::fov);
+
+		ImGui::Separator();
+
+		ImGui::Text("Forwards: W");
+		ImGui::Text("Backwards: S");
+		ImGui::Text("Left: A");
+		ImGui::Text("Right: D");
+		ImGui::Text("Up: Space");
+		ImGui::Text("Down: Left Control");
+		ImGui::Text("Sprint: Left Shift");
+		ImGui::Text("Toggle camera: Escape");
 	}
-	void GUI::RD_Interactions()
+	void EngineGUI::RD_Interactions()
 	{
 		ImGui::Text("Debug buttons");
 		ImGui::Text("");
@@ -981,7 +996,7 @@ namespace Graphics
 		}
 	}
 
-	void GUI::Shutdown()
+	void EngineGUI::Shutdown()
 	{
 		//close any remaining open ImGui windows
 		for (ImGuiWindow* window : ImGui::GetCurrentContext()->Windows)

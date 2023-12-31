@@ -21,22 +21,24 @@
 #include "imgui.h"
 
 #include <vector>
+#include <filesystem>
 
 using std::vector;
+using std::filesystem::path;
 
-namespace Graphics
+namespace Graphics::GUI
 {
-	class GUI
+	class EngineGUI
 	{
 	public:
 		static inline bool writeToConsole;
 		static inline bool firstScrollToBottom;
 		static inline bool allowScrollToBottom;
 
-		static inline bool showKeybindsMenu;
 		static inline bool showDebugMenu;
 		static inline bool showConsole;
 		static inline bool showSceneMenu;
+		static inline bool showProjectHierarchyWindow;
 		static inline bool showVersionWindow;
 		static inline bool outdatedVersion;
 
@@ -56,7 +58,7 @@ namespace Graphics
 
 		void Render();
 		static void Shutdown();
-		static GUI& GetInstance();
+		static EngineGUI& GetInstance();
 
 		static void AddTextToConsole(const string& message);
 	private:
@@ -77,10 +79,10 @@ namespace Graphics
 		static inline string versionConfirm;
 
 		//rendered windows
-		void RenderKeybindsMenu();
 		void RenderDebugMenu();
 		void RenderConsole();
 		void RenderSceneMenu();
+		void RenderProjectHierarchyWindow();
 
 		//rendered debug window parts
 		void RD_DebugMenuInfo();
@@ -91,5 +93,8 @@ namespace Graphics
 		void RSM_Spot();
 		void RSM_Point();
 		void RSM_Cube();
+
+		//rendered project hierarchy window parts
+		void RPHW_FoldersAndFiles(path selectedPath);
 	};
 }

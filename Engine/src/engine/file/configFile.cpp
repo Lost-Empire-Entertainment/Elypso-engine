@@ -48,7 +48,7 @@ using Graphics::Render;
 using Core::ConsoleManager;
 using Utils::String;
 using Utils::Search;
-using Graphics::GUI;
+using Graphics::GUI::EngineGUI;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -56,7 +56,7 @@ namespace File
 {
 	void ConfigFile::SetConfigValuesToDefaultValues()
 	{
-		GUI::fontScale = 1.5f;
+		EngineGUI::fontScale = 1.5f;
 		//Render::SCR_WIDTH = 1280; //do not uncomment! edit in render.hpp instead!
 		//Render::SCR_WIDTH = 720; //do not uncomment! edit in render.hpp instead!
 		Render::useMonitorRefreshRate = true;
@@ -66,11 +66,12 @@ namespace File
 		vec3 newPosition = vec3(0.0f, 0.0f, 3.0f);
 		Render::camera.SetCameraPosition(newPosition);
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
-		GUI::allowScrollToBottom = true;
+		EngineGUI::allowScrollToBottom = true;
 		ConsoleManager::sendDebugMessages = true;
-		GUI::showKeybindsMenu = false;
-		GUI::showDebugMenu = false;
-		GUI::showConsole = false;
+		EngineGUI::showDebugMenu = false;
+		EngineGUI::showConsole = false;
+		EngineGUI::showSceneMenu = false;
+		EngineGUI::showProjectHierarchyWindow = false;
 
 		Engine::docsPath = Search::FindDocumentsFolder();
 		Engine::filesPath = current_path().generic_string() + "/files";
@@ -127,7 +128,7 @@ namespace File
 					 && stof(cleanedValue) >= 1.0f
 					 && stof(cleanedValue) <= 2.0f)
 			{
-				GUI::fontScale = stof(cleanedValue);
+				EngineGUI::fontScale = stof(cleanedValue);
 			}
 		}
 
@@ -173,16 +174,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						GUI::fontScale = stof(lineVariables[0]);
+						EngineGUI::fontScale = stof(lineVariables[0]);
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set font scale to " + to_string(GUI::fontScale) + ".\n");
+							"Set font scale to " + to_string(EngineGUI::fontScale) + ".\n");
 					}
 					else
 					{
-						GUI::fontScale = 1.5f;
+						EngineGUI::fontScale = 1.5f;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -363,16 +364,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						GUI::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
+						EngineGUI::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set console force scroll to " + to_string(GUI::allowScrollToBottom) + ".\n");
+							"Set console force scroll to " + to_string(EngineGUI::allowScrollToBottom) + ".\n");
 					}
 					else
 					{
-						GUI::allowScrollToBottom = true;
+						EngineGUI::allowScrollToBottom = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -380,41 +381,20 @@ namespace File
 							"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
-				else if (name == "showKeybindsMenu")
-				{
-					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
-					{
-						GUI::showKeybindsMenu = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set show keybinds menu to " + to_string(GUI::showKeybindsMenu) + ".\n");
-					}
-					else
-					{
-						GUI::showKeybindsMenu = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Show keybinds menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
 				else if (name == "showDebugMenu")
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						GUI::showDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
+						EngineGUI::showDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show debug menu to " + to_string(GUI::showDebugMenu) + ".\n");
+							"Set show debug menu to " + to_string(EngineGUI::showDebugMenu) + ".\n");
 					}
 					else
 					{
-						GUI::showDebugMenu = true;
+						EngineGUI::showDebugMenu = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -426,16 +406,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						GUI::showConsole = static_cast<bool>(stoi(lineVariables[0]));
+						EngineGUI::showConsole = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show console to " + to_string(GUI::showConsole) + ".\n");
+							"Set show console to " + to_string(EngineGUI::showConsole) + ".\n");
 					}
 					else
 					{
-						GUI::showConsole = true;
+						EngineGUI::showConsole = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -447,16 +427,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						GUI::showSceneMenu = static_cast<bool>(stoi(lineVariables[0]));
+						EngineGUI::showSceneMenu = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show scene menu to " + to_string(GUI::showSceneMenu) + ".\n");
+							"Set show scene menu to " + to_string(EngineGUI::showSceneMenu) + ".\n");
 					}
 					else
 					{
-						GUI::showSceneMenu = true;
+						EngineGUI::showSceneMenu = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -464,6 +444,27 @@ namespace File
 							"Show scene menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
+				else if (name == "showProjectHierarchyWindow")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						EngineGUI::showProjectHierarchyWindow = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set show project hierarchy window to " + to_string(EngineGUI::showProjectHierarchyWindow) + ".\n");
+					}
+					else
+					{
+						EngineGUI::showProjectHierarchyWindow = true;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Show project hierarchy window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+					}
 			}
 
 			configFile.close();
@@ -502,7 +503,7 @@ namespace File
 		}
 
 		//write config data into the config file
-		configFile << "fontScale: " << GUI::fontScale << endl;
+		configFile << "fontScale: " << EngineGUI::fontScale << endl;
 		int width;
 		int height;
 		glfwGetWindowSize(Render::window, &width, &height);
@@ -519,12 +520,12 @@ namespace File
 			Render::camera.GetCameraRotation().x << ", " <<
 			Render::camera.GetCameraRotation().y << ", " <<
 			Render::camera.GetCameraRotation().z << endl;
-		configFile << "consoleForceScroll: " << GUI::allowScrollToBottom << endl;
+		configFile << "consoleForceScroll: " << EngineGUI::allowScrollToBottom << endl;
 		configFile << "consoleDebugMessages: " << ConsoleManager::sendDebugMessages << endl;
-		configFile << "showKeybindsMenu: " << GUI::showKeybindsMenu << endl;
-		configFile << "showDebugMenu: " << GUI::showDebugMenu << endl;
-		configFile << "showConsole: " << GUI::showConsole << endl;
-		configFile << "showSceneMenu: " << GUI::showSceneMenu << endl;
+		configFile << "showDebugMenu: " << EngineGUI::showDebugMenu << endl;
+		configFile << "showConsole: " << EngineGUI::showConsole << endl;
+		configFile << "showSceneMenu: " << EngineGUI::showSceneMenu << endl;
+		configFile << "showProjectHierarchyWindow: " << EngineGUI::showProjectHierarchyWindow << endl;
 
 		configFile.close();
 
@@ -612,13 +613,6 @@ namespace File
 						&& (consoleForceScroll == 0
 						|| consoleForceScroll == 1));
 			}
-			else if (type == "showKeybindsMenu")
-			{
-				int showKeybindsMenu = stoi(value);
-				return (String::CanConvertStringToInt(value)
-					&& (showKeybindsMenu == 0
-						|| showKeybindsMenu == 1));
-			}
 			else if (type == "showDebugMenu")
 			{
 				int showDebugMenu = stoi(value);
@@ -639,6 +633,13 @@ namespace File
 				return (String::CanConvertStringToInt(value)
 					&& (showSceneMenu == 0
 						|| showSceneMenu == 1));
+			}
+			else if (type == "showProjectHierarchyWindow")
+			{
+				int showProjectHierarchyWindow = stoi(value);
+				return (String::CanConvertStringToInt(value)
+					&& (showProjectHierarchyWindow == 0
+						|| showProjectHierarchyWindow == 1));
 			}
 			else
 			{
