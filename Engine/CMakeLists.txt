@@ -3,7 +3,7 @@
 # This is free software, and you are welcome to redistribute it under certain conditions.
 # Read LICENSE.md and EULA.md for more information.
 
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.27)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -137,12 +137,12 @@ target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PA
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Copy "files" directory to the install directory after build
+# Create an empty "files" directory in the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove_directory
     $<TARGET_FILE_DIR:Elypso_engine>/files
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_engine>/files
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    $<TARGET_FILE_DIR:Elypso_engine>/files
 )
 
 # Copy "engine" directory to the install directory after build

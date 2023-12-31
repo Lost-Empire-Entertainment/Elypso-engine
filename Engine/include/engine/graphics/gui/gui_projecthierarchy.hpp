@@ -17,15 +17,27 @@
 
 #pragma once
 
+#include <filesystem>
+#include <vector>
+#include <string>
+
+using std::filesystem::path;
+using std::vector;
+using std::string;
+
 namespace Graphics::GUI
 {
 	class GUIProjectHierarchy
 	{
 	public:
 		static inline bool renderProjectHierarchy;
-		static void RenderProjectHierarchy();
+		static void RenderProjectHierarchy(const path& rootPath);
+
 	private:
-		static inline bool rootPathExists;
-		static inline bool checkedForValidPath;
+		/// <summary>
+		/// Draw each individual folders content when it is accessed.
+		/// </summary>
+		/// <param name="folderPath">The folder path that is accessed.</param>
+		static void DrawFolder(const path& folderPath, bool isRoot = false);
 	};
 }

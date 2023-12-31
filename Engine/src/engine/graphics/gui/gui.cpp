@@ -152,7 +152,9 @@ namespace Graphics::GUI
 		GUIConsole::RenderConsole();
 		GUIDebugMenu::RenderDebugMenu();
 		GUIInspector::RenderInspector();
-		GUIProjectHierarchy::RenderProjectHierarchy();
+		path filesPath = Engine::filesPath;
+		path parentPath = filesPath.parent_path();
+		GUIProjectHierarchy::RenderProjectHierarchy(parentPath);
 
 		RenderVersionCheckWindow();
 
