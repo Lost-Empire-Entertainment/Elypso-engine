@@ -25,7 +25,7 @@
 #include "console.hpp"
 #include "searchUtils.hpp"
 #include "stringUtils.hpp"
-#include "gui.hpp"
+#include "gui_console.hpp"
 #include "core.hpp"
 #include "shutdown.hpp"
 #include "render.hpp"
@@ -54,7 +54,7 @@ using std::chrono::time_point_cast;
 using std::chrono::system_clock;
 using glm::vec3;
 
-using Graphics::GUI::EngineGUI;
+using Graphics::GUI::GUIConsole;
 using Utils::Search;
 using Core::Engine;
 using Utils::String;
@@ -135,7 +135,7 @@ namespace Core
     {
         for (const auto& log : storedLogs)
         {
-            EngineGUI::GetInstance().AddTextToConsole(log);
+            GUIConsole::AddTextToConsole(log);
         }
         storedLogs.clear();
     }
@@ -189,7 +189,7 @@ namespace Core
 
         if (Engine::startedWindowLoop)
         {
-            EngineGUI::GetInstance().AddTextToConsole(internalConsoleMsg);
+            GUIConsole::AddTextToConsole(internalConsoleMsg);
         }
         else
         {
@@ -280,7 +280,7 @@ namespace Core
         else if (cleanedCommands[0] == "ccc"
                  && cleanedCommands.size() == 1)
         {
-            EngineGUI::consoleMessages.clear();
+            GUIConsole::consoleMessages.clear();
         }
         else
         {

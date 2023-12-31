@@ -23,7 +23,6 @@
 #include "shader.hpp"
 #include "stringUtils.hpp"
 
-#include <string>
 #include <fstream>
 #include <iostream>
 #include <sstream>

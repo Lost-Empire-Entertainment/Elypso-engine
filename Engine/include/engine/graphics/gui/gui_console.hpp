@@ -15,7 +15,29 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-namespace Graphics
-{
+#pragma once
 
+#include <vector>
+#include <string>
+
+using std::vector;
+using std::string;
+
+namespace Graphics::GUI
+{
+	class GUIConsole
+	{
+	public:
+		static inline bool renderConsole;
+		static inline bool firstScrollToBottom;
+		static inline bool allowScrollToBottom;
+
+		static inline char inputTextBuffer[128];
+		static inline vector<string> consoleMessages;
+
+		static void RenderConsole();
+		static void AddTextToConsole(const string& message);
+	private:
+		static inline const int maxConsoleMessages = 1000;
+	};
 }

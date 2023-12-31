@@ -25,6 +25,10 @@
 #include "stringUtils.hpp"
 #include "searchUtils.hpp"
 #include "gui.hpp"
+#include "gui_console.hpp"
+#include "gui_debugmenu.hpp"
+#include "gui_inspector.hpp"
+#include "gui_projecthierarchy.hpp"
 #include "core.hpp"
 
 #include <iostream>
@@ -49,6 +53,10 @@ using Core::ConsoleManager;
 using Utils::String;
 using Utils::Search;
 using Graphics::GUI::EngineGUI;
+using Graphics::GUI::GUIConsole;
+using Graphics::GUI::GUIDebugMenu;
+using Graphics::GUI::GUIInspector;
+using Graphics::GUI::GUIProjectHierarchy;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -66,12 +74,12 @@ namespace File
 		vec3 newPosition = vec3(0.0f, 0.0f, 3.0f);
 		Render::camera.SetCameraPosition(newPosition);
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
-		EngineGUI::allowScrollToBottom = true;
+		GUIConsole::allowScrollToBottom = true;
 		ConsoleManager::sendDebugMessages = true;
-		EngineGUI::showDebugMenu = false;
-		EngineGUI::showConsole = false;
-		EngineGUI::showSceneMenu = false;
-		EngineGUI::showProjectHierarchyWindow = false;
+		GUIDebugMenu::renderDebugMenu = false;
+		GUIConsole::renderConsole = false;
+		GUIInspector::renderInspector = false;
+		GUIProjectHierarchy::renderProjectHierarchy = false;
 
 		Engine::docsPath = Search::FindDocumentsFolder();
 		Engine::filesPath = current_path().generic_string() + "/files";
@@ -364,16 +372,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						EngineGUI::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
+						GUIConsole::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set console force scroll to " + to_string(EngineGUI::allowScrollToBottom) + ".\n");
+							"Set console force scroll to " + to_string(GUIConsole::allowScrollToBottom) + ".\n");
 					}
 					else
 					{
-						EngineGUI::allowScrollToBottom = true;
+						GUIConsole::allowScrollToBottom = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -385,16 +393,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						EngineGUI::showDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
+						GUIDebugMenu::renderDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show debug menu to " + to_string(EngineGUI::showDebugMenu) + ".\n");
+							"Set show debug menu to " + to_string(GUIDebugMenu::renderDebugMenu) + ".\n");
 					}
 					else
 					{
-						EngineGUI::showDebugMenu = true;
+						GUIDebugMenu::renderDebugMenu = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -406,16 +414,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						EngineGUI::showConsole = static_cast<bool>(stoi(lineVariables[0]));
+						GUIConsole::renderConsole = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show console to " + to_string(EngineGUI::showConsole) + ".\n");
+							"Set show console to " + to_string(GUIConsole::renderConsole) + ".\n");
 					}
 					else
 					{
-						EngineGUI::showConsole = true;
+						GUIConsole::renderConsole = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -427,16 +435,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						EngineGUI::showSceneMenu = static_cast<bool>(stoi(lineVariables[0]));
+						GUIInspector::renderInspector = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show scene menu to " + to_string(EngineGUI::showSceneMenu) + ".\n");
+							"Set show scene menu to " + to_string(GUIInspector::renderInspector) + ".\n");
 					}
 					else
 					{
-						EngineGUI::showSceneMenu = true;
+						GUIInspector::renderInspector = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -448,16 +456,16 @@ namespace File
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						EngineGUI::showProjectHierarchyWindow = static_cast<bool>(stoi(lineVariables[0]));
+						GUIProjectHierarchy::renderProjectHierarchy = static_cast<bool>(stoi(lineVariables[0]));
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set show project hierarchy window to " + to_string(EngineGUI::showProjectHierarchyWindow) + ".\n");
+							"Set show project hierarchy window to " + to_string(GUIProjectHierarchy::renderProjectHierarchy) + ".\n");
 					}
 					else
 					{
-						EngineGUI::showProjectHierarchyWindow = true;
+						GUIProjectHierarchy::renderProjectHierarchy = true;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -520,12 +528,12 @@ namespace File
 			Render::camera.GetCameraRotation().x << ", " <<
 			Render::camera.GetCameraRotation().y << ", " <<
 			Render::camera.GetCameraRotation().z << endl;
-		configFile << "consoleForceScroll: " << EngineGUI::allowScrollToBottom << endl;
+		configFile << "consoleForceScroll: " << GUIConsole::allowScrollToBottom << endl;
 		configFile << "consoleDebugMessages: " << ConsoleManager::sendDebugMessages << endl;
-		configFile << "showDebugMenu: " << EngineGUI::showDebugMenu << endl;
-		configFile << "showConsole: " << EngineGUI::showConsole << endl;
-		configFile << "showSceneMenu: " << EngineGUI::showSceneMenu << endl;
-		configFile << "showProjectHierarchyWindow: " << EngineGUI::showProjectHierarchyWindow << endl;
+		configFile << "showDebugMenu: " << GUIDebugMenu::renderDebugMenu << endl;
+		configFile << "showConsole: " << GUIConsole::renderConsole << endl;
+		configFile << "showSceneMenu: " << GUIInspector::renderInspector << endl;
+		configFile << "showProjectHierarchyWindow: " << GUIProjectHierarchy::renderProjectHierarchy << endl;
 
 		configFile.close();
 

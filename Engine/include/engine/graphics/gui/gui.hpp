@@ -21,32 +21,20 @@
 #include "imgui.h"
 
 #include <vector>
-#include <filesystem>
+#include <string>
 
 using std::vector;
-using std::filesystem::path;
+using std::string;
 
 namespace Graphics::GUI
 {
 	class EngineGUI
 	{
 	public:
-		static inline bool writeToConsole;
-		static inline bool firstScrollToBottom;
-		static inline bool allowScrollToBottom;
-
-		static inline bool showDebugMenu;
-		static inline bool showConsole;
-		static inline bool showSceneMenu;
-		static inline bool showProjectHierarchyWindow;
 		static inline bool showVersionWindow;
 		static inline bool outdatedVersion;
 
 		static inline float fontScale;
-
-		static inline char inputTextBuffer[128];
-		static inline vector<string> consoleMessages;
-		static inline const int maxConsoleMessages = 1000;
 
 		void Initialize();
 
@@ -59,8 +47,6 @@ namespace Graphics::GUI
 		void Render();
 		static void Shutdown();
 		static EngineGUI& GetInstance();
-
-		static void AddTextToConsole(const string& message);
 	private:
 		//text filter for searching
 		static inline ImGuiTextFilter textFilter;
@@ -77,24 +63,5 @@ namespace Graphics::GUI
 		void RenderVersionCheckWindow();
 		static inline string versionCompare;
 		static inline string versionConfirm;
-
-		//rendered windows
-		void RenderDebugMenu();
-		void RenderConsole();
-		void RenderSceneMenu();
-		void RenderProjectHierarchyWindow();
-
-		//rendered debug window parts
-		void RD_DebugMenuInfo();
-		void RD_Interactions();
-
-		//rendered scene menu parts
-		void RSM_Main();
-		void RSM_Spot();
-		void RSM_Point();
-		void RSM_Cube();
-
-		//rendered project hierarchy window parts
-		void RPHW_FoldersAndFiles(path selectedPath);
 	};
 }

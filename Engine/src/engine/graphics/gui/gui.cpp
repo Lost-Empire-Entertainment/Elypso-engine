@@ -18,9 +18,8 @@
 //external
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <imgui_internal.h>
+#include "imgui_internal.h"
 #include "magic_enum.hpp"
-#include "type_ptr.hpp"
 
 //engine
 #include "console.hpp"
@@ -33,31 +32,35 @@
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
-#include "timeManager.hpp"
 #include "searchUtils.hpp"
 #include "fileUtils.hpp"
 #include "browserUtils.hpp"
 #include "shutdown.hpp"
 
 #include <string>
+#include <filesystem>
 
 using std::cout;
 using std::endl;
 using std::stoi;
 using std::to_string;
 using std::exception;
+using std::filesystem::path;
 using std::filesystem::exists;
 using glm::clamp;
 
 using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
-using Core::TimeManager;
 using Core::ShutdownManager;
 using Utils::Search;
 using Utils::File;
 using Utils::Browser;
 using Utils::String;
+using Graphics::GUI::GUIConsole;
+using Graphics::GUI::GUIDebugMenu;
+using Graphics::GUI::GUIInspector;
+using Graphics::GUI::GUIProjectHierarchy;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -156,10 +159,10 @@ namespace Graphics::GUI
 
 		RenderTopBar();
 
-		RenderDebugMenu();
-		RenderConsole();
-		RenderSceneMenu();
-		RenderProjectHierarchyWindow();
+		GUIConsole::RenderConsole();
+		GUIDebugMenu::RenderDebugMenu();
+		GUIInspector::RenderInspector();
+		GUIProjectHierarchy::RenderProjectHierarchy();
 
 		RenderVersionCheckWindow();
 
@@ -281,22 +284,22 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Debug menu"))
 			{
-				showDebugMenu = true;
+				GUIDebugMenu::renderDebugMenu = true;
 			}
 
 			if (ImGui::MenuItem("Console"))
 			{
-				showConsole = true;
+				GUIConsole::renderConsole = true;
 			}
 
-			if (ImGui::MenuItem("Scene menu"))
+			if (ImGui::MenuItem("Inspector"))
 			{
-				showSceneMenu = true;
+				GUIInspector::renderInspector = true;
 			}
 
 			if (ImGui::MenuItem("Project hierarchy"))
 			{
-				showProjectHierarchyWindow = true;
+				GUIProjectHierarchy::renderProjectHierarchy = true;
 			}
 
 			ImGui::EndMenu();
@@ -387,410 +390,6 @@ namespace Graphics::GUI
 		}
 	}
 
-	void EngineGUI::RenderDebugMenu()
-	{
-		ImVec2 initialPos(5, 5);
-		ImVec2 initialSize(350, 700);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse;
-
-		if (showDebugMenu
-			&& ImGui::Begin("Debug menu", NULL, windowFlags))
-		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-			if (ImGui::Button("X"))
-			{
-				showDebugMenu = false;
-			}
-
-			if (ImGui::BeginTabBar("Debug"))
-			{
-				if (ImGui::BeginTabItem("Debug info"))
-				{
-					RD_DebugMenuInfo();
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Debug interactions"))
-				{
-					RD_Interactions();
-					ImGui::EndTabItem();
-				}
-				ImGui::EndTabBar();
-			}
-
-			ImGui::End();
-		}
-	}
-
-	void EngineGUI::RenderConsole()
-	{
-		ImVec2 initialPos(357, 500);
-		ImVec2 initialSize(530, 200);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse;
-
-		if (showConsole
-			&& ImGui::Begin("Console", NULL, windowFlags))
-		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-			if (ImGui::Button("X"))
-			{
-				showConsole = false;
-			}
-
-			//text area with scrollable region
-			ImVec2 scrollingRegionSize(
-				ImGui::GetContentRegionAvail().x,
-				ImGui::GetContentRegionAvail().y - 25);
-			ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, true);
-
-			float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
-			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
-
-			//display the content of the text buffer
-			for (const auto& message : consoleMessages)
-			{
-				ImGui::TextWrapped("%s", message.c_str());
-			}
-
-			ImGui::PopTextWrapPos();
-
-			//scrolls to the bottom if scrolling is allowed
-			//and if user is close to the newest console message
-			if (allowScrollToBottom)
-			{
-				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
-				if (isNearBottom
-					|| (!firstScrollToBottom
-						&& Engine::startedWindowLoop))
-				{
-					ImGui::SetScrollHereY(1.0f);
-					firstScrollToBottom = true;
-				}
-			}
-
-			ImGui::EndChild();
-
-			//text filter input box
-			float textAreaHeight = ImGui::GetContentRegionAvail().y - 25.0f;
-			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight));
-
-			// Draw the text filter input box
-			ImGui::PushItemWidth(scrollingRegionSize.x);
-			ImGuiInputTextFlags inputFieldTextFlags =
-				ImGuiInputTextFlags_EnterReturnsTrue;
-
-			//press enter to insert install path
-			if (ImGui::InputTextWithHint(
-				"##inputfield",
-				"Enter command...",
-				inputTextBuffer,
-				sizeof(inputTextBuffer),
-				inputFieldTextFlags,
-				[](ImGuiInputTextCallbackData* data) -> int
-				{
-					//allow inserting text with Ctrl+V
-					if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_V)) &&
-						ImGui::GetIO().KeyCtrl)
-					{
-						const char* clipboardText = glfwGetClipboardString(Render::window);
-						if (clipboardText)
-						{
-							//insert clipboard text into the input buffer
-							int textLength = strlen(clipboardText);
-							int availableSpace = data->BufSize - data->BufTextLen;
-							int copyLength = ImMin(textLength, availableSpace - 1); //leave space for null terminator
-							if (copyLength > 0)
-							{
-								memcpy(data->Buf + data->CursorPos, clipboardText, copyLength);
-								data->CursorPos += copyLength;
-								data->BufTextLen += copyLength;
-								data->Buf[data->CursorPos] = '\0';
-							}
-						}
-					}
-					return 0;
-				}))
-			{
-				ConsoleManager::ParseConsoleCommand(inputTextBuffer);
-				if (allowScrollToBottom) ImGui::SetScrollHereY(1.0f);
-				memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
-			}
-
-			ImGui::PopItemWidth();
-
-			ImGui::End();
-		}
-	}
-	void EngineGUI::AddTextToConsole(const string& message)
-	{
-		consoleMessages.push_back(message);
-
-		//erases the first added message if a new one was added and count exceeded max count
-		while (consoleMessages.size() > maxConsoleMessages)
-		{
-			consoleMessages.erase(consoleMessages.begin());
-		}
-	}
-
-	void EngineGUI::RenderSceneMenu()
-	{
-		ImVec2 initialPos(5, 5);
-		ImVec2 initialSize(350, 700);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse;
-
-		if (showSceneMenu
-			&& ImGui::Begin("Scene menu", NULL, windowFlags))
-		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-			if (ImGui::Button("X"))
-			{
-				showSceneMenu = false;
-			}
-
-			if (ImGui::BeginTabBar("Scene"))
-			{
-				if (ImGui::BeginTabItem("Main"))
-				{
-					RSM_Main();
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Spotlight"))
-				{
-					RSM_Spot();
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Point light"))
-				{
-					RSM_Point();
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Cube"))
-				{
-					RSM_Cube();
-					ImGui::EndTabItem();
-				}
-				ImGui::EndTabBar();
-			}
-
-			ImGui::End();
-		}
-	}
-	void EngineGUI::RSM_Main()
-	{
-		ImGui::Text("Background color");
-		ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor));
-
-		ImGui::Text("Directional light direction");
-		ImGui::Text("x  ");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirX", &Render::directionalDirection.x, -360.0f, 360.0f);
-		ImGui::SameLine();
-		ImGui::Text("  y  ");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirY", &Render::directionalDirection.y, -360.0f, 360.0f);
-		ImGui::SameLine();
-		ImGui::Text("  z  ");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirZ", &Render::directionalDirection.z, -360.0f, 360.0f);
-
-		ImGui::Text("Directional light diffuse");
-		ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse));
-
-		ImGui::Text("Directional light intensity");
-		ImGui::SliderFloat("##dirint", &Render::directionalIntensity, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how strong the directional light intensity is.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##dirint"))
-		{
-			Render::directionalIntensity = 1.0f;
-		}
-
-		ImGui::Text("Shininess");
-		ImGui::SliderFloat("##shininess", &Render::shininess, 3.0f, 128.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how intense the material shininess should be.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##shininess"))
-		{
-			Render::shininess = 32.0f;
-		}
-	}
-	void EngineGUI::RSM_Spot()
-	{
-		ImGui::Text("Spotlight diffuse");
-		ImGui::ColorEdit3("##spotdiff", value_ptr(Render::spotDiffuse));
-
-		ImGui::Text("Spotlight intensity");
-		ImGui::SliderFloat("##spotint", &Render::spotIntensity, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how strong the spotlight intensity is.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotint"))
-		{
-			Render::spotIntensity = 1.0f;
-		}
-
-		ImGui::Text("Spotlight distance");
-		ImGui::SliderFloat("##spotdist", &Render::spotDistance, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how far the spotlight can cast.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotdist"))
-		{
-			Render::spotDistance = 1.0f;
-		}
-
-		ImGui::Text("Spotlight inner angle");
-		ImGui::SliderFloat("##spotinnerangle", &Render::spotInnerAngle, 0.0f, Render::spotOuterAngle - 0.01f);
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotinnerangle"))
-		{
-			Render::spotInnerAngle = 12.5f;
-		}
-		ImGui::Text("Spotlight outer angle");
-		ImGui::SliderFloat("##spotouterangle", &Render::spotOuterAngle, Render::spotInnerAngle + 0.01f, 50.0f);
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotouterangle"))
-		{
-			Render::spotOuterAngle = 17.5f;
-		}
-	}
-	void EngineGUI::RSM_Point()
-	{
-		ImGui::Text("Point light diffuse");
-		ImGui::ColorEdit3("##pointdiff", value_ptr(Render::pointDiffuse));
-
-		ImGui::Text("Point light intensity");
-		ImGui::SliderFloat("##pointint", &Render::pointIntensity, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how strong the point light intensity is.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##pointint"))
-		{
-			Render::pointIntensity = 1.0f;
-		}
-
-		ImGui::Text("Point light distance");
-		ImGui::SliderFloat("##pointdist", &Render::pointDistance, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how far the point light can cast.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##pointdist"))
-		{
-			Render::pointDistance = 1.0f;
-		}
-	}
-	void EngineGUI::RSM_Cube()
-	{
-		ImGui::Text("Cube speed multiplier");
-		ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust the overall cube speed multiplier.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##cubespeedmult"))
-		{
-			Render::cubeSpeedMultiplier = 0.005f;
-		}
-
-		ImGui::Text("Lamp orbit range");
-		ImGui::SliderFloat("##lamporbitrange", &Render::lampOrbitRange, 2.0f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how far the cube should orbit from the lamp.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##lamporbitrange"))
-		{
-			Render::lampOrbitRange = 5.0f;
-		}
-
-		ImGui::Text("Cube wiggle height");
-		ImGui::SliderFloat("##cubewheight", &Render::cubeWiggleHeight, 0.0f, 5.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how high and low the cube should wiggle.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##cubewheight"))
-		{
-			Render::cubeWiggleHeight = 2.0f;
-		}
-
-		ImGui::Text("Cube wiggle speed");
-		ImGui::SliderFloat("##cubewspeed", &Render::cubeWiggleSpeed, 0.0f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how fast the cube should wiggle.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##cubewspeed"))
-		{
-			Render::cubeWiggleSpeed = 1.0f;
-		}
-	}
-
-	void EngineGUI::RenderProjectHierarchyWindow()
-	{
-		ImVec2 initialPos(5, 5);
-		ImVec2 initialSize(350, 700);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse;
-
-		if (showProjectHierarchyWindow
-			&& ImGui::Begin("Project hierarchy", NULL, windowFlags))
-		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-			if (ImGui::Button("X"))
-			{
-				showProjectHierarchyWindow = false;
-			}
-
-			
-
-			ImGui::End();
-		}
-	}
-
 	void EngineGUI::RenderVersionCheckWindow()
 	{
 		ImVec2 initialPos(400, 200);
@@ -857,142 +456,6 @@ namespace Graphics::GUI
 			}
 
 			ImGui::End();
-		}
-	}
-
-	void EngineGUI::RD_DebugMenuInfo()
-	{
-		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
-		ImGui::Text(
-			"Position: %.2f, %.2f, %.2f",
-			Render::camera.GetCameraPosition().x,
-			Render::camera.GetCameraPosition().y,
-			Render::camera.GetCameraPosition().z);
-		ImGui::Text(
-			"Angle: %.2f, %.2f, %.2f",
-			Render::camera.GetCameraRotation().x,
-			Render::camera.GetCameraRotation().y,
-			Render::camera.GetCameraRotation().z);
-		ImGui::Text("FOV: %.0f", Graphics::Render::fov);
-
-		ImGui::Separator();
-
-		ImGui::Text("Forwards: W");
-		ImGui::Text("Backwards: S");
-		ImGui::Text("Left: A");
-		ImGui::Text("Right: D");
-		ImGui::Text("Up: Space");
-		ImGui::Text("Down: Left Control");
-		ImGui::Text("Sprint: Left Shift");
-		ImGui::Text("Toggle camera: Escape");
-	}
-	void EngineGUI::RD_Interactions()
-	{
-		ImGui::Text("Debug buttons");
-		ImGui::Text("");
-
-		ImGui::Text("Enable VSync");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		if (ImGui::Checkbox("##vsync", &Render::useMonitorRefreshRate))
-		{
-			glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
-		}
-
-		ImGui::Text("Enable FPS messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##fpsmsg", &Input::inputSettings.printFPSToConsole);
-
-		ImGui::Text("Enable ImGui messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##imguimsg", &Input::inputSettings.printIMGUIToConsole);
-
-		ImGui::Text("Enable input messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##inputmsg", &Input::inputSettings.printInputToConsole);
-
-		ImGui::Text("Enable console scroll to bottom");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##consolescroll", &allowScrollToBottom);
-
-		ImGui::Text("Enable console debug messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
-
-		//
-		//CAMERA CLIP RANGE
-		//
-
-		ImGui::Separator();
-
-		ImGui::Text("Camera clip range");
-		ImGui::Text("");
-
-		ImGui::Text("Near clip");
-		ImGui::SliderFloat("##nearclip", &Render::nearClip, 0.001f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust camera near clip range.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##nearclip"))
-		{
-			Render::nearClip = 0.001f;
-		}
-
-		ImGui::Text("Far clip");
-		ImGui::SliderFloat("##farclip", &Render::farClip, 10.0f, 100.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust camera far clip range.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##farclip"))
-		{
-			Render::farClip = 100.0f;
-		}
-
-		//
-		//MOVE SPEED MULTIPLIER
-		//
-
-		ImGui::Separator();
-
-		ImGui::Text("Move speed multiplier");
-		ImGui::Text("");
-		ImGui::SliderFloat("##movespeed", &Input::inputSettings.moveSpeedMultiplier, 0.1f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust camera move speed.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##movespeedmult"))
-		{
-			Input::inputSettings.moveSpeedMultiplier = 1.0f;
-		}
-
-		//
-		//FOV
-		//
-
-		ImGui::Separator();
-
-		ImGui::Text("FOV");
-		ImGui::Text("");
-		ImGui::SliderFloat("##fov", &Render::fov, 70.0f, 110.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust camera field of view.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##fov"))
-		{
-			Render::fov = 90.0f;
 		}
 	}
 
