@@ -162,11 +162,11 @@ namespace Graphics
 		glEnable(GL_DEPTH_TEST);
 
 		GameObjectShader = Shader(
-			Engine::filesPath + "/shaders/GameObject.vert",
-			Engine::filesPath + "/shaders/GameObject.frag");
+			Engine::enginePath + "/shaders/GameObject.vert",
+			Engine::enginePath + "/shaders/GameObject.frag");
 		TestLightShader = Shader(
-			Engine::filesPath + "/shaders/Light_Test.vert",
-			Engine::filesPath + "/shaders/Light_Test.frag");
+			Engine::enginePath + "/shaders/Light_Test.vert",
+			Engine::enginePath + "/shaders/Light_Test.frag");
 
 		float vertices[] = 
 		{
@@ -244,7 +244,7 @@ namespace Graphics
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
-		Texture tex(Engine::filesPath);
+		Texture tex(Engine::enginePath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 

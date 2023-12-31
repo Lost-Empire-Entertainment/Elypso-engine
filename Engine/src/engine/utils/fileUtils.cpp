@@ -15,8 +15,10 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+//engine
 #include "fileUtils.hpp"
 #include "searchUtils.hpp"
+#include "console.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -26,6 +28,13 @@
 
 using Utils::Search;
 using std::runtime_error;
+using std::filesystem::exists;
+using std::filesystem::copy_file;
+using std::filesystem::copy_options;
+
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Utils
 {
@@ -55,4 +64,40 @@ namespace Utils
 
         return result;
 	}
+
+    void File::CopyFile(path& filePath, path& targetDestination)
+    {
+        string output;
+        if (!exists(filePath))
+        {
+            output = "Error " + filePath.string() + " does not exist!\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+
+            return;
+        }
+
+        if (!exists(targetDestination))
+        {
+            output = "Error " + targetDestination.string() + " does not exist!\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+
+            return;
+        }
+
+        string fileName = filePath.filename().string();
+        string targetDestinationWithFile = targetDestination.string() + "\\" + fileName;
+        copy_file(filePath, targetDestinationWithFile, copy_options::overwrite_existing);
+
+        output = "Moved " + filePath.string() + " to " + targetDestination.string() + "\n\n";
+        ConsoleManager::WriteConsoleMessage(
+            Caller::ENGINE,
+            Type::INFO,
+            output);
+    }
 }

@@ -17,19 +17,11 @@
 
 #pragma once
 
-#include <filesystem>
-
-using std::filesystem::path;
-
-namespace Graphics::GUI
+namespace Core
 {
-	class GUIProjectHierarchy
+	class ErrorPopup
 	{
 	public:
-		static inline bool renderProjectHierarchy;
-		static void RenderProjectHierarchy(path rootPath);
-	private:
-		static inline bool rootPathExists;
-		static inline bool checkedForValidPath;
+		static void CreateErrorPopup(const char* errorTitle = "INSERT ERROR TITLE", const char* errorMessage = "INSERT ERROR MESSAGE");
 	};
 }

@@ -75,7 +75,7 @@ namespace Core
 		window = glfwCreateWindow(
 			width,
 			height,
-			programName.c_str(),
+			"Source manager",
 			NULL,
 			NULL);
 

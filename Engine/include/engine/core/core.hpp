@@ -30,6 +30,7 @@ namespace Core
 		static inline string version = "0.0.10 Prototype";
 		static inline string docsPath;
 		static inline string filesPath;
+		static inline string enginePath;
 
 		static inline bool startedWindowLoop;
 

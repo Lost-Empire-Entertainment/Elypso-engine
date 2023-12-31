@@ -93,22 +93,12 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF((Engine::enginePath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		bgrColor.x = Render::backgroundColor.x;
 		bgrColor.y = Render::backgroundColor.y;
 		bgrColor.z = Render::backgroundColor.z;
 		bgrColor.w = 1.0f;
-
-		static path rootPath = Search::FindCurrentPath() + "\\files";
-		if (exists(rootPath))
-		{
-			string output = "Successfully found root path: " + (rootPath).string() + "\n\n";
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::INFO,
-				output);
-		}
 
 		CustomizeImGuiStyle();
 	}
@@ -162,7 +152,7 @@ namespace Graphics::GUI
 		GUIConsole::RenderConsole();
 		GUIDebugMenu::RenderDebugMenu();
 		GUIInspector::RenderInspector();
-		GUIProjectHierarchy::RenderProjectHierarchy();
+		GUIProjectHierarchy::RenderProjectHierarchy(Engine::filesPath);
 
 		RenderVersionCheckWindow();
 
@@ -327,7 +317,7 @@ namespace Graphics::GUI
 
 	void EngineGUI::TB_CheckVersion()
 	{
-		string batFilePath = Engine::filesPath + "/bat scripts/checkVersion.bat";
+		string batFilePath = Engine::enginePath + "/bat scripts/checkVersion.bat";
 
 		if (exists(batFilePath))
 		{

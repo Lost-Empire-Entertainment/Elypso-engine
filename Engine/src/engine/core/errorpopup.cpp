@@ -15,21 +15,22 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#pragma once
+#include "errorpopup.hpp"
+#include "shutdown.hpp"
 
-#include <filesystem>
+#include <Windows.h>
 
-using std::filesystem::path;
+using Core::ShutdownManager;
 
-namespace Graphics::GUI
+namespace Core
 {
-	class GUIProjectHierarchy
+	void ErrorPopup::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
 	{
-	public:
-		static inline bool renderProjectHierarchy;
-		static void RenderProjectHierarchy(path rootPath);
-	private:
-		static inline bool rootPathExists;
-		static inline bool checkedForValidPath;
-	};
+		int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
+
+		if (result == IDOK)
+		{
+			ShutdownManager::shouldShutDown = true;
+		}
+	}
 }

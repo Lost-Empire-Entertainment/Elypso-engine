@@ -18,8 +18,10 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
 using std::string;
+using std::filesystem::path;
 
 namespace Utils
 {
@@ -32,5 +34,12 @@ namespace Utils
 		/// <param name="file">Where is the file located at?</param>
 		/// <returns></returns>
 		static string GetOutputFromBatFile(const char* file);
+
+		/// <summary>
+		/// Copy the selected file to the target path.
+		/// </summary>
+		/// <param name="filePath">Full path to the file you are trying to move.</param>
+		/// <param name="targetPath">Full path to the target destination without the file name itself.</param>
+		static void CopyFile(path& filePath, path& targetPath);
 	};
 }

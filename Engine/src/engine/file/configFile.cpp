@@ -30,6 +30,7 @@
 #include "gui_inspector.hpp"
 #include "gui_projecthierarchy.hpp"
 #include "core.hpp"
+#include "errorpopup.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -57,6 +58,7 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
+using Core::ErrorPopup;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -82,7 +84,22 @@ namespace File
 		GUIProjectHierarchy::renderProjectHierarchy = false;
 
 		Engine::docsPath = Search::FindDocumentsFolder();
-		Engine::filesPath = current_path().generic_string() + "/files";
+
+		path enginePath = current_path().generic_string() + "/engine";
+		if (!exists(enginePath))
+		{
+			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find engine folder! Shutting down.");
+			return;
+		}
+		Engine::enginePath = enginePath.string();
+
+		path filesPath = current_path().generic_string() + "/files";
+		if (!exists(filesPath))
+		{
+			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
+			return;
+		}
+		Engine::filesPath = filesPath.string();
 
 		if (!exists(Engine::docsPath))
 		{

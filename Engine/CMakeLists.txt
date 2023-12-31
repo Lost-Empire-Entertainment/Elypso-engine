@@ -61,6 +61,7 @@ set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
 	${SRC_CORE_DIR}/console.cpp
 	${SRC_CORE_DIR}/core.cpp
+	${SRC_CORE_DIR}/errorpopup.cpp
 	${SRC_CORE_DIR}/input.cpp
 	${SRC_CORE_DIR}/shutdown.cpp
 	${SRC_CORE_DIR}/timeManager.cpp
@@ -142,6 +143,14 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
     $<TARGET_FILE_DIR:Elypso_engine>/files
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_engine>/files
+)
+
+# Copy "engine" directory to the install directory after build
+add_custom_command(TARGET Elypso_engine POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:Elypso_engine>/engine
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/engine $<TARGET_FILE_DIR:Elypso_engine>/engine
 )
 
 # Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
