@@ -38,7 +38,9 @@ using std::filesystem::copy_options;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::filesystem::create_directory;
+using std::filesystem::create_directories;
 using std::filesystem::rename;
+using std::filesystem::recursive_directory_iterator;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -122,9 +124,20 @@ namespace Utils
     void File::CopyFileOrFolder(path& itemPath, path& targetPath)
     {
         string output;
-        if (!PathExists(itemPath)
-            || !PathExists(targetPath))
+        string fileOrFolderName = itemPath.filename().string();
+        path fixedTargetPath = targetPath = targetPath.string() + "\\" + fileOrFolderName;
+        if (!PathExists(itemPath))
         {
+            return;
+        }
+        if (exists(targetPath))
+        {
+            output = "Error " + targetPath.string() + " already exists!\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+
             return;
         }
 
@@ -132,9 +145,25 @@ namespace Utils
         {
             if (is_directory(itemPath))
             {
-                copy(itemPath, targetPath, copy_options::overwrite_existing);
+                create_directories(fixedTargetPath);
 
-                output = "Copied " + itemPath.string() + " to " + targetPath.string() + ".\n\n";
+                //copy all subfiles and subfolders and item path to target path
+                for (const auto& entry : recursive_directory_iterator(itemPath))
+                {
+                    path relativePath = relative(entry.path(), itemPath);
+                    path destinationPath = fixedTargetPath / relativePath;
+
+                    if (is_directory(entry))
+                    {
+                        create_directory(destinationPath);
+                    }
+                    else if (is_regular_file(entry))
+                    {
+                        copy_file(entry.path(), destinationPath, copy_options::overwrite_existing);
+                    }
+                }
+
+                output = "Copied " + itemPath.string() + " and its sub-folders and sub-files (if there were any) to " + fixedTargetPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::ENGINE,
                     Type::SUCCESS,
@@ -142,9 +171,9 @@ namespace Utils
             }
             else
             {
-                copy_file(itemPath, targetPath, copy_options::overwrite_existing);
+                copy_file(itemPath, fixedTargetPath, copy_options::overwrite_existing);
 
-                output = "Copied " + itemPath.string() + " to " + targetPath.string() + ".\n\n";
+                output = "Copied " + itemPath.string() + " to " + fixedTargetPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::ENGINE,
                     Type::SUCCESS,
@@ -168,7 +197,8 @@ namespace Utils
 
         try
         {
-            remove(itemPath);
+            if (is_regular_file(itemPath)) remove(itemPath);
+            else if (is_directory(itemPath)) remove_all(itemPath);
 
             output = "Deleted " + itemPath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(

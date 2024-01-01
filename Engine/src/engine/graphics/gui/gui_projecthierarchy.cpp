@@ -202,11 +202,35 @@ namespace Graphics::GUI
 				cout << "Copied " << selectedItemPath.string() << endl;
 			}
 
-			if (ImGui::MenuItem("Paste")
-				&& !copyPath.empty()
-				&& isFolder)
+			if (ImGui::MenuItem("Paste"))
 			{
+				if (!isFolder)
+				{
+					if (selectedItemPath == rootPath)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Error: Path is not a folder!");
+						return;
+					}
+				}
+
+				if (copyPath.empty()
+					|| !exists(copyPath))
+				{
+					if (selectedItemPath == rootPath)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Error: There is nothing to paste!");
+						return;
+					}
+				}
+
 				cout << "Pasted " << copyPath.string() << " to " << selectedItemPath.string() << endl;
+				File::CopyFileOrFolder(copyPath, selectedItemPath);
 			}
 
 			if (ImGui::MenuItem("Delete"))
