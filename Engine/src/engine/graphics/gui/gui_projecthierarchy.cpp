@@ -138,11 +138,12 @@ namespace Graphics::GUI
 	{
 		if (rightMouseClicked)
 		{
-			string replaceBackSlashes = String::Replace(selectedItemPath.string(), "\\", "/");
-			string doubleQuoteString = "\"";
-			string removeQuotes = String::Replace(selectedItemPath.string(), doubleQuoteString, "");
-			selectedItemPath = removeQuotes;
-			cout << "Selected " << selectedItemPath << endl;
+			string uncleanSelectedItemPath = selectedItemPath.string();
+			uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '\\', '/');
+			uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '"', '\0');
+			selectedItemPath = uncleanSelectedItemPath;
+			string displayedPath = uncleanSelectedItemPath;
+			cout << "Selected " << displayedPath << endl;
 
 			ImGui::OpenPopup("rightclickpopup");
 

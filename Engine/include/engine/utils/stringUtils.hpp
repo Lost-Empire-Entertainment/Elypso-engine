@@ -35,7 +35,16 @@ namespace Utils
 		/// <param name="search">Part to search for.</param>
 		/// <param name="replacement">Part to replace searched part with.</param>
 		/// <returns></returns>
-		static string Replace(const string& original, const string& search, const string& replacement);
+		static string StringReplace(const string& original, const string& search, const string& replacement);
+
+		/// <summary>
+		/// Replace a part of a char with something else.
+		/// </summary>
+		/// <param name="original"></param>
+		/// <param name="search"></param>
+		/// <param name="replacement"></param>
+		/// <returns></returns>
+		static string CharReplace(const string& original, const char& search, const char& replacement);
 
 		/// <summary>
 		/// Split a string in two from the delimiter.

@@ -327,7 +327,7 @@ namespace Graphics::GUI
 			vector<string>cleanedOutput = String::RemoveExcept(splitOutput, "0.0.");
 			vector<string>sortedOutput = String::RemoveDuplicates(cleanedOutput);
 
-			string currentVersion = String::Replace(Engine::version, " Prototype", "");
+			string currentVersion = String::StringReplace(Engine::version, " Prototype", "");
 
 			int versionNumber = stoi(String::Split(currentVersion, '.')[2]);
 			int currentVersionNumber = 0;

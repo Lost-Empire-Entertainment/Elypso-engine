@@ -43,7 +43,7 @@ namespace Utils
 			wstring wPath(path);
 			CoTaskMemFree(path); //free the allocated memory
 
-			return String::Replace(
+			return String::StringReplace(
 				string(wPath.begin(), wPath.end()), "\\", "/") + 
 				"/" + "Elypso engine";
 		}

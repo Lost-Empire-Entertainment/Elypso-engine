@@ -36,7 +36,7 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Utils
 {
-	string String::Replace(const string& original, const string& search, const string& replacement)
+	string String::StringReplace(const string& original, const string& search, const string& replacement)
 	{
 		string result = original;
 		size_t pos = 0;
@@ -44,6 +44,18 @@ namespace Utils
 		{
 			result.replace(pos, search.length(), replacement);
 			pos += replacement.length();
+		}
+		return result;
+	}
+
+	string String::CharReplace(const string& original, const char& search, const char& replacement)
+	{
+		string result = original;
+		size_t pos = 0;
+		while ((pos = result.find(search, pos)) != string::npos)
+		{
+			result[pos] = replacement;
+			pos += 1;
 		}
 		return result;
 	}

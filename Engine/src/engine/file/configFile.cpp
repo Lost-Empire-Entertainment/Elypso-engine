@@ -140,7 +140,7 @@ namespace File
 		while (getline(configFileStream, line))
 		{
 			vector<string> splitLine = String::Split(line, ' ');
-			string cleanedVariable = String::Replace(splitLine[0], ":", "");
+			string cleanedVariable = String::StringReplace(splitLine[0], ":", "");
 			string cleanedValue = splitLine[1];
 			if (cleanedVariable == debugMessagesCheck
 				&& String::CanConvertStringToInt(cleanedValue)
