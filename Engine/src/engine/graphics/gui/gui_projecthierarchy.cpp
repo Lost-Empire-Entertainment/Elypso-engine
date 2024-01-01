@@ -85,17 +85,20 @@ namespace Graphics::GUI
 				renderProjectHierarchy = false;
 			}
 
-			DrawFolder(rootPath);
-			RenderPopup();
+			DrawFolder(rootPath, true);
+			RightClickPopup();
 
 			ImGui::End();
 		}
 	}
-	void GUIProjectHierarchy::DrawFolder(const path& folderPath)
+	void GUIProjectHierarchy::DrawFolder(const path& folderPath, bool isRoot)
 	{
 		ImGuiTreeNodeFlags nodeFlags = 
 			ImGuiTreeNodeFlags_OpenOnArrow |
 			ImGuiTreeNodeFlags_OpenOnDoubleClick;
+
+		//always keep the root folder open
+		if (isRoot) nodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
 
 		bool isFolderOpen = ImGui::TreeNodeEx(
 			folderPath.filename().string().c_str(),
@@ -115,7 +118,7 @@ namespace Graphics::GUI
 				if (entry.is_directory() && find(ignoredNames.begin(), ignoredNames.end(),
 					entry.path().filename()) == ignoredNames.end())
 				{
-					DrawFolder(entry.path());
+					DrawFolder(entry.path(), false);
 				}
 				else if (entry.is_regular_file() && find(ignoredNames.begin(), ignoredNames.end(),
 					entry.path().filename()) == ignoredNames.end())
@@ -134,7 +137,7 @@ namespace Graphics::GUI
 			ImGui::TreePop();
 		}
 	}
-	void GUIProjectHierarchy::RenderPopup()
+	void GUIProjectHierarchy::RightClickPopup()
 	{
 		if (rightMouseClicked)
 		{
@@ -152,19 +155,19 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
-			if (ImGui::MenuItem("action 1"))
+			if (ImGui::MenuItem("Copy"))
 			{
-				cout << "Action 1 for " << selectedItemPath.string() << endl;
+				cout << "Copied " << selectedItemPath.string() << endl;
 			}
 
-			if (ImGui::MenuItem("action 2"))
+			if (ImGui::MenuItem("Paste"))
 			{
-				cout << "Action 2 for " << selectedItemPath.string() << endl;
+				cout << "Pasted " << selectedItemPath.string() << endl;
 			}
 
-			if (ImGui::MenuItem("action 3"))
+			if (ImGui::MenuItem("Delete"))
 			{
-				cout << "Action 3 for " << selectedItemPath.string() << endl;
+				cout << "Deleted " << selectedItemPath.string() << endl;
 			}
 
 			ImGui::EndPopup();

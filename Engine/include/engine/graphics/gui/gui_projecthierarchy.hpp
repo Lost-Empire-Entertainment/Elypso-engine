@@ -35,17 +35,18 @@ namespace Graphics::GUI
 
 	private:
 		static inline bool rightMouseClicked;
+		static inline path copyPath;
 		static inline path selectedItemPath;
 
 		/// <summary>
 		/// Draw each individual folders content when it is accessed.
 		/// </summary>
 		/// <param name="folderPath">The folder path that is accessed.</param>
-		static void DrawFolder(const path& folderPath);
+		static void DrawFolder(const path& folderPath, bool isRoot);
 
 		/// <summary>
 		/// Renders the popup that allows to do different actions when right-clicking a file or a folder in the project hierarchy.
 		/// </summary>
-		static void RenderPopup();
+		static void RightClickPopup();
 	};
 }
