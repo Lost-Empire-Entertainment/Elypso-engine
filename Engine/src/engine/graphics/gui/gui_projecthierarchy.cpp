@@ -175,11 +175,29 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Rename"))
 			{
+				if (selectedItemPath == rootPath)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Error: Cannot rename root path!");
+					return;
+				}
+
 				isRenaming = true;
 			}
 
 			if (ImGui::MenuItem("Copy"))
 			{
+				if (selectedItemPath == rootPath)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Error: Cannot copy root path!");
+					return;
+				}
+
 				copyPath = selectedItemPath;
 				cout << "Copied " << selectedItemPath.string() << endl;
 			}
