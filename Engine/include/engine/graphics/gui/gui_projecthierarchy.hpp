@@ -34,6 +34,9 @@ namespace Graphics::GUI
 		static void RenderProjectHierarchy(const path& rootPath);
 
 	private:
+		static inline char newNameBuffer[64];
+		static inline bool isRenaming;
+		static inline bool isFolder;
 		static inline bool rightMouseClicked;
 		static inline path copyPath;
 		static inline path selectedItemPath;
@@ -48,5 +51,7 @@ namespace Graphics::GUI
 		/// Renders the popup that allows to do different actions when right-clicking a file or a folder in the project hierarchy.
 		/// </summary>
 		static void RightClickPopup();
+
+		static void RenameFileOrFolder();
 	};
 }

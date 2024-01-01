@@ -25,6 +25,7 @@
 #include "gui_projecthierarchy.hpp"
 #include "console.hpp"
 #include "stringUtils.hpp"
+#include "fileUtils.hpp"
 
 using std::cout;
 using std::endl;
@@ -35,6 +36,7 @@ using std::filesystem::is_directory;
 using std::filesystem::directory_iterator;
 
 using Utils::String;
+using Utils::File;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -87,6 +89,7 @@ namespace Graphics::GUI
 
 			DrawFolder(rootPath, true);
 			RightClickPopup();
+			RenameFileOrFolder();
 
 			ImGui::End();
 		}
@@ -109,19 +112,26 @@ namespace Graphics::GUI
 		{
 			selectedItemPath = folderPath;
 			rightMouseClicked = true;
+			isFolder = true;
 		}
 
 		if (isFolderOpen)
 		{
 			for (const auto& entry : directory_iterator(folderPath))
 			{
-				if (entry.is_directory() && find(ignoredNames.begin(), ignoredNames.end(),
-					entry.path().filename()) == ignoredNames.end())
+				if (entry.is_directory() 
+					&& find(ignoredNames.begin(), 
+							ignoredNames.end(),
+						    entry.path().filename()) 
+						    == ignoredNames.end())
 				{
 					DrawFolder(entry.path(), false);
 				}
-				else if (entry.is_regular_file() && find(ignoredNames.begin(), ignoredNames.end(),
-					entry.path().filename()) == ignoredNames.end())
+				else if (entry.is_regular_file() 
+						 && find(ignoredNames.begin(), 
+							     ignoredNames.end(),
+						         entry.path().filename()) 
+					             == ignoredNames.end())
 				{
 					ImGui::Selectable(entry.path().filename().string().c_str());
 
@@ -130,6 +140,7 @@ namespace Graphics::GUI
 					{
 						selectedItemPath = entry.path();
 						rightMouseClicked = true;
+						isFolder = false;
 					}
 				}
 			}
@@ -155,19 +166,77 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
+			if (ImGui::MenuItem("Create folder")
+				&& isFolder)
+			{
+				path output = selectedItemPath.string() + "\\New folder";
+				File::CreateNewFolder(output);
+			}
+
+			if (ImGui::MenuItem("Rename"))
+			{
+				isRenaming = true;
+			}
+
 			if (ImGui::MenuItem("Copy"))
 			{
+				copyPath = selectedItemPath;
 				cout << "Copied " << selectedItemPath.string() << endl;
 			}
 
-			if (ImGui::MenuItem("Paste"))
+			if (ImGui::MenuItem("Paste")
+				&& !copyPath.empty()
+				&& isFolder)
 			{
-				cout << "Pasted " << selectedItemPath.string() << endl;
+				cout << "Pasted " << copyPath.string() << " to " << selectedItemPath.string() << endl;
 			}
 
 			if (ImGui::MenuItem("Delete"))
 			{
 				cout << "Deleted " << selectedItemPath.string() << endl;
+				File::DeleteFileOrfolder(selectedItemPath);
+				selectedItemPath = path();
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
+	void GUIProjectHierarchy::RenameFileOrFolder()
+	{
+		if (isRenaming)
+		{
+			ImGui::OpenPopup("Rename item");
+			isRenaming = false;
+		}
+
+		if (ImGui::BeginPopupModal("Rename item", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Enter new name:");
+			ImGui::InputText("##newname", newNameBuffer, sizeof(newNameBuffer));
+
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
+				//check if the new name is not empty
+				if (strlen(newNameBuffer) > 0)
+				{
+					path newPath = selectedItemPath.parent_path() / newNameBuffer;
+
+					//check if the new path is different from the current path
+					if (newPath != selectedItemPath)
+					{
+						File::MoveOrRenameFileOrFolder(selectedItemPath, newPath, true);
+					}
+				}
+
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				ImGui::CloseCurrentPopup();
 			}
 
 			ImGui::EndPopup();

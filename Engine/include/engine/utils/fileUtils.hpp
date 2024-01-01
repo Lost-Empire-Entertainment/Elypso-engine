@@ -36,10 +36,32 @@ namespace Utils
 		static string GetOutputFromBatFile(const char* file);
 
 		/// <summary>
-		/// Copy the selected file to the target path.
+		/// Move or rename the selected file or folder.
 		/// </summary>
-		/// <param name="filePath">Full path to the file you are trying to move.</param>
-		/// <param name="targetPath">Full path to the target destination without the file name itself.</param>
-		static void CopyFile(path& filePath, path& targetPath);
+		/// <param name="itemPath">Full path to the file or folder you are trying to move or rename.</param>
+		/// <param name="targetPath">Full path to the target destination.</param>
+		/// <param name="isRenaming">Should the file or folder be renamed?</param>
+		static void MoveOrRenameFileOrFolder(path& itemPath, path& targetPath, bool isRenaming);
+
+		/// <summary>
+		/// Copy the selected file or folder to the target path.
+		/// </summary>
+		/// <param name="itemPath">Full path to the file or folder you are trying to copy.</param>
+		/// <param name="targetPath">Full path to the target destination.</param>
+		static void CopyFileOrFolder(path& itemPath, path& targetPath);
+
+		/// <summary>
+		/// Delete a file or folder.
+		/// </summary>
+		/// <param name="itemPath">Full path to the file or folder you are trying to delete.</param>
+		static void DeleteFileOrfolder(path& itemPath);
+
+		/// <summary>
+		/// Create a new folder at the target destination.
+		/// </summary>
+		/// <param name="folderPath">Full path to the new folder you are trying to create the folder to.</param>
+		static void CreateNewFolder(path& folderPath);
+	private:
+		static bool PathExists(path& itemPath);
 	};
 }

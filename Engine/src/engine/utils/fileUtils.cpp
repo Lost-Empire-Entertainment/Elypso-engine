@@ -27,10 +27,18 @@
 #include <string>
 
 using Utils::Search;
+using std::exception;
 using std::runtime_error;
 using std::filesystem::exists;
 using std::filesystem::copy_file;
+using std::filesystem::copy;
+using std::filesystem::remove;
+using std::filesystem::remove_all;
 using std::filesystem::copy_options;
+using std::filesystem::is_directory;
+using std::filesystem::is_regular_file;
+using std::filesystem::create_directory;
+using std::filesystem::rename;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -65,12 +73,139 @@ namespace Utils
         return result;
 	}
 
-    void File::CopyFile(path& filePath, path& targetDestination)
+    void File::MoveOrRenameFileOrFolder(path& itemPath, path& targetPath, bool isRenaming)
     {
         string output;
-        if (!exists(filePath))
+        if (!isRenaming)
         {
-            output = "Error " + filePath.string() + " does not exist!\n\n";
+            if (!PathExists(itemPath)
+                || !PathExists(targetPath))
+            {
+                return;
+            }
+        }
+        else
+        {
+            if (!PathExists(itemPath)) return;
+            if (exists(targetPath))
+            {
+                output = "Error " + targetPath.string() + " already exists!\n\n";
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::ENGINE,
+                    Type::EXCEPTION,
+                    output);
+
+                return;
+            }
+        }
+
+        try
+        {
+            rename(itemPath, targetPath);
+
+            output = "Renamed " + itemPath.string() + " to " + targetPath.string() + ".\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::SUCCESS,
+                output);
+        }
+        catch (const exception& e)
+        {
+            output = "Error: " + string(e.what()) + ".\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+        }
+    }
+
+    void File::CopyFileOrFolder(path& itemPath, path& targetPath)
+    {
+        string output;
+        if (!PathExists(itemPath)
+            || !PathExists(targetPath))
+        {
+            return;
+        }
+
+        try
+        {
+            if (is_directory(itemPath))
+            {
+                copy(itemPath, targetPath, copy_options::overwrite_existing);
+
+                output = "Copied " + itemPath.string() + " to " + targetPath.string() + ".\n\n";
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::ENGINE,
+                    Type::SUCCESS,
+                    output);
+            }
+            else
+            {
+                copy_file(itemPath, targetPath, copy_options::overwrite_existing);
+
+                output = "Copied " + itemPath.string() + " to " + targetPath.string() + ".\n\n";
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::ENGINE,
+                    Type::SUCCESS,
+                    output);
+            }
+        }
+        catch (const exception& e)
+        {
+            output = "Error: " + string(e.what()) + ".\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+        }
+    }
+
+    void File::DeleteFileOrfolder(path& itemPath)
+    {
+        string output;
+        if (!PathExists(itemPath)) return;
+
+        try
+        {
+            remove(itemPath);
+
+            output = "Deleted " + itemPath.string() + ".\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::SUCCESS,
+                output);
+        }
+        catch (const exception& e)
+        {
+            output = "Error: " + string(e.what()) + ".\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+        }
+    }
+
+    bool File::PathExists(path& itemPath)
+    {
+        if (!exists(itemPath))
+        {
+            string output = "Error " + itemPath.string() + " does not exist!\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+        }
+
+        return (exists(itemPath));
+    }
+
+    void File::CreateNewFolder(path& folderPath)
+    {
+        string output;
+        if (exists(folderPath))
+        {
+            output = "Error " + folderPath.string() + " already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
@@ -79,9 +214,9 @@ namespace Utils
             return;
         }
 
-        if (!exists(targetDestination))
+        if (is_regular_file(folderPath))
         {
-            output = "Error " + targetDestination.string() + " does not exist!\n\n";
+            output = "Error " + folderPath.string() + " must be a folder!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
@@ -90,14 +225,23 @@ namespace Utils
             return;
         }
 
-        string fileName = filePath.filename().string();
-        string targetDestinationWithFile = targetDestination.string() + "\\" + fileName;
-        copy_file(filePath, targetDestinationWithFile, copy_options::overwrite_existing);
+        try
+        {
+            create_directory(folderPath);
 
-        output = "Moved " + filePath.string() + " to " + targetDestination.string() + "\n\n";
-        ConsoleManager::WriteConsoleMessage(
-            Caller::ENGINE,
-            Type::INFO,
-            output);
+            output = "Created new folder at " + folderPath.string() + ".\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::SUCCESS,
+                output);
+        }
+        catch (const exception& e)
+        {
+            output = "Error: " + string(e.what()) + ".\n\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                output);
+        }
     }
 }
