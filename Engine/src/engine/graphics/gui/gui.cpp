@@ -36,6 +36,7 @@
 #include "fileUtils.hpp"
 #include "browserUtils.hpp"
 #include "shutdown.hpp"
+#include "gameobject.hpp"
 
 #include <string>
 #include <filesystem>
@@ -48,6 +49,7 @@ using std::exception;
 using std::filesystem::path;
 using std::filesystem::exists;
 using glm::clamp;
+using glm::vec3;
 
 using Core::Engine;
 using Core::Input;
@@ -61,6 +63,8 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
+using Core::ECS::GameObject;
+using Core::ECS::Transform;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -274,6 +278,61 @@ namespace Graphics::GUI
 
 		ImGui::SameLine(100 * fontScale * 0.75f);
 
+		if (ImGui::BeginMenu("Asset"))
+		{
+			if (ImGui::BeginMenu("Shape"))
+			{
+				if (ImGui::MenuItem("Cube"))
+				{
+					GameObject obj = GameObject::CreateCube(
+						vec3(0.0f, 0.0f, 0.0f),
+						vec3(1.0f, 1.0f, 1.0f),
+						vec3(1.0f, 0.0f, 0.0f),
+						32.0f);
+
+					unsigned int ID = obj.GetID();
+					vec3 pos = obj.GetComponent<Transform>()->position;
+					string posX = to_string(pos.x);
+					string posY = to_string(pos.y);
+					string posZ = to_string(pos.z);
+
+					string output = "Successfully created " + to_string(ID) + " at position (" + posX + ", " + posY + ", " + posZ + ")\n";
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::SUCCESS,
+						output);
+				}
+				if (ImGui::MenuItem("Sphere"))
+				{
+
+				}
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Light source"))
+			{
+				if (ImGui::MenuItem("Point light"))
+				{
+
+				}
+				if (ImGui::MenuItem("Spotlight"))
+				{
+
+				}
+				if (ImGui::MenuItem("Directional light"))
+				{
+
+				}
+
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::SameLine(160 * fontScale * 0.75f);
+
 		if (ImGui::BeginMenu("Window"))
 		{
 			if (ImGui::MenuItem("Debug menu"))
@@ -299,7 +358,7 @@ namespace Graphics::GUI
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(180 * fontScale * 0.75f);
+		ImGui::SameLine(240 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Help"))
 		{

@@ -36,6 +36,7 @@ set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 
 # Manually added source file paths
 set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/engine/core")
+set(SRC_ECS_DIR "${CMAKE_SOURCE_DIR}/src/engine/core/ECS")
 set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/engine/file")
 set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics")
 set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/engine/utils")
@@ -65,6 +66,7 @@ set(SOURCE_FILES
 	${SRC_CORE_DIR}/input.cpp
 	${SRC_CORE_DIR}/shutdown.cpp
 	${SRC_CORE_DIR}/timeManager.cpp
+	${SRC_ECS_DIR}/gameobject.cpp
 	${SRC_FILE_DIR}/configFile.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_console.cpp
@@ -101,6 +103,7 @@ target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR}/engine
 	${INCLUDE_DIR}/engine/core
+	${INCLUDE_DIR}/engine/core/ECS
 	${INCLUDE_DIR}/engine/file
 	${INCLUDE_DIR}/engine/graphics
 	${INCLUDE_DIR}/engine/graphics/gui
