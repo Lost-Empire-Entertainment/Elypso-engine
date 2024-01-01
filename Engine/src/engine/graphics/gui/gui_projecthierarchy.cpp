@@ -86,6 +86,7 @@ namespace Graphics::GUI
 			}
 
 			DrawFolder(rootPath, true);
+			RenderPopup();
 
 			ImGui::End();
 		}
@@ -105,7 +106,7 @@ namespace Graphics::GUI
 			if (ImGui::IsItemHovered()
 				&& ImGui::IsMouseClicked(1))
 			{
-				RightClickPopup(folderPath);
+				RightClickConfirm(folderPath);
 			}
 
 			if (isFolderOpen)
@@ -125,7 +126,7 @@ namespace Graphics::GUI
 						if (ImGui::IsItemHovered()
 							&& ImGui::IsMouseClicked(1))
 						{
-							RightClickPopup(entry.path());
+							RightClickConfirm(entry.path());
 						}
 					}
 				}
@@ -138,7 +139,7 @@ namespace Graphics::GUI
 			if (ImGui::IsItemHovered()
 				&& ImGui::IsMouseClicked(1))
 			{
-				RightClickPopup(folderPath);
+				RightClickConfirm(folderPath);
 			}
 
 			for (const auto& entry : directory_iterator(folderPath))
@@ -148,24 +149,55 @@ namespace Graphics::GUI
 				{
 					DrawFolder(entry.path());
 				}
-				else if (entry.is_regular_file() && find(ignoredNames.begin(), ignoredNames.end(),
-					entry.path().filename()) == ignoredNames.end())
+				else if (entry.is_regular_file() 
+						 && find(ignoredNames.begin(), ignoredNames.end(),
+						     entry.path().filename()) == ignoredNames.end())
 				{
 					ImGui::Selectable(entry.path().filename().string().c_str());
 
 					if (ImGui::IsItemHovered()
 						&& ImGui::IsMouseClicked(1))
 					{
-						RightClickPopup(entry.path());
+						RightClickConfirm(entry.path());
 					}
 				}
 			}
 		}
 	}
-	void GUIProjectHierarchy::RightClickPopup(const path& selectedItemPath)
+	void GUIProjectHierarchy::RightClickConfirm(const path& selectedPath)
 	{
-		string cleanedPath = String::Replace(selectedItemPath.string(), "\\", "/");
+		string replaceBackSlashes = String::Replace(selectedPath.string(), "\\", "/");
+		string doubleQuoteString = "\"";
+		string removeQuotes = String::Replace(selectedPath.string(), doubleQuoteString, "");
+		selectedItemPath = removeQuotes;
+		cout << "Selected " << selectedItemPath << endl;
 
-		cout << "Selected " << cleanedPath << endl;
+		openRightClickPopup = true;
+	}
+	void GUIProjectHierarchy::RenderPopup()
+	{
+		if (openRightClickPopup
+			&& ImGui::BeginPopupContextItem("rightclickpopup"))
+		{
+			if (ImGui::MenuItem("action 1"))
+			{
+				cout << "Action 1 for " << selectedItemPath.string() << endl;
+				openRightClickPopup = false;
+			}
+
+			if (ImGui::MenuItem("action 2"))
+			{
+				cout << "Action 2 for " << selectedItemPath.string() << endl;
+				openRightClickPopup = false;
+			}
+
+			if (ImGui::MenuItem("action 3"))
+			{
+				cout << "Action 3 for " << selectedItemPath.string() << endl;
+				openRightClickPopup = false;
+			}
+
+			ImGui::EndPopup();
+		}
 	}
 }
