@@ -30,6 +30,7 @@ namespace Graphics::GUI
 	class GUIProjectHierarchy
 	{
 	public:
+		static inline path rootPath;
 		static inline bool renderProjectHierarchy;
 		static void RenderProjectHierarchy(const path& rootPath);
 

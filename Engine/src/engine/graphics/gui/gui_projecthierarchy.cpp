@@ -193,6 +193,15 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Delete"))
 			{
+				if (selectedItemPath == rootPath)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Error: Cannot delete root path!");
+					return;
+				}
+
 				cout << "Deleted " << selectedItemPath.string() << endl;
 				File::DeleteFileOrfolder(selectedItemPath);
 				selectedItemPath = path();
