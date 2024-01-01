@@ -85,63 +85,31 @@ namespace Graphics::GUI
 				renderProjectHierarchy = false;
 			}
 
-			DrawFolder(rootPath, true);
+			DrawFolder(rootPath);
 			RenderPopup();
 
 			ImGui::End();
 		}
 	}
-	void GUIProjectHierarchy::DrawFolder(const path& folderPath, bool isRoot)
+	void GUIProjectHierarchy::DrawFolder(const path& folderPath)
 	{
 		ImGuiTreeNodeFlags nodeFlags = 
 			ImGuiTreeNodeFlags_OpenOnArrow |
 			ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
-		if (!isRoot)
+		bool isFolderOpen = ImGui::TreeNodeEx(
+			folderPath.filename().string().c_str(),
+			nodeFlags);
+
+		if (ImGui::IsItemHovered()
+			&& ImGui::IsMouseClicked(1))
 		{
-			bool isFolderOpen = ImGui::TreeNodeEx(
-				folderPath.filename().string().c_str(),
-				nodeFlags);
-
-			if (ImGui::IsItemHovered()
-				&& ImGui::IsMouseClicked(1))
-			{
-				RightClickConfirm(folderPath);
-			}
-
-			if (isFolderOpen)
-			{
-				for (const auto& entry : directory_iterator(folderPath))
-				{
-					if (entry.is_directory() && find(ignoredNames.begin(), ignoredNames.end(),
-						entry.path().filename()) == ignoredNames.end())
-					{
-						DrawFolder(entry.path());
-					}
-					else if (entry.is_regular_file() && find(ignoredNames.begin(), ignoredNames.end(),
-						entry.path().filename()) == ignoredNames.end())
-					{
-						ImGui::Selectable(entry.path().filename().string().c_str());
-
-						if (ImGui::IsItemHovered()
-							&& ImGui::IsMouseClicked(1))
-						{
-							RightClickConfirm(entry.path());
-						}
-					}
-				}
-
-				ImGui::TreePop();
-			}
+			selectedItemPath = folderPath;
+			rightMouseClicked = true;
 		}
-		else
-		{
-			if (ImGui::IsItemHovered()
-				&& ImGui::IsMouseClicked(1))
-			{
-				RightClickConfirm(folderPath);
-			}
 
+		if (isFolderOpen)
+		{
 			for (const auto& entry : directory_iterator(folderPath))
 			{
 				if (entry.is_directory() && find(ignoredNames.begin(), ignoredNames.end(),
@@ -149,52 +117,53 @@ namespace Graphics::GUI
 				{
 					DrawFolder(entry.path());
 				}
-				else if (entry.is_regular_file() 
-						 && find(ignoredNames.begin(), ignoredNames.end(),
-						     entry.path().filename()) == ignoredNames.end())
+				else if (entry.is_regular_file() && find(ignoredNames.begin(), ignoredNames.end(),
+					entry.path().filename()) == ignoredNames.end())
 				{
 					ImGui::Selectable(entry.path().filename().string().c_str());
 
 					if (ImGui::IsItemHovered()
 						&& ImGui::IsMouseClicked(1))
 					{
-						RightClickConfirm(entry.path());
+						selectedItemPath = entry.path();
+						rightMouseClicked = true;
 					}
 				}
 			}
-		}
-	}
-	void GUIProjectHierarchy::RightClickConfirm(const path& selectedPath)
-	{
-		string replaceBackSlashes = String::Replace(selectedPath.string(), "\\", "/");
-		string doubleQuoteString = "\"";
-		string removeQuotes = String::Replace(selectedPath.string(), doubleQuoteString, "");
-		selectedItemPath = removeQuotes;
-		cout << "Selected " << selectedItemPath << endl;
 
-		openRightClickPopup = true;
+			ImGui::TreePop();
+		}
 	}
 	void GUIProjectHierarchy::RenderPopup()
 	{
-		if (openRightClickPopup
-			&& ImGui::BeginPopupContextItem("rightclickpopup"))
+		if (rightMouseClicked)
+		{
+			string replaceBackSlashes = String::Replace(selectedItemPath.string(), "\\", "/");
+			string doubleQuoteString = "\"";
+			string removeQuotes = String::Replace(selectedItemPath.string(), doubleQuoteString, "");
+			selectedItemPath = removeQuotes;
+			cout << "Selected " << selectedItemPath << endl;
+
+			ImGui::OpenPopup("rightclickpopup");
+
+			rightMouseClicked = false;
+		}
+
+		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
 			if (ImGui::MenuItem("action 1"))
 			{
 				cout << "Action 1 for " << selectedItemPath.string() << endl;
-				openRightClickPopup = false;
 			}
 
 			if (ImGui::MenuItem("action 2"))
 			{
 				cout << "Action 2 for " << selectedItemPath.string() << endl;
-				openRightClickPopup = false;
 			}
 
 			if (ImGui::MenuItem("action 3"))
 			{
 				cout << "Action 3 for " << selectedItemPath.string() << endl;
-				openRightClickPopup = false;
 			}
 
 			ImGui::EndPopup();
