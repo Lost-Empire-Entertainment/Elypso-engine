@@ -34,10 +34,18 @@ namespace Graphics::GUI
 		static void RenderProjectHierarchy(const path& rootPath);
 
 	private:
+		static inline path selectedItemPath;
+
 		/// <summary>
 		/// Draw each individual folders content when it is accessed.
 		/// </summary>
 		/// <param name="folderPath">The folder path that is accessed.</param>
 		static void DrawFolder(const path& folderPath, bool isRoot = false);
+
+		/// <summary>
+		/// Opens a popup with different actions when right-clicking a file or folder.
+		/// </summary>
+		/// <param name="selectedItemPath">The path to the item that was selected.</param>
+		static void RightClickPopup(const path& selectedItemPath);
 	};
 }

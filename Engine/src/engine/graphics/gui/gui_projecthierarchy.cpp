@@ -24,13 +24,17 @@
 //engine
 #include "gui_projecthierarchy.hpp"
 #include "console.hpp"
+#include "stringUtils.hpp"
 
+using std::cout;
+using std::endl;
 using std::find;
 using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::is_directory;
 using std::filesystem::directory_iterator;
 
+using Utils::String;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -98,21 +102,31 @@ namespace Graphics::GUI
 				folderPath.filename().string().c_str(),
 				nodeFlags);
 
+			if (ImGui::IsItemHovered()
+				&& ImGui::IsMouseClicked(1))
+			{
+				RightClickPopup(folderPath);
+			}
+
 			if (isFolderOpen)
 			{
 				for (const auto& entry : directory_iterator(folderPath))
 				{
-					if (entry.is_directory()
-						&& find(ignoredNames.begin(), ignoredNames.end(), 
-							entry.path().filename()) == ignoredNames.end())
+					if (entry.is_directory() && find(ignoredNames.begin(), ignoredNames.end(),
+						entry.path().filename()) == ignoredNames.end())
 					{
 						DrawFolder(entry.path());
 					}
-					else if (entry.is_regular_file()
-							 && find(ignoredNames.begin(), ignoredNames.end(),
-								 entry.path().filename()) == ignoredNames.end())
+					else if (entry.is_regular_file() && find(ignoredNames.begin(), ignoredNames.end(),
+						entry.path().filename()) == ignoredNames.end())
 					{
-						ImGui::BulletText("%s", entry.path().filename().string().c_str());
+						ImGui::Selectable(entry.path().filename().string().c_str());
+
+						if (ImGui::IsItemHovered()
+							&& ImGui::IsMouseClicked(1))
+						{
+							RightClickPopup(entry.path());
+						}
 					}
 				}
 
@@ -121,21 +135,37 @@ namespace Graphics::GUI
 		}
 		else
 		{
+			if (ImGui::IsItemHovered()
+				&& ImGui::IsMouseClicked(1))
+			{
+				RightClickPopup(folderPath);
+			}
+
 			for (const auto& entry : directory_iterator(folderPath))
 			{
-				if (entry.is_directory()
-					&& find(ignoredNames.begin(), ignoredNames.end(),
-						entry.path().filename()) == ignoredNames.end())
+				if (entry.is_directory() && find(ignoredNames.begin(), ignoredNames.end(),
+					entry.path().filename()) == ignoredNames.end())
 				{
 					DrawFolder(entry.path());
 				}
-				else if (entry.is_regular_file()
-						 && find(ignoredNames.begin(), ignoredNames.end(),
-							 entry.path().filename()) == ignoredNames.end())
+				else if (entry.is_regular_file() && find(ignoredNames.begin(), ignoredNames.end(),
+					entry.path().filename()) == ignoredNames.end())
 				{
-					ImGui::BulletText("%s", entry.path().filename().string().c_str());
+					ImGui::Selectable(entry.path().filename().string().c_str());
+
+					if (ImGui::IsItemHovered()
+						&& ImGui::IsMouseClicked(1))
+					{
+						RightClickPopup(entry.path());
+					}
 				}
 			}
 		}
+	}
+	void GUIProjectHierarchy::RightClickPopup(const path& selectedItemPath)
+	{
+		string cleanedPath = String::Replace(selectedItemPath.string(), "\\", "/");
+
+		cout << "Selected " << cleanedPath << endl;
 	}
 }
