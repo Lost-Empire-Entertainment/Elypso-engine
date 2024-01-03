@@ -1,6 +1,6 @@
 # Elypso engine
 
-Elypso engine is an open source C++ OpenGL engine used in Windows. The engine is entirely "codeless" where the end user does not need to write a single line of code to make games with the engine. Everything is handled by the engine itself and the user only needs to know how to use the available packages. Packages are parts of the engine the end user can add and remove to change parts of the engine. Packages are completely optional and none of them need to be activated to run the engine itself but adding new packages or removing existing ones will modify what can be used to make games with in the engine.
+Elypso engine is an open source C++ OpenGL engine used in Windows. The engine has node-based scripting where the end user does not need to write a single line of code to make games with the engine. Everything is handled by the engine itself and the user only needs to know how to use the available mechanics. The engine also supports Lua package importing to modify the existing engine UI and nodes or add new nodes. The default nodes the engine comes with are also already Lua packages that are always imported by default.
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
 
