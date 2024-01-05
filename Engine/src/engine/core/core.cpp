@@ -61,7 +61,13 @@ namespace Core
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,
 			Type::SUCCESS,
-			"Reached window loop successfully!\n");
+			"Reached window loop successfully!\n\n");
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"==================================================\n\n",
+			true);
 
 		startedWindowLoop = true;
 		if (!Core::ConsoleManager::storedLogs.empty()) 
@@ -78,6 +84,12 @@ namespace Core
 		}
 
 		ConfigFile::SaveDataAtShutdown();
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"==================================================\n\n",
+			true);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,

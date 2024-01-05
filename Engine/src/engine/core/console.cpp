@@ -154,49 +154,44 @@ namespace Core
             "_" + theType + 
             "] " + message;
 
-        string logMsg;
-        string msg;
-        string internalConsoleMsg;
+        string externalMsg;
+        string internalMsg;
 
         switch (type)
         {
         default:
-            logMsg = invalidMsg;
-            msg = invalidMsg;
-            internalConsoleMsg = invalidMsg;
+            externalMsg = invalidMsg;
+            internalMsg = invalidMsg;
             break;
         case Type::CLEANUP:
         case Type::DEBUG:
-            logMsg = validMsg;
             if (sendDebugMessages)
             {
-                msg = onlyMessage ? message : validMsg;
-                internalConsoleMsg = onlyMessage ? message : timeStamp + message;
+                externalMsg = onlyMessage ? message : validMsg;
+                internalMsg = onlyMessage ? message : timeStamp + message;
             }
             break;
         case Type::INFO:
         case Type::SUCCESS:
-            logMsg = validMsg;
-            msg = onlyMessage ? message : validMsg;
-            internalConsoleMsg = onlyMessage ? message : timeStamp + message;
+            externalMsg = onlyMessage ? message : validMsg;
+            internalMsg = onlyMessage ? message : timeStamp + message;
             break;
         case Type::EXCEPTION:
-            logMsg = validMsg;
-            msg = onlyMessage ? message : validMsg;
-            internalConsoleMsg = onlyMessage ? message : timeStamp + message;
+            externalMsg = onlyMessage ? message : validMsg;
+            internalMsg = onlyMessage ? message : timeStamp + message;
             break;
         }
 
         if (Engine::startedWindowLoop)
         {
-            GUIConsole::AddTextToConsole(internalConsoleMsg);
+            GUIConsole::AddTextToConsole(internalMsg);
         }
         else
         {
-            ConsoleManager::AddLog(internalConsoleMsg);
+            ConsoleManager::AddLog(internalMsg);
         }
-        cout << logMsg;
-        Logger::AddLog(logMsg);
+        cout << externalMsg;
+        Logger::AddLog(externalMsg);
     }
 
     void ConsoleManager::ParseConsoleCommand(const string& command)
