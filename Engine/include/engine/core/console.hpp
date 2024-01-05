@@ -66,7 +66,7 @@ namespace Core
 		/// <param name="message">The actual message.</param>
 		/// <param name="onlyMessage">Should we ignore the timestamp and message type and only print the message?</param>
 		/// <param name="displayInInternalConsole">Should we display this in the internal engine console as well?</param>
-		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false);
+		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false, bool sendInternalMessage = true);
 
 		static void ParseConsoleCommand(const string& command);
 

@@ -140,7 +140,7 @@ namespace Core
         storedLogs.clear();
     }
 
-    void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage)
+    void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool sendInternalMessage)
     {
         string timeStamp = Timestamp::GetCurrentTimestamp();
         string theCaller = string(magic_enum::enum_name(caller));
@@ -184,11 +184,17 @@ namespace Core
 
         if (Engine::startedWindowLoop)
         {
-            GUIConsole::AddTextToConsole(internalMsg);
+            if (sendInternalMessage)
+            {
+                GUIConsole::AddTextToConsole(internalMsg);
+            }
         }
         else
         {
-            ConsoleManager::AddLog(internalMsg);
+            if (sendInternalMessage)
+            {
+                ConsoleManager::AddLog(internalMsg);
+            }
         }
         cout << externalMsg;
         Logger::AddLog(externalMsg);

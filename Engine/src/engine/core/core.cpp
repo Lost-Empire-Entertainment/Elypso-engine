@@ -46,10 +46,20 @@ namespace Core
 			Type::INFO,
 			"Elypso engine " + Engine::version + "\n" +
 			"Copyright (C) Greenlaser 2023\n\n",
-			true);
+			true,
+			false);
 
-		cout << "Game documents path: " << Engine::docsPath << endl;
-		cout << "Game files path: " << Engine::filesPath << "\n\n";
+		string output = "Game documents path: " + Engine::docsPath + "\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			output);
+
+		output = "Game files path: " + Engine::filesPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			output);
 
 		Render::RenderSetup();
 
@@ -67,7 +77,8 @@ namespace Core
 			Caller::ENGINE,
 			Type::INFO,
 			"==================================================\n\n",
-			true);
+			true,
+			false);
 
 		startedWindowLoop = true;
 		if (!Core::ConsoleManager::storedLogs.empty()) 
@@ -89,7 +100,8 @@ namespace Core
 			Caller::ENGINE,
 			Type::INFO,
 			"==================================================\n\n",
-			true);
+			true,
+			false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,
