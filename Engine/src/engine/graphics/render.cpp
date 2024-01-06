@@ -33,7 +33,8 @@
 #include "timeManager.hpp"
 #include "searchUtils.hpp"
 #include "gameobject.hpp"
-#include "rendercube.hpp"
+#include "cube.hpp"
+#include "pointlight.hpp"
 
 #include <string>
 #include <iostream>
@@ -51,19 +52,19 @@ using std::to_string;
 
 using Core::Input;
 using Core::TimeManager;
-using Core::ConsoleManager;
 using Core::Engine;
 using Utils::Search;
 using Graphics::GUI::EngineGUI;
 using Core::ECS::GameObject;
-using Graphics::Shapes::Cube;
+using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Graphics::Props::Cube;
+using Graphics::LightSources::PointLight;
 
 namespace Graphics
 {
 	Input Render::camera(Render::window);
-	Shader TestLightShader;
 
 	void Render::RenderSetup()
 	{
@@ -164,74 +165,10 @@ namespace Graphics
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		TestLightShader = Shader(
-			Engine::enginePath + "/shaders/Light_Test.vert",
-			Engine::enginePath + "/shaders/Light_Test.frag");
-
-		float vertices[] =
-		{
-			//positions          //normals           //texture coords
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-		};
 		pointLightPositions[0] = vec3(1.5f, 0.0f, 1.5f);
 		pointLightPositions[1] = vec3(1.5f, 0.0f, -1.5f);
 		pointLightPositions[2] = vec3(-1.5f, 0.0f, 1.5f);
 		pointLightPositions[3] = vec3(-1.5f, 0.0f, -1.5f);
-
-		glGenBuffers(1, &VBO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindVertexArray(cubeVAO);
-
-		glGenVertexArrays(1, &lightCubeVAO);
-		glBindVertexArray(lightCubeVAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
@@ -254,16 +191,6 @@ namespace Graphics
 			1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		WindowContentLoop();
-
-		EngineGUI::GetInstance().Render();
-
-		//swap the front and back buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-	void Render::WindowContentLoop()
-	{
 		//camera transformation
 		Input::ProcessInput(window);
 
@@ -277,27 +204,22 @@ namespace Graphics
 		//update the camera
 		mat4 view = camera.GetViewMatrix();
 
-		mat4 model = mat4(1.0f);
-
-		//draw light sources
-		TestLightShader.Use();
-		TestLightShader.SetMat4("projection", projection);
-		TestLightShader.SetMat4("view", view);
-		TestLightShader.SetVec3("lightColor", pointDiffuse);
-
-		glBindVertexArray(lightCubeVAO);
-		for (unsigned int i = 0; i < 4; i++)
-		{
-			model = mat4(1.0f);
-			model = translate(model, pointLightPositions[i]);
-			model = scale(model, vec3(0.2f));
-			TestLightShader.SetMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
 		for (GameObject obj : gameObjects)
 		{
-			Cube::RenderCube(obj, view, projection);
+			if (obj.objType == GameObject::Type::cube)
+			{
+				Cube::RenderCube(obj, view, projection);
+			}
+			else if (obj.objType == GameObject::Type::point_light)
+			{
+				PointLight::RenderPointLight(obj, view, projection);
+			}
 		}
+
+		EngineGUI::GetInstance().Render();
+
+		//swap the front and back buffers
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 }

@@ -21,7 +21,6 @@
 #include "glm.hpp"
 
 //engine
-#include "rendercube.hpp"
 #include "gameobject.hpp"
 
 #include <vector>
@@ -33,12 +32,12 @@ using Core::ECS::GameObject;
 using glm::vec3;
 using glm::mat4;
 
-namespace Graphics::Shapes
+namespace Graphics::LightSources
 {
-	class Cube
+	class PointLight
 	{
 	public:
-		static GameObject CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess);
-		static void RenderCube(GameObject& obj, mat4& view, mat4& projection);
+		static GameObject CreatePointLight(const vec3& position, const vec3& scale, const vec3& color, float shininess);
+		static void RenderPointLight(GameObject& obj, mat4& view, mat4& projection);
 	};
 }

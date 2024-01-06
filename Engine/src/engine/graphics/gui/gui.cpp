@@ -37,7 +37,8 @@
 #include "browserUtils.hpp"
 #include "shutdown.hpp"
 #include "gameobject.hpp"
-#include "rendercube.hpp"
+#include "cube.hpp"
+#include "pointlight.hpp"
 
 #include <string>
 #include <filesystem>
@@ -64,7 +65,8 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
-using Graphics::Shapes::Cube;
+using Graphics::Props::Cube;
+using Graphics::LightSources::PointLight;
 using Core::ECS::GameObject;
 using Core::ECS::Transform;
 using Caller = Core::ConsoleManager::Caller;
@@ -316,7 +318,23 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
+					GameObject obj = PointLight::CreatePointLight(
+						vec3(0.0f, 0.0f, 0.0f),
+						vec3(1.0f, 1.0f, 1.0f),
+						vec3(1.0f, 0.0f, 0.0f),
+						32.0f);
 
+					unsigned int ID = obj.GetID();
+					vec3 pos = obj.GetComponent<Transform>()->position;
+					string posX = to_string(pos.x);
+					string posY = to_string(pos.y);
+					string posZ = to_string(pos.z);
+
+					string output = "Successfully created " + to_string(ID) + " at position (" + posX + ", " + posY + ", " + posZ + ")\n";
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::SUCCESS,
+						output);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{

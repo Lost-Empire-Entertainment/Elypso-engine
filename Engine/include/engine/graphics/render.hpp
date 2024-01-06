@@ -90,7 +90,5 @@ namespace Graphics
 		static void WindowSetup();
 		static void GladSetup();
 		static void ContentSetup();
-
-		static void WindowContentLoop();
 	};
 }

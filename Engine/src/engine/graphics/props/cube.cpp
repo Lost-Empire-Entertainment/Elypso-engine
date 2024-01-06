@@ -19,7 +19,7 @@
 #include "glad.h"
 
 //engine
-#include "rendercube.hpp"
+#include "cube.hpp"
 #include "gameobject.hpp"
 #include "core.hpp"
 #include "shader.hpp"
@@ -36,7 +36,7 @@ using Graphics::Shader;
 using Graphics::Render;
 using Graphics::Texture;
 
-namespace Graphics::Shapes
+namespace Graphics::Props
 {
 	Shader GameObjectShader;
 
@@ -44,6 +44,8 @@ namespace Graphics::Shapes
 	{
 		GameObject obj;
 		obj.ID = obj.nextID++;
+		obj.name = "Cube";
+		obj.objType = GameObject::Type::cube;
 
 		auto transform = make_shared<Transform>();
 		transform->position = position;
