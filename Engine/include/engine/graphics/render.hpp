@@ -67,11 +67,12 @@ namespace Graphics
 
 		static Core::Input camera;
 
+		static inline vec3 pointLightPositions[4];
+
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 		static void WindowLoop();
 	private:
-		static inline vec3 pointLightPositions[4];
 		static inline vec3 lightPos = vec3(0.0f, 0.0f, 0.0f);
 
 		static inline int SCR_POS_X;

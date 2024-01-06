@@ -19,6 +19,7 @@
 
 //external
 #include "glm.hpp"
+#include "glfw3.h"
 
 #include <unordered_map>
 #include <typeindex>
@@ -33,6 +34,7 @@ using std::vector;
 
 using glm::vec2;
 using glm::vec3;
+using glm::mat4;
 
 namespace Core::ECS
 {
@@ -46,6 +48,9 @@ namespace Core::ECS
 	class GameObject
 	{
 	public:
+		static unsigned int nextID;
+		unsigned int ID;
+
 		GameObject();
 
 		GameObject(unsigned int GameObjectID);
@@ -57,14 +62,11 @@ namespace Core::ECS
 		template <typename T>
 		shared_ptr<T> GetComponent() const;
 
-		static void AddMeshComponent(const vector<vec3>& vertices, const vector<unsigned int>& indices, const vector<vec2>& texCoords);
+		static void AddMeshComponent(const float* vertices);
 
-		static void AddMaterialComponent(const vec3& color, float shininess);
-
-		static GameObject CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess);
+		static void AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO);
 	private:
-		static unsigned int nextID;
-		unsigned int ID;
+
 		static unordered_map<type_index, shared_ptr<Component>> components;
 	};
 
@@ -79,25 +81,39 @@ namespace Core::ECS
 	class Mesh : public Component
 	{
 	public:
-		Mesh(const vector<vec3>& vertices, const vector<unsigned int>& indices, const vector<vec2>& texCoords);
-		const vector<vec3>& GetVertices() const;
-		const vector<unsigned int>& GetIndices() const;
-		const vector<vec2>& GetTexCoords() const;
+		Mesh(const float* vertices);
+		const float* GetVertices() const;
 	private:
-		vector<vec3> vertices;
-		vector<unsigned int> indices;
-		vector<vec2> texCoords;
+		const float* vertices;
 	};
 
 	class Material : public Component
 	{
 	public:
-		Material(const vec3& color, float shininess);
+		Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO);
 		const vec3& GetColor() const;
 		float GetShininess() const;
+		GLuint GetVAO() const;
+		GLuint GetVBO() const;
 	private:
 		vec3 color;
 		float shininess;
+		GLuint VAO;
+		GLuint VBO;
+	};
+
+	class Create
+	{
+	public:
+		static GameObject CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess);
+	};
+
+	class Render
+	{
+	public:
+		static inline vector<GameObject> gameObjects;
+
+		static void RenderCube(GameObject& obj, mat4& view, mat4& projection);
 	};
 }
 

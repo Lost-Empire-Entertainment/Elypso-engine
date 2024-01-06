@@ -63,6 +63,7 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
+using Core::ECS::Create;
 using Core::ECS::GameObject;
 using Core::ECS::Transform;
 using Caller = Core::ConsoleManager::Caller;
@@ -284,7 +285,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					GameObject obj = GameObject::CreateCube(
+					GameObject obj = Create::CreateCube(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f),
 						vec3(1.0f, 0.0f, 0.0f),
