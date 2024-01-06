@@ -53,8 +53,8 @@ namespace Graphics::LightSources
 		GameObject::AddComponent(transform);
 
 		TestLightShader = Shader(
-			Engine::enginePath + "/shaders/GameObject.vert",
-			Engine::enginePath + "/shaders/GameObject.frag");
+			Engine::enginePath + "/shaders/Light_Test.vert",
+			Engine::enginePath + "/shaders/Light_Test.frag");
 
 		float vertices[] =
 		{
@@ -127,13 +127,13 @@ namespace Graphics::LightSources
 			material->GetVBO());
 
 		Render::gameObjects.push_back(obj);
+		Render::pointLights.push_back(obj);
 
 		return obj;
 	}
 
 	void PointLight::RenderPointLight(GameObject& obj, mat4& view, mat4& projection)
 	{
-		//draw light sources
 		TestLightShader.Use();
 		TestLightShader.SetMat4("projection", projection);
 		TestLightShader.SetMat4("view", view);

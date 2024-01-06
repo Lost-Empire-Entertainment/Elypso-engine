@@ -165,11 +165,6 @@ namespace Graphics
 	{
 		glEnable(GL_DEPTH_TEST);
 
-		pointLightPositions[0] = vec3(1.5f, 0.0f, 1.5f);
-		pointLightPositions[1] = vec3(1.5f, 0.0f, -1.5f);
-		pointLightPositions[2] = vec3(-1.5f, 0.0f, 1.5f);
-		pointLightPositions[3] = vec3(-1.5f, 0.0f, -1.5f);
-
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
 

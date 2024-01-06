@@ -73,9 +73,9 @@ namespace Graphics
 
 		static Core::Input camera;
 
-		static inline vec3 pointLightPositions[4];
-
 		static inline vector<GameObject> gameObjects;
+		static inline vector<GameObject> pointLights;
+		static inline vector<GameObject> spotLights;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);

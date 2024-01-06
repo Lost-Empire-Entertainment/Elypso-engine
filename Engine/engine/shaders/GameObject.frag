@@ -66,7 +66,9 @@ struct SpotLight
     vec3 specular;
 };
 
-#define NR_POINT_LIGHTS 4
+#define MAX_POINT_LIGHTS 16
+uniform int numPointLights;
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 in vec3 FragPos;  
 in vec3 Normal;  
@@ -74,7 +76,6 @@ in vec2 TexCoords;
   
 uniform vec3 viewPos;
 uniform DirLight dirLight;
-uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
 uniform Material material;
 
@@ -89,9 +90,12 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
 
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
-    for (int i = 0; i < NR_POINT_LIGHTS; i++)
+    if (numPointLights > 0)
     {
-        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+        for (int i = 0; i < numPointLights; i++)
+        {
+            result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+        }
     }
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
 

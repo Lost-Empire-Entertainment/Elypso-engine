@@ -27,6 +27,7 @@
 #include "texture.hpp"
 
 using std::make_shared;
+using std::to_string;
 
 using Core::Engine;
 using Core::ECS::GameObject;
@@ -156,46 +157,27 @@ namespace Graphics::Props
 		GameObjectShader.SetVec3("dirLight.diffuse", Render::directionalDiffuse);
 		GameObjectShader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 		GameObjectShader.SetFloat("dirLight.intensity", Render::directionalIntensity);
-		//point light 1
-		GameObjectShader.SetVec3("pointLights[0].position", Render::pointLightPositions[0]);
-		GameObjectShader.SetVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[0].diffuse", Render::pointDiffuse);
-		GameObjectShader.SetVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-		GameObjectShader.SetFloat("pointLights[0].constant", 1.0f);
-		GameObjectShader.SetFloat("pointLights[0].linear", 0.09f);
-		GameObjectShader.SetFloat("pointLights[0].quadratic", 0.032f);
-		GameObjectShader.SetFloat("pointLights[0].intensity", Render::pointIntensity);
-		GameObjectShader.SetFloat("pointLights[0].distance", Render::pointDistance);
-		//point light 2
-		GameObjectShader.SetVec3("pointLights[1].position", Render::pointLightPositions[1]);
-		GameObjectShader.SetVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[1].diffuse", Render::pointDiffuse);
-		GameObjectShader.SetVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-		GameObjectShader.SetFloat("pointLights[1].constant", 1.0f);
-		GameObjectShader.SetFloat("pointLights[1].linear", 0.09f);
-		GameObjectShader.SetFloat("pointLights[1].quadratic", 0.032f);
-		GameObjectShader.SetFloat("pointLights[1].intensity", Render::pointIntensity);
-		GameObjectShader.SetFloat("pointLights[1].distance", Render::pointDistance);
-		//point light 3
-		GameObjectShader.SetVec3("pointLights[2].position", Render::pointLightPositions[2]);
-		GameObjectShader.SetVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[2].diffuse", Render::pointDiffuse);
-		GameObjectShader.SetVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
-		GameObjectShader.SetFloat("pointLights[2].constant", 1.0f);
-		GameObjectShader.SetFloat("pointLights[2].linear", 0.09f);
-		GameObjectShader.SetFloat("pointLights[2].quadratic", 0.032f);
-		GameObjectShader.SetFloat("pointLights[2].intensity", Render::pointIntensity);
-		GameObjectShader.SetFloat("pointLights[2].distance", Render::pointDistance);
-		//point light 4
-		GameObjectShader.SetVec3("pointLights[3].position", Render::pointLightPositions[3]);
-		GameObjectShader.SetVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("pointLights[3].diffuse", 1.0f, 1.0f, 1.0f);
-		GameObjectShader.SetVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
-		GameObjectShader.SetFloat("pointLights[3].constant", 1.0f);
-		GameObjectShader.SetFloat("pointLights[3].linear", 0.09f);
-		GameObjectShader.SetFloat("pointLights[3].quadratic", 0.032f);
-		GameObjectShader.SetFloat("pointLights[3].intensity", Render::pointIntensity);
-		GameObjectShader.SetFloat("pointLights[3].distance", Render::pointDistance);
+
+		//point lights
+		int pointLightCount = static_cast<int>(Render::pointLights.size());
+		GameObjectShader.SetInt("numPointLights", pointLightCount);
+		if (pointLightCount > 0)
+		{
+			for (int i = 0; i < pointLightCount; i++)
+			{
+				string lightPrefix = "pointLights[" + to_string(i) + "].";
+				GameObjectShader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetComponent<Transform>()->position);
+				GameObjectShader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
+				GameObjectShader.SetVec3(lightPrefix + "diffuse", Render::pointDiffuse);
+				GameObjectShader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+				GameObjectShader.SetFloat(lightPrefix + "constant", 1.0f);
+				GameObjectShader.SetFloat(lightPrefix + "linear", 0.09f);
+				GameObjectShader.SetFloat(lightPrefix + "quadratic", 0.032f);
+				GameObjectShader.SetFloat(lightPrefix + "intensity", Render::pointIntensity);
+				GameObjectShader.SetFloat(lightPrefix + "distance", Render::pointDistance);
+			}
+		}
+
 		//spotLight
 		GameObjectShader.SetVec3("spotLight.position", Render::camera.GetCameraPosition());
 		GameObjectShader.SetVec3("spotLight.direction", Render::camera.GetFront());
