@@ -39,6 +39,7 @@ set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/engine/core")
 set(SRC_ECS_DIR "${CMAKE_SOURCE_DIR}/src/engine/core/ECS")
 set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/engine/file")
 set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics")
+set(SRC_GRAPHICS_SHAPES_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics/shapes")
 set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/engine/utils")
 set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
 
@@ -76,6 +77,7 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/render.cpp
 	${SRC_GRAPHICS_DIR}/shader.cpp
 	${SRC_GRAPHICS_DIR}/texture.cpp
+	${SRC_GRAPHICS_SHAPES_DIR}/rendercube.cpp
 	${SRC_UTILS_DIR}/browserUtils.cpp
 	${SRC_UTILS_DIR}/fileUtils.cpp
 	${SRC_UTILS_DIR}/searchUtils.cpp
@@ -107,6 +109,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/engine/file
 	${INCLUDE_DIR}/engine/graphics
 	${INCLUDE_DIR}/engine/graphics/gui
+	${INCLUDE_DIR}/engine/graphics/shapes
 	${INCLUDE_DIR}/engine/utils
 	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad

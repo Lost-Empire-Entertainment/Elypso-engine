@@ -37,6 +37,7 @@
 #include "browserUtils.hpp"
 #include "shutdown.hpp"
 #include "gameobject.hpp"
+#include "rendercube.hpp"
 
 #include <string>
 #include <filesystem>
@@ -63,7 +64,7 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
-using Core::ECS::Create;
+using Graphics::Shapes::Cube;
 using Core::ECS::GameObject;
 using Core::ECS::Transform;
 using Caller = Core::ConsoleManager::Caller;
@@ -285,7 +286,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					GameObject obj = Create::CreateCube(
+					GameObject obj = Cube::CreateCube(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f),
 						vec3(1.0f, 0.0f, 0.0f),

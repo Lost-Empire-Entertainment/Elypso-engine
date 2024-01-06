@@ -20,7 +20,13 @@
 //engine
 #include "input.hpp"
 #include "shader.hpp"
+#include "gameobject.hpp"
 
+#include <vector>
+
+using Core::ECS::GameObject;
+
+using std::vector;
 using glm::vec3;
 
 namespace Graphics
@@ -68,6 +74,8 @@ namespace Graphics
 		static Core::Input camera;
 
 		static inline vec3 pointLightPositions[4];
+
+		static inline vector<GameObject> gameObjects;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);

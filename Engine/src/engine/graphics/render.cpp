@@ -33,6 +33,7 @@
 #include "timeManager.hpp"
 #include "searchUtils.hpp"
 #include "gameobject.hpp"
+#include "rendercube.hpp"
 
 #include <string>
 #include <iostream>
@@ -55,7 +56,7 @@ using Core::Engine;
 using Utils::Search;
 using Graphics::GUI::EngineGUI;
 using Core::ECS::GameObject;
-using ECSRender = Core::ECS::Render;
+using Graphics::Shapes::Cube;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -294,9 +295,9 @@ namespace Graphics
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		for (GameObject obj : ECSRender::gameObjects)
+		for (GameObject obj : gameObjects)
 		{
-			ECSRender::RenderCube(obj, view, projection);
+			Cube::RenderCube(obj, view, projection);
 		}
 	}
 }

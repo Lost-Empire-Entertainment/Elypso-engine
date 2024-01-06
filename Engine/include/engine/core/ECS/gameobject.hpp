@@ -24,13 +24,11 @@
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
-#include <vector>
 
 using std::shared_ptr;
 using std::unordered_map;
 using std::type_index;
 using std::dynamic_pointer_cast;
-using std::vector;
 
 using glm::vec2;
 using glm::vec3;
@@ -100,20 +98,6 @@ namespace Core::ECS
 		float shininess;
 		GLuint VAO;
 		GLuint VBO;
-	};
-
-	class Create
-	{
-	public:
-		static GameObject CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess);
-	};
-
-	class Render
-	{
-	public:
-		static inline vector<GameObject> gameObjects;
-
-		static void RenderCube(GameObject& obj, mat4& view, mat4& projection);
 	};
 }
 
