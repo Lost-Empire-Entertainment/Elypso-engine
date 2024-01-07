@@ -30,17 +30,22 @@
 #include "timeManager.hpp"
 #include "stringUtils.hpp"
 #include "input.hpp"
+#include "selectobject.hpp"
 
 #include <iostream>
 #include <string>
 
+using std::cout;
+using std::endl;
 using glm::radians;
 using glm::lookAt;
 using std::ostringstream;
 using std::fixed;
 using std::setprecision;
 using std::to_string;
+using std::numeric_limits;
 
+using Physics::Select;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -204,7 +209,7 @@ namespace Core
             front.y = sin(radians(pitch));
             front.z = sin(radians(yaw)) * cos(radians(pitch));
             cameraFront = normalize(front);
-        }        
+        }
     }
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
@@ -220,7 +225,37 @@ namespace Core
     }
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
-    {}
+    {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        {
+            double mouseX, mouseY;
+            glfwGetCursorPos(Render::window, &mouseX, &mouseY);
+
+            Select::Ray ray = Select::RayFromMouse(mouseX, mouseY, Render::view, Render::projection);
+
+            cout << "Mouse X: " << mouseX << ", Mouse Y: " << mouseY << endl;
+            cout << "Ray Direction: " << ray.direction.x << ", " << ray.direction.y << ", " << ray.direction.z << endl;
+
+            size_t index = Select::CheckRayObjectIntersections(ray, Render::gameObjects);
+
+            if (index != numeric_limits<size_t>::max())
+            {
+                const GameObject& obj = Render::gameObjects[index];
+                string output = "Hit " + string(obj.name) + "!\n";
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::INFO,
+                    output);
+            }
+            else
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::INFO,
+                    "Did not hit anything...\n");
+            }
+        }
+    }
 
     mat4 Input::GetViewMatrix() const
     {

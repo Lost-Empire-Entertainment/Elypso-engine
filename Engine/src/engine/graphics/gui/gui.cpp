@@ -300,7 +300,7 @@ namespace Graphics::GUI
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);
 
-					string output = "Successfully created " + to_string(ID) + " at position (" + posX + ", " + posY + ", " + posZ + ")\n";
+					string output = "Successfully created " + string(obj.name) + " at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::SUCCESS,

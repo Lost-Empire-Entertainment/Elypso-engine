@@ -28,6 +28,7 @@ using Core::ECS::GameObject;
 
 using std::vector;
 using glm::vec3;
+using glm::mat4;
 
 namespace Graphics
 {
@@ -70,6 +71,9 @@ namespace Graphics
 		static inline int windowedHeight;
 		static inline float nearClip;
 		static inline float farClip;
+
+		static inline mat4 projection;
+		static inline mat4 view;
 
 		static Core::Input camera;
 

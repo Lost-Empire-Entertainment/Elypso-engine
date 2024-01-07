@@ -190,14 +190,14 @@ namespace Graphics
 		Input::ProcessInput(window);
 
 		//calculate the new projection matrix
-		mat4 projection = perspective(
+		projection = perspective(
 			radians(fov),
 			aspectRatio,
 			nearClip,
 			farClip);
 
 		//update the camera
-		mat4 view = camera.GetViewMatrix();
+		view = camera.GetViewMatrix();
 
 		for (GameObject obj : gameObjects)
 		{
