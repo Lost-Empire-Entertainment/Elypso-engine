@@ -199,7 +199,7 @@ namespace Graphics
 		//update the camera
 		view = camera.GetViewMatrix();
 
-		cout << gameObjects.size() << endl;
+		//cout << gameObjects.size() << endl;
 		for (GameObject obj : gameObjects)
 		{
 			GameObject::Type objType = obj.GetType();

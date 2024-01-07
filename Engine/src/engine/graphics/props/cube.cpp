@@ -28,6 +28,8 @@
 #include "render.hpp"
 #include "texture.hpp"
 
+#include <iostream>
+
 using glm::translate;
 using glm::rotate;
 using glm::radians;
@@ -36,10 +38,13 @@ using glm::scale;
 
 using std::make_shared;
 using std::to_string;
+using std::cout;
+using std::endl;
 
 using Core::Engine;
 using Core::ECS::GameObject;
 using Core::ECS::Transform;
+using Core::ECS::Mesh;
 using Core::ECS::Material;
 using Graphics::Shader;
 using Graphics::Render;
@@ -53,7 +58,11 @@ namespace Graphics::Props
 		obj.SetName("Cube");
 		obj.SetType(GameObject::Type::cube);
 
-		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
+		Transform transform(position, vec3(0.0f, 0.0f, 0.0f), scale);
+		transform.SetPosition(position);
+		transform.SetRotation(vec3(0.0f, 0.0f, 0.0f));
+		transform.SetScale(scale);
+		obj.AddComponent(make_shared<Transform>(transform));
 
 		float vertices[] =
 		{
@@ -101,7 +110,9 @@ namespace Graphics::Props
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 		};
 
-		GameObject::AddMeshComponent(vertices);
+		Mesh mesh(vertices);
+		mesh.SetVertices(vertices);
+		obj.AddComponent(make_shared<Mesh>(mesh));
 
 		GLuint VAO, VBO;
 		glGenVertexArrays(1, &VAO);
@@ -129,7 +140,15 @@ namespace Graphics::Props
 			Engine::enginePath + "/shaders/GameObject.vert",
 			Engine::enginePath + "/shaders/GameObject.frag");
 
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, GameObjectShader);
+		cout << "VAO Address: " << &VAO << endl;
+		cout << "VBO Address: " << &VBO << endl;
+		cout << "Shader Address: " << &GameObjectShader << endl;
+
+		Material mat(color, shininess, VAO, VBO, GameObjectShader);
+		mat.SetVAO(VAO);
+		mat.SetVBO(VBO);
+		mat.SetShader(GameObjectShader);
+		obj.AddComponent(make_shared<Material>(mat));
 
 		Texture tex(Engine::enginePath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);

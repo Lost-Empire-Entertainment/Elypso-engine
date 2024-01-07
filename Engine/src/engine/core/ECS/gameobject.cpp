@@ -41,63 +41,34 @@ namespace Core::ECS
 		: ID(GameObjectID)
 	{}
 
-	// GET VARIABLE
-
 	bool GameObject::IsInitialized() const
 	{
 		return initialized;
 	}
-
 	string GameObject::GetName() const
 	{
 		return name;
 	}
-
 	GameObject::Type GameObject::GetType() const
 	{
 		return type;
 	}
-
 	unsigned int GameObject::GetID() const
 	{
 		return ID;
 	}
 
-	// SET VARIABLE
-
 	void GameObject::Initialize()
 	{
 		initialized = true;
 	}
-
 	void GameObject::SetName(string selectedName)
 	{
 		name = selectedName;
 	}
-
 	void GameObject::SetType(Type selectedType)
 	{
 		type = selectedType;
-	}
-
-	// ADD COMPONENT
-
-	void GameObject::AddTransformComponent(const vec3& pos, const vec3& rot, const vec3& scale)
-	{
-		auto transform = make_shared<Transform>(pos, rot, scale);
-		AddComponent(transform);
-	}
-
-	void GameObject::AddMeshComponent(const float* vertices)
-	{
-		auto mesh = make_shared<Mesh>(vertices);
-		AddComponent(mesh);
-	}
-
-	void GameObject::AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader)
-	{
-		auto material = make_shared<Material>(color, shininess, VAO, VBO, shader);
-		AddComponent(material);
 	}
 
 	//
@@ -112,12 +83,10 @@ namespace Core::ECS
 	{
 		Transform::position = pos;
 	}
-
 	void Transform::SetRotation(const vec3& rot)
 	{
 		Transform::rotation = rot;
 	}
-
 	void Transform::SetScale(const vec3& scale)
 	{
 		Transform::scale = scale;
@@ -127,12 +96,10 @@ namespace Core::ECS
 	{
 		return Transform::position;
 	}
-
 	const vec3& Transform::GetRotation() const
 	{
 		return Transform::rotation;
 	}
-
 	const vec3& Transform::GetScale() const
 	{
 		return Transform::scale;
@@ -145,6 +112,11 @@ namespace Core::ECS
 	Mesh::Mesh(const float* vertices)
 		: vertices(vertices)
 	{}
+
+	void Mesh::SetVertices(const float* assignedVertices)
+	{
+		vertices = assignedVertices;
+	}
 
 	const float* Mesh::GetVertices() const
 	{
@@ -159,26 +131,35 @@ namespace Core::ECS
 		: color(color), shininess(shininess), VAO(VAO), VBO(VBO), shader(shader)
 	{}
 
+	void Material::SetVAO(GLuint vao)
+	{
+		VAO = vao;
+	}
+	void Material::SetVBO(GLuint vbo)
+	{
+		VBO = vbo;
+	}
+	void Material::SetShader(Shader shader)
+	{
+		this->shader = shader;
+	}
+
 	const vec3& Material::GetColor() const
 	{
 		return color;
 	}
-
 	const float Material::GetShininess() const
 	{
 		return shininess;
 	}
-
 	const GLuint Material::GetVAO() const
 	{
 		return VAO;
 	}
-
 	const GLuint Material::GetVBO() const
 	{
 		return VBO;
 	}
-
 	const Shader Material::GetShader() const
 	{
 		return shader;

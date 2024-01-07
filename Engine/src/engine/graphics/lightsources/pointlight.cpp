@@ -39,6 +39,7 @@ using std::make_shared;
 using Core::Engine;
 using Core::ECS::GameObject;
 using Core::ECS::Transform;
+using Core::ECS::Mesh;
 using Core::ECS::Material;
 using Graphics::Shader;
 using Graphics::Render;
@@ -52,7 +53,11 @@ namespace Graphics::LightSources
 		obj.SetName("Point light");
 		obj.SetType(GameObject::Type::point_light);
 
-		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
+		Transform transform(position, vec3(0.0f, 0.0f, 0.0f), scale);
+		transform.SetPosition(position);
+		transform.SetRotation(vec3(0.0f, 0.0f, 0.0f));
+		transform.SetScale(scale);
+		obj.AddComponent(make_shared<Transform>(transform));
 
 		float vertices[] =
 		{
@@ -100,7 +105,9 @@ namespace Graphics::LightSources
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
-		GameObject::AddMeshComponent(vertices);
+		Mesh mesh(vertices);
+		mesh.SetVertices(vertices);
+		obj.AddComponent(make_shared<Mesh>(mesh));
 
 		GLuint VAO, VBO;
 		glGenVertexArrays(1, &VAO);
@@ -121,7 +128,11 @@ namespace Graphics::LightSources
 			Engine::enginePath + "/shaders/Light_Test.vert",
 			Engine::enginePath + "/shaders/Light_Test.frag");
 
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, TestLightShader);
+		Material mat(color, shininess, VAO, VBO, TestLightShader);
+		mat.SetVAO(VAO);
+		mat.SetVBO(VBO);
+		mat.SetShader(TestLightShader);
+		obj.AddComponent(make_shared<Material>(mat));
 
 		obj.Initialize();
 

@@ -83,12 +83,6 @@ namespace Core::ECS
 
 		template <typename T>
 		shared_ptr<T> GetComponent() const;
-
-		static void AddTransformComponent(const vec3& pos, const vec3& rot, const vec3& scale);
-
-		static void AddMeshComponent(const float* vertices);
-
-		static void AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
 	private:
 		static inline bool initialized;
 		static inline string name;
@@ -119,6 +113,9 @@ namespace Core::ECS
 	{
 	public:
 		Mesh(const float* vertices);
+
+		void SetVertices(const float* vertices);
+
 		const float* GetVertices() const;
 	private:
 		const float* vertices;
@@ -128,6 +125,10 @@ namespace Core::ECS
 	{
 	public:
 		Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
+
+		void SetVAO(GLuint vao);
+		void SetVBO(GLuint vbo);
+		void SetShader(Shader shader);
 
 		const vec3& GetColor() const;
 		const float GetShininess() const;
