@@ -40,22 +40,17 @@ namespace Physics
 			vec3 direction;
 		};
 
+		static inline bool isObjectSelected;
+		static inline GameObject selectedObj;
+
 		/// <summary>
 		/// Calculate a ray from mouse coordinates.
 		/// </summary>
-		/// <param name="mouseX"></param>
-		/// <param name="mouseY"></param>
-		/// <param name="viewMatrix"></param>
-		/// <param name="projectionMatrix"></param>
-		/// <returns></returns>
 		static Ray RayFromMouse(double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix);
 
 		/// <summary>
 		/// Check ray-object intersections.
 		/// </summary>
-		/// <param name="ray"></param>
-		/// <param name="objects"></param>
-		/// <returns></returns>
-		static size_t CheckRayObjectIntersections(const Ray& ray, const vector<GameObject>& objects);
+		static int CheckRayObjectIntersections(const Ray& ray, const vector<GameObject>& objects);
 	};
 }

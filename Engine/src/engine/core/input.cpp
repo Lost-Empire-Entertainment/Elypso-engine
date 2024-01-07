@@ -233,26 +233,43 @@ namespace Core
 
             Select::Ray ray = Select::RayFromMouse(mouseX, mouseY, Render::view, Render::projection);
 
-            cout << "Mouse X: " << mouseX << ", Mouse Y: " << mouseY << endl;
-            cout << "Ray Direction: " << ray.direction.x << ", " << ray.direction.y << ", " << ray.direction.z << endl;
+            string output = 
+                "\nMouse X: " + to_string(mouseX) + ", Mouse Y: " + to_string(mouseY) + "\n" +
+                "Ray Direction: " + to_string(ray.direction.x) + ", " + to_string(ray.direction.y) + ", " + to_string(ray.direction.z) + "\n";
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::DEBUG,
+                output);
 
-            size_t index = Select::CheckRayObjectIntersections(ray, Render::gameObjects);
+            int index = Select::CheckRayObjectIntersections(ray, Render::gameObjects);
 
-            if (index != numeric_limits<size_t>::max())
+            //if user pressed left mouse button over any imgui window
+            if (index == -2)
             {
-                const GameObject& obj = Render::gameObjects[index];
-                string output = "Hit " + string(obj.name) + "!\n";
+                Select::isObjectSelected = false;
                 ConsoleManager::WriteConsoleMessage(
                     Caller::INPUT,
-                    Type::INFO,
-                    output);
+                    Type::DEBUG,
+                    "Hit ImGui content...\n");
+            }
+            //if user did not press any valid gameobject
+            else if (index == -1)
+            {
+                Select::isObjectSelected = false;
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::DEBUG,
+                    "Did not hit anything...\n");
             }
             else
             {
+                Select::selectedObj = Render::gameObjects[index];
+                Select::isObjectSelected = true;
+                string output = "Hit " + string(Select::selectedObj.name) + "!\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::INPUT,
-                    Type::INFO,
-                    "Did not hit anything...\n");
+                    Type::DEBUG,
+                    output);
             }
         }
     }

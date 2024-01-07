@@ -25,6 +25,18 @@ namespace Graphics::GUI
 		static inline bool renderInspector;
 		static void RenderInspector();
 	private:
+		static inline const int bufferSize = 32;
+		static inline char inputTextBuffer_pos_x[bufferSize];
+		static inline char inputTextBuffer_pos_y[bufferSize];
+		static inline char inputTextBuffer_pos_z[bufferSize];
+		static inline char inputTextBuffer_rot_x[bufferSize];
+		static inline char inputTextBuffer_rot_y[bufferSize];
+		static inline char inputTextBuffer_rot_z[bufferSize];
+		static inline char inputTextBuffer_scale_x[bufferSize];
+		static inline char inputTextBuffer_scale_y[bufferSize];
+		static inline char inputTextBuffer_scale_z[bufferSize];
+
+		static void RSM_SelectedObject();
 		static void RSM_Main();
 		static void RSM_Spot();
 		static void RSM_Point();

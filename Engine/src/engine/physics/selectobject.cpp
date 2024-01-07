@@ -15,6 +15,9 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+//external
+#include "imgui.h"
+
 //engine
 #include "selectobject.hpp"
 #include "render.hpp"
@@ -48,17 +51,26 @@ namespace Physics
 		return Ray(Render::camera.GetCameraPosition(), rayDirection);
 	}
 
-	size_t Select::CheckRayObjectIntersections(const Ray& ray, const vector<GameObject>& objects)
+	int Select::CheckRayObjectIntersections(const Ray& ray, const vector<GameObject>& objects)
 	{
-		for (size_t i = 0; i < objects.size(); i++)
+		//if user pressed left mouse button over any imgui window
+		if (ImGui::GetIO().WantCaptureMouse)
 		{
-			if (objects[i].objType == GameObject::Type::cube
-				&& Collision::IsRayIntersectingCube(ray, objects[i]))
-			{
-				return i;
-			}
+			return -2;
 		}
+		else
+		{
+			for (int i = 0; i < objects.size(); i++)
+			{
+				if (objects[i].objType == GameObject::Type::cube
+					&& Collision::IsRayIntersectingCube(ray, objects[i]))
+				{
+					return i;
+				}
+			}
 
-		return numeric_limits<size_t>::max();
+			//if user did not press any valid gameobject
+			return -1;
+		}
 	}
 }
