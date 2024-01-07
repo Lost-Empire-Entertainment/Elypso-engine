@@ -52,28 +52,21 @@ namespace Core::ECS
 			spot_light
 		};
 
-		static inline unsigned int nextID = 0;
-
-		GameObject();
-
-		GameObject(unsigned int GameObjectID);
+		void Initialize();
+		void SetName(string name);
+		void SetType(Type type);
+		void SetID();
 
 		bool IsInitialized() const;
 		string GetName() const;
 		Type GetType() const;
 		unsigned int GetID() const;
 
-		static void Initialize();
-		static void SetName(string name);
-		static void SetType(Type type);
-
 		// TRANSFORM
 
-		//Transform(const vec3& position, const vec3& rotation, const vec3& scale);
-
-		void SetPosition(const vec3& pos);
-		void SetRotation(const vec3& rot);
-		void SetScale(const vec3& scale);
+		void SetPosition(vec3 pos);
+		void SetRotation(vec3 rot);
+		void SetScale(vec3 scale);
 
 		const vec3& GetPosition() const;
 		const vec3& GetRotation() const;
@@ -81,15 +74,11 @@ namespace Core::ECS
 
 		// MESH
 
-		//Mesh(const float* vertices);
-
 		void SetVertices(const float* vertices);
 
 		const float* GetVertices() const;
 
 		//MATERIAL
-
-		//Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
 
 		void SetVAO(GLuint vao);
 		void SetVBO(GLuint vbo);
@@ -103,10 +92,11 @@ namespace Core::ECS
 	private:
 		// GAMEOBJECT
 
-		static inline bool initialized;
-		static inline string name;
-		static inline Type type;
+		bool initialized;
+		string name;
+		Type type;
 		unsigned int ID;
+		unsigned int nextID = 0;
 
 		// TRANSFORM
 

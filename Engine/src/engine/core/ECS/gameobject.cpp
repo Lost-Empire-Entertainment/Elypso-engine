@@ -29,14 +29,22 @@ namespace Core::ECS
 	// GAMEOBJECT
 	//
 
-	GameObject::GameObject()
-		: ID(nextID++)
-	{}
-
-	GameObject::GameObject(
-		unsigned int assignedID) : 
-			ID(assignedID)
-	{}
+	void GameObject::Initialize()
+	{
+		GameObject::initialized = true;
+	}
+	void GameObject::SetName(string assignedName)
+	{
+		GameObject::name = assignedName;
+	}
+	void GameObject::SetType(Type assignedType)
+	{
+		GameObject::type = assignedType;
+	}
+	void GameObject::SetID()
+	{
+		GameObject::ID = nextID++;
+	}
 
 	bool GameObject::IsInitialized() const
 	{
@@ -55,32 +63,19 @@ namespace Core::ECS
 		return GameObject::ID;
 	}
 
-	void GameObject::Initialize()
-	{
-		GameObject::initialized = true;
-	}
-	void GameObject::SetName(string assignedName)
-	{
-		GameObject::name = assignedName;
-	}
-	void GameObject::SetType(Type assignedType)
-	{
-		GameObject::type = assignedType;
-	}
-
 	//
 	// TRANSFORM
 	//
 
-	void GameObject::SetPosition(const vec3& assignedPosition)
+	void GameObject::SetPosition(vec3 assignedPosition)
 	{
 		GameObject::position = assignedPosition;
 	}
-	void GameObject::SetRotation(const vec3& assignedRotation)
+	void GameObject::SetRotation(vec3 assignedRotation)
 	{
 		GameObject::rotation = assignedRotation;
 	}
-	void GameObject::SetScale(const vec3& assignedScale)
+	void GameObject::SetScale(vec3 assignedScale)
 	{
 		GameObject::scale = assignedScale;
 	}

@@ -54,6 +54,7 @@ namespace Graphics::Props
 		GameObject obj;
 		obj.SetName("Cube");
 		obj.SetType(GameObject::Type::cube);
+		obj.SetID();
 
 		obj.SetPosition(position);
 		obj.SetRotation(vec3(0.0f, 0.0f, 0.0f));
@@ -210,7 +211,8 @@ namespace Graphics::Props
 		shader.SetMat4("view", view);
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, obj.GetPosition());
+		vec3 position = obj.GetPosition();
+		model = translate(model, position);
 		quat newRot = quat(radians(obj.GetRotation()));
 		model *= mat4_cast(newRot);
 		model = scale(model, obj.GetScale());

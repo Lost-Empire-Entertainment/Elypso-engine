@@ -138,9 +138,9 @@ namespace Graphics::GUI
 					to_string(pos.x) + ", " +
 					to_string(pos.y) + ", " +
 					to_string(pos.z) + ")";
-				string output = "moved " + obj.GetName() + " to " + objPos + "\n\n";
+				string output = "moved " + obj.GetName() + " to " + objPos + "\n";
 
-				cout << output << endl;
+				cout << output;
 			}
 
 			vec3 rot = obj.GetRotation();
