@@ -98,9 +98,12 @@ namespace Graphics::LightSources
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
-		GLuint VAO;
+		GameObject::AddMeshComponent(vertices);
+
+		GLuint VAO{};
 		glGenVertexArrays(1, &VAO);
-		GLuint VBO;
+
+		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -108,19 +111,10 @@ namespace Graphics::LightSources
 
 		glBindVertexArray(VAO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
-		GameObject::AddMeshComponent(vertices);
-
-		auto material = make_shared<Material>(color, shininess, VAO, VBO);
-		GameObject::AddMaterialComponent(
-			material->GetColor(),
-			material->GetShininess(),
-			material->GetVAO(),
-			material->GetVBO());
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
 
 		obj.Initialize();
 

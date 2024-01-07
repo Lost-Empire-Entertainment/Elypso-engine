@@ -107,15 +107,23 @@ namespace Graphics::Props
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 		};
 
-		GLuint VAO;
+		GameObject::AddMeshComponent(vertices);
+
+		GLuint VAO{};
 		glGenVertexArrays(1, &VAO);
-		GLuint VBO;
+
+		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 		glBindVertexArray(VAO);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
 
 		//position attribute
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -134,10 +142,6 @@ namespace Graphics::Props
 		GameObjectShader.Use();
 		GameObjectShader.SetInt("material.diffuse", 0);
 		GameObjectShader.SetInt("material.specular", 1);
-
-		GameObject::AddMeshComponent(vertices);
-
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
 
 		obj.Initialize();
 

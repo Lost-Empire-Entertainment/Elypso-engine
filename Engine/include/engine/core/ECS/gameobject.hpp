@@ -123,6 +123,7 @@ namespace Core::ECS
 	{
 	public:
 		Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO);
+
 		const vec3& GetColor() const;
 		float GetShininess() const;
 		GLuint GetVAO() const;
