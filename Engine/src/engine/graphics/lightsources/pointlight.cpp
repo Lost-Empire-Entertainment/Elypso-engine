@@ -46,8 +46,6 @@ using Graphics::Texture;
 
 namespace Graphics::LightSources
 {
-	Shader TestLightShader;
-
 	GameObject PointLight::CreatePointLight(const vec3& position, const vec3& scale, const vec3& color, float shininess)
 	{
 		GameObject obj;
@@ -56,7 +54,7 @@ namespace Graphics::LightSources
 
 		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
 
-		TestLightShader = Shader(
+		Shader TestLightShader = Shader(
 			Engine::enginePath + "/shaders/Light_Test.vert",
 			Engine::enginePath + "/shaders/Light_Test.frag");
 
@@ -114,7 +112,7 @@ namespace Graphics::LightSources
 		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, TestLightShader);
 
 		glBindBuffer(GL_ARRAY_BUFFER, obj.GetComponent<Material>()->GetVBO());
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -134,10 +132,12 @@ namespace Graphics::LightSources
 
 	void PointLight::RenderPointLight(GameObject& obj, mat4& view, mat4& projection)
 	{
-		TestLightShader.Use();
-		TestLightShader.SetMat4("projection", projection);
-		TestLightShader.SetMat4("view", view);
-		TestLightShader.SetVec3("lightColor", Render::pointDiffuse);
+		Shader shader = obj.GetComponent<Material>()->GetShader();
+
+		shader.Use();
+		shader.SetMat4("projection", projection);
+		shader.SetMat4("view", view);
+		shader.SetVec3("lightColor", Render::pointDiffuse);
 
 		mat4 model = mat4(1.0f);
 		model = translate(model, obj.GetComponent<Transform>()->GetPosition());
@@ -145,7 +145,7 @@ namespace Graphics::LightSources
 		model *= mat4_cast(newRot);
 		model = scale(model, obj.GetComponent<Transform>()->GetScale());
 
-		TestLightShader.SetMat4("model", model);
+		shader.SetMat4("model", model);
 		GLuint VAO = obj.GetComponent<Material>()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);

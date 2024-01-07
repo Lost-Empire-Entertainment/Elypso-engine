@@ -47,8 +47,6 @@ using Graphics::Texture;
 
 namespace Graphics::Props
 {
-	Shader GameObjectShader;
-
 	GameObject Cube::CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess)
 	{
 		GameObject obj;
@@ -57,7 +55,7 @@ namespace Graphics::Props
 
 		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
 
-		GameObjectShader = Shader(
+		Shader GameObjectShader = Shader(
 			Engine::enginePath + "/shaders/GameObject.vert",
 			Engine::enginePath + "/shaders/GameObject.frag");
 
@@ -115,7 +113,7 @@ namespace Graphics::Props
 		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, GameObjectShader);
 
 		glBindBuffer(GL_ARRAY_BUFFER, obj.GetComponent<Material>()->GetVBO());
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -136,9 +134,10 @@ namespace Graphics::Props
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 
-		GameObjectShader.Use();
-		GameObjectShader.SetInt("material.diffuse", 0);
-		GameObjectShader.SetInt("material.specular", 1);
+		Shader shader = obj.GetComponent<Material>()->GetShader();
+		shader.Use();
+		shader.SetInt("material.diffuse", 0);
+		shader.SetInt("material.specular", 1);
 
 		obj.Initialize();
 
@@ -149,53 +148,55 @@ namespace Graphics::Props
 
 	void Cube::RenderCube(GameObject& obj, mat4& view, mat4& projection)
 	{
-		GameObjectShader.Use();
-		GameObjectShader.SetVec3("viewPos", Render::camera.GetCameraPosition());
-		GameObjectShader.SetFloat("material.shininess", Render::shininess);
+		Shader shader = obj.GetComponent<Material>()->GetShader();
+
+		shader.Use();
+		shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
+		shader.SetFloat("material.shininess", Render::shininess);
 
 		//directional light
-		GameObjectShader.SetVec3("dirLight.direction", Render::directionalDirection);
-		GameObjectShader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		GameObjectShader.SetVec3("dirLight.diffuse", Render::directionalDiffuse);
-		GameObjectShader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-		GameObjectShader.SetFloat("dirLight.intensity", Render::directionalIntensity);
+		shader.SetVec3("dirLight.direction", Render::directionalDirection);
+		shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		shader.SetVec3("dirLight.diffuse", Render::directionalDiffuse);
+		shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+		shader.SetFloat("dirLight.intensity", Render::directionalIntensity);
 
 		//point lights
 		int pointLightCount = static_cast<int>(Render::pointLights.size());
-		GameObjectShader.SetInt("numPointLights", pointLightCount);
+		shader.SetInt("numPointLights", pointLightCount);
 		if (pointLightCount > 0)
 		{
 			for (int i = 0; i < pointLightCount; i++)
 			{
 				string lightPrefix = "pointLights[" + to_string(i) + "].";
-				GameObjectShader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetComponent<Transform>()->GetPosition());
-				GameObjectShader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
-				GameObjectShader.SetVec3(lightPrefix + "diffuse", Render::pointDiffuse);
-				GameObjectShader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
-				GameObjectShader.SetFloat(lightPrefix + "constant", 1.0f);
-				GameObjectShader.SetFloat(lightPrefix + "linear", 0.09f);
-				GameObjectShader.SetFloat(lightPrefix + "quadratic", 0.032f);
-				GameObjectShader.SetFloat(lightPrefix + "intensity", Render::pointIntensity);
-				GameObjectShader.SetFloat(lightPrefix + "distance", Render::pointDistance);
+				shader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetComponent<Transform>()->GetPosition());
+				shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
+				shader.SetVec3(lightPrefix + "diffuse", Render::pointDiffuse);
+				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+				shader.SetFloat(lightPrefix + "constant", 1.0f);
+				shader.SetFloat(lightPrefix + "linear", 0.09f);
+				shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+				shader.SetFloat(lightPrefix + "intensity", Render::pointIntensity);
+				shader.SetFloat(lightPrefix + "distance", Render::pointDistance);
 			}
 		}
 
 		//spotLight
-		GameObjectShader.SetVec3("spotLight.position", Render::camera.GetCameraPosition());
-		GameObjectShader.SetVec3("spotLight.direction", Render::camera.GetFront());
-		GameObjectShader.SetFloat("spotLight.intensity", Render::spotIntensity);
-		GameObjectShader.SetFloat("spotLight.distance", Render::spotDistance);
-		GameObjectShader.SetVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-		GameObjectShader.SetVec3("spotLight.diffuse", Render::spotDiffuse);
-		GameObjectShader.SetVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-		GameObjectShader.SetFloat("spotLight.constant", 1.0f);
-		GameObjectShader.SetFloat("spotLight.linear", 0.09f);
-		GameObjectShader.SetFloat("spotLight.quadratic", 0.032f);
-		GameObjectShader.SetFloat("spotLight.cutOff", cos(radians(Render::spotInnerAngle)));
-		GameObjectShader.SetFloat("spotLight.outerCutOff", cos(radians(Render::spotOuterAngle)));
+		shader.SetVec3("spotLight.position", Render::camera.GetCameraPosition());
+		shader.SetVec3("spotLight.direction", Render::camera.GetFront());
+		shader.SetFloat("spotLight.intensity", Render::spotIntensity);
+		shader.SetFloat("spotLight.distance", Render::spotDistance);
+		shader.SetVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+		shader.SetVec3("spotLight.diffuse", Render::spotDiffuse);
+		shader.SetVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+		shader.SetFloat("spotLight.constant", 1.0f);
+		shader.SetFloat("spotLight.linear", 0.09f);
+		shader.SetFloat("spotLight.quadratic", 0.032f);
+		shader.SetFloat("spotLight.cutOff", cos(radians(Render::spotInnerAngle)));
+		shader.SetFloat("spotLight.outerCutOff", cos(radians(Render::spotOuterAngle)));
 
-		GameObjectShader.SetMat4("projection", projection);
-		GameObjectShader.SetMat4("view", view);
+		shader.SetMat4("projection", projection);
+		shader.SetMat4("view", view);
 
 		mat4 model = mat4(1.0f);
 		model = translate(model, obj.GetComponent<Transform>()->GetPosition());
@@ -210,7 +211,7 @@ namespace Graphics::Props
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
 
-		GameObjectShader.SetMat4("model", model);
+		shader.SetMat4("model", model);
 		GLuint VAO = obj.GetComponent<Material>()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);

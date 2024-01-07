@@ -21,6 +21,9 @@
 #include "glm.hpp"
 #include "glfw3.h"
 
+//engine
+#include "shader.hpp"
+
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
@@ -34,6 +37,8 @@ using std::dynamic_pointer_cast;
 using glm::vec2;
 using glm::vec3;
 using glm::mat4;
+
+using Graphics::Shader;
 
 namespace Core::ECS
 {
@@ -83,7 +88,7 @@ namespace Core::ECS
 
 		static void AddMeshComponent(const float* vertices);
 
-		static void AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO);
+		static void AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
 	private:
 		static inline bool initialized;
 		static inline string name;
@@ -122,17 +127,19 @@ namespace Core::ECS
 	class Material : public Component
 	{
 	public:
-		Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO);
+		Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
 
 		const vec3& GetColor() const;
 		float GetShininess() const;
 		GLuint GetVAO() const;
 		GLuint GetVBO() const;
+		Shader GetShader() const;
 	private:
 		vec3 color;
 		float shininess;
 		GLuint VAO;
 		GLuint VBO;
+		Shader shader;
 	};
 }
 

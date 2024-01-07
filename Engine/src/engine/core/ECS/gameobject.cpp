@@ -94,9 +94,9 @@ namespace Core::ECS
 		AddComponent(mesh);
 	}
 
-	void GameObject::AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO)
+	void GameObject::AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader)
 	{
-		auto material = make_shared<Material>(color, shininess, VAO, VBO);
+		auto material = make_shared<Material>(color, shininess, VAO, VBO, shader);
 		AddComponent(material);
 	}
 
@@ -155,8 +155,8 @@ namespace Core::ECS
 	// MATERIAL
 	//
 
-	Material::Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO)
-		: color(color), shininess(shininess), VAO(VAO), VBO(VBO)
+	Material::Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader)
+		: color(color), shininess(shininess), VAO(VAO), VBO(VBO), shader(shader)
 	{}
 
 	const vec3& Material::GetColor() const
@@ -177,5 +177,10 @@ namespace Core::ECS
 	GLuint Material::GetVBO() const
 	{
 		return VBO;
+	}
+
+	Shader Material::GetShader() const
+	{
+		return shader;
 	}
 }
