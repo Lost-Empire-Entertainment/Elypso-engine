@@ -37,8 +37,9 @@ namespace Core::ECS
 		: ID(nextID++)
 	{}
 
-	GameObject::GameObject(unsigned int GameObjectID) 
-		: ID(GameObjectID)
+	GameObject::GameObject(
+		unsigned int assignedID) : 
+			ID(assignedID)
 	{}
 
 	bool GameObject::IsInitialized() const
@@ -75,8 +76,13 @@ namespace Core::ECS
 	// TRANSFORM
 	//
 
-	Transform::Transform(const vec3& initPos, const vec3& initRot, const vec3& initScale)
-		: position(initPos), rotation(initRot), scale(initScale)
+	Transform::Transform(
+		const vec3& assignedPosition, 
+		const vec3& assignedRotation, 
+		const vec3& assignedScale) : 
+			position(assignedPosition),
+			rotation(assignedRotation),
+			scale(assignedScale)
 	{}
 
 	void Transform::SetPosition(const vec3& assignedPosition)
@@ -109,8 +115,9 @@ namespace Core::ECS
 	// MESH
 	//
 
-	Mesh::Mesh(const float* vertices)
-		: vertices(vertices)
+	Mesh::Mesh(
+		const float* assignedVertices) : 
+			vertices(assignedVertices)
 	{}
 
 	void Mesh::SetVertices(const float* assignedVertices)
@@ -127,8 +134,17 @@ namespace Core::ECS
 	// MATERIAL
 	//
 
-	Material::Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader)
-		: color(color), shininess(shininess), VAO(VAO), VBO(VBO), shader(shader)
+	Material::Material(
+		const vec3& assignedColor, 
+		float assignedShininess, 
+		GLuint assignedVAO,
+		GLuint assignedVBO, 
+		Shader assignedShader) : 
+			color(assignedColor),
+			shininess(assignedShininess),
+			VAO(assignedVAO),
+			VBO(assignedVBO),
+			shader(assignedShader)
 	{}
 
 	void Material::SetVAO(GLuint assignedVAO)
