@@ -41,6 +41,8 @@ namespace Core::ECS
 		: ID(GameObjectID)
 	{}
 
+	// GET VARIABLE
+
 	bool GameObject::IsInitialized() const
 	{
 		return initialized;
@@ -61,6 +63,8 @@ namespace Core::ECS
 		return ID;
 	}
 
+	// SET VARIABLE
+
 	void GameObject::Initialize()
 	{
 		initialized = true;
@@ -75,6 +79,8 @@ namespace Core::ECS
 	{
 		type = selectedType;
 	}
+
+	// ADD COMPONENT
 
 	void GameObject::AddMeshComponent(const float* vertices)
 	{
