@@ -79,6 +79,8 @@ namespace Core::ECS
 		template <typename T>
 		shared_ptr<T> GetComponent() const;
 
+		static void AddTransformComponent(const vec3& pos, const vec3& rot, const vec3& scale);
+
 		static void AddMeshComponent(const float* vertices);
 
 		static void AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO);
@@ -93,6 +95,16 @@ namespace Core::ECS
 	class Transform : public Component
 	{
 	public:
+		Transform(const vec3& position, const vec3& rotation, const vec3& scale);
+
+		void SetPosition(const vec3& pos);
+		void SetRotation(const vec3& rot);
+		void SetScale(const vec3& scale);
+
+		vec3 GetPosition() const;
+		vec3 GetRotation() const;
+		vec3 GetScale() const;
+	private:
 		vec3 position;
 		vec3 rotation;
 		vec3 scale;

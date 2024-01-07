@@ -46,10 +46,7 @@ namespace Graphics::LightSources
 		obj.SetName("Point light");
 		obj.SetType(GameObject::Type::point_light);
 
-		auto transform = make_shared<Transform>();
-		transform->position = position;
-		transform->scale = scale;
-		GameObject::AddComponent(transform);
+		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
 
 		TestLightShader = Shader(
 			Engine::enginePath + "/shaders/Light_Test.vert",

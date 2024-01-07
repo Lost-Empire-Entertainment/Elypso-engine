@@ -82,6 +82,12 @@ namespace Core::ECS
 
 	// ADD COMPONENT
 
+	void GameObject::AddTransformComponent(const vec3& pos, const vec3& rot, const vec3& scale)
+	{
+		auto transform = make_shared<Transform>(pos, rot, scale);
+		AddComponent(transform);
+	}
+
 	void GameObject::AddMeshComponent(const float* vertices)
 	{
 		auto mesh = make_shared<Mesh>(vertices);
@@ -95,10 +101,46 @@ namespace Core::ECS
 	}
 
 	//
-	// MESH
+	// TRANSFORM
 	//
 
-	template shared_ptr<Component> GameObject::GetComponent() const;
+	Transform::Transform(const vec3& initPos, const vec3& initRot, const vec3& initScale)
+		: position(initPos), rotation(initRot), scale(initScale)
+	{}
+
+	void Transform::SetPosition(const vec3& pos)
+	{
+		Transform::position = pos;
+	}
+
+	void Transform::SetRotation(const vec3& rot)
+	{
+		Transform::rotation = rot;
+	}
+
+	void Transform::SetScale(const vec3& scale)
+	{
+		Transform::scale = scale;
+	}
+
+	vec3 Transform::GetPosition() const
+	{
+		return Transform::position;
+	}
+
+	vec3 Transform::GetRotation() const
+	{
+		return Transform::rotation;
+	}
+
+	vec3 Transform::GetScale() const
+	{
+		return Transform::scale;
+	}
+
+	//
+	// MESH
+	//
 
 	Mesh::Mesh(const float* vertices)
 		: vertices(vertices)

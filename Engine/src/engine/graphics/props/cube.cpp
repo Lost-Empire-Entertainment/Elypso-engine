@@ -55,10 +55,7 @@ namespace Graphics::Props
 		obj.SetName("Cube");
 		obj.SetType(GameObject::Type::cube);
 
-		auto transform = make_shared<Transform>();
-		transform->position = position;
-		transform->scale = scale;
-		GameObject::AddComponent(transform);
+		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
 
 		GameObjectShader = Shader(
 			Engine::enginePath + "/shaders/GameObject.vert",
@@ -140,12 +137,7 @@ namespace Graphics::Props
 
 		GameObject::AddMeshComponent(vertices);
 
-		auto material = make_shared<Material>(color, shininess, VAO, VBO);
-		GameObject::AddMaterialComponent(
-			material->GetColor(),
-			material->GetShininess(),
-			material->GetVAO(),
-			material->GetVBO());
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
 
 		obj.Initialize();
 
@@ -175,7 +167,7 @@ namespace Graphics::Props
 			for (int i = 0; i < pointLightCount; i++)
 			{
 				string lightPrefix = "pointLights[" + to_string(i) + "].";
-				GameObjectShader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetComponent<Transform>()->position);
+				GameObjectShader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetComponent<Transform>()->GetPosition());
 				GameObjectShader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
 				GameObjectShader.SetVec3(lightPrefix + "diffuse", Render::pointDiffuse);
 				GameObjectShader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
@@ -205,10 +197,10 @@ namespace Graphics::Props
 		GameObjectShader.SetMat4("view", view);
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, obj.GetComponent<Transform>()->position);
-		quat newRot = quat(radians(obj.GetComponent<Transform>()->rotation));
+		model = translate(model, obj.GetComponent<Transform>()->GetPosition());
+		quat newRot = quat(radians(obj.GetComponent<Transform>()->GetRotation()));
 		model *= mat4_cast(newRot);
-		model = scale(model, obj.GetComponent<Transform>()->scale);
+		model = scale(model, obj.GetComponent<Transform>()->GetScale());
 
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);

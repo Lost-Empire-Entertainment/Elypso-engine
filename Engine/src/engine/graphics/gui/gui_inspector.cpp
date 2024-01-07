@@ -103,28 +103,28 @@ namespace Graphics::GUI
 		{
 			GameObject obj = Select::selectedObj;
 
-			vec3 pos = obj.GetComponent<Transform>()->position;
+			vec3 pos = obj.GetComponent<Transform>()->GetPosition();
 
 			ImGui::Text("Position");
 			if (ImGui::InputFloat3("##objPos", value_ptr(pos)))
 			{
-				obj.GetComponent<Transform>()->position = pos;
+				obj.GetComponent<Transform>()->SetPosition(pos);
 			}
 
-			vec3 rot = obj.GetComponent<Transform>()->rotation;
+			vec3 rot = obj.GetComponent<Transform>()->GetRotation();
 
 			ImGui::Text("Rotation");
 			if (ImGui::InputFloat3("##objRot", value_ptr(rot)))
 			{
-				obj.GetComponent<Transform>()->rotation = rot;
+				obj.GetComponent<Transform>()->SetRotation(rot);
 			}
 
-			vec3 scale = obj.GetComponent<Transform>()->scale;
+			vec3 scale = obj.GetComponent<Transform>()->GetScale();
 
 			ImGui::Text("Scale");
 			if (ImGui::InputFloat3("##objScale", value_ptr(scale)))
 			{
-				obj.GetComponent<Transform>()->scale = scale;
+				obj.GetComponent<Transform>()->SetScale(scale);
 			}
 		}
 	}
