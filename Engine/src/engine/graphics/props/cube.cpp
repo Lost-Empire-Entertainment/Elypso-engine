@@ -54,7 +54,7 @@ namespace Graphics::Props
 {
 	GameObject Cube::CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess)
 	{
-		GameObject obj;
+		GameObject obj{};
 		obj.SetName("Cube");
 		obj.SetType(GameObject::Type::cube);
 

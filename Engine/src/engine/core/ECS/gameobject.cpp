@@ -33,15 +33,6 @@ namespace Core::ECS
 
 	unordered_map<type_index, shared_ptr<Component>> GameObject::components;
 
-	GameObject::GameObject()
-		: ID(nextID++)
-	{}
-
-	GameObject::GameObject(
-		unsigned int assignedID) : 
-			ID(assignedID)
-	{}
-
 	bool GameObject::IsInitialized() const
 	{
 		return GameObject::initialized;
@@ -77,23 +68,23 @@ namespace Core::ECS
 	//
 
 	Transform::Transform(
-		const vec3& assignedPosition, 
-		const vec3& assignedRotation, 
-		const vec3& assignedScale) : 
+		vec3 assignedPosition, 
+		vec3 assignedRotation, 
+		vec3 assignedScale) : 
 			position(assignedPosition),
 			rotation(assignedRotation),
 			scale(assignedScale)
 	{}
 
-	void Transform::SetPosition(const vec3& assignedPosition)
+	void Transform::SetPosition(vec3 assignedPosition)
 	{
 		Transform::position = assignedPosition;
 	}
-	void Transform::SetRotation(const vec3& assignedRotation)
+	void Transform::SetRotation(vec3 assignedRotation)
 	{
 		Transform::rotation = assignedRotation;
 	}
-	void Transform::SetScale(const vec3& assignedScale)
+	void Transform::SetScale(vec3 assignedScale)
 	{
 		Transform::scale = assignedScale;
 	}

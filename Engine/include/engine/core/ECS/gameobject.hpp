@@ -63,20 +63,16 @@ namespace Core::ECS
 			spot_light
 		};
 
-		static inline unsigned int nextID = 1;
+		static inline unsigned int nextID = 0;
 
-		GameObject();
-
-		GameObject(unsigned int GameObjectID);
+		static void Initialize();
+		static void SetName(string name);
+		static void SetType(Type type);
 
 		bool IsInitialized() const;
 		string GetName() const;
 		Type GetType() const;
 		unsigned int GetID() const;
-
-		static void Initialize();
-		static void SetName(string name);
-		static void SetType(Type type);
 
 		template <typename T>
 		static void AddComponent(shared_ptr<T> component);
@@ -94,11 +90,11 @@ namespace Core::ECS
 	class Transform : public Component
 	{
 	public:
-		Transform(const vec3& position, const vec3& rotation, const vec3& scale);
+		Transform(vec3 position, vec3 rotation, vec3 scale);
 
-		void SetPosition(const vec3& pos);
-		void SetRotation(const vec3& rot);
-		void SetScale(const vec3& scale);
+		void SetPosition(vec3 pos);
+		void SetRotation(vec3 rot);
+		void SetScale(vec3 scale);
 
 		const vec3& GetPosition() const;
 		const vec3& GetRotation() const;
