@@ -63,7 +63,8 @@ namespace Physics
 			for (int i = 0; i < objects.size(); i++)
 			{
 				GameObject::Type objType = objects[i].GetType();
-				if (objType == GameObject::Type::cube
+				if ((objType == GameObject::Type::cube
+					|| objType == GameObject::Type::point_light)
 					&& Collision::IsRayIntersectingCube(ray, objects[i]))
 				{
 					return i;

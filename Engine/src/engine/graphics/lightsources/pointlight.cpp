@@ -17,6 +17,8 @@
 
 //external
 #include "glad.h"
+#include "quaternion.hpp"
+#include "matrix_transform.hpp"
 
 //engine
 #include "pointlight.hpp"
@@ -25,6 +27,12 @@
 #include "shader.hpp"
 #include "render.hpp"
 #include "texture.hpp"
+
+using glm::translate;
+using glm::rotate;
+using glm::radians;
+using glm::quat;
+using glm::scale;
 
 using std::make_shared;
 
@@ -106,15 +114,15 @@ namespace Graphics::LightSources
 		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, obj.GetComponent<Material>()->GetVBO());
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glBindVertexArray(VAO);
+		glBindVertexArray(obj.GetComponent<Material>()->GetVAO());
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
-
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
 
 		obj.Initialize();
 
@@ -132,6 +140,10 @@ namespace Graphics::LightSources
 		TestLightShader.SetVec3("lightColor", Render::pointDiffuse);
 
 		mat4 model = mat4(1.0f);
+		model = translate(model, obj.GetComponent<Transform>()->GetPosition());
+		quat newRot = quat(radians(obj.GetComponent<Transform>()->GetRotation()));
+		model *= mat4_cast(newRot);
+		model = scale(model, obj.GetComponent<Transform>()->GetScale());
 
 		TestLightShader.SetMat4("model", model);
 		GLuint VAO = obj.GetComponent<Material>()->GetVAO();

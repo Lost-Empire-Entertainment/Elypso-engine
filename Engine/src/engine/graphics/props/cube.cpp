@@ -115,15 +115,12 @@ namespace Graphics::Props
 		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, obj.GetComponent<Material>()->GetVBO());
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glBindVertexArray(VAO);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO);
+		glBindVertexArray(obj.GetComponent<Material>()->GetVAO());
 
 		//position attribute
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
