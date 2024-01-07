@@ -68,7 +68,6 @@ using Graphics::GUI::GUIProjectHierarchy;
 using Graphics::Props::Cube;
 using Graphics::LightSources::PointLight;
 using Core::ECS::GameObject;
-using Core::ECS::Transform;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -295,7 +294,7 @@ namespace Graphics::GUI
 						32.0f);
 
 					unsigned int ID = obj.GetID();
-					vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+					vec3 pos = obj.GetPosition();
 					string posX = to_string(pos.x);
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);
@@ -325,7 +324,7 @@ namespace Graphics::GUI
 						32.0f);
 
 					unsigned int ID = obj.GetID();
-					vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+					vec3 pos = obj.GetPosition();
 					string posX = to_string(pos.x);
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);

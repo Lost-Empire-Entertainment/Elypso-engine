@@ -21,8 +21,6 @@
 //engine
 #include "gameobject.hpp"
 
-using std::make_shared;
-
 using Core::ECS::GameObject;
 
 namespace Core::ECS
@@ -30,8 +28,6 @@ namespace Core::ECS
 	//
 	// GAMEOBJECT
 	//
-
-	unordered_map<type_index, shared_ptr<Component>> GameObject::components;
 
 	GameObject::GameObject()
 		: ID(nextID++)
@@ -76,108 +72,81 @@ namespace Core::ECS
 	// TRANSFORM
 	//
 
-	Transform::Transform(
-		const vec3& assignedPosition, 
-		const vec3& assignedRotation, 
-		const vec3& assignedScale) : 
-			position(assignedPosition),
-			rotation(assignedRotation),
-			scale(assignedScale)
-	{}
-
-	void Transform::SetPosition(const vec3& assignedPosition)
+	void GameObject::SetPosition(const vec3& assignedPosition)
 	{
-		Transform::position = assignedPosition;
+		GameObject::position = assignedPosition;
 	}
-	void Transform::SetRotation(const vec3& assignedRotation)
+	void GameObject::SetRotation(const vec3& assignedRotation)
 	{
-		Transform::rotation = assignedRotation;
+		GameObject::rotation = assignedRotation;
 	}
-	void Transform::SetScale(const vec3& assignedScale)
+	void GameObject::SetScale(const vec3& assignedScale)
 	{
-		Transform::scale = assignedScale;
+		GameObject::scale = assignedScale;
 	}
 
-	const vec3& Transform::GetPosition() const
+	const vec3& GameObject::GetPosition() const
 	{
-		return Transform::position;
+		return GameObject::position;
 	}
-	const vec3& Transform::GetRotation() const
+	const vec3& GameObject::GetRotation() const
 	{
-		return Transform::rotation;
+		return GameObject::rotation;
 	}
-	const vec3& Transform::GetScale() const
+	const vec3& GameObject::GetScale() const
 	{
-		return Transform::scale;
+		return GameObject::scale;
 	}
 
 	//
 	// MESH
 	//
 
-	Mesh::Mesh(
-		const float* assignedVertices) : 
-			vertices(assignedVertices)
-	{}
-
-	void Mesh::SetVertices(const float* assignedVertices)
+	void GameObject::SetVertices(const float* assignedVertices)
 	{
-		Mesh::vertices = assignedVertices;
+		GameObject::vertices = assignedVertices;
 	}
 
-	const float* Mesh::GetVertices() const
+	const float* GameObject::GetVertices() const
 	{
-		return Mesh::vertices;
+		return GameObject::vertices;
 	}
 
 	//
 	// MATERIAL
 	//
 
-	Material::Material(
-		const vec3& assignedColor, 
-		float assignedShininess, 
-		GLuint assignedVAO,
-		GLuint assignedVBO, 
-		Shader assignedShader) : 
-			color(assignedColor),
-			shininess(assignedShininess),
-			VAO(assignedVAO),
-			VBO(assignedVBO),
-			shader(assignedShader)
-	{}
-
-	void Material::SetVAO(GLuint assignedVAO)
+	void GameObject::SetVAO(GLuint assignedVAO)
 	{
-		Material::VAO = assignedVAO;
+		GameObject::VAO = assignedVAO;
 	}
-	void Material::SetVBO(GLuint assignedVBO)
+	void GameObject::SetVBO(GLuint assignedVBO)
 	{
-		Material::VBO = assignedVBO;
+		GameObject::VBO = assignedVBO;
 	}
-	void Material::SetShader(Shader assignedShader)
+	void GameObject::SetShader(Shader assignedShader)
 	{
-		Material::shader = assignedShader;
+		GameObject::shader = assignedShader;
 	}
 
-	const vec3& Material::GetColor() const
+	const vec3& GameObject::GetColor() const
 	{
-		return Material::color;
+		return GameObject::color;
 	}
-	const float Material::GetShininess() const
+	const float GameObject::GetShininess() const
 	{
-		return Material::shininess;
+		return GameObject::shininess;
 	}
-	const GLuint Material::GetVAO() const
+	const GLuint GameObject::GetVAO() const
 	{
-		return Material::VAO;
+		return GameObject::VAO;
 	}
-	const GLuint Material::GetVBO() const
+	const GLuint GameObject::GetVBO() const
 	{
-		return Material::VBO;
+		return GameObject::VBO;
 	}
-	const Shader Material::GetShader() const
+	const Shader GameObject::GetShader() const
 	{
-		return Material::shader;
+		return GameObject::shader;
 	}
 }

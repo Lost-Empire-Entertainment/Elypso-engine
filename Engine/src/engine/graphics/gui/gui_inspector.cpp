@@ -38,8 +38,6 @@ using std::to_string;
 using Graphics::Render;
 using Physics::Select;
 using Core::ECS::GameObject;
-using Core::ECS::Transform;
-using Core::ECS::Material;
 
 namespace Graphics::GUI
 {
@@ -129,13 +127,13 @@ namespace Graphics::GUI
 
 			ImGui::Spacing();
 
-			vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+			vec3 pos = obj.GetPosition();
 			ImGui::Text("Position");
 			if (ImGui::InputFloat3("##objPos", value_ptr(pos)))
 			{
-				obj.GetComponent<Transform>()->SetPosition(pos);
+				obj.SetPosition(pos);
 
-				vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+				vec3 pos = obj.GetPosition();
 				string objPos = "( " +
 					to_string(pos.x) + ", " +
 					to_string(pos.y) + ", " +
@@ -145,18 +143,18 @@ namespace Graphics::GUI
 				cout << output << endl;
 			}
 
-			vec3 rot = obj.GetComponent<Transform>()->GetRotation();
+			vec3 rot = obj.GetRotation();
 			ImGui::Text("Rotation");
 			if (ImGui::InputFloat3("##objRot", value_ptr(rot)))
 			{
-				obj.GetComponent<Transform>()->SetRotation(rot);
+				obj.SetRotation(rot);
 			}
 
-			vec3 scale = obj.GetComponent<Transform>()->GetScale();
+			vec3 scale = obj.GetScale();
 			ImGui::Text("Scale");
 			if (ImGui::InputFloat3("##objScale", value_ptr(scale)))
 			{
-				obj.GetComponent<Transform>()->SetScale(scale);
+				obj.SetScale(scale);
 			}
 		}
 	}

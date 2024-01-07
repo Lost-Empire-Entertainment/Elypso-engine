@@ -25,15 +25,9 @@
 #include "shader.hpp"
 
 #include <unordered_map>
-#include <typeindex>
-#include <memory>
 #include <string>
 
 using std::string;
-using std::shared_ptr;
-using std::unordered_map;
-using std::type_index;
-using std::dynamic_pointer_cast;
 using glm::vec2;
 using glm::vec3;
 using glm::mat4;
@@ -42,16 +36,11 @@ using Graphics::Shader;
 
 namespace Core::ECS
 {
-	class Component
-	{
-	public:
-		virtual ~Component() 
-		{}
-	};
-
 	class GameObject
 	{
 	public:
+		// GAMEOBJECT
+
 		enum Type
 		{
 			cube,
@@ -63,7 +52,7 @@ namespace Core::ECS
 			spot_light
 		};
 
-		static inline unsigned int nextID = 1;
+		static inline unsigned int nextID = 0;
 
 		GameObject();
 
@@ -78,23 +67,9 @@ namespace Core::ECS
 		static void SetName(string name);
 		static void SetType(Type type);
 
-		template <typename T>
-		static void AddComponent(shared_ptr<T> component);
+		// TRANSFORM
 
-		template <typename T>
-		shared_ptr<T> GetComponent() const;
-	private:
-		static inline bool initialized;
-		static inline string name;
-		static inline Type type;
-		unsigned int ID;
-		static unordered_map<type_index, shared_ptr<Component>> components;
-	};
-
-	class Transform : public Component
-	{
-	public:
-		Transform(const vec3& position, const vec3& rotation, const vec3& scale);
+		//Transform(const vec3& position, const vec3& rotation, const vec3& scale);
 
 		void SetPosition(const vec3& pos);
 		void SetRotation(const vec3& rot);
@@ -103,28 +78,18 @@ namespace Core::ECS
 		const vec3& GetPosition() const;
 		const vec3& GetRotation() const;
 		const vec3& GetScale() const;
-	private:
-		vec3 position;
-		vec3 rotation;
-		vec3 scale;
-	};
 
-	class Mesh : public Component
-	{
-	public:
-		Mesh(const float* vertices);
+		// MESH
+
+		//Mesh(const float* vertices);
 
 		void SetVertices(const float* vertices);
 
 		const float* GetVertices() const;
-	private:
-		const float* vertices;
-	};
 
-	class Material : public Component
-	{
-	public:
-		Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
+		//MATERIAL
+
+		//Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
 
 		void SetVAO(GLuint vao);
 		void SetVBO(GLuint vbo);
@@ -136,30 +101,29 @@ namespace Core::ECS
 		const GLuint GetVBO() const;
 		const Shader GetShader() const;
 	private:
+		// GAMEOBJECT
+
+		static inline bool initialized;
+		static inline string name;
+		static inline Type type;
+		unsigned int ID;
+
+		// TRANSFORM
+
+		vec3 position;
+		vec3 rotation;
+		vec3 scale;
+
+		// MESH
+
+		const float* vertices;
+
+		// MATERIAL
+
 		vec3 color;
 		float shininess;
 		GLuint VAO;
 		GLuint VBO;
 		Shader shader;
 	};
-}
-
-template <typename T>
-void Core::ECS::GameObject::AddComponent(shared_ptr<T> component)
-{
-	components[type_index(typeid(T))] = component;
-}
-
-template <typename T>
-shared_ptr<T> Core::ECS::GameObject::GetComponent() const
-{
-	auto it = components.find(type_index(typeid(T)));
-	if (it != components.end())
-	{
-		return dynamic_pointer_cast<T>(it->second);
-	}
-	else
-	{
-		return nullptr;
-	}
 }

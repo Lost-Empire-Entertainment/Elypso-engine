@@ -34,13 +34,8 @@ using glm::radians;
 using glm::quat;
 using glm::scale;
 
-using std::make_shared;
-
 using Core::Engine;
 using Core::ECS::GameObject;
-using Core::ECS::Transform;
-using Core::ECS::Mesh;
-using Core::ECS::Material;
 using Graphics::Shader;
 using Graphics::Render;
 using Graphics::Texture;
@@ -53,11 +48,9 @@ namespace Graphics::LightSources
 		obj.SetName("Point light");
 		obj.SetType(GameObject::Type::point_light);
 
-		Transform transform(position, vec3(0.0f, 0.0f, 0.0f), scale);
-		transform.SetPosition(position);
-		transform.SetRotation(vec3(0.0f, 0.0f, 0.0f));
-		transform.SetScale(scale);
-		obj.AddComponent(make_shared<Transform>(transform));
+		obj.SetPosition(position);
+		obj.SetRotation(vec3(0.0f, 0.0f, 0.0f));
+		obj.SetScale(scale);
 
 		float vertices[] =
 		{
@@ -105,9 +98,7 @@ namespace Graphics::LightSources
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
-		Mesh mesh(vertices);
-		mesh.SetVertices(vertices);
-		obj.AddComponent(make_shared<Mesh>(mesh));
+		obj.SetVertices(vertices);
 
 		GLuint VAO, VBO;
 		glGenVertexArrays(1, &VAO);
@@ -128,11 +119,9 @@ namespace Graphics::LightSources
 			Engine::enginePath + "/shaders/Light_Test.vert",
 			Engine::enginePath + "/shaders/Light_Test.frag");
 
-		Material mat(color, shininess, VAO, VBO, TestLightShader);
-		mat.SetVAO(VAO);
-		mat.SetVBO(VBO);
-		mat.SetShader(TestLightShader);
-		obj.AddComponent(make_shared<Material>(mat));
+		obj.SetVAO(VAO);
+		obj.SetVBO(VBO);
+		obj.SetShader(TestLightShader);
 
 		obj.Initialize();
 
@@ -144,7 +133,7 @@ namespace Graphics::LightSources
 
 	void PointLight::RenderPointLight(GameObject& obj, mat4& view, mat4& projection)
 	{
-		Shader shader = obj.GetComponent<Material>()->GetShader();
+		Shader shader = obj.GetShader();
 
 		shader.Use();
 		shader.SetMat4("projection", projection);
@@ -152,13 +141,13 @@ namespace Graphics::LightSources
 		shader.SetVec3("lightColor", Render::pointDiffuse);
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, obj.GetComponent<Transform>()->GetPosition());
-		quat newRot = quat(radians(obj.GetComponent<Transform>()->GetRotation()));
+		model = translate(model, obj.GetPosition());
+		quat newRot = quat(radians(obj.GetRotation()));
 		model *= mat4_cast(newRot);
-		model = scale(model, obj.GetComponent<Transform>()->GetScale());
+		model = scale(model, obj.GetScale());
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj.GetComponent<Material>()->GetVAO();
+		GLuint VAO = obj.GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}

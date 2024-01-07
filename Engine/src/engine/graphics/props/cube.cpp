@@ -43,9 +43,6 @@ using std::endl;
 
 using Core::Engine;
 using Core::ECS::GameObject;
-using Core::ECS::Transform;
-using Core::ECS::Mesh;
-using Core::ECS::Material;
 using Graphics::Shader;
 using Graphics::Render;
 using Graphics::Texture;
@@ -58,11 +55,9 @@ namespace Graphics::Props
 		obj.SetName("Cube");
 		obj.SetType(GameObject::Type::cube);
 
-		Transform transform(position, vec3(0.0f, 0.0f, 0.0f), scale);
-		transform.SetPosition(position);
-		transform.SetRotation(vec3(0.0f, 0.0f, 0.0f));
-		transform.SetScale(scale);
-		obj.AddComponent(make_shared<Transform>(transform));
+		obj.SetPosition(position);
+		obj.SetRotation(vec3(0.0f, 0.0f, 0.0f));
+		obj.SetScale(scale);
 
 		float vertices[] =
 		{
@@ -110,9 +105,7 @@ namespace Graphics::Props
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 		};
 
-		Mesh mesh(vertices);
-		mesh.SetVertices(vertices);
-		obj.AddComponent(make_shared<Mesh>(mesh));
+		obj.SetVertices(vertices);
 
 		GLuint VAO, VBO;
 		glGenVertexArrays(1, &VAO);
@@ -144,17 +137,15 @@ namespace Graphics::Props
 		cout << "VBO Address: " << &VBO << endl;
 		cout << "Shader Address: " << &GameObjectShader << endl;
 
-		Material mat(color, shininess, VAO, VBO, GameObjectShader);
-		mat.SetVAO(VAO);
-		mat.SetVBO(VBO);
-		mat.SetShader(GameObjectShader);
-		obj.AddComponent(make_shared<Material>(mat));
+		obj.SetVAO(VAO);
+		obj.SetVBO(VBO);
+		obj.SetShader(GameObjectShader);
 
 		Texture tex(Engine::enginePath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 
-		const Shader& shader = obj.GetComponent<Material>()->GetShader();
+		const Shader& shader = obj.GetShader();
 		shader.Use();
 		shader.SetInt("material.diffuse", 0);
 		shader.SetInt("material.specular", 1);
@@ -168,7 +159,7 @@ namespace Graphics::Props
 
 	void Cube::RenderCube(GameObject& obj, mat4& view, mat4& projection)
 	{
-		const Shader& shader = obj.GetComponent<Material>()->GetShader();
+		const Shader& shader = obj.GetShader();
 
 		shader.Use();
 		shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
@@ -189,7 +180,7 @@ namespace Graphics::Props
 			for (int i = 0; i < pointLightCount; i++)
 			{
 				string lightPrefix = "pointLights[" + to_string(i) + "].";
-				shader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetComponent<Transform>()->GetPosition());
+				shader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetPosition());
 				shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
 				shader.SetVec3(lightPrefix + "diffuse", Render::pointDiffuse);
 				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
@@ -219,10 +210,10 @@ namespace Graphics::Props
 		shader.SetMat4("view", view);
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, obj.GetComponent<Transform>()->GetPosition());
-		quat newRot = quat(radians(obj.GetComponent<Transform>()->GetRotation()));
+		model = translate(model, obj.GetPosition());
+		quat newRot = quat(radians(obj.GetRotation()));
 		model *= mat4_cast(newRot);
-		model = scale(model, obj.GetComponent<Transform>()->GetScale());
+		model = scale(model, obj.GetScale());
 
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
@@ -232,7 +223,7 @@ namespace Graphics::Props
 		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj.GetComponent<Material>()->GetVAO();
+		GLuint VAO = obj.GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
