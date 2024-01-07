@@ -218,7 +218,8 @@ namespace Core
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
         if (action == GLFW_PRESS
-            && key == GLFW_KEY_ESCAPE)
+            && key == GLFW_KEY_ESCAPE
+            && !ImGui::GetIO().WantCaptureMouse)
         {
             inputSettings.cameraEnabled = !inputSettings.cameraEnabled;
         }
