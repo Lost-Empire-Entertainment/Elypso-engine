@@ -123,17 +123,17 @@ namespace Core::ECS
 		Transform::scale = scale;
 	}
 
-	vec3 Transform::GetPosition() const
+	const vec3& Transform::GetPosition() const
 	{
 		return Transform::position;
 	}
 
-	vec3 Transform::GetRotation() const
+	const vec3& Transform::GetRotation() const
 	{
 		return Transform::rotation;
 	}
 
-	vec3 Transform::GetScale() const
+	const vec3& Transform::GetScale() const
 	{
 		return Transform::scale;
 	}
@@ -164,22 +164,22 @@ namespace Core::ECS
 		return color;
 	}
 
-	float Material::GetShininess() const
+	const float Material::GetShininess() const
 	{
 		return shininess;
 	}
 
-	GLuint Material::GetVAO() const
+	const GLuint Material::GetVAO() const
 	{
 		return VAO;
 	}
 
-	GLuint Material::GetVBO() const
+	const GLuint Material::GetVBO() const
 	{
 		return VBO;
 	}
 
-	Shader Material::GetShader() const
+	const Shader Material::GetShader() const
 	{
 		return shader;
 	}

@@ -55,10 +55,6 @@ namespace Graphics::Props
 
 		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
 
-		Shader GameObjectShader = Shader(
-			Engine::enginePath + "/shaders/GameObject.vert",
-			Engine::enginePath + "/shaders/GameObject.frag");
-
 		float vertices[] =
 		{
 			//positions          //normals           //texture coords
@@ -107,18 +103,15 @@ namespace Graphics::Props
 
 		GameObject::AddMeshComponent(vertices);
 
-		GLuint VAO{};
+		GLuint VAO, VBO;
 		glGenVertexArrays(1, &VAO);
 
-		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, GameObjectShader);
+		glBindVertexArray(VAO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, obj.GetComponent<Material>()->GetVBO());
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindVertexArray(obj.GetComponent<Material>()->GetVAO());
 
 		//position attribute
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -129,6 +122,14 @@ namespace Graphics::Props
 		//texture attribute
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
+
+		glBindVertexArray(0);
+
+		Shader GameObjectShader = Shader(
+			Engine::enginePath + "/shaders/GameObject.vert",
+			Engine::enginePath + "/shaders/GameObject.frag");
+
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, GameObjectShader);
 
 		Texture tex(Engine::enginePath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);

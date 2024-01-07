@@ -106,9 +106,9 @@ namespace Core::ECS
 		void SetRotation(const vec3& rot);
 		void SetScale(const vec3& scale);
 
-		vec3 GetPosition() const;
-		vec3 GetRotation() const;
-		vec3 GetScale() const;
+		const vec3& GetPosition() const;
+		const vec3& GetRotation() const;
+		const vec3& GetScale() const;
 	private:
 		vec3 position;
 		vec3 rotation;
@@ -130,10 +130,10 @@ namespace Core::ECS
 		Material(const vec3& color, float shininess, GLuint VAO, GLuint VBO, Shader shader);
 
 		const vec3& GetColor() const;
-		float GetShininess() const;
-		GLuint GetVAO() const;
-		GLuint GetVBO() const;
-		Shader GetShader() const;
+		const float GetShininess() const;
+		const GLuint GetVAO() const;
+		const GLuint GetVBO() const;
+		const Shader GetShader() const;
 	private:
 		vec3 color;
 		float shininess;

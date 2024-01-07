@@ -54,10 +54,6 @@ namespace Graphics::LightSources
 
 		GameObject::AddTransformComponent(position, vec3(0, 0, 0), scale);
 
-		Shader TestLightShader = Shader(
-			Engine::enginePath + "/shaders/Light_Test.vert",
-			Engine::enginePath + "/shaders/Light_Test.frag");
-
 		float vertices[] =
 		{
 			//positions          //normals
@@ -106,21 +102,26 @@ namespace Graphics::LightSources
 
 		GameObject::AddMeshComponent(vertices);
 
-		GLuint VAO{};
+		GLuint VAO, VBO;
 		glGenVertexArrays(1, &VAO);
 
-		GLuint VBO{};
 		glGenBuffers(1, &VBO);
 
-		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, TestLightShader);
+		glBindVertexArray(VAO);
 
-		glBindBuffer(GL_ARRAY_BUFFER, obj.GetComponent<Material>()->GetVBO());
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindVertexArray(obj.GetComponent<Material>()->GetVAO());
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
+
+		glBindVertexArray(0);
+
+		Shader TestLightShader = Shader(
+			Engine::enginePath + "/shaders/Light_Test.vert",
+			Engine::enginePath + "/shaders/Light_Test.frag");
+
+		GameObject::AddMaterialComponent(color, shininess, VAO, VBO, TestLightShader);
 
 		obj.Initialize();
 
