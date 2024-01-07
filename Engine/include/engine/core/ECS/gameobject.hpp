@@ -57,15 +57,21 @@ namespace Core::ECS
 			point_light,
 			spot_light
 		};
-		static inline string name;
-		static inline Type objType;
-		static unsigned int nextID;
-		unsigned int ID;
+
+		static inline unsigned int nextID = 1;
 
 		GameObject();
 
 		GameObject(unsigned int GameObjectID);
+
+		bool IsInitialized() const;
+		string GetName() const;
+		Type GetType() const;
 		unsigned int GetID() const;
+
+		static void Initialize();
+		static void SetName(string name);
+		static void SetType(Type type);
 
 		template <typename T>
 		static void AddComponent(shared_ptr<T> component);
@@ -77,6 +83,10 @@ namespace Core::ECS
 
 		static void AddMaterialComponent(const vec3& color, float shininess, GLuint VAO, GLuint VBO);
 	private:
+		static inline bool initialized;
+		static inline string name;
+		static inline Type type;
+		unsigned int ID;
 		static unordered_map<type_index, shared_ptr<Component>> components;
 	};
 

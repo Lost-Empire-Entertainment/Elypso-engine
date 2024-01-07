@@ -31,7 +31,6 @@ namespace Core::ECS
 	// GAMEOBJECT
 	//
 
-	unsigned int GameObject::nextID = 1;
 	unordered_map<type_index, shared_ptr<Component>> GameObject::components;
 
 	GameObject::GameObject()
@@ -42,9 +41,39 @@ namespace Core::ECS
 		: ID(GameObjectID)
 	{}
 
+	bool GameObject::IsInitialized() const
+	{
+		return initialized;
+	}
+
+	string GameObject::GetName() const
+	{
+		return name;
+	}
+
+	GameObject::Type GameObject::GetType() const
+	{
+		return type;
+	}
+
 	unsigned int GameObject::GetID() const
 	{
 		return ID;
+	}
+
+	void GameObject::Initialize()
+	{
+		initialized = true;
+	}
+
+	void GameObject::SetName(string selectedName)
+	{
+		name = selectedName;
+	}
+
+	void GameObject::SetType(Type selectedType)
+	{
+		type = selectedType;
 	}
 
 	void GameObject::AddMeshComponent(const float* vertices)

@@ -234,43 +234,56 @@ namespace Core
 
             Select::Ray ray = Select::RayFromMouse(mouseX, mouseY, Render::view, Render::projection);
 
-            string output = 
-                "\nMouse X: " + to_string(mouseX) + ", Mouse Y: " + to_string(mouseY) + "\n" +
-                "Ray Direction: " + to_string(ray.direction.x) + ", " + to_string(ray.direction.y) + ", " + to_string(ray.direction.z) + "\n";
-            ConsoleManager::WriteConsoleMessage(
-                Caller::INPUT,
-                Type::DEBUG,
-                output);
+            if (inputSettings.printSelectRayDirectionToConsole)
+            {
+                string output =
+                    "\nMouse X: " + to_string(mouseX) + ", Mouse Y: " + to_string(mouseY) + "\n" +
+                    "Ray Direction: " + to_string(ray.direction.x) + ", " + to_string(ray.direction.y) + ", " + to_string(ray.direction.z) + "\n";
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::DEBUG,
+                    output);
+            }
 
             int index = Select::CheckRayObjectIntersections(ray, Render::gameObjects);
 
             //if user pressed left mouse button over any imgui window
             if (index == -2)
             {
-                Select::isObjectSelected = false;
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::DEBUG,
-                    "Hit ImGui content...\n");
+                Select::isObjectSelected = true;
+                if (inputSettings.printSelectRayDirectionToConsole)
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::INPUT,
+                        Type::DEBUG,
+                        "Hit ImGui content...\n");
+                }
             }
             //if user did not press any valid gameobject
             else if (index == -1)
             {
                 Select::isObjectSelected = false;
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::DEBUG,
-                    "Did not hit anything...\n");
+                if (inputSettings.printSelectRayDirectionToConsole)
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::INPUT,
+                        Type::DEBUG,
+                        "Did not hit anything...\n");
+                }
+
             }
             else
             {
                 Select::selectedObj = Render::gameObjects[index];
                 Select::isObjectSelected = true;
-                string output = "Hit " + string(Select::selectedObj.name) + "!\n";
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::DEBUG,
-                    output);
+                if (inputSettings.printSelectRayDirectionToConsole)
+                {
+                    string output = "Hit " + Select::selectedObj.GetName() + "!\n";
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::INPUT,
+                        Type::DEBUG,
+                        output);
+                }
             }
         }
     }

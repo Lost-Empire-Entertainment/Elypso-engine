@@ -92,7 +92,8 @@ namespace Graphics::GUI
 	}
 	void GUIInspector::RSM_SelectedObject()
 	{
-		if (Select::isObjectSelected)
+		if (Select::isObjectSelected
+			&& Select::selectedObj.IsInitialized())
 		{
 			GameObject obj = Select::selectedObj;
 

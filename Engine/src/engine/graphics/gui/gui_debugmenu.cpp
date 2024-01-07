@@ -130,6 +130,11 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##inputmsg", &Input::inputSettings.printInputToConsole);
 
+		ImGui::Text("Enable select ray direction messages");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		ImGui::Checkbox("##raymsg", &Input::inputSettings.printSelectRayDirectionToConsole);
+
 		ImGui::Text("Enable console scroll to bottom");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);

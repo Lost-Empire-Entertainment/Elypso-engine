@@ -44,9 +44,8 @@ namespace Graphics::Props
 	GameObject Cube::CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess)
 	{
 		GameObject obj;
-		obj.ID = obj.nextID++;
-		obj.name = "Cube";
-		obj.objType = GameObject::Type::cube;
+		obj.SetName("Cube");
+		obj.SetType(GameObject::Type::cube);
 
 		auto transform = make_shared<Transform>();
 		transform->position = position;
@@ -139,6 +138,8 @@ namespace Graphics::Props
 			material->GetShininess(),
 			material->GetVAO(),
 			material->GetVBO());
+
+		obj.Initialize();
 
 		Render::gameObjects.push_back(obj);
 

@@ -43,9 +43,8 @@ namespace Graphics::LightSources
 	GameObject PointLight::CreatePointLight(const vec3& position, const vec3& scale, const vec3& color, float shininess)
 	{
 		GameObject obj;
-		obj.ID = obj.nextID++;
-		obj.name = "Point light";
-		obj.objType = GameObject::Type::point_light;
+		obj.SetName("Point light");
+		obj.SetType(GameObject::Type::point_light);
 
 		auto transform = make_shared<Transform>();
 		transform->position = position;
@@ -125,6 +124,8 @@ namespace Graphics::LightSources
 			material->GetShininess(),
 			material->GetVAO(),
 			material->GetVBO());
+
+		obj.Initialize();
 
 		Render::gameObjects.push_back(obj);
 		Render::pointLights.push_back(obj);

@@ -201,11 +201,12 @@ namespace Graphics
 
 		for (GameObject obj : gameObjects)
 		{
-			if (obj.objType == GameObject::Type::cube)
+			GameObject::Type objType = obj.GetType();
+			if (objType == GameObject::Type::cube)
 			{
 				Cube::RenderCube(obj, view, projection);
 			}
-			else if (obj.objType == GameObject::Type::point_light)
+			else if (objType == GameObject::Type::point_light)
 			{
 				PointLight::RenderPointLight(obj, view, projection);
 			}

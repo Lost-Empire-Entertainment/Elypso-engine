@@ -48,6 +48,7 @@ namespace Core
             bool printFPSToConsole = false;
             bool printIMGUIToConsole = false;
             bool printInputToConsole = false;
+            bool printSelectRayDirectionToConsole = false;
         };
         static inline InputSettings inputSettings;
 
