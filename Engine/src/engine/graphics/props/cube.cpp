@@ -17,6 +17,8 @@
 
 //external
 #include "glad.h"
+#include "quaternion.hpp"
+#include "matrix_transform.hpp"
 
 //engine
 #include "cube.hpp"
@@ -25,6 +27,12 @@
 #include "shader.hpp"
 #include "render.hpp"
 #include "texture.hpp"
+
+using glm::translate;
+using glm::rotate;
+using glm::radians;
+using glm::quat;
+using glm::scale;
 
 using std::make_shared;
 using std::to_string;
@@ -197,6 +205,10 @@ namespace Graphics::Props
 		GameObjectShader.SetMat4("view", view);
 
 		mat4 model = mat4(1.0f);
+		model = translate(model, obj.GetComponent<Transform>()->position);
+		quat newRot = quat(radians(obj.GetComponent<Transform>()->rotation));
+		model *= mat4_cast(newRot);
+		model = scale(model, obj.GetComponent<Transform>()->scale);
 
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);

@@ -28,6 +28,12 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+using std::to_string;
+
 using Graphics::Render;
 using Physics::Select;
 using Core::ECS::GameObject;
@@ -97,138 +103,27 @@ namespace Graphics::GUI
 		{
 			GameObject obj = Select::selectedObj;
 
-			//
-			// POSITION
-			//
-
 			vec3 pos = obj.GetComponent<Transform>()->position;
 
-			snprintf(inputTextBuffer_pos_x, sizeof(inputTextBuffer_pos_x), "%f", pos.x);
-			snprintf(inputTextBuffer_pos_y, sizeof(inputTextBuffer_pos_y), "%f", pos.y);
-			snprintf(inputTextBuffer_pos_z, sizeof(inputTextBuffer_pos_z), "%f", pos.z);
-
 			ImGui::Text("Position");
-			ImGui::Text("x  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##posX", inputTextBuffer_pos_x, sizeof(bufferSize));
-			ImGui::SameLine();
-			ImGui::Text("  y  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##posY", inputTextBuffer_pos_y, sizeof(bufferSize));
-			ImGui::SameLine();
-			ImGui::Text("  z  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##posZ", inputTextBuffer_pos_z, sizeof(bufferSize));
-
-			if (ImGui::IsItemActivated()
-				&& glfwGetKey(Render::window, GLFW_KEY_ENTER) == GLFW_PRESS)
+			if (ImGui::InputFloat3("##objPos", value_ptr(pos)))
 			{
-				if (sscanf(inputTextBuffer_pos_x, "%f", &pos.x) != 1)
-				{
-					pos.x = 0.0f;
-				}
-				if (sscanf(inputTextBuffer_pos_y, "%f", &pos.y) != 1)
-				{
-					pos.y = 0.0f;
-				}
-				if (sscanf(inputTextBuffer_pos_z, "%f", &pos.z) != 1)
-				{
-					pos.z = 0.0f;
-				}
-
 				obj.GetComponent<Transform>()->position = pos;
 			}
 
-			//
-			// ROTATION
-			//
-
 			vec3 rot = obj.GetComponent<Transform>()->rotation;
 
-			snprintf(inputTextBuffer_rot_x, sizeof(inputTextBuffer_rot_x), "%f", rot.x);
-			snprintf(inputTextBuffer_rot_y, sizeof(inputTextBuffer_rot_y), "%f", rot.y);
-			snprintf(inputTextBuffer_rot_z, sizeof(inputTextBuffer_rot_z), "%f", rot.z);
-
 			ImGui::Text("Rotation");
-			ImGui::Text("x  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##rotX", inputTextBuffer_rot_x, sizeof(bufferSize));
-			ImGui::SameLine();
-			ImGui::Text("  y  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##rotY", inputTextBuffer_rot_y, sizeof(bufferSize));
-			ImGui::SameLine();
-			ImGui::Text("  z  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##rotZ", inputTextBuffer_rot_z, sizeof(bufferSize));
-
-			if (ImGui::IsItemActivated()
-				&& glfwGetKey(Render::window, GLFW_KEY_ENTER) == GLFW_PRESS)
+			if (ImGui::InputFloat3("##objRot", value_ptr(rot)))
 			{
-				if (sscanf(inputTextBuffer_rot_x, "%f", &rot.x) != 1)
-				{
-					rot.x = 0.0f;
-				}
-				if (sscanf(inputTextBuffer_rot_y, "%f", &rot.y) != 1)
-				{
-					rot.y = 0.0f;
-				}
-				if (sscanf(inputTextBuffer_rot_z, "%f", &rot.z) != 1)
-				{
-					rot.z = 0.0f;
-				}
-
 				obj.GetComponent<Transform>()->rotation = rot;
 			}
 
-			//
-			// SCALE
-			//
-
-			vec3 scale = obj.GetComponent<Transform>()->rotation;
-
-			snprintf(inputTextBuffer_scale_x, sizeof(inputTextBuffer_scale_x), "%f", scale.x);
-			snprintf(inputTextBuffer_scale_y, sizeof(inputTextBuffer_scale_y), "%f", scale.y);
-			snprintf(inputTextBuffer_scale_z, sizeof(inputTextBuffer_scale_z), "%f", scale.z);
+			vec3 scale = obj.GetComponent<Transform>()->scale;
 
 			ImGui::Text("Scale");
-			ImGui::Text("x  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##scaleX", inputTextBuffer_scale_x, sizeof(bufferSize));
-			ImGui::SameLine();
-			ImGui::Text("  y  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##scaleY", inputTextBuffer_scale_y, sizeof(bufferSize));
-			ImGui::SameLine();
-			ImGui::Text("  z  ");
-			ImGui::SameLine();
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputText("##scaleZ", inputTextBuffer_scale_z, sizeof(bufferSize));
-
-			if (ImGui::IsItemActivated()
-				&& glfwGetKey(Render::window, GLFW_KEY_ENTER) == GLFW_PRESS)
+			if (ImGui::InputFloat3("##objScale", value_ptr(scale)))
 			{
-				if (sscanf(inputTextBuffer_scale_x, "%f", &scale.x) != 1)
-				{
-					scale.x = 1.0f;
-				}
-				if (sscanf(inputTextBuffer_scale_y, "%f", &scale.y) != 1)
-				{
-					scale.y = 1.0f;
-				}
-				if (sscanf(inputTextBuffer_scale_z, "%f", &scale.z) != 1)
-				{
-					scale.z = 1.0f;
-				}
-
 				obj.GetComponent<Transform>()->scale = scale;
 			}
 		}
