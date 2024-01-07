@@ -26,6 +26,9 @@ namespace Graphics::GUI
 		static void RenderInspector();
 	private:
 		static inline const int bufferSize = 32;
+
+		static inline char inputTextBuffer_objName[bufferSize];
+
 		static inline char inputTextBuffer_pos_x[bufferSize];
 		static inline char inputTextBuffer_pos_y[bufferSize];
 		static inline char inputTextBuffer_pos_z[bufferSize];

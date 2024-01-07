@@ -21,6 +21,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "type_ptr.hpp"
+#include "magic_enum.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -103,16 +104,48 @@ namespace Graphics::GUI
 		{
 			GameObject obj = Select::selectedObj;
 
-			vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+			string objID = "ID: " + to_string(obj.GetID());
+			ImGui::Text(objID.c_str());
 
+			ImGui::SameLine();
+
+			GameObject::Type objType = obj.GetType();
+			string objTypeValue = "     Type: " + string(magic_enum::enum_name(objType));
+			ImGui::Text(objTypeValue.c_str());
+
+			ImGui::Spacing();
+
+			ImGui::Text("Name");
+			string objName = obj.GetName();
+			strcpy_s(inputTextBuffer_objName, bufferSize, objName.c_str());
+			if (ImGui::InputText("##objName", inputTextBuffer_objName, bufferSize))
+			{
+				obj.SetName(inputTextBuffer_objName);
+			}
+
+			ImGui::Separator();
+
+			ImGui::Text("Transform");
+
+			ImGui::Spacing();
+
+			vec3 pos = obj.GetComponent<Transform>()->GetPosition();
 			ImGui::Text("Position");
 			if (ImGui::InputFloat3("##objPos", value_ptr(pos)))
 			{
 				obj.GetComponent<Transform>()->SetPosition(pos);
+
+				vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+				string objPos = "( " +
+					to_string(pos.x) + ", " +
+					to_string(pos.y) + ", " +
+					to_string(pos.z) + ")";
+				string output = "moved " + obj.GetName() + " to " + objPos + "\n\n";
+
+				cout << output << endl;
 			}
 
 			vec3 rot = obj.GetComponent<Transform>()->GetRotation();
-
 			ImGui::Text("Rotation");
 			if (ImGui::InputFloat3("##objRot", value_ptr(rot)))
 			{
@@ -120,7 +153,6 @@ namespace Graphics::GUI
 			}
 
 			vec3 scale = obj.GetComponent<Transform>()->GetScale();
-
 			ImGui::Text("Scale");
 			if (ImGui::InputFloat3("##objScale", value_ptr(scale)))
 			{

@@ -154,7 +154,7 @@ namespace Graphics::Props
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 
-		Shader shader = obj.GetComponent<Material>()->GetShader();
+		const Shader& shader = obj.GetComponent<Material>()->GetShader();
 		shader.Use();
 		shader.SetInt("material.diffuse", 0);
 		shader.SetInt("material.specular", 1);
@@ -168,7 +168,7 @@ namespace Graphics::Props
 
 	void Cube::RenderCube(GameObject& obj, mat4& view, mat4& projection)
 	{
-		Shader shader = obj.GetComponent<Material>()->GetShader();
+		const Shader& shader = obj.GetComponent<Material>()->GetShader();
 
 		shader.Use();
 		shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
