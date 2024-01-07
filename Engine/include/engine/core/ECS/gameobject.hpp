@@ -63,11 +63,10 @@ namespace Core::ECS
 			spot_light
 		};
 
-		static inline unsigned int nextID = 0;
-
-		static void Initialize();
-		static void SetName(string name);
-		static void SetType(Type type);
+		void Initialize();
+		void SetName(string name);
+		void SetType(Type type);
+		void SetID();
 
 		bool IsInitialized() const;
 		string GetName() const;
@@ -80,10 +79,11 @@ namespace Core::ECS
 		template <typename T>
 		shared_ptr<T> GetComponent() const;
 	private:
-		static inline bool initialized;
-		static inline string name;
-		static inline Type type;
+		bool initialized;
+		string name;
+		Type type;
 		unsigned int ID;
+		unsigned int nextID = 1;
 		static unordered_map<type_index, shared_ptr<Component>> components;
 	};
 

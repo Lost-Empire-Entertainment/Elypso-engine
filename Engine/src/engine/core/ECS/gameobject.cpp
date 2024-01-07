@@ -33,6 +33,23 @@ namespace Core::ECS
 
 	unordered_map<type_index, shared_ptr<Component>> GameObject::components;
 
+	void GameObject::Initialize()
+	{
+		GameObject::initialized = true;
+	}
+	void GameObject::SetName(string assignedName)
+	{
+		GameObject::name = assignedName;
+	}
+	void GameObject::SetType(Type assignedType)
+	{
+		GameObject::type = assignedType;
+	}
+	void GameObject::SetID()
+	{
+		GameObject::ID = nextID++;
+	}
+
 	bool GameObject::IsInitialized() const
 	{
 		return GameObject::initialized;
@@ -48,19 +65,6 @@ namespace Core::ECS
 	unsigned int GameObject::GetID() const
 	{
 		return GameObject::ID;
-	}
-
-	void GameObject::Initialize()
-	{
-		GameObject::initialized = true;
-	}
-	void GameObject::SetName(string assignedName)
-	{
-		GameObject::name = assignedName;
-	}
-	void GameObject::SetType(Type assignedType)
-	{
-		GameObject::type = assignedType;
 	}
 
 	//

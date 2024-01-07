@@ -52,6 +52,7 @@ namespace Graphics::LightSources
 		GameObject obj;
 		obj.SetName("Point light");
 		obj.SetType(GameObject::Type::point_light);
+		obj.SetID();
 
 		Transform transform(position, vec3(0.0f, 0.0f, 0.0f), scale);
 		transform.SetPosition(position);
