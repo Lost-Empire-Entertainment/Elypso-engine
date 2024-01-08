@@ -63,6 +63,8 @@ namespace Core::ECS
 			spot_light
 		};
 
+		static inline unsigned int nextID = 1;
+
 		void Initialize();
 		void SetName(string name);
 		void SetType(Type type);
@@ -83,7 +85,6 @@ namespace Core::ECS
 		string name;
 		Type type;
 		unsigned int ID;
-		unsigned int nextID = 1;
 		static unordered_map<type_index, shared_ptr<Component>> components;
 	};
 
