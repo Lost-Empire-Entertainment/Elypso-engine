@@ -43,7 +43,8 @@ namespace Core::ECS
 	}
 	void GameObject::SetID()
 	{
-		GameObject::ID = nextID++;
+		GameObject::ID = nextID;
+		nextID++;
 	}
 
 	bool GameObject::IsInitialized() const
