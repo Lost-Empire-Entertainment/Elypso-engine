@@ -74,7 +74,7 @@ namespace File
 		Render::fov = 90.0f;
 		Render::nearClip = 0.001f;
 		Render::farClip = 100.0f;
-		vec3 newPosition = vec3(0.0f, 0.0f, 3.0f);
+		vec3 newPosition = vec3(5.0f, 5.0f, 5.0f);
 		Render::camera.SetCameraPosition(newPosition);
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
 		GUIConsole::allowScrollToBottom = true;

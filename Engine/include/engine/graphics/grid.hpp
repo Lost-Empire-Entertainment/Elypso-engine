@@ -26,14 +26,21 @@
 using Graphics::Shader;
 
 using glm::mat4;
+using glm::vec3;
 
 namespace Graphics
 {
 	class Grid
 	{
 	public:
+		static void SetLines1(vec3 newLines1);
+		static void SetLines2(vec3 newLines2);
+
 		static void SetGridSize(float gridSize);
 		static void SetRenderDistance(float renderDistance);
+
+		static vec3 GetLines1();
+		static vec3 GetLines2();
 
 		static float GetGridSize();
 		static float GetRenderDistance();
@@ -44,7 +51,11 @@ namespace Graphics
 		static void InitializeGridY();
 		static void RenderGridY(mat4 view, mat4 projection);
 	private:
+		static inline GLuint vao, vbo;
 		static inline Shader gridShader;
+
+		static inline vec3 lines1 = vec3(-1.0f, 0.0f, 0.0f);
+		static inline vec3 lines2 = vec3(0.0f, 0.0f, 1.0f);
 		static inline float gridSize = 1.0f;
 		static inline float renderDistance = 500.0f;
 	};

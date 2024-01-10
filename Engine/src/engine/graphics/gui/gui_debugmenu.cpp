@@ -28,9 +28,14 @@
 #include "timeManager.hpp"
 #include "input.hpp"
 #include "console.hpp"
+#include "grid.hpp"
+
+
+#include <type_ptr.hpp>
 
 using Graphics::GUI::GUIConsole;
 using Graphics::Render;
+using Graphics::Grid;
 using Core::TimeManager;
 using Core::Input;
 using Core::ConsoleManager;
@@ -145,6 +150,51 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
 
+		ImGui::Text("Set grid rotation");
+		vec3 lines1 = Grid::GetLines1();
+		ImGui::Text("x  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##lines1x", &lines1.x, -1.0f, 1.0f);
+		ImGui::SameLine();
+		ImGui::Text("  y  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##lines1y", &lines1.y, -1.0f, 1.0f);
+		ImGui::SameLine();
+		ImGui::Text("  z  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##lines1z", &lines1.z, -1.0f, 1.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##resetLines1"))
+		{
+			lines1 = vec3(-1, 0, 0);
+		}
+		Grid::SetLines1(lines1);
+
+		vec3 lines2 = Grid::GetLines2();
+		ImGui::Text("x  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##lines2x", &lines2.x, -1.0f, 1.0f);
+		ImGui::SameLine();
+		ImGui::Text("  y  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##lines2y", &lines2.y, -1.0f, 1.0f);
+		ImGui::SameLine();
+		ImGui::Text("  z  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##lines2z", &lines2.z, -1.0f, 1.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##resetLines2"))
+		{
+			lines2 = vec3(0, 0, 1);
+		}
+		Grid::SetLines2(lines2);
+
 		//
 		//CAMERA CLIP RANGE
 		//
@@ -167,7 +217,7 @@ namespace Graphics::GUI
 		}
 
 		ImGui::Text("Far clip");
-		ImGui::SliderFloat("##farclip", &Render::farClip, 10.0f, 100.0f);
+		ImGui::SliderFloat("##farclip", &Render::farClip, 10.0f, 1000.0f);
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetTooltip("Adjust camera far clip range.");

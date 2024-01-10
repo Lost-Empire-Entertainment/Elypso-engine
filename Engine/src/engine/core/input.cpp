@@ -65,7 +65,7 @@ namespace Core
         lastX(0.0), lastY(0.0), 
         firstMouse(true), 
         sensitivity(sensitivity),
-        cameraPos(vec3(0.0f, 0.0f, 3.0f)), 
+        cameraPos(vec3(5.0f, 5.0f, 5.0f)), 
         cameraFront(vec3(0.0f, 0.0f, -1.0f)), 
         cameraUp(vec3(0.0f, 1.0f, 0.0f)) {}
 

@@ -39,7 +39,14 @@ using Graphics::Shader;
 
 namespace Graphics
 {
-	GLuint vao, vbo;
+	void Grid::SetLines1(vec3 newLines1)
+	{
+		lines1 = newLines1;
+	}
+	void Grid::SetLines2(vec3 newLines2)
+	{
+		lines2 = newLines2;
+	}
 
 	void Grid::SetGridSize(float assignedGridSize)
 	{
@@ -48,6 +55,15 @@ namespace Graphics
 	void Grid::SetRenderDistance(float assignedRenderDistance)
 	{
 		renderDistance = assignedRenderDistance;
+	}
+
+	vec3 Grid::GetLines1()
+	{
+		return lines1;
+	}
+	vec3 Grid::GetLines2()
+	{
+		return lines2;
 	}
 
 	float Grid::GetGridSize()
@@ -105,6 +121,7 @@ namespace Graphics
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 		vector<float> vertices;
+
 		int numVertices = static_cast<int>(renderDistance / gridSize) + 1;
 		// Generate lines along the x-axis
 		for (int i = 0; i < numVertices; ++i)
@@ -139,7 +156,7 @@ namespace Graphics
 		glBindVertexArray(vao);
 
 		mat4 model = mat4(1.0f);
-		mat4 rotation = rotate(mat4(1.0f), radians(90.0f), vec3(-1.0f, 0.0f, 0.0f));
+		mat4 rotation = rotate(mat4(1.0f), radians(90.0f), vec3(lines1));
 		mat4 mvp = projection * view * rotation * model;
 
 		gridShader.Use();
@@ -153,7 +170,7 @@ namespace Graphics
 		glBindVertexArray(vao);
 
 		mat4 model = mat4(1.0f);
-		mat4 rotation = rotate(mat4(1.0f), radians(90.0f), vec3(0.0f, 0.0f, 1.0f));
+		mat4 rotation = rotate(mat4(1.0f), radians(90.0f), vec3(lines2));
 		mat4 mvp = projection * view * rotation * model;
 
 		gridShader.Use();
