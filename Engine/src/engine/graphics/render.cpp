@@ -33,7 +33,12 @@
 #include "timeManager.hpp"
 #include "searchUtils.hpp"
 #include "gameobject.hpp"
+#include "grid.hpp"
+
+//shapes
 #include "cube.hpp"
+
+//light sources
 #include "pointlight.hpp"
 
 #include <string>
@@ -55,6 +60,7 @@ using Core::TimeManager;
 using Core::Engine;
 using Utils::Search;
 using Graphics::GUI::EngineGUI;
+using Graphics::Grid;
 using Core::ECS::GameObject;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -165,6 +171,9 @@ namespace Graphics
 	{
 		glEnable(GL_DEPTH_TEST);
 
+		Grid::InitializeGridX();
+		Grid::InitializeGridY();
+
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
 
@@ -212,6 +221,9 @@ namespace Graphics
 				PointLight::RenderPointLight(obj, view, projection);
 			}
 		}
+
+		Grid::RenderGridX(view, projection);
+		Grid::RenderGridY(view, projection);
 
 		EngineGUI::GetInstance().Render();
 

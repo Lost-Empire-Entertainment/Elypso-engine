@@ -76,6 +76,7 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/gui/gui_debugmenu.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_projecthierarchy.cpp
+	${SRC_GRAPHICS_DIR}/grid.cpp
 	${SRC_GRAPHICS_DIR}/render.cpp
 	${SRC_GRAPHICS_DIR}/shader.cpp
 	${SRC_GRAPHICS_DIR}/texture.cpp
