@@ -31,6 +31,7 @@ using std::numeric_limits;
 
 using Graphics::Render;
 using Physics::Collision;
+using Type = Graphics::Shape::Mesh::Type;
 
 namespace Physics
 {
@@ -62,9 +63,9 @@ namespace Physics
 		{
 			for (int i = 0; i < objects.size(); i++)
 			{
-				GameObject::Type objType = objects[i].GetType();
-				if ((objType == GameObject::Type::cube
-					|| objType == GameObject::Type::point_light)
+				Type objType = objects[i].GetMesh().GetType();
+				if ((objType == Type::cube
+					|| objType == Type::point_light)
 					&& Collision::IsRayIntersectingCube(ray, objects[i]))
 				{
 					return i;

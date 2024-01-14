@@ -65,10 +65,9 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
-using Graphics::Props::Cube;
-using Graphics::LightSources::PointLight;
-using Core::ECS::GameObject;
-using Core::ECS::Transform;
+using Graphics::Shape::Cube;
+using Graphics::Shape::PointLight;
+using Graphics::Shape::GameObject;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -288,14 +287,13 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					GameObject obj = Cube::CreateCube(
+					GameObject obj = Cube::InitializeCube(
 						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f),
-						vec3(1.0f, 0.0f, 0.0f),
-						32.0f);
+						vec3(0.0f, 0.0f, 0.0f),
+						vec3(1.0f, 1.0f, 1.0f));
 
 					unsigned int ID = obj.GetID();
-					vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+					vec3 pos = obj.GetTransform().GetPosition();
 					string posX = to_string(pos.x);
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);
@@ -321,14 +319,13 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					GameObject obj = PointLight::CreatePointLight(
+					GameObject obj = PointLight::InitializePointLight(
 						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f),
-						vec3(1.0f, 0.0f, 0.0f),
-						32.0f);
+						vec3(0.0f, 0.0f, 0.0f),
+						vec3(1.0f, 1.0f, 1.0f));
 
 					unsigned int ID = obj.GetID();
-					vec3 pos = obj.GetComponent<Transform>()->GetPosition();
+					vec3 pos = obj.GetTransform().GetPosition();
 					string posX = to_string(pos.x);
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);

@@ -20,7 +20,7 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 
-using Core::ECS::GameObject;
+using Graphics::Shape::GameObject;
 using Physics::Select;
 
 namespace Physics

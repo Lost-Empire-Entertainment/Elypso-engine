@@ -25,15 +25,15 @@ using glm::min;
 using glm::max;
 using glm::vec3;
 
-using Core::ECS::Transform;
+using Graphics::Shape::Transform;
 
 namespace Physics
 {
 	bool Collision::IsRayIntersectingCube(const Select::Ray& ray, const GameObject& cube)
 	{
 		//calculate the half extents of the cube along each axis
-		vec3 pos = cube.GetComponent<Transform>()->GetPosition();
-		vec3 scale = cube.GetComponent<Transform>()->GetScale();
+		vec3 pos = cube.GetTransform().GetPosition();
+		vec3 scale = cube.GetTransform().GetScale();
 		vec3 minBound = pos - 0.5f * scale;
 		vec3 maxBound = pos + 0.5f * scale;
 

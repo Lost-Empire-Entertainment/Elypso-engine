@@ -33,11 +33,7 @@
 #include "timeManager.hpp"
 #include "searchUtils.hpp"
 #include "gameobject.hpp"
-
-//shapes
 #include "cube.hpp"
-
-//light sources
 #include "pointlight.hpp"
 
 #include <string>
@@ -59,12 +55,13 @@ using Core::TimeManager;
 using Core::Engine;
 using Utils::Search;
 using Graphics::GUI::EngineGUI;
-using Core::ECS::GameObject;
+using Graphics::Shape::GameObject;
+using ShapeType = Graphics::Shape::Mesh::Type;
+using Graphics::Shape::Cube;
+using Graphics::Shape::PointLight;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Graphics::Props::Cube;
-using Graphics::LightSources::PointLight;
 
 namespace Graphics
 {
@@ -206,12 +203,12 @@ namespace Graphics
 		//cout << gameObjects.size() << endl;
 		for (GameObject obj : gameObjects)
 		{
-			GameObject::Type objType = obj.GetType();
-			if (objType == GameObject::Type::cube)
+			ShapeType objType = obj.GetMesh().GetType();
+			if (objType == ShapeType::cube)
 			{
 				Cube::RenderCube(obj, view, projection);
 			}
-			else if (objType == GameObject::Type::point_light)
+			else if (objType == ShapeType::point_light)
 			{
 				PointLight::RenderPointLight(obj, view, projection);
 			}

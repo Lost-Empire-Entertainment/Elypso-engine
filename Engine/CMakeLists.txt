@@ -36,11 +36,9 @@ set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 
 # Manually added source file paths
 set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/engine/core")
-set(SRC_ECS_DIR "${CMAKE_SOURCE_DIR}/src/engine/core/ECS")
 set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/engine/file")
 set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics")
-set(SRC_GRAPHICS_PROPS_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics/props")
-set(SRC_GRAPHICS_LIGHTSOURCES_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics/lightsources")
+set(SRC_GRAPHICS_SHAPE_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics/shapes")
 set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/physics")
 set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/engine/utils")
 set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
@@ -69,7 +67,6 @@ set(SOURCE_FILES
 	${SRC_CORE_DIR}/input.cpp
 	${SRC_CORE_DIR}/shutdown.cpp
 	${SRC_CORE_DIR}/timeManager.cpp
-	${SRC_ECS_DIR}/gameobject.cpp
 	${SRC_FILE_DIR}/configFile.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_console.cpp
@@ -79,8 +76,9 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/render.cpp
 	${SRC_GRAPHICS_DIR}/shader.cpp
 	${SRC_GRAPHICS_DIR}/texture.cpp
-	${SRC_GRAPHICS_PROPS_DIR}/cube.cpp
-	${SRC_GRAPHICS_LIGHTSOURCES_DIR}/pointlight.cpp
+	${SRC_GRAPHICS_SHAPE_DIR}/cube.cpp
+	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
+	${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp
 	${SRC_PHYSICS_DIR}/selectobject.cpp
 	${SRC_PHYSICS_DIR}/collision.cpp
 	${SRC_UTILS_DIR}/browserUtils.cpp
@@ -110,12 +108,10 @@ target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR}/engine
 	${INCLUDE_DIR}/engine/core
-	${INCLUDE_DIR}/engine/core/ECS
 	${INCLUDE_DIR}/engine/file
 	${INCLUDE_DIR}/engine/graphics
 	${INCLUDE_DIR}/engine/graphics/gui
-	${INCLUDE_DIR}/engine/graphics/props
-	${INCLUDE_DIR}/engine/graphics/lightsources
+	${INCLUDE_DIR}/engine/graphics/shapes
 	${INCLUDE_DIR}/engine/physics
 	${INCLUDE_DIR}/engine/utils
 	${INCLUDE_DIR}/external

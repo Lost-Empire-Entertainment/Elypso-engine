@@ -24,11 +24,11 @@
 
 #include <vector>
 
-using Core::ECS::GameObject;
-
 using std::vector;
 using glm::vec3;
 using glm::mat4;
+
+using Graphics::Shape::GameObject;
 
 namespace Graphics
 {

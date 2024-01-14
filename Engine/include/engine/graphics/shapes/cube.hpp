@@ -17,27 +17,20 @@
 
 #pragma once
 
-//external
 #include "glm.hpp"
-
-//engine
 #include "gameobject.hpp"
 
-#include <vector>
-
-using std::vector;
-
-using Core::ECS::GameObject;
-
 using glm::vec3;
-using glm::mat4;
 
-namespace Graphics::Props
+using Graphics::Shape::GameObject;
+
+namespace Graphics::Shape
 {
 	class Cube
 	{
 	public:
-		static GameObject CreateCube(const vec3& position, const vec3& scale, const vec3& color, float shininess);
+		static GameObject InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale);
+
 		static void RenderCube(GameObject& obj, mat4& view, mat4& projection);
 	};
 }
