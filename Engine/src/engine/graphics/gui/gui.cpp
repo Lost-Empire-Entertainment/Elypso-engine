@@ -96,8 +96,6 @@ namespace Graphics::GUI
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
-		maxWindowSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 30);
-
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 

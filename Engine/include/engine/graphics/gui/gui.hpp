@@ -36,10 +36,6 @@ namespace Graphics::GUI
 
 		static inline float fontScale;
 
-		static inline ImVec2 initialWindowPos = ImVec2(200, 150);
-		static inline ImVec2 minWindowSize = ImVec2(-1, 0);//(400, 400);
-		static inline ImVec2 maxWindowSize;
-
 		void Initialize();
 
 		void CustomizeImGuiStyle();
