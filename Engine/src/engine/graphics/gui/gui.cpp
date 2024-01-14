@@ -96,6 +96,10 @@ namespace Graphics::GUI
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
+		initialPos = ImVec2(200, 150);
+		initialSize = ImVec2(400, 700);
+		minSize = ImVec2(400, 400);
+
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 
@@ -152,6 +156,9 @@ namespace Graphics::GUI
 		ImGui::NewFrame();
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
+		ImGuiIO& io = ImGui::GetIO();
+		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y);
 
 		RenderTopBar();
 		RenderBottomBar();

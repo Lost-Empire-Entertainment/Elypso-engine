@@ -22,6 +22,7 @@
 #include "imgui_internal.h"
 
 //engine
+#include "gui.hpp"
 #include "core.hpp"
 #include "console.hpp"
 #include "gui_console.hpp"
@@ -37,11 +38,8 @@ namespace Graphics::GUI
 {
 	void GUIConsole::RenderConsole()
 	{
-		ImVec2 initialPos(357, 500);
-		ImVec2 initialSize(530, 200);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
+		ImGui::SetNextWindowPos(EngineGUI::initialPos, ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;

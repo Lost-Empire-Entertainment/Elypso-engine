@@ -36,6 +36,12 @@ namespace Graphics::GUI
 
 		static inline float fontScale;
 
+		static inline ImVec2 initialPos;
+		static inline ImVec2 initialSize;
+
+		static inline ImVec2 minSize;
+		static inline ImVec2 maxSize;
+
 		void Initialize();
 
 		void CustomizeImGuiStyle();

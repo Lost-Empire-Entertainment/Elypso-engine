@@ -25,6 +25,7 @@
 
 //engine
 #include "gui_inspector.hpp"
+#include "gui.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
@@ -46,11 +47,8 @@ namespace Graphics::GUI
 {
 	void GUIInspector::RenderInspector()
 	{
-		ImVec2 initialPos(5, 5);
-		ImVec2 initialSize(350, 700);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
+		ImGui::SetNextWindowPos(EngineGUI::initialPos, ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
