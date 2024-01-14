@@ -37,6 +37,7 @@
 #include "browserUtils.hpp"
 #include "shutdown.hpp"
 #include "gameobject.hpp"
+#include "timeManager.hpp"
 #include "cube.hpp"
 #include "pointlight.hpp"
 
@@ -57,6 +58,7 @@ using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
 using Core::ShutdownManager;
+using Core::TimeManager;
 using Utils::Search;
 using Utils::File;
 using Utils::Browser;
@@ -155,13 +157,16 @@ namespace Graphics::GUI
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-
 		ImGuiIO& io = ImGui::GetIO();
-		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y);
+		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 200);
 
 		RenderTopBar();
 		RenderBottomBar();
+
+		ImGuiDockNodeFlags dockFlags =
+			ImGuiDockNodeFlags_PassthruCentralNode;
+
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
 		GUIConsole::RenderConsole();
 		GUIDebugMenu::RenderDebugMenu();
@@ -416,8 +421,8 @@ namespace Graphics::GUI
 	void EngineGUI::RenderBottomBar()
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui::SetNextWindowSizeConstraints(ImVec2(-1, 2500), ImVec2(-1, 30));
 		ImGui::SetNextWindowPos(ImVec2(0, io.DisplaySize.y - 30));
+		ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, 30));
 
 		ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoTitleBar |
@@ -426,10 +431,25 @@ namespace Graphics::GUI
 			ImGuiWindowFlags_NoCollapse |
 			ImGuiWindowFlags_NoScrollbar |
 			ImGuiWindowFlags_NoSavedSettings;
+
 		ImGui::Begin("BottomBar", nullptr, flags);
 
 		float windowWidth = io.DisplaySize.x;
 		ImGui::SetWindowSize(ImVec2(windowWidth, 30));
+
+		ImGui::Text("FPS: %.2f     ", TimeManager::displayedFPS);
+		ImGui::SameLine();
+		ImGui::Text(
+			"Position: %.2f, %.2f, %.2f     ",
+			Render::camera.GetCameraPosition().x,
+			Render::camera.GetCameraPosition().y,
+			Render::camera.GetCameraPosition().z);
+		ImGui::SameLine();
+		ImGui::Text(
+			"Rotation: %.2f, %.2f, %.2f",
+			Render::camera.GetCameraRotation().x,
+			Render::camera.GetCameraRotation().y,
+			Render::camera.GetCameraRotation().z);
 
 		ImGui::End();
 	}
