@@ -90,13 +90,20 @@ namespace Graphics::Shape
 	class Material
 	{
 	public:
-		Material(const Shader& shader);
+		Material(
+			const Shader& shader,
+			const GLuint& vao,
+			const GLuint& vbo);
 
 		void SetShader(Shader shader);
 
 		Shader GetShader() const;
+		GLuint GetVAO() const;
+		GLuint GetVBO() const;
 	private:
 		Shader shader;
+		GLuint vao;
+		GLuint vbo;
 	};
 
 	class GameObject
@@ -111,6 +118,7 @@ namespace Graphics::Shape
 		GameObject();
 
 		GameObject(
+			const bool& isInitialized,
 			const unsigned int& ID,
 			const string& name,
 			const Transform& transform, 

@@ -96,6 +96,8 @@ namespace Graphics::GUI
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
+		maxWindowSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 30);
+
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 
@@ -109,7 +111,6 @@ namespace Graphics::GUI
 
 		CustomizeImGuiStyle();
 	}
-
 	void EngineGUI::CustomizeImGuiStyle()
 	{
 		ImGui::StyleColorsDark();
@@ -155,6 +156,7 @@ namespace Graphics::GUI
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
 		RenderTopBar();
+		RenderBottomBar();
 
 		GUIConsole::RenderConsole();
 		GUIDebugMenu::RenderDebugMenu();
@@ -292,6 +294,8 @@ namespace Graphics::GUI
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
 
+					GameObject::gameObjects.push_back(obj);
+
 					unsigned int ID = obj.GetID();
 					vec3 pos = obj.GetTransform().GetPosition();
 					string posX = to_string(pos.x);
@@ -324,13 +328,19 @@ namespace Graphics::GUI
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
 
+					GameObject::gameObjects.push_back(obj);
+					GameObject::pointLights.push_back(obj);
+
 					unsigned int ID = obj.GetID();
 					vec3 pos = obj.GetTransform().GetPosition();
 					string posX = to_string(pos.x);
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);
 
-					string output = "Successfully created " + to_string(ID) + " at position (" + posX + ", " + posY + ", " + posZ + ")\n";
+					string output =
+						"Successfully created " + obj.GetName() +
+						" with ID " + to_string(obj.GetID()) +
+						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::SUCCESS,
@@ -396,6 +406,27 @@ namespace Graphics::GUI
 		}
 
 		ImGui::EndMainMenuBar();
+	}
+
+	void EngineGUI::RenderBottomBar()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::SetNextWindowSizeConstraints(ImVec2(-1, 2500), ImVec2(-1, 30));
+		ImGui::SetNextWindowPos(ImVec2(0, io.DisplaySize.y - 30));
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_NoSavedSettings;
+		ImGui::Begin("BottomBar", nullptr, flags);
+
+		float windowWidth = io.DisplaySize.x;
+		ImGui::SetWindowSize(ImVec2(windowWidth, 30));
+
+		ImGui::End();
 	}
 
 	void EngineGUI::TB_CheckVersion()

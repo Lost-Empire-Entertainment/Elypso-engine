@@ -39,7 +39,7 @@ namespace Core
     public:
         struct InputSettings
         {
-            float cameraSpeed;
+            float cameraSpeed = 2.5f;
             vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
             vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
             float moveSpeedMultiplier = 1.0f;

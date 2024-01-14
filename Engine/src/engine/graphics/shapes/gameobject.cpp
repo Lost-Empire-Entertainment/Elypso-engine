@@ -91,8 +91,12 @@ namespace Graphics::Shape
 	//
 
 	Material::Material(
-		const Shader& shader) :
-		shader(shader)
+		const Shader& shader,
+		const GLuint& vao,
+		const GLuint& vbo) :
+		shader(shader),
+		vao(vao),
+		vbo(vbo)
 	{
 	}
 
@@ -105,27 +109,37 @@ namespace Graphics::Shape
 	{
 		return shader;
 	}
-
+	GLuint Material::GetVAO() const
+	{
+		return vao;
+	}
+	GLuint Material::GetVBO() const
+	{
+		return vbo;
+	}
 
 	//
 	// GAMEOBJECT
 	//
 
 	GameObject::GameObject() : 
+		isInitialized(isInitialized = false),
 		ID(0),
 		name("None"),
 		transform(vec3(0), vec3(0), vec3(0)),
 		mesh(Mesh(Type::cube, nullptr)),
-		mat(Material(Shader()))
+		mat(Material(Shader(), GLuint(), GLuint()))
 	{
 	}
 
 	GameObject::GameObject(
+		const bool& isInitialized,
 		const unsigned int& ID,
 		const string& name,
 		const Transform& transform,
 		const Mesh& mesh,
 		const Material& mat) :
+		isInitialized(isInitialized),
 		ID(ID),
 		name(name),
 		transform(transform),
