@@ -32,7 +32,6 @@
 #include "texture.hpp"
 #include "timeManager.hpp"
 #include "searchUtils.hpp"
-#include "gameobject.hpp"
 #include "cube.hpp"
 #include "pointlight.hpp"
 
@@ -55,7 +54,6 @@ using Core::TimeManager;
 using Core::Engine;
 using Utils::Search;
 using Graphics::GUI::EngineGUI;
-using Graphics::Shape::GameObject;
 using ShapeType = Graphics::Shape::Mesh::Type;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
@@ -201,7 +199,7 @@ namespace Graphics
 		view = camera.GetViewMatrix();
 
 		//cout << gameObjects.size() << endl;
-		for (GameObject obj : gameObjects)
+		for (GameObject obj : GameObject::gameObjects)
 		{
 			ShapeType objType = obj.GetMesh().GetType();
 			if (objType == ShapeType::cube)

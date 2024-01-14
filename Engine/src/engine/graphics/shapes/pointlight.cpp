@@ -17,7 +17,6 @@
 
 //engine
 #include "pointlight.hpp"
-#include "gameobject.hpp"
 #include "shader.hpp"
 #include "core.hpp"
 

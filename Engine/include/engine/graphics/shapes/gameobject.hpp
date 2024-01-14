@@ -25,8 +25,10 @@
 #include "render.hpp"
 
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 using glm::vec3;
 using glm::mat4;
 
@@ -100,6 +102,10 @@ namespace Graphics::Shape
 	class GameObject
 	{
 	public:
+		static inline vector<GameObject> gameObjects;
+		static inline vector<GameObject> pointLights;
+		static inline vector<GameObject> spotLights;
+
 		static inline int nextID;
 
 		GameObject();

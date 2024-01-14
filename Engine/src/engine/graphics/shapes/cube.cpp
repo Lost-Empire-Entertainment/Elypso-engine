@@ -17,7 +17,6 @@
 
 //engine
 #include "cube.hpp"
-#include "gameobject.hpp"
 #include "shader.hpp"
 #include "core.hpp"
 
