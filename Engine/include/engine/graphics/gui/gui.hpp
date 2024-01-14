@@ -60,7 +60,6 @@ namespace Graphics::GUI
 		static inline bool filterTextProcessed;
 
 		void RenderTopBar();
-		void RenderBottomBar();
 
 		//top bar interactions
 		void TB_CheckVersion();

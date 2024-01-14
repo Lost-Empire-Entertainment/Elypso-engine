@@ -161,7 +161,6 @@ namespace Graphics::GUI
 		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 200);
 
 		RenderTopBar();
-		RenderBottomBar();
 
 		ImGuiDockNodeFlags dockFlags =
 			ImGuiDockNodeFlags_PassthruCentralNode;
@@ -416,42 +415,6 @@ namespace Graphics::GUI
 		}
 
 		ImGui::EndMainMenuBar();
-	}
-
-	void EngineGUI::RenderBottomBar()
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		ImGui::SetNextWindowPos(ImVec2(0, io.DisplaySize.y - 30));
-		ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, 30));
-
-		ImGuiWindowFlags flags =
-			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoScrollbar |
-			ImGuiWindowFlags_NoSavedSettings;
-
-		ImGui::Begin("BottomBar", nullptr, flags);
-
-		float windowWidth = io.DisplaySize.x;
-		ImGui::SetWindowSize(ImVec2(windowWidth, 30));
-
-		ImGui::Text("FPS: %.2f     ", TimeManager::displayedFPS);
-		ImGui::SameLine();
-		ImGui::Text(
-			"Position: %.2f, %.2f, %.2f     ",
-			Render::camera.GetCameraPosition().x,
-			Render::camera.GetCameraPosition().y,
-			Render::camera.GetCameraPosition().z);
-		ImGui::SameLine();
-		ImGui::Text(
-			"Rotation: %.2f, %.2f, %.2f",
-			Render::camera.GetCameraRotation().x,
-			Render::camera.GetCameraRotation().y,
-			Render::camera.GetCameraRotation().z);
-
-		ImGui::End();
 	}
 
 	void EngineGUI::TB_CheckVersion()

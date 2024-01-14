@@ -28,9 +28,11 @@
 #include "render.hpp"
 #include "input.hpp"
 #include "console.hpp"
+#include "timeManager.hpp"
 
 #include <type_ptr.hpp>
 
+using Core::TimeManager;
 using Graphics::GUI::GUIConsole;
 using Graphics::Render;
 using Core::Input;
@@ -49,9 +51,6 @@ namespace Graphics::GUI
 		if (renderDebugMenu
 			&& ImGui::Begin("Debug menu", NULL, windowFlags))
 		{
-			ImGuiWindow* window = ImGui::GetCurrentWindow();
-			window->Size = ImClamp(window->Size, EngineGUI::minSize, EngineGUI::maxSize);
-
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -79,6 +78,17 @@ namespace Graphics::GUI
 	}
 	void GUIDebugMenu::RD_DebugMenuInfo()
 	{
+		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
+		ImGui::Text(
+			"Position: %.2f, %.2f, %.2f",
+			Render::camera.GetCameraPosition().x,
+			Render::camera.GetCameraPosition().y,
+			Render::camera.GetCameraPosition().z);
+		ImGui::Text(
+			"Angle: %.2f, %.2f, %.2f",
+			Render::camera.GetCameraRotation().x,
+			Render::camera.GetCameraRotation().y,
+			Render::camera.GetCameraRotation().z);
 		ImGui::Text("FOV: %.0f", Graphics::Render::fov);
 
 		ImGui::Separator();

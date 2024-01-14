@@ -78,9 +78,6 @@ namespace Graphics::GUI
 		if (renderProjectHierarchy
 			&& ImGui::Begin("Project hierarchy", NULL, windowFlags))
 		{
-			ImGuiWindow* window = ImGui::GetCurrentWindow();
-			window->Size = ImClamp(window->Size, EngineGUI::minSize, EngineGUI::maxSize);
-
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
