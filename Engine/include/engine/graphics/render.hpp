@@ -28,6 +28,8 @@ using std::vector;
 using glm::vec3;
 using glm::mat4;
 
+using Graphics::Shape::GameObject;
+
 namespace Graphics
 {
 	class Render
@@ -74,6 +76,9 @@ namespace Graphics
 		static inline mat4 view;
 
 		static Core::Input camera;
+
+		static inline vector<GameObject> gameObjects;
+		static inline vector<GameObject> pointLights;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);

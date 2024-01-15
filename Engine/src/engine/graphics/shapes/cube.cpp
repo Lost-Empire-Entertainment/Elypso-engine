@@ -21,6 +21,7 @@
 #include "matrix_transform.hpp"
 
 //engine
+#include "render.hpp"
 #include "cube.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
@@ -33,6 +34,7 @@ using glm::radians;
 using glm::quat;
 using glm::scale;
 
+using Graphics::Render;
 using Graphics::Shader;
 using Graphics::Texture;
 using Graphics::Shape::Mesh;
@@ -99,7 +101,7 @@ namespace Graphics::Shape
 			Engine::enginePath + "/shaders/GameObject.frag");
 
 		GLuint vao, vbo;
-		
+
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
 		glBindVertexArray(vao);
@@ -151,14 +153,14 @@ namespace Graphics::Shape
 		shader.SetFloat("dirLight.intensity", Render::directionalIntensity);
 
 		//point lights
-		int pointLightCount = static_cast<int>(GameObject::pointLights.size());
+		int pointLightCount = static_cast<int>(Render::pointLights.size());
 		shader.SetInt("numPointLights", pointLightCount);
 		if (pointLightCount > 0)
 		{
 			for (int i = 0; i < pointLightCount; i++)
 			{
 				string lightPrefix = "pointLights[" + to_string(i) + "].";
-				shader.SetVec3(lightPrefix + "position", GameObject::pointLights[i].GetTransform().GetPosition());
+				shader.SetVec3(lightPrefix + "position", Render::pointLights[i].GetTransform().GetPosition());
 				shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
 				shader.SetVec3(lightPrefix + "diffuse", Render::pointDiffuse);
 				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);

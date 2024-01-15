@@ -22,15 +22,8 @@
 
 //engine
 #include "shader.hpp"
-#include "render.hpp"
 
-#include <string>
-#include <vector>
-
-using std::string;
-using std::vector;
 using glm::vec3;
-using glm::mat4;
 
 using Graphics::Shader;
 
@@ -40,8 +33,8 @@ namespace Graphics::Shape
 	{
 	public:
 		Transform(
-			const vec3& pos, 
-			const vec3& rot, 
+			const vec3& pos,
+			const vec3& rot,
 			const vec3& scale);
 
 		void SetPosition(const vec3& pos);
@@ -109,10 +102,6 @@ namespace Graphics::Shape
 	class GameObject
 	{
 	public:
-		static inline vector<GameObject> gameObjects;
-		static inline vector<GameObject> pointLights;
-		static inline vector<GameObject> spotLights;
-
 		static inline int nextID;
 
 		GameObject();
@@ -121,7 +110,7 @@ namespace Graphics::Shape
 			const bool& isInitialized,
 			const unsigned int& ID,
 			const string& name,
-			const Transform& transform, 
+			const Transform& transform,
 			const Mesh& mesh,
 			const Material& material);
 

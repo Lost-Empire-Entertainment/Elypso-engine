@@ -15,26 +15,25 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-//engine
 #include "gameobject.hpp"
 
 using Type = Graphics::Shape::Mesh::Type;
 
+
 namespace Graphics::Shape
 {
 	//
-	// TRANSFORM
-	//
+// TRANSFORM
+//
 
 	Transform::Transform(
-		const vec3& pos, 
-		const vec3& rot, 
+		const vec3& pos,
+		const vec3& rot,
 		const vec3& scale) :
-		pos(pos), 
-		rot(rot), 
+		pos(pos),
+		rot(rot),
 		scale(scale)
-	{
-	}
+	{}
 
 	void Transform::SetPosition(
 		const vec3& assignedPosition)
@@ -73,8 +72,7 @@ namespace Graphics::Shape
 		const Type& type,
 		const float* vertices) :
 		type(type)
-	{
-	}
+	{}
 
 	void Mesh::SetType(Type assignedType)
 	{
@@ -97,8 +95,7 @@ namespace Graphics::Shape
 		shader(shader),
 		vao(vao),
 		vbo(vbo)
-	{
-	}
+	{}
 
 	void Material::SetShader(Shader assignedShader)
 	{
@@ -122,15 +119,14 @@ namespace Graphics::Shape
 	// GAMEOBJECT
 	//
 
-	GameObject::GameObject() : 
+	GameObject::GameObject() :
 		isInitialized(isInitialized = false),
 		ID(0),
 		name("None"),
 		transform(vec3(0), vec3(0), vec3(0)),
 		mesh(Mesh(Type::cube, nullptr)),
 		mat(Material(Shader(), GLuint(), GLuint()))
-	{
-	}
+	{}
 
 	GameObject::GameObject(
 		const bool& isInitialized,
@@ -145,8 +141,7 @@ namespace Graphics::Shape
 		transform(transform),
 		mesh(mesh),
 		mat(mat)
-	{
-	}
+	{}
 
 	void GameObject::Initialize()
 	{

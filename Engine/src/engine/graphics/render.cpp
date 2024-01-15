@@ -199,7 +199,7 @@ namespace Graphics
 		view = camera.GetViewMatrix();
 
 		//cout << gameObjects.size() << endl;
-		for (GameObject obj : GameObject::gameObjects)
+		for (GameObject obj : gameObjects)
 		{
 			ShapeType objType = obj.GetMesh().GetType();
 			if (objType == ShapeType::cube)

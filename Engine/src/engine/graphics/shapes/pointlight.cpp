@@ -24,6 +24,7 @@
 #include "pointlight.hpp"
 #include "shader.hpp"
 #include "core.hpp"
+#include "render.hpp"
 
 using glm::translate;
 using glm::rotate;
@@ -36,6 +37,7 @@ using Graphics::Shape::Mesh;
 using Type = Graphics::Shape::Mesh::Type;
 using Graphics::Shape::Material;
 using Core::Engine;
+using Graphics::Render;
 
 namespace Graphics::Shape
 {

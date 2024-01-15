@@ -245,7 +245,7 @@ namespace Core
                     output);
             }
 
-            int index = Select::CheckRayObjectIntersections(ray, GameObject::gameObjects);
+            int index = Select::CheckRayObjectIntersections(ray, Render::gameObjects);
 
             //if user pressed left mouse button over any imgui window
             if (index == -2)
@@ -277,7 +277,7 @@ namespace Core
             }
             else
             {
-                Select::selectedObj = GameObject::gameObjects[index];
+                Select::selectedObj = Render::gameObjects[index];
                 Select::isObjectSelected = true;
                 if (inputSettings.printSelectRayDirectionToConsole)
                 {

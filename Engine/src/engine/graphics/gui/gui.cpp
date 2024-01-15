@@ -303,7 +303,7 @@ namespace Graphics::GUI
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
 
-					GameObject::gameObjects.push_back(obj);
+					Render::gameObjects.push_back(obj);
 
 					unsigned int ID = obj.GetID();
 					vec3 pos = obj.GetTransform().GetPosition();
@@ -311,9 +311,9 @@ namespace Graphics::GUI
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);
 
-					string output = 
-						"Successfully created " + obj.GetName() + 
-						" with ID " + to_string(obj.GetID()) + 
+					string output =
+						"Successfully created " + obj.GetName() +
+						" with ID " + to_string(obj.GetID()) +
 						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -337,8 +337,8 @@ namespace Graphics::GUI
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
 
-					GameObject::gameObjects.push_back(obj);
-					GameObject::pointLights.push_back(obj);
+					Render::gameObjects.push_back(obj);
+					Render::pointLights.push_back(obj);
 
 					unsigned int ID = obj.GetID();
 					vec3 pos = obj.GetTransform().GetPosition();
