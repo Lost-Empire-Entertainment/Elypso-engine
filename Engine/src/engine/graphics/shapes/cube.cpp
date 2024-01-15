@@ -27,6 +27,10 @@
 #include "texture.hpp"
 #include "core.hpp"
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
 using std::to_string;
 using glm::translate;
 using glm::rotate;
@@ -134,6 +138,8 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
 
+		obj.Initialize();
+
 		return obj;
 	}
 
@@ -194,6 +200,9 @@ namespace Graphics::Shape
 		quat newRot = quat(radians(obj.GetTransform().GetRotation()));
 		model *= mat4_cast(newRot);
 		model = scale(model, obj.GetTransform().GetScale());
+
+		vec3 pos = obj.GetTransform().GetPosition();
+		cout << "currently at (" << pos.x << ", " << pos.y << ", " << pos.z << ")" << endl;
 
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
