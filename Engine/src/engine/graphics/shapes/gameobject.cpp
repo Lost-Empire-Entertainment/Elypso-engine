@@ -17,168 +17,21 @@
 
 #include "gameobject.hpp"
 
-using Type = Graphics::Shape::Mesh::Type;
+using Type = Graphics::Shape::MeshType;
 
 
 namespace Graphics::Shape
 {
-	//
-// TRANSFORM
-//
-
-	Transform::Transform(
-		const vec3& pos,
-		const vec3& rot,
-		const vec3& scale) :
-		pos(pos),
-		rot(rot),
-		scale(scale)
-	{}
-
-	void Transform::SetPosition(
-		const vec3& assignedPosition)
+	GameObject* GameObjectManager::CreateObject(const string& name, const unsigned int& ID)
 	{
-		pos = assignedPosition;
-	}
-	void Transform::SetRotation(
-		const vec3& assignedRotation)
-	{
-		rot = assignedRotation;
-	}
-	void Transform::SetScale(
-		const vec3& assignedScale)
-	{
-		scale = assignedScale;
+		objects.push_back(make_unique<GameObject>(GameObject{
+			name,
+			ID}));
+		return objects.back().get();
 	}
 
-	vec3 Transform::GetPosition() const
+	void GameObjectManager::DestroyObject(GameObject* obj)
 	{
-		return pos;
-	}
-	vec3 Transform::GetRotation() const
-	{
-		return rot;
-	}
-	vec3 Transform::GetScale() const
-	{
-		return scale;
-	}
 
-	//
-	// MESH
-	//
-
-	Mesh::Mesh(
-		const Type& type,
-		const float* vertices) :
-		type(type)
-	{}
-
-	void Mesh::SetType(Type assignedType)
-	{
-		type = assignedType;
-	}
-
-	Type Mesh::GetType() const
-	{
-		return type;
-	}
-
-	//
-	// MATERIAL
-	//
-
-	Material::Material(
-		const Shader& shader,
-		const GLuint& vao,
-		const GLuint& vbo) :
-		shader(shader),
-		vao(vao),
-		vbo(vbo)
-	{}
-
-	void Material::SetShader(Shader assignedShader)
-	{
-		shader = assignedShader;
-	}
-
-	Shader Material::GetShader() const
-	{
-		return shader;
-	}
-	GLuint Material::GetVAO() const
-	{
-		return vao;
-	}
-	GLuint Material::GetVBO() const
-	{
-		return vbo;
-	}
-
-	//
-	// GAMEOBJECT
-	//
-
-	GameObject::GameObject() :
-		isInitialized(isInitialized = false),
-		ID(0),
-		name("None"),
-		transform(vec3(0), vec3(0), vec3(0)),
-		mesh(Mesh(Type::cube, nullptr)),
-		mat(Material(Shader(), GLuint(), GLuint()))
-	{}
-
-	GameObject::GameObject(
-		const bool& isInitialized,
-		const unsigned int& ID,
-		const string& name,
-		const Transform& transform,
-		const Mesh& mesh,
-		const Material& mat) :
-		isInitialized(isInitialized),
-		ID(ID),
-		name(name),
-		transform(transform),
-		mesh(mesh),
-		mat(mat)
-	{}
-
-	void GameObject::Initialize()
-	{
-		isInitialized = true;
-	}
-	void GameObject::SetID(const unsigned int& assignedID)
-	{
-		ID = assignedID;
-	}
-	void GameObject::SetName(
-		const string& assignedName)
-	{
-		name = assignedName;
-	}
-
-	bool GameObject::IsInitialized() const
-	{
-		return isInitialized;
-	}
-	unsigned int GameObject::GetID() const
-	{
-		return ID;
-	}
-	string GameObject::GetName() const
-	{
-		return name;
-	}
-	Transform GameObject::GetTransform() const
-	{
-		return transform;
-	}
-	Mesh GameObject::GetMesh() const
-	{
-		return mesh;
-	}
-	Material GameObject::GetMaterial() const
-	{
-		return mat;
 	}
 }

@@ -23,113 +23,70 @@
 //engine
 #include "shader.hpp"
 
+#include <vector>
+#include <memory>
+
+using std::vector;
+using std::shared_ptr;
+using std::make_unique;
 using glm::vec3;
 
 using Graphics::Shader;
 
 namespace Graphics::Shape
 {
-	class Transform
+	enum class MeshType
 	{
-	public:
-		Transform(
-			const vec3& pos,
-			const vec3& rot,
-			const vec3& scale);
+		cube,
+		sphere,
+		cylinder,
+		cone,
+		pyramid,
+		assimp,
+		point_light,
+		spot_light,
+		directional_light
+	};
 
-		void SetPosition(const vec3& pos);
-		void SetRotation(const vec3& rot);
-		void SetScale(const vec3& scale);
-
-		vec3 GetPosition() const;
-		vec3 GetRotation() const;
-		vec3 GetScale() const;
-	private:
-		vec3 pos;
-		vec3 rot;
+	struct Transform
+	{
+		vec3 position;
+		vec3 rotation;
 		vec3 scale;
 	};
 
-	class Mesh
+	struct Mesh
 	{
-	public:
-		enum Type
-		{
-			// BASE SHAPES
-
-			cube,
-			sphere,
-			cylinder,
-			pyramid,
-			cone,
-
-			// LIGHT SOURCES
-
-			point_light,
-			spotlight
-
-		};
-		Mesh(
-			const Type& type,
-			const float* vertices);
-
-		void SetType(Type type);
-
-		Type GetType() const;
-	private:
-		Type type;
+		MeshType type;
 	};
 
-	class Material
+	struct Material
 	{
-	public:
-		Material(
-			const Shader& shader,
-			const GLuint& vao,
-			const GLuint& vbo);
-
-		void SetShader(Shader shader);
-
-		Shader GetShader() const;
-		GLuint GetVAO() const;
-		GLuint GetVBO() const;
-	private:
 		Shader shader;
-		GLuint vao;
-		GLuint vbo;
+		GLuint VAO;
+		GLuint VBO;
 	};
 
-	class GameObject
+	struct GameObject
 	{
-	public:
-		static inline int nextID;
-
-		GameObject();
-
-		GameObject(
-			const bool& isInitialized,
-			const unsigned int& ID,
-			const string& name,
-			const Transform& transform,
-			const Mesh& mesh,
-			const Material& material);
-
-		void Initialize();
-		void SetID(const unsigned int& ID);
-		void SetName(const string& name);
-
-		bool IsInitialized() const;
-		unsigned int GetID() const;
-		string GetName() const;
-		Transform GetTransform() const;
-		Mesh GetMesh() const;
-		Material GetMaterial() const;
-	private:
-		bool isInitialized;
-		unsigned int ID;
 		string name;
+		unsigned int ID;
+
+		//components
 		Transform transform;
 		Mesh mesh;
-		Material mat;
+		Material material;
+	};
+
+	class GameObjectManager
+	{
+	public:
+		GameObject* CreateObject(
+			const string& name, 
+			const unsigned int& ID);
+		void DestroyObject(GameObject* obj);
+
+		vector<shared_ptr<GameObject>> objects;
+		vector<shared_ptr<GameObject>> pointLights;
 	};
 }
