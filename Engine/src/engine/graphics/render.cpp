@@ -34,6 +34,7 @@
 #include "searchUtils.hpp"
 #include "cube.hpp"
 #include "pointlight.hpp"
+#include "gameobject.hpp"
 
 #include <string>
 #include <iostream>
@@ -53,8 +54,9 @@ using Core::Input;
 using Core::TimeManager;
 using Core::Engine;
 using Utils::Search;
+using Graphics::Shape::GameObjectManager;
 using Graphics::GUI::EngineGUI;
-using ShapeType = Graphics::Shape::Mesh::Type;
+using MeshType = Graphics::Shape::MeshType;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Core::ConsoleManager;
@@ -63,6 +65,7 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
+	GameObjectManager objManager;
 	Input Render::camera(Render::window);
 
 	void Render::RenderSetup()
@@ -198,19 +201,7 @@ namespace Graphics
 		//update the camera
 		view = camera.GetViewMatrix();
 
-		//cout << gameObjects.size() << endl;
-		for (GameObject obj : gameObjects)
-		{
-			ShapeType objType = obj.GetMesh().GetType();
-			if (objType == ShapeType::cube)
-			{
-				Cube::RenderCube(obj, view, projection);
-			}
-			else if (objType == ShapeType::point_light)
-			{
-				PointLight::RenderPointLight(obj, view, projection);
-			}
-		}
+		objManager.RenderAll(view, projection);
 
 		EngineGUI::GetInstance().Render();
 

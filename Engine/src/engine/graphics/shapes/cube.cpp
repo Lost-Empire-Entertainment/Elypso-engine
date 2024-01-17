@@ -42,7 +42,7 @@ using Graphics::Render;
 using Graphics::Shader;
 using Graphics::Texture;
 using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::Type;
+using MeshType = Graphics::Shape::MeshType;
 using Graphics::Shape::Material;
 using Core::Engine;
 

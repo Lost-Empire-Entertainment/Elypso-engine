@@ -17,20 +17,59 @@
 
 #include "gameobject.hpp"
 
-using Type = Graphics::Shape::MeshType;
+using std::remove;
 
+using Type = Graphics::Shape::Mesh::MeshType;
 
 namespace Graphics::Shape
 {
-	GameObject* GameObjectManager::CreateObject(const string& name, const unsigned int& ID)
+	//
+	// GAMEOBJECT MANAGER
+	//
+
+	void GameObjectManager::RenderAll(const mat4& view, const mat4& projection) const
 	{
-		objects.push_back(make_unique<GameObject>(GameObject{
-			name,
-			ID}));
-		return objects.back().get();
+		for (const auto& obj : objects)
+		{
+			GameObject& object = *obj;
+			obj->Render(object, view, projection);
+		}
 	}
 
-	void GameObjectManager::DestroyObject(GameObject* obj)
+	void GameObjectManager::AddGameObject(const shared_ptr<GameObject>& obj)
+	{
+		objects.push_back(obj);
+	}
+
+	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
+	{
+		auto it = remove(objects.begin(), objects.end(), obj);
+		objects.erase(it, objects.end());
+	}
+
+	//
+	// GAMEOBJECT
+	//
+
+	GameObject::GameObject(
+		const string& assignedName,
+		const unsigned int& ID,
+		const shared_ptr<Transform>& assignedTransform,
+		const shared_ptr<Mesh>& assignedMesh,
+		const shared_ptr<Material>& assignedMaterial) :
+		name(assignedName), 
+		ID(nextID++),
+		transform(make_shared<Transform>(assignedTransform)),
+		mesh(make_shared<Mesh>(mesh)),
+		material(make_shared<Material>(assignedMaterial))
+	{
+
+	}
+
+	void GameObject::Render(
+		const GameObject& obj,
+		const mat4& view,
+		const mat4& projection) const
 	{
 
 	}
