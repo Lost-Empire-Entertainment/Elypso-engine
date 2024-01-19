@@ -56,7 +56,6 @@ using Core::Engine;
 using Utils::Search;
 using Graphics::Shape::GameObjectManager;
 using Graphics::GUI::EngineGUI;
-using MeshType = Graphics::Shape::MeshType;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Core::ConsoleManager;

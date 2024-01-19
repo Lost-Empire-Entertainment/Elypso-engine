@@ -26,11 +26,11 @@ using Graphics::Shape::GameObject;
 
 namespace Graphics::Shape
 {
-	class Cube
+	class Cube : public GameObject
 	{
 	public:
 		static GameObject InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale);
 
-		static void RenderCube(GameObject& obj, mat4& view, mat4& projection);
+		virtual void Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const override;
 	};
 }

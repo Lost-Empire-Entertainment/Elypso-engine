@@ -24,6 +24,89 @@ using Type = Graphics::Shape::Mesh::MeshType;
 namespace Graphics::Shape
 {
 	//
+	// TRANSFORM
+	//
+
+	Transform::Transform(
+		const vec3& assignedPosition,
+		const vec3& assignedRotation,
+		const vec3& assignedScale) :
+		position(assignedPosition),
+		rotation(assignedRotation),
+		scale(assignedScale)
+	{
+		SetPosition(assignedPosition);
+		SetRotation(assignedRotation);
+		SetScale(assignedScale);
+	}
+
+	//
+	// MESH
+	//
+
+	Mesh::Mesh(const MeshType& assignedType) : type(assignedType)
+	{
+		SetMeshType(assignedType);
+	}
+
+	//
+	// MATERIAL
+	//
+
+	Material::Material(
+		const Shader& assignedShader,
+		const GLuint& assignedVAO,
+		const GLuint& assignedVBO) :
+		shader(assignedShader),
+		VAO(assignedVAO),
+		VBO(assignedVBO)
+	{
+		SetShader(assignedShader);
+		SetVAO(assignedVAO);
+		SetVBO(assignedVBO);
+	}
+
+	//
+	// GAMEOBJECT
+	//
+
+	GameObject::GameObject(
+		const bool& assignedIsInitialized,
+		const string& assignedName, 
+		const unsigned int& assignedID, 
+		const shared_ptr<Transform>& assignedTransform,
+		const shared_ptr<Mesh>& assignedMesh, 
+		const shared_ptr<Material>& assignedMaterial) :
+		isInitialized(assignedIsInitialized),
+		name(assignedName),
+		ID(assignedID),
+		transform(assignedTransform),
+		mesh(assignedMesh),
+		material(assignedMaterial)
+	{
+		SetName(assignedName);
+		SetID(nextID++);
+		SetTransform(assignedTransform);
+		SetMesh(assignedMesh);
+		SetMaterial(assignedMaterial);
+
+		Initialize();
+	}
+
+	void GameObject::Render(
+		const shared_ptr<GameObject>& obj,
+		const mat4& view,
+		const mat4& projection) const
+	{
+		Type meshType = obj->GetMesh()->GetMeshType(); 
+		switch (meshType)
+		{
+		case Type::cube:
+			break;
+		}
+	}
+
+	//
 	// GAMEOBJECT MANAGER
 	//
 
@@ -31,7 +114,7 @@ namespace Graphics::Shape
 	{
 		for (const auto& obj : objects)
 		{
-			GameObject& object = *obj;
+			shared_ptr<GameObject> object = obj;
 			obj->Render(object, view, projection);
 		}
 	}
@@ -45,32 +128,5 @@ namespace Graphics::Shape
 	{
 		auto it = remove(objects.begin(), objects.end(), obj);
 		objects.erase(it, objects.end());
-	}
-
-	//
-	// GAMEOBJECT
-	//
-
-	GameObject::GameObject(
-		const string& assignedName,
-		const unsigned int& ID,
-		const shared_ptr<Transform>& assignedTransform,
-		const shared_ptr<Mesh>& assignedMesh,
-		const shared_ptr<Material>& assignedMaterial) :
-		name(assignedName), 
-		ID(nextID++),
-		transform(make_shared<Transform>(assignedTransform)),
-		mesh(make_shared<Mesh>(mesh)),
-		material(make_shared<Material>(assignedMaterial))
-	{
-
-	}
-
-	void GameObject::Render(
-		const GameObject& obj,
-		const mat4& view,
-		const mat4& projection) const
-	{
-
 	}
 }

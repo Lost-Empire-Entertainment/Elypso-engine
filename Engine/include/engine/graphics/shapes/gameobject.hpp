@@ -103,31 +103,13 @@ namespace Graphics::Shape
 		GLuint VBO;
 	};
 
-	class GameObject;
-
-	class GameObjectManager
-	{
-	public:
-		void RenderAll(
-			const mat4& view, 
-			const mat4& projection) const;
-
-		void AddGameObject(const shared_ptr<GameObject>& obj);
-		void DestroyGameObject(const shared_ptr<GameObject>& obj);
-
-		const vector<shared_ptr<GameObject>>& GetObjects() const { return objects; }
-		const vector<shared_ptr<GameObject>> GetPointLights() const { return pointLights; }
-	private:
-		vector<shared_ptr<GameObject>> objects;
-		vector<shared_ptr<GameObject>> pointLights;
-	};
-
 	class GameObject
 	{
 	public:
 		static inline unsigned int nextID;
 
 		GameObject(
+			const bool& assignedIsInitialized,
 			const string& assignedName,
 			const unsigned int& ID,
 			const shared_ptr<Transform>& assignedTransform,
@@ -135,26 +117,52 @@ namespace Graphics::Shape
 			const shared_ptr<Material>& assignedMaterial);
 
 		virtual void Render(
-			const GameObject& obj,
+			const shared_ptr<GameObject>& obj,
 			const mat4& view,
 			const mat4& projection) const;
 
+		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
 		void SetMaterial(const shared_ptr<Material>& newMaterial) { material = newMaterial; }
 
+		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const { return ID; }
 		const shared_ptr<Transform>& GetTransform() const { return transform; }
 		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
 		const shared_ptr<Material>& GetMaterial() const { return material; }
 	private:
+		bool isInitialized;
 		string name;
 		unsigned int ID;
 		shared_ptr<Transform> transform;
 		shared_ptr<Mesh> mesh;
 		shared_ptr<Material> material;
+	};
+
+	class GameObjectManager
+	{
+	public:
+		void RenderAll(
+			const mat4& view,
+			const mat4& projection) const;
+
+		void AddGameObject(const shared_ptr<GameObject>& obj);
+		void DestroyGameObject(const shared_ptr<GameObject>& obj);
+
+		const vector<shared_ptr<GameObject>>& GetObjects() const
+		{
+			return objects;
+		}
+		const vector<shared_ptr<GameObject>> GetPointLights() const
+		{
+			return pointLights;
+		}
+	private:
+		vector<shared_ptr<GameObject>> objects;
+		vector<shared_ptr<GameObject>> pointLights;
 	};
 }
