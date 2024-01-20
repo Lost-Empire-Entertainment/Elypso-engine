@@ -269,7 +269,7 @@ namespace Core
         else if (cleanedCommands[0] == "rc"
                  && cleanedCommands.size() == 1)
         {
-            vec3 newPosition = vec3(0.0f, 0.0f, 3.0f);
+            vec3 newPosition = vec3(0.0f, 0.0f, 0.0f);
             Render::camera.SetCameraPosition(newPosition);
             Render::camera.SetCameraRotation(vec3(-90, 0, 0));
 

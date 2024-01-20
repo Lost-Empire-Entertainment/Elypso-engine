@@ -145,14 +145,15 @@ namespace Graphics::Shape
 
 		obj->Initialize();
 
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-		objects.push_back(obj);
+		GameObjectManager::AddGameObject(obj);
 
 		return obj;
 	}
 
 	void Cube::Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const
 	{
+		cout << "Rendering cube..." << endl;
+
 		Shader shader = obj->GetMaterial()->GetShader();
 
 		shader.Use();

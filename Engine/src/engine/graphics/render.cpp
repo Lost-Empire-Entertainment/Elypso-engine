@@ -35,6 +35,7 @@
 #include "cube.hpp"
 #include "pointlight.hpp"
 #include "gameobject.hpp"
+#include "grid.hpp"
 
 #include <string>
 #include <iostream>
@@ -58,6 +59,7 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::GUI::EngineGUI;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
+using Graphics::Grid;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -164,6 +166,10 @@ namespace Graphics
 	void Render::ContentSetup()
 	{
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		Grid::InitializeGrid();
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
@@ -198,6 +204,8 @@ namespace Graphics
 
 		//update the camera
 		view = camera.GetViewMatrix();
+
+		Grid::RenderGrid(view, projection);
 
 		GameObjectManager::RenderAll(view, projection);
 

@@ -15,27 +15,17 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#pragma once
+#version 330 core
 
-namespace Graphics::GUI
+uniform float transparency;
+uniform vec3 color;
+
+out vec4 FragColor;
+
+void main()
 {
-	class GUIDebugMenu
-	{
-	public:
-		static inline bool renderDebugMenu;
-		static void RenderDebugMenu();
+    vec4 outputColor = vec4(color, 1.0);
+    outputColor.a *= transparency;
 
-		static void RD_DebugMenuInfo();
-		static void RD_Interactions();
-	private:
-		static inline const int bufferSize = 32;
-
-		static inline char inputTextBuffer_camNearClip[bufferSize];
-		static inline char inputTextBuffer_camFarClip[bufferSize];
-		static inline char inputTextBuffer_camMoveSpeedMult[bufferSize];
-
-		static inline float camNearClip;
-		static inline float camFarClip;
-		static inline float camMovespeed;
-	};
+    FragColor = outputColor;
 }

@@ -150,8 +150,8 @@ namespace Graphics::Shape
 			const mat4& view,
 			const mat4& projection);
 
-		void AddGameObject(const shared_ptr<GameObject>& obj);
-		void DestroyGameObject(const shared_ptr<GameObject>& obj);
+		static void AddGameObject(const shared_ptr<GameObject>& obj);
+		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
 		static vector<shared_ptr<GameObject>>& GetObjects()
 		{

@@ -17,25 +17,32 @@
 
 #pragma once
 
-namespace Graphics::GUI
+//external
+#include "glm.hpp"
+
+//engine
+#include "shader.hpp"
+
+using glm::vec3;
+
+using Graphics::Shader;
+
+namespace Graphics
 {
-	class GUIDebugMenu
+	class Grid
 	{
 	public:
-		static inline bool renderDebugMenu;
-		static void RenderDebugMenu();
+		static inline vec3 color = vec3(1.0f, 1.0f, 1.0f);
+		static inline float transparency = 0.1f;
 
-		static void RD_DebugMenuInfo();
-		static void RD_Interactions();
+		static void InitializeGrid();
+		static void RenderGrid(const mat4& view, const mat4& projection);
 	private:
-		static inline const int bufferSize = 32;
+		static inline GLuint VAO, VBO;
+		static inline Shader shader;
 
-		static inline char inputTextBuffer_camNearClip[bufferSize];
-		static inline char inputTextBuffer_camFarClip[bufferSize];
-		static inline char inputTextBuffer_camMoveSpeedMult[bufferSize];
-
-		static inline float camNearClip;
-		static inline float camFarClip;
-		static inline float camMovespeed;
+		static inline const int lineCount = 250;
+		static inline float lineDistance = 1.0f;
+		static inline float vertices[lineCount * 4 * 3];
 	};
 }

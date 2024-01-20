@@ -19,6 +19,11 @@
 #include "cube.hpp"
 #include "pointlight.hpp"
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+using std::to_string;
 using std::remove;
 using std::dynamic_pointer_cast;
 
@@ -104,14 +109,12 @@ namespace Graphics::Shape
 		const mat4& projection) const
 	{
 		Type meshType = obj->GetMesh()->GetMeshType(); 
-		switch (meshType)
+		if (auto cube = dynamic_pointer_cast<Cube>(obj))
 		{
-		case Type::cube:
-			if (auto cube = dynamic_pointer_cast<Cube>(obj))
-			{
-				cube->Render(cube, view, projection);
-			}
-			break;
+			string output = "Render part 2: " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "...";
+			cout << output << endl;
+
+			cube->Render(cube, view, projection);
 		}
 	}
 
@@ -121,11 +124,18 @@ namespace Graphics::Shape
 
 	void GameObjectManager::RenderAll(const mat4& view, const mat4& projection)
 	{
-		for (const auto& obj : objects)
+		if (objects.size() > 0)
 		{
-			shared_ptr<GameObject> object = obj;
-			obj->Render(object, view, projection);
+			for (const auto& obj : objects)
+			{
+				string output = "Render part 1: " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "...";
+				cout << output << endl;
+
+				shared_ptr<GameObject> object = obj;
+				obj->Render(object, view, projection);
+			}
 		}
+		else cout << "There is nothing to render..." << endl;
 	}
 
 	void GameObjectManager::AddGameObject(const shared_ptr<GameObject>& obj)

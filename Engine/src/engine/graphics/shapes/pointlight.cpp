@@ -122,8 +122,7 @@ namespace Graphics::Shape
 			mesh, 
 			mat);
 
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-		objects.push_back(obj);
+		GameObjectManager::AddGameObject(obj);
 
 		return obj;
 	}

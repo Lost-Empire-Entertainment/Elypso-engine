@@ -15,27 +15,13 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#pragma once
+#version 330 core
+layout (location = 0) in vec3 aPos;
 
-namespace Graphics::GUI
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
 {
-	class GUIDebugMenu
-	{
-	public:
-		static inline bool renderDebugMenu;
-		static void RenderDebugMenu();
-
-		static void RD_DebugMenuInfo();
-		static void RD_Interactions();
-	private:
-		static inline const int bufferSize = 32;
-
-		static inline char inputTextBuffer_camNearClip[bufferSize];
-		static inline char inputTextBuffer_camFarClip[bufferSize];
-		static inline char inputTextBuffer_camMoveSpeedMult[bufferSize];
-
-		static inline float camNearClip;
-		static inline float camFarClip;
-		static inline float camMovespeed;
-	};
+	gl_Position = projection * view * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }

@@ -29,14 +29,23 @@
 #include "input.hpp"
 #include "console.hpp"
 #include "timeManager.hpp"
+#include "grid.hpp"
 
 #include <type_ptr.hpp>
+#include <cmath>
+
+using std::to_string;
+using std::stof;
+using std::round;
 
 using Core::TimeManager;
 using Graphics::GUI::GUIConsole;
 using Graphics::Render;
+using Graphics::Grid;
 using Core::Input;
 using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
@@ -146,7 +155,7 @@ namespace Graphics::GUI
 		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
 
 		//
-		//CAMERA CLIP RANGE
+		// CAMERA CLIP RANGE
 		//
 
 		ImGui::Separator();
@@ -155,50 +164,89 @@ namespace Graphics::GUI
 		ImGui::Text("");
 
 		ImGui::Text("Near clip");
-		ImGui::SliderFloat("##nearclip", &Render::nearClip, 0.001f, 10.0f);
-		if (ImGui::IsItemHovered())
+		string nearClipText = to_string(Render::nearClip);
+		strcpy_s(inputTextBuffer_camNearClip, bufferSize, nearClipText.c_str());
+		if (ImGui::InputText("##camNearClip", inputTextBuffer_camNearClip, bufferSize))
 		{
-			ImGui::SetTooltip("Adjust camera near clip range.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##nearclip"))
-		{
-			Render::nearClip = 0.001f;
+			try
+			{
+				camNearClip = stof(inputTextBuffer_camNearClip);
+
+				if (camNearClip < 0.0001f) camNearClip = 0.0001f;
+				if (camNearClip > camFarClip - 0.1f)
+				{
+					camNearClip = camFarClip - 0.1f;
+				}
+
+				Render::nearClip = camNearClip;
+			}
+			catch (...)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::EXCEPTION,
+					"Error: Debug menu camera near clip cannot be empty!\n");
+			}
 		}
 
 		ImGui::Text("Far clip");
-		ImGui::SliderFloat("##farclip", &Render::farClip, 10.0f, 1000.0f);
-		if (ImGui::IsItemHovered())
+		string farClipText = to_string(Render::farClip);
+		strcpy_s(inputTextBuffer_camFarClip, bufferSize, farClipText.c_str());
+		if (ImGui::InputText("##camFarClip", inputTextBuffer_camFarClip, bufferSize))
 		{
-			ImGui::SetTooltip("Adjust camera far clip range.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##farclip"))
-		{
-			Render::farClip = 100.0f;
+			try
+			{
+				camFarClip = stof(inputTextBuffer_camFarClip);
+
+				if (camFarClip < 0.1f) camFarClip = 0.1f;
+				if (camFarClip < camNearClip + 0.1f)
+				{
+					camFarClip = camNearClip + 0.1f;
+				}
+				if (camFarClip > 1000000.0f) camFarClip = 1000000.0f;
+
+				Render::farClip = camFarClip;
+			}
+			catch (...)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::EXCEPTION,
+					"Error: Debug menu camera far clip cannot be empty!\n");
+			}
 		}
 
 		//
-		//MOVE SPEED MULTIPLIER
+		// MOVE SPEED MULTIPLIER
 		//
 
 		ImGui::Separator();
 
 		ImGui::Text("Move speed multiplier");
-		ImGui::Text("");
-		ImGui::SliderFloat("##movespeed", &Input::inputSettings.moveSpeedMultiplier, 0.1f, 10.0f);
-		if (ImGui::IsItemHovered())
+		string camMoveSpeedText = to_string(Input::inputSettings.moveSpeedMultiplier);
+		strcpy_s(inputTextBuffer_camMoveSpeedMult, bufferSize, camMoveSpeedText.c_str());
+		if (ImGui::InputText("##camMoveSpeed", inputTextBuffer_camMoveSpeedMult, bufferSize))
 		{
-			ImGui::SetTooltip("Adjust camera move speed.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##movespeedmult"))
-		{
-			Input::inputSettings.moveSpeedMultiplier = 1.0f;
+			try
+			{
+				camMovespeed = stof(inputTextBuffer_camMoveSpeedMult);
+
+				if (camMovespeed < 0) camMovespeed = 0;
+				if (camMovespeed > 100.0f) camMovespeed = 100.0f;
+
+				Input::inputSettings.moveSpeedMultiplier = camMovespeed;
+			}
+			catch (...)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::EXCEPTION,
+					"Error: Debug menu camera movement speed multiplier cannot be empty!\n");
+			}
 		}
 
 		//
-		//FOV
+		// FOV
 		//
 
 		ImGui::Separator();
@@ -214,6 +262,23 @@ namespace Graphics::GUI
 		if (ImGui::Button("Reset##fov"))
 		{
 			Render::fov = 90.0f;
+		}
+
+		//
+		// GRID
+		//
+
+		ImGui::Separator();
+
+		ImGui::Text("Grid color");
+		ImGui::ColorEdit3("##gridColor", value_ptr(Grid::color));
+
+		ImGui::Text("Grid transparency");
+		ImGui::SliderFloat("##gridTransparency", &Grid::transparency, 0.0f, 1.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##gridTransparency"))
+		{
+			Grid::transparency = 0.1f;
 		}
 	}
 }
