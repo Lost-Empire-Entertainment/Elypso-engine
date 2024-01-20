@@ -31,6 +31,7 @@
 #include "stringUtils.hpp"
 #include "input.hpp"
 #include "selectobject.hpp"
+#include "gameobject.hpp"
 
 #include <iostream>
 #include <string>
@@ -48,11 +49,14 @@ using std::numeric_limits;
 using Physics::Select;
 using Graphics::Render;
 using Core::ConsoleManager;
+using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
+    GameObjectManager objManager;
+
     void Input::InputSetup()
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -245,7 +249,8 @@ namespace Core
                     output);
             }
 
-            int index = Select::CheckRayObjectIntersections(ray, Render::gameObjects);
+            vector<shared_ptr<GameObject>> objects = objManager.GetObjects();
+            int index = Select::CheckRayObjectIntersections(ray, objects);
 
             //if user pressed left mouse button over any imgui window
             if (index == -2)
@@ -277,11 +282,11 @@ namespace Core
             }
             else
             {
-                Select::selectedObj = Render::gameObjects[index];
+                Select::selectedObj = objects[index];
                 Select::isObjectSelected = true;
                 if (inputSettings.printSelectRayDirectionToConsole)
                 {
-                    string output = "Hit " + Select::selectedObj.GetName() + "!\n";
+                    string output = "Hit " + Select::selectedObj->GetName() + "!\n";
                     ConsoleManager::WriteConsoleMessage(
                         Caller::INPUT,
                         Type::DEBUG,

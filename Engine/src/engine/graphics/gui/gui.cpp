@@ -70,11 +70,14 @@ using Graphics::GUI::GUIProjectHierarchy;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::GameObject;
+using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
+	GameObjectManager objManager;
+
 	static ImVec4 bgrColor;
 	static ImVec4 cubeColor;
 	static ImVec4 specularColor;
@@ -298,22 +301,20 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					GameObject obj = Cube::InitializeCube(
+					shared_ptr<GameObject> obj = Cube::InitializeCube(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
 
-					Render::gameObjects.push_back(obj);
-
-					unsigned int ID = obj.GetID();
-					vec3 pos = obj.GetTransform().GetPosition();
+					unsigned int ID = obj->GetID();
+					vec3 pos = obj->GetTransform()->GetPosition();
 					string posX = to_string(pos.x);
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);
 
 					string output =
-						"Successfully created " + obj.GetName() +
-						" with ID " + to_string(obj.GetID()) +
+						"Successfully created " + obj->GetName() +
+						" with ID " + to_string(obj->GetID()) +
 						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -332,23 +333,20 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					GameObject obj = PointLight::InitializePointLight(
+					shared_ptr<GameObject> obj = PointLight::InitializePointLight(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
 
-					Render::gameObjects.push_back(obj);
-					Render::pointLights.push_back(obj);
-
-					unsigned int ID = obj.GetID();
-					vec3 pos = obj.GetTransform().GetPosition();
+					unsigned int ID = obj->GetID();
+					vec3 pos = obj->GetTransform()->GetPosition();
 					string posX = to_string(pos.x);
 					string posY = to_string(pos.y);
 					string posZ = to_string(pos.z);
 
 					string output =
-						"Successfully created " + obj.GetName() +
-						" with ID " + to_string(obj.GetID()) +
+						"Successfully created " + obj->GetName() +
+						" with ID " + to_string(obj->GetID()) +
 						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,

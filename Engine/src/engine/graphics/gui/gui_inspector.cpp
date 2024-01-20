@@ -39,7 +39,7 @@ using std::to_string;
 using Graphics::Render;
 using Physics::Select;
 using Graphics::Shape::GameObject;
-using Type = Graphics::Shape::Mesh::Type;
+using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Transform;
 using Graphics::Shape::Material;
 
@@ -99,27 +99,27 @@ namespace Graphics::GUI
 	void GUIInspector::RSM_SelectedObject()
 	{
 		if (Select::isObjectSelected
-			&& Select::selectedObj.IsInitialized())
+			&& Select::selectedObj->IsInitialized())
 		{
-			GameObject& obj = Select::selectedObj;
+			shared_ptr<GameObject>& obj = Select::selectedObj;
 
-			string objID = "ID: " + to_string(obj.GetID());
+			string objID = "ID: " + to_string(obj->GetID());
 			ImGui::Text(objID.c_str());
 
 			ImGui::SameLine();
 
-			Type objType = obj.GetMesh().GetType();
+			Type objType = obj->GetMesh()->GetMeshType();
 			string objTypeValue = "     Type: " + string(magic_enum::enum_name(objType));
 			ImGui::Text(objTypeValue.c_str());
 
 			ImGui::Spacing();
 
 			ImGui::Text("Name");
-			string objName = obj.GetName();
+			string objName = obj->GetName();
 			strcpy_s(inputTextBuffer_objName, bufferSize, objName.c_str());
 			if (ImGui::InputText("##objName", inputTextBuffer_objName, bufferSize))
 			{
-				obj.SetName(inputTextBuffer_objName);
+				obj->SetName(inputTextBuffer_objName);
 			}
 
 			ImGui::Separator();
@@ -128,34 +128,34 @@ namespace Graphics::GUI
 
 			ImGui::Spacing();
 
-			vec3 pos = obj.GetTransform().GetPosition();
+			vec3 pos = obj->GetTransform()->GetPosition();
 			ImGui::Text("Position");
 			if (ImGui::InputFloat3("##objPos", value_ptr(pos)))
 			{
-				obj.GetTransform().SetPosition(pos);
+				obj->GetTransform()->SetPosition(pos);
 
-				vec3 pos = obj.GetTransform().GetPosition();
+				vec3 pos = obj->GetTransform()->GetPosition();
 				string objPos = "( " +
 					to_string(pos.x) + ", " +
 					to_string(pos.y) + ", " +
 					to_string(pos.z) + ")";
-				string output = "moved " + obj.GetName() + " to " + objPos + "\n";
+				string output = "moved " + obj->GetName() + " to " + objPos + "\n";
 
 				cout << output;
 			}
 
-			vec3 rot = obj.GetTransform().GetRotation();
+			vec3 rot = obj->GetTransform()->GetRotation();
 			ImGui::Text("Rotation");
 			if (ImGui::InputFloat3("##objRot", value_ptr(rot)))
 			{
-				obj.GetTransform().SetRotation(rot);
+				obj->GetTransform()->SetRotation(rot);
 			}
 
-			vec3 scale = obj.GetTransform().GetScale();
+			vec3 scale = obj->GetTransform()->GetScale();
 			ImGui::Text("Scale");
 			if (ImGui::InputFloat3("##objScale", value_ptr(scale)))
 			{
-				obj.GetTransform().SetScale(scale);
+				obj->GetTransform()->SetScale(scale);
 			}
 		}
 	}

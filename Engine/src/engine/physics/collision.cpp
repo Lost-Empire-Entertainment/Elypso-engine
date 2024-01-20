@@ -29,11 +29,11 @@ using Graphics::Shape::Transform;
 
 namespace Physics
 {
-	bool Collision::IsRayIntersectingCube(const Select::Ray& ray, const GameObject& cube)
+	bool Collision::IsRayIntersectingCube(const Select::Ray& ray, const shared_ptr<GameObject>& cube)
 	{
 		//calculate the half extents of the cube along each axis
-		vec3 pos = cube.GetTransform().GetPosition();
-		vec3 scale = cube.GetTransform().GetScale();
+		vec3 pos = cube->GetTransform()->GetPosition();
+		vec3 scale = cube->GetTransform()->GetScale();
 		vec3 minBound = pos - 0.5f * scale;
 		vec3 maxBound = pos + 0.5f * scale;
 

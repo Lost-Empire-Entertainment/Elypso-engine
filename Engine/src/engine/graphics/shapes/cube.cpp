@@ -50,10 +50,9 @@ namespace Graphics::Shape
 {
 	GameObjectManager objManager;
 
-	//TODO: finish this
-	GameObject Cube::InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> Cube::InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale)
 	{
-		Transform transform(pos, rot, scale);
+		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
 		float vertices[] =
 		{
@@ -101,7 +100,7 @@ namespace Graphics::Shape
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 		};
 
-		Mesh mesh(MeshType::cube);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::cube);
 
 		Shader cubeShader = Shader(
 			Engine::enginePath + "/shaders/GameObject.vert",
@@ -127,20 +126,29 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		Material mat(cubeShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(cubeShader, vao, vbo);
 
-		GameObject obj(false, "Cube", 0, transform, mesh, mat);
+		shared_ptr<GameObject> obj = make_shared<GameObject>(
+			false, 
+			"Cube", 
+			0, 
+			transform, 
+			mesh,
+			mat);
 
 		Texture tex(Engine::enginePath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 
-		Shader assignedShader = obj.GetMaterial().GetShader();
+		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
 
-		obj.Initialize();
+		obj->Initialize();
+
+		vector<shared_ptr<GameObject>> objects = objManager.GetObjects();
+		objects.push_back(obj);
 
 		return obj;
 	}

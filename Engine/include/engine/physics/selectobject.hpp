@@ -41,7 +41,7 @@ namespace Physics
 		};
 
 		static inline bool isObjectSelected;
-		static inline GameObject selectedObj;
+		static inline shared_ptr<GameObject> selectedObj;
 
 		/// <summary>
 		/// Calculate a ray from mouse coordinates.
@@ -51,6 +51,6 @@ namespace Physics
 		/// <summary>
 		/// Check ray-object intersections.
 		/// </summary>
-		static int CheckRayObjectIntersections(const Ray& ray, const vector<GameObject>& objects);
+		static int CheckRayObjectIntersections(const Ray& ray, const vector<shared_ptr<GameObject>>& objects);
 	};
 }

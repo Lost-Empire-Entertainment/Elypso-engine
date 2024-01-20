@@ -34,16 +34,19 @@ using glm::scale;
 
 using Graphics::Shader;
 using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::Type;
+using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Material;
+using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
 
 namespace Graphics::Shape
 {
-	GameObject PointLight::InitializePointLight(const vec3& pos, const vec3& rot, const vec3& scale)
+	GameObjectManager objManager;
+
+	shared_ptr<GameObject> PointLight::InitializePointLight(const vec3& pos, const vec3& rot, const vec3& scale)
 	{
-		Transform transform(pos, rot, scale);
+		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
 		float vertices[] =
 		{
@@ -91,7 +94,7 @@ namespace Graphics::Shape
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
-		Mesh mesh(Type::cube, vertices);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::cube);
 
 		Shader pointLightShader = Shader(
 			Engine::enginePath + "/shaders/Light_Test.vert",
@@ -110,17 +113,26 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		Material mat(pointLightShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(pointLightShader, vao, vbo);
 
 		GameObject::nextID++;
-		GameObject obj(false, GameObject::nextID, "Point light", transform, mesh, mat);
+		shared_ptr<GameObject> obj = make_shared<GameObject>(
+			false, 
+			"Point light", 
+			GameObject::nextID, 
+			transform, 
+			mesh, 
+			mat);
+
+		vector<shared_ptr<GameObject>> objects = objManager.GetObjects();
+		objects.push_back(obj);
 
 		return obj;
 	}
 
-	void PointLight::RenderPointLight(GameObject& obj, mat4& view, mat4& projection)
+	void PointLight::Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const
 	{
-		Shader shader = obj.GetMaterial().GetShader();
+		Shader shader = obj->GetMaterial()->GetShader();
 
 		shader.Use();
 		shader.SetMat4("projection", projection);
@@ -128,13 +140,13 @@ namespace Graphics::Shape
 		shader.SetVec3("lightColor", Render::pointDiffuse);
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, obj.GetTransform().GetPosition());
-		quat newRot = quat(radians(obj.GetTransform().GetRotation()));
+		model = translate(model, obj->GetTransform()->GetPosition());
+		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
 		model *= mat4_cast(newRot);
-		model = scale(model, obj.GetTransform().GetScale());
+		model = scale(model, obj->GetTransform()->GetScale());
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj.GetMaterial().GetVAO();
+		GLuint VAO = obj->GetMaterial()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}

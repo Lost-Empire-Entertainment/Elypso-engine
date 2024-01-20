@@ -31,7 +31,7 @@ using std::numeric_limits;
 
 using Graphics::Render;
 using Physics::Collision;
-using Type = Graphics::Shape::Mesh::Type;
+using Type = Graphics::Shape::Mesh::MeshType;
 
 namespace Physics
 {
@@ -52,7 +52,7 @@ namespace Physics
 		return Ray(Render::camera.GetCameraPosition(), rayDirection);
 	}
 
-	int Select::CheckRayObjectIntersections(const Ray& ray, const vector<GameObject>& objects)
+	int Select::CheckRayObjectIntersections(const Ray& ray, const vector<shared_ptr<GameObject>>& objects)
 	{
 		//if user pressed left mouse button over any imgui window
 		if (ImGui::GetIO().WantCaptureMouse)
@@ -63,7 +63,7 @@ namespace Physics
 		{
 			for (int i = 0; i < objects.size(); i++)
 			{
-				Type objType = objects[i].GetMesh().GetType();
+				Type objType = objects[i]->GetMesh()->GetMeshType();
 				if ((objType == Type::cube
 					|| objType == Type::point_light)
 					&& Collision::IsRayIntersectingCube(ray, objects[i]))

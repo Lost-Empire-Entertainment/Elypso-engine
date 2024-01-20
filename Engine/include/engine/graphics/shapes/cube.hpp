@@ -29,7 +29,7 @@ namespace Graphics::Shape
 	class Cube : public GameObject
 	{
 	public:
-		static GameObject InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale);
+		static shared_ptr<GameObject> InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale);
 
 		virtual void Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const override;
 	};
