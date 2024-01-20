@@ -146,23 +146,23 @@ namespace Graphics::Shape
 	class GameObjectManager
 	{
 	public:
-		void RenderAll(
+		static void RenderAll(
 			const mat4& view,
-			const mat4& projection) const;
+			const mat4& projection);
 
 		void AddGameObject(const shared_ptr<GameObject>& obj);
 		void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
-		const vector<shared_ptr<GameObject>>& GetObjects() const
+		static vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
 		}
-		const vector<shared_ptr<GameObject>> GetPointLights() const
+		static vector<shared_ptr<GameObject>> GetPointLights()
 		{
 			return pointLights;
 		}
 	private:
-		vector<shared_ptr<GameObject>> objects;
-		vector<shared_ptr<GameObject>> pointLights;
+		static inline vector<shared_ptr<GameObject>> objects;
+		static inline vector<shared_ptr<GameObject>> pointLights;
 	};
 }

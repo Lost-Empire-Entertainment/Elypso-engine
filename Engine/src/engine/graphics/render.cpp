@@ -64,7 +64,6 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-	GameObjectManager objManager;
 	Input Render::camera(Render::window);
 
 	void Render::RenderSetup()
@@ -200,7 +199,7 @@ namespace Graphics
 		//update the camera
 		view = camera.GetViewMatrix();
 
-		objManager.RenderAll(view, projection);
+		GameObjectManager::RenderAll(view, projection);
 
 		EngineGUI::GetInstance().Render();
 

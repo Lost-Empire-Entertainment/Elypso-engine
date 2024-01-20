@@ -55,8 +55,6 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
-    GameObjectManager objManager;
-
     void Input::InputSetup()
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -249,7 +247,7 @@ namespace Core
                     output);
             }
 
-            vector<shared_ptr<GameObject>> objects = objManager.GetObjects();
+            vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
             int index = Select::CheckRayObjectIntersections(ray, objects);
 
             //if user pressed left mouse button over any imgui window

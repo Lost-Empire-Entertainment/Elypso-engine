@@ -16,10 +16,15 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 #include "gameobject.hpp"
+#include "cube.hpp"
+#include "pointlight.hpp"
 
 using std::remove;
+using std::dynamic_pointer_cast;
 
 using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Shape::Cube;
+using Graphics::Shape::PointLight;
 
 namespace Graphics::Shape
 {
@@ -102,6 +107,10 @@ namespace Graphics::Shape
 		switch (meshType)
 		{
 		case Type::cube:
+			if (auto cube = dynamic_pointer_cast<Cube>(obj))
+			{
+				cube->Render(cube, view, projection);
+			}
 			break;
 		}
 	}
@@ -110,7 +119,7 @@ namespace Graphics::Shape
 	// GAMEOBJECT MANAGER
 	//
 
-	void GameObjectManager::RenderAll(const mat4& view, const mat4& projection) const
+	void GameObjectManager::RenderAll(const mat4& view, const mat4& projection)
 	{
 		for (const auto& obj : objects)
 		{

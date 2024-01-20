@@ -42,8 +42,6 @@ using Graphics::Render;
 
 namespace Graphics::Shape
 {
-	GameObjectManager objManager;
-
 	shared_ptr<GameObject> PointLight::InitializePointLight(const vec3& pos, const vec3& rot, const vec3& scale)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
@@ -124,7 +122,7 @@ namespace Graphics::Shape
 			mesh, 
 			mat);
 
-		vector<shared_ptr<GameObject>> objects = objManager.GetObjects();
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 		objects.push_back(obj);
 
 		return obj;

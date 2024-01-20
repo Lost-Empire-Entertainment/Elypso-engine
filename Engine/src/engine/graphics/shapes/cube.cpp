@@ -48,8 +48,6 @@ using Core::Engine;
 
 namespace Graphics::Shape
 {
-	GameObjectManager objManager;
-
 	shared_ptr<GameObject> Cube::InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
@@ -147,7 +145,7 @@ namespace Graphics::Shape
 
 		obj->Initialize();
 
-		vector<shared_ptr<GameObject>> objects = objManager.GetObjects();
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 		objects.push_back(obj);
 
 		return obj;
@@ -169,7 +167,7 @@ namespace Graphics::Shape
 		shader.SetFloat("dirLight.intensity", Render::directionalIntensity);
 
 		//point lights
-		const vector<shared_ptr<GameObject>>& pointLights = objManager.GetPointLights();
+		const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointLights();
 		int pointLightCount = static_cast<int>(pointLights.size());
 		shader.SetInt("numPointLights", pointLightCount);
 		if (pointLightCount > 0)

@@ -76,8 +76,6 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
-	GameObjectManager objManager;
-
 	static ImVec4 bgrColor;
 	static ImVec4 cubeColor;
 	static ImVec4 specularColor;

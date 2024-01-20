@@ -105,6 +105,9 @@ add_executable(Elypso_engine ${SOURCE_FILES})
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
+# Set the runtime library option
+# target_compile_options(Elypso_engine PRIVATE /MD)
+
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR}/engine
 	${INCLUDE_DIR}/engine/core
