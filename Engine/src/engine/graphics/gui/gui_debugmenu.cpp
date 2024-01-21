@@ -280,5 +280,47 @@ namespace Graphics::GUI
 		{
 			Grid::transparency = 0.25f;
 		}
+
+		//
+		// BACKGROUND
+		//
+
+		ImGui::Separator();
+
+		ImGui::Text("Background color");
+		ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor));
+
+		//
+		// DIRECTIONAL LIGHT
+		//
+
+		ImGui::Separator();
+
+		ImGui::Text("Directional light direction");
+		ImGui::Text("x  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##dirX", &Render::directionalDirection.x, -360.0f, 360.0f);
+		ImGui::SameLine();
+		ImGui::Text("  y  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##dirY", &Render::directionalDirection.y, -360.0f, 360.0f);
+		ImGui::SameLine();
+		ImGui::Text("  z  ");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(100);
+		ImGui::SliderFloat("##dirZ", &Render::directionalDirection.z, -360.0f, 360.0f);
+
+		ImGui::Text("Directional light diffuse");
+		ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse));
+
+		ImGui::Text("Directional light intensity");
+		ImGui::SliderFloat("##dirint", &Render::directionalIntensity, 0.0f, 25.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##dirint"))
+		{
+			Render::directionalIntensity = 1.0f;
+		}
 	}
 }

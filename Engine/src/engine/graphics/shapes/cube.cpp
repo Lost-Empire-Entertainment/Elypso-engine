@@ -126,13 +126,17 @@ namespace Graphics::Shape
 
 		shared_ptr<Material> mat = make_shared<Material>(cubeShader, vao, vbo);
 
+		float shininess = 32;
+		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false, 
 			"Cube", 
 			0, 
 			transform, 
 			mesh,
-			mat);
+			mat,
+			basicShape);
 
 		Texture tex(Engine::enginePath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
@@ -154,7 +158,7 @@ namespace Graphics::Shape
 
 		shader.Use();
 		shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
-		shader.SetFloat("material.shininess", Render::shininess);
+		shader.SetFloat("material.shininess", obj->GetBasicShape()->GetShininess());
 
 		//directional light
 		shader.SetVec3("dirLight.direction", Render::directionalDirection);
@@ -166,7 +170,7 @@ namespace Graphics::Shape
 		//point lights
 		const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointLights();
 		int pointLightCount = static_cast<int>(pointLights.size());
-		shader.SetInt("numPointLights", pointLightCount);
+		shader.SetInt("pointLightCount", pointLightCount);
 		if (pointLightCount > 0)
 		{
 			for (int i = 0; i < pointLightCount; i++)
@@ -174,29 +178,39 @@ namespace Graphics::Shape
 				string lightPrefix = "pointLights[" + to_string(i) + "].";
 				shader.SetVec3(lightPrefix + "position", pointLights[i]->GetTransform()->GetPosition());
 				shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
-				shader.SetVec3(lightPrefix + "diffuse", Render::pointDiffuse);
+				shader.SetVec3(lightPrefix + "diffuse", pointLights[i]->GetPointLight()->GetDiffuse());
 				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
 				shader.SetFloat(lightPrefix + "constant", 1.0f);
 				shader.SetFloat(lightPrefix + "linear", 0.09f);
 				shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-				shader.SetFloat(lightPrefix + "intensity", Render::pointIntensity);
-				shader.SetFloat(lightPrefix + "distance", Render::pointDistance);
+				shader.SetFloat(lightPrefix + "intensity", pointLights[i]->GetPointLight()->GetIntensity());
+				shader.SetFloat(lightPrefix + "distance", pointLights[i]->GetPointLight()->GetDistance());
 			}
 		}
 
 		//spotLight
-		shader.SetVec3("spotLight.position", Render::camera.GetCameraPosition());
-		shader.SetVec3("spotLight.direction", Render::camera.GetFront());
-		shader.SetFloat("spotLight.intensity", Render::spotIntensity);
-		shader.SetFloat("spotLight.distance", Render::spotDistance);
-		shader.SetVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-		shader.SetVec3("spotLight.diffuse", Render::spotDiffuse);
-		shader.SetVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-		shader.SetFloat("spotLight.constant", 1.0f);
-		shader.SetFloat("spotLight.linear", 0.09f);
-		shader.SetFloat("spotLight.quadratic", 0.032f);
-		shader.SetFloat("spotLight.cutOff", cos(radians(Render::spotInnerAngle)));
-		shader.SetFloat("spotLight.outerCutOff", cos(radians(Render::spotOuterAngle)));
+		const vector<shared_ptr<GameObject>>& spotLights = GameObjectManager::GetSpotLights();
+		int spotLightCount = static_cast<int>(spotLights.size());
+		shader.SetInt("spotLightCount", spotLightCount);
+		if (spotLightCount > 0)
+		{
+			for (int i = 0; i < spotLightCount; i++)
+			{
+				string lightPrefix = "spotLights[" + to_string(i) + "].";
+				shader.SetVec3(lightPrefix + "position", spotLights[i]->GetTransform()->GetPosition());
+				shader.SetVec3(lightPrefix + "direction", spotLights[i]->GetTransform()->GetRotation());
+				shader.SetFloat(lightPrefix + "intensity", spotLights[i]->GetSpotLight()->GetIntensity());
+				shader.SetFloat(lightPrefix + "distance", spotLights[i]->GetSpotLight()->GetDistance());
+				shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
+				shader.SetVec3(lightPrefix + "diffuse", spotLights[i]->GetSpotLight()->GetDiffuse());
+				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+				shader.SetFloat(lightPrefix + "constant", 1.0f);
+				shader.SetFloat(lightPrefix + "linear", 0.09f);
+				shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+				shader.SetFloat(lightPrefix + "cutOff", cos(radians(spotLights[i]->GetSpotLight()->GetInnerAngle())));
+				shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(spotLights[i]->GetSpotLight()->GetOuterAngle())));
+			}
+		}
 
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);

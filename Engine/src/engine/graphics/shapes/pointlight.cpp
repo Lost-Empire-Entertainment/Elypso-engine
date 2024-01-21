@@ -113,13 +113,19 @@ namespace Graphics::Shape
 
 		shared_ptr<Material> mat = make_shared<Material>(pointLightShader, vao, vbo);
 
+		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
+		float intensity = 1.0f;
+		float distance = 1.0f;
+		shared_ptr<PointLight_Variables> pointLight = make_shared<PointLight_Variables>(diffuse, intensity, distance);
+
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false, 
 			"Point light", 
 			0, 
 			transform, 
 			mesh, 
-			mat);
+			mat, 
+			pointLight);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddPointLight(obj);
@@ -134,7 +140,7 @@ namespace Graphics::Shape
 		shader.Use();
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
-		shader.SetVec3("lightColor", Render::pointDiffuse);
+		shader.SetVec3("lightColor", obj->GetPointLight()->GetDiffuse());
 
 		mat4 model = mat4(1.0f);
 		model = translate(model, obj->GetTransform()->GetPosition());

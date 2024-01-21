@@ -41,26 +41,10 @@ namespace Graphics
 		static inline unsigned int VBO, VAO, cubeVAO, lightCubeVAO, EBO;
 
 		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
-		static inline float shininess = 32;
 
 		static inline vec3 directionalDirection = vec3(-0.2f, -1.0f, -0.3f);
 		static inline vec3 directionalDiffuse = vec3(0.4f, 0.4f, 0.4f);
 		static inline float directionalIntensity = 1.0f;
-
-		static inline vec3 spotDiffuse = vec3(1.0f, 1.0f, 1.0f);
-		static inline float spotIntensity = 1.0f;
-		static inline float spotDistance = 1.0f;
-		static inline float spotInnerAngle = 12.5f;
-		static inline float spotOuterAngle = 17.5f;
-
-		static inline vec3 pointDiffuse = vec3(0.8f, 0.8f, 0.8f);
-		static inline float pointIntensity = 1.0f;
-		static inline float pointDistance = 1.0f;
-
-		static inline float cubeSpeedMultiplier = 1.0f;
-		static inline float lampOrbitRange = 5;
-		static inline float cubeWiggleHeight = 2;
-		static inline float cubeWiggleSpeed = 1;
 
 		static inline bool useMonitorRefreshRate = true;
 

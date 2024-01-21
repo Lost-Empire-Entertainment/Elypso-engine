@@ -40,9 +40,5 @@ namespace Graphics::GUI
 		static inline char inputTextBuffer_scale_z[bufferSize];
 
 		static void RSM_SelectedObject();
-		static void RSM_Main();
-		static void RSM_Spot();
-		static void RSM_Point();
-		static void RSM_Cube();
 	};
 }

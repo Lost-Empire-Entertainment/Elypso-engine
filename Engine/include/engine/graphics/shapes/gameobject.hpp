@@ -103,6 +103,68 @@ namespace Graphics::Shape
 		GLuint VBO;
 	};
 
+	class BasicShape_Variables
+	{
+	public:
+		BasicShape_Variables(const float& shininess);
+
+		void SetShininess(const float& newShininess) { shininess = newShininess; }
+
+		const float& GetShininess() const { return shininess; }
+	private:
+		float shininess;
+	};
+
+	class SpotLight_Variables
+	{
+	public:
+		SpotLight_Variables(
+			const vec3& diffuse,
+			const float& intensity,
+			const float& distance,
+			const float& innerAngle,
+			const float& outerAngle);
+
+		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
+		void SetIntensity(const float& newIntensity) { intensity = newIntensity; }
+		void SetDistance(const float& newDistance) { distance = newDistance; }
+		void SetInnerAngle(const float& newInnerAngle) { innerAngle = newInnerAngle; }
+		void SetOuterAngle(const float& newOuterAngle) { outerAngle = newOuterAngle; }
+
+		const vec3& GetDiffuse() const { return diffuse; }
+		const float& GetIntensity() const { return intensity; }
+		const float& GetDistance() const { return distance; }
+		const float& GetInnerAngle() const { return innerAngle; }
+		const float& GetOuterAngle() const { return outerAngle; }
+	private:
+		vec3 diffuse;
+		float intensity;
+		float distance;
+		float innerAngle;
+		float outerAngle;
+	};
+
+	class PointLight_Variables
+	{
+	public:
+		PointLight_Variables(
+			const vec3& diffuse,
+			const float& intensity,
+			const float& distance);
+
+		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
+		void SetIntensity(const float& newIntensity) { intensity = newIntensity; }
+		void SetDistance(const float& newDistance) { distance = newDistance; }
+
+		const vec3& GetDiffuse() const { return diffuse; }
+		const float& GetIntensity() const { return intensity; }
+		const float& GetDistance() const { return distance; }
+	private:
+		vec3 diffuse;
+		float intensity;
+		float distance;
+	};
+
 	class GameObject
 	{
 	public:
@@ -114,28 +176,59 @@ namespace Graphics::Shape
 			const unsigned int& ID,
 			const shared_ptr<Transform>& assignedTransform,
 			const shared_ptr<Mesh>& assignedMesh,
-			const shared_ptr<Material>& assignedMaterial);
+			const shared_ptr<Material>& assignedMaterial,
+			const shared_ptr<BasicShape_Variables>& basicShapeVariables);
+
+		GameObject(
+			const bool& assignedIsInitialized,
+			const string& assignedName,
+			const unsigned int& ID,
+			const shared_ptr<Transform>& assignedTransform,
+			const shared_ptr<Mesh>& assignedMesh,
+			const shared_ptr<Material>& assignedMaterial,
+			const shared_ptr<PointLight_Variables>& pointLightVariables);
+
+		GameObject(
+			const bool& assignedIsInitialized,
+			const string& assignedName,
+			const unsigned int& ID,
+			const shared_ptr<Transform>& assignedTransform,
+			const shared_ptr<Mesh>& assignedMesh,
+			const shared_ptr<Material>& assignedMaterial,
+			const shared_ptr<SpotLight_Variables>& spotLightVariables);
 
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
+
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
 		void SetMaterial(const shared_ptr<Material>& newMaterial) { material = newMaterial; }
+		void SetBasicShape(const shared_ptr<BasicShape_Variables>& newBasicShape) { basicShape = newBasicShape; }
+		void SetPointLight(const shared_ptr<PointLight_Variables>& newPointLight) { pointLight = newPointLight; }
+		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight) { spotLight = newSpotLight; }
 
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const { return ID; }
+
 		const shared_ptr<Transform>& GetTransform() const { return transform; }
 		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
 		const shared_ptr<Material>& GetMaterial() const { return material; }
+		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
+		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
+		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
 	private:
 		bool isInitialized;
 		string name;
 		unsigned int ID;
+
 		shared_ptr<Transform> transform;
 		shared_ptr<Mesh> mesh;
 		shared_ptr<Material> material;
+		shared_ptr<BasicShape_Variables> basicShape;
+		shared_ptr<PointLight_Variables> pointLight;
+		shared_ptr<SpotLight_Variables> spotLight;
 	};
 
 	class GameObjectManager
@@ -147,6 +240,7 @@ namespace Graphics::Shape
 
 		static void AddGameObject(const shared_ptr<GameObject>& obj);
 		static void AddPointLight(const shared_ptr<GameObject>& obj);
+		static void AddSpotLight(const shared_ptr<GameObject>& obj);
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
@@ -158,8 +252,13 @@ namespace Graphics::Shape
 		{
 			return pointLights;
 		}
+		static vector<shared_ptr<GameObject>> GetSpotLights()
+		{
+			return spotLights;
+		}
 	private:
 		static inline vector<shared_ptr<GameObject>> objects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
+		static inline vector<shared_ptr<GameObject>> spotLights;
 	};
 }

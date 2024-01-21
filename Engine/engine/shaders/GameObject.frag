@@ -67,8 +67,12 @@ struct SpotLight
 };
 
 #define MAX_POINT_LIGHTS 16
-uniform int numPointLights;
+uniform int pointLightCount;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
+
+#define MAX_SPOT_LIGHTS 16
+uniform int spotLightCount;
+uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 
 in vec3 FragPos;  
 in vec3 Normal;  
@@ -90,14 +94,20 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
 
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
-    if (numPointLights > 0)
+    if (pointLightCount > 0)
     {
-        for (int i = 0; i < numPointLights; i++)
+        for (int i = 0; i < pointLightCount; i++)
         {
             result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
         }
     }
-    result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    if (spotLightCount > 0)
+    {
+        for (int i = 0; i < spotLightCount; i++)
+        {
+            result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+        }
+    }
 
     FragColor = vec4(result, 1.0);
 }

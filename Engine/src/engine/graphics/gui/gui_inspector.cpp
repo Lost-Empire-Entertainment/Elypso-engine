@@ -70,26 +70,6 @@ namespace Graphics::GUI
 					RSM_SelectedObject();
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Main"))
-				{
-					RSM_Main();
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Spotlight"))
-				{
-					RSM_Spot();
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Point light"))
-				{
-					RSM_Point();
-					ImGui::EndTabItem();
-				}
-				if (ImGui::BeginTabItem("Cube"))
-				{
-					RSM_Cube();
-					ImGui::EndTabItem();
-				}
 				ImGui::EndTabBar();
 			}
 
@@ -157,177 +137,90 @@ namespace Graphics::GUI
 			{
 				obj->GetTransform()->SetScale(scale);
 			}
-		}
-	}
-	void GUIInspector::RSM_Main()
-	{
-		ImGui::Text("Background color");
-		ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor));
 
-		ImGui::Text("Directional light direction");
-		ImGui::Text("x  ");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirX", &Render::directionalDirection.x, -360.0f, 360.0f);
-		ImGui::SameLine();
-		ImGui::Text("  y  ");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirY", &Render::directionalDirection.y, -360.0f, 360.0f);
-		ImGui::SameLine();
-		ImGui::Text("  z  ");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirZ", &Render::directionalDirection.z, -360.0f, 360.0f);
+			ImGui::Separator();
 
-		ImGui::Text("Directional light diffuse");
-		ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse));
+			ImGui::Text("Material");
 
-		ImGui::Text("Directional light intensity");
-		ImGui::SliderFloat("##dirint", &Render::directionalIntensity, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how strong the directional light intensity is.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##dirint"))
-		{
-			Render::directionalIntensity = 1.0f;
-		}
+			ImGui::Spacing();
 
-		ImGui::Text("Shininess");
-		ImGui::SliderFloat("##shininess", &Render::shininess, 3.0f, 128.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how intense the material shininess should be.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##shininess"))
-		{
-			Render::shininess = 32.0f;
-		}
-	}
-	void GUIInspector::RSM_Spot()
-	{
-		ImGui::Text("Spotlight diffuse");
-		ImGui::ColorEdit3("##spotdiff", value_ptr(Render::spotDiffuse));
+			if (objType == Type::cube)
+			{
+				ImGui::Text("Shininess");
+				float cubeShininess = obj->GetBasicShape()->GetShininess();
+				ImGui::SliderFloat("##shininess", &cubeShininess, 3.0f, 128.0f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##shininess"))
+				{
+					obj->GetBasicShape()->SetShininess(32.0f);
+				}
+			}
+			else if (objType == Type::point_light)
+			{
+				ImGui::Text("Point light diffuse");
+				vec3 pointDiffuse = obj->GetPointLight()->GetDiffuse();
+				ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse));
 
-		ImGui::Text("Spotlight intensity");
-		ImGui::SliderFloat("##spotint", &Render::spotIntensity, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how strong the spotlight intensity is.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotint"))
-		{
-			Render::spotIntensity = 1.0f;
-		}
+				ImGui::Text("Point light intensity");
+				float pointIntensity = obj->GetPointLight()->GetIntensity();
+				ImGui::SliderFloat("##pointint", &pointIntensity, 0.0f, 25.0f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##pointint"))
+				{
+					obj->GetPointLight()->SetIntensity(1.0f);
+				}
 
-		ImGui::Text("Spotlight distance");
-		ImGui::SliderFloat("##spotdist", &Render::spotDistance, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how far the spotlight can cast.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotdist"))
-		{
-			Render::spotDistance = 1.0f;
-		}
+				ImGui::Text("Point light distance");
+				float pointDistance = obj->GetPointLight()->GetDistance();
+				ImGui::SliderFloat("##pointdist", &pointDistance, 0.0f, 25.0f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##pointdist"))
+				{
+					obj->GetPointLight()->SetDistance(1.0f);
+				}
+			}
+			else if (objType == Type::spot_light)
+			{
+				ImGui::Text("Spotlight diffuse");
+				vec3 spotDiffuse = obj->GetSpotLight()->GetDiffuse();
+				ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse));
 
-		ImGui::Text("Spotlight inner angle");
-		ImGui::SliderFloat("##spotinnerangle", &Render::spotInnerAngle, 0.0f, Render::spotOuterAngle - 0.01f);
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotinnerangle"))
-		{
-			Render::spotInnerAngle = 12.5f;
-		}
-		ImGui::Text("Spotlight outer angle");
-		ImGui::SliderFloat("##spotouterangle", &Render::spotOuterAngle, Render::spotInnerAngle + 0.01f, 50.0f);
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##spotouterangle"))
-		{
-			Render::spotOuterAngle = 17.5f;
-		}
-	}
-	void GUIInspector::RSM_Point()
-	{
-		ImGui::Text("Point light diffuse");
-		ImGui::ColorEdit3("##pointdiff", value_ptr(Render::pointDiffuse));
+				ImGui::Text("Spotlight intensity");
+				float spotIntensity = obj->GetSpotLight()->GetIntensity();
+				ImGui::SliderFloat("##spotint", &spotIntensity, 0.0f, 25.0f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotint"))
+				{
+					obj->GetSpotLight()->SetIntensity(1.0f);
+				}
 
-		ImGui::Text("Point light intensity");
-		ImGui::SliderFloat("##pointint", &Render::pointIntensity, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how strong the point light intensity is.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##pointint"))
-		{
-			Render::pointIntensity = 1.0f;
-		}
+				ImGui::Text("Spotlight distance");
+				float spotDistance = obj->GetSpotLight()->GetDistance();
+				ImGui::SliderFloat("##spotdist", &spotDistance, 0.0f, 25.0f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotdist"))
+				{
+					obj->GetSpotLight()->SetDistance(1.0f);
+				}
 
-		ImGui::Text("Point light distance");
-		ImGui::SliderFloat("##pointdist", &Render::pointDistance, 0.0f, 25.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how far the point light can cast.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##pointdist"))
-		{
-			Render::pointDistance = 1.0f;
-		}
-	}
-	void GUIInspector::RSM_Cube()
-	{
-		ImGui::Text("Cube speed multiplier");
-		ImGui::SliderFloat("##cubespeedmult", &Render::cubeSpeedMultiplier, 0.0f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust the overall cube speed multiplier.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##cubespeedmult"))
-		{
-			Render::cubeSpeedMultiplier = 0.005f;
-		}
+				ImGui::Text("Spotlight inner angle");
+				float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
+				float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
+				ImGui::SliderFloat("##spotinnerangle", &spotInnerAngle, 0.0f, spotOuterAngle - 0.01f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotinnerangle"))
+				{
+					obj->GetSpotLight()->SetInnerAngle(12.5f);
+				}
 
-		ImGui::Text("Lamp orbit range");
-		ImGui::SliderFloat("##lamporbitrange", &Render::lampOrbitRange, 2.0f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how far the cube should orbit from the lamp.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##lamporbitrange"))
-		{
-			Render::lampOrbitRange = 5.0f;
-		}
-
-		ImGui::Text("Cube wiggle height");
-		ImGui::SliderFloat("##cubewheight", &Render::cubeWiggleHeight, 0.0f, 5.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how high and low the cube should wiggle.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##cubewheight"))
-		{
-			Render::cubeWiggleHeight = 2.0f;
-		}
-
-		ImGui::Text("Cube wiggle speed");
-		ImGui::SliderFloat("##cubewspeed", &Render::cubeWiggleSpeed, 0.0f, 10.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust how fast the cube should wiggle.");
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##cubewspeed"))
-		{
-			Render::cubeWiggleSpeed = 1.0f;
+				ImGui::Text("Spotlight outer angle");
+				ImGui::SliderFloat("##spotouterangle", &spotInnerAngle, spotOuterAngle + 0.01f, 50.0f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotouterangle"))
+				{
+					obj->GetSpotLight()->SetOuterAngle(17.5f);
+				}
+			}
 		}
 	}
 }

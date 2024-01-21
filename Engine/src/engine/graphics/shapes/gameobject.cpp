@@ -75,6 +75,47 @@ namespace Graphics::Shape
 	}
 
 	//
+	// MATERIAL VALUES
+	//
+
+	BasicShape_Variables::BasicShape_Variables(const float& assignedShininess) : shininess(assignedShininess)
+	{
+		SetShininess(assignedShininess);
+	}
+
+	SpotLight_Variables::SpotLight_Variables(
+		const vec3& assignedDiffuse,
+		const float& assignedIntensity,
+		const float& assignedDistance,
+		const float& assignedInnerAngle,
+		const float& assignedOuterAngle) :
+		diffuse(assignedDiffuse),
+		intensity(assignedIntensity),
+		distance(assignedDistance),
+		innerAngle(assignedInnerAngle),
+		outerAngle(assignedOuterAngle)
+	{
+		SetDiffuse(assignedDiffuse);
+		SetIntensity(assignedIntensity);
+		SetDistance(assignedDistance);
+		SetInnerAngle(assignedInnerAngle);
+		SetOuterAngle(assignedOuterAngle);
+	}
+
+	PointLight_Variables::PointLight_Variables(
+		const vec3& assignedDiffuse,
+		const float& assignedIntensity,
+		const float& assignedDistance) :
+		diffuse(assignedDiffuse),
+		intensity(assignedIntensity),
+		distance(assignedDistance)
+	{
+		SetDiffuse(assignedDiffuse);
+		SetIntensity(assignedIntensity);
+		SetDistance(assignedDistance);
+	}
+
+	//
 	// GAMEOBJECT
 	//
 
@@ -84,19 +125,74 @@ namespace Graphics::Shape
 		const unsigned int& assignedID, 
 		const shared_ptr<Transform>& assignedTransform,
 		const shared_ptr<Mesh>& assignedMesh, 
-		const shared_ptr<Material>& assignedMaterial) :
+		const shared_ptr<Material>& assignedMaterial,
+		const shared_ptr<BasicShape_Variables>& assignedBasicShape) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
 		transform(assignedTransform),
 		mesh(assignedMesh),
-		material(assignedMaterial)
+		material(assignedMaterial),
+		basicShape(assignedBasicShape)
 	{
 		SetName(assignedName);
 		SetID(nextID++);
 		SetTransform(assignedTransform);
 		SetMesh(assignedMesh);
 		SetMaterial(assignedMaterial);
+		SetBasicShape(assignedBasicShape);
+
+		Initialize();
+	}
+
+	GameObject::GameObject(
+		const bool& assignedIsInitialized,
+		const string& assignedName,
+		const unsigned int& assignedID,
+		const shared_ptr<Transform>& assignedTransform,
+		const shared_ptr<Mesh>& assignedMesh,
+		const shared_ptr<Material>& assignedMaterial,
+		const shared_ptr<PointLight_Variables>& assignedPointLight) :
+		isInitialized(assignedIsInitialized),
+		name(assignedName),
+		ID(assignedID),
+		transform(assignedTransform),
+		mesh(assignedMesh),
+		material(assignedMaterial),
+		pointLight(assignedPointLight)
+	{
+		SetName(assignedName);
+		SetID(nextID++);
+		SetTransform(assignedTransform);
+		SetMesh(assignedMesh);
+		SetMaterial(assignedMaterial);
+		SetPointLight(assignedPointLight);
+
+		Initialize();
+	}
+
+	GameObject::GameObject(
+		const bool& assignedIsInitialized,
+		const string& assignedName,
+		const unsigned int& assignedID,
+		const shared_ptr<Transform>& assignedTransform,
+		const shared_ptr<Mesh>& assignedMesh,
+		const shared_ptr<Material>& assignedMaterial,
+		const shared_ptr<SpotLight_Variables>& assignedSpotLight) :
+		isInitialized(assignedIsInitialized),
+		name(assignedName),
+		ID(assignedID),
+		transform(assignedTransform),
+		mesh(assignedMesh),
+		material(assignedMaterial),
+		spotLight(assignedSpotLight)
+	{
+		SetName(assignedName);
+		SetID(nextID++);
+		SetTransform(assignedTransform);
+		SetMesh(assignedMesh);
+		SetMaterial(assignedMaterial);
+		SetSpotLight(assignedSpotLight);
 
 		Initialize();
 	}
@@ -133,6 +229,11 @@ namespace Graphics::Shape
 	void GameObjectManager::AddPointLight(const shared_ptr<GameObject>& obj)
 	{
 		pointLights.push_back(obj);
+	}
+
+	void GameObjectManager::AddSpotLight(const shared_ptr<GameObject>& obj)
+	{
+		spotLights.push_back(obj);
 	}
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
