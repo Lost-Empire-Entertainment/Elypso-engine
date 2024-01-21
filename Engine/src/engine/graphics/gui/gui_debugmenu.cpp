@@ -203,7 +203,7 @@ namespace Graphics::GUI
 				{
 					camFarClip = camNearClip + 0.1f;
 				}
-				if (camFarClip > 1000000.0f) camFarClip = 1000000.0f;
+				if (camFarClip > 10000.0f) camFarClip = 10000.0f; //HARD-CAPPED TO 100000 TO SAVE PERFORMANCE
 
 				Render::farClip = camFarClip;
 			}

@@ -605,14 +605,14 @@ namespace File
 				float camnearclip = stof(value);
 				return (String::CanConvertStringToFloat(value)
 						&& camnearclip >= 0.0001f
-						&& camnearclip <= 1000000.0f);
+						&& camnearclip <= 10000.0f);
 			}
 			else if (type == "camFarClip")
 			{
 				float camfarclip = stof(value);
 				return (String::CanConvertStringToFloat(value)
 						&& camfarclip >= 0.1f
-						&& camfarclip <= 1000000.0f);
+						&& camfarclip <= 10000.0f);
 			}
 			else if (type == "camPosX"
 					 || type == "camPosY"
@@ -620,8 +620,8 @@ namespace File
 			{
 				float val = stof(value);
 				return (String::CanConvertStringToFloat(value)
-						&& val >= -1000000.0f
-						&& val <= 1000000.0f);
+						&& val >= -10000.0f
+						&& val <= 10000.0f);
 			}
 			else if (type == "camRotX"
 					 || type == "camRotY"

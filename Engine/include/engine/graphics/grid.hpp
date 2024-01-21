@@ -41,8 +41,8 @@ namespace Graphics
 		static inline GLuint VAO, VBO;
 		static inline Shader shader;
 
-		static inline const int lineCount = 250;
-		static inline float lineDistance = 1.0f;
+		static inline const int lineCount = 10000; //BREAKS IF YOU PUT IT ABOVE 100000
+		static inline float lineDistance = 1.0f; //BREAKS IF YOU PUT IT BELOW 1.0f
 		static inline float vertices[lineCount * 4 * 3];
 	};
 }
