@@ -17,7 +17,10 @@
 
 #pragma once
 
+//external
 #include "glm.hpp"
+
+//engine
 #include "gameobject.hpp"
 
 using glm::vec3;
@@ -26,11 +29,11 @@ using Graphics::Shape::GameObject;
 
 namespace Graphics::Shape
 {
-	class Cube : public GameObject
+	class Cube
 	{
 	public:
 		static shared_ptr<GameObject> InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale);
 
-		virtual void Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const override;
+		static void RenderCube(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
 }

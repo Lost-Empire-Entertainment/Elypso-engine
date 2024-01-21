@@ -34,10 +34,11 @@ using glm::mat4;
 
 namespace Graphics::Shape
 {
-	class PointLight : public GameObject
+	class PointLight
 	{
 	public:
 		static shared_ptr<GameObject> InitializePointLight(const vec3& pos, const vec3& rot, const vec3& scale);
-		virtual void Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const override;
+
+		static void RenderPointLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
 }

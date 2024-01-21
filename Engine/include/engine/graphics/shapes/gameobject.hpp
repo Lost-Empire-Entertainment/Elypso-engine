@@ -116,11 +116,6 @@ namespace Graphics::Shape
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial);
 
-		virtual void Render(
-			const shared_ptr<GameObject>& obj,
-			const mat4& view,
-			const mat4& projection) const;
-
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
@@ -151,6 +146,8 @@ namespace Graphics::Shape
 			const mat4& projection);
 
 		static void AddGameObject(const shared_ptr<GameObject>& obj);
+		static void AddPointLight(const shared_ptr<GameObject>& obj);
+
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
 		static vector<shared_ptr<GameObject>>& GetObjects()

@@ -143,17 +143,13 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
 
-		obj->Initialize();
-
 		GameObjectManager::AddGameObject(obj);
 
 		return obj;
 	}
 
-	void Cube::Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const
+	void Cube::RenderCube(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
-		cout << "Rendering cube..." << endl;
-
 		Shader shader = obj->GetMaterial()->GetShader();
 
 		shader.Use();
@@ -210,9 +206,6 @@ namespace Graphics::Shape
 		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
 		model *= mat4_cast(newRot);
 		model = scale(model, obj->GetTransform()->GetScale());
-
-		vec3 pos = obj->GetTransform()->GetPosition();
-		cout << "currently at (" << pos.x << ", " << pos.y << ", " << pos.z << ")" << endl;
 
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);

@@ -92,7 +92,7 @@ namespace Graphics::Shape
 			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::cube);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::point_light);
 
 		Shader pointLightShader = Shader(
 			Engine::enginePath + "/shaders/Light_Test.vert",
@@ -113,21 +113,21 @@ namespace Graphics::Shape
 
 		shared_ptr<Material> mat = make_shared<Material>(pointLightShader, vao, vbo);
 
-		GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false, 
 			"Point light", 
-			GameObject::nextID, 
+			0, 
 			transform, 
 			mesh, 
 			mat);
 
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddPointLight(obj);
 
 		return obj;
 	}
 
-	void PointLight::Render(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection) const
+	void PointLight::RenderPointLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
 		Shader shader = obj->GetMaterial()->GetShader();
 
