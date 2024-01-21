@@ -63,15 +63,7 @@ namespace Graphics::GUI
 				renderInspector = false;
 			}
 
-			if (ImGui::BeginTabBar("Inspector"))
-			{
-				if (ImGui::BeginTabItem("Selected"))
-				{
-					RSM_SelectedObject();
-					ImGui::EndTabItem();
-				}
-				ImGui::EndTabBar();
-			}
+			RSM_SelectedObject();
 
 			ImGui::End();
 		}
@@ -113,15 +105,6 @@ namespace Graphics::GUI
 			if (ImGui::InputFloat3("##objPos", value_ptr(pos)))
 			{
 				obj->GetTransform()->SetPosition(pos);
-
-				vec3 pos = obj->GetTransform()->GetPosition();
-				string objPos = "( " +
-					to_string(pos.x) + ", " +
-					to_string(pos.y) + ", " +
-					to_string(pos.z) + ")";
-				string output = "moved " + obj->GetName() + " to " + objPos + "\n";
-
-				cout << output;
 			}
 
 			vec3 rot = obj->GetTransform()->GetRotation();
@@ -146,8 +129,8 @@ namespace Graphics::GUI
 
 			if (objType == Type::cube)
 			{
-				ImGui::Text("Shininess");
 				float cubeShininess = obj->GetBasicShape()->GetShininess();
+				ImGui::Text("Shininess");
 				ImGui::SliderFloat("##shininess", &cubeShininess, 3.0f, 128.0f);
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##shininess"))
@@ -157,12 +140,12 @@ namespace Graphics::GUI
 			}
 			else if (objType == Type::point_light)
 			{
-				ImGui::Text("Point light diffuse");
 				vec3 pointDiffuse = obj->GetPointLight()->GetDiffuse();
+				ImGui::Text("Point light diffuse");
 				ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse));
 
-				ImGui::Text("Point light intensity");
 				float pointIntensity = obj->GetPointLight()->GetIntensity();
+				ImGui::Text("Point light intensity");
 				ImGui::SliderFloat("##pointint", &pointIntensity, 0.0f, 25.0f);
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##pointint"))
@@ -170,8 +153,8 @@ namespace Graphics::GUI
 					obj->GetPointLight()->SetIntensity(1.0f);
 				}
 
-				ImGui::Text("Point light distance");
 				float pointDistance = obj->GetPointLight()->GetDistance();
+				ImGui::Text("Point light distance");
 				ImGui::SliderFloat("##pointdist", &pointDistance, 0.0f, 25.0f);
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##pointdist"))
@@ -181,12 +164,12 @@ namespace Graphics::GUI
 			}
 			else if (objType == Type::spot_light)
 			{
-				ImGui::Text("Spotlight diffuse");
 				vec3 spotDiffuse = obj->GetSpotLight()->GetDiffuse();
+				ImGui::Text("Spotlight diffuse");
 				ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse));
 
-				ImGui::Text("Spotlight intensity");
 				float spotIntensity = obj->GetSpotLight()->GetIntensity();
+				ImGui::Text("Spotlight intensity");
 				ImGui::SliderFloat("##spotint", &spotIntensity, 0.0f, 25.0f);
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotint"))
@@ -194,8 +177,8 @@ namespace Graphics::GUI
 					obj->GetSpotLight()->SetIntensity(1.0f);
 				}
 
-				ImGui::Text("Spotlight distance");
 				float spotDistance = obj->GetSpotLight()->GetDistance();
+				ImGui::Text("Spotlight distance");
 				ImGui::SliderFloat("##spotdist", &spotDistance, 0.0f, 25.0f);
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotdist"))
@@ -203,9 +186,9 @@ namespace Graphics::GUI
 					obj->GetSpotLight()->SetDistance(1.0f);
 				}
 
-				ImGui::Text("Spotlight inner angle");
 				float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
 				float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
+				ImGui::Text("Spotlight inner angle");
 				ImGui::SliderFloat("##spotinnerangle", &spotInnerAngle, 0.0f, spotOuterAngle - 0.01f);
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotinnerangle"))
