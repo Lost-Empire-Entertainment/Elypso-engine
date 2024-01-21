@@ -278,7 +278,7 @@ namespace Graphics::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##gridTransparency"))
 		{
-			Grid::transparency = 0.1f;
+			Grid::transparency = 0.25f;
 		}
 	}
 }
