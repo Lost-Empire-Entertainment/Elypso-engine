@@ -131,7 +131,10 @@ namespace Graphics::GUI
 			{
 				float cubeShininess = obj->GetBasicShape()->GetShininess();
 				ImGui::Text("Shininess");
-				ImGui::SliderFloat("##shininess", &cubeShininess, 3.0f, 128.0f);
+				if (ImGui::SliderFloat("##shininess", &cubeShininess, 3.0f, 128.0f))
+				{
+					obj->GetBasicShape()->SetShininess(cubeShininess);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##shininess"))
 				{
@@ -142,11 +145,17 @@ namespace Graphics::GUI
 			{
 				vec3 pointDiffuse = obj->GetPointLight()->GetDiffuse();
 				ImGui::Text("Point light diffuse");
-				ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse));
+				if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
+				{
+					obj->GetPointLight()->SetDiffuse(pointDiffuse);
+				}
 
 				float pointIntensity = obj->GetPointLight()->GetIntensity();
 				ImGui::Text("Point light intensity");
-				ImGui::SliderFloat("##pointint", &pointIntensity, 0.0f, 25.0f);
+				if (ImGui::SliderFloat("##pointint", &pointIntensity, 0.0f, 5.0f))
+				{
+					obj->GetPointLight()->SetIntensity(pointIntensity);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##pointint"))
 				{
@@ -155,7 +164,10 @@ namespace Graphics::GUI
 
 				float pointDistance = obj->GetPointLight()->GetDistance();
 				ImGui::Text("Point light distance");
-				ImGui::SliderFloat("##pointdist", &pointDistance, 0.0f, 25.0f);
+				if (ImGui::SliderFloat("##pointdist", &pointDistance, 0.0f, 25.0f))
+				{
+					obj->GetPointLight()->SetDistance(pointDistance);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##pointdist"))
 				{
@@ -166,11 +178,17 @@ namespace Graphics::GUI
 			{
 				vec3 spotDiffuse = obj->GetSpotLight()->GetDiffuse();
 				ImGui::Text("Spotlight diffuse");
-				ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse));
+				if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
+				{
+					obj->GetSpotLight()->SetDiffuse(spotDiffuse);
+				}
 
 				float spotIntensity = obj->GetSpotLight()->GetIntensity();
 				ImGui::Text("Spotlight intensity");
-				ImGui::SliderFloat("##spotint", &spotIntensity, 0.0f, 25.0f);
+				if (ImGui::SliderFloat("##spotint", &spotIntensity, 0.0f, 5.0f))
+				{
+					obj->GetSpotLight()->SetIntensity(spotIntensity);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotint"))
 				{
@@ -179,7 +197,10 @@ namespace Graphics::GUI
 
 				float spotDistance = obj->GetSpotLight()->GetDistance();
 				ImGui::Text("Spotlight distance");
-				ImGui::SliderFloat("##spotdist", &spotDistance, 0.0f, 25.0f);
+				if (ImGui::SliderFloat("##spotdist", &spotDistance, 0.0f, 25.0f))
+				{
+					obj->GetSpotLight()->SetDistance(spotDistance);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotdist"))
 				{
@@ -189,7 +210,10 @@ namespace Graphics::GUI
 				float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
 				float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
 				ImGui::Text("Spotlight inner angle");
-				ImGui::SliderFloat("##spotinnerangle", &spotInnerAngle, 0.0f, spotOuterAngle - 0.01f);
+				if (ImGui::SliderFloat("##spotinnerangle", &spotInnerAngle, 0.0f, spotOuterAngle - 0.01f))
+				{
+					obj->GetSpotLight()->SetInnerAngle(spotInnerAngle);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotinnerangle"))
 				{
@@ -197,7 +221,10 @@ namespace Graphics::GUI
 				}
 
 				ImGui::Text("Spotlight outer angle");
-				ImGui::SliderFloat("##spotouterangle", &spotInnerAngle, spotOuterAngle + 0.01f, 50.0f);
+				if (ImGui::SliderFloat("##spotouterangle", &spotInnerAngle, spotOuterAngle + 0.01f, 50.0f))
+				{
+					obj->GetSpotLight()->SetOuterAngle(spotOuterAngle);
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotouterangle"))
 				{

@@ -316,7 +316,7 @@ namespace Graphics::GUI
 		ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse));
 
 		ImGui::Text("Directional light intensity");
-		ImGui::SliderFloat("##dirint", &Render::directionalIntensity, 0.0f, 25.0f);
+		ImGui::SliderFloat("##dirint", &Render::directionalIntensity, 0.0f, 5.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##dirint"))
 		{
