@@ -101,8 +101,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::cube);
 
 		Shader cubeShader = Shader(
-			Engine::enginePath + "/shaders/GameObject.vert",
-			Engine::enginePath + "/shaders/GameObject.frag");
+			Engine::filesPath + "/shaders/GameObject.vert",
+			Engine::filesPath + "/shaders/GameObject.frag");
 
 		GLuint vao, vbo;
 
@@ -138,7 +138,7 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
-		Texture tex(Engine::enginePath);
+		Texture tex(Engine::filesPath);
 		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
 

@@ -86,14 +86,6 @@ namespace File
 
 		Engine::docsPath = Search::FindDocumentsFolder();
 
-		path enginePath = current_path().generic_string() + "/engine";
-		if (!exists(enginePath))
-		{
-			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find engine folder! Shutting down.");
-			return;
-		}
-		Engine::enginePath = enginePath.string();
-
 		path filesPath = current_path().generic_string() + "/files";
 		if (!exists(filesPath))
 		{

@@ -95,8 +95,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::point_light);
 
 		Shader pointLightShader = Shader(
-			Engine::enginePath + "/shaders/Light_Test.vert",
-			Engine::enginePath + "/shaders/Light_Test.frag");
+			Engine::filesPath + "/shaders/Light_Test.vert",
+			Engine::filesPath + "/shaders/Light_Test.frag");
 
 		GLuint vao, vbo;
 
