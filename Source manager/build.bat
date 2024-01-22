@@ -34,7 +34,7 @@ cls
 
 echo Elypso engine Source manager setup
 echo.
-echo Copyright (C) 2023 Greenlaser
+echo Copyright (C) 2024 Greenlaser
 echo.
 echo This program comes with ABSOLUTELY NO WARRANTY.
 echo This is free software, and you are welcome to redistribute it under certain conditions.

@@ -20,8 +20,8 @@ set "cpsuc=[CPACK_SUCCESS]"
 set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
 set "outPath=%~dp0out"
 set "vsPath=%~dp0.vs"
-set "buildPath=%~dp0build"
 
+set "buildPath=%~dp0build"
 :: Can not run build.bat without administrative privileges
 NET SESSION >nul 2>&1
 if %errorlevel% neq 0 (

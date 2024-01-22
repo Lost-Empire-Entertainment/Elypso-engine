@@ -43,13 +43,12 @@ namespace Core
 
 		static void Shutdown();
 	private:
-		static inline bool isHowToUseOpen;
 		static inline bool isCleanVSConfirmOpen;
 		static inline bool isCleanEngineConfirmOpen;
 
 		static inline unsigned int width = 1280;
 		static inline unsigned int height = 720;
-		static inline string programName = "Elypso engine source manager v2.0.0";
+		static inline string programName = "Elypso engine source manager v2.0.1";
 		static inline GLFWwindow* window;
 		static inline float fontScale = 1.5f;
 
@@ -58,13 +57,11 @@ namespace Core
 
 		static void RunBatFile(string command);
 
-		static void MainWindow_HowToUse();
 		static void MainWindow_Reconfigure_CMake();
 		static void MainWindow_BuildEngine();
 		static void MainWindow_CleanVS();
 		static void MainWindow_CleanEngine();
 
-		static void MainWindow_HowToUse_HowToUse();
 		static void MainWindow_CleanVS_Confirm();
 		static void MainWindow_CleanEngine_Confirm();
 

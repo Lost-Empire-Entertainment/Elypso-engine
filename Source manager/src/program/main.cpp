@@ -1,5 +1,5 @@
 ﻿//<Elypso engine>
-//    Copyright(C) < 20242024 > < Greenlaser >
+//    Copyright(C) < 2024 > < Greenlaser >
 //
 //    This program is free software : you can redistribute it and /or modify
 //    it under the terms of the GNU General Public License as published by
@@ -177,8 +177,6 @@ namespace Core
 
 		ImGui::Begin("Main", NULL, windowFlags);
 
-		MainWindow_HowToUse();
-		MainWindow_HowToUse_HowToUse();
 		MainWindow_Reconfigure_CMake();
 		MainWindow_BuildEngine();
 		MainWindow_CleanVS();
@@ -187,76 +185,6 @@ namespace Core
 		MainWindow_CleanEngine_Confirm();
 
 		ImGui::End();
-	}
-	void Render::MainWindow_HowToUse()
-	{
-		ImVec2 windowSize = ImGui::GetWindowSize();
-
-		ImVec2 buttonSize(200, 60);
-		ImVec2 buttonPos(
-			(windowSize.x - buttonSize.x) * 0.5f,
-			(windowSize.y - 400 - buttonSize.y) * 0.5f);
-
-		ImGui::SetCursorPos(buttonPos);
-
-		if (ImGui::Button("How to use", buttonSize))
-		{
-			ConsoleWindow_WriteToConsole("Start 'How to use'");
-			isHowToUseOpen = true;
-		}
-	}
-	void Render::MainWindow_HowToUse_HowToUse()
-	{
-		ImVec2 initialPos(400, 200);
-		ImVec2 initialSize(600, 600);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoDocking |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoSavedSettings;
-
-		if (isHowToUseOpen
-			&& ImGui::Begin("How to use", NULL, windowFlags))
-		{
-			ImGui::Text("Configure CMake:");
-			ImGui::TextWrapped("Sets up engine installer, also required to run when source or header files are added or removed.");
-
-			ImGui::Text("");
-
-			ImGui::Text("Install engine:");
-			ImGui::TextWrapped("Installs the engine to the chosen path. Leave blank if you want to install to build/Release in project folder.");
-
-			ImGui::Text("");
-
-			ImGui::Text("Clean engine:");
-			ImGui::TextWrapped("Finds and deletes the engine executable parent folder and the engine documents folder.");
-
-			ImGui::Text("");
-
-			ImGui::Text("Clean Visual Studio:");
-			ImGui::TextWrapped("Finds and deletes Visual Studio generated files.");
-
-			ImVec2 windowSize = ImGui::GetWindowSize();
-
-			ImVec2 buttonSize(120, 30);
-			ImVec2 buttonPos(
-				(windowSize.x - buttonSize.x) * 0.5f,
-				(windowSize.y + 400 - buttonSize.y) * 0.5f);
-
-			ImGui::SetCursorPos(buttonPos);
-
-			if (ImGui::Button("Close", buttonSize))
-			{
-				ConsoleWindow_WriteToConsole("Close 'How to use'");
-				isHowToUseOpen = false;
-			}
-
-			ImGui::End();
-		}
 	}
 	void Render::MainWindow_Reconfigure_CMake()
 	{
