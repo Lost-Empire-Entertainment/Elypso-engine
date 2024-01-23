@@ -2,9 +2,13 @@
 Engine/build/
 Engine/.vs/
 Engine/out/
-Engine/files/*
 
 # Source manager ignored files and folders
-Source manager/build/
-Source manager/.vs/
-Source manager/out/
+SourceManager/build/
+SourceManager/.vs/
+SourceManager/out/
+
+# IconChanger ignored files and folders
+IconChanger/build/
+IconChanger/.vs/
+IconChanger/out/

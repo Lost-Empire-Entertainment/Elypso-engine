@@ -20,7 +20,7 @@ set(PROJECT_MINOR_VERSION 0)
 set(PROJECT_PATCH_VERSION 0)
 set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
 
-project ("Source manager" VERSION ${PROJECT_VERSION})
+project ("SourceManager" VERSION ${PROJECT_VERSION})
 
 # Paths to frequently used directories
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
@@ -37,7 +37,7 @@ set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
 
 # Add your source files
 set(SOURCE_FILES
-	${SRC_DIR}/program/main.cpp
+	${SRC_DIR}/sourcemanager/main.cpp
 )
 
 # Add your external files
@@ -53,60 +53,60 @@ list(APPEND SOURCE_FILES
 )
 
 # Add the executable
-add_executable (Source_manager ${SOURCE_FILES})
+add_executable (SourceManager ${SOURCE_FILES})
 
-target_include_directories(Source_manager PRIVATE 
-	${INCLUDE_DIR}/program
+target_include_directories(SourceManager PRIVATE 
+	${INCLUDE_DIR}/sourcemanager
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/imgui
 )
 
-target_link_libraries(Source_manager PRIVATE ${GLFW_LIBRARY_PATH})
+target_link_libraries(SourceManager PRIVATE ${GLFW_LIBRARY_PATH})
 
 # Set the subsystem to WINDOWS
-# set_target_properties(Source_manager PROPERTIES
+# set_target_properties(SourceManager PROPERTIES
 #     WIN32_EXECUTABLE TRUE
 # )
 
 # Set the entry point (MSVC-specific)
 # if (MSVC)
-#     set_target_properties(Source_manager PROPERTIES
+#     set_target_properties(SourceManager PROPERTIES
 #        LINK_FLAGS "/ENTRY:mainCRTStartup"
 #     )
 # endif()
 
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
-install(TARGETS Source_manager DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS SourceManager DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Copy "files" directory to the install directory after build
-add_custom_command(TARGET Source_manager POST_BUILD
+add_custom_command(TARGET SourceManager POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove_directory
-    $<TARGET_FILE_DIR:Source_manager>/files
+    $<TARGET_FILE_DIR:SourceManager>/files
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Source_manager>/files
+    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:SourceManager>/files
 )
 
 # Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
-add_custom_command(TARGET Source_manager POST_BUILD
+add_custom_command(TARGET SourceManager POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Source_manager>/EULA.md
+    $<TARGET_FILE_DIR:SourceManager>/EULA.md
     COMMAND ${CMAKE_COMMAND} -E copy
     ${PARENT_DIR_PATH}/EULA.md
-    $<TARGET_FILE_DIR:Source_manager>/EULA.md
+    $<TARGET_FILE_DIR:SourceManager>/EULA.md
 	
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Source_manager>/LICENSE.md
+    $<TARGET_FILE_DIR:SourceManager>/LICENSE.md
 	COMMAND ${CMAKE_COMMAND} -E copy
     ${PARENT_DIR_PATH}/LICENSE.md
-    $<TARGET_FILE_DIR:Source_manager>/LICENSE.md
+    $<TARGET_FILE_DIR:SourceManager>/LICENSE.md
 	
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Source_manager>/README.md
+    $<TARGET_FILE_DIR:SourceManager>/README.md
 	COMMAND ${CMAKE_COMMAND} -E copy
     ${PARENT_DIR_PATH}/README.md
-    $<TARGET_FILE_DIR:Source_manager>/README.md
+    $<TARGET_FILE_DIR:SourceManager>/README.md
 )
 
 # Include CPack to enable packaging
