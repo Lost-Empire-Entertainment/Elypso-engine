@@ -1,9 +1,9 @@
-# Engine ignored files and folders
+# Elypso engine ignored files and folders
 Engine/build/
 Engine/.vs/
 Engine/out/
 
-# Source manager ignored files and folders
+# SourceManager ignored files and folders
 SourceManager/build/
 SourceManager/.vs/
 SourceManager/out/
