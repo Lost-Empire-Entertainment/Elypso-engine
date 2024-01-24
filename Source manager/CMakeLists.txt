@@ -22,6 +22,9 @@ set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 
 project ("Source manager" VERSION ${PROJECT_VERSION})
 
+# A much easier fix to CMake's Glad linker errors
+add_subdirectory(thirdparty/glad)
+
 # Paths to frequently used directories
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
@@ -42,7 +45,6 @@ set(SOURCE_FILES
 
 # Add your external files
 list(APPEND SOURCE_FILES
-	${EXTERNAL_DIR}/glad/glad.c
 	${EXTERNAL_DIR}/imgui/imgui.cpp
 	${EXTERNAL_DIR}/imgui/imgui_demo.cpp
 	${EXTERNAL_DIR}/imgui/imgui_draw.cpp
@@ -55,14 +57,13 @@ list(APPEND SOURCE_FILES
 # Add the executable
 add_executable (Source_manager ${SOURCE_FILES})
 
-target_include_directories(Source_manager PRIVATE 
+target_include_directories(Source_manager PRIVATE
 	${INCLUDE_DIR}/program
-	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/imgui
 )
 
-target_link_libraries(Source_manager PRIVATE ${GLFW_LIBRARY_PATH})
+target_link_libraries(Source_manager PRIVATE ${GLFW_LIBRARY_PATH} glad)
 
 # Set the subsystem to WINDOWS
 # set_target_properties(Source_manager PROPERTIES

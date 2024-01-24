@@ -7,3 +7,5 @@ Engine/out/
 Source manager/build/
 Source manager/.vs/
 Source manager/out/
+Source manager/.idea/
+Source manager/cmake-build-debug/
