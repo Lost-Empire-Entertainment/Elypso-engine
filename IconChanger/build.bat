@@ -59,7 +59,8 @@ set /p choice="Choice: "
 :: Process user input
 if "%choice%"=="1" goto cmake
 if "%choice%"=="2" goto build
-if "%choice%"=="3" goto exit
+if "%choice%"=="3" exit
+
 if "%choice%"=="0" goto cleanvs
 
 echo %prexc% Invalid choice! Please enter a valid number.
@@ -160,6 +161,3 @@ if exist "%vsPath%" (
 
 pause
 goto menu
-
-:end
-exit
