@@ -30,45 +30,8 @@ using std::filesystem::path;
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3)
-    {
-        cout << "Error: Invalid number of arguments! Please provide the executable path and icon path." << endl;
-        cin.get();
-        return 1;
-    }
-
     const string inputexepath = argv[1];
     const string inputiconpath = argv[2];
-
-    if (!exists(inputexepath))
-    {
-        cout << "Error: " << inputexepath << " is not a valid path for the exe!" << endl;
-        cin.get();
-        return 1;
-    }
-
-    if (!exists(inputiconpath))
-    {
-        cout << "Error: " << inputiconpath << " is not a valid path for the icon!" << endl;
-        cin.get();
-        return 1;
-    }
-
-    path exepath = inputexepath;
-    if (exepath.extension() != ".exe")
-    {
-        cout << "Error: Inserted exe path " << inputexepath << " does not lead to a .exe file!" << endl;
-        cin.get();
-        return 1;
-    }
-
-    path iconpath = inputiconpath;
-    if (iconpath.extension() != ".ico")
-    {
-        cout << "Error: Inserted icon path " << inputiconpath << " does not lead to a .ico file!" << endl;
-        cin.get();
-        return 1;
-    }
 
     //load the icon
     HICON hIcon = (HICON)LoadImage(NULL, inputiconpath.c_str(), IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
