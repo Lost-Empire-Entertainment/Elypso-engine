@@ -15,7 +15,7 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#include <windows.h>
+#include <Windows.h>
 #include <filesystem>
 #include <string>
 #include <iostream>
@@ -24,82 +24,121 @@ using std::cout;
 using std::endl;
 using std::cin;
 using std::string;
-using std::filesystem::current_path;
+using std::wstring;
 using std::filesystem::exists;
+using std::filesystem::path;
 
 int main(int argc, char* argv[])
 {
-    if (argc == 0)
+    if (argc < 3)
     {
-        cout << "Error: No argument was passed to IconChanger.exe! This program should not be ran directly." << endl;
+        cout << "Error: Invalid number of arguments! Please provide the executable path and icon path." << endl;
         cin.get();
         return 1;
     }
 
-    const char* exepath = argv[1];
-    const char* iconpath = argv[2];
+    const string inputexepath = argv[1];
+    const string inputiconpath = argv[2];
 
-    if (!exists(exepath))
+    if (!exists(inputexepath))
     {
-        cout << "Error: " << exepath << " is not a valid path for the exe!" << endl;
+        cout << "Error: " << inputexepath << " is not a valid path for the exe!" << endl;
         cin.get();
         return 1;
     }
 
-    if (!exists(iconpath))
+    if (!exists(inputiconpath))
     {
-        cout << "Error: " << iconpath << " is not a valid path for the icon!" << endl;
+        cout << "Error: " << inputiconpath << " is not a valid path for the icon!" << endl;
         cin.get();
         return 1;
     }
 
-    const wchar_t* exePath = L"C:\\Path\\To\\YourExecutable.exe";
-    const wchar_t* iconPath = L"C:\\Path\\To\\YourNewIcon.ico";
-
-    HANDLE hUpdate = BeginUpdateResourceW(exePath, FALSE);
-    if (hUpdate == NULL)
+    path exepath = inputexepath;
+    if (exepath.extension() != ".exe")
     {
-        // Handle error, could not open the executable
-        cout << "Error: Could not open the executable!" << endl;
+        cout << "Error: Inserted exe path " << inputexepath << " does not lead to a .exe file!" << endl;
         cin.get();
         return 1;
     }
 
+    path iconpath = inputiconpath;
+    if (iconpath.extension() != ".ico")
+    {
+        cout << "Error: Inserted icon path " << inputiconpath << " does not lead to a .ico file!" << endl;
+        cin.get();
+        return 1;
+    }
+
+    //load the icon
+    HICON hIcon = (HICON)LoadImage(NULL, inputiconpath.c_str(), IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
+
+    //check if icon was loaded successfully
+    if (!hIcon)
+    {
+        DWORD error = GetLastError();
+        cout << "Error: Failed to load the icon! Error code: " << error << endl;
+        cin.get();
+        return 1;
+    }
+
+    //open the target executable file
+    HANDLE hFile = BeginUpdateResource(inputexepath.c_str(), FALSE);
+
+    //check if the file was opened successfully
+    if (!hFile)
+    {
+        DWORD error = GetLastError();
+        cout << "Error: Failed to open the executable file! Error code: " << error << endl;
+        DestroyIcon(hIcon);
+        return 1;
+    }
+
+    //try to find the icon resource
     HRSRC hResource = FindResource(NULL, MAKEINTRESOURCE(1), RT_ICON);
-    if (hResource == NULL)
+
+    //check if the resource was found
+    if (!hResource)
     {
-        EndUpdateResource(hUpdate, TRUE);
-        cout << "Error: Could not find the resource!" << endl;
-        cin.get();
+        DWORD error = GetLastError();
+        cout << "Error: Failed to find the icon resource! Error code: " << error << endl;
+        CloseHandle(hFile);
+        DestroyIcon(hIcon);
         return 1;
     }
 
-    HGLOBAL hGlobal = LoadResource(NULL, hResource);
-    if (hGlobal == NULL)
+    //find the size of the icon resource
+    DWORD iconSize = SizeofResource(NULL, hResource);
+
+    //check if the resource size is valid
+    if (iconSize == 0)
     {
-        EndUpdateResource(hUpdate, TRUE);
-        cout << "Error: Could not load the resource!" << endl;
-        cin.get();
+        DWORD error = GetLastError();
+        cout << "Error: Failed to obtain the size of the icon resource! Error code: " << error << endl;
+        CloseHandle(hFile);
+        DestroyIcon(hIcon);
         return 1;
     }
 
-    void* pData = LockResource(hGlobal);
-    DWORD dwSize = SizeofResource(NULL, hResource);
-
-    if (!UpdateResource(hUpdate, RT_ICON, MAKEINTRESOURCE(1), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), pData, dwSize))
+    //update the icon resource in the executable
+    if (UpdateResource(hFile, RT_ICON, MAKEINTRESOURCE(1), 0, hIcon, iconSize))
     {
-        EndUpdateResource(hUpdate, TRUE);
-        cout << "Error: Could not update the resource!" << endl;
-        cin.get();
-        return 1;
+        //commit the changes
+        EndUpdateResource(hFile, FALSE);
+        cout << "Icon replaced successfully" << endl;
+    }
+    else
+    {
+        DWORD error = GetLastError();
+        cout << "Error: Failed to replace icon! Error code: " << error << endl;
     }
 
-    if (!EndUpdateResource(hUpdate, FALSE))
-    {
-        cout << "Error: Could not save changes!" << endl;
-        cin.get();
-        return 1;
-    }
+    //close the file handle
+    CloseHandle(hFile);
 
+    //release the icon handle
+    DestroyIcon(hIcon);
+
+    cin.get();
     return 0;
 }

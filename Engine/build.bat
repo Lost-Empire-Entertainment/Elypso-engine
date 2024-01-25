@@ -114,7 +114,27 @@ if not exist "%buildPath%" (
 		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
+		goto iconchange
 	)
+)
+
+pause
+goto menu
+
+:iconchange
+
+cd /d "%~dp0"
+
+set "currentdir=%CD%"
+set "runpath=%currentdir%\..\IconChanger\build\Release\IconChanger.exe"
+set "exepath=%currentdir%\build\Release\Elypso_engine.exe"
+set "iconpath=%currentdir%\files\icons\icon.ico"
+
+if not exist "%runpath%" (
+	echo %enexc% Did not find %runpath%! Either you did not build IconChange.exe or it is not in the right location!
+) else (
+	:: Run IconChanger.exe to change Elypso engine icon
+	"%runpath%" "%exepath%" "%iconpath%"
 )
 
 pause
