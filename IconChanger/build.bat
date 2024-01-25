@@ -111,7 +111,8 @@ if not exist "%buildPath%" (
 	) else (
 		echo %cmsuc% Build succeeded!
 		
-		goto sign
+		:: future idea to sign the executables?
+		:: goto sign
 	)
 )
 

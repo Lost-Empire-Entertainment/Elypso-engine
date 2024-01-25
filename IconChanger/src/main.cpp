@@ -1,4 +1,21 @@
-﻿#include <windows.h>
+﻿//<Elypso engine>
+//    Copyright(C) < 2024 > < Greenlaser >
+//
+//    This program is free software : you can redistribute it and /or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License in LICENCE.md
+//    and a copy of the EULA in EULA.md along with this program. 
+//    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
+
+#include <windows.h>
 #include <filesystem>
 #include <string>
 #include <iostream>
@@ -10,21 +27,28 @@ using std::string;
 using std::filesystem::current_path;
 using std::filesystem::exists;
 
-int main()
+int main(int argc, char* argv[])
 {
-    string unconvertedExePath = "C:\\Path\\To\\YourExecutable.exe";
-    string unconvertedIconPath = "C:\\Path\\To\\YourNewIcon.ico";
-
-    if (!exists(unconvertedExePath))
+    if (argc == 0)
     {
-        cout << "Error: " << unconvertedExePath << " is not a valid path for the exe!" << endl;
+        cout << "Error: No argument was passed to IconChanger.exe! This program should not be ran directly." << endl;
         cin.get();
         return 1;
     }
 
-    if (!exists(unconvertedIconPath))
+    const char* exepath = argv[1];
+    const char* iconpath = argv[2];
+
+    if (!exists(exepath))
     {
-        cout << "Error: " << unconvertedIconPath << " is not a valid path for the icon!" << endl;
+        cout << "Error: " << exepath << " is not a valid path for the exe!" << endl;
+        cin.get();
+        return 1;
+    }
+
+    if (!exists(iconpath))
+    {
+        cout << "Error: " << iconpath << " is not a valid path for the icon!" << endl;
         cin.get();
         return 1;
     }

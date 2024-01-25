@@ -6,6 +6,8 @@
 @echo off
 :: Batch script that signs the executables of Elypso engine to ensure they run without triggering false-positive virus errors when running the executables.
 
+:: NOTE: THIS IS CURRENTLY NOT IN USE AND IS ONLY A PLACEHOLDER
+
 set "ssuc=[SIGN_SUCCESS]"
 set "serr=[SIGN_EXCEPTION]"
 
@@ -27,7 +29,7 @@ if %errorlevel% neq 0 (
 if "%1"=="" (
     echo %serr% No path was included with the bat file!
     pause
-    exit /b 1
+    exit
 )
 
 if exist "%1" (
