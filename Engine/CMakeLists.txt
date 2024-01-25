@@ -1,8 +1,3 @@
-# Copyright (C) 2024 Greenlaser
-# This program comes with ABSOLUTELY NO WARRANTY.
-# This is free software, and you are welcome to redistribute it under certain conditions.
-# Read LICENSE.md and EULA.md for more information.
-
 cmake_minimum_required (VERSION 3.27)
 
 # Enable Hot Reload for MSVC compilers if supported.

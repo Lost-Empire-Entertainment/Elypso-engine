@@ -114,84 +114,8 @@ if not exist "%buildPath%" (
 		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
-		goto iconchange
 	)
 )
-
-pause
-goto menu
-
-:iconchange
-
-cd /d "%~dp0"
-
-set "currentdir=%CD%"
-set "runpath=%currentdir%\..\IconChanger\build\Release\IconChanger.exe"
-set "exepath=%currentdir%\build\Release\Elypso_engine.exe"
-set "iconpath=%currentdir%\files\icon.ico"
-
-if not exist "%runpath%" (
-	echo %enexc% Did not find %runpath%! Either you did not build IconChange.exe or it is not in the right location!
-)
-
-:: Look for IconChanger.exe
-if not exist "%runpath%" (
-	echo %enexc% Did not find "%runpath%". Either you did not build IconChange.exe or it is not in the right location!
-	
-	pause
-	exit /b 1
-) else (
-	echo Found IconChanger.exe at "%runpath%".
-	echo.
-)
-
-:: Executable checks
-if "%exepath%" == "" (
-	echo Error: Exe path is empty!
-	
-	pause
-	exit /b 1
-)
-if not exist "%exepath%" (
-	echo Error: "%exepath%" does not exist! Please insert a valid path to the executable!
-	
-	pause
-	exit /b 1
-)
-for %%F in ("%exepath%") do set "exetype=%%~xF"
-if /I "%exetype%" NEQ ".exe" (
-	echo Error: Extension type for "%exepath%" was not valid! It must be '.exe'.
-) else (
-	echo Found executable at "%exepath%".
-	echo.
-)
-
-:: Icon checks
-if "%iconpath%" == "" (
-	echo Error: Icon path is empty!
-	
-	pause
-	exit /b 1
-)
-if not exist "%iconpath%" (
-	echo Error: "%iconpath%" does not exist! Please insert a valid path to the icon!
-	
-	pause
-	exit /b 1
-)
-for %%F in ("%iconpath%") do set "icontype=%%~xF"
-if /I "%icontype%" NEQ ".ico" (
-	echo Error: Extension type for "%iconpath%" was not valid! It must be '.ico'.
-	
-	pause
-	exit /b 1
-) else (
-	echo Found icon at "%iconpath%".
-	echo.
-)
-
-:: Run IconChanger.exe to change Elypso engine icon
-"%runpath%" "%exepath%" "%iconpath%"
 
 pause
 goto menu

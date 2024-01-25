@@ -2,8 +2,3 @@
 Engine/build/
 Engine/.vs/
 Engine/out/
-
-# IconChanger ignored files and folders
-IconChanger/build/
-IconChanger/.vs/
-IconChanger/out/
