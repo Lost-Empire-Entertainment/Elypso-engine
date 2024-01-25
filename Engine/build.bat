@@ -114,9 +114,6 @@ if not exist "%buildPath%" (
 		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
-		
-		:: future idea to sign the executables?
-		:: goto sign
 	)
 )
 

@@ -111,22 +111,8 @@ if not exist "%buildPath%" (
 		echo %cmerr% Build failed because IconChanger.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
-		
-		:: future idea to sign the executables?
-		:: goto sign
 	)
 )
-
-pause
-goto menu
-
-:sign
-
-cd /d "%~dp0.."
-
-set "current_path=%cd%"
-
-start /wait "Sign" "%current_path%\sign.bat"
 
 pause
 goto menu
