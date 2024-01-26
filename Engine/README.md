@@ -5,6 +5,8 @@ Elypso engine is created and managed by Lost Empire Entertainment. All permissio
 # Description
 
 Elypso_engine.exe is the executable to launch the engine, build.bat is the batch script used to compile the engine from source - more information can be found about the setup below.
+
+Please be aware that no support has been added yet for Mac or Linux, the engine is only functional on Windows at the current stage and no plans have been made to support the engine on other platforms.
 		
 Running Elypso engine creates a folder at your_documents_path\Elypso engine with three files:
 	
@@ -28,7 +30,7 @@ These are the external libraries Elypso engine uses natively, you do not need to
 
 Before you can compile Elypso engine with the provided build.bat file you should have CMake installed and CMake bin folder added to the environment path.
 
-To compile the Elypso engine from source outside of Visual Studio or your preferred IDE you need to run build.bat with administrative privileges.
+To compile the Elypso engine from source you need to run build.bat with administrative privileges.
 First run Reconfigure CMake to set up CMake, then run Build to build Elypso engine.exe.
 You can find Elypso engine.exe in one of three locations:
 		
