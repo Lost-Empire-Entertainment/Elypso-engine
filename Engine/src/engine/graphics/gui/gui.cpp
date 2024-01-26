@@ -40,6 +40,7 @@
 #include "timeManager.hpp"
 #include "cube.hpp"
 #include "pointlight.hpp"
+#include "spotlight.hpp"
 
 #include <string>
 #include <filesystem>
@@ -69,6 +70,7 @@ using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
+using Graphics::Shape::SpotLight;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -353,11 +355,25 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
+					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight(
+						vec3(0.0f, 0.0f, 0.0f),
+						vec3(0.0f, 0.0f, 0.0f),
+						vec3(1.0f, 1.0f, 1.0f));
 
-				}
-				if (ImGui::MenuItem("Directional light"))
-				{
+					unsigned int ID = obj->GetID();
+					vec3 pos = obj->GetTransform()->GetPosition();
+					string posX = to_string(pos.x);
+					string posY = to_string(pos.y);
+					string posZ = to_string(pos.z);
 
+					string output =
+						"Successfully created " + obj->GetName() +
+						" with ID " + to_string(obj->GetID()) +
+						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::SUCCESS,
+						output);
 				}
 
 				ImGui::EndMenu();

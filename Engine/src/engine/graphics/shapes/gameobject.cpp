@@ -18,6 +18,7 @@
 #include "gameobject.hpp"
 #include "cube.hpp"
 #include "pointlight.hpp"
+#include "spotlight.hpp"
 
 #include <iostream>
 
@@ -221,6 +222,9 @@ namespace Graphics::Shape
 					break;
 				case Type::point_light:
 					PointLight::RenderPointLight(obj, view, projection);
+					break;
+				case Type::spot_light:
+					SpotLight::RenderSpotLight(obj, view, projection);
 					break;
 				}
 			}

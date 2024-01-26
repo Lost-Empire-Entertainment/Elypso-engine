@@ -209,8 +209,9 @@ namespace Graphics::GUI
 
 				float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
 				float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
+
 				ImGui::Text("Spotlight inner angle");
-				if (ImGui::SliderFloat("##spotinnerangle", &spotInnerAngle, 0.0f, spotOuterAngle - 0.01f))
+				if (ImGui::SliderFloat("##spotinnerangle", &spotInnerAngle, 0.0f, spotOuterAngle - 0.1f))
 				{
 					obj->GetSpotLight()->SetInnerAngle(spotInnerAngle);
 				}
@@ -221,7 +222,7 @@ namespace Graphics::GUI
 				}
 
 				ImGui::Text("Spotlight outer angle");
-				if (ImGui::SliderFloat("##spotouterangle", &spotInnerAngle, spotOuterAngle + 0.01f, 50.0f))
+				if (ImGui::SliderFloat("##spotouterangle", &spotOuterAngle, spotInnerAngle + 0.1f, 50.0f))
 				{
 					obj->GetSpotLight()->SetOuterAngle(spotOuterAngle);
 				}

@@ -177,16 +177,18 @@ namespace Graphics::Shape
 		{
 			for (int i = 0; i < pointLightCount; i++)
 			{
+				shared_ptr<Transform> transform = pointLights[i]->GetTransform();
+				shared_ptr<PointLight_Variables> pointLight = pointLights[i]->GetPointLight();
 				string lightPrefix = "pointLights[" + to_string(i) + "].";
-				shader.SetVec3(lightPrefix + "position", pointLights[i]->GetTransform()->GetPosition());
+				shader.SetVec3(lightPrefix + "position", transform->GetPosition());
 				shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
-				shader.SetVec3(lightPrefix + "diffuse", pointLights[i]->GetPointLight()->GetDiffuse());
+				shader.SetVec3(lightPrefix + "diffuse", pointLight->GetDiffuse());
 				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
 				shader.SetFloat(lightPrefix + "constant", 1.0f);
 				shader.SetFloat(lightPrefix + "linear", 0.09f);
 				shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-				shader.SetFloat(lightPrefix + "intensity", pointLights[i]->GetPointLight()->GetIntensity());
-				shader.SetFloat(lightPrefix + "distance", pointLights[i]->GetPointLight()->GetDistance());
+				shader.SetFloat(lightPrefix + "intensity", pointLight->GetIntensity());
+				shader.SetFloat(lightPrefix + "distance", pointLight->GetDistance());
 			}
 		}
 
@@ -198,19 +200,21 @@ namespace Graphics::Shape
 		{
 			for (int i = 0; i < spotLightCount; i++)
 			{
+				shared_ptr<Transform> transform = spotLights[i]->GetTransform();
+				shared_ptr<SpotLight_Variables> spotLight = spotLights[i]->GetSpotLight();
 				string lightPrefix = "spotLights[" + to_string(i) + "].";
-				shader.SetVec3(lightPrefix + "position", spotLights[i]->GetTransform()->GetPosition());
-				shader.SetVec3(lightPrefix + "direction", spotLights[i]->GetTransform()->GetRotation());
-				shader.SetFloat(lightPrefix + "intensity", spotLights[i]->GetSpotLight()->GetIntensity());
-				shader.SetFloat(lightPrefix + "distance", spotLights[i]->GetSpotLight()->GetDistance());
+				shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+				shader.SetVec3(lightPrefix + "direction", transform->GetRotation());
+				shader.SetFloat(lightPrefix + "intensity", spotLight->GetIntensity());
+				shader.SetFloat(lightPrefix + "distance", spotLight->GetDistance());
 				shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
-				shader.SetVec3(lightPrefix + "diffuse", spotLights[i]->GetSpotLight()->GetDiffuse());
+				shader.SetVec3(lightPrefix + "diffuse", spotLight->GetDiffuse());
 				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
 				shader.SetFloat(lightPrefix + "constant", 1.0f);
 				shader.SetFloat(lightPrefix + "linear", 0.09f);
 				shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-				shader.SetFloat(lightPrefix + "cutOff", cos(radians(spotLights[i]->GetSpotLight()->GetInnerAngle())));
-				shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(spotLights[i]->GetSpotLight()->GetOuterAngle())));
+				shader.SetFloat(lightPrefix + "cutOff", cos(radians(spotLight->GetInnerAngle())));
+				shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(spotLight->GetOuterAngle())));
 			}
 		}
 
