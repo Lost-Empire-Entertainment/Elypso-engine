@@ -262,9 +262,9 @@ namespace Core
             //if user pressed left mouse button over any imgui window
             if (index == -2)
             {
-                if (Select::isObjectSelected)
+                if (!Select::isObjectSelected)
                 {
-                    Select::isObjectSelected = false;
+                    Select::isObjectSelected;
                 }
                 if (inputSettings.printSelectRayDirectionToConsole)
                 {
