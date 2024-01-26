@@ -207,8 +207,8 @@ namespace Graphics::Shape
 
 				vec3 rotationAngles = transform->GetRotation();
 				quat rotationQuat = quat(radians(rotationAngles));
-				//assuming the initial direction is along the negative Z-axis
-				vec3 initialDirection = vec3(0.0f, 0.0f, -1.0f);
+				//assuming the initial direction is along the negative Y-axis
+				vec3 initialDirection = vec3(0.0f, -1.0f, 0.0f);
 				//rotate the initial direction using the quaternion
 				vec3 rotatedDirection = rotationQuat * initialDirection;
 				//set the rotated direction in the shader

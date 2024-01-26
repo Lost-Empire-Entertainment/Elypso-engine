@@ -50,48 +50,31 @@ namespace Graphics::Shape
 
 		float vertices[] =
 		{
-			//edges of the cube
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
+			//four corner edges
+			0.0f,  0.5f,  0.0f, 
+		   -0.5f, -0.5f, -0.5f,
 
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+		    0.5f, -0.5f, -0.5f,
 
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+		   -0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+		    0.5f, -0.5f,  0.5f,
 
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
+			//four bottom edges
+			0.5f, -0.5f,  0.5f,
+		   -0.5f, -0.5f,  0.5f,
 
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+		    0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f, -0.5f,
 
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+		   -0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-
-			//connecting edges
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-
-			-0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f,  0.5f,
-
-			//new line from center to outside
-			 0.0f,  0.0f,  0.0f, //start at the center
-
-			 0.0f,  0.0f, -1.0f //point forward
+		    0.5f, -0.5f, -0.5f,
+		    0.5f, -0.5f,  0.5f
 		};
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::spot_light);
@@ -166,6 +149,6 @@ namespace Graphics::Shape
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINES, 0, 26);
+		glDrawArrays(GL_LINES, 0, 32);
 	}
 }
