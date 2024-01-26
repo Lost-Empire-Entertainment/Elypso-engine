@@ -1,5 +1,5 @@
 //<Elypso engine>
-//    Copyright(C) < 2023 > < Greenlaser >
+//    Copyright(C) < 2024 > < Greenlaser >
 //
 //    This program is free software : you can redistribute it and /or modify
 //    it under the terms of the GNU General Public License as published by
@@ -16,13 +16,16 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 #version 330 core
-layout (location = 0) in vec3 aPos;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform float transparency;
+uniform vec3 color;
+
+out vec4 FragColor;
 
 void main()
 {
-	gl_Position = projection * view * model * vec4(aPos, 1.0);
+    vec4 outputColor = vec4(color, 1.0);
+    outputColor.a *= transparency;
+
+    FragColor = outputColor;
 }

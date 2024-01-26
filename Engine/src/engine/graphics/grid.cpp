@@ -58,8 +58,8 @@ namespace Graphics
 		}
 
 		shader = Shader(
-			Engine::filesPath + "/shaders/GridShader.vert",
-			Engine::filesPath + "/shaders/GridShader.frag");
+			Engine::filesPath + "/shaders/Grid.vert",
+			Engine::filesPath + "/shaders/Grid.frag");
 
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);

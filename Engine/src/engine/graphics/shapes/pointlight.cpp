@@ -25,6 +25,7 @@
 #include "shader.hpp"
 #include "core.hpp"
 #include "render.hpp"
+#include "selectobject.hpp"
 
 using glm::translate;
 using glm::rotate;
@@ -39,6 +40,7 @@ using Graphics::Shape::Material;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
+using Physics::Select;
 
 namespace Graphics::Shape
 {
@@ -48,55 +50,50 @@ namespace Graphics::Shape
 
 		float vertices[] =
 		{
-			//positions          //normals
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			//edges of the cube
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
 
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
 
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
 
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
 
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			//connecting edges
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+
+			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f,  0.5f,
 		};
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::point_light);
 
 		Shader pointLightShader = Shader(
-			Engine::filesPath + "/shaders/Light_Test.vert",
-			Engine::filesPath + "/shaders/Light_Test.frag");
+			Engine::filesPath + "/shaders/Light.vert",
+			Engine::filesPath + "/shaders/Light.frag");
 
 		GLuint vao, vbo;
 
@@ -106,7 +103,7 @@ namespace Graphics::Shape
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
 		glBindVertexArray(0);
@@ -142,7 +139,10 @@ namespace Graphics::Shape
 		shader.Use();
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
-		shader.SetVec3("lightColor", obj->GetPointLight()->GetDiffuse());
+
+		float transparency = Select::selectedObj == obj && Select::isObjectSelected ? 1.0f : 0.5f;
+		shader.SetFloat("transparency", transparency);
+		shader.SetVec3("color", obj->GetPointLight()->GetDiffuse());
 
 		mat4 model = mat4(1.0f);
 		model = translate(model, obj->GetTransform()->GetPosition());
@@ -153,6 +153,6 @@ namespace Graphics::Shape
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_LINES, 0, 24);
 	}
 }
