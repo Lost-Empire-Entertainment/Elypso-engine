@@ -86,17 +86,12 @@ namespace Graphics::Shape
 			 0.5f,  0.5f,  0.5f,
 
 			-0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f,  0.5f,
-
-			//new line from center to outside
-			 0.0f,  0.0f,  0.0f, //start at the center
-
-			 1.0f,  0.0f,  0.0f //point forward
+			-0.5f,  0.5f,  0.5f
 		};
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::spot_light);
 
-		Shader pointLightShader = Shader(
+		Shader spotlightShader = Shader(
 			Engine::filesPath + "/shaders/Light.vert",
 			Engine::filesPath + "/shaders/Light.frag");
 
@@ -113,7 +108,7 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(pointLightShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(spotlightShader, vao, vbo);
 
 		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
 		float intensity = 1.0f;
@@ -166,6 +161,6 @@ namespace Graphics::Shape
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINES, 0, 26);
+		glDrawArrays(GL_LINES, 0, 24);
 	}
 }

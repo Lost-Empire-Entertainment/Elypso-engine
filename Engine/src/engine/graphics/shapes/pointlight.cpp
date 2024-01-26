@@ -113,7 +113,11 @@ namespace Graphics::Shape
 		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
 		float intensity = 1.0f;
 		float distance = 1.0f;
-		shared_ptr<PointLight_Variables> pointLight = make_shared<PointLight_Variables>(diffuse, intensity, distance);
+		shared_ptr<PointLight_Variables> pointLight = 
+			make_shared<PointLight_Variables>(
+				diffuse, 
+				intensity, 
+				distance);
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
