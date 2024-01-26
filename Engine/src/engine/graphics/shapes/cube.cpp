@@ -204,7 +204,16 @@ namespace Graphics::Shape
 				shared_ptr<SpotLight_Variables> spotLight = spotLights[i]->GetSpotLight();
 				string lightPrefix = "spotLights[" + to_string(i) + "].";
 				shader.SetVec3(lightPrefix + "position", transform->GetPosition());
-				shader.SetVec3(lightPrefix + "direction", transform->GetRotation());
+
+				vec3 rotationAngles = transform->GetRotation();
+				quat rotationQuat = quat(radians(rotationAngles));
+				//assuming the initial direction is along the negative Z-axis
+				vec3 initialDirection = vec3(0.0f, 0.0f, -1.0f);
+				//rotate the initial direction using the quaternion
+				vec3 rotatedDirection = rotationQuat * initialDirection;
+				//set the rotated direction in the shader
+				shader.SetVec3(lightPrefix + "direction", rotatedDirection);
+
 				shader.SetFloat(lightPrefix + "intensity", spotLight->GetIntensity());
 				shader.SetFloat(lightPrefix + "distance", spotLight->GetDistance());
 				shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);

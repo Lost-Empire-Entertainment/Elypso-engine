@@ -86,7 +86,12 @@ namespace Graphics::Shape
 			 0.5f,  0.5f,  0.5f,
 
 			-0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f,  0.5f
+			-0.5f,  0.5f,  0.5f,
+
+			//new line from center to outside
+			 0.0f,  0.0f,  0.0f, //start at the center
+
+			 0.0f,  0.0f, -1.0f //point forward
 		};
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::spot_light);
@@ -161,6 +166,6 @@ namespace Graphics::Shape
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINES, 0, 24);
+		glDrawArrays(GL_LINES, 0, 26);
 	}
 }
