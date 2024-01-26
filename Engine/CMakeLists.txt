@@ -23,6 +23,7 @@ set(eninf "[ENGINE_INFO]")
 # Paths to frequently used directories
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
+set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
 
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
@@ -98,7 +99,10 @@ list(APPEND SOURCE_FILES
 )
 
 # Add the executable
-add_executable(Elypso_engine ${SOURCE_FILES})
+add_executable(Elypso_engine ${SOURCE_FILES} ${RESOURCE_FILE})
+
+# Forces the name to be Elypso engine
+set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 

@@ -21,6 +21,7 @@
 #include "glm.hpp"
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"
+#include "stb_image.h"
 
 //engine
 #include "console.hpp"
@@ -130,6 +131,17 @@ namespace Graphics
 		glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
 		glfwSetWindowSizeLimits(window, 1280, 720, 7680, 4320);
 		glfwSwapInterval(1);
+
+		int width, height, channels;
+		string iconpath = Engine::filesPath + "/icon.png";
+		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
+
+		GLFWimage icon{};
+		icon.width = width;
+		icon.height = height;
+		icon.pixels = iconData;
+
+		glfwSetWindowIcon(window, 1, &icon);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
