@@ -110,6 +110,8 @@ namespace Graphics::GUI
 		ImGui::Text("Down: Left Control");
 		ImGui::Text("Sprint: Left Shift");
 		ImGui::Text("Toggle camera: Escape");
+		ImGui::Text("Select GameObject: Left Mouse Button");
+		ImGui::Text("Delete selected GameObject: Delete");
 	}
 	void GUIDebugMenu::RD_Interactions()
 	{
