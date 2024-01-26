@@ -1,6 +1,6 @@
 # Disclaimer
 
-	Elypso engine is created and managed by Lost Empire Entertainment. All permissions and restrictions given by the EULA apply to Elypso engine.
+Elypso engine is created and managed by Lost Empire Entertainment. All permissions and restrictions given by the EULA apply to Elypso engine.
 
 # Description
 
