@@ -4,18 +4,32 @@ Elypso engine is created and managed by Lost Empire Entertainment. All permissio
 
 # Description
 
-Elypso_engine.exe is the actual engine executable.
+Elypso_engine.exe is the executable to launch the engine, build.bat is the batch script used to compile the engine from source - more information can be found about the setup below.
 		
 Running Elypso engine creates a folder at your_documents_path\Elypso engine with three files:
 	
 	- config.txt - holds the configuration data of the current settings for Elypso engine.
 	- engine_log.txt - writes all in-engine log messages to this external file to help with debugging.
 	- imgui.ini - the actual ImGui ini file that holds the data to construct all the ImGui windows of Elypso engine.
-		
+
+# Built with
+
+These are the external libraries Elypso engine uses natively, you do not need to download or set them up yourself, they come with the engine and are functional out of the box.
+
+* [CMake](https://cmake.org/) - generates build files for the engine
+* [GLFW](https://www.glfw.org/) - provides a simple API for creating windows, contexts and surfaces, receiving input and events
+* [GLAD](https://glad.dav1d.de/) - simplifies the process of managing OpenGL function pointers
+* [GLM](https://github.com/g-truc/glm) - C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification
+* [magic enum](https://github.com/Neargye/magic_enum) - provides static reflection for enums, work with any enum type without any macro or boilerplate code
+* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
+* [Dear ImGui](https://github.com/ocornut/imgui) - immediate mode GUI library
+  
 # How to build Elypso engine from source
 
-To compile the Elypso engine from source outside of Visual Studio you need to run build.bat with administrative privileges.
-First run ReConfigure CMake to set up CMake, then run Build to build Elypso engine.exe.
+Before you can compile Elypso engine with the provided build.bat file you should have CMake installed and CMake bin folder added to the environment path.
+
+To compile the Elypso engine from source outside of Visual Studio or your preferred IDE you need to run build.bat with administrative privileges.
+First run Reconfigure CMake to set up CMake, then run Build to build Elypso engine.exe.
 You can find Elypso engine.exe in one of three locations:
 		
 	- if you compiled it from source - your_project_path\Elypso_engine\build\Release
@@ -30,7 +44,6 @@ It has five created folders that are required to go along with all distributed v
 	
 	- bat scripts - holds bat scripts that are ran from inside Elypso engine for different interactions.
 	- fonts - holds all the actual Elypso engine fonts.
-	- icons - holds the png and ico version of the Elypso engine logo.
 	- shaders - holds all the shaders that Elypso engine and its created games use.
 	- textures - holds all the textures that Elypso engine and its created games use.
 		
