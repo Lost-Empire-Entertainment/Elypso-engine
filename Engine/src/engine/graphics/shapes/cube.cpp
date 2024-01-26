@@ -129,6 +129,7 @@ namespace Graphics::Shape
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
+		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false, 
 			"Cube", 
@@ -136,11 +137,12 @@ namespace Graphics::Shape
 			transform, 
 			mesh,
 			mat,
-			basicShape);
+			basicShape,
+			textures);
 
 		Texture tex(Engine::filesPath);
-		tex.LoadTexture("textures/crate_2.png", false, GL_RGBA);
-		tex.LoadTexture("textures/crate_2_specular.png", false, GL_RGBA);
+		tex.LoadTexture(obj, "textures/crate_2.png", false, GL_RGBA);
+		tex.LoadTexture(obj, "textures/crate_2_specular.png", false, GL_RGBA);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();

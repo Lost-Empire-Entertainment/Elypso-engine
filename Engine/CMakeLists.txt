@@ -129,6 +129,9 @@ target_include_directories(Elypso_engine PRIVATE
 
 target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
 
+# Define GLFW_INCLUDE_NONE
+target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
+
 # Set the subsystem to WINDOWS
 # set_target_properties(Elypso_engine PROPERTIES
 #     WIN32_EXECUTABLE TRUE

@@ -18,7 +18,7 @@
 #pragma once
 
 //external
-#include "glm.hpp"
+#include "glad.h"
 
 //engine
 #include "shader.hpp"
@@ -89,6 +89,13 @@ namespace Graphics::Shape
 			const Shader& shader, 
 			const GLuint& VAO,
 			const GLuint& VBO);
+		~Material()
+		{
+			unsigned int shaderID = GetShader().ID;
+			glDeleteShader(shaderID);
+			glDeleteVertexArrays(1, &VAO);
+			glDeleteBuffers(1, &VBO);
+		}
 
 		void SetShader(const Shader& newShader) { shader = newShader; }
 		void SetVAO(const GLuint& newVAO) { VAO = newVAO; }
@@ -177,7 +184,8 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& assignedTransform,
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<BasicShape_Variables>& basicShapeVariables);
+			const shared_ptr<BasicShape_Variables>& basicShapeVariables,
+			const vector<unsigned int> textures);
 
 		GameObject(
 			const bool& assignedIsInitialized,
@@ -186,7 +194,8 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& assignedTransform,
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<PointLight_Variables>& pointLightVariables);
+			const shared_ptr<PointLight_Variables>& pointLightVariables,
+			const vector<unsigned int> textures);
 
 		GameObject(
 			const bool& assignedIsInitialized,
@@ -195,11 +204,13 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& assignedTransform,
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<SpotLight_Variables>& spotLightVariables);
+			const shared_ptr<SpotLight_Variables>& spotLightVariables,
+			const vector<unsigned int> textures);
 
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
+		void AddTexture(const unsigned int& newTexture) { textures.push_back(newTexture); }
 
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
@@ -218,6 +229,7 @@ namespace Graphics::Shape
 		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
+		const vector<unsigned int>GetTexturesVector() const { return textures; }
 	private:
 		bool isInitialized;
 		string name;
@@ -229,6 +241,7 @@ namespace Graphics::Shape
 		shared_ptr<BasicShape_Variables> basicShape;
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;
+		vector<unsigned int> textures;
 	};
 
 	class GameObjectManager

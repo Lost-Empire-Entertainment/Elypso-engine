@@ -16,7 +16,6 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 //external
-#include "glad.h"
 #include "glfw3.h"
 #include "stb_image.h"
 
@@ -38,7 +37,7 @@ namespace Graphics
 
 	Texture::Texture(const string& path) : texturePath(path){}
 
-	void Texture::LoadTexture(const string& textureName, bool flipTexture, GLenum pixelFormat)
+	void Texture::LoadTexture(const shared_ptr<GameObject>& obj, const string& textureName, bool flipTexture, GLenum pixelFormat)
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::TEXTURE,
@@ -64,6 +63,8 @@ namespace Graphics
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			textures.push_back(texture);
+			vector<unsigned int> objTextures = obj->GetTexturesVector();
+			objTextures.push_back(texture);
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::TEXTURE,

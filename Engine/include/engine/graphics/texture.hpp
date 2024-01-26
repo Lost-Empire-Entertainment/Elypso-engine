@@ -17,9 +17,17 @@
 
 #pragma once
 
+//external
+#include "glad.h"
+
+//engine
+#include "gameobject.hpp"
+
 #include <vector>
 
 using std::vector;
+
+using Graphics::Shape::GameObject;
 
 namespace Graphics
 {
@@ -36,6 +44,10 @@ namespace Graphics
 		/// <param name="textureName">What is the actual texture name we are trying to load?</param>
 		/// <param name="flipTexture">Should the texture be flipped 180 degrees?</param>
 		/// <param name="pixelFormat">What is the pixel format of the texture? (GL_RGB/GL_RGBA etc.)</param>
-		void LoadTexture(const string& textureName, bool flipTexture = false, GLenum pixelFormat = GL_RGB);
+		void LoadTexture(const shared_ptr<GameObject>& obj, const string& textureName, bool flipTexture = false, GLenum pixelFormat = GL_RGB);
+		void DeleteTexture(unsigned int texture)
+		{
+			glDeleteTextures(1, &texture);
+		}
 	};
 }

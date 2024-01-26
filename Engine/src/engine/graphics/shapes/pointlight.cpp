@@ -118,6 +118,7 @@ namespace Graphics::Shape
 		float distance = 1.0f;
 		shared_ptr<PointLight_Variables> pointLight = make_shared<PointLight_Variables>(diffuse, intensity, distance);
 
+		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false, 
 			"Point light", 
@@ -125,7 +126,8 @@ namespace Graphics::Shape
 			transform, 
 			mesh, 
 			mat, 
-			pointLight);
+			pointLight,
+			textures);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddPointLight(obj);

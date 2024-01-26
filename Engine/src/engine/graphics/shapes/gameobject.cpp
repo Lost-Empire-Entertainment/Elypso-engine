@@ -126,14 +126,16 @@ namespace Graphics::Shape
 		const shared_ptr<Transform>& assignedTransform,
 		const shared_ptr<Mesh>& assignedMesh, 
 		const shared_ptr<Material>& assignedMaterial,
-		const shared_ptr<BasicShape_Variables>& assignedBasicShape) :
+		const shared_ptr<BasicShape_Variables>& assignedBasicShape,
+		const vector<unsigned int> assignedTextures) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
 		transform(assignedTransform),
 		mesh(assignedMesh),
 		material(assignedMaterial),
-		basicShape(assignedBasicShape)
+		basicShape(assignedBasicShape),
+		textures(assignedTextures)
 	{
 		SetName(assignedName);
 		SetID(nextID++);
@@ -152,14 +154,16 @@ namespace Graphics::Shape
 		const shared_ptr<Transform>& assignedTransform,
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
-		const shared_ptr<PointLight_Variables>& assignedPointLight) :
+		const shared_ptr<PointLight_Variables>& assignedPointLight,
+		const vector<unsigned int> assignedTextures) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
 		transform(assignedTransform),
 		mesh(assignedMesh),
 		material(assignedMaterial),
-		pointLight(assignedPointLight)
+		pointLight(assignedPointLight),
+		textures(assignedTextures)
 	{
 		SetName(assignedName);
 		SetID(nextID++);
@@ -178,14 +182,16 @@ namespace Graphics::Shape
 		const shared_ptr<Transform>& assignedTransform,
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
-		const shared_ptr<SpotLight_Variables>& assignedSpotLight) :
+		const shared_ptr<SpotLight_Variables>& assignedSpotLight,
+		const vector<unsigned int> assignedTextures) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
 		transform(assignedTransform),
 		mesh(assignedMesh),
 		material(assignedMaterial),
-		spotLight(assignedSpotLight)
+		spotLight(assignedSpotLight),
+		textures(assignedTextures)
 	{
 		SetName(assignedName);
 		SetID(nextID++);
@@ -238,7 +244,15 @@ namespace Graphics::Shape
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
 	{
-		auto it = remove(objects.begin(), objects.end(), obj);
-		objects.erase(it, objects.end());
+		auto gameobject = remove(objects.begin(), objects.end(), obj);
+		objects.erase(gameobject, objects.end());
+
+		//if gameobject is in pointlights vector
+		auto pointLight = remove(pointLights.begin(), pointLights.end(), obj);
+		pointLights.erase(pointLight, pointLights.end());
+
+		//if gameobject is in spotlights vector
+		auto spotLight = remove(spotLights.begin(), spotLights.end(), obj);
+		spotLights.erase(spotLight, spotLights.end());
 	}
 }

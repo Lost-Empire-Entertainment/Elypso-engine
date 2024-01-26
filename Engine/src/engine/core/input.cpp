@@ -225,11 +225,20 @@ namespace Core
         {
             inputSettings.cameraEnabled = !inputSettings.cameraEnabled;
         }
+        if (action == GLFW_PRESS
+            && key == GLFW_KEY_DELETE)
+        {
+            Select::isObjectSelected = false;
+            shared_ptr<GameObject> selectedObj = Select::selectedObj;
+            Select::selectedObj = nullptr;
+            GameObjectManager::DestroyGameObject(selectedObj);
+        }
     }
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+        if (button == GLFW_MOUSE_BUTTON_LEFT 
+            && action == GLFW_PRESS)
         {
             double mouseX, mouseY;
             glfwGetCursorPos(Render::window, &mouseX, &mouseY);
@@ -255,7 +264,7 @@ namespace Core
             {
                 if (Select::isObjectSelected)
                 {
-                    Select::isObjectSelected = true;
+                    Select::isObjectSelected = false;
                 }
                 if (inputSettings.printSelectRayDirectionToConsole)
                 {

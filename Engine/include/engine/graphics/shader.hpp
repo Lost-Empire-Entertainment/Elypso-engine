@@ -19,7 +19,6 @@
 
 //external
 #include "glm.hpp"
-#include "glfw3.h"
 
 #include <string>
 
