@@ -136,7 +136,9 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		float transparency = Select::selectedObj == obj && Select::isObjectSelected ? 1.0f : 0.5f;
+		float transparency = Select::selectedObj == 
+			obj 
+			&& Select::isObjectSelected ? 1.0f : 0.5f;
 		shader.SetFloat("transparency", transparency);
 		shader.SetVec3("color", obj->GetSpotLight()->GetDiffuse());
 

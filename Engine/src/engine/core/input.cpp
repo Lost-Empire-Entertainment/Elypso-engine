@@ -278,6 +278,7 @@ namespace Core
             else if (index == -1)
             {
                 Select::isObjectSelected = false;
+                Select::selectedObj = nullptr;
                 if (inputSettings.printSelectRayDirectionToConsole)
                 {
                     ConsoleManager::WriteConsoleMessage(

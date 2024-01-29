@@ -41,6 +41,7 @@
 #include "cube.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
+#include "selectobject.hpp"
 
 #include <string>
 #include <filesystem>
@@ -60,6 +61,7 @@ using Core::Input;
 using Core::ConsoleManager;
 using Core::ShutdownManager;
 using Core::TimeManager;
+using Physics::Select;
 using Utils::Search;
 using Utils::File;
 using Utils::Browser;
@@ -301,6 +303,9 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
+					Select::isObjectSelected = false;
+					Select::selectedObj = nullptr;
+
 					shared_ptr<GameObject> obj = Cube::InitializeCube(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
@@ -323,7 +328,8 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Sphere"))
 				{
-
+					Select::isObjectSelected = false;
+					Select::selectedObj = nullptr;
 				}
 
 				ImGui::EndMenu();
@@ -333,6 +339,9 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
+					Select::isObjectSelected = false;
+					Select::selectedObj = nullptr;
+
 					shared_ptr<GameObject> obj = PointLight::InitializePointLight(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
@@ -355,6 +364,9 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
+					Select::isObjectSelected = false;
+					Select::selectedObj = nullptr;
+
 					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
