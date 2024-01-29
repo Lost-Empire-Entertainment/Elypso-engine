@@ -4,7 +4,7 @@ Elypso engine is created and managed by Lost Empire Entertainment. All permissio
 
 # Description
 
-Elypso_engine.exe is the executable to launch the engine, build.bat is the batch script used to compile the engine from source - more information can be found about the setup below.
+Elypso engine.exe is the executable to launch the engine, build.bat is the batch script used to compile the engine from source - more information can be found about the setup below.
 
 Please be aware that no support has been added yet for Mac or Linux, the engine is only functional on Windows at the current stage and no plans have been made to support the engine on other platforms.
 		
@@ -16,7 +16,7 @@ Running Elypso engine creates a folder at your_documents_path\Elypso engine with
 
 # Built with
 
-These are the external libraries Elypso engine uses natively, you do not need to download or set them up yourself, they come with the engine and are functional out of the box.
+These are the external libraries Elypso engine uses natively, you do not need to download or set them up yourself (except CMake), they come with the engine and are functional out of the box.
 
 * [CMake](https://cmake.org/) - generates build files for the engine
 * [GLFW](https://www.glfw.org/) - provides a simple API for creating windows, contexts and surfaces, receiving input and events
