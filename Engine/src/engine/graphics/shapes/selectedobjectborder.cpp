@@ -21,7 +21,7 @@
 #include "matrix_transform.hpp"
 
 //engine
-#include "pointlight.hpp"
+#include "selectedobjectborder.hpp"
 #include "shader.hpp"
 #include "core.hpp"
 #include "render.hpp"
@@ -44,7 +44,7 @@ using Physics::Select;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> PointLight::InitializePointLight(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> Border::InitializeBorder(const vec3& pos, const vec3& rot, const vec3& scale)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -89,9 +89,9 @@ namespace Graphics::Shape
 			-0.5f,  0.5f,  0.5f,
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::point_light);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border);
 
-		Shader pointLightShader = Shader(
+		Shader borderShader = Shader(
 			Engine::filesPath + "/shaders/Basic_model.vert",
 			Engine::filesPath + "/shaders/Basic.frag");
 
@@ -108,25 +108,25 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(pointLightShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(borderShader, vao, vbo);
 
 		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
 		float intensity = 1.0f;
 		float distance = 1.0f;
-		shared_ptr<PointLight_Variables> pointLight = 
+		shared_ptr<PointLight_Variables> pointLight =
 			make_shared<PointLight_Variables>(
-				diffuse, 
-				intensity, 
+				diffuse,
+				intensity,
 				distance);
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false, 
-			"Point light", 
-			0, 
-			transform, 
-			mesh, 
-			mat, 
+			false,
+			"Point light",
+			0,
+			transform,
+			mesh,
+			mat,
 			pointLight,
 			textures);
 
@@ -136,7 +136,7 @@ namespace Graphics::Shape
 		return obj;
 	}
 
-	void PointLight::RenderPointLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void Border::RenderBorder(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
 		Shader shader = obj->GetMaterial()->GetShader();
 
@@ -144,8 +144,8 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		float transparency = 
-			Select::selectedObj == obj 
+		float transparency =
+			Select::selectedObj == obj
 			&& Select::isObjectSelected ? 1.0f : 0.5f;
 		shader.SetFloat("transparency", transparency);
 		shader.SetVec3("color", obj->GetPointLight()->GetDiffuse());

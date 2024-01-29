@@ -64,13 +64,9 @@ namespace Graphics::Shape
 		{
 			cube,
 			sphere,
-			cylinder,
-			cone,
-			pyramid,
-			assimp,
+			border,
 			point_light,
-			spot_light,
-			directional_light
+			spot_light
 		};
 
 		Mesh(const MeshType& type);

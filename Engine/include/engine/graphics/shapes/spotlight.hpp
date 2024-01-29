@@ -23,10 +23,6 @@
 //engine
 #include "gameobject.hpp"
 
-#include <vector>
-
-using std::vector;
-
 using Graphics::Shape::GameObject;
 
 using glm::vec3;

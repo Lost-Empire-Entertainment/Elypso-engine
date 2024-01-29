@@ -15,17 +15,26 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#version 330 core
+#pragma once
 
-uniform float transparency;
-uniform vec3 color;
+//external
+#include "glm.hpp"
 
-out vec4 FragColor;
+//engine
+#include "gameobject.hpp"
 
-void main()
+using glm::vec3;
+using glm::mat4;
+
+using Graphics::Shape::GameObject;
+
+namespace Graphics::Shape
 {
-    vec4 outputColor = vec4(color, 1.0);
-    outputColor.a *= transparency;
+	class Border
+	{
+	public:
+		static shared_ptr<GameObject> InitializeBorder(const vec3& pos, const vec3& rot, const vec3& scale);
 
-    FragColor = outputColor;
+		static void RenderBorder(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
+	};
 }
