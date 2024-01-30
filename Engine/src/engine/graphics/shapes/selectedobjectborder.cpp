@@ -140,7 +140,8 @@ namespace Graphics::Shape
 		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
-		if (Select::isObjectSelected)
+		if (Select::isObjectSelected
+			&& Select::selectedObj->GetMesh()->GetMeshType() == Type::cube)
 		{
 			shader.SetFloat("transparency", 1.0f);
 
