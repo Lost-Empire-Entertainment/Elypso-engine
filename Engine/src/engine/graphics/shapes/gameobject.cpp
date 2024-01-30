@@ -139,17 +139,7 @@ namespace Graphics::Shape
 		mesh(assignedMesh),
 		material(assignedMaterial),
 		basicShape(assignedBasicShape),
-		textures(assignedTextures)
-	{
-		SetName(assignedName);
-		SetID(nextID++);
-		SetTransform(assignedTransform);
-		SetMesh(assignedMesh);
-		SetMaterial(assignedMaterial);
-		SetBasicShape(assignedBasicShape);
-
-		Initialize();
-	}
+		textures(assignedTextures) {}
 
 	GameObject::GameObject(
 		const bool& assignedIsInitialized,
@@ -159,7 +149,8 @@ namespace Graphics::Shape
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
 		const shared_ptr<PointLight_Variables>& assignedPointLight,
-		const vector<unsigned int> assignedTextures) :
+		const vector<unsigned int> assignedTextures,
+		const shared_ptr<GameObject>& assignedBillboard) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
@@ -167,17 +158,8 @@ namespace Graphics::Shape
 		mesh(assignedMesh),
 		material(assignedMaterial),
 		pointLight(assignedPointLight),
-		textures(assignedTextures)
-	{
-		SetName(assignedName);
-		SetID(nextID++);
-		SetTransform(assignedTransform);
-		SetMesh(assignedMesh);
-		SetMaterial(assignedMaterial);
-		SetPointLight(assignedPointLight);
-
-		Initialize();
-	}
+		textures(assignedTextures),
+		billboard(assignedBillboard) {}
 
 	GameObject::GameObject(
 		const bool& assignedIsInitialized,
@@ -187,7 +169,8 @@ namespace Graphics::Shape
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
 		const shared_ptr<SpotLight_Variables>& assignedSpotLight,
-		const vector<unsigned int> assignedTextures) :
+		const vector<unsigned int> assignedTextures,
+		const shared_ptr<GameObject>& assignedBillboard) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
@@ -195,17 +178,8 @@ namespace Graphics::Shape
 		mesh(assignedMesh),
 		material(assignedMaterial),
 		spotLight(assignedSpotLight),
-		textures(assignedTextures)
-	{
-		SetName(assignedName);
-		SetID(nextID++);
-		SetTransform(assignedTransform);
-		SetMesh(assignedMesh);
-		SetMaterial(assignedMaterial);
-		SetSpotLight(assignedSpotLight);
-
-		Initialize();
-	}
+		textures(assignedTextures),
+		billboard(assignedBillboard) {}
 
 	//
 	// GAMEOBJECT MANAGER

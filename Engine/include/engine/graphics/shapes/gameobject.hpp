@@ -173,6 +173,7 @@ namespace Graphics::Shape
 	public:
 		static inline unsigned int nextID;
 
+		//basic gameobject
 		GameObject(
 			const bool& assignedIsInitialized,
 			const string& assignedName,
@@ -183,6 +184,7 @@ namespace Graphics::Shape
 			const shared_ptr<BasicShape_Variables>& basicShapeVariables,
 			const vector<unsigned int> textures);
 
+		//point light
 		GameObject(
 			const bool& assignedIsInitialized,
 			const string& assignedName,
@@ -191,8 +193,10 @@ namespace Graphics::Shape
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
 			const shared_ptr<PointLight_Variables>& pointLightVariables,
-			const vector<unsigned int> textures);
+			const vector<unsigned int> textures,
+			const shared_ptr<GameObject>& billboard);
 
+		//spotlight
 		GameObject(
 			const bool& assignedIsInitialized,
 			const string& assignedName,
@@ -201,7 +205,8 @@ namespace Graphics::Shape
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
 			const shared_ptr<SpotLight_Variables>& spotLightVariables,
-			const vector<unsigned int> textures);
+			const vector<unsigned int> textures,
+			const shared_ptr<GameObject>& billboard);
 
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
@@ -214,6 +219,7 @@ namespace Graphics::Shape
 		void SetBasicShape(const shared_ptr<BasicShape_Variables>& newBasicShape) { basicShape = newBasicShape; }
 		void SetPointLight(const shared_ptr<PointLight_Variables>& newPointLight) { pointLight = newPointLight; }
 		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight) { spotLight = newSpotLight; }
+		void SetBillboard(const shared_ptr<GameObject>& newBillboard) { billboard = newBillboard; }
 
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
@@ -225,7 +231,8 @@ namespace Graphics::Shape
 		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
-		const vector<unsigned int>GetTexturesVector() const { return textures; }
+		const vector<unsigned int>& GetTexturesVector() const { return textures; }
+		const shared_ptr<GameObject>& GetBillboard() const { return billboard; }
 	private:
 		bool isInitialized;
 		string name;
@@ -238,6 +245,7 @@ namespace Graphics::Shape
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;
 		vector<unsigned int> textures;
+		shared_ptr<GameObject> billboard;
 	};
 
 	class GameObjectManager

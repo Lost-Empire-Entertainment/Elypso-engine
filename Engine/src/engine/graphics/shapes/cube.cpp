@@ -131,9 +131,9 @@ namespace Graphics::Shape
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false, 
+			true, 
 			"Cube", 
-			0, 
+			GameObject::nextID++,
 			transform, 
 			mesh,
 			mat,

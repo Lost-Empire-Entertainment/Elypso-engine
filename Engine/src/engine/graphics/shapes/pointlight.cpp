@@ -26,6 +26,7 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "billboard.hpp"
 
 using glm::translate;
 using glm::rotate;
@@ -119,16 +120,19 @@ namespace Graphics::Shape
 				intensity, 
 				distance);
 
+		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(pos, rot, scale);
+
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false, 
+			true, 
 			"Point light", 
-			0, 
+			GameObject::nextID++,
 			transform, 
 			mesh, 
 			mat, 
 			pointLight,
-			textures);
+			textures,
+			billboard);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddPointLight(obj);
