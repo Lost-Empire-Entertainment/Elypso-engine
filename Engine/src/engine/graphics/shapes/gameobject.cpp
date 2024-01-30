@@ -138,8 +138,7 @@ namespace Graphics::Shape
 		transform(assignedTransform),
 		mesh(assignedMesh),
 		material(assignedMaterial),
-		basicShape(assignedBasicShape),
-		textures(assignedTextures) {}
+		basicShape(assignedBasicShape) {}
 
 	GameObject::GameObject(
 		const bool& assignedIsInitialized,
@@ -149,8 +148,7 @@ namespace Graphics::Shape
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
 		const shared_ptr<PointLight_Variables>& assignedPointLight,
-		const vector<unsigned int> assignedTextures,
-		const shared_ptr<GameObject>& assignedBillboard) :
+		const vector<unsigned int> assignedTextures) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
@@ -158,8 +156,7 @@ namespace Graphics::Shape
 		mesh(assignedMesh),
 		material(assignedMaterial),
 		pointLight(assignedPointLight),
-		textures(assignedTextures),
-		billboard(assignedBillboard) {}
+		textures(assignedTextures) {}
 
 	GameObject::GameObject(
 		const bool& assignedIsInitialized,
@@ -169,8 +166,7 @@ namespace Graphics::Shape
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
 		const shared_ptr<SpotLight_Variables>& assignedSpotLight,
-		const vector<unsigned int> assignedTextures,
-		const shared_ptr<GameObject>& assignedBillboard) :
+		const vector<unsigned int> assignedTextures) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
@@ -178,8 +174,7 @@ namespace Graphics::Shape
 		mesh(assignedMesh),
 		material(assignedMaterial),
 		spotLight(assignedSpotLight),
-		textures(assignedTextures),
-		billboard(assignedBillboard) {}
+		textures(assignedTextures) {}
 
 	//
 	// GAMEOBJECT MANAGER
@@ -206,24 +201,12 @@ namespace Graphics::Shape
 				case Type::border:
 					Border::RenderBorder(GetBorder(), view, projection);
 					break;
+				case Type::billboard:
+					Billboard::RenderBillboard(obj, view, projection);
+					break;
 				}
 			}
 		}
-	}
-
-	void GameObjectManager::AddGameObject(const shared_ptr<GameObject>& obj)
-	{
-		objects.push_back(obj);
-	}
-
-	void GameObjectManager::AddPointLight(const shared_ptr<GameObject>& obj)
-	{
-		pointLights.push_back(obj);
-	}
-
-	void GameObjectManager::AddSpotLight(const shared_ptr<GameObject>& obj)
-	{
-		spotLights.push_back(obj);
 	}
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)

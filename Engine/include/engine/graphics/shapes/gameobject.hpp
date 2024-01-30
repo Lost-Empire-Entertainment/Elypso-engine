@@ -193,8 +193,7 @@ namespace Graphics::Shape
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
 			const shared_ptr<PointLight_Variables>& pointLightVariables,
-			const vector<unsigned int> textures,
-			const shared_ptr<GameObject>& billboard);
+			const vector<unsigned int> textures);
 
 		//spotlight
 		GameObject(
@@ -205,8 +204,7 @@ namespace Graphics::Shape
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
 			const shared_ptr<SpotLight_Variables>& spotLightVariables,
-			const vector<unsigned int> textures,
-			const shared_ptr<GameObject>& billboard);
+			const vector<unsigned int> textures);
 
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
@@ -219,7 +217,8 @@ namespace Graphics::Shape
 		void SetBasicShape(const shared_ptr<BasicShape_Variables>& newBasicShape) { basicShape = newBasicShape; }
 		void SetPointLight(const shared_ptr<PointLight_Variables>& newPointLight) { pointLight = newPointLight; }
 		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight) { spotLight = newSpotLight; }
-		void SetBillboard(const shared_ptr<GameObject>& newBillboard) { billboard = newBillboard; }
+		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
+		void SetChild(const shared_ptr<GameObject>& newChild) { child = newChild; }
 
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
@@ -232,7 +231,8 @@ namespace Graphics::Shape
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
 		const vector<unsigned int>& GetTexturesVector() const { return textures; }
-		const shared_ptr<GameObject>& GetBillboard() const { return billboard; }
+		const shared_ptr<GameObject>& GetParent() const { return parent; }
+		const shared_ptr<GameObject>& GetChild() const { return child; }
 	private:
 		bool isInitialized;
 		string name;
@@ -245,7 +245,8 @@ namespace Graphics::Shape
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;
 		vector<unsigned int> textures;
-		shared_ptr<GameObject> billboard;
+		shared_ptr<GameObject> parent;
+		shared_ptr<GameObject> child;
 	};
 
 	class GameObjectManager
@@ -255,33 +256,24 @@ namespace Graphics::Shape
 			const mat4& view,
 			const mat4& projection);
 
-		static void AddGameObject(const shared_ptr<GameObject>& obj);
-		static void AddPointLight(const shared_ptr<GameObject>& obj);
-		static void AddSpotLight(const shared_ptr<GameObject>& obj);
+		static void AddGameObject(const shared_ptr<GameObject>& obj) { objects.push_back(obj); }
+		static void AddPointLight(const shared_ptr<GameObject>& obj) { pointLights.push_back(obj); }
+		static void AddSpotLight(const shared_ptr<GameObject>& obj) { spotLights.push_back(obj); }
 		static void SetBorder(const shared_ptr<GameObject>& newBorder) { border = newBorder; }
+		static void AddBillboard(const shared_ptr<GameObject>& obj) { billboards.push_back(obj); }
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
-		static vector<shared_ptr<GameObject>>& GetObjects()
-		{
-			return objects;
-		}
-		static vector<shared_ptr<GameObject>> GetPointLights()
-		{
-			return pointLights;
-		}
-		static vector<shared_ptr<GameObject>> GetSpotLights()
-		{
-			return spotLights;
-		}
-		static shared_ptr<GameObject> GetBorder()
-		{
-			return border;
-		}
+		static vector<shared_ptr<GameObject>>& GetObjects() { return pointLights; }
+		static vector<shared_ptr<GameObject>> GetPointLights() { return pointLights; }
+		static vector<shared_ptr<GameObject>> GetSpotLights() { return spotLights; }
+		static shared_ptr<GameObject> GetBorder() { return border; }
+		static vector<shared_ptr<GameObject>> GetBillboards() { return billboards; }
 	private:
 		static inline vector<shared_ptr<GameObject>> objects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
 		static inline vector<shared_ptr<GameObject>> spotLights;
 		static inline shared_ptr<GameObject> border;
+		static inline vector<shared_ptr<GameObject>> billboards;
 	};
 }

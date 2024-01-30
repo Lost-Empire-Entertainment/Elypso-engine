@@ -123,8 +123,7 @@ namespace Graphics::Shape
 			mesh,
 			mat,
 			spotLight,
-			textures,
-			billboard);
+			textures);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddSpotLight(obj);

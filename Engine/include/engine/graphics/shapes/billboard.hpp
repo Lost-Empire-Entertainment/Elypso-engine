@@ -35,6 +35,6 @@ namespace Graphics::Shape
 	public:
 		static shared_ptr<GameObject> InitializeBillboard(const vec3& pos, const vec3& rot, const vec3& scale);
 
-		static void RenderBillboard(const shared_ptr<GameObject>& obj, const shared_ptr<GameObject>& parentObj, const mat4& view, const mat4& projection);
+		static void RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
 }

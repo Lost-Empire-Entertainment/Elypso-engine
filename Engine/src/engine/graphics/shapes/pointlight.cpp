@@ -131,8 +131,7 @@ namespace Graphics::Shape
 			mesh, 
 			mat, 
 			pointLight,
-			textures,
-			billboard);
+			textures);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddPointLight(obj);

@@ -51,17 +51,17 @@ namespace Graphics::Shape
 		float vertices[] =
 		{
 			//corners of the billboard
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
+			-0.25f, -0.25f, -0.25f,
+			 0.25f, -0.25f, -0.25f,
 
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
+			 0.25f, -0.25f, -0.25f,
+			 0.25f,  0.25f, -0.25f,
 
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
+			 0.25f,  0.25f, -0.25f,
+			-0.25f,  0.25f, -0.25f,
 
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f
+			-0.25f,  0.25f, -0.25f,
+			-0.25f, -0.25f, -0.25f
 		};
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
@@ -90,9 +90,9 @@ namespace Graphics::Shape
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false,
+			true,
 			"Billboard",
-			0,
+			GameObject::nextID,
 			transform,
 			mesh,
 			mat,
@@ -100,12 +100,11 @@ namespace Graphics::Shape
 			textures);
 
 		GameObjectManager::AddGameObject(obj);
-		GameObjectManager::AddPointLight(obj);
 
 		return obj;
 	}
 
-	void Billboard::RenderBillboard(const shared_ptr<GameObject>& obj, const shared_ptr<GameObject>& parentObj, const mat4& view, const mat4& projection)
+	void Billboard::RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
 		Shader shader = obj->GetMaterial()->GetShader();
 
@@ -114,10 +113,10 @@ namespace Graphics::Shape
 		shader.SetMat4("view", view);
 
 		shader.SetFloat("transparency", 1.0f);
-		shader.SetVec3("color", obj->GetPointLight()->GetDiffuse());
+		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, parentObj->GetTransform()->GetPosition());
+		model = translate(model, obj->GetTransform()->GetPosition());
 
 		vec3 camPos = Render::camera.GetCameraPosition();
 		//create a rotation matrix that points in the direction of the camera
