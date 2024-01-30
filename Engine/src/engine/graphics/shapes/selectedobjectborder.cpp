@@ -154,10 +154,10 @@ namespace Graphics::Shape
 		{
 			shader.SetFloat("transparency", 0.0f);
 
-			model = translate(model, obj->GetTransform()->GetPosition());
-			quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+			model = translate(model, vec3(0.0f, -100.0f, 0.0f));
+			quat newRot = quat(radians(vec3(0)));
 			model *= mat4_cast(newRot);
-			model = scale(model, obj->GetTransform()->GetScale());
+			model = scale(model, vec3(0.01f));
 		}
 
 		shader.SetMat4("model", model);
