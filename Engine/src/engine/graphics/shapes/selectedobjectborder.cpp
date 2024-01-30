@@ -110,28 +110,21 @@ namespace Graphics::Shape
 
 		shared_ptr<Material> mat = make_shared<Material>(borderShader, vao, vbo);
 
-		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
-		float intensity = 1.0f;
-		float distance = 1.0f;
-		shared_ptr<PointLight_Variables> pointLight =
-			make_shared<PointLight_Variables>(
-				diffuse,
-				intensity,
-				distance);
+		float shininess = 32;
+		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false,
-			"Point light",
+			"Border",
 			0,
 			transform,
 			mesh,
 			mat,
-			pointLight,
+			basicShape,
 			textures);
 
 		GameObjectManager::AddGameObject(obj);
-		GameObjectManager::AddPointLight(obj);
 
 		return obj;
 	}
@@ -144,17 +137,27 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		float transparency =
-			Select::selectedObj == obj
-			&& Select::isObjectSelected ? 1.0f : 0.5f;
-		shader.SetFloat("transparency", transparency);
-		shader.SetVec3("color", obj->GetPointLight()->GetDiffuse());
+		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, obj->GetTransform()->GetPosition());
-		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
-		model *= mat4_cast(newRot);
-		model = scale(model, obj->GetTransform()->GetScale());
+		if (Select::isObjectSelected)
+		{
+			shader.SetFloat("transparency", 1.0f);
+
+			model = translate(model, Select::selectedObj->GetTransform()->GetPosition());
+			quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
+			model *= mat4_cast(newRot);
+			model = scale(model, Select::selectedObj->GetTransform()->GetScale() + vec3(0.025f, 0.025f, 0.025f));
+		}
+		else
+		{
+			shader.SetFloat("transparency", 0.0f);
+
+			model = translate(model, obj->GetTransform()->GetPosition());
+			quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+			model *= mat4_cast(newRot);
+			model = scale(model, obj->GetTransform()->GetScale());
+		}
 
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();

@@ -250,6 +250,7 @@ namespace Graphics::Shape
 		static void AddGameObject(const shared_ptr<GameObject>& obj);
 		static void AddPointLight(const shared_ptr<GameObject>& obj);
 		static void AddSpotLight(const shared_ptr<GameObject>& obj);
+		static void SetBorder(const shared_ptr<GameObject>& newBorder) { border = newBorder; }
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
@@ -265,9 +266,14 @@ namespace Graphics::Shape
 		{
 			return spotLights;
 		}
+		static shared_ptr<GameObject> GetBorder()
+		{
+			return border;
+		}
 	private:
 		static inline vector<shared_ptr<GameObject>> objects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
 		static inline vector<shared_ptr<GameObject>> spotLights;
+		static inline shared_ptr<GameObject> border;
 	};
 }

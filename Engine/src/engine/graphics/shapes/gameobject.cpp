@@ -19,6 +19,7 @@
 #include "cube.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
+#include "selectedobjectborder.hpp"
 
 #include <iostream>
 
@@ -29,6 +30,7 @@ using std::remove;
 using std::dynamic_pointer_cast;
 
 using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Shape::Border;
 
 namespace Graphics::Shape
 {
@@ -226,6 +228,8 @@ namespace Graphics::Shape
 				case Type::spot_light:
 					SpotLight::RenderSpotLight(obj, view, projection);
 					break;
+				case Type::border:
+					Border::RenderBorder(GetBorder(), view, projection);
 				}
 			}
 		}

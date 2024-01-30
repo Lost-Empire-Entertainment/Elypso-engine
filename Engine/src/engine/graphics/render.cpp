@@ -37,6 +37,7 @@
 #include "pointlight.hpp"
 #include "gameobject.hpp"
 #include "grid.hpp"
+#include "selectedobjectborder.hpp"
 
 #include <string>
 #include <iostream>
@@ -61,6 +62,7 @@ using Graphics::GUI::EngineGUI;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Grid;
+using Graphics::Shape::Border;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -182,6 +184,12 @@ namespace Graphics
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		Grid::InitializeGrid();
+
+		shared_ptr<GameObject> border = Border::InitializeBorder(
+			vec3(1.0f, 1.0f, 1.0f),
+			vec3(0.0f, 0.0f, 0.0f),
+			vec3(1.0f, 1.0f, 1.0f));
+		GameObjectManager::SetBorder(border);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}
