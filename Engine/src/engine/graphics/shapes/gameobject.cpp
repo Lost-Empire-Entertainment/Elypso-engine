@@ -230,6 +230,7 @@ namespace Graphics::Shape
 					break;
 				case Type::border:
 					Border::RenderBorder(GetBorder(), view, projection);
+					break;
 				}
 			}
 		}
