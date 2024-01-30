@@ -80,8 +80,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::spot_light);
 
 		Shader spotlightShader = Shader(
-			Engine::filesPath + "/shaders/Light.vert",
-			Engine::filesPath + "/shaders/Light.frag");
+			Engine::filesPath + "/shaders/Basic_model.vert",
+			Engine::filesPath + "/shaders/Basic.frag");
 
 		GLuint vao, vbo;
 
