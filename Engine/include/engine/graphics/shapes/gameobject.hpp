@@ -63,10 +63,10 @@ namespace Graphics::Shape
 		enum class MeshType
 		{
 			cube,
-			sphere,
-			border,
 			point_light,
-			spot_light
+			spot_light,
+			border,
+			billboard
 		};
 
 		Mesh(const MeshType& type);

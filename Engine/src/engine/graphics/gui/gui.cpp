@@ -326,11 +326,6 @@ namespace Graphics::GUI
 						Type::SUCCESS,
 						output);
 				}
-				if (ImGui::MenuItem("Sphere"))
-				{
-					Select::isObjectSelected = false;
-					Select::selectedObj = nullptr;
-				}
 
 				ImGui::EndMenu();
 			}

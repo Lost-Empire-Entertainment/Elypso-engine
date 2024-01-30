@@ -20,6 +20,7 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "selectedobjectborder.hpp"
+#include "billboard.hpp"
 
 #include <iostream>
 
