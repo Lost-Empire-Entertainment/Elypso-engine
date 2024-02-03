@@ -17,17 +17,24 @@
 
 #pragma once
 
-#include "selectobject.hpp"
+//external
+#include "glm.hpp"
+
+//engine
 #include "gameobject.hpp"
 
 using Graphics::Shape::GameObject;
-using Physics::Select;
 
-namespace Physics
+using glm::vec3;
+using glm::mat4;
+
+namespace Graphics::Shape
 {
-	class Collision
+	class Billboard
 	{
 	public:
-		static bool IsRayIntersectingCube(const Select::Ray& ray, const shared_ptr<GameObject>& cube);
+		static shared_ptr<GameObject> InitializeBillboard(const vec3& pos, const vec3& rot, const vec3& scale);
+
+		static void RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
 }

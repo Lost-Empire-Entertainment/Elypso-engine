@@ -23,10 +23,6 @@
 #include "render.hpp"
 #include "collision.hpp"
 
-#include <iostream>
-
-using std::cout;
-using std::endl;
 using std::string;
 using glm::inverse;
 using glm::normalize;
@@ -68,17 +64,12 @@ namespace Physics
 			for (int i = 0; i < objects.size(); i++)
 			{
 				Type objType = objects[i]->GetMesh()->GetMeshType();
-				if (objType == Type::cube
+				if ((objType == Type::cube
 					|| objType == Type::point_light
 					|| objType == Type::spot_light)
+					&& Collision::IsRayIntersectingCube(ray, objects[i]))
 				{
-					cout << "detected " << objects[i]->GetName() << endl;
-
-					if (Collision::IsRayIntersectingObject(ray, objects[i]))
-					{
-						cout << "collided with " << objects[i]->GetName() << endl;
-						return i;
-					}
+					return i;
 				}
 			}
 

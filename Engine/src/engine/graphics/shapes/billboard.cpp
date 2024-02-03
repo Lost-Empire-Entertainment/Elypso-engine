@@ -21,12 +21,11 @@
 #include "matrix_transform.hpp"
 
 //engine
-#include "spotlight.hpp"
+#include "billboard.hpp"
 #include "shader.hpp"
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
-#include "billboard.hpp"
 
 using glm::translate;
 using glm::rotate;
@@ -45,43 +44,30 @@ using Physics::Select;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> SpotLight::InitializeSpotLight(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> Billboard::InitializeBillboard(const vec3& pos, const vec3& rot, const vec3& scale)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
 		float vertices[] =
 		{
-			//four corner edges
-			0.0f,  0.5f,  0.0f, 
-		   -0.5f, -0.5f, -0.5f,
+			//corners of the billboard
+			-0.25f, -0.25f, -0.25f,
+			 0.25f, -0.25f, -0.25f,
 
-			0.0f,  0.5f,  0.0f,
-		    0.5f, -0.5f, -0.5f,
+			 0.25f, -0.25f, -0.25f,
+			 0.25f,  0.25f, -0.25f,
 
-			0.0f,  0.5f,  0.0f,
-		   -0.5f, -0.5f,  0.5f,
+			 0.25f,  0.25f, -0.25f,
+			-0.25f,  0.25f, -0.25f,
 
-			0.0f,  0.5f,  0.0f,
-		    0.5f, -0.5f,  0.5f,
-
-			//four bottom edges
-			0.5f, -0.5f,  0.5f,
-		   -0.5f, -0.5f,  0.5f,
-
-		    0.5f, -0.5f, -0.5f,
-		   -0.5f, -0.5f, -0.5f,
-
-		   -0.5f, -0.5f, -0.5f,
-		   -0.5f, -0.5f,  0.5f,
-
-		    0.5f, -0.5f, -0.5f,
-		    0.5f, -0.5f,  0.5f
+			-0.25f,  0.25f, -0.25f,
+			-0.25f, -0.25f, -0.25f
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::spot_light);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
 
-		Shader spotlightShader = Shader(
-			Engine::filesPath + "/shaders/Basic_model.vert",
+		Shader billboardShader = Shader(
+			Engine::filesPath + "/shaders/Basic.vert",
 			Engine::filesPath + "/shaders/Basic.frag");
 
 		GLuint vao, vbo;
@@ -97,41 +83,28 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(spotlightShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(billboardShader, vao, vbo);
 
-		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
-		float intensity = 1.0f;
-		float distance = 1.0f;
-		float innerAngle = 12.5f;
-		float outerAngle = 17.5f;
-		shared_ptr<SpotLight_Variables> spotLight = 
-			make_shared<SpotLight_Variables>(
-				diffuse, 
-				intensity, 
-				distance,
-				innerAngle,
-				outerAngle);
-
-		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(pos, rot, scale);
+		float shininess = 32;
+		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,
-			"Spotlight",
-			GameObject::nextID++,
+			"Billboard",
+			GameObject::nextID,
 			transform,
 			mesh,
 			mat,
-			spotLight,
+			basicShape,
 			textures);
 
 		GameObjectManager::AddGameObject(obj);
-		GameObjectManager::AddSpotLight(obj);
 
 		return obj;
 	}
 
-	void SpotLight::RenderSpotLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void Billboard::RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
 		Shader shader = obj->GetMaterial()->GetShader();
 
@@ -139,21 +112,24 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		float transparency = Select::selectedObj == 
-			obj 
-			&& Select::isObjectSelected ? 1.0f : 0.5f;
-		shader.SetFloat("transparency", transparency);
-		shader.SetVec3("color", obj->GetSpotLight()->GetDiffuse());
+		shader.SetFloat("transparency", 1.0f);
+		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
 		model = translate(model, obj->GetTransform()->GetPosition());
-		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+
+		vec3 camPos = Render::camera.GetCameraPosition();
+		//create a rotation matrix that points in the direction of the camera
+		mat4 rotationMatrix = lookAt(vec3(0.0f), camPos, vec3(0.0f, 1.0f, 0.0f));
+		//extract the rotation quaternion from the rotation matrix
+		quat newRot = quat_cast(rotationMatrix);
 		model *= mat4_cast(newRot);
+
 		model = scale(model, obj->GetTransform()->GetScale());
 
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINES, 0, 32);
+		glDrawArrays(GL_LINES, 0, 8);
 	}
 }
