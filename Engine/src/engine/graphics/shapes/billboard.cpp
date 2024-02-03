@@ -117,14 +117,8 @@ namespace Graphics::Shape
 
 		mat4 model = mat4(1.0f);
 		model = translate(model, obj->GetTransform()->GetPosition());
-
-		vec3 camPos = Render::camera.GetCameraPosition();
-		//create a rotation matrix that points in the direction of the camera
-		mat4 rotationMatrix = lookAt(vec3(0.0f), camPos, vec3(0.0f, 1.0f, 0.0f));
-		//extract the rotation quaternion from the rotation matrix
-		quat newRot = quat_cast(rotationMatrix);
+		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
 		model *= mat4_cast(newRot);
-
 		model = scale(model, obj->GetTransform()->GetScale());
 
 		shader.SetMat4("model", model);

@@ -219,6 +219,7 @@ namespace Graphics::Shape
 		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight) { spotLight = newSpotLight; }
 		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
 		void SetChild(const shared_ptr<GameObject>& newChild) { child = newChild; }
+		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder) { parentBillboardHolder = newParentBillboardHolder; }
 
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
@@ -233,6 +234,7 @@ namespace Graphics::Shape
 		const vector<unsigned int>& GetTexturesVector() const { return textures; }
 		const shared_ptr<GameObject>& GetParent() const { return parent; }
 		const shared_ptr<GameObject>& GetChild() const { return child; }
+		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
 	private:
 		bool isInitialized;
 		string name;
@@ -247,6 +249,7 @@ namespace Graphics::Shape
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> parent;
 		shared_ptr<GameObject> child;
+		shared_ptr<GameObject> parentBillboardHolder;
 	};
 
 	class GameObjectManager
