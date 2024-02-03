@@ -116,10 +116,14 @@ namespace Graphics::Shape
 		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
-		vec3 pos = obj->GetTransform()->GetPosition();
-		model = translate(model, pos);
-		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
-		model *= mat4_cast(newRot);
+		vec3 objectPos = obj->GetTransform()->GetPosition();
+		vec3 cameraPos = Render::camera.GetCameraPosition();
+		model = translate(model, objectPos);
+
+		mat4 rotationMatrix = lookAt(objectPos, cameraPos, vec3(0.0f, 1.0f, 0.0f));
+		rotationMatrix = inverse(rotationMatrix);
+		model = rotationMatrix;
+
 		model = scale(model, obj->GetTransform()->GetScale());
 
 		shader.SetMat4("model", model);

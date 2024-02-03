@@ -21,6 +21,7 @@
 #include "spotlight.hpp"
 #include "selectedobjectborder.hpp"
 #include "billboard.hpp"
+#include "render.hpp"
 
 #include <iostream>
 
@@ -32,6 +33,7 @@ using std::dynamic_pointer_cast;
 
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Border;
+using Graphics::Render;
 
 namespace Graphics::Shape
 {
@@ -205,6 +207,10 @@ namespace Graphics::Shape
 					shared_ptr<GameObject> parent = obj->GetParentBillboardHolder();
 					vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
 					obj->GetTransform()->SetPosition(pos);
+
+					vec3 rot = Render::camera.GetCameraRotation();
+					obj->GetTransform()->SetRotation(rot);
+
 					Billboard::RenderBillboard(obj, view, projection);
 					break;
 				}
