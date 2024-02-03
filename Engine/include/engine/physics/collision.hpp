@@ -28,6 +28,6 @@ namespace Physics
 	class Collision
 	{
 	public:
-		static bool IsRayIntersectingCube(const Select::Ray& ray, const shared_ptr<GameObject>& cube);
+		static bool IsRayIntersectingObject(const Select::Ray& ray, const shared_ptr<GameObject>& obj);
 	};
 }

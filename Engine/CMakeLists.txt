@@ -73,7 +73,6 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/render.cpp
 	${SRC_GRAPHICS_DIR}/shader.cpp
 	${SRC_GRAPHICS_DIR}/texture.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/cube.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp

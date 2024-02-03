@@ -20,7 +20,6 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "selectedobjectborder.hpp"
-#include "billboard.hpp"
 
 #include <iostream>
 
@@ -200,9 +199,6 @@ namespace Graphics::Shape
 					break;
 				case Type::border:
 					Border::RenderBorder(GetBorder(), view, projection);
-					break;
-				case Type::billboard:
-					Billboard::RenderBillboard(obj, view, projection);
 					break;
 				}
 			}
