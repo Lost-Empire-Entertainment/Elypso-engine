@@ -204,13 +204,6 @@ namespace Graphics::Shape
 					Border::RenderBorder(GetBorder(), view, projection);
 					break;
 				case Type::billboard:
-					shared_ptr<GameObject> parent = obj->GetParentBillboardHolder();
-					vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
-					obj->GetTransform()->SetPosition(pos);
-
-					vec3 rot = Render::camera.GetCameraRotation();
-					obj->GetTransform()->SetRotation(rot);
-
 					Billboard::RenderBillboard(obj, view, projection);
 					break;
 				}

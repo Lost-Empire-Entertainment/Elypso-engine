@@ -116,6 +116,11 @@ namespace Graphics::Shape
 		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
+
+		shared_ptr<GameObject> parent = obj->GetParentBillboardHolder();
+		vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
+		obj->GetTransform()->SetPosition(pos);
+
 		vec3 objectPos = obj->GetTransform()->GetPosition();
 		vec3 cameraPos = Render::camera.GetCameraPosition();
 		model = translate(model, objectPos);
