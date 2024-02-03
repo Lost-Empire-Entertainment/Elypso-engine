@@ -264,7 +264,7 @@ namespace Graphics::Shape
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
-		static vector<shared_ptr<GameObject>>& GetObjects() { return pointLights; }
+		static vector<shared_ptr<GameObject>>& GetObjects() { return objects; }
 		static vector<shared_ptr<GameObject>> GetPointLights() { return pointLights; }
 		static vector<shared_ptr<GameObject>> GetSpotLights() { return spotLights; }
 		static shared_ptr<GameObject> GetBorder() { return border; }
