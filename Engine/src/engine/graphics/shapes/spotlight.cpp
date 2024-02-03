@@ -125,6 +125,8 @@ namespace Graphics::Shape
 			spotLight,
 			textures);
 
+		billboard->SetParentBillboardHolder(obj);
+
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddSpotLight(obj);
 

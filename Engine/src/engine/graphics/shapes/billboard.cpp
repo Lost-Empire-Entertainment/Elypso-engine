@@ -67,7 +67,7 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
 
 		Shader billboardShader = Shader(
-			Engine::filesPath + "/shaders/Basic.vert",
+			Engine::filesPath + "/shaders/Basic_model.vert",
 			Engine::filesPath + "/shaders/Basic.frag");
 
 		GLuint vao, vbo;
@@ -116,7 +116,8 @@ namespace Graphics::Shape
 		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
-		model = translate(model, obj->GetTransform()->GetPosition());
+		vec3 pos = obj->GetTransform()->GetPosition();
+		model = translate(model, pos);
 		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
 		model *= mat4_cast(newRot);
 		model = scale(model, obj->GetTransform()->GetScale());

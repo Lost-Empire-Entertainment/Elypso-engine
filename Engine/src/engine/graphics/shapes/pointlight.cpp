@@ -133,6 +133,8 @@ namespace Graphics::Shape
 			pointLight,
 			textures);
 
+		billboard->SetParentBillboardHolder(obj);
+
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddPointLight(obj);
 
