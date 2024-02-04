@@ -127,6 +127,7 @@ namespace Graphics::Shape
 			textures);
 
 		billboard->SetParentBillboardHolder(obj);
+		obj->SetChildBillboard(billboard);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddSpotLight(obj);

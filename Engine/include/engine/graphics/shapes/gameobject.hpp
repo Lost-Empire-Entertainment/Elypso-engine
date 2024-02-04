@@ -220,6 +220,7 @@ namespace Graphics::Shape
 		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
 		void SetChild(const shared_ptr<GameObject>& newChild) { child = newChild; }
 		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder) { parentBillboardHolder = newParentBillboardHolder; }
+		void SetChildBillboard(const shared_ptr<GameObject>& newChildBillboard) { childBillboard = newChildBillboard; }
 
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
@@ -235,6 +236,7 @@ namespace Graphics::Shape
 		const shared_ptr<GameObject>& GetParent() const { return parent; }
 		const shared_ptr<GameObject>& GetChild() const { return child; }
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
+		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
 	private:
 		bool isInitialized;
 		string name;
@@ -250,6 +252,7 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> parent;
 		shared_ptr<GameObject> child;
 		shared_ptr<GameObject> parentBillboardHolder;
+		shared_ptr<GameObject> childBillboard;
 	};
 
 	class GameObjectManager

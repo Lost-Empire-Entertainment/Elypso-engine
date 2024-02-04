@@ -130,7 +130,6 @@ namespace Graphics::Shape
 
 		mat4 model = mat4(1.0f);
 
-		shared_ptr<GameObject> parent = obj->GetParentBillboardHolder();
 		vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
 		obj->GetTransform()->SetPosition(pos);
 

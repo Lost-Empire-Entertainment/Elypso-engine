@@ -252,15 +252,29 @@ namespace Graphics::Shape
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
 	{
-		auto gameobject = remove(objects.begin(), objects.end(), obj);
-		objects.erase(gameobject, objects.end());
-
-		//if gameobject is in pointlights vector
-		auto pointLight = remove(pointLights.begin(), pointLights.end(), obj);
-		pointLights.erase(pointLight, pointLights.end());
-
-		//if gameobject is in spotlights vector
-		auto spotLight = remove(spotLights.begin(), spotLights.end(), obj);
-		spotLights.erase(spotLight, spotLights.end());
+		Type type = obj->GetMesh()->GetMeshType();
+		switch (type)
+		{
+		case Type::cube:
+			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			break;
+		case Type::point_light:
+			DestroyGameObject(obj->GetChildBillboard());
+			obj->SetChildBillboard(nullptr);
+			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			pointLights.erase(remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
+			break;
+		case Type::spot_light:
+			DestroyGameObject(obj->GetChildBillboard());
+			obj->SetChildBillboard(nullptr);
+			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			spotLights.erase(remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
+			break;
+		case Type::billboard:
+			obj->SetParentBillboardHolder(nullptr);
+			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
+			break;
+		}
 	}
 }
