@@ -83,8 +83,7 @@ namespace Graphics
 
 		Input::InputSetup();
 
-		TimeManager::targetDT = 1.0f / EngineGUI::GetScreenRefreshRate();
-		TimeManager::lastTime = high_resolution_clock::now();
+		TimeManager::InitializeDeltaTime();
 	}
 
 	void Render::GLFWSetup()

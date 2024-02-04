@@ -24,13 +24,13 @@
 #include "console.hpp"
 
 #include <iostream>
-#include <algorithm>
 #include <thread>
 
 using std::cout;
 using std::to_string;
-using std::chrono::microseconds;
-using std::chrono::duration;
+using std::chrono::milliseconds;
+using std::this_thread::sleep_for;
+using std::min;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -38,54 +38,37 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
+    void TimeManager::InitializeDeltaTime()
+    {
+        start_time = high_resolution_clock::now();
+        last_frame_time = start_time;
+
+        last_smoothed_update = last_frame_time;
+        smoothing_interval = 0.1; //how often should displayed framerate update
+    }
+
 	void TimeManager::UpdateDeltaTime()
 	{
-		//get the current time in seconds
-		float currentFrame = static_cast<float>(glfwGetTime());
+        high_resolution_clock::time_point current_time = high_resolution_clock::now();
+        frame_duration = current_time - last_frame_time;
+        deltaTime = frame_duration.count();
 
-		//calculate the frame duration since the last frame
-		deltaTime = currentFrame - lastFrame;
+        const double targetFPS = 60.0;
+        const double targetFrameTime = 1.0 / targetFPS;
 
-		//cap delta time to a maximum value (e.g., 1.0 / 60 seconds) to prevent large time steps
-		deltaTime = std::min(deltaTime, 1.0f / 60);
+        deltaTime = min(frame_duration.count(), targetFrameTime);
 
-		//update last frame time to keep track of delta time
-		lastFrame = currentFrame;
+        last_frame_time = current_time;
 
-		//calculate elapsed time and FPS
-		auto now = high_resolution_clock::now();
-		float elapsed_seconds = duration<float>(now - lastTime).count();
+        smoothed_frame_count++;
 
-		static high_resolution_clock::time_point previousFrameTime = high_resolution_clock::now();
-		high_resolution_clock::time_point currentFrameTime = high_resolution_clock::now();
-
-		auto frameDuration = duration_cast<microseconds>(currentFrameTime - previousFrameTime);
-		fps = 1.0 / (frameDuration.count() / 1e6);
-		previousFrameTime = currentFrameTime;
-		lastTime = high_resolution_clock::now();
-
-		//calculate displayed FPS
-		high_resolution_clock::time_point currentTime = high_resolution_clock::now();
-		auto elapsedSeconds = duration_cast<duration<double>>(currentTime - lastUpdate).count();
-		if (elapsedSeconds >= 0.15f)
-		{
-			lastUpdate = currentTime;
-			displayedFPS = fps;
-
-			//print FPS to the console if enabled
-			if (Input::inputSettings.printFPSToConsole)
-			{
-				string msg = 
-					"FPS: " + to_string(displayedFPS) + ", " +
-					"Elapsed time : " + to_string(elapsed_seconds) + ", " +
-					"TargetDT: " + to_string(TimeManager::targetDT) + ", " +
-					"Frame duration: " + to_string(frameDuration.count()) + ", " +
-					"Delta Time: " + to_string(deltaTime) + "\n";
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::DEBUG,
-					msg);
-			}
-		}
+        current_time = high_resolution_clock::now();
+        elapsed_seconds = current_time - last_smoothed_update;
+        if (elapsed_seconds.count() >= smoothing_interval)
+        {
+            displayedFPS = static_cast<double>(smoothed_frame_count) / elapsed_seconds.count();
+            smoothed_frame_count = 0;
+            last_smoothed_update = current_time;
+        }
 	}
 }

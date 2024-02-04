@@ -20,21 +20,29 @@
 #include <chrono>
 
 using std::chrono::high_resolution_clock;
+using std::chrono::duration;
 
 namespace Core
 {
 	class TimeManager 
 	{
 	public:
-		static inline double fps;
 		static inline double displayedFPS;
-		static inline float deltaTime;
-		static inline float targetDT;
-		static inline high_resolution_clock::time_point lastTime;
+		static inline double deltaTime;
 
+		static void InitializeDeltaTime();
 		static void UpdateDeltaTime();
 	private:
-		static inline float lastFrame;
-		static inline high_resolution_clock::time_point lastUpdate;
+		static inline int frame_count;
+		static inline high_resolution_clock::time_point start_time;
+		static inline high_resolution_clock::time_point last_frame_time;
+		static inline duration<double> frame_duration;
+
+		//smooth displayed fps update
+		static inline int smoothed_frame_count;
+		static inline double smoothing_interval;
+		static inline high_resolution_clock::time_point last_smoothed_update;
+		static inline high_resolution_clock::time_point current_time;
+		static inline duration<double> elapsed_seconds;
 	};
 }
