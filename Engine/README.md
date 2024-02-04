@@ -12,7 +12,7 @@ Running Elypso engine creates a folder at your_documents_path\Elypso engine with
 	
 	- config.txt - holds the configuration data of the current settings for Elypso engine.
 	- engine_log.txt - writes all in-engine log messages to this external file to help with debugging.
-	- imgui.ini - the actual ImGui ini file that holds the data to construct all the ImGui windows of Elypso engine.
+	- imgui.ini - the actual ImGui ini file that holds the data to construct all the ImGui windows of Elypso engine (if none was found then a default one is always copied from your_project_path\Engine\files\imgui.ini).
 
 # Built with
 
@@ -34,9 +34,9 @@ To compile the Elypso engine from source you need to run build.bat with administ
 First run Reconfigure CMake to set up CMake, then run Build to build Elypso engine.exe.
 You can find Elypso engine.exe in one of three locations:
 		
-	- if you compiled it from source - your_project_path\Elypso_engine\build\Release
-	- if you compiled it in Release mode in Visual studio - your_project_path\Elypso_engine\out\build\x64-release
-	- if you compiled it in Debug mode in Visual studio - your_project_path\Elypso_engine\out\build\x64-debug
+	- if you compiled it from source - your_project_path\Engine\build\Release
+	- if you compiled it in Release mode in Visual studio - your_project_path\Engine\out\build\x64-release
+	- if you compiled it in Debug mode in Visual studio - your_project_path\Engine\out\build\x64-debug
 		
 # Files and folders
 		

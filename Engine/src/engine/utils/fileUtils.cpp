@@ -105,7 +105,8 @@ namespace Utils
         {
             rename(itemPath, targetPath);
 
-            output = "Renamed " + itemPath.string() + " to " + targetPath.string() + ".\n\n";
+            string outputType = isRenaming ? "Renamed " : "Moved ";
+            output = outputType + itemPath.string() + " to " + targetPath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::SUCCESS,
