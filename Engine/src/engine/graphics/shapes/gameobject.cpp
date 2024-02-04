@@ -199,8 +199,7 @@ namespace Graphics::Shape
 			for (const auto& obj : objects)
 			{
 				Type type = obj->GetMesh()->GetMeshType();
-				if (type == Type::billboard
-					|| type == Type::border)
+				if (type == Type::billboard)
 				{
 					transparentObjects.push_back(obj);
 				}
@@ -222,6 +221,9 @@ namespace Graphics::Shape
 				case Type::spot_light:
 					SpotLight::RenderSpotLight(obj, view, projection);
 					break;
+				case Type::border:
+					Border::RenderBorder(obj, view, projection);
+					break;
 				}
 			}
 
@@ -240,9 +242,6 @@ namespace Graphics::Shape
 				Type type = obj->GetMesh()->GetMeshType();
 				switch (type)
 				{
-				case Type::border:
-					Border::RenderBorder(obj, view, projection);
-					break;
 				case Type::billboard:
 					Billboard::RenderBillboard(obj, view, projection);
 					break;
