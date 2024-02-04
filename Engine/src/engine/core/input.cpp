@@ -160,13 +160,13 @@ namespace Core
                     Render::camera.cameraPos += inputSettings.cameraSpeed * currentSpeed * right);
             }
             //camera up
-            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.cameraPos += inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
             }
             //camera down
-            if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.cameraPos -= inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
