@@ -145,12 +145,9 @@ namespace Graphics::Shape
 		model = scale(model, obj->GetTransform()->GetScale());
 
 		const vector<unsigned int>& textures = obj->GetTexturesVector();
-		if (textures.size() > 0)
-		{
-			//bind diffuse map
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textures[0]);
-		}
+		//bind diffuse map
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
 
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();

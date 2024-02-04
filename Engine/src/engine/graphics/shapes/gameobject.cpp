@@ -15,6 +15,10 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+//external
+#include "glm.hpp"
+
+//engine
 #include "gameobject.hpp"
 #include "cube.hpp"
 #include "pointlight.hpp"
@@ -24,12 +28,15 @@
 #include "render.hpp"
 
 #include <iostream>
+#include <algorithm>
 
 using std::cout;
 using std::endl;
+using std::sort;
 using std::to_string;
 using std::remove;
 using std::dynamic_pointer_cast;
+using glm::distance;
 
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Border;
@@ -186,7 +193,22 @@ namespace Graphics::Shape
 	{
 		if (objects.size() > 0)
 		{
+			vector<shared_ptr<GameObject>> opaqueObjects;
+			vector<shared_ptr<GameObject>> transparentObjects;
+
 			for (const auto& obj : objects)
+			{
+				Type type = obj->GetMesh()->GetMeshType();
+				if (type == Type::billboard
+					|| type == Type::border)
+				{
+					transparentObjects.push_back(obj);
+				}
+				else opaqueObjects.push_back(obj);
+			}
+
+			//render opaque objects first
+			for (const auto& obj : opaqueObjects)
 			{
 				Type type = obj->GetMesh()->GetMeshType();
 				switch (type)
@@ -200,8 +222,26 @@ namespace Graphics::Shape
 				case Type::spot_light:
 					SpotLight::RenderSpotLight(obj, view, projection);
 					break;
+				}
+			}
+
+			//sort transparent objects by distance from camera
+			sort(transparentObjects.begin(), transparentObjects.end(),
+				[&view](const auto& a, const auto& b)
+				{
+					float distanceA = distance(a->GetTransform()->GetPosition(), vec3(view[3]));
+					float distanceB = distance(b->GetTransform()->GetPosition(), vec3(view[3]));
+					return distanceA > distanceB; //render from back to front
+				});
+
+			//render transparent objects
+			for (const auto& obj : transparentObjects)
+			{
+				Type type = obj->GetMesh()->GetMeshType();
+				switch (type)
+				{
 				case Type::border:
-					Border::RenderBorder(GetBorder(), view, projection);
+					Border::RenderBorder(obj, view, projection);
 					break;
 				case Type::billboard:
 					Billboard::RenderBillboard(obj, view, projection);
