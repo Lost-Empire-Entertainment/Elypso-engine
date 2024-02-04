@@ -65,7 +65,7 @@ namespace Core
         yaw(-90.0f), 
         pitch(0.0f), 
         lastX(0.0), lastY(0.0), 
-        firstMouse(true), 
+        firstMouse(true),
         sensitivity(sensitivity),
         cameraPos(vec3(0.0f, 1.0f, 0.0f)), 
         cameraFront(vec3(0.0f, 0.0f, -1.0f)), 
@@ -178,11 +178,16 @@ namespace Core
     {
         if (inputSettings.cameraEnabled)
         {
-            if (firstMouse)
+            if (firstMouse 
+                || inputSettings.cameraModeSwitched)
             {
+                firstMouse = false;
+                inputSettings.cameraModeSwitched = false;
+
+                SetCameraRotation(inputSettings.lastKnownRotation);
+
                 lastX = xpos;
                 lastY = ypos;
-                firstMouse = false;
             }
 
             double xOffset = xpos - lastX;
@@ -224,6 +229,12 @@ namespace Core
             && !ImGui::GetIO().WantCaptureMouse)
         {
             inputSettings.cameraEnabled = !inputSettings.cameraEnabled;
+            inputSettings.cameraModeSwitched = true;
+
+            if (!inputSettings.cameraEnabled)
+            {
+                inputSettings.lastKnownRotation = Render::camera.GetCameraRotation();
+            }
         }
         if (action == GLFW_PRESS
             && key == GLFW_KEY_DELETE)

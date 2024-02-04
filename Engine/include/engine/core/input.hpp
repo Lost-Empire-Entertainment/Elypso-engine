@@ -42,8 +42,10 @@ namespace Core
             float cameraSpeed = 2.5f;
             vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
             vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
+            vec3 lastKnownRotation = vec3(0);
             float moveSpeedMultiplier = 1.0f;
             bool cameraEnabled = false;
+            bool cameraModeSwitched = false;
 
             bool printFPSToConsole = false;
             bool printIMGUIToConsole = false;
