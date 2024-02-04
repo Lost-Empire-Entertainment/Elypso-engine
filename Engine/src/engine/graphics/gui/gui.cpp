@@ -204,14 +204,6 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Open"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Open is a placeholder button and does not yet have any functions.\n");
-			}
-
 			if (ImGui::MenuItem("Save"))
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -228,7 +220,7 @@ namespace Graphics::GUI
 					"Save As is a placeholder button and does not yet have any functions.\n");
 			}
 
-			if (ImGui::MenuItem("New Project"))
+			if (ImGui::MenuItem("New Scene"))
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,

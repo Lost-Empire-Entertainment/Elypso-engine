@@ -49,22 +49,14 @@ namespace Graphics::GUI
 	/// </summary>
 	vector<string> ignoredNames =
 	{
-		".cmake",
-		"CMakeFiles",
-		"Testing",
-		".ninja_deps",
-		".ninja_log",
-		"build.ninja",
-		"cmake_install.cmake",
-		"CMakeCache.txt",
-		"CPackConfig.cmake",
-		"CPackSourceConfig.cmake",
-		"Elypso_engine.exe",
-		"EULA.md",
-		"glad.lib",
-		"LICENSE.md",
-		"README.md",
-		"VSInheritEnvironments.txt"
+		"bat scripts",
+		//"fonts",
+		"icon.ico",
+		"icon.png",
+		"icon.rc",
+		//"icons",
+		//"shaders",
+		//"textures"
 	};
 
 	void GUIProjectHierarchy::RenderProjectHierarchy(const path& rootPath)
