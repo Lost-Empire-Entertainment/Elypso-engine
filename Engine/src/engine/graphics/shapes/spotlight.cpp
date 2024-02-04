@@ -112,7 +112,8 @@ namespace Graphics::Shape
 				innerAngle,
 				outerAngle);
 
-		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(pos, rot, scale);
+		string spotLightIconName = "icons/spotLight.png";
+		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(spotLightIconName, pos, rot, scale);
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(

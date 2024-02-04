@@ -27,14 +27,15 @@
 #include <vector>
 #include <iostream>
 
+using std::cout;
+using std::endl;
+
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-	vector<unsigned int> Texture::textures;
-
 	Texture::Texture(const string& path) : texturePath(path){}
 
 	void Texture::LoadTexture(const shared_ptr<GameObject>& obj, const string& textureName, bool flipTexture, GLenum pixelFormat)
@@ -62,9 +63,7 @@ namespace Graphics
 			glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, width, height, 0, pixelFormat, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			textures.push_back(texture);
-			vector<unsigned int> objTextures = obj->GetTexturesVector();
-			objTextures.push_back(texture);
+			obj->AddTexture(texture);
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::TEXTURE,

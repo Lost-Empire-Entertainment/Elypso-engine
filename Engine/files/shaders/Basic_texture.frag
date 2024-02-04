@@ -15,26 +15,19 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#pragma once
+#version 330 core
 
-//external
-#include "glm.hpp"
+uniform sampler2D diffuse;
+in vec2 TexCoords;
 
-//engine
-#include "gameobject.hpp"
+uniform float transparency;
+uniform vec3 color;
 
-using Graphics::Shape::GameObject;
+out vec4 FragColor;
 
-using glm::vec3;
-using glm::mat4;
-
-namespace Graphics::Shape
+void main()
 {
-	class Billboard
-	{
-	public:
-		static shared_ptr<GameObject> InitializeBillboard(const string& iconName, const vec3& pos, const vec3& rot, const vec3& scale);
-
-		static void RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
-	};
+    vec4 textureColor = texture(diffuse, TexCoords);
+    vec4 outputColor = vec4(textureColor.rgb * color, textureColor.a * transparency);
+    FragColor = outputColor;
 }

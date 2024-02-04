@@ -23,6 +23,7 @@
 //engine
 #include "billboard.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
@@ -34,6 +35,7 @@ using glm::quat;
 using glm::scale;
 
 using Graphics::Shader;
+using Graphics::Texture;
 using Graphics::Shape::Mesh;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Material;
@@ -44,31 +46,27 @@ using Physics::Select;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> Billboard::InitializeBillboard(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> Billboard::InitializeBillboard(const string& iconName, const vec3& pos, const vec3& rot, const vec3& scale)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
-		float vertices[] =
+		float vertices[] = 
 		{
-			//corners of the billboard
-			-0.25f, -0.25f, -0.25f,
-			 0.25f, -0.25f, -0.25f,
-
-			 0.25f, -0.25f, -0.25f,
-			 0.25f,  0.25f, -0.25f,
-
-			 0.25f,  0.25f, -0.25f,
-			-0.25f,  0.25f, -0.25f,
-
-			-0.25f,  0.25f, -0.25f,
-			-0.25f, -0.25f, -0.25f
+			//positions             //normals            //texture coords
+			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+			 0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+			 0.25f,  0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+			 0.25f,  0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+			-0.25f,  0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f
 		};
+
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
 
 		Shader billboardShader = Shader(
-			Engine::filesPath + "/shaders/Basic_model.vert",
-			Engine::filesPath + "/shaders/Basic.frag");
+			Engine::filesPath + "/shaders/Basic_texture.vert",
+			Engine::filesPath + "/shaders/Basic_texture.frag");
 
 		GLuint vao, vbo;
 
@@ -78,8 +76,15 @@ namespace Graphics::Shape
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		//position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
+		//normal attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		//texture attribute
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
 
 		glBindVertexArray(0);
 
@@ -99,7 +104,15 @@ namespace Graphics::Shape
 			basicShape,
 			textures);
 
+		Texture tex(Engine::filesPath);
+		tex.LoadTexture(obj, iconName, true, GL_RGBA);
+
+		Shader assignedShader = obj->GetMaterial()->GetShader();
+		assignedShader.Use();
+		assignedShader.SetInt("material.diffuse", 0);
+
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddBillboard(obj);
 
 		return obj;
 	}
@@ -112,8 +125,8 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		shader.SetFloat("transparency", 1.0f);
-		shader.SetVec3("color", vec3(1.0));
+		shader.SetFloat("transparency", 0.5f);
+		shader.SetVec3("color", vec3(1));
 
 		mat4 model = mat4(1.0f);
 
@@ -131,9 +144,17 @@ namespace Graphics::Shape
 
 		model = scale(model, obj->GetTransform()->GetScale());
 
+		const vector<unsigned int>& textures = obj->GetTexturesVector();
+		if (textures.size() > 0)
+		{
+			//bind diffuse map
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textures[0]);
+		}
+
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINES, 0, 8);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 }

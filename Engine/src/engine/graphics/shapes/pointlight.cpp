@@ -120,7 +120,8 @@ namespace Graphics::Shape
 				intensity, 
 				distance);
 
-		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(pos, rot, scale);
+		string pointLightIconName = "icons/pointLight.png";
+		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(pointLightIconName, pos, rot, scale);
 
 		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(

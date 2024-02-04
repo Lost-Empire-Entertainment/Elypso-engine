@@ -15,26 +15,24 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#pragma once
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
 
-//external
-#include "glm.hpp"
+out vec3 FragPos;
+out vec3 Normal;
+out vec2 TexCoords;
 
-//engine
-#include "gameobject.hpp"
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
-using Graphics::Shape::GameObject;
-
-using glm::vec3;
-using glm::mat4;
-
-namespace Graphics::Shape
+void main()
 {
-	class Billboard
-	{
-	public:
-		static shared_ptr<GameObject> InitializeBillboard(const string& iconName, const vec3& pos, const vec3& rot, const vec3& scale);
-
-		static void RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
-	};
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    Normal = mat3(transpose(inverse(model))) * aNormal;  
+    TexCoords = aTexCoords;
+    
+    gl_Position = projection * view * vec4(FragPos, 1.0);
 }

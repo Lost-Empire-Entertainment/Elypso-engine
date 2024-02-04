@@ -34,7 +34,6 @@ namespace Graphics
 	class Texture
 	{
 	public:
-		static vector<unsigned int> textures;
 		const string texturePath;
 		Texture(const string& path);
 

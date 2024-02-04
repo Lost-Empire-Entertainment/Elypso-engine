@@ -236,12 +236,16 @@ namespace Graphics::Shape
 		model *= mat4_cast(newRot);
 		model = scale(model, obj->GetTransform()->GetScale());
 
-		//bind diffuse map
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture::textures[0]);
-		//bind specular map
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, Texture::textures[1]);
+		const vector<unsigned int>& textures = obj->GetTexturesVector();
+		if (textures.size() > 0)
+		{
+			//bind diffuse map
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textures[0]);
+			//bind specular map
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, textures[1]);
+		}
 
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
