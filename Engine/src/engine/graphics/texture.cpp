@@ -63,7 +63,7 @@ namespace Graphics
 			glTexImage2D(GL_TEXTURE_2D, 0, pixelFormat, width, height, 0, pixelFormat, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			obj->AddTexture(texture);
+			obj->GetMaterial()->AddTexture(textureName, texture);
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::TEXTURE,

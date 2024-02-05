@@ -109,7 +109,8 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(pointLightShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
+		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", pointLightShader);
 
 		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
 		float intensity = 1.0f;
@@ -123,7 +124,6 @@ namespace Graphics::Shape
 		string pointLightIconName = "icons/pointLight.png";
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(pointLightIconName, pos, rot, scale);
 
-		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true, 
 			"Point light", 
@@ -131,8 +131,7 @@ namespace Graphics::Shape
 			transform, 
 			mesh, 
 			mat, 
-			pointLight,
-			textures);
+			pointLight);
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);

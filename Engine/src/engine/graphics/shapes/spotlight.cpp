@@ -97,7 +97,8 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(spotlightShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
+		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", spotlightShader);
 
 		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
 		float intensity = 1.0f;
@@ -115,7 +116,6 @@ namespace Graphics::Shape
 		string spotLightIconName = "icons/spotLight.png";
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(spotLightIconName, pos, rot, scale);
 
-		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,
 			"Spotlight",
@@ -123,8 +123,7 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
-			spotLight,
-			textures);
+			spotLight);
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);

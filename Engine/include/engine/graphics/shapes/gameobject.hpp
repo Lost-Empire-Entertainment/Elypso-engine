@@ -82,7 +82,6 @@ namespace Graphics::Shape
 	{
 	public:
 		Material(
-			const Shader& shader, 
 			const GLuint& VAO,
 			const GLuint& VBO);
 		~Material()
@@ -93,14 +92,30 @@ namespace Graphics::Shape
 			glDeleteBuffers(1, &VBO);
 		}
 
-		void SetShader(const Shader& newShader) { shader = newShader; }
 		void SetVAO(const GLuint& newVAO) { VAO = newVAO; }
 		void SetVBO(const GLuint& newVBO) { VBO = newVBO; }
+		void AddTexture(const string& newTextureName, const unsigned int& newTextureID)
+		{
+			textureNames.push_back(newTextureName);
+			textureIDs.push_back(newTextureID);
+		}
+		void AddShader(const string& vertShader, const string& fragShader, const Shader& newShader)
+		{
+			shaderNames.push_back(vertShader);
+			shaderNames.push_back(fragShader);
+			shader = newShader;
+		}
 
-		const Shader& GetShader() const { return shader; }
 		const GLuint& GetVAO() const { return VAO; }
 		const GLuint& GetVBO() const { return VBO; }
+		const unsigned int& GetTextureID(unsigned int position) const { return textureIDs[position]; }
+		const string& GetTextureName(unsigned int position) const { return textureNames[position]; }
+		const string& GetShaderName(unsigned int position) const { return shaderNames[position]; }
+		const Shader& GetShader() const { return shader; }
 	private:
+		vector<string> textureNames;
+		vector<unsigned int> textureIDs;
+		vector<string> shaderNames;
 		Shader shader;
 		GLuint VAO;
 		GLuint VBO;
@@ -181,8 +196,7 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& assignedTransform,
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<BasicShape_Variables>& basicShapeVariables,
-			const vector<unsigned int> textures);
+			const shared_ptr<BasicShape_Variables>& basicShapeVariables);
 
 		//point light
 		GameObject(
@@ -192,8 +206,7 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& assignedTransform,
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<PointLight_Variables>& pointLightVariables,
-			const vector<unsigned int> textures);
+			const shared_ptr<PointLight_Variables>& pointLightVariables);
 
 		//spotlight
 		GameObject(
@@ -203,13 +216,11 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& assignedTransform,
 			const shared_ptr<Mesh>& assignedMesh,
 			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<SpotLight_Variables>& spotLightVariables,
-			const vector<unsigned int> textures);
+			const shared_ptr<SpotLight_Variables>& spotLightVariables);
 
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
-		void AddTexture(const unsigned int& newTexture) { textures.push_back(newTexture); }
 
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
@@ -217,6 +228,7 @@ namespace Graphics::Shape
 		void SetBasicShape(const shared_ptr<BasicShape_Variables>& newBasicShape) { basicShape = newBasicShape; }
 		void SetPointLight(const shared_ptr<PointLight_Variables>& newPointLight) { pointLight = newPointLight; }
 		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight) { spotLight = newSpotLight; }
+
 		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
 		void SetChild(const shared_ptr<GameObject>& newChild) { child = newChild; }
 		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder) { parentBillboardHolder = newParentBillboardHolder; }
@@ -232,7 +244,6 @@ namespace Graphics::Shape
 		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
-		const vector<unsigned int>& GetTexturesVector() const { return textures; }
 		const shared_ptr<GameObject>& GetParent() const { return parent; }
 		const shared_ptr<GameObject>& GetChild() const { return child; }
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
@@ -248,7 +259,6 @@ namespace Graphics::Shape
 		shared_ptr<BasicShape_Variables> basicShape;
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;
-		vector<unsigned int> textures;
 		shared_ptr<GameObject> parent;
 		shared_ptr<GameObject> child;
 		shared_ptr<GameObject> parentBillboardHolder;

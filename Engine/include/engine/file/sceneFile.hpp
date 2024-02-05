@@ -23,14 +23,10 @@ using std::string;
 
 namespace EngineFile
 {
-	class ConfigFile
+	class SceneFile
 	{
 	public:
-		static void ProcessFirstConfigValues();
-		static void ProcessConfigFile(const string& fileName);
-		static void SaveDataAtShutdown();
-	private:
-		static bool IsValueInRange(string type, string value);
-		static void SetConfigValuesToDefaultValues();
+		static void LoadScene(const string& fileName);
+		static void SaveCurrentScene();
 	};
 }

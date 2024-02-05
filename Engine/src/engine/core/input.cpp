@@ -32,6 +32,7 @@
 #include "input.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
+#include "sceneFile.hpp"
 
 #include <iostream>
 #include <string>
@@ -49,6 +50,7 @@ using std::numeric_limits;
 using Physics::Select;
 using Graphics::Render;
 using Core::ConsoleManager;
+using EngineFile::SceneFile;
 using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -160,15 +162,13 @@ namespace Core
                     Render::camera.cameraPos += inputSettings.cameraSpeed * currentSpeed * right);
             }
             //camera up
-            if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS
-                || glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.cameraPos += inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
             }
             //camera down
-            if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS
-                || glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.cameraPos -= inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
@@ -226,8 +226,9 @@ namespace Core
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
-        if (action == GLFW_PRESS
-            && key == GLFW_KEY_ESCAPE
+        //toggle camera input on and off
+        if (key == GLFW_KEY_ESCAPE
+            && action == GLFW_PRESS
             && !ImGui::GetIO().WantCaptureMouse)
         {
             inputSettings.cameraEnabled = !inputSettings.cameraEnabled;
@@ -238,13 +239,23 @@ namespace Core
                 inputSettings.lastKnownRotation = Render::camera.GetCameraRotation();
             }
         }
-        if (action == GLFW_PRESS
-            && key == GLFW_KEY_DELETE)
+
+        //delete selected gameobject
+        if (key == GLFW_KEY_DELETE
+            && action == GLFW_PRESS)
         {
             Select::isObjectSelected = false;
             shared_ptr<GameObject> selectedObj = Select::selectedObj;
             Select::selectedObj = nullptr;
             GameObjectManager::DestroyGameObject(selectedObj);
+        }
+
+        //save current scene
+        if (key == GLFW_KEY_S
+            && mods == GLFW_MOD_CONTROL
+            && action == GLFW_PRESS)
+        {
+            SceneFile::SaveCurrentScene();
         }
     }
 

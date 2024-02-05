@@ -19,7 +19,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
-#include "magic_enum.hpp"
 
 //engine
 #include "console.hpp"
@@ -42,6 +41,7 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "selectobject.hpp"
+#include "sceneFile.hpp"
 
 #include <string>
 #include <filesystem>
@@ -75,6 +75,7 @@ using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
+using EngineFile::SceneFile;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -206,10 +207,7 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Save"))
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Save is a placeholder button and does not yet have any functions.\n");
+				SceneFile::SaveCurrentScene();
 			}
 
 			if (ImGui::MenuItem("Save As"))

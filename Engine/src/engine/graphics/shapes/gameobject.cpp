@@ -54,47 +54,29 @@ namespace Graphics::Shape
 		const vec3& assignedScale) :
 		position(assignedPosition),
 		rotation(assignedRotation),
-		scale(assignedScale)
-	{
-		SetPosition(assignedPosition);
-		SetRotation(assignedRotation);
-		SetScale(assignedScale);
-	}
+		scale(assignedScale) {}
 
 	//
 	// MESH
 	//
 
-	Mesh::Mesh(const MeshType& assignedType) : type(assignedType)
-	{
-		SetMeshType(assignedType);
-	}
+	Mesh::Mesh(const MeshType& assignedType) : type(assignedType) {}
 
 	//
 	// MATERIAL
 	//
 
 	Material::Material(
-		const Shader& assignedShader,
 		const GLuint& assignedVAO,
 		const GLuint& assignedVBO) :
-		shader(assignedShader),
 		VAO(assignedVAO),
-		VBO(assignedVBO)
-	{
-		SetShader(assignedShader);
-		SetVAO(assignedVAO);
-		SetVBO(assignedVBO);
-	}
+		VBO(assignedVBO) {}
 
 	//
 	// MATERIAL VALUES
 	//
 
-	BasicShape_Variables::BasicShape_Variables(const float& assignedShininess) : shininess(assignedShininess)
-	{
-		SetShininess(assignedShininess);
-	}
+	BasicShape_Variables::BasicShape_Variables(const float& assignedShininess) : shininess(assignedShininess) {}
 
 	SpotLight_Variables::SpotLight_Variables(
 		const vec3& assignedDiffuse,
@@ -106,14 +88,7 @@ namespace Graphics::Shape
 		intensity(assignedIntensity),
 		distance(assignedDistance),
 		innerAngle(assignedInnerAngle),
-		outerAngle(assignedOuterAngle)
-	{
-		SetDiffuse(assignedDiffuse);
-		SetIntensity(assignedIntensity);
-		SetDistance(assignedDistance);
-		SetInnerAngle(assignedInnerAngle);
-		SetOuterAngle(assignedOuterAngle);
-	}
+		outerAngle(assignedOuterAngle) {}
 
 	PointLight_Variables::PointLight_Variables(
 		const vec3& assignedDiffuse,
@@ -121,12 +96,7 @@ namespace Graphics::Shape
 		const float& assignedDistance) :
 		diffuse(assignedDiffuse),
 		intensity(assignedIntensity),
-		distance(assignedDistance)
-	{
-		SetDiffuse(assignedDiffuse);
-		SetIntensity(assignedIntensity);
-		SetDistance(assignedDistance);
-	}
+		distance(assignedDistance) {}
 
 	//
 	// GAMEOBJECT
@@ -139,8 +109,7 @@ namespace Graphics::Shape
 		const shared_ptr<Transform>& assignedTransform,
 		const shared_ptr<Mesh>& assignedMesh, 
 		const shared_ptr<Material>& assignedMaterial,
-		const shared_ptr<BasicShape_Variables>& assignedBasicShape,
-		const vector<unsigned int> assignedTextures) :
+		const shared_ptr<BasicShape_Variables>& assignedBasicShape) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
@@ -156,16 +125,14 @@ namespace Graphics::Shape
 		const shared_ptr<Transform>& assignedTransform,
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
-		const shared_ptr<PointLight_Variables>& assignedPointLight,
-		const vector<unsigned int> assignedTextures) :
+		const shared_ptr<PointLight_Variables>& assignedPointLight) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
 		transform(assignedTransform),
 		mesh(assignedMesh),
 		material(assignedMaterial),
-		pointLight(assignedPointLight),
-		textures(assignedTextures) {}
+		pointLight(assignedPointLight) {}
 
 	GameObject::GameObject(
 		const bool& assignedIsInitialized,
@@ -174,16 +141,14 @@ namespace Graphics::Shape
 		const shared_ptr<Transform>& assignedTransform,
 		const shared_ptr<Mesh>& assignedMesh,
 		const shared_ptr<Material>& assignedMaterial,
-		const shared_ptr<SpotLight_Variables>& assignedSpotLight,
-		const vector<unsigned int> assignedTextures) :
+		const shared_ptr<SpotLight_Variables>& assignedSpotLight) :
 		isInitialized(assignedIsInitialized),
 		name(assignedName),
 		ID(assignedID),
 		transform(assignedTransform),
 		mesh(assignedMesh),
 		material(assignedMaterial),
-		spotLight(assignedSpotLight),
-		textures(assignedTextures) {}
+		spotLight(assignedSpotLight) {}
 
 	//
 	// GAMEOBJECT MANAGER

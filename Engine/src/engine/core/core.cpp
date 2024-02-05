@@ -23,13 +23,16 @@
 #include "timeManager.hpp"
 #include "configFile.hpp"
 #include "gui.hpp"
+#include "sceneFile.hpp"
 
 using std::cout;
 using std::endl;
 
 using Core::ShutdownManager;
-using File::ConfigFile;
+using EngineFile::ConfigFile;
 using Graphics::Render;
+using EngineFile::SceneFile;
+using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -60,6 +63,8 @@ namespace Core
 			Caller::ENGINE,
 			Type::DEBUG,
 			output);
+
+		SceneFile::LoadScene("scene.txt");
 
 		Render::RenderSetup();
 

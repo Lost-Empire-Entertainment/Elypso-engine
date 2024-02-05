@@ -108,21 +108,20 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(borderShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
+		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", borderShader);
 
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
-		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false,
 			"Border",
-			6900000,
+			-1,
 			transform,
 			mesh,
 			mat,
-			basicShape,
-			textures);
+			basicShape);
 
 		GameObjectManager::AddGameObject(obj);
 

@@ -63,7 +63,7 @@ using Core::ErrorPopup;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
-namespace File
+namespace EngineFile
 {
 	void ConfigFile::SetConfigValuesToDefaultValues()
 	{

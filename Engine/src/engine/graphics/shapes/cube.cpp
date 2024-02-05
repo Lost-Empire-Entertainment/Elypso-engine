@@ -28,10 +28,12 @@
 #include "core.hpp"
 
 #include <iostream>
+#include <map>
 
 using std::cout;
 using std::endl;
 using std::to_string;
+using std::map;
 using glm::translate;
 using glm::rotate;
 using glm::radians;
@@ -124,12 +126,12 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(cubeShader, vao, vbo);
+		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
+		mat->AddShader("shaders/GameObject.vert", "shaders/GameObject.frag", cubeShader);
 
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
-		vector<unsigned int> textures;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true, 
 			"Cube", 
@@ -137,8 +139,7 @@ namespace Graphics::Shape
 			transform, 
 			mesh,
 			mat,
-			basicShape,
-			textures);
+			basicShape);
 
 		Texture tex(Engine::filesPath);
 		tex.LoadTexture(obj, "textures/crate_2.png", false, GL_RGBA);
@@ -236,13 +237,12 @@ namespace Graphics::Shape
 		model *= mat4_cast(newRot);
 		model = scale(model, obj->GetTransform()->GetScale());
 
-		const vector<unsigned int>& textures = obj->GetTexturesVector();
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		//bind specular map
+		glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(0));
+		// bind specular map
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textures[1]);
+		glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(1));
 
 		shader.SetMat4("model", model);
 		GLuint VAO = obj->GetMaterial()->GetVAO();
