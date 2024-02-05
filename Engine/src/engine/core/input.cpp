@@ -60,6 +60,7 @@ namespace Core
     void Input::InputSetup()
     {
         ImGuiIO& io = ImGui::GetIO();
+        inputSettings.moveSpeedMultiplier = 1.0f;
     }
 
     Input::Input(GLFWwindow* window, float sensitivity) : 

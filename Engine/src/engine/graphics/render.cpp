@@ -196,7 +196,7 @@ namespace Graphics
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
 		//Calculate the new aspect ratio
-		aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+		Input::inputSettings.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
 		//Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
@@ -216,10 +216,10 @@ namespace Graphics
 
 		//calculate the new projection matrix
 		projection = perspective(
-			radians(fov),
-			aspectRatio,
-			nearClip,
-			farClip);
+			radians(Input::inputSettings.fov),
+			Input::inputSettings.aspectRatio,
+			Input::inputSettings.nearClip,
+			Input::inputSettings.farClip);
 
 		//update the camera
 		view = camera.GetViewMatrix();

@@ -98,7 +98,7 @@ namespace Graphics::GUI
 			Render::camera.GetCameraRotation().x,
 			Render::camera.GetCameraRotation().y,
 			Render::camera.GetCameraRotation().z);
-		ImGui::Text("FOV: %.0f", Graphics::Render::fov);
+		ImGui::Text("FOV: %.0f", Input::inputSettings.fov);
 
 		ImGui::Separator();
 
@@ -166,57 +166,10 @@ namespace Graphics::GUI
 		ImGui::Text("");
 
 		ImGui::Text("Near clip");
-		string nearClipText = to_string(Render::nearClip);
-		strcpy_s(inputTextBuffer_camNearClip, bufferSize, nearClipText.c_str());
-		if (ImGui::InputText("##camNearClip", inputTextBuffer_camNearClip, bufferSize))
-		{
-			try
-			{
-				camNearClip = stof(inputTextBuffer_camNearClip);
-
-				if (camNearClip < 0.0001f) camNearClip = 0.0001f;
-				if (camNearClip > camFarClip - 0.1f)
-				{
-					camNearClip = camFarClip - 0.1f;
-				}
-
-				Render::nearClip = camNearClip;
-			}
-			catch (...)
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::EXCEPTION,
-					"Error: Debug menu camera near clip cannot be empty!\n");
-			}
-		}
+		ImGui::DragFloat("##camNearClip", &Input::inputSettings.nearClip, 0.1f, 0.001f, Input::inputSettings.farClip - 0.001f);
 
 		ImGui::Text("Far clip");
-		string farClipText = to_string(Render::farClip);
-		strcpy_s(inputTextBuffer_camFarClip, bufferSize, farClipText.c_str());
-		if (ImGui::InputText("##camFarClip", inputTextBuffer_camFarClip, bufferSize))
-		{
-			try
-			{
-				camFarClip = stof(inputTextBuffer_camFarClip);
-
-				if (camFarClip < 0.1f) camFarClip = 0.1f;
-				if (camFarClip < camNearClip + 0.1f)
-				{
-					camFarClip = camNearClip + 0.1f;
-				}
-				if (camFarClip > 10000.0f) camFarClip = 10000.0f; //HARD-CAPPED TO 100000 TO SAVE PERFORMANCE
-
-				Render::farClip = camFarClip;
-			}
-			catch (...)
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::EXCEPTION,
-					"Error: Debug menu camera far clip cannot be empty!\n");
-			}
-		}
+		ImGui::DragFloat("##camFarClip", &Input::inputSettings.farClip, 0.1f, Input::inputSettings.nearClip + 0.001f, 10000);
 
 		//
 		// MOVE SPEED MULTIPLIER
@@ -225,26 +178,11 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Move speed multiplier");
-		string camMoveSpeedText = to_string(Input::inputSettings.moveSpeedMultiplier);
-		strcpy_s(inputTextBuffer_camMoveSpeedMult, bufferSize, camMoveSpeedText.c_str());
-		if (ImGui::InputText("##camMoveSpeed", inputTextBuffer_camMoveSpeedMult, bufferSize))
+		ImGui::DragFloat("##camMoveSpeed", &Input::inputSettings.moveSpeedMultiplier, 0.1f, 0.0f, 100.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##camMoveSpeed"))
 		{
-			try
-			{
-				camMovespeed = stof(inputTextBuffer_camMoveSpeedMult);
-
-				if (camMovespeed < 0) camMovespeed = 0;
-				if (camMovespeed > 100.0f) camMovespeed = 100.0f;
-
-				Input::inputSettings.moveSpeedMultiplier = camMovespeed;
-			}
-			catch (...)
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::EXCEPTION,
-					"Error: Debug menu camera movement speed multiplier cannot be empty!\n");
-			}
+			Input::inputSettings.moveSpeedMultiplier = 1.0f;
 		}
 
 		//
@@ -254,16 +192,11 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("FOV");
-		ImGui::Text("");
-		ImGui::SliderFloat("##fov", &Render::fov, 70.0f, 110.0f);
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetTooltip("Adjust camera field of view.");
-		}
+		ImGui::DragFloat("##fov", &Input::inputSettings.fov, 0.1f, 70.0f, 110.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##fov"))
 		{
-			Render::fov = 90.0f;
+			Input::inputSettings.fov = 90.0f;
 		}
 
 		//
@@ -276,7 +209,7 @@ namespace Graphics::GUI
 		ImGui::ColorEdit3("##gridColor", value_ptr(Grid::color));
 
 		ImGui::Text("Grid transparency");
-		ImGui::SliderFloat("##gridTransparency", &Grid::transparency, 0.0f, 1.0f);
+		ImGui::DragFloat("##gridTransparency", &Grid::transparency, 0.001f, 0.0f, 1.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##gridTransparency"))
 		{
@@ -302,23 +235,23 @@ namespace Graphics::GUI
 		ImGui::Text("x  ");
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirX", &Render::directionalDirection.x, -360.0f, 360.0f);
+		ImGui::DragFloat("##dirX", &Render::directionalDirection.x, 0.1f, -360.0f, 360.0f);
 		ImGui::SameLine();
 		ImGui::Text("  y  ");
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirY", &Render::directionalDirection.y, -360.0f, 360.0f);
+		ImGui::DragFloat("##dirY", &Render::directionalDirection.y, 0.1f, -360.0f, 360.0f);
 		ImGui::SameLine();
 		ImGui::Text("  z  ");
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100);
-		ImGui::SliderFloat("##dirZ", &Render::directionalDirection.z, -360.0f, 360.0f);
+		ImGui::DragFloat("##dirZ", &Render::directionalDirection.z, 0.1f, -360.0f, 360.0f);
 
 		ImGui::Text("Directional light diffuse");
 		ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse));
 
 		ImGui::Text("Directional light intensity");
-		ImGui::SliderFloat("##dirint", &Render::directionalIntensity, 0.0f, 5.0f);
+		ImGui::DragFloat("##dirint", &Render::directionalIntensity, 0.001f, 0.0f, 5.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##dirint"))
 		{

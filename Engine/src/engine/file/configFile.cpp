@@ -31,6 +31,7 @@
 #include "gui_projecthierarchy.hpp"
 #include "core.hpp"
 #include "errorpopup.hpp"
+#include "input.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -49,6 +50,7 @@ using std::filesystem::remove;
 using std::filesystem::current_path;
 using std::filesystem::create_directory;
 
+using Core::Input;
 using Core::Engine;
 using Graphics::Render;
 using Core::ConsoleManager;
@@ -71,9 +73,10 @@ namespace EngineFile
 		//Render::SCR_WIDTH = 1280; //do not uncomment! edit in render.hpp instead!
 		//Render::SCR_WIDTH = 720; //do not uncomment! edit in render.hpp instead!
 		Render::useMonitorRefreshRate = true;
-		Render::fov = 90.0f;
-		Render::nearClip = 0.001f;
-		Render::farClip = 100.0f;
+		Input::inputSettings.fov = 90.0f;
+		Input::inputSettings.moveSpeedMultiplier = 1.0f;
+		Input::inputSettings.nearClip = 0.001f;
+		Input::inputSettings.farClip = 100.0f;
 		vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
 		Render::camera.SetCameraPosition(newPosition);
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
@@ -264,16 +267,16 @@ namespace EngineFile
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						Render::fov = stof(lineVariables[0]);
+						Input::inputSettings.fov = stof(lineVariables[0]);
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set fov to " + to_string(Render::fov) + ".\n");
+							"Set fov to " + to_string(Input::inputSettings.fov) + ".\n");
 					}
 					else
 					{
-						Render::fov = 90;
+						Input::inputSettings.fov = 90;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -285,16 +288,16 @@ namespace EngineFile
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						Render::nearClip = stof(lineVariables[0]);
+						Input::inputSettings.nearClip = stof(lineVariables[0]);
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set camera near clip to " + to_string(Render::nearClip) + ".\n");
+							"Set camera near clip to " + to_string(Input::inputSettings.nearClip) + ".\n");
 					}
 					else
 					{
-						Render::nearClip = 0.001f;
+						Input::inputSettings.nearClip = 0.001f;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -306,16 +309,16 @@ namespace EngineFile
 				{
 					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
 					{
-						Render::farClip = stof(lineVariables[0]);
+						Input::inputSettings.farClip = stof(lineVariables[0]);
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::DEBUG,
-							"Set camera far clip to " + to_string(Render::farClip) + ".\n");
+							"Set camera far clip to " + to_string(Input::inputSettings.farClip) + ".\n");
 					}
 					else
 					{
-						Render::farClip = 100.0f;
+						Input::inputSettings.farClip = 100.0f;
 
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
@@ -527,9 +530,9 @@ namespace EngineFile
 		glfwGetWindowSize(Render::window, &width, &height);
 		configFile << "resolution: " << width << ", " << height << endl;
 		configFile << "vsync: " << Render::useMonitorRefreshRate << endl;
-		configFile << "fov: " << Render::fov << endl;
-		configFile << "camNearClip: " << Render::nearClip << endl;
-		configFile << "camFarClip: " << Render::farClip << endl;
+		configFile << "fov: " << Input::inputSettings.fov << endl;
+		configFile << "camNearClip: " << Input::inputSettings.nearClip << endl;
+		configFile << "camFarClip: " << Input::inputSettings.farClip << endl;
 		configFile << "camPos: " <<
 			Render::camera.GetCameraPosition().x << ", " <<
 			Render::camera.GetCameraPosition().y << ", " <<

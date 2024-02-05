@@ -44,6 +44,10 @@ namespace Core
             vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
             vec3 lastKnownRotation = vec3(0);
             float moveSpeedMultiplier = 1.0f;
+            float nearClip = 0.01f;
+            float farClip = 100.0f;
+            float fov = 90.0f;
+            float aspectRatio = 0.0f;
             bool cameraEnabled = false;
             bool cameraModeSwitched = false;
 

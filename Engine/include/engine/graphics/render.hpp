@@ -49,13 +49,9 @@ namespace Graphics
 		static inline bool useMonitorRefreshRate = true;
 
 		static inline GLFWwindow* window;
-		static inline float fov;
-		static inline float aspectRatio;
+
 		static inline int windowedWidth;
 		static inline int windowedHeight;
-		static inline float nearClip;
-		static inline float farClip;
-
 		static inline mat4 projection;
 		static inline mat4 view;
 
