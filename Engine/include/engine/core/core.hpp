@@ -27,7 +27,7 @@ namespace Core
 	{
 	public:
 		static inline string name = "Elypso engine";
-		static inline string version = "0.0.10 Prototype";
+		static inline string version = "0.0.11 Prototype";
 		static inline string docsPath;
 		static inline string filesPath;
 
