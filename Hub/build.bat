@@ -4,12 +4,12 @@
 :: Read LICENSE.md and EULA.md for more information.
 
 @echo off
-:: Batch script to build the executable and create the installer for the engine
+:: Batch script to build the executable and create the installer for Elypso hub
 
 :: Reusable message types printed to console
-set "enexc=[ENGINE_EXCEPTION]"
-set "eninf=[ENGINE_INFO]"
-set "encln=[ENGINE_CLEANUP]"
+set "enexc=[HUB_EXCEPTION]"
+set "eninf=[HUB_INFO]"
+set "encln=[HUB_CLEANUP]"
 set "cminf=[CMAKE_INFO]"
 set "cmerr=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
@@ -17,7 +17,7 @@ set "cpinf=[CPACK_INFO]"
 set "cperr=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
-set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
+set "documentsPath=%USERPROFILE%\Documents\Elypso hub"
 set "outPath=%~dp0out"
 set "vsPath=%~dp0.vs"
 
@@ -34,7 +34,7 @@ if %errorlevel% neq 0 (
 :menu
 cls
 
-echo Elypso engine setup
+echo Elypso hub setup
 echo.
 echo Copyright (C) 2024 Greenlaser
 echo.
@@ -51,11 +51,11 @@ echo.
 echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake
-echo 2. Build Elypso engine
+echo 2. Build Elypso hub
 echo 3. Exit
 echo.
 echo 9. Clean Visual Studio (DELETES OUT AND .VS FOLDERS)
-echo 0. Clean engine (DELETES BUILD AND ENGINE DOCUMENTS FOLDERS)
+echo 0. Clean hub (DELETES BUILD AND HUB DOCUMENTS FOLDERS)
 echo.
 set /p choice="Choice: "
 
@@ -111,7 +111,7 @@ if not exist "%buildPath%" (
 	cmake --build . --config Release
 	
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly.
+		echo %cmerr% Build failed because Elypso hub.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
 	)
@@ -152,7 +152,7 @@ cd /d "%~dp0"
 	
 if not exist "%buildPath%" (
 	if not exist "%documentsPath%" (
-		echo %encln% There are no engine folders to remove.
+		echo %encln% There are no hub folders to remove.
 		pause
 		goto menu
 	)
@@ -163,7 +163,7 @@ if exist "%buildPath%" (
 	rd /s /q "%buildPath%"
 )
 if exist "%documentsPath%" (
-	echo %encln% Deleted folder: Documents/Elypso engine
+	echo %encln% Deleted folder: Documents/Elypso hub
 	rd /s /q "%documentsPath%"
 )
 	

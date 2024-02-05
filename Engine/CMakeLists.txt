@@ -181,7 +181,7 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_engine>/README.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/README.md
+    ${CMAKE_SOURCE_DIR}/README.md
     $<TARGET_FILE_DIR:Elypso_engine>/README.md
 )
 
