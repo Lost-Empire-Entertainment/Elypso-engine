@@ -2,3 +2,8 @@
 Engine/build/
 Engine/.vs/
 Engine/out/
+
+# Elypso hub ignored files and folders
+Hub/build/
+Hub/.vs/
+Hub/out/

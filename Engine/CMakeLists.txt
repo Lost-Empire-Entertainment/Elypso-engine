@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.27)
+cmake_minimum_required (VERSION 3.8)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -121,7 +121,6 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/engine/graphics/shapes
 	${INCLUDE_DIR}/engine/physics
 	${INCLUDE_DIR}/engine/utils
-	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/glm

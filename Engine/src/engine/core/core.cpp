@@ -64,7 +64,7 @@ namespace Core
 			Type::DEBUG,
 			output);
 
-		SceneFile::LoadScene("scene.txt");
+		SceneFile::CheckForStartupSceneFile();
 
 		Render::RenderSetup();
 

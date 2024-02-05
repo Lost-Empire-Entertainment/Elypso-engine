@@ -51,24 +51,63 @@ using Type = Core::ConsoleManager::Type;
 
 namespace EngineFile
 {
-	void SceneFile::LoadScene(const string& filePath)
+	void SceneFile::CheckForStartupSceneFile()
 	{
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-		if (objects.size() == 0)
+
+	}
+
+	void SceneFile::CreateNewScene(const string& filePath)
+	{
+		string fullPath = Engine::filesPath + filePath;
+		if (exists(fullPath))
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
-				Type::INFO,
-				"Successfully loaded " + filePath + "!\n");
+				Type::EXCEPTION,
+				"Tried to create " + filePath + " but it already exists!\n");
+			return;
+		}
+
+		ofstream sceneFile(fullPath);
+
+		if (!sceneFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Couldn't open " + filePath + "!\n");
+			return;
+		}
+
+		sceneFile.close();
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"Successfully created " + filePath + "!\n");
+	}
+
+	void SceneFile::LoadScene(const string& filePath)
+	{
+		if (!exists(Engine::filesPath + filePath))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Tried to load " + filePath + " but it doesn't exist!\n");
 			return;
 		}
 
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
 
-		for (const auto& obj : objects)
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
+		if (objects.size() != 0)
 		{
-			GameObjectManager::DestroyGameObject(obj);
+			for (const auto& obj : objects)
+			{
+				GameObjectManager::DestroyGameObject(obj);
+			}
 		}
 
 		ConsoleManager::WriteConsoleMessage(
