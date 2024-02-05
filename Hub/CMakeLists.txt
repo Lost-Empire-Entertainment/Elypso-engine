@@ -76,6 +76,7 @@ target_compile_features(Elypso_hub PRIVATE cxx_std_20)
 target_include_directories(Elypso_hub PRIVATE 
 	${INCLUDE_DIR}/hub
 	${INCLUDE_DIR}/hub/core
+	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/imgui

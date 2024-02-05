@@ -89,14 +89,6 @@ namespace EngineFile
 
 		Engine::docsPath = Search::FindDocumentsFolder();
 
-		path filesPath = current_path().generic_string() + "/files";
-		if (!exists(filesPath))
-		{
-			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
-			return;
-		}
-		Engine::filesPath = filesPath.string();
-
 		if (!exists(Engine::docsPath))
 		{
 			try
@@ -112,6 +104,14 @@ namespace EngineFile
 
 	void ConfigFile::ProcessFirstConfigValues()
 	{
+		path filesPath = current_path().generic_string() + "/files";
+		if (!exists(filesPath))
+		{
+			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
+			return;
+		}
+		Engine::filesPath = filesPath.string();
+
 		string configFilePath = Search::FindDocumentsFolder() + "/config.txt";
 		string debugMessagesCheck = "consoleDebugMessages";
 		string fontScale = "fontScale";

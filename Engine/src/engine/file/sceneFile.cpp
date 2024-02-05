@@ -25,6 +25,7 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "fileUtils.hpp"
+#include "errorpopup.hpp"
 
 #include <vector>
 #include <memory>
@@ -36,6 +37,7 @@ using std::to_string;
 using std::vector;
 using std::shared_ptr;
 using std::ofstream;
+using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::path;
 
@@ -44,6 +46,7 @@ using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Physics::Select;
 using Core::Engine;
+using Core::ErrorPopup;
 using Utils::File;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -53,7 +56,12 @@ namespace EngineFile
 {
 	void SceneFile::CheckForStartupSceneFile()
 	{
-
+		path filesPath = current_path().generic_string();
+		if (!exists(filesPath.string() + "/openedproject.txt"))
+		{
+			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find project load file! Shutting down.");
+			return;
+		}
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)
