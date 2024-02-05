@@ -12,7 +12,7 @@ Running Elypso engine creates a folder at your_documents_path\Elypso engine with
 	
 	- config.txt - holds the configuration data of the current settings for Elypso engine.
 	- engine_log.txt - writes all in-engine log messages to this external file to help with debugging.
-	- imgui.ini - the actual ImGui ini file that holds the data to construct all the ImGui windows of Elypso engine (if none was found then a default one is always copied from your_project_path\Engine\files\imgui.ini).
+	- imgui.ini - the actual ImGui ini file that holds the data to construct all the ImGui windows of Elypso engine
 
 # Built with
 
@@ -46,8 +46,11 @@ It has five created folders that are required to go along with all distributed v
 	
 	- bat scripts - holds bat scripts that are ran from inside Elypso engine for different interactions.
 	- fonts - holds all the actual Elypso engine fonts.
+	- icons - holds all the icons the engine uses for its billboards and engine icons
 	- shaders - holds all the shaders that Elypso engine and its created games use.
 	- textures - holds all the textures that Elypso engine and its created games use.
+	
+Elypso engine also has three extra files for the engine icons at the root files folder directory that are required to be added alongside with the required folders.
 		
 The Elypso engine source, header and library files are distributed into three folders:
 	
