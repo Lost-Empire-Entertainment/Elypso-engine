@@ -293,13 +293,13 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					Select::isObjectSelected = false;
-					Select::selectedObj = nullptr;
-
 					shared_ptr<GameObject> obj = Cube::InitializeCube(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
+
+					Select::selectedObj = obj;
+					Select::isObjectSelected = true;
 
 					unsigned int ID = obj->GetID();
 					vec3 pos = obj->GetTransform()->GetPosition();
@@ -324,13 +324,13 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					Select::isObjectSelected = false;
-					Select::selectedObj = nullptr;
-
 					shared_ptr<GameObject> obj = PointLight::InitializePointLight(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
+
+					Select::selectedObj = obj;
+					Select::isObjectSelected = true;
 
 					unsigned int ID = obj->GetID();
 					vec3 pos = obj->GetTransform()->GetPosition();
@@ -349,13 +349,13 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					Select::isObjectSelected = false;
-					Select::selectedObj = nullptr;
-
 					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight(
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(0.0f, 0.0f, 0.0f),
 						vec3(1.0f, 1.0f, 1.0f));
+
+					Select::selectedObj = obj;
+					Select::isObjectSelected = true;
 
 					unsigned int ID = obj->GetID();
 					vec3 pos = obj->GetTransform()->GetPosition();
