@@ -204,14 +204,13 @@ namespace Core
             yaw += xOffset;
             pitch += yOffset;
 
-            if (yaw >= 360.00f
-                || yaw <= -360.00f)
+            if (yaw > 359.99f
+                || yaw < -359.99f)
             {
                 yaw = 0.0f;
             }
-
-            if (pitch > 90.0f) pitch = 90.0f;
-            if (pitch < -90.0f) pitch = -90.0f;
+            if (pitch > 89.99f) pitch = 89.99f;
+            if (pitch < -89.99f) pitch = -89.99f;
 
             vec3 front{};
             front.x = cos(radians(yaw)) * cos(radians(pitch));
