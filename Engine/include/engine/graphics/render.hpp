@@ -38,8 +38,6 @@ namespace Graphics
 		static inline unsigned int SCR_WIDTH = 1280;
 		static inline unsigned int SCR_HEIGHT = 720;
 
-		static inline unsigned int VBO, VAO, cubeVAO, lightCubeVAO, EBO;
-
 		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
 		static inline vec3 directionalDirection = vec3(-0.2f, -1.0f, -0.3f);

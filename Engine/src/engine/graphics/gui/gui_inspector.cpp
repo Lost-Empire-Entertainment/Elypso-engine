@@ -102,7 +102,7 @@ namespace Graphics::GUI
 
 			vec3 pos = obj->GetTransform()->GetPosition();
 			ImGui::Text("Position");
-			if (ImGui::DragFloat3("##objPos", value_ptr(pos), 0.1f))
+			if (ImGui::DragFloat3("##objPos", value_ptr(pos), 0.01f))
 			{
 				obj->GetTransform()->SetPosition(pos);
 			}
@@ -116,7 +116,7 @@ namespace Graphics::GUI
 
 			vec3 scale = obj->GetTransform()->GetScale();
 			ImGui::Text("Scale");
-			if (ImGui::DragFloat3("##objScale", value_ptr(scale), 0.1f))
+			if (ImGui::DragFloat3("##objScale", value_ptr(scale), 0.01f))
 			{
 				obj->GetTransform()->SetScale(scale);
 			}
@@ -152,7 +152,7 @@ namespace Graphics::GUI
 
 				float pointIntensity = obj->GetPointLight()->GetIntensity();
 				ImGui::Text("Point light intensity");
-				if (ImGui::DragFloat("##pointint", &pointIntensity, 0.1f, 0.0f, 5.0f))
+				if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 5.0f))
 				{
 					obj->GetPointLight()->SetIntensity(pointIntensity);
 				}
@@ -185,7 +185,7 @@ namespace Graphics::GUI
 
 				float spotIntensity = obj->GetSpotLight()->GetIntensity();
 				ImGui::Text("Spotlight intensity");
-				if (ImGui::DragFloat("##spotint", &spotIntensity, 0.1f, 0.0f, 5.0f))
+				if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 5.0f))
 				{
 					obj->GetSpotLight()->SetIntensity(spotIntensity);
 				}
@@ -211,7 +211,7 @@ namespace Graphics::GUI
 				float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
 
 				ImGui::Text("Spotlight inner angle");
-				if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.1f))
+				if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
 				{
 					obj->GetSpotLight()->SetInnerAngle(spotInnerAngle);
 				}
@@ -222,7 +222,7 @@ namespace Graphics::GUI
 				}
 
 				ImGui::Text("Spotlight outer angle");
-				if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.1f, 50.0f))
+				if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 50.0f))
 				{
 					obj->GetSpotLight()->SetOuterAngle(spotOuterAngle);
 				}

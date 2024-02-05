@@ -29,16 +29,6 @@ namespace Graphics::GUI
 
 		static inline char inputTextBuffer_objName[bufferSize];
 
-		static inline char inputTextBuffer_pos_x[bufferSize];
-		static inline char inputTextBuffer_pos_y[bufferSize];
-		static inline char inputTextBuffer_pos_z[bufferSize];
-		static inline char inputTextBuffer_rot_x[bufferSize];
-		static inline char inputTextBuffer_rot_y[bufferSize];
-		static inline char inputTextBuffer_rot_z[bufferSize];
-		static inline char inputTextBuffer_scale_x[bufferSize];
-		static inline char inputTextBuffer_scale_y[bufferSize];
-		static inline char inputTextBuffer_scale_z[bufferSize];
-
 		static void RSM_SelectedObject();
 	};
 }

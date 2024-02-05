@@ -27,15 +27,5 @@ namespace Graphics::GUI
 
 		static void RD_DebugMenuInfo();
 		static void RD_Interactions();
-	private:
-		static inline const int bufferSize = 32;
-
-		static inline char inputTextBuffer_camNearClip[bufferSize];
-		static inline char inputTextBuffer_camFarClip[bufferSize];
-		static inline char inputTextBuffer_camMoveSpeedMult[bufferSize];
-
-		static inline float camNearClip;
-		static inline float camFarClip;
-		static inline float camMovespeed;
 	};
 }
