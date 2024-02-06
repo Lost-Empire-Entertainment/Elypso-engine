@@ -14,6 +14,7 @@
 #include <ShlObj.h>
 
 using std::cout;
+using std::exception;
 using std::wstring;
 using std::string;
 using std::filesystem::current_path;
@@ -150,7 +151,12 @@ void GUI::Initialize()
 			result.replace(pos, incorrectSlash.length(), correctSlash);
 			pos += correctSlash.length();
 		}
-		Core::docsPath = result;
+		Core::docsPath = result + "/Elypso hub";
+	}
+
+	if (!exists(Core::docsPath))
+	{
+		create_directory(Core::docsPath);
 	}
 
 	static string tempString = Core::docsPath.string() + "/imgui.ini";
@@ -188,7 +194,6 @@ void GUI::Render()
 	ImGui::NewFrame();
 
 	ImGuiIO& io = ImGui::GetIO();
-	maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 200);
 
 	ImGuiDockNodeFlags dockFlags =
 		ImGuiDockNodeFlags_PassthruCentralNode;
@@ -203,7 +208,21 @@ void GUI::Render()
 
 void GUI::RenderMainWindow()
 {
+	int framebufferWidth, framebufferHeight;
+	glfwGetFramebufferSize(Core::window, &framebufferWidth, &framebufferHeight);
 
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(framebufferWidth, framebufferHeight));
+
+	ImGuiWindowFlags windowFlags =
+		ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoTitleBar
+		| ImGuiWindowFlags_NoResize
+		| ImGuiWindowFlags_NoMove;
+
+	ImGui::Begin("Main", NULL, windowFlags);
+
+	ImGui::End();
 }
 
 void GUI::Shutdown()

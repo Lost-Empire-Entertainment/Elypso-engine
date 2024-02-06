@@ -37,8 +37,6 @@ public:
 class GUI
 {
 public:
-	static inline ImVec2 maxSize;
-
 	static void Initialize();
 	static void Render();
 	static void RenderMainWindow();
