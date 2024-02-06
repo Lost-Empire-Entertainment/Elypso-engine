@@ -210,14 +210,6 @@ namespace Graphics::GUI
 				SceneFile::SaveCurrentScene();
 			}
 
-			if (ImGui::MenuItem("Save As"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Save As is a placeholder button and does not yet have any functions.\n");
-			}
-
 			if (ImGui::MenuItem("New Scene"))
 			{
 				ConsoleManager::WriteConsoleMessage(

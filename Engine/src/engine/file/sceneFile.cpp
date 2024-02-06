@@ -33,8 +33,6 @@
 #include <fstream>
 #include <filesystem>
 
-using std::cout;
-using std::endl;
 using std::to_string;
 using std::vector;
 using std::shared_ptr;
@@ -61,9 +59,7 @@ namespace EngineFile
 	void SceneFile::CheckForStartupSceneFile()
 	{
 		path defaultPath = current_path().generic_string();
-		string openedProjectPath = defaultPath.string() + "/openedproject.txt";
-
-		cout << openedProjectPath << endl;
+	    path openedProjectPath = defaultPath.string() + "/openedproject.txt";
 
 		if (!exists(openedProjectPath))
 		{
@@ -88,12 +84,14 @@ namespace EngineFile
 
 		if (!exists(Engine::filesPath + sceneFile))
 		{
-			string message = "Couldn't open selected scene file '" + sceneFile + "' because it doesn't exist! Shutting down.";
+			string message = "Couldn't open scene file '" + sceneFile + "' because it doesn't exist! Shutting down.";
 			ErrorPopup::CreateErrorPopup("Invalid scene path error", message.c_str());
 			return;
 		}
 
 		openedProjectFile.close();
+
+		File::DeleteFileOrfolder(openedProjectPath);
 
 		LoadScene(sceneFile);
 	}
