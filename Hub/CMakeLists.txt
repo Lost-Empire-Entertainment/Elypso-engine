@@ -116,6 +116,14 @@ target_compile_definitions(Elypso_hub PRIVATE GLFW_INCLUDE_NONE)
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_hub DESTINATION ${CMAKE_INSTALL_BINDIR})
 
+# Copy "files" directory to the install directory after build
+add_custom_command(TARGET Elypso_hub POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:Elypso_hub>/files
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_hub>/files
+)
+
 # Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
 add_custom_command(TARGET Elypso_hub POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove

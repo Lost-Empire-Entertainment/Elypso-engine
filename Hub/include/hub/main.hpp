@@ -3,6 +3,7 @@
 //external
 #include "glfw3.h"
 #include "glm.hpp"
+#include "imgui.h"
 
 #include <filesystem>
 
@@ -23,11 +24,23 @@ public:
 	static inline float aspectRatio;
 
 	static inline path defaultPath;
+	static inline path docsPath;
 
 	static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
 	static void Initialize();
 	static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 	static void Render();
+	static void Shutdown();
+};
+
+class GUI
+{
+public:
+	static inline ImVec2 maxSize;
+
+	static void Initialize();
+	static void Render();
+	static void RenderMainWindow();
 	static void Shutdown();
 };
