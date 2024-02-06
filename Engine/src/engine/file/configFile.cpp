@@ -111,6 +111,13 @@ namespace EngineFile
 			return;
 		}
 		Engine::filesPath = filesPath.string();
+		path enginePath = current_path().generic_string() + "/engine";
+		if (!exists(enginePath))
+		{
+			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find engine folder! Shutting down.");
+			return;
+		}
+		Engine::enginePath = enginePath.string();
 
 		string configFilePath = Search::FindDocumentsFolder() + "/config.txt";
 		string debugMessagesCheck = "consoleDebugMessages";

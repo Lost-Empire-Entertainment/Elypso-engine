@@ -134,7 +134,7 @@ namespace Graphics
 		glfwSwapInterval(1);
 
 		int width, height, channels;
-		string iconpath = Engine::filesPath + "/icon.png";
+		string iconpath = Engine::enginePath + "/icon.png";
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};

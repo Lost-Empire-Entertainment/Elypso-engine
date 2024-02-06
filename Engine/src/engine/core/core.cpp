@@ -52,13 +52,19 @@ namespace Core
 			true,
 			false);
 
-		string output = "Game documents path: " + Engine::docsPath + "\n";
+		string output = "Engine documents path: " + Engine::docsPath + "\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
 			output);
 
-		output = "Game files path: " + Engine::filesPath + "\n\n";
+		output = "User engine files path: " + Engine::filesPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			output);
+
+		output = "Engine files path: " + Engine::enginePath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,

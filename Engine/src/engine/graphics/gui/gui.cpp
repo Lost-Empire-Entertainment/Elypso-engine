@@ -112,7 +112,7 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF((Engine::enginePath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		bgrColor.x = Render::backgroundColor.x;
 		bgrColor.y = Render::backgroundColor.y;
@@ -428,7 +428,7 @@ namespace Graphics::GUI
 
 	void EngineGUI::TB_CheckVersion()
 	{
-		string batFilePath = Engine::filesPath + "/bat scripts/checkVersion.bat";
+		string batFilePath = Engine::enginePath + "/bat scripts/checkVersion.bat";
 
 		if (exists(batFilePath))
 		{

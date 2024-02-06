@@ -37,6 +37,8 @@ using std::to_string;
 using std::vector;
 using std::shared_ptr;
 using std::ofstream;
+using std::ifstream;
+using std::getline;
 using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::path;
@@ -56,12 +58,40 @@ namespace EngineFile
 {
 	void SceneFile::CheckForStartupSceneFile()
 	{
+		/*
 		path filesPath = current_path().generic_string();
-		if (!exists(filesPath.string() + "/openedproject.txt"))
+		string openedProjectPath = filesPath.string() + "/openedproject.txt";
+		if (!exists(openedProjectPath))
 		{
 			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find project load file! Shutting down.");
 			return;
 		}
+
+		ifstream openedProjectFile(openedProjectPath);
+
+		if (!openedProjectFile.is_open())
+		{
+			ErrorPopup::CreateErrorPopup("File open error", "Couldn't open project load file! Shutting down.");
+			return;
+		}
+
+		string sceneFile;
+		if (!getline(openedProjectFile, sceneFile))
+		{
+			ErrorPopup::CreateErrorPopup("Empty file error", "Couldn't read from load file because it is empty! Shutting down.");
+			return;
+		}
+
+		if (!exists(Engine::filesPath + sceneFile))
+		{
+			ErrorPopup::CreateErrorPopup("Invalid scene path error", "Couldn't open selected scebe file because it doesn't exist! Shutting down.");
+			return;
+		}
+
+		openedProjectFile.close();
+
+		LoadScene(sceneFile);
+		*/
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)

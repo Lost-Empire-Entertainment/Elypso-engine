@@ -65,8 +65,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
 
 		Shader billboardShader = Shader(
-			Engine::filesPath + "/shaders/Basic_texture.vert",
-			Engine::filesPath + "/shaders/Basic_texture.frag");
+			Engine::enginePath + "/shaders/Basic_texture.vert",
+			Engine::enginePath + "/shaders/Basic_texture.frag");
 
 		GLuint vao, vbo;
 
@@ -103,7 +103,7 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
-		Texture tex(Engine::filesPath);
+		Texture tex(Engine::enginePath);
 		tex.LoadTexture(obj, iconName, true, GL_RGBA);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();

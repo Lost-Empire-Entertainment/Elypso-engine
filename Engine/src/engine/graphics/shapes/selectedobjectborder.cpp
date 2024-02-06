@@ -92,8 +92,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border);
 
 		Shader borderShader = Shader(
-			Engine::filesPath + "/shaders/Basic_model.vert",
-			Engine::filesPath + "/shaders/Basic.frag");
+			Engine::enginePath + "/shaders/Basic_model.vert",
+			Engine::enginePath + "/shaders/Basic.frag");
 
 		GLuint vao, vbo;
 

@@ -103,8 +103,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::cube);
 
 		Shader cubeShader = Shader(
-			Engine::filesPath + "/shaders/GameObject.vert",
-			Engine::filesPath + "/shaders/GameObject.frag");
+			Engine::enginePath + "/shaders/GameObject.vert",
+			Engine::enginePath + "/shaders/GameObject.frag");
 
 		GLuint vao, vbo;
 

@@ -65,7 +65,7 @@ if "%choice%"=="2" goto build
 if "%choice%"=="3" exit
 
 if "%choice%"=="9" goto cleanvs
-if "%choice%"=="0" goto cleanen
+if "%choice%"=="0" goto cleanhub
 
 echo %prexc% Invalid choice! Please enter a valid number.
 pause
@@ -146,7 +146,7 @@ if exist "%outPath%" (
 pause
 goto menu
 
-:cleanen
+:cleanhub
 :: Change to the script directory
 cd /d "%~dp0"
 	
