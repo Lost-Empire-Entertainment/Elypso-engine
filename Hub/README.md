@@ -16,10 +16,12 @@ Running Elypso hub creates a folder at your_documents_path\Elypso hub with one f
 
 These are the external libraries Elypso hub uses natively, you do not need to download or set them up yourself (except CMake), they come with Elypso hub and are functional out of the box.
 
-* [CMake](https://cmake.org/) - generates build files for the hub
+* [CMake](https://cmake.org/) - generates build files for the engine
 * [GLFW](https://www.glfw.org/) - provides a simple API for creating windows, contexts and surfaces, receiving input and events
 * [GLAD](https://glad.dav1d.de/) - simplifies the process of managing OpenGL function pointers
+* [GLM](https://github.com/g-truc/glm) - C++ mathematics library for graphics software based on the OpenGL Shading Language (GLSL) specification
 * [magic enum](https://github.com/Neargye/magic_enum) - provides static reflection for enums, work with any enum type without any macro or boilerplate code
+* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
 * [Dear ImGui](https://github.com/ocornut/imgui) - immediate mode GUI library
   
 # How to build Elypso hub from source

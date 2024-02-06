@@ -34,6 +34,10 @@ set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/hub/core")
 set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
 
+# Add GLAD
+add_library(glad STATIC ${SRC_DIR}/external/glad/glad.c)
+target_include_directories(glad PUBLIC ${INCLUDE_DIR})
+
 # Add GLFW
 set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
 
@@ -43,7 +47,7 @@ target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
 
 # Group external libraries
 add_library(external_libs INTERFACE)
-target_link_libraries(external_libs INTERFACE magic_enum)
+target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
 set(SOURCE_FILES
@@ -52,6 +56,7 @@ set(SOURCE_FILES
 
 # Add your external files
 list(APPEND SOURCE_FILES
+	${EXTERNAL_DIR}/glad/glad.c
 	${EXTERNAL_DIR}/imgui/imgui.cpp
 	${EXTERNAL_DIR}/imgui/imgui_demo.cpp
 	${EXTERNAL_DIR}/imgui/imgui_draw.cpp
@@ -59,6 +64,7 @@ list(APPEND SOURCE_FILES
 	${EXTERNAL_DIR}/imgui/imgui_impl_opengl3.cpp
 	${EXTERNAL_DIR}/imgui/imgui_tables.cpp
 	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
+	${EXTERNAL_DIR}/stb_image/stb_image.cpp
 )
 
 # Add the executable
@@ -76,12 +82,20 @@ target_include_directories(Elypso_hub PRIVATE
 	${INCLUDE_DIR}/hub
 	${INCLUDE_DIR}/hub/core
 	${INCLUDE_DIR}/external
+	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
+	${INCLUDE_DIR}/external/glm
+	${INCLUDE_DIR}/external/glm/detail
+	${INCLUDE_DIR}/external/glm/ext
+	${INCLUDE_DIR}/external/glm/gtc
+	${INCLUDE_DIR}/external/glm/gtx
+	${INCLUDE_DIR}/external/glm/simd
 	${INCLUDE_DIR}/external/magic_enum
 	${INCLUDE_DIR}/external/imgui
+	${INCLUDE_DIR}/external/stb_image
 )
 
-target_link_libraries(Elypso_hub PRIVATE external_libs ${GLFW_LIBRARY_PATH})
+target_link_libraries(Elypso_hub PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Elypso_hub PRIVATE GLFW_INCLUDE_NONE)
