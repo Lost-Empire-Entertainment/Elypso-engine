@@ -6,7 +6,7 @@ The main branch holds a stable version of the engine that is up to date with the
 
 Everything is still in early development and is highly likely to be modified a lot before alpha is released so there is no documentation provided at the current stage. Alpha is aimed for march/april 2024 and will include a bare-bones structure for making very basic games and the engine will significantly improve during alpha. Beta will release at the beginning of 2025 and is aimed to be worked on for the entirety of 2025 so the full release of this engine is aimed for the start of 2026.
 
-The engine folder README.md file contains instructions how to compile the engine from source and what files are used for what purposes and some extra details.
+The engine and hub folder README.md files contain instructions how to compile them from source and what files are used for what purposes and some extra details.
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
 
