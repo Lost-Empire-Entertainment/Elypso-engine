@@ -41,6 +41,12 @@ The origin is found at your_project_path\Hub\files.
 It has one created folder that is required to go along with all distributed versions of Elypso hub to ensure it runs:
 	
 	- fonts - holds all the actual Elypso hub fonts.
+
+Elypso hub also has three extra files for the engine icons at the root files folder directory that are required to be added alongside with the files folder:
+
+    - icon.png
+    - icon.ico
+    - icon.rc
 		
 The Elypso hub source, header and library files are distributed into three folders:
 	
