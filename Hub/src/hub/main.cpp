@@ -9,16 +9,16 @@
 #include "main.hpp"
 
 #include <iostream>
-#include <string>
+#include <algorithm>
 #include <Windows.h>
 #include <ShlObj.h>
 
 using std::cout;
 using std::exception;
 using std::wstring;
-using std::string;
 using std::filesystem::current_path;
 using std::filesystem::exists;
+using std::filesystem::directory_iterator;
 
 int main()
 {
@@ -159,6 +159,12 @@ void GUI::Initialize()
 		create_directory(Core::docsPath);
 	}
 
+	Core::projectsPath = Core::docsPath.string() + "/projects";
+	if (!exists(Core::projectsPath))
+	{
+		create_directory(Core::projectsPath);
+	}
+
 	static string tempString = Core::docsPath.string() + "/imgui.ini";
 	const char* customConfigPath = tempString.c_str();
 	io.IniFilename = customConfigPath;
@@ -222,7 +228,63 @@ void GUI::RenderMainWindow()
 
 	ImGui::Begin("Main", NULL, windowFlags);
 
+	//ImGui::BeginChild("ScrollingRegion", ImVec2(framebufferWidth - 25, framebufferHeight - 25), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+	GUI::RenderPanels(GetFiles(Core::projectsPath.string()));
+
+	//ImGui::EndChild();
+
 	ImGui::End();
+}
+
+void GUI::RenderPanels(const vector<string>& files)
+{
+	ImVec2 nextPanelPos = ImGui::GetCursorScreenPos();
+
+	for (const auto& file : files)
+	{
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoSavedSettings;
+
+		ImGui::SetNextWindowPos(nextPanelPos);
+		ImGui::SetNextWindowSize(ImVec2(minSize));
+
+		string fileName = path(file).filename().string();
+
+		ImGui::Begin(file.c_str(), NULL, windowFlags);
+
+		ImGui::SetWindowFocus();
+		ImGui::Text("File: %s", fileName.c_str());
+
+		ImGui::End();
+
+		nextPanelPos.y += minSize.y + panelSpacing;
+	}
+}
+vector<string> GUI::GetFiles(const string& path)
+{
+	vector<string> files;
+	files.clear();
+
+	//add files that exist in the projects directory
+	for (const auto& entry : directory_iterator(path))
+	{
+		if (entry.path().extension() == ".project")
+		{
+			const string filePath = entry.path().string();
+
+			if (find(files.begin(), files.end(), filePath) == files.end())
+			{
+				files.push_back(filePath);
+			}
+		}
+	}
+
+	return files;
 }
 
 void GUI::Shutdown()

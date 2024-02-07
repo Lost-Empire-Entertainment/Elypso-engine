@@ -6,7 +6,11 @@
 #include "imgui.h"
 
 #include <filesystem>
+#include <vector>
+#include <string>
 
+using std::string;
+using std::vector;
 using std::filesystem::path;
 using glm::vec3;
 
@@ -25,6 +29,7 @@ public:
 
 	static inline path defaultPath;
 	static inline path docsPath;
+	static inline path projectsPath;
 
 	static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
@@ -37,8 +42,15 @@ public:
 class GUI
 {
 public:
+	static inline float panelSpacing = 10.0f;
+	static inline ImVec2 minSize = ImVec2(400, 200);
+
 	static void Initialize();
+
 	static void Render();
 	static void RenderMainWindow();
+	static void RenderPanels(const vector<string>& files);
+	static vector<string> GetFiles(const string& path);
+
 	static void Shutdown();
 };
