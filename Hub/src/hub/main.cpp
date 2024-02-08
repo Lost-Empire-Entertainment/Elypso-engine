@@ -204,7 +204,7 @@ void GUI::Render()
 	ImGuiDockNodeFlags dockFlags =
 		ImGuiDockNodeFlags_PassthruCentralNode;
 
-	GUI::RenderMainWindow();
+	GUI::RenderPanels(GetFiles(Core::projectsPath.string()));
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
@@ -212,9 +212,8 @@ void GUI::Render()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GUI::RenderMainWindow()
+void GUI::RenderPanels(const vector<string>& files)
 {
-	int framebufferWidth, framebufferHeight;
 	glfwGetFramebufferSize(Core::window, &framebufferWidth, &framebufferHeight);
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
@@ -228,17 +227,6 @@ void GUI::RenderMainWindow()
 
 	ImGui::Begin("Main", NULL, windowFlags);
 
-	//ImGui::BeginChild("ScrollingRegion", ImVec2(framebufferWidth - 25, framebufferHeight - 25), true, ImGuiWindowFlags_HorizontalScrollbar);
-
-	GUI::RenderPanels(GetFiles(Core::projectsPath.string()));
-
-	//ImGui::EndChild();
-
-	ImGui::End();
-}
-
-void GUI::RenderPanels(const vector<string>& files)
-{
 	ImVec2 nextPanelPos = ImGui::GetCursorScreenPos();
 
 	for (const auto& file : files)
@@ -264,7 +252,10 @@ void GUI::RenderPanels(const vector<string>& files)
 
 		nextPanelPos.y += minSize.y + panelSpacing;
 	}
+
+	ImGui::End();
 }
+
 vector<string> GUI::GetFiles(const string& path)
 {
 	vector<string> files;
