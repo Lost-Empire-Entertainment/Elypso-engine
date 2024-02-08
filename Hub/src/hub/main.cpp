@@ -219,39 +219,45 @@ void GUI::RenderPanels(const vector<string>& files)
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(framebufferWidth, framebufferHeight));
 
-	ImGuiWindowFlags windowFlags =
+	ImGuiWindowFlags mainWindowFlags =
 		ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_NoTitleBar
 		| ImGuiWindowFlags_NoResize
 		| ImGuiWindowFlags_NoMove;
 
-	ImGui::Begin("Main", NULL, windowFlags);
+	ImGui::Begin("Main", NULL, mainWindowFlags);
+
+	int height = (minSize.y + panelSpacing) * files.size();
+	if (height < framebufferHeight - 20) height = framebufferHeight - 20;
+	ImGui::BeginChild("ScrollingRegion", ImVec2(framebufferWidth, height), true, ImGuiWindowFlags_HorizontalScrollbar);
 
 	ImVec2 nextPanelPos = ImGui::GetCursorScreenPos();
 
 	for (const auto& file : files)
 	{
 		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoTitleBar
-			| ImGuiWindowFlags_NoResize
-			| ImGuiWindowFlags_NoMove
-			| ImGuiWindowFlags_NoSavedSettings;
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoSavedSettings;
 
 		ImGui::SetNextWindowPos(nextPanelPos);
 		ImGui::SetNextWindowSize(ImVec2(minSize));
 
-		string fileName = path(file).filename().string();
-
 		ImGui::Begin(file.c_str(), NULL, windowFlags);
 
 		ImGui::SetWindowFocus();
+
+		string fileName = path(file).filename().string();
 		ImGui::Text("File: %s", fileName.c_str());
 
 		ImGui::End();
 
 		nextPanelPos.y += minSize.y + panelSpacing;
 	}
+
+	ImGui::EndChild();
 
 	ImGui::End();
 }
