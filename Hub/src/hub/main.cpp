@@ -216,16 +216,19 @@ void GUI::RenderPanels(const vector<string>& files)
 {
 	glfwGetFramebufferSize(Core::window, &framebufferWidth, &framebufferHeight);
 
-	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2(framebufferWidth, framebufferHeight));
+	ImGui::SetNextWindowSize(ImVec2(900, framebufferHeight));
 
 	ImGuiWindowFlags mainWindowFlags =
 		ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_NoTitleBar
 		| ImGuiWindowFlags_NoResize
-		| ImGuiWindowFlags_NoMove;
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings;
 
 	ImGui::Begin("Main", NULL, mainWindowFlags);
+
+	float mainWindowX = framebufferWidth - ImGui::GetWindowSize().x;
+	ImGui::SetWindowPos(ImVec2(mainWindowX, 0));
 
 	int height = (minSize.y + panelSpacing) * files.size();
 	if (height < framebufferHeight - 20) height = framebufferHeight - 20;
@@ -236,21 +239,29 @@ void GUI::RenderPanels(const vector<string>& files)
 	for (const auto& file : files)
 	{
 		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoTitleBar |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoMove |
-			ImGuiWindowFlags_NoSavedSettings;
+			ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoSavedSettings;
 
 		ImGui::SetNextWindowPos(nextPanelPos);
 		ImGui::SetNextWindowSize(ImVec2(minSize));
 
 		ImGui::Begin(file.c_str(), NULL, windowFlags);
 
-		ImGui::SetWindowFocus();
+		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+		{
+			ImGui::SetWindowFocus();
+		}
 
 		string fileName = path(file).filename().string();
 		ImGui::Text("File: %s", fileName.c_str());
+
+		if (ImGui::Button("Launch", ImVec2(200, 50)))
+		{
+			cout << "launching " << fileName << "\n\n";
+		}
 
 		ImGui::End();
 

@@ -44,7 +44,7 @@ class GUI
 public:
 	static inline int framebufferWidth, framebufferHeight;
 	static inline float panelSpacing = 10.0f;
-	static inline ImVec2 minSize = ImVec2(400, 200);
+	static inline ImVec2 minSize = ImVec2(865, 200);
 
 	static void Initialize();
 
