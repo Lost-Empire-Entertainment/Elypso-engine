@@ -10,8 +10,8 @@
 
 #include <iostream>
 #include <algorithm>
-#include <Windows.h>
 #include <ShlObj.h>
+#include <fstream>
 
 using std::cout;
 using std::exception;
@@ -19,6 +19,7 @@ using std::wstring;
 using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
+using std::ofstream;
 
 int main()
 {
@@ -305,6 +306,43 @@ void GUI::RenderButtons()
 	ImGui::End();
 }
 
+void GUI::NewProject()
+{
+	string path = SetNewProjectFolderPath(NULL);
+
+	if (path.empty())
+	{
+		cout << "Cancelled folder selection...\n\n";
+		return;
+	}
+
+	for (const auto& entry : directory_iterator(path))
+	{
+		if (entry.is_regular_file()
+			|| entry.is_directory())
+		{
+			cout << "Error: Cannot create a project inside a folder with content inside it!\n\n";
+			return;
+		}
+	}
+
+	ofstream scene(path + "/scene.txt");
+	if (!scene.is_open())
+	{
+		cout << "Error: Failed to open scene file at " << path + "/scene.txt\n\n";
+		return;
+	}
+
+	scene.close();
+
+	cout << "Created new project at " << path << "\n\n";
+}
+
+void GUI::AddProject()
+{
+	cout << "Added existing project" << "\n\n";
+}
+
 vector<string> GUI::GetFiles(const string& path)
 {
 	vector<string> files;
@@ -327,14 +365,34 @@ vector<string> GUI::GetFiles(const string& path)
 	return files;
 }
 
-void GUI::NewProject()
+string GUI::SetNewProjectFolderPath(HWND hwndOwner)
 {
-	cout << "Created new project" << "\n\n";
-}
+	TCHAR szDisplayName[MAX_PATH]{};
+	BROWSEINFO browseInfo;
+	ZeroMemory(&browseInfo, sizeof(browseInfo));
+	browseInfo.hwndOwner = hwndOwner;
+	browseInfo.pidlRoot = NULL;
+	browseInfo.pszDisplayName = szDisplayName;
+	browseInfo.lpszTitle = TEXT("Select a folder");
+	browseInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 
-void GUI::AddProject()
-{
-	cout << "Added existing project" << "\n\n";
+	LPITEMIDLIST pidl = SHBrowseForFolder(&browseInfo);
+	if (pidl != NULL)
+	{
+		//get the path from the PIDL
+		if (SHGetPathFromIDList(pidl, szDisplayName))
+		{
+			//free the PIDL
+			IMalloc* pMalloc;
+			if (SUCCEEDED(SHGetMalloc(&pMalloc)))
+			{
+				pMalloc->Free(pidl);
+				pMalloc->Release();
+			}
+			return string(szDisplayName);
+		}
+	}
+	return string();
 }
 
 void GUI::Shutdown()

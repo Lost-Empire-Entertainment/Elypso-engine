@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include <Windows.h>
 
 using std::string;
 using std::vector;
@@ -52,11 +53,13 @@ public:
 	static void RenderPanels(const vector<string>& files);
 	static void RenderButtons();
 
-	static vector<string> GetFiles(const string& path);
-
 	static void NewProject();
 
 	static void AddProject();
+
+	static string SetNewProjectFolderPath(HWND hwndOwner);
+
+	static vector<string> GetFiles(const string& path);
 
 	static void Shutdown();
 };
