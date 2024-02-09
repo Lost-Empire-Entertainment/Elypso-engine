@@ -59,6 +59,8 @@ public:
 
 	static string SetNewProjectFolderPath(HWND hwndOwner);
 
+	static bool Compress(const string& inputFile, const string& outputFile);
+
 	static vector<string> GetFiles(const string& path);
 
 	static void Shutdown();
