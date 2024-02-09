@@ -44,13 +44,19 @@ class GUI
 public:
 	static inline int framebufferWidth, framebufferHeight;
 	static inline float panelSpacing = 10.0f;
-	static inline ImVec2 minSize = ImVec2(865, 200);
+	static inline float panelHeight = 200.0f;
 
 	static void Initialize();
 
 	static void Render();
 	static void RenderPanels(const vector<string>& files);
+	static void RenderButtons();
+
 	static vector<string> GetFiles(const string& path);
+
+	static void NewProject();
+
+	static void AddProject();
 
 	static void Shutdown();
 };

@@ -24,7 +24,8 @@ int main()
 {
 	Core::Initialize();
 
-	cout << "Successfully reached render loop!\n";
+	cout << "Successfully reached render loop!\n\n";
+	cout << "==================================================\n\n";
 
 	while (!glfwWindowShouldClose(Core::window))
 	{
@@ -205,6 +206,7 @@ void GUI::Render()
 		ImGuiDockNodeFlags_PassthruCentralNode;
 
 	GUI::RenderPanels(GetFiles(Core::projectsPath.string()));
+	GUI::RenderButtons();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
@@ -216,8 +218,6 @@ void GUI::RenderPanels(const vector<string>& files)
 {
 	glfwGetFramebufferSize(Core::window, &framebufferWidth, &framebufferHeight);
 
-	ImGui::SetNextWindowSize(ImVec2(900, framebufferHeight));
-
 	ImGuiWindowFlags mainWindowFlags =
 		ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_NoTitleBar
@@ -225,12 +225,12 @@ void GUI::RenderPanels(const vector<string>& files)
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoSavedSettings;
 
-	ImGui::Begin("Main", NULL, mainWindowFlags);
+	ImGui::Begin("Panels", NULL, mainWindowFlags);
 
-	float mainWindowX = framebufferWidth - ImGui::GetWindowSize().x;
-	ImGui::SetWindowPos(ImVec2(mainWindowX, 0));
+	ImGui::SetWindowPos(ImVec2(300, 0));
+	ImGui::SetWindowSize(ImVec2(static_cast<float>(framebufferWidth) - 300, static_cast<float>(framebufferHeight)));
 
-	int height = (minSize.y + panelSpacing) * files.size();
+	int height = (panelHeight + panelSpacing) * files.size();
 	if (height < framebufferHeight - 20) height = framebufferHeight - 20;
 	ImGui::BeginChild("ScrollingRegion", ImVec2(framebufferWidth, height), true, ImGuiWindowFlags_HorizontalScrollbar);
 
@@ -246,17 +246,18 @@ void GUI::RenderPanels(const vector<string>& files)
 			| ImGuiWindowFlags_NoSavedSettings;
 
 		ImGui::SetNextWindowPos(nextPanelPos);
-		ImGui::SetNextWindowSize(ImVec2(minSize));
 
 		ImGui::Begin(file.c_str(), NULL, windowFlags);
+
+		ImGui::SetWindowSize(ImVec2(framebufferWidth - 335, 200));
 
 		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
 		{
 			ImGui::SetWindowFocus();
 		}
 
-		string fileName = path(file).filename().string();
-		ImGui::Text("File: %s", fileName.c_str());
+		string fileName = path(file).stem().string();
+		ImGui::Text("%s", fileName.c_str());
 
 		if (ImGui::Button("Launch", ImVec2(200, 50)))
 		{
@@ -265,10 +266,41 @@ void GUI::RenderPanels(const vector<string>& files)
 
 		ImGui::End();
 
-		nextPanelPos.y += minSize.y + panelSpacing;
+		nextPanelPos.y += panelHeight + panelSpacing;
 	}
 
 	ImGui::EndChild();
+
+	ImGui::End();
+}
+
+void GUI::RenderButtons()
+{
+	glfwGetFramebufferSize(Core::window, &framebufferWidth, &framebufferHeight);
+
+	ImGui::SetNextWindowSize(ImVec2(300, framebufferHeight));
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+
+	ImGuiWindowFlags mainWindowFlags =
+		ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoTitleBar
+		| ImGuiWindowFlags_NoResize
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoSavedSettings;
+
+	ImGui::Begin("Buttons", NULL, mainWindowFlags);
+
+	if (ImGui::Button("New Project", ImVec2(285, 50)))
+	{
+		GUI::NewProject();
+	}
+
+	ImGui::Dummy(ImVec2(0.0f, 15.0f));
+
+	if (ImGui::Button("Add Project", ImVec2(285, 50)))
+	{
+		GUI::AddProject();
+	}
 
 	ImGui::End();
 }
@@ -293,6 +325,16 @@ vector<string> GUI::GetFiles(const string& path)
 	}
 
 	return files;
+}
+
+void GUI::NewProject()
+{
+	cout << "Created new project" << "\n\n";
+}
+
+void GUI::AddProject()
+{
+	cout << "Added existing project" << "\n\n";
 }
 
 void GUI::Shutdown()
