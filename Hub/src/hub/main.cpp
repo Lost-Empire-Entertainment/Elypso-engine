@@ -4,6 +4,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "zlib.h"
 
 //hub
 #include "main.hpp"
@@ -18,12 +19,7 @@ using std::exception;
 using std::wstring;
 using std::filesystem::current_path;
 using std::filesystem::exists;
-using std::filesystem::relative;
-using std::filesystem::is_regular_file;
-using std::filesystem::is_directory;
-using std::filesystem::remove_all;
 using std::filesystem::directory_iterator;
-using std::filesystem::recursive_directory_iterator;
 using std::ifstream;
 using std::ofstream;
 using std::ios;
@@ -315,15 +311,15 @@ void GUI::RenderButtons()
 
 void GUI::NewProject()
 {
-	string rootPath = SetNewProjectFolderPath(NULL);
+	string filePath = SetNewProjectFolderPath(NULL);
 
-	if (rootPath.empty())
+	if (filePath.empty())
 	{
 		cout << "Cancelled folder selection...\n\n";
 		return;
 	}
 
-	for (const auto& entry : directory_iterator(rootPath))
+	for (const auto& entry : directory_iterator(filePath))
 	{
 		if (entry.is_regular_file()
 			|| entry.is_directory())
@@ -333,23 +329,24 @@ void GUI::NewProject()
 		}
 	}
 
-	ofstream scene(rootPath + "/scene.txt");
+	ofstream scene(filePath + "/scene.txt");
 	if (!scene.is_open())
 	{
-		cout << "Error: Failed to open scene file at " << rootPath + "/scene.txt\n\n";
+		cout << "Error: Failed to open scene file at " << filePath + "/scene.txt\n\n";
 		return;
 	}
 
 	scene.close();
 
-	//string compressedFilePath = path(rootPath).parent_path().string() + "\\" + path(rootPath).stem().string() + ".zip";
-	//cout << "Attempting to compress " << rootPath << " to " << compressedFilePath << "\n\n";
+	string compressPath = path(filePath).parent_path().string() + "\\" + path(filePath).stem().string() + ".project";
+	cout << "Attempting to compress " << filePath << " to " << compressPath << "\n\n";
+	if (!GUI::Compress(filePath, compressPath))
+	{
+		cout << "Error: Failed to compress the folder " << filePath << "!\n\n";
+		return;
+	}
 
-	//GUI::CompressFolder(rootPath);
-
-	//remove_all(rootPath);
-
-	cout << "Successfully created new project at " << rootPath << "!\n\n";
+	cout << "Successfully created new project at " << filePath << "!\n\n";
 }
 
 void GUI::AddProject()
@@ -379,13 +376,51 @@ vector<string> GUI::GetFiles(const string& path)
 	return files;
 }
 
-void GUI::CompressFile(const string& filePath)
+bool GUI::Compress(const string& inputFile, const string& outputFile)
 {
+	ifstream ifs(inputFile, ios::binary);
+	ofstream ofs(outputFile, ios::binary);
+	if (!ifs || !ofs)
+	{
+		cout << "Error: Failed to open files\n\n";
+		return false;
+	}
 
-}
-void GUI::CompressFolder(const string& inputPath)
-{
+	vector<char> buffer(1024);
+	z_stream stream{};
+	stream.zalloc = Z_NULL;
+	stream.zfree = Z_NULL;
+	stream.opaque = Z_NULL;
+	if (deflateInit(&stream, Z_DEFAULT_COMPRESSION) != Z_OK)
+	{
+		cout << "Error: Failed to initialize zlib!\n\n";
+		return false;
+	}
 
+	stream.next_out = reinterpret_cast<Bytef*>(&buffer[0]);
+	stream.avail_out = buffer.size();
+
+	char inbuffer[1024];
+	do
+	{
+		ifs.read(inbuffer, sizeof(inbuffer));
+		stream.next_in = reinterpret_cast<Bytef*>(inbuffer);
+		stream.avail_in = static_cast<uInt>(ifs.gcount());
+
+		if (deflate(&stream, ifs.eof() ? Z_FINISH : Z_NO_FLUSH) == Z_STREAM_ERROR)
+		{
+			cout << "Error: Failed to compress data!\n\n";
+			return false;
+		}
+
+		ofs.write(buffer.data(), buffer.size() - stream.avail_out);
+		stream.avail_out = buffer.size();
+		stream.next_out = reinterpret_cast<Bytef*>(&buffer[0]);
+	}
+	while (!ifs.eof());
+
+	deflateEnd(&stream);
+	return true;
 }
 
 string GUI::SetNewProjectFolderPath(HWND hwndOwner)
