@@ -44,7 +44,7 @@ public:
 
 	static inline path defaultPath;
 	static inline path docsPath;
-	static inline path projectsPath;
+	static inline path projectsFilePath;
 
 	static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 

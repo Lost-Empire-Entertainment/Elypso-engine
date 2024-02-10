@@ -32,7 +32,9 @@
 
 using std::cout;
 using std::wstring;
+using std::ifstream;
 using std::ofstream;
+using std::getline;
 using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
@@ -74,10 +76,14 @@ void GUI::Initialize()
 		create_directory(Core::docsPath);
 	}
 
-	Core::projectsPath = Core::docsPath.string() + "/projects";
-	if (!exists(Core::projectsPath))
+	Core::projectsFilePath = Core::docsPath.string() + "/projects.txt";
+	if (!exists(Core::projectsFilePath))
 	{
-		create_directory(Core::projectsPath);
+		ofstream projectsFile(Core::projectsFilePath);
+		if (!projectsFile)
+		{
+			cout << "Error: Failed to create " << Core::projectsFilePath << "!\n\n";
+		}
 	}
 
 	static string tempString = Core::docsPath.string() + "/imgui.ini";
@@ -119,7 +125,7 @@ void GUI::Render()
 	ImGuiDockNodeFlags dockFlags =
 		ImGuiDockNodeFlags_PassthruCentralNode;
 
-	GUI::RenderPanels(GetFiles(Core::projectsPath.string()));
+	GUI::RenderPanels();
 	GUI::RenderButtons();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
@@ -128,7 +134,7 @@ void GUI::Render()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GUI::RenderPanels(const vector<string>& files)
+void GUI::RenderPanels()
 {
 	glfwGetFramebufferSize(Core::window, &framebufferWidth, &framebufferHeight);
 
@@ -150,37 +156,40 @@ void GUI::RenderPanels(const vector<string>& files)
 
 	ImVec2 nextPanelPos = ImGui::GetCursorScreenPos();
 
-	for (const auto& file : files)
+	if (files.size() > 0)
 	{
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoTitleBar
-			| ImGuiWindowFlags_NoResize
-			| ImGuiWindowFlags_NoMove
-			| ImGuiWindowFlags_NoSavedSettings;
-
-		ImGui::SetNextWindowPos(nextPanelPos);
-
-		ImGui::Begin(file.c_str(), NULL, windowFlags);
-
-		ImGui::SetWindowSize(ImVec2(framebufferWidth - 335, 200));
-
-		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+		for (const auto& file : files)
 		{
-			ImGui::SetWindowFocus();
+			ImGuiWindowFlags windowFlags =
+				ImGuiWindowFlags_NoCollapse
+				| ImGuiWindowFlags_NoTitleBar
+				| ImGuiWindowFlags_NoResize
+				| ImGuiWindowFlags_NoMove
+				| ImGuiWindowFlags_NoSavedSettings;
+
+			ImGui::SetNextWindowPos(nextPanelPos);
+
+			ImGui::Begin(file.c_str(), NULL, windowFlags);
+
+			ImGui::SetWindowSize(ImVec2(framebufferWidth - 335, 200));
+
+			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+			{
+				ImGui::SetWindowFocus();
+			}
+
+			string fileName = path(file).stem().string();
+			ImGui::Text("%s", fileName.c_str());
+
+			if (ImGui::Button("Launch", ImVec2(200, 50)))
+			{
+				cout << "launching " << fileName << "\n\n";
+			}
+
+			ImGui::End();
+
+			nextPanelPos.y += panelHeight + panelSpacing;
 		}
-
-		string fileName = path(file).stem().string();
-		ImGui::Text("%s", fileName.c_str());
-
-		if (ImGui::Button("Launch", ImVec2(200, 50)))
-		{
-			cout << "launching " << fileName << "\n\n";
-		}
-
-		ImGui::End();
-
-		nextPanelPos.y += panelHeight + panelSpacing;
 	}
 
 	ImGui::EndChild();
@@ -289,6 +298,15 @@ void GUI::NewProject()
 
 	remove_all(filePath);
 
+	ofstream projectsFile(Core::projectsFilePath);
+	if (!projectsFile.is_open())
+	{
+		cout << "Error: Failed to open projects file!\n\n";
+		return;
+	}
+	projectsFile << filePath << "\n";
+	UpdateFileList();
+
 	cout << "Successfully created new project at '" << projectPath << "'!\n\n";
 }
 
@@ -301,30 +319,49 @@ void GUI::AddProject()
 		cout << "Cancelled folder selection...\n\n";
 		return;
 	}
+	 
+	for (const auto& element : files)
+	{
+		if (element == filePath)
+		{
+			cout << "Error: " << filePath << " already is added!\n\n";
+			return;
+		}
+	}
+
+	ofstream projectsFile(Core::projectsFilePath);
+	if (!projectsFile.is_open())
+	{
+		cout << "Error: Failed to open projects file!\n\n";
+		return;
+	}
+	projectsFile << filePath << "\n";
+	UpdateFileList();
 
 	cout << "Added existing project '" << filePath << "'!\n\n";
 }
 
-vector<string> GUI::GetFiles(const string& path)
+void GUI::UpdateFileList()
 {
-	vector<string> files;
 	files.clear();
 
-	//add files that exist in the projects directory
-	for (const auto& entry : directory_iterator(path))
-	{
-		if (entry.path().extension() == ".project")
-		{
-			const string filePath = entry.path().string();
+	ifstream projectsFile(Core::projectsFilePath);
 
-			if (find(files.begin(), files.end(), filePath) == files.end())
-			{
-				files.push_back(filePath);
-			}
-		}
+	if (!projectsFile.is_open())
+	{
+		cout << "Error: Failed to open projects file!\n\n";
+		return;
 	}
 
-	return files;
+	string line;
+	while (getline(projectsFile, line))
+	{
+		cout << "found from txt file: " << line << "\n";
+		files.push_back(line);
+	}
+	cout << "new count: " << files.size() << "\n\n";
+
+	projectsFile.close();
 }
 
 string GUI::SelectWithExplorer(SelectType selectType)

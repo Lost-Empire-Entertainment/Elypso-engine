@@ -37,10 +37,12 @@ public:
 	static inline float panelSpacing = 10.0f;
 	static inline float panelHeight = 200.0f;
 
+	static inline vector<string> files;
+
 	static void Initialize();
 
 	static void Render();
-	static void RenderPanels(const vector<string>& files);
+	static void RenderPanels();
 	static void RenderButtons();
 
 	static void NewProject();
@@ -49,7 +51,7 @@ public:
 
 	static string SelectWithExplorer(enum SelectType);
 
-	static vector<string> GetFiles(const string& path);
+	static void UpdateFileList();
 
 	static void Shutdown();
 };

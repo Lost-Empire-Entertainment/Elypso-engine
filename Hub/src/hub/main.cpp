@@ -37,6 +37,9 @@ int main()
 {
 	Core::Initialize();
 
+	//get all files if any new ones were added
+	GUI::UpdateFileList();
+
 	cout << "Successfully reached render loop!\n\n";
 	cout << "==================================================\n\n";
 
