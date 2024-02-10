@@ -28,6 +28,7 @@
 #include <iostream>
 #include <ShlObj.h>
 #include <fstream>
+#include <filesystem>
 
 using std::cout;
 using std::wstring;
@@ -36,6 +37,7 @@ using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 using std::filesystem::remove_all;
+using std::filesystem::rename;
 
 void GUI::Initialize()
 {
@@ -221,6 +223,32 @@ void GUI::NewProject()
 {
 	string filePath = SetNewProjectFolderPath(NULL);
 
+	path convertedFilePath = path(filePath);
+	string fileName = convertedFilePath.stem().string();
+	
+	char* word = new char[fileName.length() + 1];
+	fileName.copy(word, fileName.length());
+	word[fileName.length()] = '\0';
+
+	bool foundSpace = false;
+	for (int i = 0; i < fileName.length(); ++i)
+	{
+		if (isspace(word[i]))
+		{
+			foundSpace = true;
+			break;
+		}
+	}
+
+	delete[] word;
+
+	if (foundSpace)
+	{
+		cout << "Error: Failed to create new project with name '" << fileName << "' because it contains spaces!\n\n";
+		remove_all(filePath);
+		return;
+	}
+
 	if (filePath.empty())
 	{
 		cout << "Cancelled folder selection...\n\n";
@@ -229,30 +257,39 @@ void GUI::NewProject()
 
 	if (!is_empty(filePath))
 	{
-		cout << "Error: Cannot create a project inside a folder with content inside it!\n\n";
+		cout << "Error: Cannot create a new project inside a folder with content inside it!\n\n";
+		remove_all(filePath);
 		return;
 	}
 
 	ofstream scene(filePath + "/scene.txt");
 	if (!scene.is_open())
 	{
-		cout << "Error: Failed to open scene file at " << filePath + "/scene.txt\n\n";
+		cout << "Error: Failed to open scene file at '" << filePath + "/scene.txt'!\n\n";
+		remove_all(filePath);
 		return;
 	}
 
 	scene.close();
 
 	string compressPath = path(filePath).parent_path().string() + "\\" + path(filePath).stem().string() + ".zip";
-	cout << "Attempting to compress " << filePath << " as " << compressPath << "\n\n";
+	cout << "Attempting to compress '" << filePath << "' as '" << compressPath << "'...\n\n";
 	if (!Compression::CompressFolder(filePath, compressPath))
 	{
-		cout << "Error: Failed to compress the folder " << filePath << "!\n\n";
+		cout << "Error: Failed to compress '" << filePath << "'!\n\n";
+		remove_all(filePath);
 		return;
 	}
 
+	path compressFilePath(filePath);
+	string parentProjectPath = compressFilePath.parent_path().string();
+	string projectPath = parentProjectPath + "/" + compressFilePath.stem().string() + ".project";
+	cout << projectPath << "\n\n";
+	rename(compressPath, projectPath);
+
 	remove_all(filePath);
 
-	cout << "Successfully created new project at " << filePath << "!\n\n";
+	cout << "Successfully created new project at '" << projectPath << "'!\n\n";
 }
 
 void GUI::AddProject()
