@@ -18,19 +18,21 @@
 //hub
 #include "compression.hpp"
 
-#include <fstream>
 #include <iostream>
 #include <filesystem>
+#include <cstdlib>
 
 using std::cout;
-using std::ifstream;
-using std::ofstream;
-using std::ios;
-using std::replace;
-using std::filesystem::is_regular_file;
-using rdi = std::filesystem::recursive_directory_iterator;
+using std::filesystem::current_path;
 
-void Compression::CompressFolder(const string& inputPath, const string& outputPath)
+bool Compression::CompressFolder(const string& inputPath, const string& outputPath)
 {
+	string compressPath = current_path().string() + "\\files\\bat scripts\\compress.bat";
+	
+	string quotedCompressPath = "\"" + compressPath + "\"";
 
+	string command = quotedCompressPath + " " + inputPath + " " + outputPath;
+
+	int result = system(command.c_str());
+	return result == 0;
 }

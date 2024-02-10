@@ -32,6 +32,7 @@
 using std::cout;
 using std::wstring;
 using std::ofstream;
+using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 using std::filesystem::remove_all;
@@ -226,14 +227,10 @@ void GUI::NewProject()
 		return;
 	}
 
-	for (const auto& entry : directory_iterator(filePath))
+	if (!is_empty(filePath))
 	{
-		if (entry.is_regular_file()
-			|| entry.is_directory())
-		{
-			cout << "Error: Cannot create a project inside a folder with content inside it!\n\n";
-			return;
-		}
+		cout << "Error: Cannot create a project inside a folder with content inside it!\n\n";
+		return;
 	}
 
 	ofstream scene(filePath + "/scene.txt");
@@ -247,7 +244,11 @@ void GUI::NewProject()
 
 	string compressPath = path(filePath).parent_path().string() + "\\" + path(filePath).stem().string() + ".zip";
 	cout << "Attempting to compress " << filePath << " as " << compressPath << "\n\n";
-	Compression::CompressFolder(filePath, compressPath);
+	if (!Compression::CompressFolder(filePath, compressPath))
+	{
+		cout << "Error: Failed to compress the folder " << filePath << "!\n\n";
+		return;
+	}
 
 	remove_all(filePath);
 
