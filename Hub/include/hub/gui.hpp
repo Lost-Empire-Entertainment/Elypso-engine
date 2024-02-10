@@ -27,6 +27,12 @@ using std::vector;
 class GUI
 {
 public:
+	enum class SelectType
+	{
+		new_folder,
+		existing_file
+	};
+
 	static inline int framebufferWidth, framebufferHeight;
 	static inline float panelSpacing = 10.0f;
 	static inline float panelHeight = 200.0f;
@@ -41,7 +47,7 @@ public:
 
 	static void AddProject();
 
-	static string SetNewProjectFolderPath(HWND hwndOwner);
+	static string SelectWithExplorer(enum SelectType);
 
 	static vector<string> GetFiles(const string& path);
 

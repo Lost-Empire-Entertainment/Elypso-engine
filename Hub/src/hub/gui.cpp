@@ -221,7 +221,7 @@ void GUI::RenderButtons()
 
 void GUI::NewProject()
 {
-	string filePath = SetNewProjectFolderPath(NULL);
+	string filePath = SelectWithExplorer(SelectType::new_folder);
 
 	path convertedFilePath = path(filePath);
 	string fileName = convertedFilePath.stem().string();
@@ -294,7 +294,15 @@ void GUI::NewProject()
 
 void GUI::AddProject()
 {
-	cout << "Added existing project" << "\n\n";
+	string filePath = SelectWithExplorer(SelectType::existing_file);
+
+	if (filePath.empty())
+	{
+		cout << "Cancelled folder selection...\n\n";
+		return;
+	}
+
+	cout << "Added existing project '" << filePath << "'!\n\n";
 }
 
 vector<string> GUI::GetFiles(const string& path)
@@ -319,34 +327,118 @@ vector<string> GUI::GetFiles(const string& path)
 	return files;
 }
 
-string GUI::SetNewProjectFolderPath(HWND hwndOwner)
+string GUI::SelectWithExplorer(SelectType selectType)
 {
-	TCHAR szDisplayName[MAX_PATH]{};
-	BROWSEINFO browseInfo;
-	ZeroMemory(&browseInfo, sizeof(browseInfo));
-	browseInfo.hwndOwner = hwndOwner;
-	browseInfo.pidlRoot = NULL;
-	browseInfo.pszDisplayName = szDisplayName;
-	browseInfo.lpszTitle = TEXT("Select a folder");
-	browseInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
-
-	LPITEMIDLIST pidl = SHBrowseForFolder(&browseInfo);
-	if (pidl != NULL)
+	//initialize COM
+	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	if (FAILED(hr))
 	{
-		//get the path from the PIDL
-		if (SHGetPathFromIDList(pidl, szDisplayName))
+		cout << "Error: Failed to initialize COM!\n\n";
+		return "";
+	}
+
+	//create an instance of the File Open dialog
+	IFileOpenDialog* pFileOpen = nullptr;
+	hr = CoCreateInstance(
+		CLSID_FileOpenDialog, 
+		NULL,
+		CLSCTX_ALL,
+		IID_IFileOpenDialog,
+		reinterpret_cast<void**>(&pFileOpen));
+	if (FAILED(hr))
+	{
+		cout << "Error: Failed to create File Open dialog!\n\n";
+		CoUninitialize();
+		return "";
+	}
+
+	if (selectType == SelectType::new_folder)
+	{
+		DWORD dwOptions;
+		hr = pFileOpen->GetOptions(&dwOptions);
+		if (SUCCEEDED(hr))
 		{
-			//free the PIDL
-			IMalloc* pMalloc;
-			if (SUCCEEDED(SHGetMalloc(&pMalloc)))
+			hr = pFileOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
+			if (FAILED(hr))
 			{
-				pMalloc->Free(pidl);
-				pMalloc->Release();
+				cout << "Error: Failed to set options!\n\n";
+				pFileOpen->Release();
+				CoUninitialize();
+				return "";
 			}
-			return string(szDisplayName);
+		}
+		else
+		{
+			cout << "Error: Failed to get options!\n\n";
+			pFileOpen->Release();
+			CoUninitialize();
+			return "";
 		}
 	}
-	return string();
+
+	else if (selectType == SelectType::existing_file)
+	{
+		COMDLG_FILTERSPEC filterSpec[] = { { L"Project Files", L"*.project"} };
+		hr = pFileOpen->SetFileTypes(1, filterSpec);
+		if (FAILED(hr))
+		{
+			cout << "Error: Failed to set file filter!\n\n";
+			pFileOpen->Release();
+			CoUninitialize();
+			return "";
+		}
+	}
+
+	//show the File Open dialog
+	hr = pFileOpen->Show(NULL);
+	if (FAILED(hr))
+	{
+		cout << "Error: Failed to show dialog!\n\n";
+		pFileOpen->Release();
+		CoUninitialize();
+		return "";
+	}
+
+	//get the result of the user's selection
+	IShellItem* pItem;
+	hr = pFileOpen->GetResult(&pItem);
+	if (FAILED(hr))
+	{
+		cout << "Error: Failed to retrieve result!\n\n";
+		pFileOpen->Release();
+		CoUninitialize();
+		return "";
+	}
+
+	//get the path pf the selected file or folder
+	PWSTR filePath;
+	hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath);
+	if (FAILED(hr))
+	{
+		cout << "Error: Failed to retrieve path!\n\n";
+		pItem->Release();
+		pFileOpen->Release();
+		CoUninitialize();
+		return "";
+	}
+
+	//convert the wide string to a string
+	wstring ws(filePath);
+	string selectedPath(ws.begin(), ws.end());
+
+	//free memory allocated for filePath
+	CoTaskMemFree(filePath);
+
+	//release the shell item
+	pItem->Release();
+
+	//release the file open dialog
+	pFileOpen->Release();
+
+	//uninitialze COM
+	CoUninitialize();
+
+	return selectedPath;
 }
 
 void GUI::Shutdown()
