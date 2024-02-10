@@ -35,6 +35,7 @@ using std::wstring;
 using std::ifstream;
 using std::ofstream;
 using std::getline;
+using std::ios;
 using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
@@ -298,13 +299,14 @@ void GUI::NewProject()
 
 	remove_all(filePath);
 
-	ofstream projectsFile(Core::projectsFilePath);
+	ofstream projectsFile(Core::projectsFilePath, ios::app);
 	if (!projectsFile.is_open())
 	{
 		cout << "Error: Failed to open projects file!\n\n";
 		return;
 	}
 	projectsFile << filePath << "\n";
+	projectsFile.close();
 	UpdateFileList();
 
 	cout << "Successfully created new project at '" << projectPath << "'!\n\n";
@@ -329,13 +331,14 @@ void GUI::AddProject()
 		}
 	}
 
-	ofstream projectsFile(Core::projectsFilePath);
+	ofstream projectsFile(Core::projectsFilePath, ios::app);
 	if (!projectsFile.is_open())
 	{
 		cout << "Error: Failed to open projects file!\n\n";
 		return;
 	}
 	projectsFile << filePath << "\n";
+	projectsFile.close();
 	UpdateFileList();
 
 	cout << "Added existing project '" << filePath << "'!\n\n";
