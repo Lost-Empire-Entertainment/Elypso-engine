@@ -31,11 +31,10 @@
 
 using std::cout;
 using std::wstring;
-using std::ifstream;
 using std::ofstream;
-using std::ios;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
+using std::filesystem::remove_all;
 
 void GUI::Initialize()
 {
@@ -246,13 +245,11 @@ void GUI::NewProject()
 
 	scene.close();
 
-	string compressPath = path(filePath).parent_path().string() + "\\" + path(filePath).stem().string() + ".project";
-	cout << "Attempting to compress " << filePath << " to " << compressPath << "\n\n";
-	if (!Compression::Compress(filePath, compressPath))
-	{
-		cout << "Error: Failed to compress the folder " << filePath << "!\n\n";
-		return;
-	}
+	string compressPath = path(filePath).parent_path().string() + "\\" + path(filePath).stem().string() + ".zip";
+	cout << "Attempting to compress " << filePath << " as " << compressPath << "\n\n";
+	Compression::CompressFolder(filePath, compressPath);
+
+	remove_all(filePath);
 
 	cout << "Successfully created new project at " << filePath << "!\n\n";
 }

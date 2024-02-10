@@ -18,7 +18,19 @@
 //hub
 #include "compression.hpp"
 
-bool Compression::Compress(const string& inputFile, const string& outputFile)
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+
+using std::cout;
+using std::ifstream;
+using std::ofstream;
+using std::ios;
+using std::replace;
+using std::filesystem::is_regular_file;
+using rdi = std::filesystem::recursive_directory_iterator;
+
+void Compression::CompressFolder(const string& inputPath, const string& outputPath)
 {
-	return false;
+
 }

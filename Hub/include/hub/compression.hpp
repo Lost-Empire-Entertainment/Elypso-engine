@@ -24,5 +24,5 @@ using std::string;
 class Compression
 {
 public:
-	static bool Compress(const string& inputFile, const string& outputFile);
+	static void CompressFolder(const string& inputPath, const string& outputPath);
 };

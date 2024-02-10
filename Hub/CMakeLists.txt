@@ -67,21 +67,6 @@ list(APPEND SOURCE_FILES
 	${EXTERNAL_DIR}/imgui/imgui_tables.cpp
 	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
 	${EXTERNAL_DIR}/stb_image/stb_image.cpp
-	${EXTERNAL_DIR}/zlib/adler32.c
-	${EXTERNAL_DIR}/zlib/compress.c
-	${EXTERNAL_DIR}/zlib/crc32.c
-	${EXTERNAL_DIR}/zlib/deflate.c
-	${EXTERNAL_DIR}/zlib/gzclose.c
-	${EXTERNAL_DIR}/zlib/gzlib.c
-	${EXTERNAL_DIR}/zlib/gzread.c
-	${EXTERNAL_DIR}/zlib/gzwrite.c
-	${EXTERNAL_DIR}/zlib/infback.c
-	${EXTERNAL_DIR}/zlib/inffast.c
-	${EXTERNAL_DIR}/zlib/inflate.c
-	${EXTERNAL_DIR}/zlib/inftrees.c
-	${EXTERNAL_DIR}/zlib/trees.c
-	${EXTERNAL_DIR}/zlib/uncompr.c
-	${EXTERNAL_DIR}/zlib/zutil.c
 )
 
 # Add the executable
@@ -109,7 +94,6 @@ target_include_directories(Elypso_hub PRIVATE
 	${INCLUDE_DIR}/external/magic_enum
 	${INCLUDE_DIR}/external/imgui
 	${INCLUDE_DIR}/external/stb_image
-	${INCLUDE_DIR}/external/zlib
 )
 
 target_link_libraries(Elypso_hub PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
