@@ -52,6 +52,8 @@ target_link_libraries(external_libs INTERFACE glad magic_enum)
 # Add your source files
 set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/hub/main.cpp
+	${CMAKE_SOURCE_DIR}/src/hub/gui.cpp
+	${CMAKE_SOURCE_DIR}/src/hub/compression.cpp
 )
 
 # Add your external files
@@ -95,7 +97,6 @@ target_compile_features(Elypso_hub PRIVATE cxx_std_20)
 
 target_include_directories(Elypso_hub PRIVATE 
 	${INCLUDE_DIR}/hub
-	${INCLUDE_DIR}/hub/core
 	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
