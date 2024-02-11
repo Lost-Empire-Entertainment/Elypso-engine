@@ -29,8 +29,6 @@
 #include <ShlObj.h>
 #include <fstream>
 #include <filesystem>
-#include <codecvt>
-#include <locale>
 
 using std::cout;
 using std::wstring;
@@ -339,8 +337,7 @@ void GUI::NewProject()
 
 	scene.close();
 
-	string compressPath = path(filePath).parent_path().string() + "\\" + path(filePath).stem().string() + ".zip";
-	cout << "Attempting to compress '" << filePath << "' as '" << compressPath << "'...\n\n";
+	string compressPath = path(filePath).string() + "\\" + path(filePath).stem().string() + ".zip";
 	if (!Compression::CompressFolder(filePath, compressPath))
 	{
 		cout << "Error: Failed to compress '" << filePath << "'!\n\n";

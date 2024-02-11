@@ -6,5 +6,5 @@ if "%~2"=="" (
 	exit /b 1
 )
 
-:: Compress the folder into a zip package
-powershell Compress-Archive -Path "%~1" -DestinationPath "%~2"
+:: Compress the contents of the folder into a zip package
+powershell Compress-Archive -Path (Get-ChildItem -Path "%~1" -Recurse).FullName -DestinationPath "%~2"
