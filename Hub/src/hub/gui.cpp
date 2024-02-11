@@ -42,6 +42,7 @@ using std::filesystem::directory_iterator;
 using std::filesystem::remove_all;
 using std::filesystem::rename;
 using std::filesystem::copy;
+using std::filesystem::create_directory;
 
 void GUI::Initialize()
 {
@@ -338,6 +339,30 @@ void GUI::NewProject()
 
 	scene.close();
 
+	string sceneDirectory = filePath + "/TemplateScene";
+	create_directory(sceneDirectory);
+
+	//compress scene folder into zip
+	rename(scenePath, sceneDirectory + "/TemplateScene.txt");
+	string sceneCompressPath = path(sceneDirectory).string() + "\\" + path(sceneDirectory).stem().string() + ".zip";
+	if (!Compression::CompressFolder(sceneDirectory, sceneCompressPath))
+	{
+		cout << "Error: Failed to compress '" << filePath << "'!\n\n";
+		remove_all(filePath);
+		return;
+	}
+	//rename scene folder .zip extension to .scene extension
+	path sceneFilePath(scenePath);
+	string sceneParentProjectPath = sceneFilePath.parent_path().string();
+	string sceneScenePath = sceneParentProjectPath + "/" + sceneFilePath.stem().string() + ".scene";
+	rename(sceneCompressPath, sceneScenePath);
+	
+	//move .scene file to parent project folder
+	rename(sceneScenePath, filePath + "/" + sceneFilePath.stem().string() + ".scene");
+	//remove no longer needed scene folder
+	remove_all(sceneDirectory);
+
+	//compress parent folder into zip
 	string compressPath = path(filePath).string() + "\\" + path(filePath).stem().string() + ".zip";
 	if (!Compression::CompressFolder(filePath, compressPath))
 	{
@@ -345,7 +370,7 @@ void GUI::NewProject()
 		remove_all(filePath);
 		return;
 	}
-
+	//rename parent folder .zip extension to .project extension
 	path compressFilePath(filePath);
 	string parentProjectPath = compressFilePath.parent_path().string();
 	string projectPath = parentProjectPath + "/" + compressFilePath.stem().string() + ".project";
