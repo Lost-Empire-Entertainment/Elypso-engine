@@ -361,7 +361,7 @@ void GUI::NewProject()
 		cout << "Error: Failed to open projects file!\n\n";
 		return;
 	}
-	projectsFile << filePath << "\n";
+	projectsFile << projectPath << "\n";
 	projectsFile.close();
 	UpdateFileList();
 
