@@ -101,7 +101,7 @@ namespace EngineFile
 			}
 		}
 	}
-
+	
 	void ConfigFile::ProcessFirstConfigValues()
 	{
 		path filesPath = current_path().generic_string() + "/files";

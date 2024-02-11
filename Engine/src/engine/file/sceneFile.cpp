@@ -58,40 +58,7 @@ namespace EngineFile
 {
 	void SceneFile::CheckForStartupSceneFile()
 	{
-	    path openedProjectPath = current_path().generic_string() + "/openedProject.txt";
-
-		if (!exists(openedProjectPath))
-		{
-			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find project load file! Shutting down.");
-			return;
-		}
-
-		ifstream openedProjectFile(openedProjectPath);
-		if (!openedProjectFile.is_open())
-		{
-			ErrorPopup::CreateErrorPopup("File open error", "Couldn't open project load file! Shutting down.");
-			return;
-		}
-
-		string sceneFile;
-		if (!getline(openedProjectFile, sceneFile))
-		{
-			ErrorPopup::CreateErrorPopup("Empty file error", "Couldn't read from load file because it is empty! Shutting down.");
-			return;
-		}
-
-		if (!exists(sceneFile))
-		{
-			string message = "Couldn't open scene file '" + sceneFile + "' because it doesn't exist! Shutting down.";
-			ErrorPopup::CreateErrorPopup("Invalid scene path error", message.c_str());
-			return;
-		}
-
-		openedProjectFile.close();
-
-		File::DeleteFileOrfolder(openedProjectPath);
-
-		LoadScene(sceneFile);
+		//LoadScene(sceneFile);
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)

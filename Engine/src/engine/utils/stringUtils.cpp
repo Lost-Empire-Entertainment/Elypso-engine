@@ -140,31 +140,17 @@ namespace Utils
 
 	bool String::CanConvertStringToFloat(const string& value)
 	{
-		try
-		{
-			size_t pos;
-			float convertedValue = stof(value, &pos);
+		size_t pos;
+		float convertedValue = stof(value, &pos);
 
-			return pos == value.length();
-		}
-		catch (const exception& e)
-		{
-			return false;
-		}
+		return pos == value.length();
 	}
 
 	bool String::CanConvertStringToInt(const string& value)
 	{
-		try
-		{
-			size_t pos;
-			int convertedValue = stoi(value, &pos);
+		size_t pos;
+		int convertedValue = stoi(value, &pos);
 
-			return pos == value.length();
-		}
-		catch (const exception& e)
-		{
-			return false;
-		}
+		return pos == value.length();
 	}
 }

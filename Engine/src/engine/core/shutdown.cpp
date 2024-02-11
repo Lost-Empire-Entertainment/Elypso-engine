@@ -25,7 +25,18 @@
 #include "render.hpp"
 #include "shutdown.hpp"
 #include "configFile.hpp"
+#include "fileUtils.hpp"
 
+#include <filesystem>
+
+using std::filesystem::directory_iterator;
+using std::filesystem::current_path;
+using std::filesystem::remove;
+using std::filesystem::remove_all;
+using std::filesystem::is_regular_file;
+using std::filesystem::is_directory;
+
+using Utils::File;
 using Graphics::GUI::EngineGUI;
 using Graphics::Render;
 using EngineFile::ConfigFile;
@@ -51,6 +62,14 @@ namespace Core
 			Caller::SHUTDOWN,
 			Type::INFO,
 			"Cleaning up resources...\n");
+
+		string files = current_path().generic_string() + "/files";
+		for (const auto& entry : directory_iterator(files))
+		{
+			path entryPath(entry);
+			if (is_directory(entryPath)) remove_all(entryPath);
+			else if (is_regular_file(entryPath)) remove(entryPath);
+		}
 
 		EngineGUI::GetInstance().Shutdown();
 

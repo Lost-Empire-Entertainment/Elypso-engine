@@ -327,10 +327,11 @@ void GUI::NewProject()
 		}
 	}
 
-	ofstream scene(filePath + "/scene.txt");
+	string scenePath = filePath + "/TemplateScene.txt";
+	ofstream scene(scenePath);
 	if (!scene.is_open())
 	{
-		cout << "Error: Failed to open scene file at '" << filePath + "/scene.txt'!\n\n";
+		cout << "Error: Failed to open scene file at '" << scenePath << "'!\n\n";
 		remove_all(filePath);
 		return;
 	}
@@ -598,30 +599,8 @@ void GUI::RunProject(const string& targetProject)
 		else if (is_directory(entryPath)) remove_all(entryPath);
 	}
 
-	//assign correct folder to copy content from inside project folder
-	string contentFolder;
-	for (const auto& entry : directory_iterator(decompressedTargetProject))
-	{
-		path entryPath = entry.path();
-		if (is_directory(entryPath)
-			&& entryPath.stem().string() == targetProjectPath.stem().string())
-		{
-			contentFolder = entryPath.string();
-			break;
-		}
-	}
-	if (contentFolder == "")
-	{
-		cout << "Error: Did not find correct folder inside project file!\n\n";
-		//delete temporary zip file
-		remove(renamedCopiedTargetProjectPath.c_str());
-		//delete temporary folder
-		remove_all(decompressedTargetProject);
-		return;
-	}
-
 	//move temp folder content to engine files folder content
-	for (const auto& entry : directory_iterator(contentFolder))
+	for (const auto& entry : directory_iterator(decompressedTargetProject))
 	{
 		path entryPath = entry.path();
 		if (is_regular_file(entryPath))
