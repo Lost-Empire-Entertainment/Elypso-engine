@@ -104,19 +104,5 @@ namespace Core
 
 			Render::WindowLoop();
 		}
-
-		ConfigFile::SaveDataAtShutdown();
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"==================================================\n\n",
-			true,
-			false);
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::WINDOW_LOOP,
-			Type::DEBUG,
-			"Exiting window loop...\n");
 	}
 }

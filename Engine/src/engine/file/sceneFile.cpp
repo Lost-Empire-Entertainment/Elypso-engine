@@ -58,9 +58,7 @@ namespace EngineFile
 {
 	void SceneFile::CheckForStartupSceneFile()
 	{
-		/*
-		path defaultPath = current_path().generic_string();
-	    path openedProjectPath = defaultPath.string() + "/openedProject.txt";
+	    path openedProjectPath = current_path().generic_string() + "/openedProject.txt";
 
 		if (!exists(openedProjectPath))
 		{
@@ -69,7 +67,6 @@ namespace EngineFile
 		}
 
 		ifstream openedProjectFile(openedProjectPath);
-
 		if (!openedProjectFile.is_open())
 		{
 			ErrorPopup::CreateErrorPopup("File open error", "Couldn't open project load file! Shutting down.");
@@ -95,7 +92,6 @@ namespace EngineFile
 		File::DeleteFileOrfolder(openedProjectPath);
 
 		LoadScene(sceneFile);
-		*/
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)

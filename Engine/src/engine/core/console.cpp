@@ -248,7 +248,7 @@ namespace Core
                 Caller::INPUT,
                 Type::DEBUG,
                 "User closed engine with 'qqq' console command.\n");
-            ShutdownManager::shouldShutDown = true;
+            ShutdownManager::Shutdown();
         }
         else if (cleanedCommands[0] == "srm"
                  && (cleanedCommands[1] == "1"

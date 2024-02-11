@@ -24,9 +24,11 @@
 #include "gui.hpp"
 #include "render.hpp"
 #include "shutdown.hpp"
+#include "configFile.hpp"
 
 using Graphics::GUI::EngineGUI;
 using Graphics::Render;
+using EngineFile::ConfigFile;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -34,6 +36,17 @@ namespace Core
 {
 	void ShutdownManager::Shutdown()
 	{
+		shouldShutDown = true;
+
+		ConfigFile::SaveDataAtShutdown();
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"==================================================\n\n",
+			true,
+			false);
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::SHUTDOWN,
 			Type::INFO,

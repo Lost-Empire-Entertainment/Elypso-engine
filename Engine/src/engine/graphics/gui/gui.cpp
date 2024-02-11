@@ -224,7 +224,7 @@ namespace Graphics::GUI
 					Caller::INPUT,
 					Type::DEBUG,
 					"User closed engine exit button.\n");
-				ShutdownManager::shouldShutDown = true;
+				ShutdownManager::ShutdownManager::Shutdown();
 			}
 
 			ImGui::EndMenu();
