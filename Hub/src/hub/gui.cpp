@@ -41,6 +41,7 @@ using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 using std::filesystem::remove_all;
 using std::filesystem::rename;
+using std::filesystem::copy;
 
 void GUI::Initialize()
 {
@@ -202,7 +203,7 @@ void GUI::RenderPanels()
 				if (!renderConfirmWindow
 					&& IsValidEnginePath(Core::enginePath.string()))
 				{
-					GUI::RunProject();
+					GUI::RunProject(file);
 				}
 			}
 
@@ -564,9 +565,84 @@ bool GUI::IsValidEnginePath(const string& enginePath)
 	return true;
 }
 
-void GUI::RunProject()
+void GUI::RunProject(const string& targetProject)
 {
-	cout << "Running engine from '" << Core::enginePath << "'...\n\n";
+	//first we need a duplicate of the original file
+	path targetProjectPath(targetProject);
+	string copiedTargetProject = 
+		targetProjectPath.parent_path().string() + "/TEMP_" + targetProjectPath.stem().string() + ".project";
+	copy(targetProjectPath.string(), copiedTargetProject);
+
+	//then we need to rename its extension to zip
+	path copiedTargetProjectPath(copiedTargetProject);
+	string renamedCopiedTargetProjectPath =
+		copiedTargetProjectPath.parent_path().string() + "/" + copiedTargetProjectPath.stem().string() + ".zip";
+	rename(copiedTargetProjectPath.string(), renamedCopiedTargetProjectPath);
+
+	//then we can decompress it
+	string decompressedTargetProject = 
+		copiedTargetProjectPath.parent_path().string() + "/" + copiedTargetProjectPath.stem().string();
+	if (!Compression::DecompressFile(renamedCopiedTargetProjectPath, decompressedTargetProject))
+	{
+		cout << "Error: Failed to decompress " << targetProjectPath << "!\n\n";
+		//delete temporary zip file
+		remove(renamedCopiedTargetProjectPath.c_str());
+		return;
+	}
+
+	//empty engine folder content if any content exists
+	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
+	for (const auto& entry : directory_iterator(engineFilesFolderPath))
+	{
+		path entryPath = entry.path();
+		if (is_regular_file(entryPath)) remove(entryPath);
+		else if (is_directory(entryPath)) remove_all(entryPath);
+	}
+
+	//move temp folder content to engine files folder content
+	string contentFolder;
+	for (const auto& entry : directory_iterator(decompressedTargetProject))
+	{
+		path entryPath = entry.path();
+		if (is_directory(entryPath)
+			&& entryPath.stem().string() == targetProjectPath.stem().string())
+		{
+			contentFolder = entryPath.string();
+			break;
+		}
+	}
+	if (contentFolder == "")
+	{
+		cout << "Error: Did not find correct folder inside project file!\n\n";
+		//delete temporary zip file
+		remove(renamedCopiedTargetProjectPath.c_str());
+		//delete temporary folder
+		remove_all(decompressedTargetProject);
+		return;
+	}
+
+	for (const auto& entry : directory_iterator(contentFolder))
+	{
+		path entryPath = entry.path();
+		if (is_regular_file(entryPath))
+		{
+			string name = entryPath.stem().string();
+			string extension = entryPath.extension().string();
+			rename(entryPath, engineFilesFolderPath + "/" + name + extension);
+		}
+		else if (is_directory(entryPath))
+		{
+			string name = entryPath.stem().string();
+			rename(entryPath, engineFilesFolderPath + "/" + name);
+		}
+	}
+
+	//delete temporary zip file
+	remove(renamedCopiedTargetProjectPath.c_str());
+	//delete temporary folder
+	remove_all(decompressedTargetProject);
+
+	cout << "Running engine from '" << Core::enginePath << "'!\n\n";
 }
 
 void GUI::UpdateFileList()

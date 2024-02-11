@@ -62,7 +62,7 @@ public:
 
 	static bool IsValidEnginePath(const string& enginePath);
 
-	static void RunProject();
+	static void RunProject(const string& targetProject);
 
 	static string SelectWithExplorer(enum SelectType);
 
