@@ -431,6 +431,9 @@ void GUI::RemoveProject(const string& projectPath)
 		return;
 	}
 
+	std::filesystem::remove(projectPath);
+	UpdateFileList();
+
 	cout << "Removed '" << projectPath << "'...\n\n";
 }
 
@@ -461,11 +464,7 @@ void GUI::UpdateFileList()
 	string line;
 	while (getline(projectsFile, line))
 	{
-		if (!exists(line))
-		{
-			cout << "Error: '" << line << "' is not a valid project path!" << "\n\n";
-			foundInvalidPath = true;
-		}
+		if (!exists(line)) foundInvalidPath = true;
 		else files.push_back(line);
 	}
 	if (files.size() > 0) cout << "Found and loaded " << files.size() << " projects!\n\n";
