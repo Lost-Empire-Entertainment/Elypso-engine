@@ -649,6 +649,10 @@ void GUI::RunProject(const string& targetProject)
 
 	cout << ".\n.\n.\n\n";
 
+	//
+	// RUN ENGINE
+	//
+
 	wstring exeDir = Core::enginePath.parent_path().wstring();
 	wstring wideExePath = Core::enginePath;
 	wstring wideCmdArgs = L""; //initialize with your command line arguments
@@ -764,6 +768,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 	if (selectType == SelectType::new_folder)
 	{
+		//restrict the selection to folders only
 		DWORD dwOptions;
 		hr = pFileOpen->GetOptions(&dwOptions);
 		if (SUCCEEDED(hr))
@@ -788,6 +793,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 	else if (selectType == SelectType::existing_file)
 	{
+		//restrict file selection to .txt only
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Project Files", L"*.project"} };
 		hr = pFileOpen->SetFileTypes(1, filterSpec);
 		if (FAILED(hr))
@@ -801,6 +807,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 	else if (selectType == SelectType::engine_path)
 	{
+		//restrict file selection to .txt only
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Executables", L"*.exe"} };
 		hr = pFileOpen->SetFileTypes(1, filterSpec);
 		if (FAILED(hr))
@@ -814,6 +821,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 	else if (selectType == SelectType::scene_file)
 	{
+		//restrict file selection to .txt only
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Scene files", L"*.txt"} };
 		hr = pFileOpen->SetFileTypes(1, filterSpec);
 		if (FAILED(hr))
