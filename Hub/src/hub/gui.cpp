@@ -29,6 +29,8 @@
 #include <ShlObj.h>
 #include <fstream>
 #include <filesystem>
+#include <codecvt>
+#include <locale>
 
 using std::cout;
 using std::wstring;
@@ -584,7 +586,7 @@ void GUI::RunProject(const string& targetProject)
 		copiedTargetProjectPath.parent_path().string() + "/" + copiedTargetProjectPath.stem().string();
 	if (!Compression::DecompressFile(renamedCopiedTargetProjectPath, decompressedTargetProject))
 	{
-		cout << "Error: Failed to decompress " << targetProjectPath << "!\n\n";
+		cout << "Error: Failed to decompress '" << targetProjectPath << "'!\n\n";
 		//delete temporary zip file
 		remove(renamedCopiedTargetProjectPath.c_str());
 		return;
@@ -599,7 +601,7 @@ void GUI::RunProject(const string& targetProject)
 		else if (is_directory(entryPath)) remove_all(entryPath);
 	}
 
-	//move temp folder content to engine files folder content
+	//assign correct folder to copy content from inside project folder
 	string contentFolder;
 	for (const auto& entry : directory_iterator(decompressedTargetProject))
 	{
@@ -621,6 +623,7 @@ void GUI::RunProject(const string& targetProject)
 		return;
 	}
 
+	//move temp folder content to engine files folder content
 	for (const auto& entry : directory_iterator(contentFolder))
 	{
 		path entryPath = entry.path();
@@ -643,6 +646,53 @@ void GUI::RunProject(const string& targetProject)
 	remove_all(decompressedTargetProject);
 
 	cout << "Running engine from '" << Core::enginePath << "'!\n\n";
+
+	cout << ".\n.\n.\n\n";
+
+	wstring exeDir = Core::enginePath.parent_path().wstring();
+	wstring wideExePath = Core::enginePath;
+	wstring wideCmdArgs = L""; //initialize with your command line arguments
+
+	//initialize structures for process creation
+	STARTUPINFOW si;
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&si, sizeof(si));
+	ZeroMemory(&pi, sizeof(pi));
+	si.cb = sizeof(si);
+
+	// Create the new process
+	if (!CreateProcessW
+	(
+		wideExePath.c_str(), //path to the executable
+		wideCmdArgs.data(),  //command line arguments
+		nullptr,             //process handle not inheritable
+		nullptr,             //thread handle not inheritable
+		FALSE,               //handle inheritance
+		0,                   //creation flags
+		nullptr,             //use parent's environment block
+		exeDir.c_str(),      //use parent's starting directory
+		&si,                 //pointer to STARTUPINFO structure
+		&pi                  //pointer to PROCESS_INFORMATION structure
+	))
+	{
+		//retrieve the error code and print a descriptive error message
+		LPVOID lpMsgBuf = nullptr;
+		DWORD dw = GetLastError();
+		FormatMessageW(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER 
+			| FORMAT_MESSAGE_FROM_SYSTEM 
+			| FORMAT_MESSAGE_IGNORE_INSERTS,
+			nullptr, 
+			dw, 
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
+			(LPWSTR)&lpMsgBuf, 0, nullptr);
+		std::wcout << L"Error: " << reinterpret_cast<LPCWSTR>(lpMsgBuf) << L"\n\n";
+		LocalFree(lpMsgBuf);
+	}
+
+	// Close process and thread handles
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
 }
 
 void GUI::UpdateFileList()
@@ -752,6 +802,19 @@ string GUI::SelectWithExplorer(SelectType selectType)
 	else if (selectType == SelectType::engine_path)
 	{
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Executables", L"*.exe"} };
+		hr = pFileOpen->SetFileTypes(1, filterSpec);
+		if (FAILED(hr))
+		{
+			cout << "Error: Failed to set file filter!\n\n";
+			pFileOpen->Release();
+			CoUninitialize();
+			return "";
+		}
+	}
+
+	else if (selectType == SelectType::scene_file)
+	{
+		COMDLG_FILTERSPEC filterSpec[] = { { L"Scene files", L"*.txt"} };
 		hr = pFileOpen->SetFileTypes(1, filterSpec);
 		if (FAILED(hr))
 		{

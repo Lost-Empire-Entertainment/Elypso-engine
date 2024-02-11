@@ -58,8 +58,9 @@ namespace EngineFile
 {
 	void SceneFile::CheckForStartupSceneFile()
 	{
+		/*
 		path defaultPath = current_path().generic_string();
-	    path openedProjectPath = defaultPath.string() + "/openedproject.txt";
+	    path openedProjectPath = defaultPath.string() + "/openedProject.txt";
 
 		if (!exists(openedProjectPath))
 		{
@@ -82,7 +83,7 @@ namespace EngineFile
 			return;
 		}
 
-		if (!exists(Engine::filesPath + sceneFile))
+		if (!exists(sceneFile))
 		{
 			string message = "Couldn't open scene file '" + sceneFile + "' because it doesn't exist! Shutting down.";
 			ErrorPopup::CreateErrorPopup("Invalid scene path error", message.c_str());
@@ -94,6 +95,7 @@ namespace EngineFile
 		File::DeleteFileOrfolder(openedProjectPath);
 
 		LoadScene(sceneFile);
+		*/
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)

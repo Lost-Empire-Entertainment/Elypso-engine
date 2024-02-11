@@ -565,121 +565,114 @@ namespace EngineFile
 
 	bool ConfigFile::IsValueInRange(string type, string value)
 	{
-		try
+		if (type == "fontScale")
 		{
-			if (type == "fontScale")
-			{
-				float fontScale = stof(value);
-				return (String::CanConvertStringToFloat(value)
-						&& fontScale >= 1.0f
-						&& fontScale <= 2.0f);
-			}
-			else if (type == "width")
-			{
-				float width = stof(value);
-				return (String::CanConvertStringToInt(value)
-						&& width >= 1280
-						&& width <= 7680);
-			}
-			else if (type == "height")
-			{
-				float height = stof(value);
-				return (String::CanConvertStringToInt(value)
-						&& height >= 720
-						&& height <= 4320);
-			}
-			else if (type == "vsync")
-			{
-				int vsync = stoi(value);
-				return (String::CanConvertStringToInt(value)
-						&& (vsync == 0
-						|| vsync == 1));
-			}
-			else if (type == "fov")
-			{
-				float fov = stof(value);
-				return (String::CanConvertStringToFloat(value)
-						&& fov >= 70.0f
-						&& fov <= 110.0f);
-			}
-			else if (type == "camNearClip")
-			{
-				float camnearclip = stof(value);
-				return (String::CanConvertStringToFloat(value)
-						&& camnearclip >= 0.0001f
-						&& camnearclip <= 10000.0f);
-			}
-			else if (type == "camFarClip")
-			{
-				float camfarclip = stof(value);
-				return (String::CanConvertStringToFloat(value)
-						&& camfarclip >= 0.1f
-						&& camfarclip <= 10000.0f);
-			}
-			else if (type == "camPosX"
-					 || type == "camPosY"
-					 || type == "camPosZ")
-			{
-				float val = stof(value);
-				return (String::CanConvertStringToFloat(value)
-						&& val >= -10000.0f
-						&& val <= 10000.0f);
-			}
-			else if (type == "camRotX"
-					 || type == "camRotY"
-					 || type == "camRotZ")
-			{
-				float val = stof(value);
-				return (String::CanConvertStringToFloat(value)
-					&& val >= -360.0f
-					&& val <= 360.0f);
-			}
-			else if (type == "consoleForceScroll")
-			{
-				int consoleForceScroll = stoi(value);
-				return (String::CanConvertStringToInt(value)
-						&& (consoleForceScroll == 0
-						|| consoleForceScroll == 1));
-			}
-			else if (type == "showDebugMenu")
-			{
-				int showDebugMenu = stoi(value);
-				return (String::CanConvertStringToInt(value)
-					&& (showDebugMenu == 0
-						|| showDebugMenu == 1));
-			}
-			else if (type == "showConsole")
-			{
-				int showConsole = stoi(value);
-				return (String::CanConvertStringToInt(value)
-					&& (showConsole == 0
-						|| showConsole == 1));
-			}
-			else if (type == "showSceneMenu")
-			{
-				int showSceneMenu = stoi(value);
-				return (String::CanConvertStringToInt(value)
-					&& (showSceneMenu == 0
-						|| showSceneMenu == 1));
-			}
-			else if (type == "showProjectHierarchyWindow")
-			{
-				int showProjectHierarchyWindow = stoi(value);
-				return (String::CanConvertStringToInt(value)
-					&& (showProjectHierarchyWindow == 0
-						|| showProjectHierarchyWindow == 1));
-			}
-			else
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					type + " is not a valid config file variable type!\n");
-				return false;
-			}
+			float fontScale = stof(value);
+			return (String::CanConvertStringToFloat(value)
+				&& fontScale >= 1.0f
+				&& fontScale <= 2.0f);
 		}
-		catch (const exception& e)
+		else if (type == "width")
 		{
+			float width = stof(value);
+			return (String::CanConvertStringToInt(value)
+				&& width >= 1280
+				&& width <= 7680);
+		}
+		else if (type == "height")
+		{
+			float height = stof(value);
+			return (String::CanConvertStringToInt(value)
+				&& height >= 720
+				&& height <= 4320);
+		}
+		else if (type == "vsync")
+		{
+			int vsync = stoi(value);
+			return (String::CanConvertStringToInt(value)
+				&& (vsync == 0
+					|| vsync == 1));
+		}
+		else if (type == "fov")
+		{
+			float fov = stof(value);
+			return (String::CanConvertStringToFloat(value)
+				&& fov >= 70.0f
+				&& fov <= 110.0f);
+		}
+		else if (type == "camNearClip")
+		{
+			float camnearclip = stof(value);
+			return (String::CanConvertStringToFloat(value)
+				&& camnearclip >= 0.0001f
+				&& camnearclip <= 10000.0f);
+		}
+		else if (type == "camFarClip")
+		{
+			float camfarclip = stof(value);
+			return (String::CanConvertStringToFloat(value)
+				&& camfarclip >= 0.1f
+				&& camfarclip <= 10000.0f);
+		}
+		else if (type == "camPosX"
+			|| type == "camPosY"
+			|| type == "camPosZ")
+		{
+			float val = stof(value);
+			return (String::CanConvertStringToFloat(value)
+				&& val >= -10000.0f
+				&& val <= 10000.0f);
+		}
+		else if (type == "camRotX"
+			|| type == "camRotY"
+			|| type == "camRotZ")
+		{
+			float val = stof(value);
+			return (String::CanConvertStringToFloat(value)
+				&& val >= -360.0f
+				&& val <= 360.0f);
+		}
+		else if (type == "consoleForceScroll")
+		{
+			int consoleForceScroll = stoi(value);
+			return (String::CanConvertStringToInt(value)
+				&& (consoleForceScroll == 0
+					|| consoleForceScroll == 1));
+		}
+		else if (type == "showDebugMenu")
+		{
+			int showDebugMenu = stoi(value);
+			return (String::CanConvertStringToInt(value)
+				&& (showDebugMenu == 0
+					|| showDebugMenu == 1));
+		}
+		else if (type == "showConsole")
+		{
+			int showConsole = stoi(value);
+			return (String::CanConvertStringToInt(value)
+				&& (showConsole == 0
+					|| showConsole == 1));
+		}
+		else if (type == "showSceneMenu")
+		{
+			int showSceneMenu = stoi(value);
+			return (String::CanConvertStringToInt(value)
+				&& (showSceneMenu == 0
+					|| showSceneMenu == 1));
+		}
+		else if (type == "showProjectHierarchyWindow")
+		{
+			int showProjectHierarchyWindow = stoi(value);
+			return (String::CanConvertStringToInt(value)
+				&& (showProjectHierarchyWindow == 0
+					|| showProjectHierarchyWindow == 1));
+		}
+		else
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				type + " is not a valid config file variable type!\n");
 			return false;
 		}
 	}

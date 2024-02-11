@@ -31,7 +31,8 @@ public:
 	{
 		new_folder,
 		existing_file,
-		engine_path
+		engine_path,
+		scene_file
 	};
 
 	static inline bool foundInvalidPath;
@@ -54,6 +55,7 @@ public:
 
 	static void NewProject();
 	static void AddProject();
+
 	static void SetEnginePathBySelection();
 	static void SetEnginePathFromConfigFile();
 
