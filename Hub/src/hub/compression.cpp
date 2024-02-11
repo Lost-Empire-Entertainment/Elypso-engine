@@ -36,3 +36,15 @@ bool Compression::CompressFolder(const string& inputPath, const string& outputPa
 	int result = system(command.c_str());
 	return result == 0;
 }
+
+bool Compression::DecompressFile(const string& inputPath, const string& outputPath)
+{
+	string compressPath = current_path().string() + "\\files\\bat scripts\\decompress.bat";
+
+	string quotedCompressPath = "\"" + compressPath + "\"";
+
+	string command = quotedCompressPath + " " + inputPath + " " + outputPath;
+
+	int result = system(command.c_str());
+	return result == 0;
+}

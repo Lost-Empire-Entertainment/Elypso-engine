@@ -40,6 +40,9 @@ int main()
 	//get all files if any new ones were added
 	GUI::UpdateFileList();
 
+	//assign engine path from config file
+	GUI::SetEnginePathFromConfigFile();
+
 	cout << "Successfully reached render loop!\n\n";
 	cout << "==================================================\n\n";
 

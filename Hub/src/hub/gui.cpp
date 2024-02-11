@@ -81,10 +81,22 @@ void GUI::Initialize()
 	if (!exists(Core::projectsFilePath))
 	{
 		ofstream projectsFile(Core::projectsFilePath);
-		if (!projectsFile)
+		if (!projectsFile.is_open())
 		{
 			cout << "Error: Failed to create " << Core::projectsFilePath << "!\n\n";
 		}
+		projectsFile.close();
+	}
+
+	Core::configFilePath = Core::docsPath.string() + "/config.txt";
+	if (!exists(Core::configFilePath))
+	{
+		ofstream configFile(Core::configFilePath);
+		if (!configFile.is_open())
+		{
+			cout << "Error: Failed to create " << Core::configFilePath << "!\n\n";
+		}
+		configFile.close();
 	}
 
 	static string tempString = Core::docsPath.string() + "/imgui.ini";
@@ -189,7 +201,7 @@ void GUI::RenderPanels()
 			{
 				if (!renderConfirmWindow)
 				{
-					GUI::RunProject(file);
+					GUI::RunProject();
 				}
 			}
 
@@ -243,6 +255,13 @@ void GUI::RenderButtons()
 	if (ImGui::Button("Add Project", ImVec2(285, 50)))
 	{
 		if (!renderConfirmWindow) GUI::AddProject();
+	}
+
+	ImGui::Dummy(ImVec2(0.0f, 15.0f));
+
+	if (ImGui::Button("Set engine path", ImVec2(285, 50)))
+	{
+		if (!renderConfirmWindow) GUI::SetEnginePathBySelection();
 	}
 
 	ImGui::End();
@@ -351,7 +370,7 @@ void GUI::AddProject()
 
 	if (filePath.empty())
 	{
-		cout << "Cancelled folder selection...\n\n";
+		cout << "Cancelled project selection...\n\n";
 		return;
 	}
 	 
@@ -376,6 +395,84 @@ void GUI::AddProject()
 	UpdateFileList();
 
 	cout << "Added existing project '" << filePath << "'!\n\n";
+}
+
+void GUI::SetEnginePathBySelection()
+{
+	string filePath = SelectWithExplorer(SelectType::engine_path);
+
+	if (filePath.empty())
+	{
+		cout << "Cancelled engine selection...\n\n";
+		return;
+	}
+
+	path enginePath(filePath);
+	if (enginePath.stem().string() != "Elypso engine"
+		|| enginePath.extension().string() != ".exe")
+	{
+		cout << "Error: Path " << filePath << " does not lead to Elypso engine.exe!\n\n";
+		return;
+	}
+
+	ofstream configFile(Core::configFilePath);
+	if (!configFile.is_open())
+	{
+		cout << "Error: Failed to open config file!\n\n";
+		return;
+	}
+	configFile << filePath << "\n";
+	configFile.close();
+
+	Core::enginePath = filePath;
+
+	cout << "Set engine path to '" << Core::enginePath << "'!\n\n";
+}
+void GUI::SetEnginePathFromConfigFile()
+{
+	ifstream configFile(Core::configFilePath);
+	if (!configFile.is_open())
+	{
+		cout << "Error: Failed to open config file at '" << Core::configFilePath << "'!\n\n";
+		return;
+	}
+
+	string firstLine;
+	if (!getline(configFile, firstLine))
+	{
+		if (configFile.eof()) cout << "Error: Config file is empty!\n\n";
+		else cout << "Error: Couldn't read first line from file!\n\n";
+		configFile.close();
+		return;
+	}
+
+	if (firstLine.empty())
+	{
+		cout << "Error: Config file is empty!\n\n";
+		configFile.close();
+		return;
+	}
+
+	if (!exists(firstLine))
+	{
+		cout << "Error: Engine path '" << firstLine << "' read from config file does not exist!\n\n";
+		configFile.close();
+		return;
+	}
+
+	path enginePath(firstLine);
+	if (enginePath.stem().string() != "Elypso engine"
+		|| enginePath.extension().string() != ".exe")
+	{
+		cout << "Error: Path '" << firstLine << "' does not lead to Elypso engine.exe!\n\n";
+		configFile.close();
+		return;
+	}
+	Core::enginePath = enginePath.string();
+
+	configFile.close();
+
+	cout << "Set engine path to " << Core::enginePath << "!\n\n";
 }
 
 void GUI::ConfirmRemove(const string& projectName, const string& projectPath)
@@ -437,16 +534,26 @@ void GUI::RemoveProject(const string& projectPath)
 	cout << "Removed '" << projectPath << "'...\n\n";
 }
 
-void GUI::RunProject(const string& projectPath)
+void GUI::RunProject()
 {
-	if (!exists(projectPath))
+	if (Core::enginePath == "")
 	{
-		cout << "Error: Tried to run '" << projectPath << "' but it doesn't exist!\n\n";
-		UpdateFileList();
+		SetEnginePathFromConfigFile();
+	}
+
+	if (Core::enginePath == "")
+	{
+		cout << "Error: Couldn't run engine because no valid path could be loaded!\n\n";
 		return;
 	}
 
-	cout << "Running '" << projectPath << "'...\n\n";
+	if (!exists(Core::enginePath))
+	{
+		cout << "Error: Tried to run '" << Core::enginePath << "' but it doesn't exist!\n\n";
+		return;
+	}
+
+	cout << "Running engine from '" << Core::enginePath << "'...\n\n";
 }
 
 void GUI::UpdateFileList()
@@ -467,8 +574,6 @@ void GUI::UpdateFileList()
 		if (!exists(line)) foundInvalidPath = true;
 		else files.push_back(line);
 	}
-	if (files.size() > 0) cout << "Found and loaded " << files.size() << " projects!\n\n";
-	else cout << "Did not find any projects to load...\n\n";
 
 	projectsFile.close();
 
@@ -545,6 +650,19 @@ string GUI::SelectWithExplorer(SelectType selectType)
 	else if (selectType == SelectType::existing_file)
 	{
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Project Files", L"*.project"} };
+		hr = pFileOpen->SetFileTypes(1, filterSpec);
+		if (FAILED(hr))
+		{
+			cout << "Error: Failed to set file filter!\n\n";
+			pFileOpen->Release();
+			CoUninitialize();
+			return "";
+		}
+	}
+
+	else if (selectType == SelectType::engine_path)
+	{
+		COMDLG_FILTERSPEC filterSpec[] = { { L"Executables", L"*.exe"} };
 		hr = pFileOpen->SetFileTypes(1, filterSpec);
 		if (FAILED(hr))
 		{

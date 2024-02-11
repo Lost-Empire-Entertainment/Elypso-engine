@@ -141,7 +141,7 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
-		Texture tex(Engine::filesPath);
+		Texture tex(Engine::enginePath);
 		tex.LoadTexture(obj, "textures/crate_2.png", false, GL_RGBA);
 		tex.LoadTexture(obj, "textures/crate_2_specular.png", false, GL_RGBA);
 

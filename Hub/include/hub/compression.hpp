@@ -25,4 +25,6 @@ class Compression
 {
 public:
 	static bool CompressFolder(const string& inputPath, const string& outputPath);
+
+	static bool DecompressFile(const string& inputPath, const string& outputPath);
 };

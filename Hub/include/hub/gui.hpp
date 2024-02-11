@@ -30,7 +30,8 @@ public:
 	enum class SelectType
 	{
 		new_folder,
-		existing_file
+		existing_file,
+		engine_path
 	};
 
 	static inline bool foundInvalidPath;
@@ -52,13 +53,14 @@ public:
 	static void RenderButtons();
 
 	static void NewProject();
-
 	static void AddProject();
+	static void SetEnginePathBySelection();
+	static void SetEnginePathFromConfigFile();
 
 	static void RemoveProject(const string& projectName);
 	static void ConfirmRemove(const string& projectName, const string& projectPath);
 
-	static void RunProject(const string& projectPath);
+	static void RunProject();
 
 	static string SelectWithExplorer(enum SelectType);
 
