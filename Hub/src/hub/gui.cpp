@@ -129,6 +129,8 @@ void GUI::Render()
 	GUI::RenderPanels();
 	GUI::RenderButtons();
 
+	if (renderConfirmWindow) GUI::ConfirmRemove(confirmFileName, confirmFilePath);
+
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
 	ImGui::Render();
@@ -174,7 +176,8 @@ void GUI::RenderPanels()
 
 			ImGui::SetWindowSize(ImVec2(framebufferWidth - 335, 200));
 
-			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)
+				&& !renderConfirmWindow)
 			{
 				ImGui::SetWindowFocus();
 			}
@@ -184,7 +187,23 @@ void GUI::RenderPanels()
 
 			if (ImGui::Button("Launch", ImVec2(200, 50)))
 			{
-				cout << "launching " << fileName << "\n\n";
+				if (!renderConfirmWindow)
+				{
+					GUI::RunProject(file);
+				}
+			}
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 20);
+
+			if (ImGui::Button("Remove", ImVec2(200, 50)))
+			{
+				if (!renderConfirmWindow)
+				{
+					confirmFileName = fileName;
+					confirmFilePath = file;
+					renderConfirmWindow = true;
+				}
 			}
 
 			ImGui::End();
@@ -216,14 +235,14 @@ void GUI::RenderButtons()
 
 	if (ImGui::Button("New Project", ImVec2(285, 50)))
 	{
-		GUI::NewProject();
+		if (!renderConfirmWindow) GUI::NewProject();
 	}
 
 	ImGui::Dummy(ImVec2(0.0f, 15.0f));
 
 	if (ImGui::Button("Add Project", ImVec2(285, 50)))
 	{
-		GUI::AddProject();
+		if (!renderConfirmWindow) GUI::AddProject();
 	}
 
 	ImGui::End();
@@ -272,6 +291,21 @@ void GUI::NewProject()
 		return;
 	}
 
+	path parentPath(filePath);
+	parentPath = parentPath.parent_path();
+	for (const auto& entry : directory_iterator(parentPath))
+	{
+		path entryFile(entry);
+		path projectFile(filePath + ".project");
+		if (entry.is_regular_file()
+			&& entryFile.stem() == projectFile.stem())
+		{
+			cout << "Error: A project with the name '" << projectFile.stem().string() << "' already exists in the same folder!\n\n";
+			remove_all(filePath);
+			return;
+		}
+	}
+
 	ofstream scene(filePath + "/scene.txt");
 	if (!scene.is_open())
 	{
@@ -294,7 +328,6 @@ void GUI::NewProject()
 	path compressFilePath(filePath);
 	string parentProjectPath = compressFilePath.parent_path().string();
 	string projectPath = parentProjectPath + "/" + compressFilePath.stem().string() + ".project";
-	cout << projectPath << "\n\n";
 	rename(compressPath, projectPath);
 
 	remove_all(filePath);
@@ -326,7 +359,8 @@ void GUI::AddProject()
 	{
 		if (element == filePath)
 		{
-			cout << "Error: " << filePath << " already is added!\n\n";
+			cout << "Error: '" << filePath << "' has already been added!\n\n";
+			UpdateFileList();
 			return;
 		}
 	}
@@ -344,6 +378,74 @@ void GUI::AddProject()
 	cout << "Added existing project '" << filePath << "'!\n\n";
 }
 
+void GUI::ConfirmRemove(const string& projectName, const string& projectPath)
+{
+	ImGui::SetNextWindowPos(ImVec2(400, 200));
+	ImGui::SetNextWindowSize(ImVec2(500, 300));
+
+	ImGuiWindowFlags flags = 
+		ImGuiWindowFlags_NoResize
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoCollapse
+		| ImGuiWindowFlags_NoSavedSettings;
+
+	string title = "Remove " + projectName + "?";
+	ImGui::Begin(title.c_str(), nullptr, flags);
+
+	ImVec2 windowPos = ImGui::GetWindowPos();
+	ImVec2 windowSize = ImGui::GetWindowSize();
+
+	ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
+	ImVec2 buttonSize(120, 50);
+	float buttonSpacing = 20.0f;
+
+	ImVec2 buttonYesPos(
+		windowSize.x * 0.45f - buttonSize.x,
+		windowSize.y * 0.5f - buttonSize.y * 0.5f);
+	ImVec2 buttonNoPos(
+		windowSize.x * 0.55f,
+		windowSize.y * 0.5f - buttonSize.y * 0.5f);
+	
+	ImGui::SetCursorPos(buttonYesPos);
+	if (ImGui::Button("Yes", buttonSize))
+	{
+		GUI::RemoveProject(projectPath);
+		renderConfirmWindow = false;
+	}
+
+	ImGui::SetCursorPos(buttonNoPos);
+	if (ImGui::Button("No", buttonSize))
+	{
+		cout << "Cancelled project removal...\n\n";
+		renderConfirmWindow = false;
+	}
+
+	ImGui::End();
+}
+void GUI::RemoveProject(const string& projectPath)
+{
+	if (!exists(projectPath))
+	{
+		cout << "Error: Tried to remove '" << projectPath << "' but it has already been removed!\n\n";
+		UpdateFileList();
+		return;
+	}
+
+	cout << "Removed '" << projectPath << "'...\n\n";
+}
+
+void GUI::RunProject(const string& projectPath)
+{
+	if (!exists(projectPath))
+	{
+		cout << "Error: Tried to run '" << projectPath << "' but it doesn't exist!\n\n";
+		UpdateFileList();
+		return;
+	}
+
+	cout << "Running '" << projectPath << "'...\n\n";
+}
+
 void GUI::UpdateFileList()
 {
 	files.clear();
@@ -359,12 +461,37 @@ void GUI::UpdateFileList()
 	string line;
 	while (getline(projectsFile, line))
 	{
-		cout << "found from txt file: " << line << "\n";
-		files.push_back(line);
+		if (!exists(line))
+		{
+			cout << "Error: '" << line << "' is not a valid project path!" << "\n\n";
+			foundInvalidPath = true;
+		}
+		else files.push_back(line);
 	}
-	cout << "new count: " << files.size() << "\n\n";
+	if (files.size() > 0) cout << "Found and loaded " << files.size() << " projects!\n\n";
+	else cout << "Did not find any projects to load...\n\n";
 
 	projectsFile.close();
+
+	if (files.size() > 0
+		&& foundInvalidPath)
+	{
+		ofstream editedProjectsFile(Core::projectsFilePath);
+		if (!editedProjectsFile.is_open())
+		{
+			cout << "Error: Failed to open projects file!\n\n";
+			return;
+		}
+
+		for (const auto& file : files)
+		{
+			editedProjectsFile << file << "\n";
+		}
+
+		editedProjectsFile.close();
+
+		foundInvalidPath = false;
+	}
 }
 
 string GUI::SelectWithExplorer(SelectType selectType)

@@ -33,6 +33,12 @@ public:
 		existing_file
 	};
 
+	static inline bool foundInvalidPath;
+
+	static inline bool renderConfirmWindow;
+	static inline string confirmFileName;
+	static inline string confirmFilePath;
+
 	static inline int framebufferWidth, framebufferHeight;
 	static inline float panelSpacing = 10.0f;
 	static inline float panelHeight = 200.0f;
@@ -48,6 +54,11 @@ public:
 	static void NewProject();
 
 	static void AddProject();
+
+	static void RemoveProject(const string& projectName);
+	static void ConfirmRemove(const string& projectName, const string& projectPath);
+
+	static void RunProject(const string& projectPath);
 
 	static string SelectWithExplorer(enum SelectType);
 
