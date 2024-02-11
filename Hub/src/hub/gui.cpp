@@ -199,7 +199,8 @@ void GUI::RenderPanels()
 
 			if (ImGui::Button("Launch", ImVec2(200, 50)))
 			{
-				if (!renderConfirmWindow)
+				if (!renderConfirmWindow
+					&& IsValidEnginePath(Core::enginePath.string()))
 				{
 					GUI::RunProject();
 				}
@@ -534,7 +535,7 @@ void GUI::RemoveProject(const string& projectPath)
 	cout << "Removed '" << projectPath << "'...\n\n";
 }
 
-void GUI::RunProject()
+bool GUI::IsValidEnginePath(const string& enginePath)
 {
 	if (Core::enginePath == "")
 	{
@@ -544,15 +545,27 @@ void GUI::RunProject()
 	if (Core::enginePath == "")
 	{
 		cout << "Error: Couldn't run engine because no valid path could be loaded!\n\n";
-		return;
+		return false;
 	}
 
 	if (!exists(Core::enginePath))
 	{
 		cout << "Error: Tried to run '" << Core::enginePath << "' but it doesn't exist!\n\n";
-		return;
+		return false;
 	}
 
+	if (Core::enginePath.stem().string() != "Elypso engine"
+		|| Core::enginePath.extension().string() != ".exe")
+	{
+		cout << "Error: Path '" << Core::enginePath << "' does not lead to Elypso engine.exe!\n\n";
+		return false;
+	}
+
+	return true;
+}
+
+void GUI::RunProject()
+{
 	cout << "Running engine from '" << Core::enginePath << "'...\n\n";
 }
 

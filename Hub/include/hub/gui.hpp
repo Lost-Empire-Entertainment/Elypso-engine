@@ -60,6 +60,8 @@ public:
 	static void RemoveProject(const string& projectName);
 	static void ConfirmRemove(const string& projectName, const string& projectPath);
 
+	static bool IsValidEnginePath(const string& enginePath);
+
 	static void RunProject();
 
 	static string SelectWithExplorer(enum SelectType);
