@@ -328,7 +328,7 @@ void GUI::NewProject()
 		}
 	}
 
-	string scenePath = filePath + "/TemplateScene.txt";
+	string scenePath = filePath + "/scene.txt";
 	ofstream scene(scenePath);
 	if (!scene.is_open())
 	{
@@ -343,7 +343,7 @@ void GUI::NewProject()
 	create_directory(sceneDirectory);
 
 	//compress scene folder into zip
-	rename(scenePath, sceneDirectory + "/TemplateScene.txt");
+	rename(scenePath, sceneDirectory + "/scene.txt");
 	string sceneCompressPath = path(sceneDirectory).string() + "\\" + path(sceneDirectory).stem().string() + ".zip";
 	if (!Compression::CompressFolder(sceneDirectory, sceneCompressPath))
 	{
@@ -354,11 +354,11 @@ void GUI::NewProject()
 	//rename scene folder .zip extension to .scene extension
 	path sceneFilePath(scenePath);
 	string sceneParentProjectPath = sceneFilePath.parent_path().string();
-	string sceneScenePath = sceneParentProjectPath + "/" + sceneFilePath.stem().string() + ".scene";
+	string sceneScenePath = sceneParentProjectPath + "/TemplateScene.scene";
 	rename(sceneCompressPath, sceneScenePath);
 	
 	//move .scene file to parent project folder
-	rename(sceneScenePath, filePath + "/" + sceneFilePath.stem().string() + ".scene");
+	rename(sceneScenePath, filePath + "/TemplateScene.scene");
 	//remove no longer needed scene folder
 	remove_all(sceneDirectory);
 

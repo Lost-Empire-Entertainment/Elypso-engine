@@ -1,0 +1,61 @@
+//<Elypso engine>
+//    Copyright(C) < 2024 > < Greenlaser >
+//
+//    This program is free software : you can redistribute it and /or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License in LICENCE.md
+//    and a copy of the EULA in EULA.md along with this program. 
+//    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
+
+//engine
+#include "compression.hpp"
+
+#include <iostream>
+#include <filesystem>
+#include <cstdlib>
+
+using std::cout;
+using std::filesystem::current_path;
+
+namespace EngineFile
+{
+	bool Compression::CompressFolder(const string& inputPath, const string& outputPath)
+	{
+		string compressPath = current_path().string() + "\\engine\\bat scripts\\compress.bat";
+
+		string quotedCompressPath = "\"" + compressPath + "\"";
+		string quotedInputPath = "\"" + inputPath + "\"";
+		string quotedOutputPath = "\"" + outputPath + "\"";
+
+		string command = quotedCompressPath + " " + quotedInputPath + " " + quotedOutputPath;
+
+		cout << "command: " << command << "\n\n";
+
+		int result = system(command.c_str());
+		return result == 0;
+	}
+
+	bool Compression::DecompressFile(const string& inputPath, const string& outputPath)
+	{
+		string decompressPath = current_path().string() + "\\engine\\bat scripts\\decompress.bat";
+
+		string quotedDecompressPath = "\"" + decompressPath + "\"";
+		string quotedInputPath = "\"" + inputPath + "\"";
+		string quotedOutputPath = "\"" + outputPath + "\"";
+
+		string command = quotedDecompressPath + " " + quotedInputPath + " " + quotedOutputPath;
+
+		cout << "command: " << command << "\n\n";
+
+		int result = system(command.c_str());
+		return result == 0;
+	}
+}
