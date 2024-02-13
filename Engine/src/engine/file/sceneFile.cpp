@@ -40,6 +40,7 @@ using std::shared_ptr;
 using std::ofstream;
 using std::ifstream;
 using std::getline;
+using std::replace;
 using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::path;
@@ -80,6 +81,8 @@ namespace EngineFile
 
 		path scenePath(sceneFile);
 		string decompressedSceneFile = scenePath.parent_path().string() + "/" + scenePath.stem().string();
+		replace(sceneFile.begin(), sceneFile.end(), '/', '\\');
+		replace(decompressedSceneFile.begin(), decompressedSceneFile.end(), '/', '\\');
 		if (!Compression::DecompressFile(sceneFile, decompressedSceneFile))
 		{
 			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to decompress scene file! Shutting down.");

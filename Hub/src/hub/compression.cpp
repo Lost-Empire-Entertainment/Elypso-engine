@@ -18,20 +18,20 @@
 //hub
 #include "compression.hpp"
 
-#include <iostream>
-#include <filesystem>
 #include <cstdlib>
+#include <iostream>
 
 using std::cout;
-using std::filesystem::current_path;
 
 bool Compression::CompressFolder(const string& inputPath, const string& outputPath)
 {
-	string compressPath = current_path().string() + "\\files\\bat scripts\\compress.bat";
-	
-	string quotedCompressPath = "\"" + compressPath + "\"";
+	string quotedInputPath = "\"" + inputPath + "\"";
+	string quotedOutputPath = "\"" + outputPath + "\"";
+	string powershell1 = "powershell Compress-Archive -Path (Get-ChildItem -Path ";
+	string powershell2 = " -Recurse).FullName -DestinationPath ";
+	string command = powershell1 + quotedInputPath + powershell2 + quotedOutputPath;
 
-	string command = quotedCompressPath + " " + inputPath + " " + outputPath;
+	cout << "hub compress:\n" << command << "\n\n";
 
 	int result = system(command.c_str());
 	return result == 0;
@@ -39,11 +39,13 @@ bool Compression::CompressFolder(const string& inputPath, const string& outputPa
 
 bool Compression::DecompressFile(const string& inputPath, const string& outputPath)
 {
-	string compressPath = current_path().string() + "\\files\\bat scripts\\decompress.bat";
+	string quotedInputPath = "\"" + inputPath + "\"";
+	string quotedOutputPath = "\"" + outputPath + "\"";
+	string powershell1 = "powershell Expand-Archive -Path ";
+	string powershell2 = " -DestinationPath ";
+	string command = powershell1 + quotedInputPath + powershell2 + quotedOutputPath;
 
-	string quotedCompressPath = "\"" + compressPath + "\"";
-
-	string command = quotedCompressPath + " " + inputPath + " " + outputPath;
+	cout << "hub decompress:\n" << command << "\n\n";
 
 	int result = system(command.c_str());
 	return result == 0;

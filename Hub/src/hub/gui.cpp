@@ -345,6 +345,8 @@ void GUI::NewProject()
 	//compress scene folder into zip
 	rename(scenePath, sceneDirectory + "/scene.txt");
 	string sceneCompressPath = path(sceneDirectory).string() + "\\" + path(sceneDirectory).stem().string() + ".zip";
+	replace(sceneDirectory.begin(), sceneDirectory.end(), '/', '\\');
+	replace(sceneCompressPath.begin(), sceneCompressPath.end(), '/', '\\');
 	if (!Compression::CompressFolder(sceneDirectory, sceneCompressPath))
 	{
 		cout << "Error: Failed to compress '" << filePath << "'!\n\n";
@@ -364,6 +366,8 @@ void GUI::NewProject()
 
 	//compress parent folder into zip
 	string compressPath = path(filePath).string() + "\\" + path(filePath).stem().string() + ".zip";
+	replace(filePath.begin(), filePath.end(), '/', '\\');
+	replace(compressPath.begin(), compressPath.end(), '/', '\\');
 	if (!Compression::CompressFolder(filePath, compressPath))
 	{
 		cout << "Error: Failed to compress '" << filePath << "'!\n\n";
@@ -607,6 +611,8 @@ void GUI::RunProject(const string& targetProject)
 	//then we can decompress it
 	string decompressedTargetProject = 
 		copiedTargetProjectPath.parent_path().string() + "/" + copiedTargetProjectPath.stem().string();
+	replace(renamedCopiedTargetProjectPath.begin(), renamedCopiedTargetProjectPath.end(), '/', '\\');
+	replace(decompressedTargetProject.begin(), decompressedTargetProject.end(), '/', '\\');
 	if (!Compression::DecompressFile(renamedCopiedTargetProjectPath, decompressedTargetProject))
 	{
 		cout << "Error: Failed to decompress '" << targetProjectPath << "'!\n\n";
