@@ -27,8 +27,8 @@ bool Compression::CompressFolder(const string& inputPath, const string& outputPa
 {
 	string quotedInputPath = "\"" + inputPath + "\"";
 	string quotedOutputPath = "\"" + outputPath + "\"";
-	string powershell1 = "powershell Compress-Archive -Path (Get-ChildItem -Path ";
-	string powershell2 = " -Recurse).FullName -DestinationPath ";
+	string powershell1 = "powershell Compress-Archive -LiteralPath ";
+	string powershell2 = " -DestinationPath ";
 	string command = powershell1 + quotedInputPath + powershell2 + quotedOutputPath;
 
 	cout << "hub compress:\n" << command << "\n\n";

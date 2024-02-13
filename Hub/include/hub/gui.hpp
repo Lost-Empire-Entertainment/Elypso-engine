@@ -23,6 +23,7 @@
 
 using std::string;
 using std::vector;
+using std::wstring;
 
 class GUI
 {
@@ -65,6 +66,8 @@ public:
 	static bool IsValidEnginePath(const string& enginePath);
 
 	static void RunProject(const string& targetProject);
+
+	static void RunApplication(const wstring& parentFolderPath, const wstring& exePath, const wstring& commands = L"");
 
 	static string SelectWithExplorer(enum SelectType);
 

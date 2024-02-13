@@ -31,7 +31,6 @@
 #include <filesystem>
 
 using std::cout;
-using std::wstring;
 using std::ifstream;
 using std::ofstream;
 using std::getline;
@@ -273,32 +272,7 @@ void GUI::RenderButtons()
 void GUI::NewProject()
 {
 	string filePath = SelectWithExplorer(SelectType::new_folder);
-
-	path convertedFilePath = path(filePath);
-	string fileName = convertedFilePath.stem().string();
-	
-	char* word = new char[fileName.length() + 1];
-	fileName.copy(word, fileName.length());
-	word[fileName.length()] = '\0';
-
-	bool foundSpace = false;
-	for (int i = 0; i < fileName.length(); ++i)
-	{
-		if (isspace(word[i]))
-		{
-			foundSpace = true;
-			break;
-		}
-	}
-
-	delete[] word;
-
-	if (foundSpace)
-	{
-		cout << "Error: Failed to create new project with name '" << fileName << "' because it contains spaces!\n\n";
-		remove_all(filePath);
-		return;
-	}
+	cout << "started with " << filePath << "\n\n";
 
 	if (filePath.empty())
 	{
@@ -315,10 +289,10 @@ void GUI::NewProject()
 
 	path parentPath(filePath);
 	parentPath = parentPath.parent_path();
+	path projectFile(filePath + ".project");
 	for (const auto& entry : directory_iterator(parentPath))
 	{
 		path entryFile(entry);
-		path projectFile(filePath + ".project");
 		if (entry.is_regular_file()
 			&& entryFile.stem() == projectFile.stem())
 		{
@@ -341,24 +315,30 @@ void GUI::NewProject()
 
 	string sceneDirectory = filePath + "/TemplateScene";
 	create_directory(sceneDirectory);
+	cout << "created " << sceneDirectory << "\n\n";
 
 	//compress scene folder into zip
 	rename(scenePath, sceneDirectory + "/scene.txt");
+	cout << "moved " << scenePath << " into " << sceneDirectory + "/scene.txt" << "\n\n";
 	string sceneCompressPath = path(sceneDirectory).string() + "\\" + path(sceneDirectory).stem().string() + ".zip";
 	replace(sceneDirectory.begin(), sceneDirectory.end(), '/', '\\');
 	replace(sceneCompressPath.begin(), sceneCompressPath.end(), '/', '\\');
+	cout << "starting to compress " << sceneDirectory << " into " << sceneCompressPath << "\n\n";
 	if (!Compression::CompressFolder(sceneDirectory, sceneCompressPath))
 	{
 		cout << "Error: Failed to compress '" << filePath << "'!\n\n";
 		remove_all(filePath);
 		return;
 	}
+	cout << "zipped " << sceneDirectory << " into " << sceneCompressPath << "\n\n";
+
 	//rename scene folder .zip extension to .scene extension
 	path sceneFilePath(scenePath);
 	string sceneParentProjectPath = sceneFilePath.parent_path().string();
 	string sceneScenePath = sceneParentProjectPath + "/TemplateScene.scene";
 	rename(sceneCompressPath, sceneScenePath);
-	
+	cout << "renamed " << sceneCompressPath << " into " << sceneScenePath << "\n\n";
+
 	//move .scene file to parent project folder
 	rename(sceneScenePath, filePath + "/TemplateScene.scene");
 	//remove no longer needed scene folder
@@ -374,11 +354,14 @@ void GUI::NewProject()
 		remove_all(filePath);
 		return;
 	}
+	cout << "zipped " << compressPath << "\n\n";
+
 	//rename parent folder .zip extension to .project extension
 	path compressFilePath(filePath);
 	string parentProjectPath = compressFilePath.parent_path().string();
 	string projectPath = parentProjectPath + "/" + compressFilePath.stem().string() + ".project";
 	rename(compressPath, projectPath);
+	cout << "renamed " << compressPath << " into " << projectPath << "\n\n";
 
 	remove_all(filePath);
 
@@ -656,14 +639,13 @@ void GUI::RunProject(const string& targetProject)
 
 	cout << ".\n.\n.\n\n";
 
-	//
-	// RUN ENGINE
-	//
+	GUI::RunApplication(
+		Core::enginePath.parent_path().wstring(),
+		Core::enginePath);
+}
 
-	wstring exeDir = Core::enginePath.parent_path().wstring();
-	wstring wideExePath = Core::enginePath;
-	wstring wideCmdArgs = L""; //initialize with your command line arguments
-
+void GUI::RunApplication(const wstring& parentFolderPath, const wstring& exePath, const wstring& commands)
+{
 	//initialize structures for process creation
 	STARTUPINFOW si;
 	PROCESS_INFORMATION pi;
@@ -674,28 +656,28 @@ void GUI::RunProject(const string& targetProject)
 	// Create the new process
 	if (!CreateProcessW
 	(
-		wideExePath.c_str(), //path to the executable
-		wideCmdArgs.data(),  //command line arguments
-		nullptr,             //process handle not inheritable
-		nullptr,             //thread handle not inheritable
-		FALSE,               //handle inheritance
-		0,                   //creation flags
-		nullptr,             //use parent's environment block
-		exeDir.c_str(),      //use parent's starting directory
-		&si,                 //pointer to STARTUPINFO structure
-		&pi                  //pointer to PROCESS_INFORMATION structure
+		exePath.c_str(),          //path to the executable
+		const_cast<LPWSTR>(commands.c_str()), //command line arguments
+		nullptr,                  //process handle not inheritable
+		nullptr,                  //thread handle not inheritable
+		FALSE,                    //handle inheritance
+		0,                        //creation flags
+		nullptr,                  //use parent's environment block
+		parentFolderPath.c_str(), //use parent's starting directory
+		&si,                      //pointer to STARTUPINFO structure
+		&pi                       //pointer to PROCESS_INFORMATION structure
 	))
 	{
 		//retrieve the error code and print a descriptive error message
 		LPVOID lpMsgBuf = nullptr;
 		DWORD dw = GetLastError();
 		FormatMessageW(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER 
-			| FORMAT_MESSAGE_FROM_SYSTEM 
+			FORMAT_MESSAGE_ALLOCATE_BUFFER
+			| FORMAT_MESSAGE_FROM_SYSTEM
 			| FORMAT_MESSAGE_IGNORE_INSERTS,
-			nullptr, 
-			dw, 
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
+			nullptr,
+			dw,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 			(LPWSTR)&lpMsgBuf, 0, nullptr);
 		std::wcout << L"Error: " << reinterpret_cast<LPCWSTR>(lpMsgBuf) << L"\n\n";
 		LocalFree(lpMsgBuf);
