@@ -53,7 +53,6 @@ target_link_libraries(external_libs INTERFACE glad magic_enum)
 set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/hub/main.cpp
 	${CMAKE_SOURCE_DIR}/src/hub/gui.cpp
-	${CMAKE_SOURCE_DIR}/src/hub/compression.cpp
 )
 
 # Add your external files

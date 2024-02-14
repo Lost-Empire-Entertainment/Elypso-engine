@@ -26,7 +26,6 @@
 #include "core.hpp"
 #include "fileUtils.hpp"
 #include "errorpopup.hpp"
-#include "compression.hpp"
 
 #include <vector>
 #include <memory>
@@ -34,6 +33,7 @@
 #include <fstream>
 #include <filesystem>
 
+using std::cout;
 using std::to_string;
 using std::vector;
 using std::shared_ptr;
@@ -53,7 +53,6 @@ using Physics::Select;
 using Core::Engine;
 using Core::ErrorPopup;
 using Utils::File;
-using EngineFile::Compression;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -66,9 +65,11 @@ namespace EngineFile
 		string files = current_path().generic_string() + "/files";
 		for (const auto& entry : directory_iterator(files))
 		{
+			cout << entry << "\n";
 			path entryPath = entry.path();
 			if (is_regular_file(entryPath)
-				&& entryPath.extension() == ".scene")
+				&& entryPath.stem() == "scene"
+				&& entryPath.extension() == ".txt")
 			{
 				sceneFile = entryPath.string();
 				break;
@@ -79,33 +80,7 @@ namespace EngineFile
 			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to find scene file! Shutting down.");
 		}
 
-		path scenePath(sceneFile);
-		string decompressedSceneFile = scenePath.parent_path().string() + "/" + scenePath.stem().string();
-		replace(sceneFile.begin(), sceneFile.end(), '/', '\\');
-		replace(decompressedSceneFile.begin(), decompressedSceneFile.end(), '/', '\\');
-		if (!Compression::DecompressFile(sceneFile, decompressedSceneFile))
-		{
-			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to decompress scene file! Shutting down.");
-		}
-
-		string validSceneFile;
-		for (const auto& entry : directory_iterator(decompressedSceneFile))
-		{
-			path entryPath = entry.path();
-			if (is_regular_file(entryPath)
-				&& entryPath.stem() == "scene"
-				&& entryPath.extension() == ".txt")
-			{
-				validSceneFile = entryPath.string();
-				break;
-			}
-		}
-		if (validSceneFile == "")
-		{
-			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to load valid scene file from scene package! Shutting down.");
-		}
-
-		LoadScene(validSceneFile);
+		LoadScene(sceneFile);
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)

@@ -23,7 +23,6 @@
 //hub
 #include "gui.hpp"
 #include "main.hpp"
-#include "compression.hpp"
 
 #include <iostream>
 #include <ShlObj.h>
@@ -289,7 +288,7 @@ void GUI::NewProject()
 
 	path parentPath(filePath);
 	parentPath = parentPath.parent_path();
-	path projectFile(filePath + ".project");
+	path projectFile(filePath);
 	for (const auto& entry : directory_iterator(parentPath))
 	{
 		path entryFile(entry);
@@ -317,53 +316,7 @@ void GUI::NewProject()
 	create_directory(sceneDirectory);
 	cout << "created " << sceneDirectory << "\n\n";
 
-	//compress scene folder into zip
 	rename(scenePath, sceneDirectory + "/scene.txt");
-	cout << "moved " << scenePath << " into " << sceneDirectory + "/scene.txt" << "\n\n";
-	string sceneCompressPath = path(sceneDirectory).string() + "\\" + path(sceneDirectory).stem().string() + ".zip";
-	replace(sceneDirectory.begin(), sceneDirectory.end(), '/', '\\');
-	replace(sceneCompressPath.begin(), sceneCompressPath.end(), '/', '\\');
-	cout << "starting to compress " << sceneDirectory << " into " << sceneCompressPath << "\n\n";
-	if (!Compression::CompressFolder(sceneDirectory, sceneCompressPath))
-	{
-		cout << "Error: Failed to compress '" << filePath << "'!\n\n";
-		remove_all(filePath);
-		return;
-	}
-	cout << "zipped " << sceneDirectory << " into " << sceneCompressPath << "\n\n";
-
-	//rename scene folder .zip extension to .scene extension
-	path sceneFilePath(scenePath);
-	string sceneParentProjectPath = sceneFilePath.parent_path().string();
-	string sceneScenePath = sceneParentProjectPath + "/TemplateScene.scene";
-	rename(sceneCompressPath, sceneScenePath);
-	cout << "renamed " << sceneCompressPath << " into " << sceneScenePath << "\n\n";
-
-	//move .scene file to parent project folder
-	rename(sceneScenePath, filePath + "/TemplateScene.scene");
-	//remove no longer needed scene folder
-	remove_all(sceneDirectory);
-
-	//compress parent folder into zip
-	string compressPath = path(filePath).string() + "\\" + path(filePath).stem().string() + ".zip";
-	replace(filePath.begin(), filePath.end(), '/', '\\');
-	replace(compressPath.begin(), compressPath.end(), '/', '\\');
-	if (!Compression::CompressFolder(filePath, compressPath))
-	{
-		cout << "Error: Failed to compress '" << filePath << "'!\n\n";
-		remove_all(filePath);
-		return;
-	}
-	cout << "zipped " << compressPath << "\n\n";
-
-	//rename parent folder .zip extension to .project extension
-	path compressFilePath(filePath);
-	string parentProjectPath = compressFilePath.parent_path().string();
-	string projectPath = parentProjectPath + "/" + compressFilePath.stem().string() + ".project";
-	rename(compressPath, projectPath);
-	cout << "renamed " << compressPath << " into " << projectPath << "\n\n";
-
-	remove_all(filePath);
 
 	ofstream projectsFile(Core::projectsFilePath, ios::app);
 	if (!projectsFile.is_open())
@@ -371,11 +324,11 @@ void GUI::NewProject()
 		cout << "Error: Failed to open projects file!\n\n";
 		return;
 	}
-	projectsFile << projectPath << "\n";
+	projectsFile << filePath << "\n";
 	projectsFile.close();
 	UpdateFileList();
 
-	cout << "Successfully created new project at '" << projectPath << "'!\n\n";
+	cout << "Successfully created new project at '" << filePath << "'!\n\n";
 }
 
 void GUI::AddProject()
@@ -579,31 +532,6 @@ bool GUI::IsValidEnginePath(const string& enginePath)
 
 void GUI::RunProject(const string& targetProject)
 {
-	//first we need a duplicate of the original file
-	path targetProjectPath(targetProject);
-	string copiedTargetProject = 
-		targetProjectPath.parent_path().string() + "/TEMP_" + targetProjectPath.stem().string() + ".project";
-	copy(targetProjectPath.string(), copiedTargetProject);
-
-	//then we need to rename its extension to zip
-	path copiedTargetProjectPath(copiedTargetProject);
-	string renamedCopiedTargetProjectPath =
-		copiedTargetProjectPath.parent_path().string() + "/" + copiedTargetProjectPath.stem().string() + ".zip";
-	rename(copiedTargetProjectPath.string(), renamedCopiedTargetProjectPath);
-
-	//then we can decompress it
-	string decompressedTargetProject = 
-		copiedTargetProjectPath.parent_path().string() + "/" + copiedTargetProjectPath.stem().string();
-	replace(renamedCopiedTargetProjectPath.begin(), renamedCopiedTargetProjectPath.end(), '/', '\\');
-	replace(decompressedTargetProject.begin(), decompressedTargetProject.end(), '/', '\\');
-	if (!Compression::DecompressFile(renamedCopiedTargetProjectPath, decompressedTargetProject))
-	{
-		cout << "Error: Failed to decompress '" << targetProjectPath << "'!\n\n";
-		//delete temporary zip file
-		remove(renamedCopiedTargetProjectPath.c_str());
-		return;
-	}
-
 	//empty engine folder content if any content exists
 	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
 	for (const auto& entry : directory_iterator(engineFilesFolderPath))
@@ -614,26 +542,22 @@ void GUI::RunProject(const string& targetProject)
 	}
 
 	//move temp folder content to engine files folder content
-	for (const auto& entry : directory_iterator(decompressedTargetProject))
+	for (const auto& entry : directory_iterator(targetProject))
 	{
 		path entryPath = entry.path();
+		cout << entryPath << "\n";
 		if (is_regular_file(entryPath))
 		{
 			string name = entryPath.stem().string();
 			string extension = entryPath.extension().string();
-			rename(entryPath, engineFilesFolderPath + "/" + name + extension);
+			copy(entryPath, engineFilesFolderPath + "/" + name + extension);
 		}
 		else if (is_directory(entryPath))
 		{
 			string name = entryPath.stem().string();
-			rename(entryPath, engineFilesFolderPath + "/" + name);
+			copy(entryPath, engineFilesFolderPath + "/" + name);
 		}
 	}
-
-	//delete temporary zip file
-	remove(renamedCopiedTargetProjectPath.c_str());
-	//delete temporary folder
-	remove_all(decompressedTargetProject);
 
 	cout << "Running engine from '" << Core::enginePath << "'!\n\n";
 
@@ -755,7 +679,8 @@ string GUI::SelectWithExplorer(SelectType selectType)
 		return "";
 	}
 
-	if (selectType == SelectType::new_folder)
+	if (selectType == SelectType::new_folder
+		|| selectType == SelectType::existing_file)
 	{
 		//restrict the selection to folders only
 		DWORD dwOptions;
@@ -774,20 +699,6 @@ string GUI::SelectWithExplorer(SelectType selectType)
 		else
 		{
 			cout << "Error: Failed to get options!\n\n";
-			pFileOpen->Release();
-			CoUninitialize();
-			return "";
-		}
-	}
-
-	else if (selectType == SelectType::existing_file)
-	{
-		//restrict file selection to .txt only
-		COMDLG_FILTERSPEC filterSpec[] = { { L"Project Files", L"*.project"} };
-		hr = pFileOpen->SetFileTypes(1, filterSpec);
-		if (FAILED(hr))
-		{
-			cout << "Error: Failed to set file filter!\n\n";
 			pFileOpen->Release();
 			CoUninitialize();
 			return "";

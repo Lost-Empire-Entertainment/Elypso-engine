@@ -62,7 +62,6 @@ set(SOURCE_FILES
 	${SRC_CORE_DIR}/input.cpp
 	${SRC_CORE_DIR}/shutdown.cpp
 	${SRC_CORE_DIR}/timeManager.cpp
-	${SRC_FILE_DIR}/compression.cpp
 	${SRC_FILE_DIR}/configFile.cpp
 	${SRC_FILE_DIR}/sceneFile.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui.cpp
