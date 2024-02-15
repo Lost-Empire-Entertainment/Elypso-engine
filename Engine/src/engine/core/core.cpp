@@ -70,8 +70,6 @@ namespace Core
 			Type::DEBUG,
 			output);
 
-		SceneFile::CheckForStartupSceneFile();
-
 		Render::RenderSetup();
 
 		ConfigFile::ProcessConfigFile("config.txt");

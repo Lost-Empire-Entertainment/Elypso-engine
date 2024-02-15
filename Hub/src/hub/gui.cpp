@@ -495,7 +495,7 @@ void GUI::RemoveProject(const string& projectPath)
 		return;
 	}
 
-	std::filesystem::remove(projectPath);
+	remove_all(projectPath);
 	UpdateFileList();
 
 	cout << "Removed '" << projectPath << "'...\n\n";

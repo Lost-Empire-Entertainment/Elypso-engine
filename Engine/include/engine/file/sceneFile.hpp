@@ -26,7 +26,6 @@ namespace EngineFile
 	class SceneFile
 	{
 	public:
-		static void CheckForStartupSceneFile();
 		static void CreateNewScene(const string& fileName);
 		static void LoadScene(const string& fileName);
 		static void SaveCurrentScene();

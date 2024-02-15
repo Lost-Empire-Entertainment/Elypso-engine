@@ -59,30 +59,6 @@ using Type = Core::ConsoleManager::Type;
 
 namespace EngineFile
 {
-	void SceneFile::CheckForStartupSceneFile()
-	{
-		string sceneFile;
-		string files = current_path().generic_string() + "/files";
-		for (const auto& entry : directory_iterator(files))
-		{
-			cout << entry << "\n";
-			path entryPath = entry.path();
-			if (is_regular_file(entryPath)
-				&& entryPath.stem() == "scene"
-				&& entryPath.extension() == ".txt")
-			{
-				sceneFile = entryPath.string();
-				break;
-			}
-		}
-		if (sceneFile == "")
-		{
-			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to find scene file! Shutting down.");
-		}
-
-		LoadScene(sceneFile);
-	}
-
 	void SceneFile::CreateNewScene(const string& filePath)
 	{
 		string fullPath = Engine::filesPath + filePath;
