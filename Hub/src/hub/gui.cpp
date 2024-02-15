@@ -301,7 +301,7 @@ void GUI::NewProject()
 		}
 	}
 
-	string scenePath = filePath + "/scene.txt";
+	string scenePath = filePath + "/scene1.txt";
 	ofstream scene(scenePath);
 	if (!scene.is_open())
 	{
@@ -312,11 +312,11 @@ void GUI::NewProject()
 
 	scene.close();
 
-	string sceneDirectory = filePath + "/TemplateScene";
+	string sceneDirectory = filePath + "/Scene1";
 	create_directory(sceneDirectory);
 	cout << "created " << sceneDirectory << "\n\n";
 
-	rename(scenePath, sceneDirectory + "/scene.txt");
+	rename(scenePath, sceneDirectory + "/scene1.txt");
 
 	ofstream projectsFile(Core::projectsFilePath, ios::app);
 	if (!projectsFile.is_open())
