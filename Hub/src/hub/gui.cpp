@@ -318,6 +318,17 @@ void GUI::NewProject()
 
 	rename(scenePath, sceneDirectory + "/scene1.txt");
 
+	string projectFilePath = filePath + "/project.txt";
+	ofstream project(projectFilePath);
+	if (!project.is_open())
+	{
+		cout << "Error: Failed to open project file at '" << projectFilePath << "'!\n\n";
+		remove_all(filePath);
+		return;
+	}
+	project << sceneDirectory + "/scene1.txt\n";
+	project.close();
+
 	ofstream projectsFile(Core::projectsFilePath, ios::app);
 	if (!projectsFile.is_open())
 	{
