@@ -40,6 +40,8 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
+		SceneFile::CheckForProjectFile();
+
 		ConfigFile::ProcessFirstConfigValues();
 
 		Logger::InitializeLogger();

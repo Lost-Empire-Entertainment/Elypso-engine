@@ -59,6 +59,32 @@ using Type = Core::ConsoleManager::Type;
 
 namespace EngineFile
 {
+	void SceneFile::CheckForProjectFile()
+	{
+		string projectPath = current_path().generic_string() + "/files/project.txt";
+		if (!exists(projectPath))
+		{
+			ErrorPopup::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
+		}
+
+		string targetScene;
+		ifstream projectFile(projectPath);
+		string line;
+		while (getline(projectFile, line))
+		{
+			targetScene = line;
+			break;
+		}
+		projectFile.close();
+
+		if (!exists(targetScene))
+		{
+			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
+		}
+
+		LoadScene(targetScene);
+	}
+
 	void SceneFile::CreateNewScene(const string& filePath)
 	{
 		string fullPath = Engine::filesPath + filePath;

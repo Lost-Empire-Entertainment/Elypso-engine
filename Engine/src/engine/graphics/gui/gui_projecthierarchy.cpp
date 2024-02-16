@@ -49,14 +49,7 @@ namespace Graphics::GUI
 	/// </summary>
 	vector<string> ignoredNames =
 	{
-		"bat scripts",
-		//"fonts",
-		"icon.ico",
-		"icon.png",
-		"icon.rc",
-		//"icons",
-		//"shaders",
-		//"textures"
+		
 	};
 
 	void GUIProjectHierarchy::RenderProjectHierarchy(const path& rootPath)
