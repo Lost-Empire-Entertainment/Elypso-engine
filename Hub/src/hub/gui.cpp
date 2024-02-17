@@ -324,7 +324,9 @@ void GUI::NewProject()
 		remove_all(filePath);
 		return;
 	}
-	project << "scene: " << sceneDirectory + "/scene1.txt\n";
+
+	string engineParentPath = Core::enginePath.parent_path().string();
+	project << "scene: " << engineParentPath + "/files/Scene1/scene1.txt\n";
 	project.close();
 
 	ofstream projectsFile(Core::projectsFilePath, ios::app);

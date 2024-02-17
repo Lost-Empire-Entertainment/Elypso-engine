@@ -26,6 +26,8 @@ namespace EngineFile
 	class SceneFile
 	{
 	public:
+		static inline string currentScenePath;
+
 		static void CheckForProjectFile();
 		static void CreateNewScene(const string& fileName);
 		static void LoadScene(const string& fileName);

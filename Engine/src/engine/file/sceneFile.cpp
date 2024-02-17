@@ -156,10 +156,12 @@ namespace EngineFile
 			}
 		}
 
+		currentScenePath = filePath;
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Successfully loaded " + filePath + "!\n");
+			"Successfully loaded " + currentScenePath + "!\n");
 	}
 
 	void SceneFile::SaveCurrentScene()
@@ -175,8 +177,7 @@ namespace EngineFile
 			return;
 		}
 
-		string fullScenePath = Engine::filesPath + "/scenes/scene.txt";
-		string tempFullScenePath = path(fullScenePath).replace_extension().string() + "_TEMP.txt";
+		string tempFullScenePath = path(currentScenePath).replace_extension().string() + "_TEMP.txt";
 
 		ofstream sceneFile(tempFullScenePath);
 
@@ -274,15 +275,16 @@ namespace EngineFile
 
 		sceneFile.close();
 
-		path fsPath = fullScenePath;
+		path fsPath = currentScenePath;
 		File::DeleteFileOrfolder(fsPath);
 
 		path tempFSPath = tempFullScenePath;
 		File::MoveOrRenameFileOrFolder(tempFSPath, fsPath, true);
+		currentScenePath = fsPath.string();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Successfully saved " + fullScenePath + "!\n");
+			"Successfully saved " + currentScenePath + "!\n");
 	}
 }
