@@ -46,6 +46,8 @@ using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
+using std::filesystem::create_directory;
+using std::filesystem::copy;
 
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
@@ -79,26 +81,38 @@ namespace EngineFile
 		string line;
 		while (getline(projectFile, line))
 		{
-			if (!line.empty()
-				&& find(line.begin(), line.end(), ':') != line.end())
+			if (!line.empty())
 			{
-				string value = String::StringReplace(line, "scene: ", "");
-				string type = String::StringReplace(line, ": " + value, "");
-
-				if (type == "scene")
+				size_t pos_scene = line.find("scene:");
+				if (pos_scene != string::npos)
 				{
-					targetScene = value;
-					break;
+					string removable = "scene: ";
+					size_t pos = line.find(removable);
+					targetScene = line.erase(pos, removable.length());
+				}
+
+				size_t pos_project = line.find("project:");
+				if (pos_project != string::npos)
+				{
+					string removable = "project: ";
+					size_t pos = line.find(removable);
+					currentProjectPath = line.erase(pos, removable.length());
 				}
 			}
 		}
 		projectFile.close();
 
-		if (!exists(targetScene))
+		if (targetScene.empty()
+			|| !exists(targetScene))
 		{
 			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
 		}
-		projectFile.close();
+
+		if (currentProjectPath.empty()
+			|| !exists(currentProjectPath))
+		{
+			ErrorPopup::CreateErrorPopup("Project load error", "Failed to load valid scene from project file! Shutting down engine");
+		}
 
 		LoadScene(targetScene);
 	}
@@ -170,7 +184,8 @@ namespace EngineFile
 		unordered_map<string, string> obj;
 		while (getline(sceneFile, line))
 		{
-			if (line.find(":"))
+			if (!line.empty()
+				&& line.find(":"))
 			{
 				vector<string> splitLine = String::Split(line, ':');
 				string type = splitLine[0];

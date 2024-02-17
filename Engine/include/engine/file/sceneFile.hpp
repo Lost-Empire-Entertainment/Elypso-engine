@@ -28,6 +28,7 @@ namespace EngineFile
 	class SceneFile
 	{
 	public:
+		static inline string currentProjectPath;
 		static inline string currentScenePath;
 
 		static void CheckForProjectFile();

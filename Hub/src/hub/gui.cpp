@@ -327,6 +327,7 @@ void GUI::NewProject()
 
 	string engineParentPath = Core::enginePath.parent_path().string();
 	project << "scene: " << engineParentPath + "/files/Scene1/scene1.txt\n";
+	project << "project: " << filePath << "\n";
 	project.close();
 
 	ofstream projectsFile(Core::projectsFilePath, ios::app);
@@ -543,6 +544,13 @@ bool GUI::IsValidEnginePath(const string& enginePath)
 
 void GUI::RunProject(const string& targetProject)
 {
+	if (!exists(targetProject))
+	{
+		cout << "Error: Trying to run project that no longer exists!\n";
+		UpdateFileList();
+		return;
+	}
+
 	//empty engine folder content if any content exists
 	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
 	for (const auto& entry : directory_iterator(engineFilesFolderPath))

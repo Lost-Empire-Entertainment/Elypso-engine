@@ -41,27 +41,27 @@ namespace Utils
 		/// <param name="itemPath">Full path to the file or folder you are trying to move or rename.</param>
 		/// <param name="targetPath">Full path to the target destination.</param>
 		/// <param name="isRenaming">Should the file or folder be renamed?</param>
-		static void MoveOrRenameFileOrFolder(path& itemPath, path& targetPath, bool isRenaming);
+		static void MoveOrRenameFileOrFolder(const path& itemPath, const path& targetPath, const bool isRenaming);
 
 		/// <summary>
 		/// Copy the selected file or folder to the target path.
 		/// </summary>
 		/// <param name="itemPath">Full path to the file or folder you are trying to copy.</param>
 		/// <param name="targetPath">Full path to the target destination.</param>
-		static void CopyFileOrFolder(path& itemPath, path& targetPath);
+		static void CopyFileOrFolder(const path& itemPath, const path& targetPath);
 
 		/// <summary>
 		/// Delete a file or folder.
 		/// </summary>
 		/// <param name="itemPath">Full path to the file or folder you are trying to delete.</param>
-		static void DeleteFileOrfolder(path& itemPath);
+		static void DeleteFileOrfolder(const path& itemPath);
 
 		/// <summary>
 		/// Create a new folder at the target destination.
 		/// </summary>
 		/// <param name="folderPath">Full path to the new folder you are trying to create the folder to.</param>
-		static void CreateNewFolder(path& folderPath);
+		static void CreateNewFolder(const path& folderPath);
 	private:
-		static bool PathExists(path& itemPath);
+		static bool PathExists(const path& itemPath);
 	};
 }
