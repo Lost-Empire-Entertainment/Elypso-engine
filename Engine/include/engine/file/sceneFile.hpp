@@ -18,8 +18,10 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 using std::string;
+using std::unordered_map;
 
 namespace EngineFile
 {
@@ -31,6 +33,7 @@ namespace EngineFile
 		static void CheckForProjectFile();
 		static void CreateNewScene(const string& fileName);
 		static void LoadScene(const string& fileName);
+		static void LoadGameObject(const unordered_map<string, string> obj);
 		static void SaveCurrentScene();
 	};
 }

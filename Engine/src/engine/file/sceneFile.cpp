@@ -156,12 +156,55 @@ namespace EngineFile
 			}
 		}
 
+		ifstream sceneFile(filePath);
+		if (!sceneFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Error: Failed to open scene file " + filePath + "!\n\n");
+			return;
+		}
+
+		string line;
+		unordered_map<string, string> obj;
+		while (getline(sceneFile, line))
+		{
+			if (line.find(":"))
+			{
+				vector<string> splitLine = String::Split(line, ':');
+				string type = splitLine[0];
+				string value = splitLine[1];
+
+				if (type == "id")
+				{
+					if (!obj.empty()) LoadGameObject(obj);
+
+					obj.clear();
+					obj[type] = value;
+				}
+				else obj[type] = value;
+			}
+		}
+
+		sceneFile.close();
+
+		if (!obj.empty()) LoadGameObject(obj);
+
 		currentScenePath = filePath;
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
 			"Successfully loaded " + currentScenePath + "!\n");
+	}
+
+	void SceneFile::LoadGameObject(const unordered_map<string, string> obj)
+	{
+		for (const auto& pair : obj)
+		{
+			cout << "key: " << pair.first << "\n" << "value: " << pair.second << "\n\n";
+		}
 	}
 
 	void SceneFile::SaveCurrentScene()
