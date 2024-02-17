@@ -26,6 +26,7 @@
 #include "core.hpp"
 #include "fileUtils.hpp"
 #include "errorpopup.hpp"
+#include "stringUtils.hpp"
 
 #include <vector>
 #include <memory>
@@ -53,6 +54,7 @@ using Physics::Select;
 using Core::Engine;
 using Core::ErrorPopup;
 using Utils::File;
+using Utils::String;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -69,11 +71,26 @@ namespace EngineFile
 
 		string targetScene;
 		ifstream projectFile(projectPath);
+		if (!projectFile.is_open())
+		{
+			ErrorPopup::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
+		}
+
 		string line;
 		while (getline(projectFile, line))
 		{
-			targetScene = line;
-			break;
+			if (!line.empty()
+				&& find(line.begin(), line.end(), ':') != line.end())
+			{
+				string value = String::StringReplace(line, "scene: ", "");
+				string type = String::StringReplace(line, ": " + value, "");
+
+				if (type == "scene")
+				{
+					targetScene = value;
+					break;
+				}
+			}
 		}
 		projectFile.close();
 
@@ -81,14 +98,14 @@ namespace EngineFile
 		{
 			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
 		}
+		projectFile.close();
 
 		LoadScene(targetScene);
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)
 	{
-		string fullPath = Engine::filesPath + filePath;
-		if (exists(fullPath))
+		if (exists(filePath))
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
@@ -97,7 +114,7 @@ namespace EngineFile
 			return;
 		}
 
-		ofstream sceneFile(fullPath);
+		ofstream sceneFile(filePath);
 
 		if (!sceneFile.is_open())
 		{
@@ -118,7 +135,7 @@ namespace EngineFile
 
 	void SceneFile::LoadScene(const string& filePath)
 	{
-		if (!exists(Engine::filesPath + filePath))
+		if (!exists(filePath))
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,

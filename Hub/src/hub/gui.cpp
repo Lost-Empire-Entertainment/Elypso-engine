@@ -271,7 +271,6 @@ void GUI::RenderButtons()
 void GUI::NewProject()
 {
 	string filePath = SelectWithExplorer(SelectType::new_folder);
-	cout << "started with " << filePath << "\n\n";
 
 	if (filePath.empty())
 	{
@@ -314,7 +313,6 @@ void GUI::NewProject()
 
 	string sceneDirectory = filePath + "/Scene1";
 	create_directory(sceneDirectory);
-	cout << "created " << sceneDirectory << "\n\n";
 
 	rename(scenePath, sceneDirectory + "/scene1.txt");
 
@@ -326,7 +324,7 @@ void GUI::NewProject()
 		remove_all(filePath);
 		return;
 	}
-	project << sceneDirectory + "/scene1.txt\n";
+	project << "scene: " << sceneDirectory + "/scene1.txt\n";
 	project.close();
 
 	ofstream projectsFile(Core::projectsFilePath, ios::app);
@@ -556,7 +554,6 @@ void GUI::RunProject(const string& targetProject)
 	for (const auto& entry : directory_iterator(targetProject))
 	{
 		path entryPath = entry.path();
-		cout << entryPath << "\n";
 		if (is_regular_file(entryPath))
 		{
 			string name = entryPath.stem().string();

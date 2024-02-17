@@ -81,7 +81,7 @@ void Core::Initialize()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
 	glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
-	glfwSetWindowSizeLimits(window, 1280, 720, 7680, 4320);
+	glfwSetWindowSizeLimits(window, 800, 500, 7680, 4320);
 	glfwSwapInterval(1);
 
 	defaultPath = current_path().generic_string();
