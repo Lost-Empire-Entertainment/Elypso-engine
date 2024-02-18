@@ -75,38 +75,33 @@ namespace Utils
         return result;
 	}
 
-    void File::MoveOrRenameFileOrFolder(path& itemPath, path& targetPath, bool isRenaming)
+    void File::MoveOrRenameFileOrFolder(const path& sourcePath, const path& destinationPath, const bool isRenaming)
     {
         string output;
-        if (!isRenaming)
-        {
-            if (!PathExists(itemPath)
-                || !PathExists(targetPath))
-            {
-                return;
-            }
-        }
-        else
-        {
-            if (!PathExists(itemPath)) return;
-            if (exists(targetPath))
-            {
-                output = "Error " + targetPath.string() + " already exists!\n\n";
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::ENGINE,
-                    Type::EXCEPTION,
-                    output);
 
-                return;
-            }
+        if (!exists(sourcePath))
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
+            return;
+        }
+        if (!exists(destinationPath))
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                "Error: Destination path " + destinationPath.string() + " does not exist!\n\n");
+            return;
         }
 
         try
         {
-            rename(itemPath, targetPath);
+            rename(sourcePath, destinationPath);
 
             string outputType = isRenaming ? "Renamed " : "Moved ";
-            output = outputType + itemPath.string() + " to " + targetPath.string() + ".\n\n";
+            output = outputType + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::SUCCESS,
@@ -122,59 +117,64 @@ namespace Utils
         }
     }
 
-    void File::CopyFileOrFolder(path& itemPath, path& targetPath)
+    void File::CopyFileOrFolder(const path& sourcePath, const path& destinationPath)
     {
         string output;
-        string fileOrFolderName = itemPath.filename().string();
-        path fixedTargetPath = targetPath = targetPath.string() + "\\" + fileOrFolderName;
-        if (!PathExists(itemPath))
+        string fileOrFolderName = sourcePath.filename().string();
+        path fixedTargetPath = destinationPath.string() + "\\" + fileOrFolderName;
+
+        if (!exists(sourcePath))
         {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
         }
-        if (exists(targetPath))
+
+        if (exists(destinationPath))
         {
-            output = "Error " + targetPath.string() + " already exists!\n\n";
+            output = "Error " + destinationPath.string() + " already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
                 output);
-
             return;
         }
 
         try
         {
-            if (is_directory(itemPath))
+            if (is_directory(sourcePath))
             {
                 create_directories(fixedTargetPath);
 
                 //copy all subfiles and subfolders and item path to target path
-                for (const auto& entry : recursive_directory_iterator(itemPath))
+                for (const auto& entry : recursive_directory_iterator(sourcePath))
                 {
-                    path relativePath = relative(entry.path(), itemPath);
-                    path destinationPath = fixedTargetPath / relativePath;
+                    path relativePath = relative(entry.path(), sourcePath);
+                    path destPath = fixedTargetPath / relativePath;
 
                     if (is_directory(entry))
                     {
-                        create_directory(destinationPath);
+                        create_directory(destPath);
                     }
                     else if (is_regular_file(entry))
                     {
-                        copy_file(entry.path(), destinationPath, copy_options::overwrite_existing);
+                        copy_file(entry.path(), destPath, copy_options::overwrite_existing);
                     }
                 }
 
-                output = "Copied " + itemPath.string() + " and its sub-folders and sub-files (if there were any) to " + fixedTargetPath.string() + ".\n\n";
+                output = "Copied folder " + sourcePath.string() + " to " + fixedTargetPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::ENGINE,
                     Type::SUCCESS,
                     output);
             }
-            else
+            else if (is_regular_file(sourcePath))
             {
-                copy_file(itemPath, fixedTargetPath, copy_options::overwrite_existing);
+                copy_file(sourcePath, fixedTargetPath, copy_options::overwrite_existing);
 
-                output = "Copied " + itemPath.string() + " to " + fixedTargetPath.string() + ".\n\n";
+                output = "Copied file " + sourcePath.string() + " to " + fixedTargetPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::ENGINE,
                     Type::SUCCESS,
@@ -191,17 +191,25 @@ namespace Utils
         }
     }
 
-    void File::DeleteFileOrfolder(path& itemPath)
+
+    void File::DeleteFileOrfolder(const path& sourcePath)
     {
         string output;
-        if (!PathExists(itemPath)) return;
+        if (!exists(sourcePath))
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                "Error: " + sourcePath.string() + " does not exist!\n\n");
+            return;
+        }
 
         try
         {
-            if (is_regular_file(itemPath)) remove(itemPath);
-            else if (is_directory(itemPath)) remove_all(itemPath);
+            if (is_regular_file(sourcePath)) remove(sourcePath);
+            else if (is_directory(sourcePath)) remove_all(sourcePath);
 
-            output = "Deleted " + itemPath.string() + ".\n\n";
+            output = "Deleted " + sourcePath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::SUCCESS,
@@ -217,21 +225,7 @@ namespace Utils
         }
     }
 
-    bool File::PathExists(path& itemPath)
-    {
-        if (!exists(itemPath))
-        {
-            string output = "Error " + itemPath.string() + " does not exist!\n\n";
-            ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
-                Type::EXCEPTION,
-                output);
-        }
-
-        return (exists(itemPath));
-    }
-
-    void File::CreateNewFolder(path& folderPath)
+    void File::CreateNewFolder(const path& folderPath)
     {
         string output;
         if (exists(folderPath))
