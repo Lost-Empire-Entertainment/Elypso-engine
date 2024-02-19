@@ -26,6 +26,7 @@
 #include "shutdown.hpp"
 #include "configFile.hpp"
 #include "fileUtils.hpp"
+#include "sceneFile.hpp"
 
 #include <filesystem>
 
@@ -39,6 +40,7 @@ using std::filesystem::is_directory;
 using Utils::File;
 using Graphics::GUI::EngineGUI;
 using Graphics::Render;
+using EngineFile::SceneFile;
 using EngineFile::ConfigFile;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -47,40 +49,47 @@ namespace Core
 {
 	void ShutdownManager::Shutdown()
 	{
-		shouldShutDown = true;
-
-		ConfigFile::SaveDataAtShutdown();
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"==================================================\n\n",
-			true,
-			false);
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::SHUTDOWN,
-			Type::INFO,
-			"Cleaning up resources...\n");
-
-		string files = current_path().generic_string() + "/files";
-		for (const auto& entry : directory_iterator(files))
+		if (SceneFile::unsavedChanges == true)
 		{
-			path entryPath(entry);
-			if (is_directory(entryPath)) remove_all(entryPath);
-			else if (is_regular_file(entryPath)) remove(entryPath);
+			EngineGUI::renderConfirmWindow = true;
 		}
+		else
+		{
+			shouldShutDown = true;
 
-		EngineGUI::GetInstance().Shutdown();
+			ConfigFile::SaveDataAtShutdown();
 
-		//clean all glfw resources after program is closed
-		glfwTerminate();
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"==================================================\n\n",
+				true,
+				false);
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::SHUTDOWN,
-			Type::SUCCESS,
-			"Shutdown complete!\n");
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::INFO,
+				"Cleaning up resources...\n");
 
-		Logger::CloseLogger();
+			string files = current_path().generic_string() + "/files";
+			for (const auto& entry : directory_iterator(files))
+			{
+				path entryPath(entry);
+				if (is_directory(entryPath)) remove_all(entryPath);
+				else if (is_regular_file(entryPath)) remove(entryPath);
+			}
+
+			EngineGUI::GetInstance().Shutdown();
+
+			//clean all glfw resources after program is closed
+			glfwTerminate();
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::SUCCESS,
+				"Shutdown complete!\n");
+
+			Logger::CloseLogger();
+		}
 	}
 }

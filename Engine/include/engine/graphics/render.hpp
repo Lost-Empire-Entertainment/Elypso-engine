@@ -57,6 +57,7 @@ namespace Graphics
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
+		static void SetWindowNameAsUnsaved(bool state);
 		static void WindowLoop();
 	private:
 		static inline vec3 lightPos = vec3(0.0f, 0.0f, 0.0f);

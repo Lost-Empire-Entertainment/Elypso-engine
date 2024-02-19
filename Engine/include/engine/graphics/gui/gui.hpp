@@ -42,6 +42,8 @@ namespace Graphics::GUI
 		static inline ImVec2 minSize;
 		static inline ImVec2 maxSize;
 
+		static inline bool renderConfirmWindow;
+
 		void Initialize();
 
 		void CustomizeImGuiStyle();
@@ -66,8 +68,10 @@ namespace Graphics::GUI
 		void TB_ReportIssue();
 
 		//top bar rendered windows
-		void RenderVersionCheckWindow();
 		static inline string versionCompare;
 		static inline string versionConfirm;
+		void RenderVersionCheckWindow();
+
+		void ConfirmUnsavedShutdown();
 	};
 }

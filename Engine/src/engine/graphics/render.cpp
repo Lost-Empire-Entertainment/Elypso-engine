@@ -38,6 +38,7 @@
 #include "gameobject.hpp"
 #include "grid.hpp"
 #include "selectedobjectborder.hpp"
+#include "sceneFile.hpp"
 
 #include <string>
 #include <iostream>
@@ -63,6 +64,7 @@ using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Grid;
 using Graphics::Shape::Border;
+using EngineFile::SceneFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -200,6 +202,16 @@ namespace Graphics
 
 		//Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
+	}
+
+	void Render::SetWindowNameAsUnsaved(bool state)
+	{
+		SceneFile::unsavedChanges = state;
+
+		string newName = state == true
+			? Engine::name + " " + Engine::version + "*"
+			: Engine::name + " " + Engine::version;
+		glfwSetWindowTitle(window, newName.c_str());
 	}
 
 	void Render::WindowLoop()

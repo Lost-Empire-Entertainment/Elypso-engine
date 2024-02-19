@@ -92,6 +92,7 @@ namespace Graphics::GUI
 			if (ImGui::InputText("##objName", inputTextBuffer_objName, bufferSize))
 			{
 				obj->SetName(inputTextBuffer_objName);
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::Separator();
@@ -105,6 +106,7 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat3("##objPos", value_ptr(pos), 0.01f))
 			{
 				obj->GetTransform()->SetPosition(pos);
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			vec3 rot = obj->GetTransform()->GetRotation();
@@ -112,6 +114,7 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat3("##objRot", value_ptr(rot), 0.1f))
 			{
 				obj->GetTransform()->SetRotation(rot);
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			vec3 scale = obj->GetTransform()->GetScale();
@@ -119,6 +122,7 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat3("##objScale", value_ptr(scale), 0.01f))
 			{
 				obj->GetTransform()->SetScale(scale);
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::Separator();
@@ -134,11 +138,13 @@ namespace Graphics::GUI
 				if (ImGui::DragFloat("##shininess", &cubeShininess, 0.1f, 3.0f, 128.0f))
 				{
 					obj->GetBasicShape()->SetShininess(cubeShininess);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##shininess"))
 				{
 					obj->GetBasicShape()->SetShininess(32.0f);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 			}
 			else if (objType == Type::point_light)
@@ -148,6 +154,7 @@ namespace Graphics::GUI
 				if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
 				{
 					obj->GetPointLight()->SetDiffuse(pointDiffuse);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				float pointIntensity = obj->GetPointLight()->GetIntensity();
@@ -155,11 +162,13 @@ namespace Graphics::GUI
 				if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 5.0f))
 				{
 					obj->GetPointLight()->SetIntensity(pointIntensity);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##pointint"))
 				{
 					obj->GetPointLight()->SetIntensity(1.0f);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				float pointDistance = obj->GetPointLight()->GetDistance();
@@ -167,11 +176,13 @@ namespace Graphics::GUI
 				if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 25.0f))
 				{
 					obj->GetPointLight()->SetDistance(pointDistance);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##pointdist"))
 				{
 					obj->GetPointLight()->SetDistance(1.0f);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 			}
 			else if (objType == Type::spot_light)
@@ -181,6 +192,7 @@ namespace Graphics::GUI
 				if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
 				{
 					obj->GetSpotLight()->SetDiffuse(spotDiffuse);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				float spotIntensity = obj->GetSpotLight()->GetIntensity();
@@ -188,11 +200,13 @@ namespace Graphics::GUI
 				if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 5.0f))
 				{
 					obj->GetSpotLight()->SetIntensity(spotIntensity);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotint"))
 				{
 					obj->GetSpotLight()->SetIntensity(1.0f);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				float spotDistance = obj->GetSpotLight()->GetDistance();
@@ -200,11 +214,13 @@ namespace Graphics::GUI
 				if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 25.0f))
 				{
 					obj->GetSpotLight()->SetDistance(spotDistance);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotdist"))
 				{
 					obj->GetSpotLight()->SetDistance(1.0f);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
@@ -214,22 +230,26 @@ namespace Graphics::GUI
 				if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
 				{
 					obj->GetSpotLight()->SetInnerAngle(spotInnerAngle);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotinnerangle"))
 				{
 					obj->GetSpotLight()->SetInnerAngle(12.5f);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::Text("Spotlight outer angle");
 				if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 50.0f))
 				{
 					obj->GetSpotLight()->SetOuterAngle(spotOuterAngle);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotouterangle"))
 				{
 					obj->GetSpotLight()->SetOuterAngle(17.5f);
+					Render::SetWindowNameAsUnsaved(true);
 				}
 			}
 		}

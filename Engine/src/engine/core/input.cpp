@@ -248,6 +248,8 @@ namespace Core
             shared_ptr<GameObject> selectedObj = Select::selectedObj;
             Select::selectedObj = nullptr;
             GameObjectManager::DestroyGameObject(selectedObj);
+
+            Render::SetWindowNameAsUnsaved(true);
         }
 
         //save current scene

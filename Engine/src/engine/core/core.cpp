@@ -49,7 +49,7 @@ namespace Core
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Elypso engine " + Engine::version + "\n" +
+			Engine::name + " " + Engine::version + "\n" +
 			"Copyright (C) Greenlaser 2024\n\n",
 			true,
 			false);

@@ -27,9 +27,11 @@
 #include "selectobject.hpp"
 #include "console.hpp"
 #include "core.hpp"
+#include "render.hpp"
 #include "fileUtils.hpp"
 #include "errorpopup.hpp"
 #include "stringUtils.hpp"
+#include "shutdown.hpp"
 
 #include <vector>
 #include <memory>
@@ -59,9 +61,11 @@ using Graphics::Shape::Material;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
+using Graphics::Render;
 using Physics::Select;
 using Core::Engine;
 using Core::ErrorPopup;
+using Core::ShutdownManager;
 using Utils::File;
 using Utils::String;
 using Core::ConsoleManager;
@@ -228,6 +232,8 @@ namespace EngineFile
 
 		currentScenePath = filePath;
 
+		Render::SetWindowNameAsUnsaved(false);
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
@@ -377,15 +383,47 @@ namespace EngineFile
 		}
 	}
 
-	void SceneFile::SaveCurrentScene()
+	void SceneFile::SaveCurrentScene(bool shutDownAfterSave)
 	{
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 		if (objects.size() < 2)
 		{
+			string tempFullScenePath = path(currentScenePath).replace_extension().string() + "_TEMP.txt";
+
+			ofstream sceneFile(tempFullScenePath);
+
+			if (!sceneFile.is_open())
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Couldn't open temp scene file '" + tempFullScenePath + "'!\n");
+				return;
+			}
+
+			sceneFile.close();
+
+			path fsPath = currentScenePath;
+			path tempFSPath = tempFullScenePath;
+			File::DeleteFileOrfolder(fsPath);
+			File::MoveOrRenameFileOrFolder(tempFSPath, fsPath, true);
+			currentScenePath = fsPath.string();
+
+			path tempProjectPath = currentProjectPath + "_TEMP";
+			for (const auto& entry : directory_iterator(Engine::filesPath))
+			{
+				path entryPath = entry.path();
+				File::CopyFileOrFolder(entryPath, tempProjectPath);
+			}
+			File::DeleteFileOrfolder(currentProjectPath);
+			File::MoveOrRenameFileOrFolder(tempProjectPath, currentProjectPath, true);
+
+			Render::SetWindowNameAsUnsaved(false);
+
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::INFO,
-				"There is no content to save...\n");
+				"Successfully saved scene '" + currentScenePath + "'!\n");
 
 			return;
 		}
@@ -527,9 +565,13 @@ namespace EngineFile
 		File::DeleteFileOrfolder(currentProjectPath);
 		File::MoveOrRenameFileOrFolder(tempProjectPath, currentProjectPath, true);
 
+		Render::SetWindowNameAsUnsaved(false);
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
 			"Successfully saved scene '" + currentScenePath + "'!\n");
+
+		if (shutDownAfterSave) ShutdownManager::Shutdown();
 	}
 }

@@ -28,6 +28,7 @@
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
 #include "sceneFile.hpp"
+#include "render.hpp"
 
 #include <fstream>
 
@@ -42,6 +43,7 @@ using std::filesystem::directory_iterator;
 
 using Utils::String;
 using Utils::File;
+using Graphics::Render;
 using EngineFile::SceneFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -163,6 +165,8 @@ namespace Graphics::GUI
 			{
 				path output = selectedItemPath / "New folder";
 				File::CreateNewFolder(output);
+
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Rename"))
@@ -223,6 +227,8 @@ namespace Graphics::GUI
 
 				cout << "Pasted " << copyPath.string() << " to " << selectedItemPath.string() << endl;
 				File::CopyFileOrFolder(copyPath, selectedItemPath);
+
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Delete"))
@@ -239,6 +245,8 @@ namespace Graphics::GUI
 				cout << "Deleted " << selectedItemPath.string() << endl;
 				File::DeleteFileOrfolder(selectedItemPath);
 				selectedItemPath = path();
+
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::EndPopup();
@@ -271,6 +279,8 @@ namespace Graphics::GUI
 						File::MoveOrRenameFileOrFolder(selectedItemPath, newPath, true);
 					}
 				}
+
+				Render::SetWindowNameAsUnsaved(true);
 
 				ImGui::CloseCurrentPopup();
 			}

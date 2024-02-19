@@ -183,6 +183,7 @@ namespace Graphics::GUI
 		}
 
 		RenderVersionCheckWindow();
+		if (renderConfirmWindow) ConfirmUnsavedShutdown();
 
 		if (Input::inputSettings.printIMGUIToConsole)
 		{
@@ -304,6 +305,8 @@ namespace Graphics::GUI
 						Caller::ENGINE,
 						Type::SUCCESS,
 						output);
+
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();
@@ -332,6 +335,8 @@ namespace Graphics::GUI
 						Caller::ENGINE,
 						Type::SUCCESS,
 						output);
+
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
@@ -354,6 +359,8 @@ namespace Graphics::GUI
 						Caller::ENGINE,
 						Type::SUCCESS,
 						output);
+
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();
@@ -541,6 +548,54 @@ namespace Graphics::GUI
 
 			ImGui::End();
 		}
+	}
+
+	void EngineGUI::ConfirmUnsavedShutdown()
+	{
+		ImGui::SetNextWindowPos(ImVec2(400, 200));
+		ImGui::SetNextWindowSize(ImVec2(500, 300));
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoSavedSettings;
+
+		string title = "You have unsaved changes. Save before closing?";
+		ImGui::Begin(title.c_str(), nullptr, flags);
+
+		ImVec2 windowPos = ImGui::GetWindowPos();
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
+		ImVec2 buttonSize(120, 50);
+		float buttonSpacing = 20.0f;
+
+		ImVec2 button1Pos(
+			windowSize.x * 0.4f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button2Pos(
+			windowSize.x * 0.85f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+
+		ImGui::SetCursorPos(button1Pos);
+		if (ImGui::Button("Save", buttonSize))
+		{
+			SceneFile::SaveCurrentScene(true);
+			renderConfirmWindow = false;
+		}
+
+		ImGui::SetCursorPos(button2Pos);
+		if (ImGui::Button("Cancel", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Cancelled shutdown...\n");
+			renderConfirmWindow = false;
+		}
+
+		ImGui::End();
 	}
 
 	void EngineGUI::Shutdown()
