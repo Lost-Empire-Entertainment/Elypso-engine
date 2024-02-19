@@ -334,11 +334,19 @@ namespace EngineFile
 		sceneFile.close();
 
 		path fsPath = currentScenePath;
-		File::DeleteFileOrfolder(fsPath);
-
 		path tempFSPath = tempFullScenePath;
+		File::DeleteFileOrfolder(fsPath);
 		File::MoveOrRenameFileOrFolder(tempFSPath, fsPath, true);
 		currentScenePath = fsPath.string();
+
+		path tempProjectPath = currentProjectPath + "_TEMP";
+		for (const auto& entry : directory_iterator(Engine::filesPath))
+		{
+			path entryPath = entry.path();
+			File::CopyFileOrFolder(entryPath, tempProjectPath);
+		}
+		File::DeleteFileOrfolder(currentProjectPath);
+		File::MoveOrRenameFileOrFolder(tempProjectPath, currentProjectPath, true);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,

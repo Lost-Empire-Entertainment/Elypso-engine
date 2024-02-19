@@ -87,12 +87,14 @@ namespace Utils
                 "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
         }
-        if (!exists(destinationPath))
+        if (exists(destinationPath))
         {
+            string outputType = isRenaming ? "Cannot rename source " : "Cannot move source ";
+            output = outputType + sourcePath.string() + " to destination " + destinationPath.string() + " because destination already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
-                "Error: Destination path " + destinationPath.string() + " does not exist!\n\n");
+                output);
             return;
         }
 
@@ -121,7 +123,7 @@ namespace Utils
     {
         string output;
         string fileOrFolderName = sourcePath.filename().string();
-        path fixedTargetPath = destinationPath.string() + "\\" + fileOrFolderName;
+        path fixedTargetPath = destinationPath / fileOrFolderName;
 
         if (!exists(sourcePath))
         {
@@ -132,27 +134,21 @@ namespace Utils
             return;
         }
 
-        if (exists(destinationPath))
-        {
-            output = "Error " + destinationPath.string() + " already exists!\n\n";
-            ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
-                Type::EXCEPTION,
-                output);
-            return;
-        }
-
         try
         {
             if (is_directory(sourcePath))
             {
                 create_directories(fixedTargetPath);
 
-                //copy all subfiles and subfolders and item path to target path
                 for (const auto& entry : recursive_directory_iterator(sourcePath))
                 {
                     path relativePath = relative(entry.path(), sourcePath);
                     path destPath = fixedTargetPath / relativePath;
+
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::ENGINE,
+                        Type::INFO,
+                        "Copying: " + entry.path().string() + " to " + destPath.string() + "\n");
 
                     if (is_directory(entry))
                     {
@@ -172,9 +168,12 @@ namespace Utils
             }
             else if (is_regular_file(sourcePath))
             {
-                copy_file(sourcePath, fixedTargetPath, copy_options::overwrite_existing);
+                create_directories(destinationPath);
 
-                output = "Copied file " + sourcePath.string() + " to " + fixedTargetPath.string() + ".\n\n";
+                path destPath = destinationPath / fileOrFolderName;
+                copy_file(sourcePath, destPath, copy_options::overwrite_existing);
+
+                output = "Copied file " + sourcePath.string() + " to " + destPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::ENGINE,
                     Type::SUCCESS,
@@ -190,7 +189,6 @@ namespace Utils
                 output);
         }
     }
-
 
     void File::DeleteFileOrfolder(const path& sourcePath)
     {

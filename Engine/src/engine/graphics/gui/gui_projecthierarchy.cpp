@@ -161,7 +161,7 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Create folder")
 				&& isFolder)
 			{
-				path output = selectedItemPath.string() + "\\New folder";
+				path output = selectedItemPath / "New folder";
 				File::CreateNewFolder(output);
 			}
 
