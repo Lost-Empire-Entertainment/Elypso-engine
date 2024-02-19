@@ -32,7 +32,14 @@ namespace Graphics::Shape
 	class Cube
 	{
 	public:
-		static shared_ptr<GameObject> InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale);
+		static shared_ptr<GameObject> InitializeCube(
+			const vec3& pos = vec3(0),
+			const vec3& rot = vec3(0),
+			const vec3& scale = vec3(1),
+			const string& vertShader = "",
+			const string& fragShader = "",
+			const string& diffTexture = "",
+			const string& specTexture = "");
 
 		static void RenderCube(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};

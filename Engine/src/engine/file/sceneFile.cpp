@@ -52,6 +52,7 @@ using std::filesystem::copy;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
+using Graphics::Shape::Material;
 using Physics::Select;
 using Core::Engine;
 using Core::ErrorPopup;
@@ -181,7 +182,7 @@ namespace EngineFile
 		}
 
 		string line;
-		unordered_map<string, string> obj;
+		map<string, string> obj;
 		while (getline(sceneFile, line))
 		{
 			if (!line.empty()
@@ -214,11 +215,18 @@ namespace EngineFile
 			"Successfully loaded " + currentScenePath + "!\n");
 	}
 
-	void SceneFile::LoadGameObject(const unordered_map<string, string> obj)
+	void SceneFile::LoadGameObject(const map<string, string> obj)
 	{
 		for (const auto& pair : obj)
 		{
-			cout << "key: " << pair.first << "\n" << "value: " << pair.second << "\n\n";
+			auto type = magic_enum::enum_cast<Mesh::MeshType>(obj.at("type"));
+			Mesh::MeshType actualType{};
+			if (type.has_value()) actualType = *type;
+			switch (actualType)
+			{
+			case Mesh::MeshType::cube:
+				break;
+			}
 		}
 	}
 
