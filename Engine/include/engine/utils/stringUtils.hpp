@@ -17,11 +17,16 @@
 
 #pragma once
 
+#include "glm.hpp"
+
 #include <vector>
 #include <string>
+#include <sstream>
 
 using std::string;
 using std::vector;
+using std::istringstream;
+using glm::vec3;
 
 namespace Utils
 {
@@ -45,6 +50,26 @@ namespace Utils
 		/// <param name="replacement"></param>
 		/// <returns></returns>
 		static string CharReplace(const string& original, const char& search, const char& replacement);
+
+		/// <summary>
+		/// Convert an inserted vector string to a vec3.
+		/// </summary>
+		/// <param name="original">A vector of string x, y and z positions.</param>
+		/// <returns></returns>
+		static vec3 StringToVec3(const vector<string>& original)
+		{
+			vec3 output{};
+
+			istringstream issX(original[0]);
+			istringstream issY(original[1]);
+			istringstream issZ(original[2]);
+
+			issX >> output.x;
+			issY >> output.y;
+			issZ >> output.z;
+
+			return output;
+		}
 
 		/// <summary>
 		/// Split a string in two from the delimiter.

@@ -21,6 +21,9 @@
 //engine
 #include "sceneFile.hpp"
 #include "gameobject.hpp"
+#include "cube.hpp"
+#include "pointlight.hpp"
+#include "spotlight.hpp"
 #include "selectobject.hpp"
 #include "console.hpp"
 #include "core.hpp"
@@ -53,6 +56,9 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Graphics::Shape::Material;
+using Graphics::Shape::Cube;
+using Graphics::Shape::PointLight;
+using Graphics::Shape::SpotLight;
 using Physics::Select;
 using Core::Engine;
 using Core::ErrorPopup;
@@ -232,9 +238,91 @@ namespace EngineFile
 
 	void SceneFile::LoadGameObject(const map<string, string> obj)
 	{
-		for (const auto& pair : obj)
+		//
+		// VALUES USED FOR ALL GAMEOBJECTS
+		//
+
+		unsigned int id = stoul(obj.at("id"));
+		string name = obj.at("name");
+		auto meshType = magic_enum::enum_cast<Mesh::MeshType>(obj.at("type"));
+
+		vec3 pos{};
+		if (obj.count("position"))
 		{
-			cout << pair.first << " - " << pair.second << "\n";
+			vector<string> vect = String::Split(obj.at("position"), ',');
+			pos = String::StringToVec3(vect);
+		}
+
+		vec3 rot{};
+		if (obj.count("rotation"))
+		{
+			vector<string> vect = String::Split(obj.at("rotation"), ',');
+			rot = String::StringToVec3(vect);
+		}
+
+		vec3 scale{};
+		if (obj.count("scale"))
+		{
+			vector<string> vect = String::Split(obj.at("scale"), ',');
+			scale = String::StringToVec3(vect);
+		}
+
+		vector<string> shaders = String::Split(obj.at("shaders"), ',');
+
+		//
+		// EXTRA VALUES
+		//
+
+		vector<string> textures;
+		if (obj.count("textures")) textures = String::Split(obj.at("textures"), ',');
+
+		float shininess = 32;
+		if (obj.count("shininess")) shininess = stof(obj.at("shininess"));
+
+		vec3 diffuse{};
+		if (obj.count("diffuse"))
+		{
+			vector<string> vect = String::Split(obj.at("diffuse"), ',');
+			diffuse = String::StringToVec3(vect);
+		}
+
+		float intensity;
+		if (obj.count("intensity")) intensity = stof(obj.at("intensity"));
+
+		float distance;
+		if (obj.count("distance")) distance = stof(obj.at("distance"));
+
+		float innerAngle;
+		if (obj.count("inner angle")) innerAngle = stof(obj.at("inner angle"));
+
+		float outerAngle;
+		if (obj.count("outer angle")) outerAngle = stof(obj.at("outer angle"));
+
+		//
+		// CREATE GAMEOBJECTS
+		//
+
+		if (meshType == Mesh::MeshType::cube)
+		{
+			Cube::InitializeCube(
+				pos,
+				rot,
+				scale,
+				shaders[0],
+				shaders[1],
+				textures[0],
+				textures[1],
+				shininess,
+				name,
+				id);
+		}
+		else if (meshType == Mesh::MeshType::point_light)
+		{
+			//PointLight::InitializePointLight();
+		}
+		else if (meshType == Mesh::MeshType::spot_light)
+		{
+			//SpotLight::InitializeSpotLight();
 		}
 	}
 
