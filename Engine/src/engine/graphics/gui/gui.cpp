@@ -285,10 +285,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					shared_ptr<GameObject> obj = Cube::InitializeCube(
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f));
+					shared_ptr<GameObject> obj = Cube::InitializeCube();
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
@@ -316,10 +313,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					shared_ptr<GameObject> obj = PointLight::InitializePointLight(
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f));
+					shared_ptr<GameObject> obj = PointLight::InitializePointLight();
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
@@ -341,10 +335,7 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight(
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f));
+					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;

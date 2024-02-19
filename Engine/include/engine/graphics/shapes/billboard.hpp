@@ -33,7 +33,19 @@ namespace Graphics::Shape
 	class Billboard
 	{
 	public:
-		static shared_ptr<GameObject> InitializeBillboard(const string& iconName, const vec3& pos, const vec3& rot, const vec3& scale);
+		static inline string tempName = "123456789";
+		static inline unsigned int tempID = 123456789;
+
+		static shared_ptr<GameObject> InitializeBillboard(
+			const vec3& pos = vec3(0),
+			const vec3& rot = vec3(0),
+			const vec3& scale = vec3(1),
+			const string& vertShader = "",
+			const string& fragShader = "",
+			const string& diffTexture = "",
+			const float& shininess = 32,
+			string& name = tempName,
+			unsigned int& id = tempID);
 
 		static void RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
