@@ -572,10 +572,13 @@ namespace Graphics::GUI
 		float buttonSpacing = 20.0f;
 
 		ImVec2 button1Pos(
-			windowSize.x * 0.4f - buttonSize.x,
+			windowSize.x * 0.3f - buttonSize.x,
 			windowSize.y * 0.5f - buttonSize.y * 0.5f);
 		ImVec2 button2Pos(
-			windowSize.x * 0.85f - buttonSize.x,
+			windowSize.x * 0.625f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button3Pos(
+			windowSize.x * 0.7f,
 			windowSize.y * 0.5f - buttonSize.y * 0.5f);
 
 		ImGui::SetCursorPos(button1Pos);
@@ -586,6 +589,17 @@ namespace Graphics::GUI
 		}
 
 		ImGui::SetCursorPos(button2Pos);
+		if (ImGui::Button("Don't save", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Closed engine without saving.\n");
+			SceneFile::unsavedChanges = false;
+			ShutdownManager::Shutdown();
+		}
+
+		ImGui::SetCursorPos(button3Pos);
 		if (ImGui::Button("Cancel", buttonSize))
 		{
 			ConsoleManager::WriteConsoleMessage(
