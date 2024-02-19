@@ -117,7 +117,7 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false,
 			"Border",
-			-1,
+			10000000,
 			transform,
 			mesh,
 			mat,
