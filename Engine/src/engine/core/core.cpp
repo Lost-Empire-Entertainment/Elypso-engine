@@ -75,6 +75,9 @@ namespace Core
 		Render::RenderSetup();
 
 		ConfigFile::ProcessConfigFile("config.txt");
+
+		//first scene is actually loaded when engine is ready for use
+		SceneFile::LoadScene(SceneFile::currentScenePath);
 	}
 
 	void Engine::RunEngine()

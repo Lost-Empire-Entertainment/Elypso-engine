@@ -115,7 +115,7 @@ namespace EngineFile
 			ErrorPopup::CreateErrorPopup("Project load error", "Failed to load valid scene from project file! Shutting down engine");
 		}
 
-		LoadScene(targetScene);
+		currentScenePath = targetScene;
 	}
 
 	void SceneFile::CreateNewScene(const string& filePath)
@@ -125,7 +125,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Tried to create " + filePath + " but it already exists!\n");
+				"Tried to create scene '" + filePath + "' but it already exists!\n");
 			return;
 		}
 
@@ -136,7 +136,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Couldn't open " + filePath + "!\n");
+				"Couldn't open scene file '" + filePath + "'!\n");
 			return;
 		}
 
@@ -145,7 +145,7 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Successfully created " + filePath + "!\n");
+			"Successfully created new scene '" + filePath + "'!\n");
 	}
 
 	void SceneFile::LoadScene(const string& filePath)
@@ -155,7 +155,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Tried to load " + filePath + " but it doesn't exist!\n");
+				"Tried to load scene '" + filePath + "' but it doesn't exist!\n");
 			return;
 		}
 
@@ -177,7 +177,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Error: Failed to open scene file " + filePath + "!\n\n");
+				"Error: Failed to open scene file '" + filePath + "'!\n\n");
 			return;
 		}
 
@@ -186,11 +186,26 @@ namespace EngineFile
 		while (getline(sceneFile, line))
 		{
 			if (!line.empty()
-				&& line.find(":"))
+				&& line.find(":") != string::npos)
 			{
 				vector<string> splitLine = String::Split(line, ':');
 				string type = splitLine[0];
 				string value = splitLine[1];
+
+				//remove two spaces in front of type if they exist
+				if (type[0] == ' ' && type[1] == ' ') type.erase(0, 2);
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
 
 				if (type == "id")
 				{
@@ -212,21 +227,14 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Successfully loaded " + currentScenePath + "!\n");
+			"Successfully loaded scene '" + currentScenePath + "'!\n");
 	}
 
 	void SceneFile::LoadGameObject(const map<string, string> obj)
 	{
 		for (const auto& pair : obj)
 		{
-			auto type = magic_enum::enum_cast<Mesh::MeshType>(obj.at("type"));
-			Mesh::MeshType actualType{};
-			if (type.has_value()) actualType = *type;
-			switch (actualType)
-			{
-			case Mesh::MeshType::cube:
-				break;
-			}
+			cout << pair.first << " - " << pair.second << "\n";
 		}
 	}
 
@@ -252,7 +260,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Couldn't open " + tempFullScenePath + "!\n");
+				"Couldn't open temp scene file '" + tempFullScenePath + "'!\n");
 			return;
 		}
 
@@ -359,6 +367,6 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Successfully saved " + currentScenePath + "!\n");
+			"Successfully saved scene '" + currentScenePath + "'!\n");
 	}
 }

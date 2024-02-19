@@ -145,11 +145,6 @@ namespace Utils
                     path relativePath = relative(entry.path(), sourcePath);
                     path destPath = fixedTargetPath / relativePath;
 
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::ENGINE,
-                        Type::INFO,
-                        "Copying: " + entry.path().string() + " to " + destPath.string() + "\n");
-
                     if (is_directory(entry))
                     {
                         create_directory(destPath);
