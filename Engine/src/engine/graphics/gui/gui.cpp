@@ -319,7 +319,7 @@ namespace Graphics::GUI
 						Type::INFO,
 						output);
 
-					Render::SetWindowNameAsUnsaved(true);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();
@@ -349,7 +349,7 @@ namespace Graphics::GUI
 						Type::INFO,
 						output);
 
-					Render::SetWindowNameAsUnsaved(true);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
@@ -373,7 +373,7 @@ namespace Graphics::GUI
 						Type::INFO,
 						output);
 
-					Render::SetWindowNameAsUnsaved(true);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();

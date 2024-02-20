@@ -171,7 +171,7 @@ namespace Graphics::GUI
 				path output = selectedItemPath / "New folder";
 				File::CreateNewFolder(output);
 
-				Render::SetWindowNameAsUnsaved(true);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Rename"))
@@ -233,7 +233,7 @@ namespace Graphics::GUI
 				cout << "Pasted " << copyPath.string() << " to " << selectedItemPath.string() << endl;
 				File::CopyFileOrFolder(copyPath, selectedItemPath);
 
-				Render::SetWindowNameAsUnsaved(true);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Delete"))
@@ -270,7 +270,7 @@ namespace Graphics::GUI
 				File::DeleteFileOrfolder(selectedItemPath);
 				selectedItemPath = path();
 
-				Render::SetWindowNameAsUnsaved(true);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::EndPopup();
@@ -304,7 +304,7 @@ namespace Graphics::GUI
 					}
 				}
 
-				Render::SetWindowNameAsUnsaved(true);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 
 				ImGui::CloseCurrentPopup();
 			}

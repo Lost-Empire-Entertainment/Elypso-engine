@@ -249,7 +249,7 @@ namespace Core
             Select::selectedObj = nullptr;
             GameObjectManager::DestroyGameObject(selectedObj);
 
-            Render::SetWindowNameAsUnsaved(true);
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
         }
 
         //save current scene

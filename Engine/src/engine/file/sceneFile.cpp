@@ -232,7 +232,7 @@ namespace EngineFile
 
 		currentScenePath = filePath;
 
-		Render::SetWindowNameAsUnsaved(false);
+		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
@@ -418,7 +418,7 @@ namespace EngineFile
 			File::DeleteFileOrfolder(currentProjectPath);
 			File::MoveOrRenameFileOrFolder(tempProjectPath, currentProjectPath, true);
 
-			Render::SetWindowNameAsUnsaved(false);
+			if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
@@ -565,7 +565,7 @@ namespace EngineFile
 		File::DeleteFileOrfolder(currentProjectPath);
 		File::MoveOrRenameFileOrFolder(tempProjectPath, currentProjectPath, true);
 
-		Render::SetWindowNameAsUnsaved(false);
+		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
