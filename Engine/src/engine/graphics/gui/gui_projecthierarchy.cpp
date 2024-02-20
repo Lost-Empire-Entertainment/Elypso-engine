@@ -247,6 +247,25 @@ namespace Graphics::GUI
 					return;
 				}
 
+				path currentScenePath = SceneFile::currentScenePath;
+				if (selectedItemPath == currentScenePath)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Error: Cannot delete opened scene file!");
+					return;
+				}
+				path currentSceneParentPath = currentScenePath.parent_path();
+				if (selectedItemPath == currentSceneParentPath)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Error: Cannot delete opened scene folder!");
+					return;
+				}
+
 				cout << "Deleted " << selectedItemPath.string() << endl;
 				File::DeleteFileOrfolder(selectedItemPath);
 				selectedItemPath = path();
