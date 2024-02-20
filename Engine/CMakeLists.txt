@@ -23,12 +23,11 @@ set(eninf "[ENGINE_INFO]")
 # Paths to frequently used directories
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
-set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
+set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/engine/icon.rc")
 
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
-set(FILES_DIR "${CMAKE_SOURCE_DIR}/files")
 
 # Manually added source file paths
 set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/engine/core")
@@ -121,6 +120,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/engine/graphics/shapes
 	${INCLUDE_DIR}/engine/physics
 	${INCLUDE_DIR}/engine/utils
+	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/glm
@@ -163,6 +163,14 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
     ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_engine>/files
 )
 
+# Copy "engine" directory to the install directory after build
+add_custom_command(TARGET Elypso_engine POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:Elypso_engine>/engine
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/engine $<TARGET_FILE_DIR:Elypso_engine>/engine
+)
+
 # Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
@@ -180,7 +188,7 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_engine>/README.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/README.md
+    ${CMAKE_SOURCE_DIR}/README.md
     $<TARGET_FILE_DIR:Elypso_engine>/README.md
 )
 

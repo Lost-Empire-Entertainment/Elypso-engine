@@ -29,6 +29,7 @@
 #include "core.hpp"
 #include "shutdown.hpp"
 #include "render.hpp"
+#include "errorpopup.hpp"
 
 #include <ctime>
 #include <chrono>
@@ -60,6 +61,7 @@ using Core::Engine;
 using Utils::String;
 using Core::ShutdownManager;
 using Graphics::Render;
+using Core::ErrorPopup;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -94,8 +96,7 @@ namespace Core
     {
         if (!exists(Engine::docsPath))
         {
-            cout << "Error: Documents path " << Engine::docsPath << " does not exist!" << endl;
-            return;
+            ErrorPopup::CreateErrorPopup("Missing path", "Couldn't initialize logger because path to Engine documents folder is missing!");
         }
         
         logFile.open(Engine::docsPath + "/engine_log.txt");
@@ -182,19 +183,10 @@ namespace Core
             break;
         }
 
-        if (Engine::startedWindowLoop)
+        if (sendInternalMessage)
         {
-            if (sendInternalMessage)
-            {
-                GUIConsole::AddTextToConsole(internalMsg);
-            }
-        }
-        else
-        {
-            if (sendInternalMessage)
-            {
-                ConsoleManager::AddLog(internalMsg);
-            }
+            if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
+            else ConsoleManager::AddLog(internalMsg);
         }
         cout << externalMsg;
         Logger::AddLog(externalMsg);
@@ -248,7 +240,7 @@ namespace Core
                 Caller::INPUT,
                 Type::DEBUG,
                 "User closed engine with 'qqq' console command.\n");
-            ShutdownManager::shouldShutDown = true;
+            ShutdownManager::Shutdown();
         }
         else if (cleanedCommands[0] == "srm"
                  && (cleanedCommands[1] == "1"

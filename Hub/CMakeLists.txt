@@ -41,13 +41,18 @@ target_include_directories(glad PUBLIC ${INCLUDE_DIR})
 # Add GLFW
 set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
 
+# Add magic_enum
+add_library(magic_enum INTERFACE)
+target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
+
 # Group external libraries
 add_library(external_libs INTERFACE)
-target_link_libraries(external_libs INTERFACE glad)
+target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
 set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/hub/main.cpp
+	${CMAKE_SOURCE_DIR}/src/hub/gui.cpp
 )
 
 # Add your external files
@@ -60,6 +65,7 @@ list(APPEND SOURCE_FILES
 	${EXTERNAL_DIR}/imgui/imgui_impl_opengl3.cpp
 	${EXTERNAL_DIR}/imgui/imgui_tables.cpp
 	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
+	${EXTERNAL_DIR}/stb_image/stb_image.cpp
 )
 
 # Add the executable
@@ -75,10 +81,18 @@ target_compile_features(Elypso_hub PRIVATE cxx_std_20)
 
 target_include_directories(Elypso_hub PRIVATE 
 	${INCLUDE_DIR}/hub
-	${INCLUDE_DIR}/hub/core
+	${INCLUDE_DIR}/external
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
+	${INCLUDE_DIR}/external/glm
+	${INCLUDE_DIR}/external/glm/detail
+	${INCLUDE_DIR}/external/glm/ext
+	${INCLUDE_DIR}/external/glm/gtc
+	${INCLUDE_DIR}/external/glm/gtx
+	${INCLUDE_DIR}/external/glm/simd
+	${INCLUDE_DIR}/external/magic_enum
 	${INCLUDE_DIR}/external/imgui
+	${INCLUDE_DIR}/external/stb_image
 )
 
 target_link_libraries(Elypso_hub PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
@@ -102,6 +116,14 @@ target_compile_definitions(Elypso_hub PRIVATE GLFW_INCLUDE_NONE)
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_hub DESTINATION ${CMAKE_INSTALL_BINDIR})
 
+# Copy "files" directory to the install directory after build
+add_custom_command(TARGET Elypso_hub POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:Elypso_hub>/files
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_hub>/files
+)
+
 # Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
 add_custom_command(TARGET Elypso_hub POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
@@ -119,7 +141,7 @@ add_custom_command(TARGET Elypso_hub POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_hub>/README.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/README.md
+    ${CMAKE_SOURCE_DIR}/README.md
     $<TARGET_FILE_DIR:Elypso_hub>/README.md
 )
 

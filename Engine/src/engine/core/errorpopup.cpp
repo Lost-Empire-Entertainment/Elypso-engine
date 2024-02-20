@@ -30,7 +30,7 @@ namespace Core
 
 		if (result == IDOK)
 		{
-			ShutdownManager::shouldShutDown = true;
+			ShutdownManager::ShutdownManager::Shutdown();
 		}
 	}
 }

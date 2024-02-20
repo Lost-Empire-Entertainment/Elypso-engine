@@ -92,8 +92,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border);
 
 		Shader borderShader = Shader(
-			Engine::filesPath + "/shaders/Basic_model.vert",
-			Engine::filesPath + "/shaders/Basic.frag");
+			Engine::enginePath + "/shaders/Basic_model.vert",
+			Engine::enginePath + "/shaders/Basic.frag");
 
 		GLuint vao, vbo;
 
@@ -117,7 +117,7 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false,
 			"Border",
-			-1,
+			10000000,
 			transform,
 			mesh,
 			mat,

@@ -28,6 +28,9 @@
 #include "render.hpp"
 #include "selectobject.hpp"
 
+#include <iostream>
+
+using std::cout;
 using glm::translate;
 using glm::rotate;
 using glm::radians;
@@ -46,7 +49,16 @@ using Physics::Select;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> Billboard::InitializeBillboard(const string& iconName, const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> Billboard::InitializeBillboard(
+		const vec3& pos,
+		const vec3& rot,
+		const vec3& scale,
+		const string& vertShader,
+		const string& fragShader,
+		const string& diffTexture,
+		const float& shininess,
+		string& name,
+		unsigned int& id)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -61,12 +73,11 @@ namespace Graphics::Shape
 			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f
 		};
 
-
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
 
 		Shader billboardShader = Shader(
-			Engine::filesPath + "/shaders/Basic_texture.vert",
-			Engine::filesPath + "/shaders/Basic_texture.frag");
+			Engine::enginePath + "/" + vertShader,
+			Engine::enginePath + "/" + fragShader);
 
 		GLuint vao, vbo;
 
@@ -89,22 +100,23 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
-		mat->AddShader("shaders/Basic_texture.vert", "shaders/Basic_texture.frag", billboardShader);
+		mat->AddShader(vertShader, fragShader, billboardShader);
 
-		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
+		if (name == tempName) name = "Billboard";
+		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,
-			"Billboard",
-			GameObject::nextID++,
+			name,
+			id,
 			transform,
 			mesh,
 			mat,
 			basicShape);
 
-		Texture tex(Engine::filesPath);
-		tex.LoadTexture(obj, iconName, true, GL_RGBA);
+		Texture tex(Engine::enginePath);
+		tex.LoadTexture(obj, diffTexture, true, GL_RGBA);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();

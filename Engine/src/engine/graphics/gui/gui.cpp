@@ -112,7 +112,7 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF((Engine::enginePath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		bgrColor.x = Render::backgroundColor.x;
 		bgrColor.y = Render::backgroundColor.y;
@@ -183,6 +183,8 @@ namespace Graphics::GUI
 		}
 
 		RenderVersionCheckWindow();
+		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
+		if (renderUnsavedSceneSwitchWindow) ConfirmUnsavedSceneSwitch();
 
 		if (Input::inputSettings.printIMGUIToConsole)
 		{
@@ -210,14 +212,6 @@ namespace Graphics::GUI
 				SceneFile::SaveCurrentScene();
 			}
 
-			if (ImGui::MenuItem("Save As"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Save As is a placeholder button and does not yet have any functions.\n");
-			}
-
 			if (ImGui::MenuItem("New Scene"))
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -232,7 +226,7 @@ namespace Graphics::GUI
 					Caller::INPUT,
 					Type::DEBUG,
 					"User closed engine exit button.\n");
-				ShutdownManager::shouldShutDown = true;
+				ShutdownManager::ShutdownManager::Shutdown();
 			}
 
 			ImGui::EndMenu();
@@ -293,10 +287,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					shared_ptr<GameObject> obj = Cube::InitializeCube(
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f));
+					shared_ptr<GameObject> obj = Cube::InitializeCube();
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
@@ -315,6 +306,8 @@ namespace Graphics::GUI
 						Caller::ENGINE,
 						Type::SUCCESS,
 						output);
+
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();
@@ -324,10 +317,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					shared_ptr<GameObject> obj = PointLight::InitializePointLight(
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f));
+					shared_ptr<GameObject> obj = PointLight::InitializePointLight();
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
@@ -346,13 +336,12 @@ namespace Graphics::GUI
 						Caller::ENGINE,
 						Type::SUCCESS,
 						output);
+
+					Render::SetWindowNameAsUnsaved(true);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight(
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(0.0f, 0.0f, 0.0f),
-						vec3(1.0f, 1.0f, 1.0f));
+					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
@@ -371,6 +360,8 @@ namespace Graphics::GUI
 						Caller::ENGINE,
 						Type::SUCCESS,
 						output);
+
+					Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();
@@ -428,7 +419,7 @@ namespace Graphics::GUI
 
 	void EngineGUI::TB_CheckVersion()
 	{
-		string batFilePath = Engine::filesPath + "/bat scripts/checkVersion.bat";
+		string batFilePath = Engine::enginePath + "/bat scripts/checkVersion.bat";
 
 		if (exists(batFilePath))
 		{
@@ -558,6 +549,130 @@ namespace Graphics::GUI
 
 			ImGui::End();
 		}
+	}
+
+	void EngineGUI::ConfirmUnsavedShutdown()
+	{
+		ImGui::SetNextWindowPos(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(500, 300));
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoDocking
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoSavedSettings;
+
+		string title = "You have unsaved changes. Save before closing?";
+		ImGui::Begin(title.c_str(), nullptr, flags);
+
+		ImVec2 windowPos = ImGui::GetWindowPos();
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
+		ImVec2 buttonSize(120, 50);
+		float buttonSpacing = 20.0f;
+
+		ImVec2 button1Pos(
+			windowSize.x * 0.3f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button2Pos(
+			windowSize.x * 0.625f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button3Pos(
+			windowSize.x * 0.7f,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+
+		ImGui::SetCursorPos(button1Pos);
+		if (ImGui::Button("Save", buttonSize))
+		{
+			SceneFile::SaveCurrentScene(SceneFile::SaveType::shutDown);
+			renderUnsavedShutdownWindow = false;
+		}
+
+		ImGui::SetCursorPos(button2Pos);
+		if (ImGui::Button("Don't save", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Closed engine without saving.\n");
+			SceneFile::unsavedChanges = false;
+			ShutdownManager::Shutdown();
+		}
+
+		ImGui::SetCursorPos(button3Pos);
+		if (ImGui::Button("Cancel", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Cancelled shutdown...\n");
+			renderUnsavedShutdownWindow = false;
+		}
+
+		ImGui::End();
+	}
+
+	void EngineGUI::ConfirmUnsavedSceneSwitch()
+	{
+		ImGui::SetNextWindowPos(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(500, 300));
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoDocking
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoSavedSettings;
+
+		string title = "You have unsaved changes. Save before switching scenes?";
+		ImGui::Begin(title.c_str(), nullptr, flags);
+
+		ImVec2 windowPos = ImGui::GetWindowPos();
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
+		ImVec2 buttonSize(120, 50);
+		float buttonSpacing = 20.0f;
+
+		ImVec2 button1Pos(
+			windowSize.x * 0.3f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button2Pos(
+			windowSize.x * 0.625f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button3Pos(
+			windowSize.x * 0.7f,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+
+		ImGui::SetCursorPos(button1Pos);
+		if (ImGui::Button("Save", buttonSize))
+		{
+			SceneFile::SaveCurrentScene(SceneFile::SaveType::sceneSwitch, targetScene);
+			renderUnsavedSceneSwitchWindow = false;
+		}
+
+		ImGui::SetCursorPos(button2Pos);
+		if (ImGui::Button("Don't save", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Switched scene without saving.\n");
+			SceneFile::LoadScene(targetScene);
+			renderUnsavedSceneSwitchWindow = false;
+		}
+
+		ImGui::SetCursorPos(button3Pos);
+		if (ImGui::Button("Cancel", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Cancelled scene switch...\n");
+			renderUnsavedSceneSwitchWindow = false;
+		}
+
+		ImGui::End();
 	}
 
 	void EngineGUI::Shutdown()

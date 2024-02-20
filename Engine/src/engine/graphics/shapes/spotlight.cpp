@@ -45,7 +45,26 @@ using Physics::Select;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> SpotLight::InitializeSpotLight(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> SpotLight::InitializeSpotLight(
+		const vec3& pos,
+		const vec3& rot,
+		const vec3& scale,
+		const string& vertShader,
+		const string& fragShader,
+		const vec3& diffuse,
+		const float& intensity,
+		const float& distance,
+		const float& innerAngle,
+		const float& outerAngle,
+		string& name,
+		unsigned int& id,
+		
+		const string& billboardVertShader,
+		const string& billboardFragShader,
+		const string& billboardDiffTexture,
+		const float& billboardShininess,
+		string& billboardName,
+		unsigned int& billboardID)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -81,8 +100,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::spot_light);
 
 		Shader spotlightShader = Shader(
-			Engine::filesPath + "/shaders/Basic_model.vert",
-			Engine::filesPath + "/shaders/Basic.frag");
+			Engine::enginePath + "/" + vertShader,
+			Engine::enginePath + "/" + fragShader);
 
 		GLuint vao, vbo;
 
@@ -98,13 +117,8 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
-		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", spotlightShader);
+		mat->AddShader(vertShader, fragShader, spotlightShader);
 
-		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
-		float intensity = 1.0f;
-		float distance = 1.0f;
-		float innerAngle = 12.5f;
-		float outerAngle = 17.5f;
 		shared_ptr<SpotLight_Variables> spotLight = 
 			make_shared<SpotLight_Variables>(
 				diffuse, 
@@ -113,13 +127,23 @@ namespace Graphics::Shape
 				innerAngle,
 				outerAngle);
 
-		string spotLightIconName = "icons/spotLight.png";
-		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(spotLightIconName, pos, rot, scale);
+		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+			pos, 
+			rot, 
+			scale, 
+			billboardVertShader,
+			billboardFragShader,
+			billboardDiffTexture,
+			billboardShininess,
+			billboardName,
+			billboardID);
 
+		if (name == tempName) name = "Spotlight";
+		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,
-			"Spotlight",
-			GameObject::nextID++,
+			name,
+			id,
 			transform,
 			mesh,
 			mat,

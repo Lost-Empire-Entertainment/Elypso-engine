@@ -27,10 +27,15 @@
 #include "console.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#include "sceneFile.hpp"
+#include "render.hpp"
+
+#include <fstream>
 
 using std::cout;
 using std::endl;
 using std::find;
+using std::ifstream;
 using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::is_directory;
@@ -38,27 +43,14 @@ using std::filesystem::directory_iterator;
 
 using Utils::String;
 using Utils::File;
+using Graphics::Render;
+using EngineFile::SceneFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
-	/// <summary>
-	/// These file and folder names are ignored in the rendered project hierarchy.
-	/// </summary>
-	vector<string> ignoredNames =
-	{
-		"bat scripts",
-		//"fonts",
-		"icon.ico",
-		"icon.png",
-		"icon.rc",
-		//"icons",
-		//"shaders",
-		//"textures"
-	};
-
 	void GUIProjectHierarchy::RenderProjectHierarchy(const path& rootPath)
 	{
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
@@ -109,19 +101,8 @@ namespace Graphics::GUI
 		{
 			for (const auto& entry : directory_iterator(folderPath))
 			{
-				if (entry.is_directory() 
-					&& find(ignoredNames.begin(), 
-							ignoredNames.end(),
-						    entry.path().filename()) 
-						    == ignoredNames.end())
-				{
-					DrawFolder(entry.path(), false);
-				}
-				else if (entry.is_regular_file() 
-						 && find(ignoredNames.begin(), 
-							     ignoredNames.end(),
-						         entry.path().filename()) 
-					             == ignoredNames.end())
+				if (entry.is_directory()) DrawFolder(entry.path(), false);
+				else if (entry.is_regular_file())
 				{
 					ImGui::Selectable(entry.path().filename().string().c_str());
 
@@ -147,7 +128,6 @@ namespace Graphics::GUI
 			uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '"', '\0');
 			selectedItemPath = uncleanSelectedItemPath;
 			string displayedPath = uncleanSelectedItemPath;
-			cout << "Selected " << displayedPath << endl;
 
 			ImGui::OpenPopup("rightclickpopup");
 
@@ -156,11 +136,38 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
+			if (ImGui::MenuItem("Open"))
+			{
+				if (selectedItemPath.extension() != ".txt")
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Error: Target file is not an openable file! Only txt files are supported.\n\n");
+					return;
+				}
+
+				if (selectedItemPath.stem() == "project"
+					&& selectedItemPath.extension() == ".txt")
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Error: Target file is a project file and cannot be run! Please choose a valid scene file.\n\n");
+					return;
+				}
+
+				EngineGUI::targetScene = selectedItemPath.string();
+				EngineGUI::renderUnsavedSceneSwitchWindow = true;
+			}
+
 			if (ImGui::MenuItem("Create folder")
 				&& isFolder)
 			{
-				path output = selectedItemPath.string() + "\\New folder";
+				path output = selectedItemPath / "New folder";
 				File::CreateNewFolder(output);
+
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Rename"))
@@ -221,6 +228,8 @@ namespace Graphics::GUI
 
 				cout << "Pasted " << copyPath.string() << " to " << selectedItemPath.string() << endl;
 				File::CopyFileOrFolder(copyPath, selectedItemPath);
+
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Delete"))
@@ -237,6 +246,8 @@ namespace Graphics::GUI
 				cout << "Deleted " << selectedItemPath.string() << endl;
 				File::DeleteFileOrfolder(selectedItemPath);
 				selectedItemPath = path();
+
+				Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::EndPopup();
@@ -269,6 +280,8 @@ namespace Graphics::GUI
 						File::MoveOrRenameFileOrFolder(selectedItemPath, newPath, true);
 					}
 				}
+
+				Render::SetWindowNameAsUnsaved(true);
 
 				ImGui::CloseCurrentPopup();
 			}

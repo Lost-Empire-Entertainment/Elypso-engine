@@ -40,6 +40,8 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
+		SceneFile::CheckForProjectFile();
+
 		ConfigFile::ProcessFirstConfigValues();
 
 		Logger::InitializeLogger();
@@ -47,28 +49,35 @@ namespace Core
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Elypso engine " + Engine::version + "\n" +
+			Engine::name + " " + Engine::version + "\n" +
 			"Copyright (C) Greenlaser 2024\n\n",
 			true,
 			false);
 
-		string output = "Game documents path: " + Engine::docsPath + "\n";
+		string output = "Engine documents path: " + Engine::docsPath + "\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
 			output);
 
-		output = "Game files path: " + Engine::filesPath + "\n\n";
+		output = "User engine files path: " + Engine::filesPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::DEBUG,
 			output);
 
-		SceneFile::CheckForStartupSceneFile();
+		output = "Engine files path: " + Engine::enginePath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			output);
 
 		Render::RenderSetup();
 
 		ConfigFile::ProcessConfigFile("config.txt");
+
+		//first scene is actually loaded when engine is ready for use
+		SceneFile::LoadScene(SceneFile::currentScenePath);
 	}
 
 	void Engine::RunEngine()
@@ -91,26 +100,11 @@ namespace Core
 			Core::ConsoleManager::PrintLogsToBuffer();
 		}
 
-		while (!glfwWindowShouldClose(Render::window)
-			   && !ShutdownManager::shouldShutDown)
+		while (!glfwWindowShouldClose(Render::window))
 		{
 			TimeManager::UpdateDeltaTime();
 
 			Render::WindowLoop();
 		}
-
-		ConfigFile::SaveDataAtShutdown();
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"==================================================\n\n",
-			true,
-			false);
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::WINDOW_LOOP,
-			Type::DEBUG,
-			"Exiting window loop...\n");
 	}
 }

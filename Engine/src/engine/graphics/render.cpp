@@ -38,6 +38,7 @@
 #include "gameobject.hpp"
 #include "grid.hpp"
 #include "selectedobjectborder.hpp"
+#include "sceneFile.hpp"
 
 #include <string>
 #include <iostream>
@@ -63,6 +64,8 @@ using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Grid;
 using Graphics::Shape::Border;
+using EngineFile::SceneFile;
+using Core::ShutdownManager;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -134,7 +137,7 @@ namespace Graphics
 		glfwSwapInterval(1);
 
 		int width, height, channels;
-		string iconpath = Engine::filesPath + "/icon.png";
+		string iconpath = Engine::enginePath + "/icon.png";
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};
@@ -148,6 +151,8 @@ namespace Graphics
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 		glfwSetScrollCallback(window, Input::ScrollCallback);
 		glfwSetKeyCallback(window, Input::KeyCallback);
+
+		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { ShutdownManager::Shutdown(); });
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_SETUP,
@@ -200,6 +205,16 @@ namespace Graphics
 
 		//Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
+	}
+
+	void Render::SetWindowNameAsUnsaved(bool state)
+	{
+		SceneFile::unsavedChanges = state;
+
+		string newName = state == true
+			? Engine::name + " " + Engine::version + "*"
+			: Engine::name + " " + Engine::version;
+		glfwSetWindowTitle(window, newName.c_str());
 	}
 
 	void Render::WindowLoop()

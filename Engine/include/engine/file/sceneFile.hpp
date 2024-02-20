@@ -18,17 +18,31 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 using std::string;
+using std::map;
 
 namespace EngineFile
 {
 	class SceneFile
 	{
 	public:
-		static void CheckForStartupSceneFile();
+		enum class SaveType
+		{
+			defaultSave,
+			sceneSwitch,
+			shutDown
+		};
+
+		static inline bool unsavedChanges;
+		static inline string currentProjectPath;
+		static inline string currentScenePath;
+
+		static void CheckForProjectFile();
 		static void CreateNewScene(const string& fileName);
 		static void LoadScene(const string& fileName);
-		static void SaveCurrentScene();
+		static void LoadGameObject(const map<string, string> obj);
+		static void SaveCurrentScene(SaveType saveType = SaveType::defaultSave, const string& targetScene = "");
 	};
 }

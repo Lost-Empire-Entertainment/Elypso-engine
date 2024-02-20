@@ -111,7 +111,7 @@ if not exist "%buildPath%" (
 	cmake --build . --config Release
 	
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed because Elypso_engine.exe did not get generated properly.
+		echo %cmerr% Build failed because Elypso engine.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
 	)

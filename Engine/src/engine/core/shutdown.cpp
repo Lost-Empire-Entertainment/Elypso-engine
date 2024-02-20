@@ -24,9 +24,24 @@
 #include "gui.hpp"
 #include "render.hpp"
 #include "shutdown.hpp"
+#include "configFile.hpp"
+#include "fileUtils.hpp"
+#include "sceneFile.hpp"
 
+#include <filesystem>
+
+using std::filesystem::directory_iterator;
+using std::filesystem::current_path;
+using std::filesystem::remove;
+using std::filesystem::remove_all;
+using std::filesystem::is_regular_file;
+using std::filesystem::is_directory;
+
+using Utils::File;
 using Graphics::GUI::EngineGUI;
 using Graphics::Render;
+using EngineFile::SceneFile;
+using EngineFile::ConfigFile;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -34,21 +49,46 @@ namespace Core
 {
 	void ShutdownManager::Shutdown()
 	{
-		ConsoleManager::WriteConsoleMessage(
-			Caller::SHUTDOWN,
-			Type::INFO,
-			"Cleaning up resources...\n");
+		if (SceneFile::unsavedChanges == true)
+		{
+			glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+			EngineGUI::renderUnsavedShutdownWindow = true;
+		}
+		else
+		{
+			ConfigFile::SaveDataAtShutdown();
 
-		EngineGUI::GetInstance().Shutdown();
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"==================================================\n\n",
+				true,
+				false);
 
-		//clean all glfw resources after program is closed
-		glfwTerminate();
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::INFO,
+				"Cleaning up resources...\n");
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::SHUTDOWN,
-			Type::SUCCESS,
-			"Shutdown complete!\n");
+			string files = current_path().generic_string() + "/files";
+			for (const auto& entry : directory_iterator(files))
+			{
+				path entryPath(entry);
+				if (is_directory(entryPath)) remove_all(entryPath);
+				else if (is_regular_file(entryPath)) remove(entryPath);
+			}
 
-		Logger::CloseLogger();
+			EngineGUI::GetInstance().Shutdown();
+
+			//clean all glfw resources after program is closed
+			glfwTerminate();
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::SUCCESS,
+				"Shutdown complete!\n");
+
+			Logger::CloseLogger();
+		}
 	}
 }

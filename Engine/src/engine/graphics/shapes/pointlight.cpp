@@ -45,7 +45,24 @@ using Physics::Select;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> PointLight::InitializePointLight(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> PointLight::InitializePointLight(
+		const vec3& pos,
+		const vec3& rot,
+		const vec3& scale,
+		const string& vertShader,
+		const string& fragShader,
+		const vec3& diffuse,
+		const float& intensity,
+		const float& distance,
+		string& name,
+		unsigned int& id,
+		
+		const string& billboardVertShader,
+		const string& billboardFragShader,
+		const string& billboardDiffTexture,
+		const float& billboardShininess,
+		string& billboardName,
+		unsigned int& billboardID)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -93,8 +110,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::point_light);
 
 		Shader pointLightShader = Shader(
-			Engine::filesPath + "/shaders/Basic_model.vert",
-			Engine::filesPath + "/shaders/Basic.frag");
+			Engine::enginePath + "/" + vertShader,
+			Engine::enginePath + "/" + fragShader);
 
 		GLuint vao, vbo;
 
@@ -110,24 +127,31 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
-		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", pointLightShader);
+		mat->AddShader(vertShader, fragShader, pointLightShader);
 
-		vec3 diffuse = vec3(1.0f, 1.0f, 1.0f);
-		float intensity = 1.0f;
-		float distance = 1.0f;
 		shared_ptr<PointLight_Variables> pointLight = 
 			make_shared<PointLight_Variables>(
 				diffuse, 
 				intensity, 
 				distance);
 
-		string pointLightIconName = "icons/pointLight.png";
-		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(pointLightIconName, pos, rot, scale);
+		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+			pos,
+			rot,
+			scale,
+			billboardVertShader,
+			billboardFragShader,
+			billboardDiffTexture,
+			billboardShininess,
+			billboardName,
+			billboardID);
 
+		if (name == tempName) name = "Point light";
+		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true, 
-			"Point light", 
-			GameObject::nextID++,
+			name, 
+			id,
 			transform, 
 			mesh, 
 			mat, 

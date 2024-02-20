@@ -50,7 +50,17 @@ using Core::Engine;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> Cube::InitializeCube(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> Cube::InitializeCube(
+		const vec3& pos,
+		const vec3& rot,
+		const vec3& scale,
+		const string& vertShader,
+		const string& fragShader,
+		const string& diffTexture,
+		const string& specTexture,
+		const float& shininess,
+		string& name,
+		unsigned int& id)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -103,8 +113,8 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::cube);
 
 		Shader cubeShader = Shader(
-			Engine::filesPath + "/shaders/GameObject.vert",
-			Engine::filesPath + "/shaders/GameObject.frag");
+			Engine::enginePath + "/" + vertShader,
+			Engine::enginePath + "/" + fragShader);
 
 		GLuint vao, vbo;
 
@@ -127,23 +137,25 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
-		mat->AddShader("shaders/GameObject.vert", "shaders/GameObject.frag", cubeShader);
+		mat->AddShader(vertShader, fragShader, cubeShader);
 
-		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
+		if (name == tempName) name = "Cube";
+		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true, 
-			"Cube", 
-			GameObject::nextID++,
+			name, 
+			id,
 			transform, 
 			mesh,
 			mat,
 			basicShape);
 
-		Texture tex(Engine::filesPath);
-		tex.LoadTexture(obj, "textures/crate_2.png", false, GL_RGBA);
-		tex.LoadTexture(obj, "textures/crate_2_specular.png", false, GL_RGBA);
+		Texture tex(Engine::enginePath);
+
+		tex.LoadTexture(obj, diffTexture, false, GL_RGBA);
+		tex.LoadTexture(obj, specTexture, false, GL_RGBA);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();
