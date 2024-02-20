@@ -285,6 +285,7 @@ namespace Graphics::Shape
 		static vector<shared_ptr<GameObject>>& GetObjects() { return objects; }
 		static vector<shared_ptr<GameObject>> GetPointLights() { return pointLights; }
 		static vector<shared_ptr<GameObject>> GetSpotLights() { return spotLights; }
+		static shared_ptr<GameObject> GetActionTex() { return actionTex; }
 		static shared_ptr<GameObject> GetBorder() { return border; }
 		static vector<shared_ptr<GameObject>> GetBillboards() { return billboards; }
 	private:
