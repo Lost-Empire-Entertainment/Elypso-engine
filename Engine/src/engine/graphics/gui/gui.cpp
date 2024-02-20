@@ -304,7 +304,7 @@ namespace Graphics::GUI
 						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
-						Type::SUCCESS,
+						Type::INFO,
 						output);
 
 					Render::SetWindowNameAsUnsaved(true);
@@ -334,7 +334,7 @@ namespace Graphics::GUI
 						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
-						Type::SUCCESS,
+						Type::INFO,
 						output);
 
 					Render::SetWindowNameAsUnsaved(true);
@@ -358,7 +358,7 @@ namespace Graphics::GUI
 						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
-						Type::SUCCESS,
+						Type::INFO,
 						output);
 
 					Render::SetWindowNameAsUnsaved(true);

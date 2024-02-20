@@ -51,8 +51,7 @@ namespace Core
 			Type::INFO,
 			Engine::name + " " + Engine::version + "\n" +
 			"Copyright (C) Greenlaser 2024\n\n",
-			true,
-			false);
+			true);
 
 		string output = "Engine documents path: " + Engine::docsPath + "\n";
 		ConsoleManager::WriteConsoleMessage(
@@ -84,7 +83,7 @@ namespace Core
 	{
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_LOOP,
-			Type::SUCCESS,
+			Type::DEBUG,
 			"Reached window loop successfully!\n\n");
 
 		ConsoleManager::WriteConsoleMessage(

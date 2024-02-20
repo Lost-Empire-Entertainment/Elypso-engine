@@ -62,8 +62,7 @@ namespace Core
 				Caller::ENGINE,
 				Type::INFO,
 				"==================================================\n\n",
-				true,
-				false);
+				true);
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::SHUTDOWN,
@@ -85,7 +84,7 @@ namespace Core
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::SHUTDOWN,
-				Type::SUCCESS,
+				Type::INFO,
 				"Shutdown complete!\n");
 
 			Logger::CloseLogger();

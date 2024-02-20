@@ -157,8 +157,12 @@ namespace Graphics::GUI
 					return;
 				}
 
-				EngineGUI::targetScene = selectedItemPath.string();
-				EngineGUI::renderUnsavedSceneSwitchWindow = true;
+				if (SceneFile::unsavedChanges)
+				{
+					EngineGUI::targetScene = selectedItemPath.string();
+					EngineGUI::renderUnsavedSceneSwitchWindow = true;
+				}
+				else SceneFile::LoadScene(selectedItemPath.string());
 			}
 
 			if (ImGui::MenuItem("Create folder")

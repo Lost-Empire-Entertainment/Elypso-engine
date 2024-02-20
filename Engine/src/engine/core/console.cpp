@@ -141,7 +141,7 @@ namespace Core
         storedLogs.clear();
     }
 
-    void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool sendInternalMessage)
+    void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool internalMessage)
     {
         string timeStamp = Timestamp::GetCurrentTimestamp();
         string theCaller = string(magic_enum::enum_name(caller));
@@ -164,7 +164,6 @@ namespace Core
             externalMsg = invalidMsg;
             internalMsg = invalidMsg;
             break;
-        case Type::CLEANUP:
         case Type::DEBUG:
             if (sendDebugMessages)
             {
@@ -173,7 +172,6 @@ namespace Core
             }
             break;
         case Type::INFO:
-        case Type::SUCCESS:
             externalMsg = onlyMessage ? message : validMsg;
             internalMsg = onlyMessage ? message : timeStamp + message;
             break;
@@ -183,21 +181,19 @@ namespace Core
             break;
         }
 
-        if (sendInternalMessage)
+        if (internalMessage)
         {
             if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
             else ConsoleManager::AddLog(internalMsg);
         }
+
         cout << externalMsg;
         Logger::AddLog(externalMsg);
     }
 
     void ConsoleManager::ParseConsoleCommand(const string& command)
     {
-        if (command == "") 
-        {
-            return;
-        }
+        if (command == "") return;
 
         vector<string> splitCommand = String::Split(command, ' ');
         size_t count = splitCommand.size();

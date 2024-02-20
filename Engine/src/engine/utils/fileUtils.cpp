@@ -106,7 +106,7 @@ namespace Utils
             output = outputType + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
-                Type::SUCCESS,
+                Type::DEBUG,
                 output);
         }
         catch (const exception& e)
@@ -158,7 +158,7 @@ namespace Utils
                 output = "Copied folder " + sourcePath.string() + " to " + fixedTargetPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::ENGINE,
-                    Type::SUCCESS,
+                    Type::DEBUG,
                     output);
             }
             else if (is_regular_file(sourcePath))
@@ -171,7 +171,7 @@ namespace Utils
                 output = "Copied file " + sourcePath.string() + " to " + destPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::ENGINE,
-                    Type::SUCCESS,
+                    Type::DEBUG,
                     output);
             }
         }
@@ -205,7 +205,7 @@ namespace Utils
             output = "Deleted " + sourcePath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
-                Type::SUCCESS,
+                Type::DEBUG,
                 output);
         }
         catch (const exception& e)
@@ -250,7 +250,7 @@ namespace Utils
             output = "Created new folder at " + folderPath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
-                Type::SUCCESS,
+                Type::DEBUG,
                 output);
         }
         catch (const exception& e)

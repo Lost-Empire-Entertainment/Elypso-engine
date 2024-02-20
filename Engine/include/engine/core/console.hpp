@@ -47,10 +47,8 @@ namespace Core
 		};
 		enum class Type : char
 		{
-			SUCCESS,
 			INFO,
 			DEBUG,
-			CLEANUP,
 			EXCEPTION
 		};
 
@@ -59,14 +57,14 @@ namespace Core
 		static vector<string> storedLogs;
 
 		/// <summary>
-		/// A simple method that prints a message with a message type and timestamp to the console.
+		/// Print selected message to in-engine console.
 		/// </summary>
-		/// <param name="caller">What called this message?</param>
-		/// <param name="type">What type of a message is this?</param>
-		/// <param name="message">The actual message.</param>
-		/// <param name="onlyMessage">Should we ignore the timestamp and message type and only print the message?</param>
-		/// <param name="displayInInternalConsole">Should we display this in the internal engine console as well?</param>
-		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false, bool sendInternalMessage = true);
+		/// <param name="caller">What called the message.</param>
+		/// <param name="type">What kind of a message is it.</param>
+		/// <param name="message">The message itself.</param>
+		/// <param name="onlyMessage">Do we only send the message without message caller, type and timestamp?</param>
+		/// <param name="internalMessage">Do we also print this message to the in-engine console?</param>
+		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false, bool internalMessage = true);
 
 		static void ParseConsoleCommand(const string& command);
 

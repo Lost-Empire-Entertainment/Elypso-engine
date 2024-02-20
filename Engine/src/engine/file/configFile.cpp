@@ -81,7 +81,7 @@ namespace EngineFile
 		Render::camera.SetCameraPosition(newPosition);
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
 		GUIConsole::allowScrollToBottom = true;
-		ConsoleManager::sendDebugMessages = true;
+		ConsoleManager::sendDebugMessages = false;
 		GUIDebugMenu::renderDebugMenu = false;
 		GUIConsole::renderConsole = false;
 		GUIInspector::renderInspector = false;
@@ -514,7 +514,7 @@ namespace EngineFile
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
-				Type::CLEANUP,
+				Type::DEBUG,
 				"Deleted file: config.txt\n");
 		}
 
