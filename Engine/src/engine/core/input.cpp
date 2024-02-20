@@ -259,6 +259,54 @@ namespace Core
         {
             SceneFile::SaveCurrentScene();
         }
+
+        if (!inputSettings.cameraEnabled
+            && Select::selectedObj != nullptr)
+        {
+            //switch to X axis
+            if (key == GLFW_KEY_X
+                && action == GLFW_PRESS
+                && inputSettings.axis != "X")
+            {
+                inputSettings.axis = "X";
+            }
+            //switch to Y axis
+            if (key == GLFW_KEY_Y
+                && action == GLFW_PRESS
+                && inputSettings.axis != "Y")
+            {
+                inputSettings.axis = "Y";
+            }
+            //switch to Z axis
+            if (key == GLFW_KEY_Z
+                && action == GLFW_PRESS
+                && inputSettings.axis != "Z")
+            {
+                inputSettings.axis = "Z";
+            }
+
+            //switch to move action
+            if (key == GLFW_KEY_W
+                && action == GLFW_PRESS
+                && inputSettings.objectAction != "move")
+            {
+                inputSettings.objectAction = "move";
+            }
+            //switch to rotate action
+            if (key == GLFW_KEY_E
+                && action == GLFW_PRESS
+                && inputSettings.objectAction != "rotate")
+            {
+                inputSettings.objectAction = "rotate";
+            }
+            //switch to scale action
+            if (key == GLFW_KEY_R
+                && action == GLFW_PRESS
+                && inputSettings.objectAction != "scale")
+            {
+                inputSettings.objectAction = "scale";
+            }
+        }
     }
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -312,7 +360,6 @@ namespace Core
                         Type::DEBUG,
                         "Did not hit anything...\n");
                 }
-
             }
             else
             {
@@ -327,6 +374,8 @@ namespace Core
                         output);
                 }
             }
+
+            inputSettings.objectAction = "none";
         }
     }
 

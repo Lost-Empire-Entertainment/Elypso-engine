@@ -99,6 +99,8 @@ namespace Graphics::GUI
 			Render::camera.GetCameraRotation().y,
 			Render::camera.GetCameraRotation().z);
 		ImGui::Text("FOV: %.0f", Input::inputSettings.fov);
+		ImGui::Text("Current axis: %s", Input::inputSettings.axis.c_str());
+		ImGui::Text("Current tool: %s", Input::inputSettings.objectAction.c_str());
 
 		ImGui::Separator();
 
@@ -112,6 +114,15 @@ namespace Graphics::GUI
 		ImGui::Text("Toggle camera: Escape");
 		ImGui::Text("Select GameObject: Left Mouse Button");
 		ImGui::Text("Delete selected GameObject: Delete");
+		ImGui::Text("Switch to X axis: X");
+		ImGui::Text("Switch to Y axis: Y");
+		ImGui::Text("Switch to Z axis: Z");
+		ImGui::Text("Move selected object:");
+		ImGui::Text("Press W and drag with left mouse to left or right");
+		ImGui::Text("Rotate selected object:");
+		ImGui::Text("Hold S and drag with left mouse to left or right");
+		ImGui::Text("Scale selected object:");
+		ImGui::Text("Hold R and drag with left mouse to left or right");
 	}
 	void GUIDebugMenu::RD_Interactions()
 	{

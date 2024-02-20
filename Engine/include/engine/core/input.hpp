@@ -26,11 +26,13 @@
 #include "input.hpp"
 
 #include <unordered_map>
+#include <string>
 
 using glm::vec3;
 using glm::mat4;
 using glm::radians;
 using std::unordered_map;
+using std::string;
 
 namespace Core
 {
@@ -50,6 +52,9 @@ namespace Core
             float aspectRatio = 0.0f;
             bool cameraEnabled = false;
             bool cameraModeSwitched = false;
+
+            string axis = "X";
+            string objectAction = "none";
 
             bool printFPSToConsole = false;
             bool printIMGUIToConsole = false;

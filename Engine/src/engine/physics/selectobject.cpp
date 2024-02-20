@@ -23,7 +23,6 @@
 #include "render.hpp"
 #include "collision.hpp"
 
-using std::string;
 using glm::inverse;
 using glm::normalize;
 using glm::vec4;
