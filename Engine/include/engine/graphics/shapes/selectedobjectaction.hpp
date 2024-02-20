@@ -30,14 +30,14 @@ using Graphics::Shape::GameObject;
 
 namespace Graphics::Shape
 {
-	class Border
+	class ActionTex
 	{
 	public:
-		static shared_ptr<GameObject> InitializeBorder(
+		static shared_ptr<GameObject> InitializeActionTex(
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1));
 
-		static void RenderBorder(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
+		static void RenderActionTex(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
 }

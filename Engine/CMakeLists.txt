@@ -77,6 +77,7 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_SHAPE_DIR}/cube.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp
+	${SRC_GRAPHICS_SHAPE_DIR}/selectedobjectaction.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/selectedobjectborder.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/spotlight.cpp
 	${SRC_PHYSICS_DIR}/selectobject.cpp

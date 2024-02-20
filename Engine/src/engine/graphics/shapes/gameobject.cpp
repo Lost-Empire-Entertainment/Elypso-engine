@@ -23,6 +23,7 @@
 #include "cube.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
+#include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "billboard.hpp"
 #include "render.hpp"
@@ -39,6 +40,7 @@ using std::dynamic_pointer_cast;
 using glm::distance;
 
 using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
 using Graphics::Render;
 
@@ -188,6 +190,9 @@ namespace Graphics::Shape
 					break;
 				case Type::border:
 					Border::RenderBorder(obj, view, projection);
+					break;
+				case Type::actionTex:
+					ActionTex::RenderActionTex(obj, view, projection);
 					break;
 				}
 			}

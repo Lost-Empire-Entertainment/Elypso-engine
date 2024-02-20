@@ -444,8 +444,9 @@ namespace EngineFile
 		for (const auto& obj : objects)
 		{
 			//ignore border gameobject
-			//and billboards
+			//billboards and actiontex
 			if (obj->GetID() != 10000000
+				&& obj->GetID() != 10000001
 				&& obj->GetMesh()->GetMeshType() != Mesh::MeshType::billboard)
 			{
 				sceneFile << "id: " << to_string(obj->GetID()) << "\n";

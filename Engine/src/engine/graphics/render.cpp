@@ -37,6 +37,7 @@
 #include "pointlight.hpp"
 #include "gameobject.hpp"
 #include "grid.hpp"
+#include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "sceneFile.hpp"
 
@@ -63,6 +64,7 @@ using Graphics::GUI::EngineGUI;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Grid;
+using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
 using EngineFile::SceneFile;
 using Core::ShutdownManager;
@@ -189,11 +191,11 @@ namespace Graphics
 
 		Grid::InitializeGrid();
 
-		shared_ptr<GameObject> border = Border::InitializeBorder(
-			vec3(1.0f, 1.0f, 1.0f),
-			vec3(0.0f, 0.0f, 0.0f),
-			vec3(1.0f, 1.0f, 1.0f));
+		shared_ptr<GameObject> border = Border::InitializeBorder();
 		GameObjectManager::SetBorder(border);
+
+		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
+		GameObjectManager::SetActionTex(actionTex);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}

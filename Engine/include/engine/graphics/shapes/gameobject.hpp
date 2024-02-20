@@ -62,10 +62,11 @@ namespace Graphics::Shape
 	public:
 		enum class MeshType
 		{
+			border,
+			actionTex,
 			cube,
 			point_light,
 			spot_light,
-			border,
 			billboard
 		};
 
@@ -275,6 +276,7 @@ namespace Graphics::Shape
 		static void AddGameObject(const shared_ptr<GameObject>& obj) { objects.push_back(obj); }
 		static void AddPointLight(const shared_ptr<GameObject>& obj) { pointLights.push_back(obj); }
 		static void AddSpotLight(const shared_ptr<GameObject>& obj) { spotLights.push_back(obj); }
+		static void SetActionTex(const shared_ptr<GameObject>& newActionTex) { actionTex = newActionTex; }
 		static void SetBorder(const shared_ptr<GameObject>& newBorder) { border = newBorder; }
 		static void AddBillboard(const shared_ptr<GameObject>& obj) { billboards.push_back(obj); }
 
@@ -289,6 +291,7 @@ namespace Graphics::Shape
 		static inline vector<shared_ptr<GameObject>> objects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
 		static inline vector<shared_ptr<GameObject>> spotLights;
+		static inline shared_ptr<GameObject> actionTex;
 		static inline shared_ptr<GameObject> border;
 		static inline vector<shared_ptr<GameObject>> billboards;
 	};
