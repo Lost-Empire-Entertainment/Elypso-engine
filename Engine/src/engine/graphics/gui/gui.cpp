@@ -183,7 +183,8 @@ namespace Graphics::GUI
 		}
 
 		RenderVersionCheckWindow();
-		if (renderConfirmWindow) ConfirmUnsavedShutdown();
+		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
+		if (renderUnsavedSceneSwitchWindow) ConfirmUnsavedSceneSwitch();
 
 		if (Input::inputSettings.printIMGUIToConsole)
 		{
@@ -552,12 +553,12 @@ namespace Graphics::GUI
 
 	void EngineGUI::ConfirmUnsavedShutdown()
 	{
-		ImGui::SetNextWindowPos(ImVec2(400, 200));
+		ImGui::SetNextWindowPos(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(500, 300));
 
 		ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoResize
-			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoDocking
 			| ImGuiWindowFlags_NoCollapse
 			| ImGuiWindowFlags_NoSavedSettings;
 
@@ -584,8 +585,8 @@ namespace Graphics::GUI
 		ImGui::SetCursorPos(button1Pos);
 		if (ImGui::Button("Save", buttonSize))
 		{
-			SceneFile::SaveCurrentScene(true);
-			renderConfirmWindow = false;
+			SceneFile::SaveCurrentScene(SceneFile::SaveType::shutDown);
+			renderUnsavedShutdownWindow = false;
 		}
 
 		ImGui::SetCursorPos(button2Pos);
@@ -606,7 +607,69 @@ namespace Graphics::GUI
 				Caller::ENGINE,
 				Type::INFO,
 				"Cancelled shutdown...\n");
-			renderConfirmWindow = false;
+			renderUnsavedShutdownWindow = false;
+		}
+
+		ImGui::End();
+	}
+
+	void EngineGUI::ConfirmUnsavedSceneSwitch()
+	{
+		ImGui::SetNextWindowPos(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(500, 300));
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoDocking
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoSavedSettings;
+
+		string title = "You have unsaved changes. Save before switching scenes?";
+		ImGui::Begin(title.c_str(), nullptr, flags);
+
+		ImVec2 windowPos = ImGui::GetWindowPos();
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
+		ImVec2 buttonSize(120, 50);
+		float buttonSpacing = 20.0f;
+
+		ImVec2 button1Pos(
+			windowSize.x * 0.3f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button2Pos(
+			windowSize.x * 0.625f - buttonSize.x,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+		ImVec2 button3Pos(
+			windowSize.x * 0.7f,
+			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+
+		ImGui::SetCursorPos(button1Pos);
+		if (ImGui::Button("Save", buttonSize))
+		{
+			SceneFile::SaveCurrentScene(SceneFile::SaveType::sceneSwitch, targetScene);
+			renderUnsavedSceneSwitchWindow = false;
+		}
+
+		ImGui::SetCursorPos(button2Pos);
+		if (ImGui::Button("Don't save", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Switched scene without saving.\n");
+			SceneFile::LoadScene(targetScene);
+			renderUnsavedSceneSwitchWindow = false;
+		}
+
+		ImGui::SetCursorPos(button3Pos);
+		if (ImGui::Button("Cancel", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Cancelled scene switch...\n");
+			renderUnsavedSceneSwitchWindow = false;
 		}
 
 		ImGui::End();

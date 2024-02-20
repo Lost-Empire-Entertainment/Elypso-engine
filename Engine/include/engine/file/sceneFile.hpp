@@ -28,6 +28,13 @@ namespace EngineFile
 	class SceneFile
 	{
 	public:
+		enum class SaveType
+		{
+			defaultSave,
+			sceneSwitch,
+			shutDown
+		};
+
 		static inline bool unsavedChanges;
 		static inline string currentProjectPath;
 		static inline string currentScenePath;
@@ -36,6 +43,6 @@ namespace EngineFile
 		static void CreateNewScene(const string& fileName);
 		static void LoadScene(const string& fileName);
 		static void LoadGameObject(const map<string, string> obj);
-		static void SaveCurrentScene(bool shutDownAfterSave = false);
+		static void SaveCurrentScene(SaveType saveType = SaveType::defaultSave, const string& targetScene = "");
 	};
 }

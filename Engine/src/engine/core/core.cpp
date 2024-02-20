@@ -100,8 +100,7 @@ namespace Core
 			Core::ConsoleManager::PrintLogsToBuffer();
 		}
 
-		while (!glfwWindowShouldClose(Render::window)
-			   && !ShutdownManager::shouldShutDown)
+		while (!glfwWindowShouldClose(Render::window))
 		{
 			TimeManager::UpdateDeltaTime();
 

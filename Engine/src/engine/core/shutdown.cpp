@@ -51,12 +51,11 @@ namespace Core
 	{
 		if (SceneFile::unsavedChanges == true)
 		{
-			EngineGUI::renderConfirmWindow = true;
+			glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+			EngineGUI::renderUnsavedShutdownWindow = true;
 		}
 		else
 		{
-			shouldShutDown = true;
-
 			ConfigFile::SaveDataAtShutdown();
 
 			ConsoleManager::WriteConsoleMessage(

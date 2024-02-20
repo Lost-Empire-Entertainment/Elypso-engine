@@ -42,7 +42,9 @@ namespace Graphics::GUI
 		static inline ImVec2 minSize;
 		static inline ImVec2 maxSize;
 
-		static inline bool renderConfirmWindow;
+		static inline bool renderUnsavedShutdownWindow;
+		static inline bool renderUnsavedSceneSwitchWindow;
+		static inline string targetScene;
 
 		void Initialize();
 
@@ -73,5 +75,7 @@ namespace Graphics::GUI
 		void RenderVersionCheckWindow();
 
 		void ConfirmUnsavedShutdown();
+
+		void ConfirmUnsavedSceneSwitch();
 	};
 }

@@ -383,7 +383,7 @@ namespace EngineFile
 		}
 	}
 
-	void SceneFile::SaveCurrentScene(bool shutDownAfterSave)
+	void SceneFile::SaveCurrentScene(SaveType saveType, const string& targetScene)
 	{
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 		if (objects.size() < 2)
@@ -572,6 +572,14 @@ namespace EngineFile
 			Type::INFO,
 			"Successfully saved scene '" + currentScenePath + "'!\n");
 
-		if (shutDownAfterSave) ShutdownManager::Shutdown();
+		switch (saveType)
+		{
+		case SaveType::sceneSwitch:
+			LoadScene(targetScene);
+			break;
+		case SaveType::shutDown:
+			ShutdownManager::Shutdown();
+			break;
+		}
 	}
 }

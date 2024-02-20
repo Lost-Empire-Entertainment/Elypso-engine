@@ -22,7 +22,6 @@ namespace Core
 	class ShutdownManager
 	{
 	public:
-		static inline bool shouldShutDown;
 		static void Shutdown();
 	};
 }

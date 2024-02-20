@@ -65,6 +65,7 @@ using Graphics::Shape::PointLight;
 using Graphics::Grid;
 using Graphics::Shape::Border;
 using EngineFile::SceneFile;
+using Core::ShutdownManager;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -150,6 +151,8 @@ namespace Graphics
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 		glfwSetScrollCallback(window, Input::ScrollCallback);
 		glfwSetKeyCallback(window, Input::KeyCallback);
+
+		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { ShutdownManager::Shutdown(); });
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::WINDOW_SETUP,
