@@ -285,7 +285,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::DEBUG,
-					"Paste is a placeholder button and does not yet have any functions.");
+					"Paste is a placeholder button and does not yet have any functions.\n");
 			}
 
 			ImGui::EndMenu();
@@ -471,7 +471,7 @@ namespace Graphics::GUI
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INPUT,
 				Type::EXCEPTION,
-				"Error: Path " + batFilePath + " does not exist!");
+				"Path " + batFilePath + " does not exist!\n\n");
 		}
 	}
 
@@ -490,7 +490,7 @@ namespace Graphics::GUI
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INPUT,
 				Type::EXCEPTION,
-				"Error: Failed to open link to Github repository issues page! " + string(e.what()) + "\n");
+				"Failed to open link to Github repository issues page! " + string(e.what()) + "\n");
 		}
 	}
 
@@ -554,7 +554,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							Caller::INPUT,
 							Type::EXCEPTION,
-							"Error: Failed to open link to Github repository releases page! " + string(e.what()) + "\n");
+							"Failed to open link to Github repository releases page! " + string(e.what()) + "\n");
 					}
 				}
 			}

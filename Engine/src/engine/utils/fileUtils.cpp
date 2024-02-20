@@ -84,7 +84,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
-                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
+                "Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
         }
         if (exists(destinationPath))
@@ -111,7 +111,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = "Error: " + string(e.what()) + ".\n\n";
+            output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
@@ -130,7 +130,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
-                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
+                "Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
         }
 
@@ -177,7 +177,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = "Error: " + string(e.what()) + ".\n\n";
+            output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
@@ -193,7 +193,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
-                "Error: " + sourcePath.string() + " does not exist!\n\n");
+                sourcePath.string() + " does not exist!\n\n");
             return;
         }
 
@@ -210,7 +210,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = "Error: " + string(e.what()) + ".\n\n";
+            output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,
@@ -255,7 +255,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = "Error: " + string(e.what()) + ".\n\n";
+            output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::ENGINE,
                 Type::EXCEPTION,

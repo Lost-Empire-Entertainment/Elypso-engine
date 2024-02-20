@@ -143,7 +143,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Error: Target file is not an openable file! Only txt files are supported.\n\n");
+						"Target file is not an openable file! Only txt files are supported.\n\n");
 					return;
 				}
 
@@ -153,7 +153,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Error: Target file is a project file and cannot be run! Please choose a valid scene file.\n\n");
+						"Target file is a project file and cannot be run! Please choose a valid scene file.\n\n");
 					return;
 				}
 
@@ -181,7 +181,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Error: Cannot rename root path!");
+						"Cannot rename root path!\n\n");
 					return;
 				}
 
@@ -195,7 +195,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Error: Cannot copy root path!");
+						"Cannot copy root path!\n\n");
 					return;
 				}
 
@@ -212,7 +212,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"Error: Path is not a folder!");
+							"Path is not a folder!\n\n");
 						return;
 					}
 				}
@@ -225,7 +225,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"Error: There is nothing to paste!");
+							"There is nothing to paste!\n\n");
 						return;
 					}
 				}
@@ -243,7 +243,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Error: Cannot delete root path!");
+						"Cannot delete root path!\n\n");
 					return;
 				}
 
@@ -253,7 +253,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Error: Cannot delete opened scene file!");
+						"Cannot delete opened scene file!\n\n");
 					return;
 				}
 				path currentSceneParentPath = currentScenePath.parent_path();
@@ -262,7 +262,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Error: Cannot delete opened scene folder!");
+						"Cannot delete opened scene folder!\n\n");
 					return;
 				}
 

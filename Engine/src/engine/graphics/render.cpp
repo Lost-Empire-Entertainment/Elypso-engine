@@ -126,7 +126,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::GLFW,
 				Type::EXCEPTION,
-				"Error: Failed to create GLFW window!\n\n");
+				"Failed to create GLFW window!\n\n");
 			return;
 		}
 
@@ -172,7 +172,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::GLAD,
 				Type::EXCEPTION,
-				"Error: Failed to initialize GLAD!\n\n");
+				"Failed to initialize GLAD!\n\n");
 			return;
 		}
 

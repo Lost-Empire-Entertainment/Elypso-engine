@@ -187,7 +187,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Error: Failed to open scene file '" + filePath + "'!\n\n");
+				"Failed to open scene file '" + filePath + "'!\n\n");
 			return;
 		}
 
