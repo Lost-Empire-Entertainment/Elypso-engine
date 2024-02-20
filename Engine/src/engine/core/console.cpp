@@ -181,7 +181,10 @@ namespace Core
             break;
         }
 
-        if (internalMessage)
+        if (internalMessage
+            && (sendDebugMessages
+            || (!sendDebugMessages
+            && type != Type::DEBUG)))
         {
             if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
             else ConsoleManager::AddLog(internalMsg);
