@@ -53,6 +53,8 @@ using std::to_string;
 using std::exception;
 using std::filesystem::path;
 using std::filesystem::exists;
+using std::filesystem::directory_iterator;
+using std::filesystem::create_directory;
 using glm::clamp;
 using glm::vec3;
 
@@ -207,27 +209,37 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Save"))
-			{
-				SceneFile::SaveCurrentScene();
-			}
+			if (ImGui::MenuItem("Save")) SceneFile::SaveCurrentScene();
 
 			if (ImGui::MenuItem("New Scene"))
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"New Project is a placeholder button and does not yet have any functions.\n");
+				int highestFolderNumber = 1;
+				for (const auto& entry : directory_iterator(Engine::filesPath))
+				{
+					path entryPath = entry.path();
+					if (is_directory(entryPath))
+					{
+						string folderName = entryPath.stem().string();
+
+						if (folderName.find("Scene") != string::npos)
+						{
+							size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
+							string result = folderName.substr(pos + 1);
+							if (result != ""
+								&& String::CanConvertStringToInt(result))
+							{
+								int number = stoi(result);
+								if (number == highestFolderNumber) highestFolderNumber = ++number;
+							}
+						}
+					}
+				}
+				string newFolderPath = Engine::filesPath + "/Scene" + to_string(highestFolderNumber);
+				create_directory(newFolderPath);
+				SceneFile::CreateNewScene(newFolderPath + "/scene.txt");
 			}
 
-			if (ImGui::MenuItem("Exit"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"User closed engine exit button.\n");
-				ShutdownManager::ShutdownManager::Shutdown();
-			}
+			if (ImGui::MenuItem("Exit")) ShutdownManager::ShutdownManager::Shutdown();
 
 			ImGui::EndMenu();
 		}

@@ -300,7 +300,7 @@ void GUI::NewProject()
 		}
 	}
 
-	string scenePath = filePath + "/scene1.txt";
+	string scenePath = filePath + "/scene.txt";
 	ofstream scene(scenePath);
 	if (!scene.is_open())
 	{
@@ -314,7 +314,7 @@ void GUI::NewProject()
 	string sceneDirectory = filePath + "/Scene1";
 	create_directory(sceneDirectory);
 
-	rename(scenePath, sceneDirectory + "/scene1.txt");
+	rename(scenePath, sceneDirectory + "/scene.txt");
 
 	string projectFilePath = filePath + "/project.txt";
 	ofstream project(projectFilePath);
@@ -326,7 +326,7 @@ void GUI::NewProject()
 	}
 
 	string engineParentPath = Core::enginePath.parent_path().string();
-	project << "scene: " << engineParentPath + "/files/Scene1/scene1.txt\n";
+	project << "scene: " << engineParentPath + "/files/Scene1/scene.txt\n";
 	project << "project: " << filePath << "\n";
 	project.close();
 
