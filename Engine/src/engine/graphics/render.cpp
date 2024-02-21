@@ -185,9 +185,14 @@ namespace Graphics
 	}
 	void Render::ContentSetup()
 	{
+		//enable depth testing
 		glEnable(GL_DEPTH_TEST);
+		//enable blending
 		glEnable(GL_BLEND);
+		//set blending function
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//set depth function (optional, but typically set during initialization)
+		glDepthFunc(GL_LEQUAL);
 
 		Grid::InitializeGrid();
 

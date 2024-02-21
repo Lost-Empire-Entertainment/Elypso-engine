@@ -54,7 +54,7 @@ namespace Core
             bool cameraModeSwitched = false;
 
             string axis = "X";
-            string objectAction = "none";
+            string objectAction = "move";
 
             bool printFPSToConsole = false;
             bool printIMGUIToConsole = false;

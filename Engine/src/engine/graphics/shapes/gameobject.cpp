@@ -166,7 +166,8 @@ namespace Graphics::Shape
 			for (const auto& obj : objects)
 			{
 				Type type = obj->GetMesh()->GetMeshType();
-				if (type == Type::billboard)
+				if (type == Type::billboard
+					|| type == Type::actionTex)
 				{
 					transparentObjects.push_back(obj);
 				}
@@ -191,9 +192,6 @@ namespace Graphics::Shape
 				case Type::border:
 					Border::RenderBorder(obj, view, projection);
 					break;
-				case Type::actionTex:
-					ActionTex::RenderActionTex(obj, view, projection);
-					break;
 				}
 			}
 
@@ -214,6 +212,9 @@ namespace Graphics::Shape
 				{
 				case Type::billboard:
 					Billboard::RenderBillboard(obj, view, projection);
+					break;
+				case Type::actionTex:
+					ActionTex::RenderActionTex(obj, view, projection);
 					break;
 				}
 			}

@@ -363,6 +363,12 @@ namespace Core
             }
             else
             {
+                if (objects[index] != Select::selectedObj
+                    || Select::selectedObj == nullptr)
+                {
+                    inputSettings.objectAction = "move";
+                }
+
                 Select::selectedObj = objects[index];
                 Select::isObjectSelected = true;
                 if (inputSettings.printSelectRayDirectionToConsole)
@@ -374,8 +380,6 @@ namespace Core
                         output);
                 }
             }
-
-            inputSettings.objectAction = "none";
         }
     }
 
