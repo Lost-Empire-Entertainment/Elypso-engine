@@ -123,6 +123,7 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.diffuse", 0);
 
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddTransparentObject(obj);
 		GameObjectManager::AddBillboard(obj);
 
 		return obj;
@@ -136,7 +137,7 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		shader.SetFloat("transparency", 0.5f);
+		shader.SetFloat("transparency", 1.0f);
 		shader.SetVec3("color", vec3(1));
 
 		mat4 model = mat4(1.0f);

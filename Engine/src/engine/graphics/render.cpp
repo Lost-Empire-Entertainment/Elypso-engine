@@ -192,15 +192,17 @@ namespace Graphics
 		//set blending function
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//set depth function (optional, but typically set during initialization)
-		glDepthFunc(GL_LEQUAL);
+		//glDepthFunc(GL_LEQUAL);
 
 		Grid::InitializeGrid();
 
 		shared_ptr<GameObject> border = Border::InitializeBorder();
 		GameObjectManager::SetBorder(border);
+		GameObjectManager::AddOpaqueObject(border);
 
 		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
 		GameObjectManager::SetActionTex(actionTex);
+		GameObjectManager::AddTransparentObject(actionTex);
 
 		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
 	}

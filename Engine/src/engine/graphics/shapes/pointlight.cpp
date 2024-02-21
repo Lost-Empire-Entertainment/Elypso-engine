@@ -161,6 +161,7 @@ namespace Graphics::Shape
 		obj->SetChildBillboard(billboard);
 
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddPointLight(obj);
 
 		return obj;

@@ -39,9 +39,5 @@ namespace Graphics::Shape
 			const vec3& scale = vec3(1));
 
 		static void RenderActionTex(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
-	private:
-		static inline vec3 x = vec3(90.0f, 0.0f, 0.0f);
-		static inline vec3 y = vec3(0.0f, 90.0f, 0.0f);
-		static inline vec3 z = vec3(0.0f, 0.0f, 90.0f);
 	};
 }

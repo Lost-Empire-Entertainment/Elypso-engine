@@ -158,23 +158,9 @@ namespace Graphics::Shape
 
 	void GameObjectManager::RenderAll(const mat4& view, const mat4& projection)
 	{
-		if (objects.size() > 0)
+		//opaque objects are rendered first
+		if (opaqueObjects.size() > 0)
 		{
-			vector<shared_ptr<GameObject>> opaqueObjects;
-			vector<shared_ptr<GameObject>> transparentObjects;
-
-			for (const auto& obj : objects)
-			{
-				Type type = obj->GetMesh()->GetMeshType();
-				if (type == Type::billboard
-					|| type == Type::actionTex)
-				{
-					transparentObjects.push_back(obj);
-				}
-				else opaqueObjects.push_back(obj);
-			}
-
-			//render opaque objects first
 			for (const auto& obj : opaqueObjects)
 			{
 				Type type = obj->GetMesh()->GetMeshType();
@@ -189,22 +175,35 @@ namespace Graphics::Shape
 				case Type::spot_light:
 					SpotLight::RenderSpotLight(obj, view, projection);
 					break;
-				case Type::border:
-					Border::RenderBorder(obj, view, projection);
-					break;
 				}
 			}
 
-			//sort transparent objects by distance from camera
+			Border::RenderBorder(border, view, projection);
+		}
+
+		//transparent objects are rendered last
+		if (transparentObjects.size() > 0)
+		{
 			sort(transparentObjects.begin(), transparentObjects.end(),
 				[&view](const auto& a, const auto& b)
 				{
-					float distanceA = distance(a->GetTransform()->GetPosition(), vec3(view[3]));
-					float distanceB = distance(b->GetTransform()->GetPosition(), vec3(view[3]));
+					//calculate the distance along the viewing direction vector from the camera
+					vec3 cameraPosition = vec3(view[3]);
+					vec3 objectPositionA = a->GetTransform()->GetPosition();
+					vec3 objectPositionB = b->GetTransform()->GetPosition();
+
+					//project object positions onto the viewing direction vector
+					float distanceA = dot(objectPositionA - cameraPosition, vec3(view[2]));
+					float distanceB = dot(objectPositionB - cameraPosition, vec3(view[2]));
+
+					//sort based on the projected distances
 					return distanceA > distanceB; //render from back to front
 				});
 
-			//render transparent objects
+			glDisable(GL_DEPTH_TEST);
+
+			ActionTex::RenderActionTex(actionTex, view, projection);
+
 			for (const auto& obj : transparentObjects)
 			{
 				Type type = obj->GetMesh()->GetMeshType();
@@ -213,11 +212,10 @@ namespace Graphics::Shape
 				case Type::billboard:
 					Billboard::RenderBillboard(obj, view, projection);
 					break;
-				case Type::actionTex:
-					ActionTex::RenderActionTex(obj, view, projection);
-					break;
 				}
 			}
+
+			glEnable(GL_DEPTH_TEST);
 		}
 	}
 
@@ -228,22 +226,26 @@ namespace Graphics::Shape
 		{
 		case Type::cube:
 			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;
 		case Type::point_light:
 			DestroyGameObject(obj->GetChildBillboard());
 			obj->SetChildBillboard(nullptr);
 			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			pointLights.erase(remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
 			break;
 		case Type::spot_light:
 			DestroyGameObject(obj->GetChildBillboard());
 			obj->SetChildBillboard(nullptr);
 			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			spotLights.erase(remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
 			break;
 		case Type::billboard:
 			obj->SetParentBillboardHolder(nullptr);
 			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			transparentObjects.erase(remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
 			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
 		}

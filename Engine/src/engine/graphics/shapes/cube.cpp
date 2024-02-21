@@ -163,6 +163,7 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.specular", 1);
 
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddOpaqueObject(obj);
 
 		return obj;
 	}

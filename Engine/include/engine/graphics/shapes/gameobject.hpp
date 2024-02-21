@@ -274,6 +274,8 @@ namespace Graphics::Shape
 			const mat4& projection);
 
 		static void AddGameObject(const shared_ptr<GameObject>& obj) { objects.push_back(obj); }
+		static void AddOpaqueObject(const shared_ptr<GameObject>& obj) { opaqueObjects.push_back(obj); }
+		static void AddTransparentObject(const shared_ptr<GameObject>& obj) { transparentObjects.push_back(obj); }
 		static void AddPointLight(const shared_ptr<GameObject>& obj) { pointLights.push_back(obj); }
 		static void AddSpotLight(const shared_ptr<GameObject>& obj) { spotLights.push_back(obj); }
 		static void SetActionTex(const shared_ptr<GameObject>& newActionTex) { actionTex = newActionTex; }
@@ -290,6 +292,8 @@ namespace Graphics::Shape
 		static vector<shared_ptr<GameObject>> GetBillboards() { return billboards; }
 	private:
 		static inline vector<shared_ptr<GameObject>> objects;
+		static inline vector<shared_ptr<GameObject>> opaqueObjects;
+		static inline vector<shared_ptr<GameObject>> transparentObjects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
 		static inline vector<shared_ptr<GameObject>> spotLights;
 		static inline shared_ptr<GameObject> actionTex;

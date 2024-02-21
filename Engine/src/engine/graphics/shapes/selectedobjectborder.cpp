@@ -139,10 +139,9 @@ namespace Graphics::Shape
 		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
-		if (Select::isObjectSelected
-			&& Select::selectedObj->GetMesh()->GetMeshType() == Type::cube)
+		if (Select::isObjectSelected)
 		{
-			shader.SetFloat("transparency", 1.0f);
+			shader.SetFloat("transparency", 0.5f);
 
 			model = translate(model, Select::selectedObj->GetTransform()->GetPosition());
 			quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
