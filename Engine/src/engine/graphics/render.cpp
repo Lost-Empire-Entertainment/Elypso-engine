@@ -150,7 +150,6 @@ namespace Graphics
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 		glfwSetScrollCallback(window, Input::ScrollCallback);
-		glfwSetCursorPosCallback(window, Input::CursorPosCallback);
 		glfwSetKeyCallback(window, Input::KeyCallback);
 
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { ShutdownManager::Shutdown(); });

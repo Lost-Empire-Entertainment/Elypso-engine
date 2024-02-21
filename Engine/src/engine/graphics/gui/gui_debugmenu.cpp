@@ -168,6 +168,20 @@ namespace Graphics::GUI
 		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
 
 		//
+		// GAMEOBJECT INTERACTION MOVE SENSITIVITY
+		//
+
+		ImGui::Separator();
+
+		ImGui::Text("Interaction move sensitivity");
+		ImGui::DragFloat("##intMoveSpeed", &Input::objectSensitivity, 0.01f, 0.0f, 1.0f);
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##intMoveSpeed"))
+		{
+			Input::objectSensitivity = 0.1f;
+		}
+
+		//
 		// CAMERA CLIP RANGE
 		//
 
@@ -188,7 +202,7 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		ImGui::Text("Move speed multiplier");
+		ImGui::Text("Camera move speed multiplier");
 		ImGui::DragFloat("##camMoveSpeed", &Input::moveSpeedMultiplier, 0.1f, 0.0f, 100.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##camMoveSpeed"))

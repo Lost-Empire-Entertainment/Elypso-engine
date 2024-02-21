@@ -79,6 +79,7 @@ namespace EngineFile
 		Input::farClip = 100.0f;
 		vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
 		Render::camera.SetCameraPosition(newPosition);
+		Input::objectSensitivity = 0.1f;
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
 		GUIConsole::allowScrollToBottom = true;
 		ConsoleManager::sendDebugMessages = false;
@@ -333,6 +334,27 @@ namespace EngineFile
 							"Camera far clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 					}
 				}
+				else if (name == "objectSensitivity")
+				{
+					if (ConfigFile::IsValueInRange(name, lineVariables[0]))
+					{
+						Input::objectSensitivity = stof(lineVariables[0]);
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set object sensitivity to " + to_string(Input::objectSensitivity) + ".\n");
+					}
+					else
+					{
+						Input::objectSensitivity = 0.1f;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Object sensitivity value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
+					}
+				}
 				else if (name == "camPos")
 				{
 					if (ConfigFile::IsValueInRange(name + "X", lineVariables[0])
@@ -540,6 +562,7 @@ namespace EngineFile
 		configFile << "fov: " << Input::fov << endl;
 		configFile << "camNearClip: " << Input::nearClip << endl;
 		configFile << "camFarClip: " << Input::farClip << endl;
+		configFile << "objectSensitivity: " << Input::objectSensitivity << endl;
 		configFile << "camPos: " <<
 			Render::camera.GetCameraPosition().x << ", " <<
 			Render::camera.GetCameraPosition().y << ", " <<
@@ -614,6 +637,13 @@ namespace EngineFile
 				&& camfarclip >= 0.1f
 				&& camfarclip <= 10000.0f);
 		}
+		else if (type == "objectSensitivity")
+		{
+			float objectSens = stof(value);
+			return (String::CanConvertStringToFloat(value)
+				&& objectSens >= 0.0f
+				&& objectSens <= 5.0f);
+		}
 		else if (type == "camPosX"
 			|| type == "camPosY"
 			|| type == "camPosZ")
@@ -637,35 +667,35 @@ namespace EngineFile
 			int consoleForceScroll = stoi(value);
 			return (String::CanConvertStringToInt(value)
 				&& (consoleForceScroll == 0
-					|| consoleForceScroll == 1));
+				|| consoleForceScroll == 1));
 		}
 		else if (type == "showDebugMenu")
 		{
 			int showDebugMenu = stoi(value);
 			return (String::CanConvertStringToInt(value)
 				&& (showDebugMenu == 0
-					|| showDebugMenu == 1));
+				|| showDebugMenu == 1));
 		}
 		else if (type == "showConsole")
 		{
 			int showConsole = stoi(value);
 			return (String::CanConvertStringToInt(value)
 				&& (showConsole == 0
-					|| showConsole == 1));
+				|| showConsole == 1));
 		}
 		else if (type == "showSceneMenu")
 		{
 			int showSceneMenu = stoi(value);
 			return (String::CanConvertStringToInt(value)
 				&& (showSceneMenu == 0
-					|| showSceneMenu == 1));
+				|| showSceneMenu == 1));
 		}
 		else if (type == "showProjectHierarchyWindow")
 		{
 			int showProjectHierarchyWindow = stoi(value);
 			return (String::CanConvertStringToInt(value)
 				&& (showProjectHierarchyWindow == 0
-					|| showProjectHierarchyWindow == 1));
+				|| showProjectHierarchyWindow == 1));
 		}
 		else
 		{

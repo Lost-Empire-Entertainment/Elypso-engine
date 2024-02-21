@@ -53,6 +53,10 @@ namespace Core
         static inline bool leftMouseHeld;
         static inline double lastMouseX;
         static inline double lastMouseY;
+        static inline float objectSensitivity = 0.1f;
+        static inline vec3 newObjectPosition;
+        static inline vec3 newObjectRotation;
+        static inline vec3 newObjectScale;
 
         static inline string axis = "X";
         static inline string objectAction = "move";
@@ -87,7 +91,6 @@ namespace Core
         }
 
         static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
-        static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     private:

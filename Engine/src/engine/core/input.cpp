@@ -17,6 +17,8 @@
 
 //external
 #include "glad.h"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -41,6 +43,8 @@ using std::cout;
 using std::endl;
 using glm::radians;
 using glm::lookAt;
+using glm::quat;
+using glm::rotate;
 using std::ostringstream;
 using std::fixed;
 using std::setprecision;
@@ -169,6 +173,80 @@ namespace Core
                     Render::camera.cameraPos -= Render::camera.cameraUp * cameraSpeed * currentSpeed);
             }
         }
+        else
+        {
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+            {
+                leftMouseHeld = true;
+            }
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE
+                && leftMouseHeld)
+            {
+                leftMouseHeld = false;
+            }
+
+            if (leftMouseHeld
+                && Select::selectedObj != nullptr)
+            {
+                double xpos;
+                double ypos;
+                glfwGetCursorPos(window, &xpos, &ypos);
+
+                double dx = xpos - lastMouseX;
+                double dy = ypos - lastMouseY;
+
+                double distance = sqrt(dx * dx + dy * dy);
+                if (distance > 0.0)
+                {
+                    dx /= distance;
+                    dy /= distance;
+                }
+
+                vec3 mouseMovement = vec3(dx, dy, 0.0f);
+
+                quat cameraQuat = quat(Render::camera.GetCameraRotation());
+                vec3 rotatedMouseMovement = rotate(cameraQuat, mouseMovement);
+
+                vec3 scaledMouseMovement = vec3(
+                    rotatedMouseMovement.x * objectSensitivity,
+                    rotatedMouseMovement.y * -objectSensitivity,
+                    rotatedMouseMovement.z * -objectSensitivity);
+
+                if (objectAction == "move")
+                {
+                    newObjectPosition = Select::selectedObj->GetTransform()->GetPosition();
+
+                    if (axis == "X") newObjectPosition.x += scaledMouseMovement.x;
+                    else if (axis == "Y") newObjectPosition.y += scaledMouseMovement.y;
+                    else if (axis == "Z") newObjectPosition.z += scaledMouseMovement.z;
+
+                    Select::selectedObj->GetTransform()->SetPosition(newObjectPosition);
+                }
+                else if (objectAction == "rotate")
+                {
+                    newObjectRotation = Select::selectedObj->GetTransform()->GetRotation();
+
+                    if (axis == "X") newObjectRotation.x += scaledMouseMovement.x * 20;
+                    else if (axis == "Y") newObjectRotation.y += scaledMouseMovement.y * 20;
+                    else if (axis == "Z") newObjectRotation.z += scaledMouseMovement.z * 20;
+
+                    Select::selectedObj->GetTransform()->SetRotation(newObjectRotation);
+                }
+                else if (objectAction == "scale")
+                {
+                    newObjectScale = Select::selectedObj->GetTransform()->GetScale();
+
+                    if (axis == "X") newObjectScale.x += scaledMouseMovement.x;
+                    else if (axis == "Y") newObjectScale.y += scaledMouseMovement.y;
+                    else if (axis == "Z") newObjectScale.z += scaledMouseMovement.z;
+
+                    Select::selectedObj->GetTransform()->SetScale(newObjectScale);
+                }
+
+                lastMouseX = xpos;
+                lastMouseY = ypos;
+            }
+        }
     }
 
     void Input::ProcessMouseMovement(double xpos, double ypos) 
@@ -217,11 +295,6 @@ namespace Core
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
     {}
-
-    void Input::CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
-    {
-        
-    }
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
@@ -380,19 +453,6 @@ namespace Core
                         Type::DEBUG,
                         output);
                 }
-            }
-        }
-
-        if (button == GLFW_MOUSE_BUTTON_LEFT)
-        {
-            if (action == GLFW_PRESS)
-            {
-                leftMouseHeld = true;
-                glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
-            }
-            else if (action == GLFW_RELEASE)
-            {
-                leftMouseHeld = false;
             }
         }
     }
