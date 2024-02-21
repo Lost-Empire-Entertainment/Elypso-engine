@@ -86,8 +86,6 @@ namespace Graphics
 
 		EngineGUI::GetInstance().Initialize();
 
-		Input::InputSetup();
-
 		TimeManager::InitializeDeltaTime();
 	}
 
@@ -152,6 +150,7 @@ namespace Graphics
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 		glfwSetScrollCallback(window, Input::ScrollCallback);
+		glfwSetCursorPosCallback(window, Input::CursorPosCallback);
 		glfwSetKeyCallback(window, Input::KeyCallback);
 
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { ShutdownManager::Shutdown(); });
@@ -210,7 +209,7 @@ namespace Graphics
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
 		//Calculate the new aspect ratio
-		Input::inputSettings.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+		Input::aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
 		//Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
@@ -240,10 +239,10 @@ namespace Graphics
 
 		//calculate the new projection matrix
 		projection = perspective(
-			radians(Input::inputSettings.fov),
-			Input::inputSettings.aspectRatio,
-			Input::inputSettings.nearClip,
-			Input::inputSettings.farClip);
+			radians(Input::fov),
+			Input::aspectRatio,
+			Input::nearClip,
+			Input::farClip);
 
 		//update the camera
 		view = camera.GetViewMatrix();

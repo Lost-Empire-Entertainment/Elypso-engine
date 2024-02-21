@@ -98,9 +98,9 @@ namespace Graphics::GUI
 			Render::camera.GetCameraRotation().x,
 			Render::camera.GetCameraRotation().y,
 			Render::camera.GetCameraRotation().z);
-		ImGui::Text("FOV: %.0f", Input::inputSettings.fov);
-		ImGui::Text("Current axis: %s", Input::inputSettings.axis.c_str());
-		ImGui::Text("Current tool: %s", Input::inputSettings.objectAction.c_str());
+		ImGui::Text("FOV: %.0f", Input::fov);
+		ImGui::Text("Current axis: %s", Input::axis.c_str());
+		ImGui::Text("Current tool: %s", Input::objectAction.c_str());
 
 		ImGui::Separator();
 
@@ -140,22 +140,22 @@ namespace Graphics::GUI
 		ImGui::Text("Enable FPS messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##fpsmsg", &Input::inputSettings.printFPSToConsole);
+		ImGui::Checkbox("##fpsmsg", &Input::printFPSToConsole);
 
 		ImGui::Text("Enable ImGui messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##imguimsg", &Input::inputSettings.printIMGUIToConsole);
+		ImGui::Checkbox("##imguimsg", &Input::printIMGUIToConsole);
 
 		ImGui::Text("Enable input messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##inputmsg", &Input::inputSettings.printInputToConsole);
+		ImGui::Checkbox("##inputmsg", &Input::printInputToConsole);
 
 		ImGui::Text("Enable select ray direction messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##raymsg", &Input::inputSettings.printSelectRayDirectionToConsole);
+		ImGui::Checkbox("##raymsg", &Input::printSelectRayDirectionToConsole);
 
 		ImGui::Text("Enable console scroll to bottom");
 		ImGui::SameLine();
@@ -177,10 +177,10 @@ namespace Graphics::GUI
 		ImGui::Text("");
 
 		ImGui::Text("Near clip");
-		ImGui::DragFloat("##camNearClip", &Input::inputSettings.nearClip, 0.1f, 0.001f, Input::inputSettings.farClip - 0.001f);
+		ImGui::DragFloat("##camNearClip", &Input::nearClip, 0.1f, 0.001f, Input::farClip - 0.001f);
 
 		ImGui::Text("Far clip");
-		ImGui::DragFloat("##camFarClip", &Input::inputSettings.farClip, 0.1f, Input::inputSettings.nearClip + 0.001f, 10000);
+		ImGui::DragFloat("##camFarClip", &Input::farClip, 0.1f, Input::nearClip + 0.001f, 10000);
 
 		//
 		// MOVE SPEED MULTIPLIER
@@ -189,11 +189,11 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Move speed multiplier");
-		ImGui::DragFloat("##camMoveSpeed", &Input::inputSettings.moveSpeedMultiplier, 0.1f, 0.0f, 100.0f);
+		ImGui::DragFloat("##camMoveSpeed", &Input::moveSpeedMultiplier, 0.1f, 0.0f, 100.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##camMoveSpeed"))
 		{
-			Input::inputSettings.moveSpeedMultiplier = 1.0f;
+			Input::moveSpeedMultiplier = 1.0f;
 		}
 
 		//
@@ -203,11 +203,11 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("FOV");
-		ImGui::DragFloat("##fov", &Input::inputSettings.fov, 0.1f, 70.0f, 110.0f);
+		ImGui::DragFloat("##fov", &Input::fov, 0.1f, 70.0f, 110.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##fov"))
 		{
-			Input::inputSettings.fov = 90.0f;
+			Input::fov = 90.0f;
 		}
 
 		//

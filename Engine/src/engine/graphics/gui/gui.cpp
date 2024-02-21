@@ -188,7 +188,7 @@ namespace Graphics::GUI
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
 		if (renderUnsavedSceneSwitchWindow) ConfirmUnsavedSceneSwitch();
 
-		if (Input::inputSettings.printIMGUIToConsole)
+		if (Input::printIMGUIToConsole)
 		{
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{

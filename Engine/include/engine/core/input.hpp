@@ -39,34 +39,32 @@ namespace Core
     class Input
     {
     public:
-        struct InputSettings
-        {
-            float cameraSpeed = 2.5f;
-            vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
-            vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
-            vec3 lastKnownRotation = vec3(0);
-            float moveSpeedMultiplier = 1.0f;
-            float nearClip = 0.01f;
-            float farClip = 100.0f;
-            float fov = 90.0f;
-            float aspectRatio = 0.0f;
-            bool cameraEnabled = false;
-            bool cameraModeSwitched = false;
+        static inline float cameraSpeed = 2.5f;
 
-            string axis = "X";
-            string objectAction = "move";
+        static inline vec3 lastKnownRotation = vec3(0);
+        static inline float moveSpeedMultiplier = 1.0f;
+        static inline float nearClip = 0.01f;
+        static inline float farClip = 100.0f;
+        static inline float fov = 90.0f;
+        static inline float aspectRatio = 0.0f;
+        static inline bool cameraEnabled;
+        static inline bool cameraModeSwitched;
 
-            bool printFPSToConsole = false;
-            bool printIMGUIToConsole = false;
-            bool printInputToConsole = false;
-            bool printSelectRayDirectionToConsole = false;
-        };
-        static inline InputSettings inputSettings;
+        static inline bool leftMouseHeld;
+        static inline double lastMouseX;
+        static inline double lastMouseY;
+
+        static inline string axis = "X";
+        static inline string objectAction = "move";
+
+        static inline bool printFPSToConsole;
+        static inline bool printIMGUIToConsole;
+        static inline bool printInputToConsole;
+        static inline bool printSelectRayDirectionToConsole;
 
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;
 
-        static void InputSetup();
         static void ProcessInput(GLFWwindow* window);
 
         vec3 GetCameraPosition() const { return cameraPos; }
@@ -89,6 +87,7 @@ namespace Core
         }
 
         static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+        static void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
     private:
@@ -103,8 +102,8 @@ namespace Core
         static inline bool printCheck;
 
         vec3 cameraPos;
-        vec3 cameraFront;
-        vec3 cameraUp;
+        vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
+        vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
         void ProcessMouseMovement(double xpos, double ypos);
         static void ProcessKeyboardInput(GLFWwindow* window);

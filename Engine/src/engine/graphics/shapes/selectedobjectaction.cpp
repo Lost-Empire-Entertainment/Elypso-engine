@@ -132,48 +132,48 @@ namespace Graphics::Shape
 		{
 			shader.SetFloat("transparency", 1.0f);
 
-			if (Input::inputSettings.axis == "X")
+			if (Input::axis == "X")
 			{
-				if (Input::inputSettings.objectAction == "move"
-					|| Input::inputSettings.objectAction == "scale")
+				if (Input::objectAction == "move"
+					|| Input::objectAction == "scale")
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 0.0f)));
 					model *= mat4_cast(newRot);
 				}
-				else if (Input::inputSettings.objectAction == "rotate")
+				else if (Input::objectAction == "rotate")
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 			}
-			else if (Input::inputSettings.axis == "Y")
+			else if (Input::axis == "Y")
 			{
-				if (Input::inputSettings.objectAction == "move"
-					|| Input::inputSettings.objectAction == "scale")
+				if (Input::objectAction == "move"
+					|| Input::objectAction == "scale")
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
-				else if (Input::inputSettings.objectAction == "rotate")
+				else if (Input::objectAction == "rotate")
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 			}
-			else if (Input::inputSettings.axis == "Z")
+			else if (Input::axis == "Z")
 			{
-				if (Input::inputSettings.objectAction == "move"
-					|| Input::inputSettings.objectAction == "scale")
+				if (Input::objectAction == "move"
+					|| Input::objectAction == "scale")
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
-				else if (Input::inputSettings.objectAction == "rotate")
+				else if (Input::objectAction == "rotate")
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
@@ -195,12 +195,12 @@ namespace Graphics::Shape
 
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
-		if (Input::inputSettings.objectAction == "move"
-			|| Input::inputSettings.objectAction == "scale")
+		if (Input::objectAction == "move"
+			|| Input::objectAction == "scale")
 		{
 			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(0));
 		}
-		else if (Input::inputSettings.objectAction == "rotate")
+		else if (Input::objectAction == "rotate")
 		{
 			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(1));
 		}

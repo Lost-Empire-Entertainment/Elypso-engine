@@ -57,12 +57,6 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
-    void Input::InputSetup()
-    {
-        ImGuiIO& io = ImGui::GetIO();
-        inputSettings.moveSpeedMultiplier = 1.0f;
-    }
-
     Input::Input(GLFWwindow* window, float sensitivity) : 
         window(window), 
         yaw(-90.0f), 
@@ -78,13 +72,13 @@ namespace Core
 	{
         Input::ProcessKeyboardInput(Render::window);
 
-        if (inputSettings.cameraEnabled)
+        if (cameraEnabled)
         {
             glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
             {
                 Render::camera.ProcessMouseMovement(xpos, ypos);
             });
-            inputSettings.cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
+            cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
@@ -98,7 +92,7 @@ namespace Core
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
-        if (inputSettings.printInputToConsole)
+        if (printInputToConsole)
         {
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS 
                 && !printCheck)
@@ -128,12 +122,12 @@ namespace Core
 
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
-        if (inputSettings.cameraEnabled)
+        if (cameraEnabled)
         {
             bool isLeftShiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-            float currentSpeed = inputSettings.cameraSpeed;
-            if (isLeftShiftPressed) currentSpeed = 2.0f * inputSettings.moveSpeedMultiplier;
-            else                    currentSpeed = 1.0f * inputSettings.moveSpeedMultiplier;
+            float currentSpeed = cameraSpeed;
+            if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;
+            else                    currentSpeed = 1.0f * moveSpeedMultiplier;
 
             vec3 front = Render::camera.GetFront();
             vec3 right = Render::camera.GetRight();
@@ -142,52 +136,52 @@ namespace Core
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
-                    Render::camera.cameraPos += inputSettings.cameraSpeed * currentSpeed * front);
+                    Render::camera.cameraPos += cameraSpeed * currentSpeed * front);
             }
             //camera backwards
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
-                    Render::camera.cameraPos -= inputSettings.cameraSpeed * currentSpeed * front);
+                    Render::camera.cameraPos -= cameraSpeed * currentSpeed * front);
             }
             //camera left
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
-                    Render::camera.cameraPos -= inputSettings.cameraSpeed * currentSpeed * right);
+                    Render::camera.cameraPos -= cameraSpeed * currentSpeed * right);
             }
             //camera right
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
-                    Render::camera.cameraPos += inputSettings.cameraSpeed * currentSpeed * right);
+                    Render::camera.cameraPos += cameraSpeed * currentSpeed * right);
             }
             //camera up
             if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
-                    Render::camera.cameraPos += inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
+                    Render::camera.cameraPos += Render::camera.cameraUp * cameraSpeed * currentSpeed);
             }
             //camera down
             if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
-                    Render::camera.cameraPos -= inputSettings.cameraUp * inputSettings.cameraSpeed * currentSpeed);
+                    Render::camera.cameraPos -= Render::camera.cameraUp * cameraSpeed * currentSpeed);
             }
         }
     }
 
     void Input::ProcessMouseMovement(double xpos, double ypos) 
     {
-        if (inputSettings.cameraEnabled)
+        if (cameraEnabled)
         {
             if (firstMouse 
-                || inputSettings.cameraModeSwitched)
+                || cameraModeSwitched)
             {
                 firstMouse = false;
-                inputSettings.cameraModeSwitched = false;
+                cameraModeSwitched = false;
 
-                SetCameraRotation(inputSettings.lastKnownRotation);
+                SetCameraRotation(lastKnownRotation);
 
                 lastX = xpos;
                 lastY = ypos;
@@ -224,6 +218,11 @@ namespace Core
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
     {}
 
+    void Input::CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+    {
+        
+    }
+
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
         //toggle camera input on and off
@@ -231,80 +230,82 @@ namespace Core
             && action == GLFW_PRESS
             && !ImGui::GetIO().WantCaptureMouse)
         {
-            inputSettings.cameraEnabled = !inputSettings.cameraEnabled;
-            inputSettings.cameraModeSwitched = true;
+            cameraEnabled = !cameraEnabled;
+            cameraModeSwitched = true;
 
-            if (!inputSettings.cameraEnabled)
+            if (!cameraEnabled)
             {
-                inputSettings.lastKnownRotation = Render::camera.GetCameraRotation();
+                lastKnownRotation = Render::camera.GetCameraRotation();
             }
         }
 
-        //delete selected gameobject
-        if (key == GLFW_KEY_DELETE
-            && action == GLFW_PRESS)
+        if (!cameraEnabled)
         {
-            Select::isObjectSelected = false;
-            shared_ptr<GameObject> selectedObj = Select::selectedObj;
-            Select::selectedObj = nullptr;
-            GameObjectManager::DestroyGameObject(selectedObj);
-
-            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-        }
-
-        //save current scene
-        if (key == GLFW_KEY_S
-            && mods == GLFW_MOD_CONTROL
-            && action == GLFW_PRESS)
-        {
-            SceneFile::SaveCurrentScene();
-        }
-
-        if (!inputSettings.cameraEnabled
-            && Select::selectedObj != nullptr)
-        {
-            //switch to X axis
-            if (key == GLFW_KEY_X
-                && action == GLFW_PRESS
-                && inputSettings.axis != "X")
+            //delete selected gameobject
+            if (key == GLFW_KEY_DELETE
+                && action == GLFW_PRESS)
             {
-                inputSettings.axis = "X";
-            }
-            //switch to Y axis
-            if (key == GLFW_KEY_Y
-                && action == GLFW_PRESS
-                && inputSettings.axis != "Y")
-            {
-                inputSettings.axis = "Y";
-            }
-            //switch to Z axis
-            if (key == GLFW_KEY_Z
-                && action == GLFW_PRESS
-                && inputSettings.axis != "Z")
-            {
-                inputSettings.axis = "Z";
+                Select::isObjectSelected = false;
+                shared_ptr<GameObject> selectedObj = Select::selectedObj;
+                Select::selectedObj = nullptr;
+                GameObjectManager::DestroyGameObject(selectedObj);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
 
-            //switch to move action
-            if (key == GLFW_KEY_W
-                && action == GLFW_PRESS
-                && inputSettings.objectAction != "move")
+            //save current scene
+            if (key == GLFW_KEY_S
+                && mods == GLFW_MOD_CONTROL
+                && action == GLFW_PRESS)
             {
-                inputSettings.objectAction = "move";
+                SceneFile::SaveCurrentScene();
             }
-            //switch to rotate action
-            if (key == GLFW_KEY_E
-                && action == GLFW_PRESS
-                && inputSettings.objectAction != "rotate")
+
+            if (Select::selectedObj != nullptr)
             {
-                inputSettings.objectAction = "rotate";
-            }
-            //switch to scale action
-            if (key == GLFW_KEY_R
-                && action == GLFW_PRESS
-                && inputSettings.objectAction != "scale")
-            {
-                inputSettings.objectAction = "scale";
+                //switch to X axis
+                if (key == GLFW_KEY_X
+                    && action == GLFW_PRESS
+                    && axis != "X")
+                {
+                    axis = "X";
+                }
+                //switch to Y axis
+                if (key == GLFW_KEY_Y
+                    && action == GLFW_PRESS
+                    && axis != "Y")
+                {
+                    axis = "Y";
+                }
+                //switch to Z axis
+                if (key == GLFW_KEY_Z
+                    && action == GLFW_PRESS
+                    && axis != "Z")
+                {
+                    axis = "Z";
+                }
+
+                //switch to move action
+                if (key == GLFW_KEY_W
+                    && action == GLFW_PRESS
+                    && objectAction != "move")
+                {
+                    objectAction = "move";
+                }
+                //switch to rotate action
+                if (key == GLFW_KEY_E
+                    && action == GLFW_PRESS
+                    && objectAction != "rotate")
+                {
+                    objectAction = "rotate";
+                }
+                //switch to scale action
+                if (key == GLFW_KEY_R
+                    && action == GLFW_PRESS
+                    && objectAction != "scale")
+                {
+                    objectAction = "scale";
+                }
             }
         }
     }
@@ -319,7 +320,7 @@ namespace Core
 
             Select::Ray ray = Select::RayFromMouse(mouseX, mouseY, Render::view, Render::projection);
 
-            if (inputSettings.printSelectRayDirectionToConsole)
+            if (printSelectRayDirectionToConsole)
             {
                 string output =
                     "\nMouse X: " + to_string(mouseX) + ", Mouse Y: " + to_string(mouseY) + "\n" +
@@ -340,7 +341,7 @@ namespace Core
                 {
                     Select::isObjectSelected;
                 }
-                if (inputSettings.printSelectRayDirectionToConsole)
+                if (printSelectRayDirectionToConsole)
                 {
                     ConsoleManager::WriteConsoleMessage(
                         Caller::INPUT,
@@ -353,7 +354,7 @@ namespace Core
             {
                 Select::isObjectSelected = false;
                 Select::selectedObj = nullptr;
-                if (inputSettings.printSelectRayDirectionToConsole)
+                if (printSelectRayDirectionToConsole)
                 {
                     ConsoleManager::WriteConsoleMessage(
                         Caller::INPUT,
@@ -366,12 +367,12 @@ namespace Core
                 if (objects[index] != Select::selectedObj
                     || Select::selectedObj == nullptr)
                 {
-                    inputSettings.objectAction = "move";
+                    objectAction = "move";
                 }
 
                 Select::selectedObj = objects[index];
                 Select::isObjectSelected = true;
-                if (inputSettings.printSelectRayDirectionToConsole)
+                if (printSelectRayDirectionToConsole)
                 {
                     string output = "Hit " + Select::selectedObj->GetName() + "!\n";
                     ConsoleManager::WriteConsoleMessage(
@@ -379,6 +380,19 @@ namespace Core
                         Type::DEBUG,
                         output);
                 }
+            }
+        }
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+        {
+            if (action == GLFW_PRESS)
+            {
+                leftMouseHeld = true;
+                glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
+            }
+            else if (action == GLFW_RELEASE)
+            {
+                leftMouseHeld = false;
             }
         }
     }
