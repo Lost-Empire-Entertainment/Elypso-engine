@@ -118,6 +118,24 @@ namespace Graphics::GUI
 				obj->GetTransform()->SetRotation(rot);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
+			if (rot.x > 359.99f 
+				|| rot.x < -359.99f)
+			{
+				rot.x = 0.0f;
+				obj->GetTransform()->SetRotation(rot);
+			}
+			if (rot.y > 359.99f 
+				|| rot.y < -359.99f)
+			{
+				rot.y = 0.0f;
+				obj->GetTransform()->SetRotation(rot);
+			}
+			if (rot.z > 359.99f 
+				|| rot.z < -359.99f)
+			{
+				rot.z = 0.0f;
+				obj->GetTransform()->SetRotation(rot);
+			}
 
 			vec3 scale = obj->GetTransform()->GetScale();
 			ImGui::Text("Scale");
@@ -125,6 +143,21 @@ namespace Graphics::GUI
 			{
 				obj->GetTransform()->SetScale(scale);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			if (scale.x < 0.0f)
+			{
+				scale.x = 0.0f;
+				obj->GetTransform()->SetScale(scale);
+			}
+			if (scale.y < 0.0f)
+			{
+				scale.y = 0.0f;
+				obj->GetTransform()->SetScale(scale);
+			}
+			if (scale.z < 0.0f)
+			{
+				scale.z = 0.0f;
+				obj->GetTransform()->SetScale(scale);
 			}
 
 			ImGui::Separator();
