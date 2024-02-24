@@ -29,7 +29,6 @@
 #include "core.hpp"
 #include "shutdown.hpp"
 #include "render.hpp"
-#include "errorpopup.hpp"
 
 #include <ctime>
 #include <chrono>

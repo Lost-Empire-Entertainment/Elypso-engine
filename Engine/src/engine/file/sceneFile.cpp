@@ -29,7 +29,6 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "fileUtils.hpp"
-#include "errorpopup.hpp"
 #include "stringUtils.hpp"
 #include "shutdown.hpp"
 

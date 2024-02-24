@@ -30,7 +30,6 @@
 #include "gui_inspector.hpp"
 #include "gui_projecthierarchy.hpp"
 #include "core.hpp"
-#include "errorpopup.hpp"
 #include "input.hpp"
 
 #include <iostream>

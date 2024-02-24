@@ -58,7 +58,6 @@ set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
 	${SRC_CORE_DIR}/console.cpp
 	${SRC_CORE_DIR}/core.cpp
-	${SRC_CORE_DIR}/errorpopup.cpp
 	${SRC_CORE_DIR}/input.cpp
 	${SRC_CORE_DIR}/shutdown.cpp
 	${SRC_CORE_DIR}/timeManager.cpp
