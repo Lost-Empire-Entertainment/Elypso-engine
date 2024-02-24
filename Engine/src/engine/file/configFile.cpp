@@ -61,7 +61,6 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
-using Core::ErrorPopup;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -108,14 +107,14 @@ namespace EngineFile
 		path filesPath = current_path().generic_string() + "/files";
 		if (!exists(filesPath))
 		{
-			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
+			Engine::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
 			return;
 		}
 		Engine::filesPath = filesPath.string();
 		path enginePath = current_path().generic_string() + "/engine";
 		if (!exists(enginePath))
 		{
-			ErrorPopup::CreateErrorPopup("Path load error", "Couldn't find engine folder! Shutting down.");
+			Engine::CreateErrorPopup("Path load error", "Couldn't find engine folder! Shutting down.");
 			return;
 		}
 		Engine::enginePath = enginePath.string();

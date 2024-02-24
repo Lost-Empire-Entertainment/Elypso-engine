@@ -25,6 +25,8 @@
 #include "gui.hpp"
 #include "sceneFile.hpp"
 
+#include <Windows.h>
+
 using std::cout;
 using std::endl;
 
@@ -104,6 +106,16 @@ namespace Core
 			TimeManager::UpdateDeltaTime();
 
 			Render::WindowLoop();
+		}
+	}
+
+	void Engine::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
+	{
+		int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
+
+		if (result == IDOK)
+		{
+			ShutdownManager::ShutdownManager::Shutdown();
 		}
 	}
 }

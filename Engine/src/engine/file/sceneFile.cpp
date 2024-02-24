@@ -64,7 +64,6 @@ using Graphics::Shape::SpotLight;
 using Graphics::Render;
 using Physics::Select;
 using Core::Engine;
-using Core::ErrorPopup;
 using Core::ShutdownManager;
 using Utils::File;
 using Utils::String;
@@ -79,14 +78,14 @@ namespace EngineFile
 		string projectPath = current_path().generic_string() + "/files/project.txt";
 		if (!exists(projectPath))
 		{
-			ErrorPopup::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
+			Engine::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
 		}
 
 		string targetScene;
 		ifstream projectFile(projectPath);
 		if (!projectFile.is_open())
 		{
-			ErrorPopup::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
+			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
 		}
 
 		string line;
@@ -116,13 +115,13 @@ namespace EngineFile
 		if (targetScene.empty()
 			|| !exists(targetScene))
 		{
-			ErrorPopup::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
+			Engine::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
 		}
 
 		if (currentProjectPath.empty()
 			|| !exists(currentProjectPath))
 		{
-			ErrorPopup::CreateErrorPopup("Project load error", "Failed to load valid scene from project file! Shutting down engine");
+			Engine::CreateErrorPopup("Project load error", "Failed to load valid scene from project file! Shutting down engine");
 		}
 
 		currentScenePath = targetScene;

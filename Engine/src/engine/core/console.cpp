@@ -61,7 +61,6 @@ using Core::Engine;
 using Utils::String;
 using Core::ShutdownManager;
 using Graphics::Render;
-using Core::ErrorPopup;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -97,7 +96,7 @@ namespace Core
     {
         if (!exists(Engine::docsPath))
         {
-            ErrorPopup::CreateErrorPopup("Missing path", "Couldn't initialize logger because path to Engine documents folder is missing!");
+            Engine::CreateErrorPopup("Missing path", "Couldn't initialize logger because path to Engine documents folder is missing!");
         }
         
         logFile.open(Engine::docsPath + "/engine_log.txt");
