@@ -38,8 +38,8 @@ namespace Physics
 	{
 		int width, height;
 		glfwGetWindowSize(Render::window, &width, &height);
-		float x = (2.0f * mouseX) / static_cast<float>(width) - 1.0f;
-		float y = 1.0f - (2.0f * mouseY) / static_cast<float>(height);
+		float x = (2.0f * static_cast<float>(mouseX)) / width - 1.0f;
+		float y = 1.0f - (2.0f * static_cast<float>(mouseY)) / height;
 
 		vec4 rayClip = vec4(x, y, -1.0, 1.0);
 		vec4 rayEye = inverse(projectionMatrix) * rayClip;

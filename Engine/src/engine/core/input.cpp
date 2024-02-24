@@ -90,7 +90,7 @@ namespace Core
         {
             glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) 
             {
-                ImGui::GetIO().MousePos = ImVec2(xpos, ypos);
+                ImGui::GetIO().MousePos = ImVec2(static_cast<float>(xpos), static_cast<float>(ypos));
             });
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -275,8 +275,8 @@ namespace Core
             xOffset *= sensitivity;
             yOffset *= sensitivity;
 
-            yaw += xOffset;
-            pitch += yOffset;
+            yaw += static_cast<float>(xOffset);
+            pitch += static_cast<float>(yOffset);
 
             if (yaw > 359.99f
                 || yaw < -359.99f)

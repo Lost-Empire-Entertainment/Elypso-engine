@@ -43,8 +43,31 @@ namespace Utils
 			wstring wPath(path);
 			CoTaskMemFree(path); //free the allocated memory
 
+			//get the required buffer size
+			int size_needed = WideCharToMultiByte(
+				CP_UTF8, 
+				0, 
+				wPath.c_str(),
+				static_cast<int>(wPath.length()), 
+				NULL, 
+				0, 
+				NULL, 
+				NULL);
+
+			//convert wide string to utf-8 encoded narrow string
+			string narrowPath(size_needed, 0);
+			WideCharToMultiByte(
+				CP_UTF8,
+				0,
+				wPath.c_str(),
+				static_cast<int>(wPath.length()),
+				&narrowPath[0],
+				size_needed,
+				NULL,
+				NULL);
+
 			return String::StringReplace(
-				string(wPath.begin(), wPath.end()), "\\", "/") + 
+				string(narrowPath.begin(), narrowPath.end()), "\\", "/") +
 				"/" + "Elypso engine";
 		}
 		else return "";

@@ -113,7 +113,7 @@ namespace Graphics::GUI
 						if (clipboardText)
 						{
 							//insert clipboard text into the input buffer
-							int textLength = strlen(clipboardText);
+							int textLength = static_cast<int>(strlen(clipboardText));
 							int availableSpace = data->BufSize - data->BufTextLen;
 							int copyLength = ImMin(textLength, availableSpace - 1); //leave space for null terminator
 							if (copyLength > 0)

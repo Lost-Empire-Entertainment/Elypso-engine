@@ -79,7 +79,8 @@ namespace Core
         auto now_c = system_clock::to_time_t(now);
         auto ms = duration_cast<microseconds>(now - now_ms);
 
-        auto tm = *localtime(&now_c);
+        tm tm;
+        localtime_s(&tm, &now_c);
 
         stringstream ss{};
         ss 
