@@ -186,7 +186,8 @@ namespace Core
             }
 
             if (leftMouseHeld
-                && Select::selectedObj != nullptr)
+                && Select::selectedObj != nullptr
+                && !ImGui::GetIO().WantCaptureMouse)
             {
                 double xpos;
                 double ypos;
@@ -212,7 +213,7 @@ namespace Core
                     rotatedMouseMovement.y * -objectSensitivity,
                     rotatedMouseMovement.z * -objectSensitivity);
 
-                if (objectAction == "move")
+                if (objectAction == ObjectAction::move)
                 {
                     newObjectPosition = Select::selectedObj->GetTransform()->GetPosition();
 
@@ -222,7 +223,7 @@ namespace Core
 
                     Select::selectedObj->GetTransform()->SetPosition(newObjectPosition);
                 }
-                else if (objectAction == "rotate")
+                else if (objectAction == ObjectAction::rotate)
                 {
                     newObjectRotation = Select::selectedObj->GetTransform()->GetRotation();
 
@@ -232,7 +233,7 @@ namespace Core
 
                     Select::selectedObj->GetTransform()->SetRotation(newObjectRotation);
                 }
-                else if (objectAction == "scale")
+                else if (objectAction == ObjectAction::scale)
                 {
                     newObjectScale = Select::selectedObj->GetTransform()->GetScale();
 
@@ -306,10 +307,8 @@ namespace Core
             cameraEnabled = !cameraEnabled;
             cameraModeSwitched = true;
 
-            if (!cameraEnabled)
-            {
-                lastKnownRotation = Render::camera.GetCameraRotation();
-            }
+            if (!cameraEnabled) lastKnownRotation = Render::camera.GetCameraRotation();
+            else objectAction = ObjectAction::none;
         }
 
         if (!cameraEnabled)
@@ -361,23 +360,23 @@ namespace Core
                 //switch to move action
                 if (key == GLFW_KEY_W
                     && action == GLFW_PRESS
-                    && objectAction != "move")
+                    && objectAction != ObjectAction::move)
                 {
-                    objectAction = "move";
+                    objectAction = ObjectAction::move;
                 }
                 //switch to rotate action
                 if (key == GLFW_KEY_E
                     && action == GLFW_PRESS
-                    && objectAction != "rotate")
+                    && objectAction != ObjectAction::rotate)
                 {
-                    objectAction = "rotate";
+                    objectAction = ObjectAction::rotate;
                 }
                 //switch to scale action
                 if (key == GLFW_KEY_R
                     && action == GLFW_PRESS
-                    && objectAction != "scale")
+                    && objectAction != ObjectAction::scale)
                 {
-                    objectAction = "scale";
+                    objectAction = ObjectAction::scale;
                 }
             }
         }
@@ -440,7 +439,7 @@ namespace Core
                 if (objects[index] != Select::selectedObj
                     || Select::selectedObj == nullptr)
                 {
-                    objectAction = "none";
+                    objectAction = ObjectAction::none;
                 }
 
                 Select::selectedObj = objects[index];

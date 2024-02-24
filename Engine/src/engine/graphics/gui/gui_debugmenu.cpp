@@ -20,6 +20,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "magic_enum.hpp"
 
 //engine
 #include "gui_debugmenu.hpp"
@@ -100,7 +101,7 @@ namespace Graphics::GUI
 			Render::camera.GetCameraRotation().z);
 		ImGui::Text("FOV: %.0f", Input::fov);
 		ImGui::Text("Current axis: %s", Input::axis.c_str());
-		ImGui::Text("Current tool: %s", Input::objectAction.c_str());
+		ImGui::Text("Current tool: %s", string(magic_enum::enum_name(Input::objectAction)).c_str());
 
 		ImGui::Separator();
 

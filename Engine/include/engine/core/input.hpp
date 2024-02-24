@@ -59,7 +59,14 @@ namespace Core
         static inline vec3 newObjectScale;
 
         static inline string axis = "X";
-        static inline string objectAction = "none";
+        enum class ObjectAction
+        {
+            none,
+            move,
+            rotate,
+            scale
+        };
+        static inline ObjectAction objectAction = ObjectAction::none;
 
         static inline bool printFPSToConsole;
         static inline bool printIMGUIToConsole;

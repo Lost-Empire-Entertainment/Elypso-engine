@@ -108,8 +108,9 @@ namespace Graphics::Shape
 
 		Texture tex(Engine::enginePath);
 		tex.LoadTexture(obj, "icons/blank.png", true, GL_RGBA);
-		tex.LoadTexture(obj, "icons/move_or_scale.png", true, GL_RGBA);
+		tex.LoadTexture(obj, "icons/move.png", true, GL_RGBA);
 		tex.LoadTexture(obj, "icons/rotate.png", true, GL_RGBA);
+		tex.LoadTexture(obj, "icons/scale.png", true, GL_RGBA);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();
@@ -135,14 +136,14 @@ namespace Graphics::Shape
 
 			if (Input::axis == "X")
 			{
-				if (Input::objectAction == "move"
-					|| Input::objectAction == "scale")
+				if (Input::objectAction == Input::ObjectAction::move
+					|| Input::objectAction == Input::ObjectAction::scale)
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 0.0f)));
 					model *= mat4_cast(newRot);
 				}
-				else if (Input::objectAction == "rotate")
+				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 90.0f)));
@@ -151,14 +152,14 @@ namespace Graphics::Shape
 			}
 			else if (Input::axis == "Y")
 			{
-				if (Input::objectAction == "move"
-					|| Input::objectAction == "scale")
+				if (Input::objectAction == Input::ObjectAction::move
+					|| Input::objectAction == Input::ObjectAction::scale)
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
-				else if (Input::objectAction == "rotate")
+				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
@@ -167,14 +168,14 @@ namespace Graphics::Shape
 			}
 			else if (Input::axis == "Z")
 			{
-				if (Input::objectAction == "move"
-					|| Input::objectAction == "scale")
+				if (Input::objectAction == Input::ObjectAction::move
+					|| Input::objectAction == Input::ObjectAction::scale)
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
-				else if (Input::objectAction == "rotate")
+				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
 					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
@@ -196,18 +197,21 @@ namespace Graphics::Shape
 
 		//bind texture
 		glActiveTexture(GL_TEXTURE0);
-		if (Input::objectAction == "none")
+		if (Input::objectAction == Input::ObjectAction::none)
 		{
 			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(0));
 		}
-		else if (Input::objectAction == "move"
-			|| Input::objectAction == "scale")
+		else if (Input::objectAction == Input::ObjectAction::move)
 		{
 			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(1));
 		}
-		else if (Input::objectAction == "rotate")
+		else if (Input::objectAction == Input::ObjectAction::rotate)
 		{
 			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(2));
+		}
+		else if (Input::objectAction == Input::ObjectAction::scale)
+		{
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(3));
 		}
 
 		shader.SetMat4("model", model);
