@@ -440,7 +440,7 @@ namespace Core
                 if (objects[index] != Select::selectedObj
                     || Select::selectedObj == nullptr)
                 {
-                    objectAction = "move";
+                    objectAction = "none";
                 }
 
                 Select::selectedObj = objects[index];

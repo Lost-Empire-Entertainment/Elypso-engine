@@ -59,7 +59,7 @@ namespace Core
         static inline vec3 newObjectScale;
 
         static inline string axis = "X";
-        static inline string objectAction = "move";
+        static inline string objectAction = "none";
 
         static inline bool printFPSToConsole;
         static inline bool printIMGUIToConsole;

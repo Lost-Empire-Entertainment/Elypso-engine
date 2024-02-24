@@ -107,6 +107,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddGameObject(obj);
 
 		Texture tex(Engine::enginePath);
+		tex.LoadTexture(obj, "icons/blank.png", true, GL_RGBA);
 		tex.LoadTexture(obj, "icons/move_or_scale.png", true, GL_RGBA);
 		tex.LoadTexture(obj, "icons/rotate.png", true, GL_RGBA);
 
@@ -193,16 +194,20 @@ namespace Graphics::Shape
 			model = scale(model, vec3(0.01f));
 		}
 
-		//bind diffuse map
+		//bind texture
 		glActiveTexture(GL_TEXTURE0);
-		if (Input::objectAction == "move"
-			|| Input::objectAction == "scale")
+		if (Input::objectAction == "none")
 		{
 			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(0));
 		}
-		else if (Input::objectAction == "rotate")
+		else if (Input::objectAction == "move"
+			|| Input::objectAction == "scale")
 		{
 			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(1));
+		}
+		else if (Input::objectAction == "rotate")
+		{
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(2));
 		}
 
 		shader.SetMat4("model", model);
