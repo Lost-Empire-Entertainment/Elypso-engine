@@ -16,6 +16,7 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 #include <Windows.h>
+#include <ShlObj.h>
 #include <filesystem>
 
 //engine
@@ -27,16 +28,22 @@
 #include "gui.hpp"
 #include "sceneFile.hpp"
 #include "fileUtils.hpp"
+#include "stringUtils.hpp"
 
 using std::cout;
 using std::endl;
+using std::wstring;
 using std::filesystem::directory_iterator;
-using std::filesystem::current_path;
+using std::filesystem::exists;
 using std::filesystem::remove;
 using std::filesystem::remove_all;
 using std::filesystem::is_regular_file;
 using std::filesystem::is_directory;
+using std::filesystem::path;
+using std::filesystem::current_path;
+using std::filesystem::create_directory;
 
+using Utils::String;
 using Utils::File;
 using Graphics::GUI::EngineGUI;
 using Graphics::Render;
@@ -48,6 +55,78 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
+	void Engine::PreInitializePathChecks()
+	{
+		//
+		// SET DOCUMENTS PATH
+		//
+
+		PWSTR docsFolderWidePath;
+		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &docsFolderWidePath);
+		if (SUCCEEDED(result))
+		{
+			wstring wPath(docsFolderWidePath);
+			CoTaskMemFree(docsFolderWidePath); //free the allocated memory
+
+			//get the required buffer size
+			int size_needed = WideCharToMultiByte(
+				CP_UTF8,
+				0,
+				wPath.c_str(),
+				static_cast<int>(wPath.length()),
+				NULL,
+				0,
+				NULL,
+				NULL);
+
+			//convert wide string to utf-8 encoded narrow string
+			string narrowPath(size_needed, 0);
+			WideCharToMultiByte(
+				CP_UTF8,
+				0,
+				wPath.c_str(),
+				static_cast<int>(wPath.length()),
+				&narrowPath[0],
+				size_needed,
+				NULL,
+				NULL);
+
+			docsPath = String::StringReplace(
+				string(narrowPath.begin(), narrowPath.end()), "\\", "/") +
+				"/" + "Elypso engine";
+
+			if (!exists(docsPath)) create_directory(docsPath);
+		}
+		else
+		{
+			Engine::CreateErrorPopup("Path load error", "Couldn't find engine documents folder! Shutting down.");
+		}
+
+		//
+		// SET FILES PATH
+		//
+
+		path fsFilesPath = current_path().generic_string() + "/files";
+		if (!exists(fsFilesPath))
+		{
+			Engine::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
+			return;
+		}
+		filesPath = fsFilesPath.string();
+
+		//
+		// SET ENGINE PATH
+		//
+
+		path fsEnginePath = current_path().generic_string() + "/engine";
+		if (!exists(fsEnginePath))
+		{
+			Engine::CreateErrorPopup("Path load error", "Couldn't find engine folder! Shutting down.");
+			return;
+		}
+		enginePath = fsEnginePath.string();
+	}
+
 	void Engine::InitializeEngine()
 	{
 		SceneFile::CheckForProjectFile();

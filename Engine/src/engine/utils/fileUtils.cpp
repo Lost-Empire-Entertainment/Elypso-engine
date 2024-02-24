@@ -23,10 +23,8 @@
 
 //engine
 #include "fileUtils.hpp"
-#include "searchUtils.hpp"
 #include "console.hpp"
 
-using Utils::Search;
 using std::exception;
 using std::runtime_error;
 using std::filesystem::exists;

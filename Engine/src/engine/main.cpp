@@ -23,6 +23,8 @@ using Core::Engine;
 
 int main()
 {
+	Engine::PreInitializePathChecks();
+
 	Engine::InitializeEngine();
 
 	Engine::RunEngine();

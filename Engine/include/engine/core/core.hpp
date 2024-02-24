@@ -34,6 +34,8 @@ namespace Core
 
 		static inline bool startedWindowLoop;
 
+		static void PreInitializePathChecks();
+
 		static void InitializeEngine();
 		static void RunEngine();
 

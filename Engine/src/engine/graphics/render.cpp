@@ -32,11 +32,9 @@
 #include "core.hpp"
 #include "gui.hpp"
 #include "render.hpp"
-#include "searchUtils.hpp"
 #include "shutdown.hpp"
 #include "texture.hpp"
 #include "timeManager.hpp"
-#include "searchUtils.hpp"
 #include "cube.hpp"
 #include "pointlight.hpp"
 #include "gameobject.hpp"
@@ -58,7 +56,6 @@ using std::to_string;
 using Core::Input;
 using Core::TimeManager;
 using Core::Engine;
-using Utils::Search;
 using Graphics::Shape::GameObjectManager;
 using Graphics::GUI::EngineGUI;
 using Graphics::Shape::Cube;

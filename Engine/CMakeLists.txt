@@ -82,7 +82,6 @@ set(SOURCE_FILES
 	${SRC_PHYSICS_DIR}/collision.cpp
 	${SRC_UTILS_DIR}/browserUtils.cpp
 	${SRC_UTILS_DIR}/fileUtils.cpp
-	${SRC_UTILS_DIR}/searchUtils.cpp
 	${SRC_UTILS_DIR}/stringUtils.cpp
 )
 

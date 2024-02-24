@@ -73,7 +73,8 @@ namespace EngineFile
 {
 	void SceneFile::CheckForProjectFile()
 	{
-		string projectPath = current_path().generic_string() + "/files/project.txt";
+		path engineParentPath = path(Engine::enginePath).parent_path();
+		string projectPath = engineParentPath.string() + "/files/project.txt";
 		if (!exists(projectPath))
 		{
 			Engine::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");

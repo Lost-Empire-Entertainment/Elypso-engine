@@ -29,7 +29,6 @@
 
 //engine
 #include "console.hpp"
-#include "searchUtils.hpp"
 #include "stringUtils.hpp"
 #include "gui_console.hpp"
 #include "core.hpp"
@@ -55,7 +54,6 @@ using std::chrono::system_clock;
 using glm::vec3;
 
 using Graphics::GUI::GUIConsole;
-using Utils::Search;
 using Core::Engine;
 using Utils::String;
 using Graphics::Render;
@@ -92,11 +90,6 @@ namespace Core
 
     void Logger::InitializeLogger()
     {
-        if (!exists(Engine::docsPath))
-        {
-            Engine::CreateErrorPopup("Missing path", "Couldn't initialize logger because path to Engine documents folder is missing!");
-        }
-        
         logFile.open(Engine::docsPath + "/engine_log.txt");
         if (!logFile.is_open())
         {

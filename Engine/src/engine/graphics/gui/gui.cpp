@@ -34,7 +34,6 @@
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
-#include "searchUtils.hpp"
 #include "fileUtils.hpp"
 #include "browserUtils.hpp"
 #include "shutdown.hpp"
@@ -63,7 +62,6 @@ using Core::Input;
 using Core::ConsoleManager;
 using Core::TimeManager;
 using Physics::Select;
-using Utils::Search;
 using Utils::File;
 using Utils::Browser;
 using Utils::String;
