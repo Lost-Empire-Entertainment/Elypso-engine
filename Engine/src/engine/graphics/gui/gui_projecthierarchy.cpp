@@ -15,6 +15,8 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <fstream>
+
 //external
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -29,8 +31,6 @@
 #include "fileUtils.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
-
-#include <fstream>
 
 using std::cout;
 using std::endl;

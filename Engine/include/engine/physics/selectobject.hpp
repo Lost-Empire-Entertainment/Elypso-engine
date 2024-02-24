@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include <vector>
+
 //external
 #include "glm.hpp"
 #include "gameobject.hpp"
-
-#include <vector>
 
 using std::vector;
 using glm::vec3;

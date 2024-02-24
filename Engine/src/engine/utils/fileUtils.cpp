@@ -15,16 +15,16 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-//engine
-#include "fileUtils.hpp"
-#include "searchUtils.hpp"
-#include "console.hpp"
-
 #include <iostream>
 #include <cstdio>
 #include <memory>
 #include <stdexcept>
 #include <string>
+
+//engine
+#include "fileUtils.hpp"
+#include "searchUtils.hpp"
+#include "console.hpp"
 
 using Utils::Search;
 using std::exception;

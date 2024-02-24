@@ -15,6 +15,9 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <iostream>
+#include <thread>
+
 //external
 #include "glfw3.h"
 
@@ -22,9 +25,6 @@
 #include "input.hpp"
 #include "timeManager.hpp"
 #include "console.hpp"
-
-#include <iostream>
-#include <thread>
 
 using std::cout;
 using std::to_string;

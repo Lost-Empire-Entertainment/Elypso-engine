@@ -15,6 +15,10 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <string>
+#include <vector>
+#include <iostream>
+
 //external
 #include "glfw3.h"
 #include "stb_image.h"
@@ -22,10 +26,6 @@
 //engine
 #include "console.hpp"
 #include "texture.hpp"
-
-#include <string>
-#include <vector>
-#include <iostream>
 
 using std::cout;
 using std::endl;

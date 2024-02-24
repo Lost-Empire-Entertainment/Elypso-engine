@@ -15,6 +15,10 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <string>
+#include <iostream>
+#include <filesystem>
+
 //external
 #include "glad.h"
 #include "glfw3.h"
@@ -40,10 +44,6 @@
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "sceneFile.hpp"
-
-#include <string>
-#include <iostream>
-#include <filesystem>
 
 using glm::perspective;
 using glm::radians;

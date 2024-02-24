@@ -15,6 +15,8 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <filesystem>
+
 //external
 #include "glad.h"
 #include "glfw3.h"
@@ -27,8 +29,6 @@
 #include "configFile.hpp"
 #include "fileUtils.hpp"
 #include "sceneFile.hpp"
-
-#include <filesystem>
 
 using std::filesystem::directory_iterator;
 using std::filesystem::current_path;

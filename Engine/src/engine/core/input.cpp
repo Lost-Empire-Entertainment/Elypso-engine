@@ -15,11 +15,13 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <iostream>
+#include <string>
+
 //external
 #include "glad.h"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/quaternion.hpp"
-
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -35,9 +37,6 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "sceneFile.hpp"
-
-#include <iostream>
-#include <string>
 
 using std::cout;
 using std::endl;

@@ -15,6 +15,12 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <ctime>
+#include <chrono>
+#include <filesystem>
+#include <iomanip>
+#include <system_error>
+
 //external
 #include "magic_enum.hpp"
 #include "glad.h"
@@ -29,12 +35,6 @@
 #include "core.hpp"
 #include "shutdown.hpp"
 #include "render.hpp"
-
-#include <ctime>
-#include <chrono>
-#include <filesystem>
-#include <iomanip>
-#include <system_error>
 
 using std::endl;
 using std::cout;

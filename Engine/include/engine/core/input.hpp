@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include <unordered_map>
+#include <string>
+
 //external
 #include "glm.hpp"
 #include "glm/gtc/matrix_transform.hpp" //two matrix_transform.hpp files exist in glm
@@ -24,9 +27,6 @@
 
 //engine
 #include "input.hpp"
-
-#include <unordered_map>
-#include <string>
 
 using glm::vec3;
 using glm::mat4;

@@ -15,17 +15,17 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <Windows.h>
+
 //engine
-#include "console.hpp"
 #include "core.hpp"
+#include "console.hpp"
 #include "render.hpp"
 #include "shutdown.hpp"
 #include "timeManager.hpp"
 #include "configFile.hpp"
 #include "gui.hpp"
 #include "sceneFile.hpp"
-
-#include <Windows.h>
 
 using std::cout;
 using std::endl;

@@ -17,14 +17,14 @@
 
 #pragma once
 
+#include <vector>
+#include <memory>
+
 //external
 #include "glad.h"
 
 //engine
 #include "shader.hpp"
-
-#include <vector>
-#include <memory>
 
 using std::vector;
 using std::shared_ptr;

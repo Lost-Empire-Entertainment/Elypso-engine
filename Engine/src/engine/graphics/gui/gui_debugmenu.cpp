@@ -15,6 +15,9 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <type_ptr.hpp>
+#include <cmath>
+
 //external
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -31,9 +34,6 @@
 #include "console.hpp"
 #include "timeManager.hpp"
 #include "grid.hpp"
-
-#include <type_ptr.hpp>
-#include <cmath>
 
 using std::to_string;
 using std::stof;

@@ -15,13 +15,13 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-//engine
-#include "searchUtils.hpp"
-#include "stringUtils.hpp"
-
 #include <Windows.h>
 #include <ShlObj.h>
 #include <filesystem>
+
+//engine
+#include "searchUtils.hpp"
+#include "stringUtils.hpp"
 
 using std::wstring;
 using std::filesystem::path;

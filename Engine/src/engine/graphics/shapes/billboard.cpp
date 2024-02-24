@@ -15,6 +15,8 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <iostream>
+
 //external
 #include "glad.h"
 #include "quaternion.hpp"
@@ -27,8 +29,6 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
-
-#include <iostream>
 
 using std::cout;
 using glm::translate;

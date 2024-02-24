@@ -17,11 +17,12 @@
 
 #pragma once
 
-#include "glm.hpp"
-
 #include <vector>
 #include <string>
 #include <sstream>
+
+//external
+#include "glm.hpp"
 
 using std::string;
 using std::vector;

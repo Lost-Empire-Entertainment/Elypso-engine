@@ -17,10 +17,10 @@
 
 #pragma once
 
+#include <string>
+
 //external
 #include "glm.hpp"
-
-#include <string>
 
 using glm::vec2;
 using glm::vec3;

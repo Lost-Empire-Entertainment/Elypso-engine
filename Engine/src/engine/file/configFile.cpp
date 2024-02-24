@@ -15,6 +15,10 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+
 //external
 #include "glm.hpp"
 
@@ -31,10 +35,6 @@
 #include "gui_projecthierarchy.hpp"
 #include "core.hpp"
 #include "input.hpp"
-
-#include <iostream>
-#include <fstream>
-#include <filesystem>
 
 using glm::vec3;
 using std::cout;

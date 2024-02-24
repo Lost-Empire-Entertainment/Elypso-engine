@@ -17,12 +17,12 @@
 
 #pragma once
 
+#include <vector>
+
 //engine
 #include "gameobject.hpp"
 #include "input.hpp"
 #include "shader.hpp"
-
-#include <vector>
 
 using std::vector;
 using glm::vec3;

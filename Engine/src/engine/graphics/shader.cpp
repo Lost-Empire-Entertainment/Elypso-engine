@@ -15,6 +15,12 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <filesystem>
+#include <vector>
+
 //external
 #include "glad.h"
 
@@ -22,12 +28,6 @@
 #include "console.hpp"
 #include "shader.hpp"
 #include "stringUtils.hpp"
-
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <filesystem>
-#include <vector>
 
 using std::cout;
 using std::endl;

@@ -17,13 +17,13 @@
 
 #pragma once
 
+#include <vector>
+
 //external
 #include "glad.h"
 
 //engine
 #include "gameobject.hpp"
-
-#include <vector>
 
 using std::vector;
 
