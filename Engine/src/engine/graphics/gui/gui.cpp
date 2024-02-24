@@ -61,7 +61,6 @@ using glm::vec3;
 using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
-using Core::ShutdownManager;
 using Core::TimeManager;
 using Physics::Select;
 using Utils::Search;
@@ -239,7 +238,7 @@ namespace Graphics::GUI
 				SceneFile::CreateNewScene(newFolderPath + "/scene.txt");
 			}
 
-			if (ImGui::MenuItem("Exit")) ShutdownManager::ShutdownManager::Shutdown();
+			if (ImGui::MenuItem("Exit")) Engine::Shutdown();
 
 			ImGui::EndMenu();
 		}
@@ -609,7 +608,7 @@ namespace Graphics::GUI
 				Type::INFO,
 				"Closed engine without saving.\n");
 			SceneFile::unsavedChanges = false;
-			ShutdownManager::Shutdown();
+			Engine::Shutdown();
 		}
 
 		ImGui::SetCursorPos(button3Pos);

@@ -20,7 +20,6 @@
 #include "shutdown.hpp"
 
 using Core::Engine;
-using Core::ShutdownManager;
 
 int main()
 {
@@ -28,6 +27,6 @@ int main()
 
 	Engine::RunEngine();
 
-	ShutdownManager::Shutdown();
+	Engine::Shutdown();
 	return 0;
 }

@@ -63,7 +63,6 @@ using Graphics::Shape::SpotLight;
 using Graphics::Render;
 using Physics::Select;
 using Core::Engine;
-using Core::ShutdownManager;
 using Utils::File;
 using Utils::String;
 using Core::ConsoleManager;
@@ -577,7 +576,7 @@ namespace EngineFile
 			LoadScene(targetScene);
 			break;
 		case SaveType::shutDown:
-			ShutdownManager::Shutdown();
+			Engine::Shutdown();
 			break;
 		}
 	}

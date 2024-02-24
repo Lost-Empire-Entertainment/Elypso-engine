@@ -38,5 +38,7 @@ namespace Core
 		static void RunEngine();
 
 		static void CreateErrorPopup(const char* errorTitle = "INSERT ERROR TITLE", const char* errorMessage = "INSERT ERROR MESSAGE");
+
+		static void Shutdown();
 	};
 }

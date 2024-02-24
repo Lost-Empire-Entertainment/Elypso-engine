@@ -16,24 +16,32 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 #include <Windows.h>
+#include <filesystem>
 
 //engine
 #include "core.hpp"
 #include "console.hpp"
 #include "render.hpp"
-#include "shutdown.hpp"
 #include "timeManager.hpp"
 #include "configFile.hpp"
 #include "gui.hpp"
 #include "sceneFile.hpp"
+#include "fileUtils.hpp"
 
 using std::cout;
 using std::endl;
+using std::filesystem::directory_iterator;
+using std::filesystem::current_path;
+using std::filesystem::remove;
+using std::filesystem::remove_all;
+using std::filesystem::is_regular_file;
+using std::filesystem::is_directory;
 
-using Core::ShutdownManager;
-using EngineFile::ConfigFile;
+using Utils::File;
+using Graphics::GUI::EngineGUI;
 using Graphics::Render;
 using EngineFile::SceneFile;
+using EngineFile::ConfigFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -113,9 +121,50 @@ namespace Core
 	{
 		int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
 
-		if (result == IDOK)
+		if (result == IDOK) Shutdown();
+	}
+
+	void Engine::Shutdown()
+	{
+		if (SceneFile::unsavedChanges == true)
 		{
-			ShutdownManager::ShutdownManager::Shutdown();
+			glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+			EngineGUI::renderUnsavedShutdownWindow = true;
+		}
+		else
+		{
+			ConfigFile::SaveDataAtShutdown();
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"==================================================\n\n",
+				true);
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::INFO,
+				"Cleaning up resources...\n");
+
+			string files = current_path().generic_string() + "/files";
+			for (const auto& entry : directory_iterator(files))
+			{
+				path entryPath(entry);
+				if (is_directory(entryPath)) remove_all(entryPath);
+				else if (is_regular_file(entryPath)) remove(entryPath);
+			}
+
+			EngineGUI::GetInstance().Shutdown();
+
+			//clean all glfw resources after program is closed
+			glfwTerminate();
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::INFO,
+				"Shutdown complete!\n");
+
+			Logger::CloseLogger();
 		}
 	}
 }

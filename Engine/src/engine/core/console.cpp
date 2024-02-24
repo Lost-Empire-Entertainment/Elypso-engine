@@ -58,7 +58,6 @@ using Graphics::GUI::GUIConsole;
 using Utils::Search;
 using Core::Engine;
 using Utils::String;
-using Core::ShutdownManager;
 using Graphics::Render;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -238,7 +237,7 @@ namespace Core
                 Caller::INPUT,
                 Type::DEBUG,
                 "User closed engine with 'qqq' console command.\n");
-            ShutdownManager::Shutdown();
+            Engine::Shutdown();
         }
         else if (cleanedCommands[0] == "srm"
                  && (cleanedCommands[1] == "1"
