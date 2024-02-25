@@ -48,7 +48,7 @@ using Utils::File;
 using Graphics::GUI::EngineGUI;
 using Graphics::Render;
 using EngineFile::SceneFile;
-using EngineFile::ConfigFile;
+using EngineFile::ConfigFileManager;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -131,7 +131,7 @@ namespace Core
 	{
 		SceneFile::CheckForProjectFile();
 
-		ConfigFile::ProcessFirstConfigValues();
+		ConfigFileManager::ProcessFirstConfigValues();
 
 		Logger::InitializeLogger();
 
@@ -162,7 +162,7 @@ namespace Core
 
 		Render::RenderSetup();
 
-		ConfigFile::ProcessConfigFile("config.txt");
+		ConfigFileManager::ProcessConfigFile("config.txt");
 
 		//first scene is actually loaded when engine is ready for use
 		SceneFile::LoadScene(SceneFile::currentScenePath);
@@ -212,7 +212,7 @@ namespace Core
 		}
 		else
 		{
-			ConfigFile::SaveDataAtShutdown();
+			ConfigFileManager::SaveDataAtShutdown();
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,

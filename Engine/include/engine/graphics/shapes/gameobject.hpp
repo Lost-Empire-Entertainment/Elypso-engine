@@ -42,7 +42,10 @@ namespace Graphics::Shape
 		Transform(
 			const vec3& position, 
 			const vec3& rotation, 
-			const vec3& scale);
+			const vec3& scale) :
+			position(position),
+			rotation(rotation),
+			scale(scale) {}
 
 		void SetPosition(const vec3& newPosition) { position = newPosition; }
 		void SetRotation(const vec3& newRotation) { rotation = newRotation; }
@@ -70,7 +73,7 @@ namespace Graphics::Shape
 			billboard
 		};
 
-		Mesh(const MeshType& type);
+		Mesh(const MeshType& type) : type(type) {}
 
 		void SetMeshType(const MeshType& newType) { type = newType; }
 
@@ -84,7 +87,9 @@ namespace Graphics::Shape
 	public:
 		Material(
 			const GLuint& VAO,
-			const GLuint& VBO);
+			const GLuint& VBO) :
+			VAO(VAO),
+			VBO(VBO) {}
 		~Material()
 		{
 			unsigned int shaderID = GetShader().ID;
@@ -125,7 +130,7 @@ namespace Graphics::Shape
 	class BasicShape_Variables
 	{
 	public:
-		BasicShape_Variables(const float& shininess);
+		BasicShape_Variables(const float& shininess) : shininess(shininess) {}
 
 		void SetShininess(const float& newShininess) { shininess = newShininess; }
 
@@ -142,7 +147,12 @@ namespace Graphics::Shape
 			const float& intensity,
 			const float& distance,
 			const float& innerAngle,
-			const float& outerAngle);
+			const float& outerAngle) :
+			diffuse(diffuse),
+			intensity(intensity),
+			distance(distance),
+			innerAngle(innerAngle),
+			outerAngle(outerAngle) {}
 
 		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
 		void SetIntensity(const float& newIntensity) { intensity = newIntensity; }
@@ -169,7 +179,10 @@ namespace Graphics::Shape
 		PointLight_Variables(
 			const vec3& diffuse,
 			const float& intensity,
-			const float& distance);
+			const float& distance) :
+			diffuse(diffuse),
+			intensity(intensity),
+			distance(distance) {}
 
 		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
 		void SetIntensity(const float& newIntensity) { intensity = newIntensity; }
@@ -191,33 +204,54 @@ namespace Graphics::Shape
 
 		//basic gameobject
 		GameObject(
-			const bool& assignedIsInitialized,
-			const string& assignedName,
+			const bool& isInitialized,
+			const string& name,
 			const unsigned int& ID,
-			const shared_ptr<Transform>& assignedTransform,
-			const shared_ptr<Mesh>& assignedMesh,
-			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<BasicShape_Variables>& basicShapeVariables);
+			const shared_ptr<Transform>& transform,
+			const shared_ptr<Mesh>& mesh,
+			const shared_ptr<Material>& material,
+			const shared_ptr<BasicShape_Variables>& basicShape) :
+			isInitialized(isInitialized),
+			name(name),
+			ID(ID),
+			transform(transform),
+			mesh(mesh),
+			material(material),
+			basicShape(basicShape) {}
 
 		//point light
 		GameObject(
-			const bool& assignedIsInitialized,
-			const string& assignedName,
+			const bool& isInitialized,
+			const string& name,
 			const unsigned int& ID,
-			const shared_ptr<Transform>& assignedTransform,
-			const shared_ptr<Mesh>& assignedMesh,
-			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<PointLight_Variables>& pointLightVariables);
+			const shared_ptr<Transform>& transform,
+			const shared_ptr<Mesh>& mesh,
+			const shared_ptr<Material>& material,
+			const shared_ptr<PointLight_Variables>& pointLight) :
+			isInitialized(isInitialized),
+			name(name),
+			ID(ID),
+			transform(transform),
+			mesh(mesh),
+			material(material),
+			pointLight(pointLight) {}
 
 		//spotlight
 		GameObject(
-			const bool& assignedIsInitialized,
-			const string& assignedName,
+			const bool& isInitialized,
+			const string& name,
 			const unsigned int& ID,
-			const shared_ptr<Transform>& assignedTransform,
-			const shared_ptr<Mesh>& assignedMesh,
-			const shared_ptr<Material>& assignedMaterial,
-			const shared_ptr<SpotLight_Variables>& spotLightVariables);
+			const shared_ptr<Transform>& transform,
+			const shared_ptr<Mesh>& mesh,
+			const shared_ptr<Material>& material,
+			const shared_ptr<SpotLight_Variables>& spotLight) :
+			isInitialized(isInitialized),
+			name(name),
+			ID(ID),
+			transform(transform),
+			mesh(mesh),
+			material(material),
+			spotLight(spotLight) {}
 
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
