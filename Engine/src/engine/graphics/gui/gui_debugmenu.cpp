@@ -34,11 +34,13 @@
 #include "console.hpp"
 #include "timeManager.hpp"
 #include "grid.hpp"
+#include "sceneFile.hpp"
 
 using std::to_string;
 using std::stof;
 using std::round;
 
+using EngineFile::SceneFile;
 using Core::TimeManager;
 using Graphics::GUI::GUIConsole;
 using Graphics::Render;
@@ -136,34 +138,35 @@ namespace Graphics::GUI
 		if (ImGui::Checkbox("##vsync", &Render::useMonitorRefreshRate))
 		{
 			glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
-		ImGui::Text("Enable FPS messages");
+		ImGui::Text("Allow console scroll to bottom");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##fpsmsg", &Input::printFPSToConsole);
+		if (ImGui::Checkbox("##consolescroll", &GUIConsole::allowScrollToBottom))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
-		ImGui::Text("Enable ImGui messages");
+		ImGui::Separator();
+
+		ImGui::Text("Print ImGui messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##imguimsg", &Input::printIMGUIToConsole);
 
-		ImGui::Text("Enable input messages");
+		ImGui::Text("Print input messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##inputmsg", &Input::printInputToConsole);
 
-		ImGui::Text("Enable select ray direction messages");
+		ImGui::Text("Print ray direction messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##raymsg", &Input::printSelectRayDirectionToConsole);
 
-		ImGui::Text("Enable console scroll to bottom");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##consolescroll", &GUIConsole::allowScrollToBottom);
-
-		ImGui::Text("Enable console debug messages");
+		ImGui::Text("Print console debug messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
@@ -175,11 +178,15 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Interaction move sensitivity");
-		ImGui::DragFloat("##intMoveSpeed", &Input::objectSensitivity, 0.01f, 0.0f, 1.0f);
+		if (ImGui::DragFloat("##intMoveSpeed", &Input::objectSensitivity, 0.01f, 0.0f, 1.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##intMoveSpeed"))
 		{
 			Input::objectSensitivity = 0.1f;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		//
@@ -192,10 +199,16 @@ namespace Graphics::GUI
 		ImGui::Text("");
 
 		ImGui::Text("Near clip");
-		ImGui::DragFloat("##camNearClip", &Input::nearClip, 0.1f, 0.001f, Input::farClip - 0.001f);
+		if (ImGui::DragFloat("##camNearClip", &Input::nearClip, 0.1f, 0.001f, Input::farClip - 0.001f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		ImGui::Text("Far clip");
-		ImGui::DragFloat("##camFarClip", &Input::farClip, 0.1f, Input::nearClip + 0.001f, 10000);
+		if (ImGui::DragFloat("##camFarClip", &Input::farClip, 0.1f, Input::nearClip + 0.001f, 10000))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		//
 		// MOVE SPEED MULTIPLIER
@@ -204,11 +217,15 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Camera move speed multiplier");
-		ImGui::DragFloat("##camMoveSpeed", &Input::moveSpeedMultiplier, 0.1f, 0.0f, 100.0f);
+		if (ImGui::DragFloat("##camMoveSpeed", &Input::moveSpeedMultiplier, 0.1f, 0.0f, 100.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##camMoveSpeed"))
 		{
 			Input::moveSpeedMultiplier = 1.0f;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		//
@@ -218,11 +235,15 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("FOV");
-		ImGui::DragFloat("##fov", &Input::fov, 0.1f, 70.0f, 110.0f);
+		if (ImGui::DragFloat("##fov", &Input::fov, 0.1f, 70.0f, 110.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##fov"))
 		{
 			Input::fov = 90.0f;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		//
@@ -232,14 +253,21 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Grid color");
-		ImGui::ColorEdit3("##gridColor", value_ptr(Grid::color));
+		if (ImGui::ColorEdit3("##gridColor", value_ptr(Grid::color)))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		ImGui::Text("Grid transparency");
-		ImGui::DragFloat("##gridTransparency", &Grid::transparency, 0.001f, 0.0f, 1.0f);
+		if (ImGui::DragFloat("##gridTransparency", &Grid::transparency, 0.001f, 0.0f, 1.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##gridTransparency"))
 		{
 			Grid::transparency = 0.25f;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		//
@@ -249,7 +277,10 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Background color");
-		ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor));
+		if (ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor)))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		//
 		// DIRECTIONAL LIGHT
@@ -261,27 +292,43 @@ namespace Graphics::GUI
 		ImGui::Text("x  ");
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100);
-		ImGui::DragFloat("##dirX", &Render::directionalDirection.x, 0.1f, -360.0f, 360.0f);
+		if (ImGui::DragFloat("##dirX", &Render::directionalDirection.x, 0.1f, -360.0f, 360.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 		ImGui::SameLine();
 		ImGui::Text("  y  ");
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100);
-		ImGui::DragFloat("##dirY", &Render::directionalDirection.y, 0.1f, -360.0f, 360.0f);
+		if (ImGui::DragFloat("##dirY", &Render::directionalDirection.y, 0.1f, -360.0f, 360.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 		ImGui::SameLine();
 		ImGui::Text("  z  ");
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(100);
-		ImGui::DragFloat("##dirZ", &Render::directionalDirection.z, 0.1f, -360.0f, 360.0f);
+		if (ImGui::DragFloat("##dirZ", &Render::directionalDirection.z, 0.1f, -360.0f, 360.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		ImGui::Text("Directional light diffuse");
-		ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse));
+		if (ImGui::ColorEdit3("##dirdiff", value_ptr(Render::directionalDiffuse)))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		ImGui::Text("Directional light intensity");
-		ImGui::DragFloat("##dirint", &Render::directionalIntensity, 0.001f, 0.0f, 5.0f);
+		if (ImGui::DragFloat("##dirint", &Render::directionalIntensity, 0.001f, 0.0f, 5.0f))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##dirint"))
 		{
 			Render::directionalIntensity = 1.0f;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 	}
 }

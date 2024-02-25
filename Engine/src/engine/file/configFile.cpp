@@ -35,6 +35,7 @@
 #include "gui_projecthierarchy.hpp"
 #include "core.hpp"
 #include "input.hpp"
+#include "sceneFile.hpp"
 
 using glm::vec3;
 using std::cout;
@@ -50,6 +51,7 @@ using std::filesystem::remove;
 using std::filesystem::current_path;
 using std::filesystem::create_directory;
 
+using EngineFile::SceneFile;
 using Core::Input;
 using Core::Engine;
 using Graphics::Render;
@@ -180,14 +182,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Font scale value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 				}
-
-				ConfigFileValue fontScale(
-					"fontScale",
-					to_string(EngineGUI::fontScale),
-					"1.0",
-					"2.0",
-					ConfigFileValue::Type::type_float);
-				AddValue(fontScale);
 			}
 			else if (name == "resolution")
 			{
@@ -216,14 +210,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Height or width value " + lineVariables[0] + " for resolution is out of range or not a float! Resetting to default.\n");
 				}
-
-				ConfigFileValue resolution(
-					"resolution",
-					to_string(Render::SCR_WIDTH) + ", " + to_string(Render::SCR_HEIGHT),
-					"1280, 720",
-					"7860, 3840",
-					ConfigFileValue::Type::type_vec2);
-				AddValue(resolution);
 			}
 			else if (name == "vsync")
 			{
@@ -247,14 +233,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"VSync value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
-
-				ConfigFileValue vsync(
-					"vsync",
-					to_string(Render::useMonitorRefreshRate),
-					"0",
-					"1",
-					ConfigFileValue::Type::type_int);
-				AddValue(vsync);
 			}
 			else if (name == "fov")
 			{
@@ -276,14 +254,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"FOV value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 				}
-
-				ConfigFileValue fov(
-					"fov",
-					to_string(Input::fov),
-					"70",
-					"110",
-					ConfigFileValue::Type::type_float);
-				AddValue(fov);
 			}
 			else if (name == "camNearClip")
 			{
@@ -305,14 +275,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Camera near clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 				}
-
-				ConfigFileValue camNearClip(
-					"camNearClip",
-					to_string(Input::nearClip),
-					"0.001",
-					"10000.0",
-					ConfigFileValue::Type::type_float);
-				AddValue(camNearClip);
 			}
 			else if (name == "camFarClip")
 			{
@@ -334,14 +296,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Camera far clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 				}
-
-				ConfigFileValue camFarClip(
-					"camFarClip",
-					to_string(Input::farClip),
-					"0.001",
-					"10000.0",
-					ConfigFileValue::Type::type_float);
-				AddValue(camFarClip);
 			}
 			else if (name == "objectSensitivity")
 			{
@@ -363,14 +317,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Object sensitivity value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 				}
-
-				ConfigFileValue objectSensitivity(
-					"objectSensitivity",
-					to_string(Input::objectSensitivity),
-					"0.0",
-					"5.0",
-					ConfigFileValue::Type::type_float);
-				AddValue(objectSensitivity);
 			}
 			else if (name == "camPos")
 			{
@@ -401,18 +347,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"X, Y or Z position for value " + lineVariables[0] + " camera is out of range or not a float! Resetting to default.\n");
 				}
-
-				string camPosValue = 
-					to_string(Render::camera.GetCameraPosition().x) + ", " +
-					to_string(Render::camera.GetCameraPosition().y) + ", " +
-					to_string(Render::camera.GetCameraPosition().z);
-				ConfigFileValue camPos(
-					"camPos",
-					camPosValue,
-					"-1000000.0, -1000000.0, -1000000.0",
-					"1000000.0, 1000000.0, 1000000.0",
-					ConfigFileValue::Type::type_vec3);
-				AddValue(camPos);
 			}
 			else if (name == "camRot")
 			{
@@ -442,18 +376,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"X, Y or Z rotation value " + lineVariables[0] + " for camera is out of range or not a float! Resetting to default.\n");
 				}
-
-				string camRotValue =
-					to_string(Render::camera.GetCameraRotation().x) + ", " +
-					to_string(Render::camera.GetCameraRotation().y) + ", " +
-					to_string(Render::camera.GetCameraRotation().z);
-				ConfigFileValue camRot(
-					"camRot",
-					camRotValue,
-					"-359.99, -359.99, -359.99",
-					"359.99, 359.99, 359.99",
-					ConfigFileValue::Type::type_vec3);
-				AddValue(camRot);
 			}
 			else if (name == "consoleForceScroll")
 			{
@@ -475,14 +397,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
-
-				ConfigFileValue consoleForceScroll(
-					"consoleForceScroll",
-					to_string(GUIConsole::allowScrollToBottom),
-					"0",
-					"1",
-					ConfigFileValue::Type::type_int);
-				AddValue(consoleForceScroll);
 			}
 			else if (name == "showDebugMenu")
 			{
@@ -504,14 +418,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Show debug menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
-
-				ConfigFileValue showDebugMenu(
-					"showDebugMenu",
-					to_string(GUIDebugMenu::renderDebugMenu),
-					"0",
-					"1",
-					ConfigFileValue::Type::type_int);
-				AddValue(showDebugMenu);
 			}
 			else if (name == "showConsole")
 			{
@@ -533,14 +439,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Show console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
-
-				ConfigFileValue showConsole(
-					"showConsole",
-					to_string(GUIConsole::renderConsole),
-					"0",
-					"1",
-					ConfigFileValue::Type::type_int);
-				AddValue(showConsole);
 			}
 			else if (name == "showSceneMenu")
 			{
@@ -562,14 +460,6 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Show scene menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
-
-				ConfigFileValue showSceneMenu(
-					"showSceneMenu",
-					to_string(GUIInspector::renderInspector),
-					"0",
-					"1",
-					ConfigFileValue::Type::type_int);
-				AddValue(showSceneMenu);
 			}
 			else if (name == "showProjectHierarchyWindow")
 			{
@@ -591,22 +481,18 @@ namespace EngineFile
 						Type::EXCEPTION,
 						"Show project hierarchy window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
-
-				ConfigFileValue showProjectHierarchyWindow(
-					"showProjectHierarchyWindow",
-					to_string(GUIProjectHierarchy::renderProjectHierarchy),
-					"0",
-					"1",
-					ConfigFileValue::Type::type_int);
-				AddValue(showProjectHierarchyWindow);
 			}
 		}
 
 		configFile.close();
+
+		UpdateValues();
 	}
 
-	void ConfigFileManager::SaveDataAtShutdown()
+	void ConfigFileManager::SaveData()
 	{
+		UpdateValues();
+
 		if (exists(Engine::docsPath + "/config.txt"))
 		{
 			if (!remove(Engine::docsPath + "/config.txt"))
@@ -636,16 +522,18 @@ namespace EngineFile
 			return;
 		}
 
-		for (const auto& variable : ConfigFileManager::GetValuesVector())
+		for (const auto& variable : values)
 		{
 			configFile << variable.GetName() << ": " << variable.GetValue() << "\n";
 		}
 
 		configFile.close();
 
+		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
-			Type::DEBUG,
+			Type::INFO,
 			"Sucessfully saved data to config.txt!\n");
 	}
 
@@ -661,36 +549,131 @@ namespace EngineFile
 		return "";
 	}
 
-	void ConfigFileManager::SetValue(
-		const string& name, 
-		const string& newValue)
+	void ConfigFileManager::UpdateValues()
 	{
-		for (auto& configFileValue : values)
-		{
-			if (configFileValue.GetName() == name)
-			{
-				ConfigFileValue::Type type = configFileValue.GetType();
+		values.clear();
 
-				if (type == ConfigFileValue::Type::type_string
-					|| (type == ConfigFileValue::Type::type_float)
-					&& String::CanConvertStringToFloat(newValue)
-					|| (type == ConfigFileValue::Type::type_int)
-					&& String::CanConvertStringToFloat(newValue))
-				{
-					if (ConfigFileManager::IsValueInRange(name, newValue))
-					{
-						configFileValue.SetValue(newValue);
-					}
-					else cout << "this idiot cant set config file values in range\n";
-					break;
-				}
-				else
-				{
-					cout << "this idiot cant convert config file values\n";
-					break;
-				}
-			}
-		}
+		ConfigFileValue fontScale(
+			"fontScale",
+			to_string(EngineGUI::fontScale),
+			"1.0",
+			"2.0",
+			ConfigFileValue::Type::type_float);
+		AddValue(fontScale);
+
+		int width, height;
+		glfwGetWindowSize(Render::window, &width, &height);
+		ConfigFileValue resolution(
+			"resolution",
+			to_string(width) + ", " + to_string(height),
+			"1280, 720",
+			"7860, 3840",
+			ConfigFileValue::Type::type_vec2);
+		AddValue(resolution);
+
+		ConfigFileValue vsync(
+			"vsync",
+			to_string(Render::useMonitorRefreshRate),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(vsync);
+
+		ConfigFileValue fov(
+			"fov",
+			to_string(Input::fov),
+			"70",
+			"110",
+			ConfigFileValue::Type::type_float);
+		AddValue(fov);
+
+		ConfigFileValue camNearClip(
+			"camNearClip",
+			to_string(Input::nearClip),
+			"0.001",
+			"10000.0",
+			ConfigFileValue::Type::type_float);
+		AddValue(camNearClip);
+
+		ConfigFileValue camFarClip(
+			"camFarClip",
+			to_string(Input::farClip),
+			"0.001",
+			"10000.0",
+			ConfigFileValue::Type::type_float);
+		AddValue(camFarClip);
+
+		ConfigFileValue objectSensitivity(
+			"objectSensitivity",
+			to_string(Input::objectSensitivity),
+			"0.0",
+			"5.0",
+			ConfigFileValue::Type::type_float);
+		AddValue(objectSensitivity);
+
+		string camPosValue =
+			to_string(Render::camera.GetCameraPosition().x) + ", " +
+			to_string(Render::camera.GetCameraPosition().y) + ", " +
+			to_string(Render::camera.GetCameraPosition().z);
+		ConfigFileValue camPos(
+			"camPos",
+			camPosValue,
+			"-1000000.0, -1000000.0, -1000000.0",
+			"1000000.0, 1000000.0, 1000000.0",
+			ConfigFileValue::Type::type_vec3);
+		AddValue(camPos);
+
+		string camRotValue =
+			to_string(Render::camera.GetCameraRotation().x) + ", " +
+			to_string(Render::camera.GetCameraRotation().y) + ", " +
+			to_string(Render::camera.GetCameraRotation().z);
+		ConfigFileValue camRot(
+			"camRot",
+			camRotValue,
+			"-359.99, -359.99, -359.99",
+			"359.99, 359.99, 359.99",
+			ConfigFileValue::Type::type_vec3);
+		AddValue(camRot);
+
+		ConfigFileValue consoleForceScroll(
+			"consoleForceScroll",
+			to_string(GUIConsole::allowScrollToBottom),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(consoleForceScroll);
+
+		ConfigFileValue showDebugMenu(
+			"showDebugMenu",
+			to_string(GUIDebugMenu::renderDebugMenu),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(showDebugMenu);
+
+		ConfigFileValue showConsole(
+			"showConsole",
+			to_string(GUIConsole::renderConsole),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(showConsole);
+
+		ConfigFileValue showSceneMenu(
+			"showSceneMenu",
+			to_string(GUIInspector::renderInspector),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(showSceneMenu);
+
+		ConfigFileValue showProjectHierarchyWindow(
+			"showProjectHierarchyWindow",
+			to_string(GUIProjectHierarchy::renderProjectHierarchy),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(showProjectHierarchyWindow);
 	}
 
 	bool ConfigFileManager::IsValueInRange(

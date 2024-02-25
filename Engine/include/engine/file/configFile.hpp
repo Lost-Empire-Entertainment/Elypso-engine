@@ -76,21 +76,20 @@ namespace EngineFile
 	public:
 		static void ProcessFirstConfigValues();
 		static void ProcessConfigFile(const string& fileName);
-		static void SaveDataAtShutdown();
+		static void SaveData();
+	private:
+		static inline vector<ConfigFileValue> values;
+
+		static void SetConfigValuesToDefaultValues();
 
 		static void AddValue(const ConfigFileValue& value) { values.push_back(value); };
+
 		static string GetValue(const string& name);
-		static void SetValue(
-			const string& name, 
-			const string& newValue);
+
+		static void UpdateValues();
+
 		static bool IsValueInRange(
 			const string& name,
 			const string& value);
-
-		static vector<ConfigFileValue> GetValuesVector() { return values; }
-	private:
-		static void SetConfigValuesToDefaultValues();
-
-		static inline vector<ConfigFileValue> values;
 	};
 }

@@ -68,7 +68,6 @@ namespace Core
         };
         static inline ObjectAction objectAction = ObjectAction::none;
 
-        static inline bool printFPSToConsole;
         static inline bool printIMGUIToConsole;
         static inline bool printInputToConsole;
         static inline bool printSelectRayDirectionToConsole;

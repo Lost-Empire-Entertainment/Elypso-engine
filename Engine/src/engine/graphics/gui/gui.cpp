@@ -44,6 +44,7 @@
 #include "spotlight.hpp"
 #include "selectobject.hpp"
 #include "sceneFile.hpp"
+#include "configFile.hpp"
 
 using std::cout;
 using std::endl;
@@ -75,6 +76,7 @@ using Graphics::Shape::SpotLight;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using EngineFile::SceneFile;
+using EngineFile::ConfigFileManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -206,7 +208,11 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Save")) SceneFile::SaveCurrentScene();
+			if (ImGui::MenuItem("Save"))
+			{
+				SceneFile::SaveCurrentScene();
+				ConfigFileManager::SaveData();
+			}
 
 			if (ImGui::MenuItem("New Scene"))
 			{

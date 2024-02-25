@@ -125,6 +125,15 @@ namespace Core
 			return;
 		}
 		enginePath = fsEnginePath.string();
+
+		//
+		// COPY config.txt TO ENGINE DOCUMENTS FOLDER IF config.txt DOESNT EXIST
+		//
+
+		if (!exists(Engine::docsPath + "/config.txt"))
+		{
+			File::CopyFileOrFolder(Engine::enginePath + "/template files/config.txt", Engine::docsPath + "/config.txt");
+		}
 	}
 
 	void Engine::InitializeEngine()
@@ -212,7 +221,7 @@ namespace Core
 		}
 		else
 		{
-			ConfigFileManager::SaveDataAtShutdown();
+			ConfigFileManager::SaveData();
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,

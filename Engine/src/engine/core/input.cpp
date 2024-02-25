@@ -37,6 +37,7 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "sceneFile.hpp"
+#include "configFile.hpp"
 
 using std::cout;
 using std::endl;
@@ -54,6 +55,7 @@ using Physics::Select;
 using Graphics::Render;
 using Core::ConsoleManager;
 using EngineFile::SceneFile;
+using EngineFile::ConfigFileManager;
 using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -330,6 +332,7 @@ namespace Core
                 && action == GLFW_PRESS)
             {
                 SceneFile::SaveCurrentScene();
+                ConfigFileManager::SaveData();
             }
 
             if (Select::selectedObj != nullptr)
