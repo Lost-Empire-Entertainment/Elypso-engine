@@ -1,5 +1,5 @@
 ﻿//<Elypso hub>
-//    Copyright(C) < 2024 > < Greenlaser >
+//    Copyright(C) < 2024 > < Lost Empire Entertainment >
 //
 //    This program is free software : you can redistribute it and /or modify
 //    it under the terms of the GNU General Public License as published by
