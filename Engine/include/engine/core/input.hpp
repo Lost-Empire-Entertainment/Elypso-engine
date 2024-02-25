@@ -99,6 +99,7 @@ namespace Core
         static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+        static void MouseMovementCallback(GLFWwindow* window, double xpos, double ypos);
     private:
         GLFWwindow* window;
         float yaw;

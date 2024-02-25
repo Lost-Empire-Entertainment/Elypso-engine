@@ -42,6 +42,7 @@ using std::filesystem::is_directory;
 using std::filesystem::path;
 using std::filesystem::current_path;
 using std::filesystem::create_directory;
+using std::filesystem::copy_file;
 
 using Utils::String;
 using Utils::File;
@@ -132,7 +133,7 @@ namespace Core
 
 		if (!exists(Engine::docsPath + "/config.txt"))
 		{
-			File::CopyFileOrFolder(Engine::enginePath + "/template files/config.txt", Engine::docsPath + "/config.txt");
+			copy_file(Engine::enginePath + "/template files/config.txt", Engine::docsPath + "/config.txt");
 		}
 	}
 

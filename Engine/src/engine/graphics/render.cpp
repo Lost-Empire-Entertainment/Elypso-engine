@@ -147,6 +147,7 @@ namespace Graphics
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 		glfwSetScrollCallback(window, Input::ScrollCallback);
 		glfwSetKeyCallback(window, Input::KeyCallback);
+		glfwSetCursorPosCallback(window, Input::MouseMovementCallback);
 
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { Engine::Shutdown(); });
 

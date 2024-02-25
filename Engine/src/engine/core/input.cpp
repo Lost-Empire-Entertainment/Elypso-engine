@@ -91,6 +91,7 @@ namespace Core
         {
             glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) 
             {
+                Input::MouseMovementCallback(window, xpos, ypos);
                 ImGui::GetIO().MousePos = ImVec2(static_cast<float>(xpos), static_cast<float>(ypos));
             });
 
@@ -184,13 +185,6 @@ namespace Core
                 && leftMouseHeld)
             {
                 leftMouseHeld = false;
-            }
-
-            if (leftMouseHeld
-                && Select::selectedObj != nullptr
-                && !ImGui::GetIO().WantCaptureMouse)
-            {
-
             }
         }
     }
@@ -399,6 +393,71 @@ namespace Core
                         output);
                 }
             }
+        }
+    }
+
+    void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
+    {
+        if (leftMouseHeld
+            && Select::selectedObj != nullptr
+            && !ImGui::GetIO().WantCaptureMouse)
+        {
+            lastMouseX = 0.0;
+            lastMouseY = 0.0;
+
+            double dx = xpos - lastMouseX;
+            double dy = ypos - lastMouseY;
+
+            double distance = sqrt(dx * dx + dy * dy);
+            if (distance > 0.0)
+            {
+                dx /= distance;
+                dy /= distance;
+            }
+
+            vec3 mouseMovement = vec3(dx, dy, 0.0f);
+
+            quat cameraQuat = quat(Render::camera.GetCameraRotation());
+            vec3 rotatedMouseMovement = rotate(cameraQuat, mouseMovement);
+
+            vec3 scaledMouseMovement = vec3(
+                rotatedMouseMovement.x * objectSensitivity,
+                rotatedMouseMovement.y * -objectSensitivity,
+                rotatedMouseMovement.z * -objectSensitivity);
+
+            if (objectAction == ObjectAction::move)
+            {
+                newObjectPosition = Select::selectedObj->GetTransform()->GetPosition();
+
+                if (axis == "X") newObjectPosition.x += scaledMouseMovement.x;
+                else if (axis == "Y") newObjectPosition.y += scaledMouseMovement.y;
+                else if (axis == "Z") newObjectPosition.z += scaledMouseMovement.z;
+
+                Select::selectedObj->GetTransform()->SetPosition(newObjectPosition);
+            }
+            else if (objectAction == ObjectAction::rotate)
+            {
+                newObjectRotation = Select::selectedObj->GetTransform()->GetRotation();
+
+                if (axis == "X") newObjectRotation.x += scaledMouseMovement.x * 20;
+                else if (axis == "Y") newObjectRotation.y += scaledMouseMovement.y * 20;
+                else if (axis == "Z") newObjectRotation.z += scaledMouseMovement.z * 20;
+
+                Select::selectedObj->GetTransform()->SetRotation(newObjectRotation);
+            }
+            else if (objectAction == ObjectAction::scale)
+            {
+                newObjectScale = Select::selectedObj->GetTransform()->GetScale();
+
+                if (axis == "X") newObjectScale.x += scaledMouseMovement.x;
+                else if (axis == "Y") newObjectScale.y += scaledMouseMovement.y;
+                else if (axis == "Z") newObjectScale.z += scaledMouseMovement.z;
+
+                Select::selectedObj->GetTransform()->SetScale(newObjectScale);
+            }
+
+            lastMouseX = xpos;
+            lastMouseY = ypos;
         }
     }
 
