@@ -15,6 +15,9 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine 
 
+#include <iostream>
+#include <algorithm>
+
 //external
 #include "glad.h"
 #include "stb_image.h"
@@ -25,9 +28,6 @@
 //hub
 #include "main.hpp"
 #include "gui.hpp"
-
-#include <iostream>
-#include <algorithm>
 
 using std::cout;
 using std::exception;

@@ -15,6 +15,12 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine 
 
+#include <Windows.h>
+#include <ShlObj.h>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+
 //external
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -24,16 +30,12 @@
 #include "gui.hpp"
 #include "main.hpp"
 
-#include <iostream>
-#include <ShlObj.h>
-#include <fstream>
-#include <filesystem>
-
 using std::cout;
 using std::ifstream;
 using std::ofstream;
 using std::getline;
 using std::ios;
+using std::wstring;
 using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
@@ -60,16 +62,38 @@ void GUI::Initialize()
 		wstring wPath(path);
 		CoTaskMemFree(path); //free the allocated memory
 
-		string result = string(wPath.begin(), wPath.end());
+		//get the required buffer size
+		int size_needed = WideCharToMultiByte(
+			CP_UTF8,
+			0,
+			wPath.c_str(),
+			static_cast<int>(wPath.length()),
+			NULL,
+			0,
+			NULL,
+			NULL);
+
+		//convert wide string to utf-8 encoded narrow string
+		string narrowPath(size_needed, 0);
+		WideCharToMultiByte(
+			CP_UTF8,
+			0,
+			wPath.c_str(),
+			static_cast<int>(wPath.length()),
+			&narrowPath[0],
+			size_needed,
+			NULL,
+			NULL);
+
 		size_t pos = 0;
 		string incorrectSlash = "\\";
 		string correctSlash = "/";
-		while ((pos = result.find(incorrectSlash, pos)) != string::npos)
+		while ((pos = narrowPath.find(incorrectSlash, pos)) != string::npos)
 		{
-			result.replace(pos, incorrectSlash.length(), correctSlash);
+			narrowPath.replace(pos, incorrectSlash.length(), correctSlash);
 			pos += correctSlash.length();
 		}
-		Core::docsPath = result + "/Elypso hub";
+		Core::docsPath = narrowPath + "/Elypso hub";
 	}
 
 	if (!exists(Core::docsPath))
@@ -165,9 +189,11 @@ void GUI::RenderPanels()
 	ImGui::SetWindowPos(ImVec2(300, 0));
 	ImGui::SetWindowSize(ImVec2(static_cast<float>(framebufferWidth) - 300, static_cast<float>(framebufferHeight)));
 
-	int height = (panelHeight + panelSpacing) * files.size();
+	int panelHeightInt = static_cast<int>(panelHeight);
+	int panelSpacingInt = static_cast<int>(panelSpacing);
+	int height = (panelHeightInt + panelSpacingInt) * static_cast<int>(files.size());
 	if (height < framebufferHeight - 20) height = framebufferHeight - 20;
-	ImGui::BeginChild("ScrollingRegion", ImVec2(framebufferWidth, height), true, ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::BeginChild("ScrollingRegion", ImVec2(static_cast<float>(framebufferWidth), static_cast<float>(height)), true, ImGuiWindowFlags_HorizontalScrollbar);
 
 	ImVec2 nextPanelPos = ImGui::GetCursorScreenPos();
 
@@ -186,7 +212,7 @@ void GUI::RenderPanels()
 
 			ImGui::Begin(file.c_str(), NULL, windowFlags);
 
-			ImGui::SetWindowSize(ImVec2(framebufferWidth - 335, 200));
+			ImGui::SetWindowSize(ImVec2(static_cast<float>(framebufferWidth) - 335, 200));
 
 			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)
 				&& !renderConfirmWindow)
@@ -234,7 +260,7 @@ void GUI::RenderButtons()
 {
 	glfwGetFramebufferSize(Core::window, &framebufferWidth, &framebufferHeight);
 
-	ImGui::SetNextWindowSize(ImVec2(300, framebufferHeight));
+	ImGui::SetNextWindowSize(ImVec2(300, static_cast<float>(framebufferHeight)));
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
 
 	ImGuiWindowFlags mainWindowFlags =
@@ -582,12 +608,16 @@ void GUI::RunProject(const string& targetProject)
 	cout << ".\n.\n.\n\n";
 
 	GUI::RunApplication(
-		Core::enginePath.parent_path().wstring(),
-		Core::enginePath);
+		Core::enginePath.parent_path().string(),
+		Core::enginePath.string());
 }
 
-void GUI::RunApplication(const wstring& parentFolderPath, const wstring& exePath, const wstring& commands)
+void GUI::RunApplication(const string& parentFolderPath, const string& exePath, const string& commands)
 {
+	wstring wParentFolderPath(parentFolderPath.begin(), parentFolderPath.end());
+	wstring wExePath(exePath.begin(), exePath.end());
+	wstring wCommands(commands.begin(), commands.end());
+
 	//initialize structures for process creation
 	STARTUPINFOW si;
 	PROCESS_INFORMATION pi;
@@ -598,16 +628,16 @@ void GUI::RunApplication(const wstring& parentFolderPath, const wstring& exePath
 	// Create the new process
 	if (!CreateProcessW
 	(
-		exePath.c_str(),          //path to the executable
-		const_cast<LPWSTR>(commands.c_str()), //command line arguments
-		nullptr,                  //process handle not inheritable
-		nullptr,                  //thread handle not inheritable
-		FALSE,                    //handle inheritance
-		0,                        //creation flags
-		nullptr,                  //use parent's environment block
-		parentFolderPath.c_str(), //use parent's starting directory
-		&si,                      //pointer to STARTUPINFO structure
-		&pi                       //pointer to PROCESS_INFORMATION structure
+		wExePath.c_str(),          //path to the executable
+		const_cast<LPWSTR>(wCommands.c_str()), //command line arguments
+		nullptr,                   //process handle not inheritable
+		nullptr,                   //thread handle not inheritable
+		FALSE,                     //handle inheritance
+		0,                         //creation flags
+		nullptr,                   //use parent's environment block
+		wParentFolderPath.c_str(), //use parent's starting directory
+		&si,                       //pointer to STARTUPINFO structure
+		&pi                        //pointer to PROCESS_INFORMATION structure
 	))
 	{
 		//retrieve the error code and print a descriptive error message
@@ -786,7 +816,29 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 	//convert the wide string to a string
 	wstring ws(filePath);
-	string selectedPath(ws.begin(), ws.end());
+
+	//get the required buffer size
+	int size_needed = WideCharToMultiByte(
+		CP_UTF8,
+		0,
+		ws.c_str(),
+		static_cast<int>(ws.length()),
+		NULL,
+		0,
+		NULL,
+		NULL);
+
+	//convert wide string to utf-8 encoded narrow string
+	string narrowPath(size_needed, 0);
+	WideCharToMultiByte(
+		CP_UTF8,
+		0,
+		ws.c_str(),
+		static_cast<int>(ws.length()),
+		&narrowPath[0],
+		size_needed,
+		NULL,
+		NULL);
 
 	//free memory allocated for filePath
 	CoTaskMemFree(filePath);
@@ -800,7 +852,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 	//uninitialze COM
 	CoUninitialize();
 
-	return selectedPath;
+	return narrowPath;
 }
 
 void GUI::Shutdown()

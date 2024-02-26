@@ -18,12 +18,10 @@
 #pragma once
 
 #include <string>
-#include <Windows.h>
 #include <vector>
 
 using std::string;
 using std::vector;
-using std::wstring;
 
 class GUI
 {
@@ -67,7 +65,7 @@ public:
 
 	static void RunProject(const string& targetProject);
 
-	static void RunApplication(const wstring& parentFolderPath, const wstring& exePath, const wstring& commands = L"");
+	static void RunApplication(const string& parentFolderPath, const string& exePath, const string& commands = "");
 
 	static string SelectWithExplorer(enum SelectType);
 

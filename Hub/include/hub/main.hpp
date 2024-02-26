@@ -17,13 +17,13 @@
 
 #pragma once
 
+#include <filesystem>
+#include <string>
+
 //external
 #include "glfw3.h"
 #include "glm.hpp"
 #include "imgui.h"
-
-#include <filesystem>
-#include <string>
 
 using std::string;
 using std::filesystem::path;
