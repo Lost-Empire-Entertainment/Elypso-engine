@@ -50,14 +50,6 @@ namespace Core
         static inline bool cameraEnabled;
         static inline bool cameraModeSwitched;
 
-        static inline bool leftMouseHeld;
-        static inline double lastMouseX;
-        static inline double lastMouseY;
-        static inline float objectSensitivity = 0.1f;
-        static inline vec3 newObjectPosition;
-        static inline vec3 newObjectRotation;
-        static inline vec3 newObjectScale;
-
         static inline string axis = "X";
         enum class ObjectAction
         {
@@ -110,6 +102,7 @@ namespace Core
         float sensitivity;
 
         static inline bool printCheck;
+        static inline float increment;
 
         vec3 cameraPos;
         vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);

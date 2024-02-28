@@ -77,27 +77,6 @@ namespace Core
 	{
         Input::ProcessKeyboardInput(Render::window);
 
-        if (cameraEnabled)
-        {
-            glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
-            {
-                Render::camera.ProcessMouseMovement(xpos, ypos);
-            });
-            cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
-
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-        else
-        {
-            glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) 
-            {
-                Input::MouseMovementCallback(window, xpos, ypos);
-                ImGui::GetIO().MousePos = ImVec2(static_cast<float>(xpos), static_cast<float>(ypos));
-            });
-
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
-
         if (printInputToConsole)
         {
             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS 
@@ -163,13 +142,13 @@ namespace Core
                     Render::camera.cameraPos += cameraSpeed * currentSpeed * right);
             }
             //camera up
-            if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.cameraPos += Render::camera.cameraUp * cameraSpeed * currentSpeed);
             }
             //camera down
-            if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+            if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.cameraPos -= Render::camera.cameraUp * cameraSpeed * currentSpeed);
@@ -177,15 +156,7 @@ namespace Core
         }
         else
         {
-            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-            {
-                leftMouseHeld = true;
-            }
-            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE
-                && leftMouseHeld)
-            {
-                leftMouseHeld = false;
-            }
+            increment = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 1.0f : 0.1f;
         }
     }
 
@@ -233,8 +204,37 @@ namespace Core
         }
     }
 
-    void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset) 
-    {}
+    void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+    {
+        float combinedOffset = increment * static_cast<float>(yoffset);
+
+        if (objectAction == ObjectAction::move)
+        {
+            vec3 pos = Select::selectedObj->GetTransform()->GetPosition();
+            if (axis == "X") pos = vec3(pos.x + combinedOffset, pos.y, pos.z);
+            else if (axis == "Y") pos = vec3(pos.x, pos.y + combinedOffset, pos.z);
+            else if (axis == "Z") pos = vec3(pos.x, pos.y, pos.z + combinedOffset);
+
+            Select::selectedObj->GetTransform()->SetPosition(pos);
+        }
+        else if (objectAction == ObjectAction::rotate)
+        {
+            vec3 rot = Select::selectedObj->GetTransform()->GetRotation();
+            if (axis == "X") rot = vec3(rot.x + combinedOffset * 10, rot.y, rot.z);
+            else if (axis == "Y") rot = vec3(rot.x, rot.y + combinedOffset * 10, rot.z);
+            else if (axis == "Z") rot = vec3(rot.x, rot.y, rot.z + combinedOffset * 10);
+            Select::selectedObj->GetTransform()->SetRotation(rot);
+        }
+        else if (objectAction == ObjectAction::scale)
+        {
+            vec3 scale = Select::selectedObj->GetTransform()->GetScale();
+            if (axis == "X") scale = vec3(scale.x + combinedOffset, scale.y, scale.z);
+            else if (axis == "Y") scale = vec3(scale.x, scale.y + combinedOffset, scale.z);
+            else if (axis == "Z") scale = vec3(scale.x, scale.y, scale.z + combinedOffset);
+
+            Select::selectedObj->GetTransform()->SetScale(scale);
+        }
+    }
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
@@ -398,66 +398,29 @@ namespace Core
 
     void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
     {
-        if (leftMouseHeld
-            && Select::selectedObj != nullptr
-            && !ImGui::GetIO().WantCaptureMouse)
+        static bool cursorNormal;
+
+        if (cameraEnabled)
         {
-            lastMouseX = 0.0;
-            lastMouseY = 0.0;
-
-            double dx = xpos - lastMouseX;
-            double dy = ypos - lastMouseY;
-
-            double distance = sqrt(dx * dx + dy * dy);
-            if (distance > 0.0)
+            if (cursorNormal)
             {
-                dx /= distance;
-                dy /= distance;
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                cursorNormal = false;
             }
 
-            vec3 mouseMovement = vec3(dx, dy, 0.0f);
+            Render::camera.ProcessMouseMovement(xpos, ypos);
 
-            quat cameraQuat = quat(Render::camera.GetCameraRotation());
-            vec3 rotatedMouseMovement = rotate(cameraQuat, mouseMovement);
-
-            vec3 scaledMouseMovement = vec3(
-                rotatedMouseMovement.x * objectSensitivity,
-                rotatedMouseMovement.y * -objectSensitivity,
-                rotatedMouseMovement.z * -objectSensitivity);
-
-            if (objectAction == ObjectAction::move)
+            cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
+        }
+        else
+        {
+            if (!cursorNormal)
             {
-                newObjectPosition = Select::selectedObj->GetTransform()->GetPosition();
-
-                if (axis == "X") newObjectPosition.x += scaledMouseMovement.x;
-                else if (axis == "Y") newObjectPosition.y += scaledMouseMovement.y;
-                else if (axis == "Z") newObjectPosition.z += scaledMouseMovement.z;
-
-                Select::selectedObj->GetTransform()->SetPosition(newObjectPosition);
-            }
-            else if (objectAction == ObjectAction::rotate)
-            {
-                newObjectRotation = Select::selectedObj->GetTransform()->GetRotation();
-
-                if (axis == "X") newObjectRotation.x += scaledMouseMovement.x * 20;
-                else if (axis == "Y") newObjectRotation.y += scaledMouseMovement.y * 20;
-                else if (axis == "Z") newObjectRotation.z += scaledMouseMovement.z * 20;
-
-                Select::selectedObj->GetTransform()->SetRotation(newObjectRotation);
-            }
-            else if (objectAction == ObjectAction::scale)
-            {
-                newObjectScale = Select::selectedObj->GetTransform()->GetScale();
-
-                if (axis == "X") newObjectScale.x += scaledMouseMovement.x;
-                else if (axis == "Y") newObjectScale.y += scaledMouseMovement.y;
-                else if (axis == "Z") newObjectScale.z += scaledMouseMovement.z;
-
-                Select::selectedObj->GetTransform()->SetScale(newObjectScale);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                cursorNormal = true;
             }
 
-            lastMouseX = xpos;
-            lastMouseY = ypos;
+            ImGui::GetIO().MousePos = ImVec2(static_cast<float>(xpos), static_cast<float>(ypos));
         }
     }
 

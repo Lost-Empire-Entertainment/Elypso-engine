@@ -69,6 +69,8 @@ namespace Graphics::Shape
 			}
 
 			Border::RenderBorder(border, view, projection);
+
+			ActionTex::RenderActionTex(actionTex, view, projection);
 		}
 
 		//transparent objects are rendered last
@@ -91,8 +93,6 @@ namespace Graphics::Shape
 				});
 
 			glDisable(GL_DEPTH_TEST);
-
-			ActionTex::RenderActionTex(actionTex, view, projection);
 
 			for (const auto& obj : transparentObjects)
 			{

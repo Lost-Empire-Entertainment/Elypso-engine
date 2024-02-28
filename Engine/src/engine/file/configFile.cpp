@@ -79,7 +79,6 @@ namespace EngineFile
 		Input::farClip = 100.0f;
 		vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
 		Render::camera.SetCameraPosition(newPosition);
-		Input::objectSensitivity = 0.1f;
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
 		GUIConsole::allowScrollToBottom = true;
 		ConsoleManager::sendDebugMessages = false;
@@ -295,27 +294,6 @@ namespace EngineFile
 						Caller::ENGINE,
 						Type::EXCEPTION,
 						"Camera far clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "objectSensitivity")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					Input::objectSensitivity = stof(lineVariables[0]);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set object sensitivity to " + to_string(Input::objectSensitivity) + ".\n");
-				}
-				else
-				{
-					Input::objectSensitivity = 0.1f;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Object sensitivity value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
 				}
 			}
 			else if (name == "camPos")
@@ -602,14 +580,6 @@ namespace EngineFile
 			"10000.0",
 			ConfigFileValue::Type::type_float);
 		AddValue(camFarClip);
-
-		ConfigFileValue objectSensitivity(
-			"objectSensitivity",
-			to_string(Input::objectSensitivity),
-			"0.0",
-			"5.0",
-			ConfigFileValue::Type::type_float);
-		AddValue(objectSensitivity);
 
 		string camPosValue =
 			to_string(Render::camera.GetCameraPosition().x) + ", " +

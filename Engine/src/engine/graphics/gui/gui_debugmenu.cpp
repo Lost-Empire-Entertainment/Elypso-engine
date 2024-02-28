@@ -172,24 +172,6 @@ namespace Graphics::GUI
 		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
 
 		//
-		// GAMEOBJECT INTERACTION MOVE SENSITIVITY
-		//
-
-		ImGui::Separator();
-
-		ImGui::Text("Interaction move sensitivity");
-		if (ImGui::DragFloat("##intMoveSpeed", &Input::objectSensitivity, 0.01f, 0.0f, 1.0f))
-		{
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##intMoveSpeed"))
-		{
-			Input::objectSensitivity = 0.1f;
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-
-		//
 		// CAMERA CLIP RANGE
 		//
 
