@@ -121,11 +121,11 @@ namespace Graphics::GUI
 		ImGui::Text("Switch to Y axis: Y");
 		ImGui::Text("Switch to Z axis: Z");
 		ImGui::Text("Move selected object:");
-		ImGui::Text("Press W and drag with left mouse to left or right");
+		ImGui::Text("Press W and scroll up to increase or down to decrease value");
 		ImGui::Text("Rotate selected object:");
-		ImGui::Text("Hold S and drag with left mouse to left or right");
+		ImGui::Text("Hold E and scroll up to increase or down to decrease value");
 		ImGui::Text("Scale selected object:");
-		ImGui::Text("Hold R and drag with left mouse to left or right");
+		ImGui::Text("Hold R and scroll up to increase or down to decrease value");
 	}
 	void GUIDebugMenu::RD_Interactions()
 	{
