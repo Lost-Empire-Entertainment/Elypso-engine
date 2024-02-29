@@ -265,7 +265,11 @@ namespace Graphics::Shape
 		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight) { spotLight = newSpotLight; }
 
 		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
-		void SetChild(const shared_ptr<GameObject>& newChild) { child = newChild; }
+		void AddChild(const shared_ptr<GameObject>& addedChild) { children.push_back(addedChild); }
+		void RemoveChild(const shared_ptr<GameObject>& removedChild) 
+		{ 
+			children.erase(remove(children.begin(), children.end(), removedChild), children.end()); 
+		}
 		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder) { parentBillboardHolder = newParentBillboardHolder; }
 		void SetChildBillboard(const shared_ptr<GameObject>& newChildBillboard) { childBillboard = newChildBillboard; }
 
@@ -280,7 +284,7 @@ namespace Graphics::Shape
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
 		const shared_ptr<GameObject>& GetParent() const { return parent; }
-		const shared_ptr<GameObject>& GetChild() const { return child; }
+		const vector<shared_ptr<GameObject>>& GetChildren() const { return children; }
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
 		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
 	private:
@@ -295,7 +299,7 @@ namespace Graphics::Shape
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;
 		shared_ptr<GameObject> parent;
-		shared_ptr<GameObject> child;
+		vector<shared_ptr<GameObject>> children;
 		shared_ptr<GameObject> parentBillboardHolder;
 		shared_ptr<GameObject> childBillboard;
 	};

@@ -33,6 +33,7 @@
 #include "gui_debugmenu.hpp"
 #include "gui_inspector.hpp"
 #include "gui_projecthierarchy.hpp"
+#include "gui_scenehierarchy.hpp"
 #include "core.hpp"
 #include "input.hpp"
 #include "sceneFile.hpp"
@@ -62,6 +63,7 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
+using Graphics::GUI::GUISceneHierarchy;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -376,6 +378,27 @@ namespace EngineFile
 						"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
 			}
+			else if (name == "showSceneHierarchy")
+			{
+				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+				{
+					GUISceneHierarchy::renderSceneHierarchy = static_cast<bool>(stoi(lineVariables[0]));
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::DEBUG,
+						"Set show scene hierarchy to " + to_string(GUISceneHierarchy::renderSceneHierarchy) + ".\n");
+				}
+				else
+				{
+					GUISceneHierarchy::renderSceneHierarchy = false;
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Show scene hierarchy value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+				}
+			}
 			else if (name == "showDebugMenu")
 			{
 				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
@@ -389,7 +412,7 @@ namespace EngineFile
 				}
 				else
 				{
-					GUIDebugMenu::renderDebugMenu = true;
+					GUIDebugMenu::renderDebugMenu = false;
 
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -410,7 +433,7 @@ namespace EngineFile
 				}
 				else
 				{
-					GUIConsole::renderConsole = true;
+					GUIConsole::renderConsole = false;
 
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -418,7 +441,7 @@ namespace EngineFile
 						"Show console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
 			}
-			else if (name == "showSceneMenu")
+			else if (name == "showInspector")
 			{
 				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
 				{
@@ -427,16 +450,16 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::DEBUG,
-						"Set show scene menu to " + to_string(GUIInspector::renderInspector) + ".\n");
+						"Set show inspector to " + to_string(GUIInspector::renderInspector) + ".\n");
 				}
 				else
 				{
-					GUIInspector::renderInspector = true;
+					GUIInspector::renderInspector = false;
 
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Show scene menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+						"Show inspector value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
 			}
 			else if (name == "showProjectHierarchyWindow")
@@ -452,7 +475,7 @@ namespace EngineFile
 				}
 				else
 				{
-					GUIProjectHierarchy::renderProjectHierarchy = true;
+					GUIProjectHierarchy::renderProjectHierarchy = false;
 
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -613,6 +636,14 @@ namespace EngineFile
 			ConfigFileValue::Type::type_int);
 		AddValue(consoleForceScroll);
 
+		ConfigFileValue showSceneHierarchy(
+			"showSceneHierarchy",
+			to_string(GUISceneHierarchy::renderSceneHierarchy),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(showSceneHierarchy);
+
 		ConfigFileValue showDebugMenu(
 			"showDebugMenu",
 			to_string(GUIDebugMenu::renderDebugMenu),
@@ -629,13 +660,13 @@ namespace EngineFile
 			ConfigFileValue::Type::type_int);
 		AddValue(showConsole);
 
-		ConfigFileValue showSceneMenu(
-			"showSceneMenu",
+		ConfigFileValue showInspector(
+			"showInspector",
 			to_string(GUIInspector::renderInspector),
 			"0",
 			"1",
 			ConfigFileValue::Type::type_int);
-		AddValue(showSceneMenu);
+		AddValue(showInspector);
 
 		ConfigFileValue showProjectHierarchyWindow(
 			"showProjectHierarchyWindow",
