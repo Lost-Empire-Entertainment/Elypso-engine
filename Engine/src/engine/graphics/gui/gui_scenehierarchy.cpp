@@ -110,30 +110,10 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
-			if (ImGui::MenuItem("Create gameobject"))
-			{
-				cout << "Created new gameobject \n";
-
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
 
 			if (ImGui::MenuItem("Rename"))
 			{
 				isRenaming = true;
-			}
-
-			if (ImGui::MenuItem("Copy"))
-			{
-				copiedGameObject = selectedGameObject;
-
-				cout << "Copied " << selectedGameObject->GetName() << "\n";
-			}
-
-			if (ImGui::MenuItem("Paste"))
-			{
-				cout << "Pasted " << copiedGameObject->GetName() << " to " << selectedGameObject->GetName() << "\n";
-
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Delete"))
