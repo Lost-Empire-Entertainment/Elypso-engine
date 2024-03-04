@@ -17,30 +17,12 @@
 
 #pragma once
 
-#include <string>
-
-using std::string;
-
-namespace Core
+namespace Graphics::GUI
 {
-	class Engine
+	class GUINodeBlock
 	{
 	public:
-		static inline string name = "Elypso engine";
-		static inline string version = "0.0.12 Prototype";
-		static inline string docsPath;
-		static inline string filesPath;
-		static inline string enginePath;
-
-		static inline bool startedWindowLoop;
-
-		static void PreInitializePathChecks();
-
-		static void InitializeEngine();
-		static void RunEngine();
-
-		static void CreateErrorPopup(const char* errorTitle = "INSERT ERROR TITLE", const char* errorMessage = "INSERT ERROR MESSAGE");
-
-		static void Shutdown();
+		static inline bool renderNodeBlock;
+		static void RenderNodeBlock();
 	};
 }

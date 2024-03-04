@@ -34,6 +34,7 @@
 #include "gui_inspector.hpp"
 #include "gui_projecthierarchy.hpp"
 #include "gui_scenehierarchy.hpp"
+#include "gui_nodeblock.hpp"
 #include "core.hpp"
 #include "input.hpp"
 #include "sceneFile.hpp"
@@ -64,6 +65,7 @@ using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUIProjectHierarchy;
 using Graphics::GUI::GUISceneHierarchy;
+using Graphics::GUI::GUINodeBlock;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -88,6 +90,8 @@ namespace EngineFile
 		GUIConsole::renderConsole = false;
 		GUIInspector::renderInspector = false;
 		GUIProjectHierarchy::renderProjectHierarchy = false;
+		GUISceneHierarchy::renderSceneHierarchy = false;
+		GUINodeBlock::renderNodeBlock = false;
 	}
 	
 	void ConfigFileManager::ProcessFirstConfigValues()
@@ -483,6 +487,48 @@ namespace EngineFile
 						"Show project hierarchy window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
 			}
+			else if (name == "showSceneHierarchyWindow")
+			{
+				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+				{
+					GUISceneHierarchy::renderSceneHierarchy = static_cast<bool>(stoi(lineVariables[0]));
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::DEBUG,
+						"Set show scene hierarchy window to " + to_string(GUIProjectHierarchy::renderProjectHierarchy) + ".\n");
+				}
+				else
+				{
+					GUISceneHierarchy::renderSceneHierarchy = false;
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Show scene hierarchy window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+				}
+			}
+			else if (name == "showNodeBlockWindow")
+			{
+				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+				{
+					GUINodeBlock::renderNodeBlock = static_cast<bool>(stoi(lineVariables[0]));
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::DEBUG,
+						"Set show node block window to " + to_string(GUIProjectHierarchy::renderProjectHierarchy) + ".\n");
+				}
+				else
+				{
+					GUINodeBlock::renderNodeBlock = false;
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Show node block window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+				}
+			}
 		}
 
 		configFile.close();
@@ -675,6 +721,22 @@ namespace EngineFile
 			"1",
 			ConfigFileValue::Type::type_int);
 		AddValue(showProjectHierarchyWindow);
+
+		ConfigFileValue showSceneHierarchyWindow(
+			"showSceneHierarchyWindow",
+			to_string(GUISceneHierarchy::renderSceneHierarchy),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(showSceneHierarchyWindow);
+
+		ConfigFileValue showNodeBlockWindow(
+			"showNodeBlockWindow",
+			to_string(GUINodeBlock::renderNodeBlock),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(showNodeBlockWindow);
 	}
 
 	bool ConfigFileManager::IsValueInRange(

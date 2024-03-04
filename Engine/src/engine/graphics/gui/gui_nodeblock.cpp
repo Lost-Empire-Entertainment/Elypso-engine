@@ -15,32 +15,37 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#pragma once
+//external
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
-#include <string>
+//engine
+#include "gui_nodeblock.hpp"
+#include "gui.hpp"
 
-using std::string;
-
-namespace Core
+namespace Graphics::GUI
 {
-	class Engine
+	void GUINodeBlock::RenderNodeBlock()
 	{
-	public:
-		static inline string name = "Elypso engine";
-		static inline string version = "0.0.12 Prototype";
-		static inline string docsPath;
-		static inline string filesPath;
-		static inline string enginePath;
+		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
+		ImGui::SetNextWindowPos(EngineGUI::initialPos, ImGuiCond_FirstUseEver);
 
-		static inline bool startedWindowLoop;
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse;
 
-		static void PreInitializePathChecks();
+		if (renderNodeBlock
+			&& ImGui::Begin("Nodeblock", NULL, windowFlags))
+		{
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				renderNodeBlock = false;
+			}
 
-		static void InitializeEngine();
-		static void RunEngine();
-
-		static void CreateErrorPopup(const char* errorTitle = "INSERT ERROR TITLE", const char* errorMessage = "INSERT ERROR MESSAGE");
-
-		static void Shutdown();
-	};
+			ImGui::End();
+		}
+	}
 }

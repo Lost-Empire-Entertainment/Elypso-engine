@@ -32,6 +32,7 @@
 #include "gui_inspector.hpp"
 #include "gui_projecthierarchy.hpp"
 #include "gui_scenehierarchy.hpp"
+#include "gui_nodeblock.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -67,11 +68,6 @@ using Physics::Select;
 using Utils::File;
 using Utils::Browser;
 using Utils::String;
-using Graphics::GUI::GUIConsole;
-using Graphics::GUI::GUIDebugMenu;
-using Graphics::GUI::GUIInspector;
-using Graphics::GUI::GUIProjectHierarchy;
-using Graphics::GUI::GUISceneHierarchy;
 using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
@@ -181,6 +177,7 @@ namespace Graphics::GUI
 		GUIInspector::RenderInspector();
 		GUIProjectHierarchy::RenderProjectHierarchy(Engine::filesPath);
 		GUISceneHierarchy::RenderSceneHierarchy();
+		GUINodeBlock::RenderNodeBlock();
 		if (GUIProjectHierarchy::rootPath.empty())
 		{
 			GUIProjectHierarchy::rootPath = Engine::filesPath;
@@ -397,14 +394,14 @@ namespace Graphics::GUI
 				GUISceneHierarchy::renderSceneHierarchy = true;
 			}
 
-			if (ImGui::MenuItem("Debug menu"))
-			{
-				GUIDebugMenu::renderDebugMenu = true;
-			}
-
 			if (ImGui::MenuItem("Project hierarchy"))
 			{
 				GUIProjectHierarchy::renderProjectHierarchy = true;
+			}
+
+			if (ImGui::MenuItem("Node block"))
+			{
+				GUINodeBlock::renderNodeBlock = true;
 			}
 
 			if (ImGui::MenuItem("Inspector"))
@@ -415,6 +412,11 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Console"))
 			{
 				GUIConsole::renderConsole = true;
+			}
+
+			if (ImGui::MenuItem("Debug menu"))
+			{
+				GUIDebugMenu::renderDebugMenu = true;
 			}
 
 			ImGui::EndMenu();
