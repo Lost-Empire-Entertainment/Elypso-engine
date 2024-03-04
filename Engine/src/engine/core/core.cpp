@@ -149,7 +149,7 @@ namespace Core
 			Caller::ENGINE,
 			Type::INFO,
 			Engine::name + " " + Engine::version + "\n" +
-			"Copyright (C) Greenlaser 2024\n\n",
+			"Copyright (C) Lost Empire Entertainment 2024\n\n",
 			true);
 
 		string output = "Engine documents path: " + Engine::docsPath + "\n";

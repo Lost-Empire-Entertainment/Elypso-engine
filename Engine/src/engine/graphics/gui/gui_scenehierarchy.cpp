@@ -29,6 +29,8 @@
 #include "gui.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
+#include "selectobject.hpp"
+#include "input.hpp"
 
 using std::cout;
 
@@ -37,6 +39,8 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::GUI::EngineGUI;
 using EngineFile::SceneFile;
 using Graphics::Render;
+using Physics::Select;
+using Core::Input;
 
 namespace Graphics::GUI
 {
@@ -65,7 +69,7 @@ namespace Graphics::GUI
 					&& type != Mesh::MeshType::billboard
 					&& type != Mesh::MeshType::border)
 				{
-					DrawGameObject(obj, true);
+					DrawGameObject(obj);
 				}
 			}
 			RightClickPopup();
@@ -75,47 +79,24 @@ namespace Graphics::GUI
 		}
 	}
 
-	void GUISceneHierarchy::DrawGameObject(const shared_ptr<GameObject> obj, bool isRoot)
+	void GUISceneHierarchy::DrawGameObject(const shared_ptr<GameObject> obj)
 	{
-		ImGuiTreeNodeFlags nodeFlags =
-			ImGuiTreeNodeFlags_OpenOnArrow |
-			ImGuiTreeNodeFlags_OpenOnDoubleClick;
+		ImGui::Selectable(obj->GetName().c_str(), false, ImGuiSelectableFlags_AllowItemOverlap);
 
-		bool isGameObjectOpen = ImGui::TreeNodeEx(
-			obj->GetName().c_str(),
-			nodeFlags);
-
-
-		if (ImGui::IsItemHovered()
-			&& ImGui::IsMouseClicked(1))
+		if (ImGui::IsItemHovered())
 		{
-			selectedGameObject = obj;
-			rightMouseClicked = true;
-		}
-
-		if (isGameObjectOpen)
-		{
-			for (const auto& entry : obj->GetChildren())
+			if (ImGui::IsMouseClicked(0))
 			{
-				Mesh::MeshType type = entry->GetMesh()->GetMeshType();
-				if (type != Mesh::MeshType::actionTex
-					&& type != Mesh::MeshType::billboard
-					&& type != Mesh::MeshType::border)
-				{
-					DrawGameObject(entry, true);
-
-					ImGui::Selectable(entry->GetName().c_str());
-
-					if (ImGui::IsItemHovered()
-						&& ImGui::IsMouseClicked(1))
-					{
-						selectedGameObject = entry;
-						rightMouseClicked = true;
-					}
-				}
+				Select::selectedObj = obj;
+				Select::isObjectSelected = true;
+				Input::objectAction = Input::ObjectAction::move;
 			}
 
-			ImGui::TreePop();
+			if (ImGui::IsMouseClicked(1))
+			{
+				selectedGameObject = obj;
+				rightMouseClicked = true;
+			}
 		}
 	}
 
@@ -157,7 +138,11 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Delete"))
 			{
-				cout << "Deleted " << selectedGameObject->GetName() << "\n";
+				string objName = selectedGameObject->GetName();
+
+				GameObjectManager::DestroyGameObject(selectedGameObject);
+
+				cout << "Deleted " << objName << "\n";
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

@@ -386,6 +386,7 @@ namespace Core
 
                 Select::selectedObj = objects[index];
                 Select::isObjectSelected = true;
+                Input::objectAction = Input::ObjectAction::move;
                 if (printSelectRayDirectionToConsole)
                 {
                     string output = "Hit " + Select::selectedObj->GetName() + "!\n";

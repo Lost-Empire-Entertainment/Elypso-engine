@@ -156,11 +156,8 @@ namespace Core
             internalMsg = invalidMsg;
             break;
         case Type::DEBUG:
-            if (sendDebugMessages)
-            {
-                externalMsg = onlyMessage ? message : validMsg;
-                internalMsg = onlyMessage ? message : timeStamp + message;
-            }
+            if (sendDebugMessages) internalMsg = onlyMessage ? message : timeStamp + message;
+            externalMsg = onlyMessage ? message : validMsg;
             break;
         case Type::INFO:
             externalMsg = onlyMessage ? message : validMsg;

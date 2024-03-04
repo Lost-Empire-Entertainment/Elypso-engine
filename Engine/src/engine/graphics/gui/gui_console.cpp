@@ -27,9 +27,11 @@
 #include "console.hpp"
 #include "gui_console.hpp"
 #include "render.hpp"
+#include "timeManager.hpp"
 
 using Graphics::Render;
 using Core::Engine;
+using Core::TimeManager;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -47,6 +49,7 @@ namespace Graphics::GUI
 		if (renderConsole
 			&& ImGui::Begin("Console", NULL, windowFlags))
 		{
+			ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))

@@ -30,6 +30,7 @@
 #include "selectedobjectborder.hpp"
 #include "billboard.hpp"
 #include "render.hpp"
+#include "selectobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -39,6 +40,7 @@ using std::remove;
 using std::dynamic_pointer_cast;
 using glm::distance;
 
+using Physics::Select;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -112,6 +114,10 @@ namespace Graphics::Shape
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
 	{
 		Type type = obj->GetMesh()->GetMeshType();
+
+		Select::selectedObj = nullptr;
+		Select::isObjectSelected = false;
+
 		switch (type)
 		{
 		case Type::cube:

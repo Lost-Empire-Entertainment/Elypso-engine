@@ -39,7 +39,7 @@ namespace Graphics::GUI
 		static inline shared_ptr<GameObject> copiedGameObject;
 		static inline shared_ptr<GameObject> selectedGameObject;
 
-		static void DrawGameObject(shared_ptr<GameObject> obj, bool isRoot);
+		static void DrawGameObject(shared_ptr<GameObject> obj);
 		static void RightClickPopup();
 		static void RenameGameObject();
 	};

@@ -32,7 +32,6 @@
 #include "render.hpp"
 #include "input.hpp"
 #include "console.hpp"
-#include "timeManager.hpp"
 #include "grid.hpp"
 #include "sceneFile.hpp"
 
@@ -41,7 +40,6 @@ using std::stof;
 using std::round;
 
 using EngineFile::SceneFile;
-using Core::TimeManager;
 using Graphics::GUI::GUIConsole;
 using Graphics::Render;
 using Graphics::Grid;
@@ -90,7 +88,6 @@ namespace Graphics::GUI
 	}
 	void GUIDebugMenu::RD_DebugMenuInfo()
 	{
-		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 		ImGui::Text(
 			"Position: %.2f, %.2f, %.2f",
 			Render::camera.GetCameraPosition().x,
