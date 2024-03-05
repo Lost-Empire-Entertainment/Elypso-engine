@@ -135,6 +135,18 @@ namespace Graphics::GUI
 			ImGui::SetCursorPos(imagePos);
 			ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(textureID)), imageSize);
 
+			if (ImGui::IsMouseClicked(1)) ImGui::OpenPopup("rightclickpopup");
+
+			if (ImGui::BeginPopupContextItem("rightclickpopup"))
+			{
+				if (ImGui::MenuItem("Add node"))
+				{
+					cout << "added node...\n";
+				}
+
+				ImGui::EndPopup();
+			}
+
 			ImGui::EndChild();
 
 			ImGui::End();

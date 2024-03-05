@@ -110,7 +110,6 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
-
 			if (ImGui::MenuItem("Rename"))
 			{
 				isRenaming = true;
