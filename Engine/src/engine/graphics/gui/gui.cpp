@@ -119,6 +119,8 @@ namespace Graphics::GUI
 		bgrColor.w = 1.0f;
 
 		CustomizeImGuiStyle();
+
+		GUINodeBlock::SetBackgroundTexture();
 	}
 	void EngineGUI::CustomizeImGuiStyle()
 	{

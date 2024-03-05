@@ -17,12 +17,19 @@
 
 #pragma once
 
+#include "glfw3.h"
+
 namespace Graphics::GUI
 {
 	class GUINodeBlock
 	{
 	public:
+		static inline unsigned int textureID;
 		static inline bool renderNodeBlock;
+
+		static void SetBackgroundTexture();
 		static void RenderNodeBlock();
+	private:
+		static inline unsigned int backgroundID;
 	};
 }
