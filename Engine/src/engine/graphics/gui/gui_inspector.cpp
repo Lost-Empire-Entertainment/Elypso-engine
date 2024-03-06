@@ -33,6 +33,7 @@
 #include "gameobject.hpp"
 #include "sceneFile.hpp"
 #include "input.hpp"
+#include "gui_nodeblock.hpp"
 
 using std::cout;
 using std::endl;
@@ -351,13 +352,22 @@ namespace Graphics::GUI
 
 				if (ImGui::BeginPopupContextItem("rightclickpopup"))
 				{
+					if (ImGui::MenuItem("Select"))
+					{
+						GUINodeBlock::selectedGameObject = Select::selectedObj;
+						GUINodeBlock::selectedComponent = component;
+					}
+
 					if (ImGui::MenuItem("Remove"))
 					{
 						string componentName = component->GetName();
 
-						Select::selectedObj->RemoveComponent(component);
+						if (GUINodeBlock::selectedComponent == component)
+						{
+							GUINodeBlock::selectedComponent = nullptr;
+						}
 
-						cout << "Removed " << componentName << "\n";
+						Select::selectedObj->RemoveComponent(component);
 					}
 
 					ImGui::EndPopup();

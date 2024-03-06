@@ -87,6 +87,13 @@ namespace Graphics::GUI
 			static ImVec2 lastMousePos;
 			static bool isDragging = false;
 
+			if (selectedGameObject != nullptr
+				&& selectedComponent != nullptr)
+			{
+				string text = selectedGameObject->GetName() + " | " + selectedComponent->GetName();
+				ImGui::Text(text.c_str());
+			}
+
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -151,7 +158,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Add node"))
 				{
-					cout << "added node...\n";
+
 				}
 
 				ImGui::EndPopup();
