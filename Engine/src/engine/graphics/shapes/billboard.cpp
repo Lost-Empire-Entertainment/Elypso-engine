@@ -102,6 +102,8 @@ namespace Graphics::Shape
 		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
 		mat->AddShader(vertShader, fragShader, billboardShader);
 
+		vector<shared_ptr<Component>> components;
+
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
 		if (name == tempName) name = "Billboard";
@@ -113,6 +115,7 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
+			components,
 			basicShape);
 
 		Texture tex(Engine::enginePath);

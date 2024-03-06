@@ -31,6 +31,7 @@
 #include "gui_nodeblock.hpp"
 #include "gui.hpp"
 #include "core.hpp"
+#include "input.hpp"
 
 using std::cout;
 using std::max;
@@ -38,6 +39,7 @@ using std::min;
 using std::filesystem::exists;
 
 using Core::Engine;
+using Core::Input;
 
 namespace Graphics::GUI
 {
@@ -98,36 +100,39 @@ namespace Graphics::GUI
 
 			ImGui::BeginChild("NodeblockScrolling", ImVec2(0, 0), true, childWindowFlags);
 
-			//zooming with mouse scroll wheel and ctrl key
-			if (ImGui::IsWindowHovered()
-				&& ImGui::GetIO().KeyCtrl
-				&& ImGui::GetIO().MouseWheel != 0)
+			if (!Input::cameraEnabled
+				&& ImGui::IsWindowHovered())
 			{
-				zoomFactor += ImGui::GetIO().MouseWheel * 0.1f;
-				zoomFactor = max(zoomFactor, 0.3f);
-				zoomFactor = min(zoomFactor, 5.0f);
-			}
+				//zooming with mouse scroll wheel and ctrl key
+				if (ImGui::GetIO().KeyCtrl
+					&& ImGui::GetIO().MouseWheel != 0)
+				{
+					zoomFactor += ImGui::GetIO().MouseWheel * 0.1f;
+					zoomFactor = max(zoomFactor, 0.3f);
+					zoomFactor = min(zoomFactor, 5.0f);
+				}
 
-			//dragging with left mouse key
-			if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)
-				&& !isDragging)
-			{
-				isDragging = true;
-				lastMousePos = ImGui::GetMousePos();
-			}
-			if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
-			{
-				isDragging = false;
-			}
+				//dragging with left mouse key
+				if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)
+					&& !isDragging)
+				{
+					isDragging = true;
+					lastMousePos = ImGui::GetMousePos();
+				}
+				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+				{
+					isDragging = false;
+				}
 
-			if (isDragging)
-			{
-				ImVec2 mouseDelta;
-				mouseDelta.x = ImGui::GetMousePos().x - lastMousePos.x;
-				mouseDelta.y = ImGui::GetMousePos().y - lastMousePos.y;
-				imagePos.x += mouseDelta.x;
-				imagePos.y += mouseDelta.y;
-				lastMousePos = ImGui::GetMousePos();
+				if (isDragging)
+				{
+					ImVec2 mouseDelta;
+					mouseDelta.x = ImGui::GetMousePos().x - lastMousePos.x;
+					mouseDelta.y = ImGui::GetMousePos().y - lastMousePos.y;
+					imagePos.x += mouseDelta.x;
+					imagePos.y += mouseDelta.y;
+					lastMousePos = ImGui::GetMousePos();
+				}
 			}
 
 			ImVec2 imageSize(5000 * zoomFactor, 5000 * zoomFactor);
@@ -135,7 +140,12 @@ namespace Graphics::GUI
 			ImGui::SetCursorPos(imagePos);
 			ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(textureID)), imageSize);
 
-			if (ImGui::IsMouseClicked(1)) ImGui::OpenPopup("rightclickpopup");
+			if (!Input::cameraEnabled
+				&& ImGui::IsWindowHovered()
+				&& ImGui::IsMouseClicked(1))
+			{
+				ImGui::OpenPopup("rightclickpopup");
+			}
 
 			if (ImGui::BeginPopupContextItem("rightclickpopup"))
 			{

@@ -93,8 +93,16 @@ namespace Graphics::GUI
 			&& ImGui::IsMouseClicked(1))
 		{
 			selectedItemPath = folderPath;
-			rightMouseClicked = true;
+
 			isFolder = true;
+
+			string uncleanSelectedItemPath = selectedItemPath.string();
+			uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '\\', '/');
+			uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '"', '\0');
+			selectedItemPath = uncleanSelectedItemPath;
+			string displayedPath = uncleanSelectedItemPath;
+
+			ImGui::OpenPopup("rightclickpopup");
 		}
 
 		if (isFolderOpen)
@@ -110,8 +118,16 @@ namespace Graphics::GUI
 						&& ImGui::IsMouseClicked(1))
 					{
 						selectedItemPath = entry.path();
-						rightMouseClicked = true;
+						
 						isFolder = false;
+
+						string uncleanSelectedItemPath = selectedItemPath.string();
+						uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '\\', '/');
+						uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '"', '\0');
+						selectedItemPath = uncleanSelectedItemPath;
+						string displayedPath = uncleanSelectedItemPath;
+
+						ImGui::OpenPopup("rightclickpopup");
 					}
 				}
 			}
@@ -121,19 +137,6 @@ namespace Graphics::GUI
 	}
 	void GUIProjectHierarchy::RightClickPopup()
 	{
-		if (rightMouseClicked)
-		{
-			string uncleanSelectedItemPath = selectedItemPath.string();
-			uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '\\', '/');
-			uncleanSelectedItemPath = String::CharReplace(uncleanSelectedItemPath, '"', '\0');
-			selectedItemPath = uncleanSelectedItemPath;
-			string displayedPath = uncleanSelectedItemPath;
-
-			ImGui::OpenPopup("rightclickpopup");
-
-			rightMouseClicked = false;
-		}
-
 		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
 			if (ImGui::MenuItem("Open"))

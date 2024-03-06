@@ -206,7 +206,8 @@ namespace Core
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
-        if (!cameraEnabled)
+        if (!cameraEnabled
+            && !ImGui::GetIO().WantCaptureMouse)
         {
             float combinedOffset = increment * static_cast<float>(yoffset);
 
@@ -252,7 +253,8 @@ namespace Core
             if (!cameraEnabled) lastKnownRotation = Render::camera.GetCameraRotation();
         }
 
-        if (!cameraEnabled)
+        if (!cameraEnabled
+            && !ImGui::GetIO().WantCaptureMouse)
         {
             //delete selected gameobject
             if (key == GLFW_KEY_DELETE
@@ -326,7 +328,8 @@ namespace Core
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
-        if (button == GLFW_MOUSE_BUTTON_LEFT 
+        if (!cameraEnabled
+            && button == GLFW_MOUSE_BUTTON_LEFT 
             && action == GLFW_PRESS)
         {
             double mouseX, mouseY;

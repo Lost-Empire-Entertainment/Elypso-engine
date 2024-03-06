@@ -92,6 +92,8 @@ namespace Graphics::Shape
 		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
 		mat->AddShader("shaders/Basic_texture.vert", "shaders/Basic_texture.frag", borderShader);
 
+		vector<shared_ptr<Component>> components;
+
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
@@ -102,6 +104,7 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
+			components,
 			basicShape);
 
 		GameObjectManager::AddGameObject(obj);

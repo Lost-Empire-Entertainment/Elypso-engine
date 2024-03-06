@@ -38,7 +38,6 @@ namespace Graphics::GUI
 		static inline char newNameBuffer[64];
 		static inline bool isRenaming;
 		static inline bool isFolder;
-		static inline bool rightMouseClicked;
 		static inline path copyPath;
 		static inline path selectedItemPath;
 

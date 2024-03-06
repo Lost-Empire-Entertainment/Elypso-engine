@@ -32,6 +32,7 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "sceneFile.hpp"
+#include "input.hpp"
 
 using std::cout;
 using std::endl;
@@ -43,7 +44,9 @@ using Graphics::Shape::GameObject;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Transform;
 using Graphics::Shape::Material;
+using Graphics::Shape::Component;
 using EngineFile::SceneFile;
+using Core::Input;
 
 namespace Graphics::GUI
 {
@@ -58,6 +61,28 @@ namespace Graphics::GUI
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
+			if (Select::selectedObj != nullptr
+				&& ImGui::Button("Add component"))
+			{
+				ImGui::OpenPopup("rightclickpopup");
+			}
+			if (ImGui::BeginPopupContextItem("rightclickpopup"))
+			{
+				if (ImGui::MenuItem("Nodeblock"))
+				{
+					static unsigned int ID = 1;
+					vector<shared_ptr<Node>> nodes;
+					shared_ptr<Component> comp = make_shared<Component>("comp" + to_string(ID), Component::ComponentType::Nodeblock, nodes);
+					Select::selectedObj->AddComponent(comp);
+
+					ID++;
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				ImGui::EndPopup();
+			}
+
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -65,17 +90,25 @@ namespace Graphics::GUI
 				renderInspector = false;
 			}
 
-			RSM_SelectedObject();
+			RI_PermanentComponents();
+			RI_DynamicComponents();
 
 			ImGui::End();
 		}
 	}
-	void GUIInspector::RSM_SelectedObject()
+	void GUIInspector::RI_PermanentComponents()
 	{
 		if (Select::isObjectSelected
 			&& Select::selectedObj->IsInitialized())
 		{
 			shared_ptr<GameObject>& obj = Select::selectedObj;
+
+			ImGuiChildFlags childWindowFlags{};
+
+			ImGui::BeginChild("GameObject", ImVec2(ImGui::GetWindowWidth() - 20, 150), true, childWindowFlags);
+
+			ImGui::Text("GameObject");
+			ImGui::Separator();
 
 			string objID = "ID: " + to_string(obj->GetID());
 			ImGui::Text(objID.c_str());
@@ -97,11 +130,12 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			ImGui::Separator();
+			ImGui::EndChild();
+
+			ImGui::BeginChild("Transform", ImVec2(ImGui::GetWindowWidth() - 20, 240), true, childWindowFlags);
 
 			ImGui::Text("Transform");
-
-			ImGui::Spacing();
+			ImGui::Separator();
 
 			vec3 pos = obj->GetTransform()->GetPosition();
 			ImGui::Text("Position");
@@ -160,11 +194,13 @@ namespace Graphics::GUI
 				obj->GetTransform()->SetScale(scale);
 			}
 
-			ImGui::Separator();
+			ImGui::EndChild();
+
+			float height = Select::selectedObj->GetMesh()->GetMeshType() == Type::spot_light ? 355.0f : 240.0f;
+			ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
 
 			ImGui::Text("Material");
-
-			ImGui::Spacing();
+			ImGui::Separator();
 
 			if (objType == Type::cube)
 			{
@@ -286,6 +322,48 @@ namespace Graphics::GUI
 					obj->GetSpotLight()->SetOuterAngle(17.5f);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
+			}
+
+			ImGui::EndChild();
+		}
+	}
+
+	void GUIInspector::RI_DynamicComponents()
+	{
+		if (Select::isObjectSelected
+			&& Select::selectedObj->IsInitialized())
+		{
+			for (const auto& component : Select::selectedObj->GetComponents())
+			{
+				ImGuiChildFlags childWindowFlags{};
+
+				ImGui::BeginChild(component->GetName().c_str(), ImVec2(ImGui::GetWindowWidth() - 20, 225), true, childWindowFlags);
+
+				ImGui::Text(component->GetName().c_str());
+				ImGui::Separator();
+
+				if (!Input::cameraEnabled
+					&& ImGui::IsWindowHovered()
+					&& ImGui::IsMouseClicked(1))
+				{
+					ImGui::OpenPopup("rightclickpopup");
+				}
+
+				if (ImGui::BeginPopupContextItem("rightclickpopup"))
+				{
+					if (ImGui::MenuItem("Remove"))
+					{
+						string componentName = component->GetName();
+
+						Select::selectedObj->RemoveComponent(component);
+
+						cout << "Removed " << componentName << "\n";
+					}
+
+					ImGui::EndPopup();
+				}
+
+				ImGui::EndChild();
 			}
 		}
 	}

@@ -95,19 +95,13 @@ namespace Graphics::GUI
 			if (ImGui::IsMouseClicked(1))
 			{
 				selectedGameObject = obj;
-				rightMouseClicked = true;
+				ImGui::OpenPopup("rightclickpopup");
 			}
 		}
 	}
 
 	void GUISceneHierarchy::RightClickPopup()
 	{
-		if (rightMouseClicked)
-		{
-			ImGui::OpenPopup("rightclickpopup");
-			rightMouseClicked = false;
-		}
-
 		if (ImGui::BeginPopupContextItem("rightclickpopup"))
 		{
 			if (ImGui::MenuItem("Rename"))

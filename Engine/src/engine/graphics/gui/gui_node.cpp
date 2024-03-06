@@ -15,31 +15,10 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#pragma once
-
-#include <memory>
-
-#include "gameobject.hpp"
-
-using std::shared_ptr;
-
-using Graphics::Shape::GameObject;
+//engine
+#include "gui_node.hpp"
 
 namespace Graphics::GUI
 {
-	class GUISceneHierarchy
-	{
-	public:
-		static inline bool renderSceneHierarchy;
-		static void RenderSceneHierarchy();
-	private:
-		static inline char newNameBuffer[64];
-		static inline bool isRenaming;
-		static inline shared_ptr<GameObject> copiedGameObject;
-		static inline shared_ptr<GameObject> selectedGameObject;
 
-		static void DrawGameObject(shared_ptr<GameObject> obj);
-		static void RightClickPopup();
-		static void RenameGameObject();
-	};
 }

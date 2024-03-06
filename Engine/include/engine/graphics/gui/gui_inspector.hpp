@@ -29,6 +29,7 @@ namespace Graphics::GUI
 
 		static inline char inputTextBuffer_objName[bufferSize];
 
-		static void RSM_SelectedObject();
+		static void RI_PermanentComponents();
+		static void RI_DynamicComponents();
 	};
 }

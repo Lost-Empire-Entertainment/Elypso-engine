@@ -119,6 +119,8 @@ namespace Graphics::Shape
 		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
 		mat->AddShader(vertShader, fragShader, spotlightShader);
 
+		vector<shared_ptr<Component>> components;
+
 		shared_ptr<SpotLight_Variables> spotLight = 
 			make_shared<SpotLight_Variables>(
 				diffuse, 
@@ -147,6 +149,7 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
+			components,
 			spotLight);
 
 		billboard->SetParentBillboardHolder(obj);

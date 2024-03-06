@@ -25,6 +25,7 @@
 
 //engine
 #include "shader.hpp"
+#include "gui_node.hpp"
 
 using std::vector;
 using std::shared_ptr;
@@ -33,6 +34,7 @@ using glm::vec3;
 using glm::mat4;
 
 using Graphics::Shader;
+using Graphics::GUI::Node;
 
 namespace Graphics::Shape
 {
@@ -197,6 +199,32 @@ namespace Graphics::Shape
 		float distance;
 	};
 
+	class Component
+	{
+	public:
+		enum class ComponentType
+		{
+			Nodeblock
+		};
+
+		Component(
+			const string& name,
+			const ComponentType& type,
+			const vector<shared_ptr<Node>> nodes) :
+			name(name),
+			type(type),
+			nodes(nodes){}
+
+		string GetName() const { return name; }
+		ComponentType GetType() const { return type; }
+		vector<shared_ptr<Node>> GetNodes() const { return nodes; }
+
+	private:
+		string name;
+		ComponentType type;
+		vector<shared_ptr<Node>> nodes;
+	};
+
 	class GameObject
 	{
 	public:
@@ -210,6 +238,7 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& transform,
 			const shared_ptr<Mesh>& mesh,
 			const shared_ptr<Material>& material,
+			const vector<shared_ptr<Component>> components,
 			const shared_ptr<BasicShape_Variables>& basicShape) :
 			isInitialized(isInitialized),
 			name(name),
@@ -217,6 +246,7 @@ namespace Graphics::Shape
 			transform(transform),
 			mesh(mesh),
 			material(material),
+			components(components),
 			basicShape(basicShape) {}
 
 		//point light
@@ -227,6 +257,7 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& transform,
 			const shared_ptr<Mesh>& mesh,
 			const shared_ptr<Material>& material,
+			const vector<shared_ptr<Component>> components,
 			const shared_ptr<PointLight_Variables>& pointLight) :
 			isInitialized(isInitialized),
 			name(name),
@@ -234,6 +265,7 @@ namespace Graphics::Shape
 			transform(transform),
 			mesh(mesh),
 			material(material),
+			components(components),
 			pointLight(pointLight) {}
 
 		//spotlight
@@ -244,6 +276,7 @@ namespace Graphics::Shape
 			const shared_ptr<Transform>& transform,
 			const shared_ptr<Mesh>& mesh,
 			const shared_ptr<Material>& material,
+			const vector<shared_ptr<Component>> components,
 			const shared_ptr<SpotLight_Variables>& spotLight) :
 			isInitialized(isInitialized),
 			name(name),
@@ -251,6 +284,7 @@ namespace Graphics::Shape
 			transform(transform),
 			mesh(mesh),
 			material(material),
+			components(components),
 			spotLight(spotLight) {}
 
 		void Initialize() { isInitialized = true; }
@@ -260,6 +294,11 @@ namespace Graphics::Shape
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
 		void SetMaterial(const shared_ptr<Material>& newMaterial) { material = newMaterial; }
+		void AddComponent(const shared_ptr<Component> newComponent) { components.push_back(newComponent); }
+		void RemoveComponent(const shared_ptr<Component> removedComponent)
+		{
+			components.erase(remove(components.begin(), components.end(), removedComponent), components.end());
+		}
 		void SetBasicShape(const shared_ptr<BasicShape_Variables>& newBasicShape) { basicShape = newBasicShape; }
 		void SetPointLight(const shared_ptr<PointLight_Variables>& newPointLight) { pointLight = newPointLight; }
 		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight) { spotLight = newSpotLight; }
@@ -286,6 +325,7 @@ namespace Graphics::Shape
 		const shared_ptr<Transform>& GetTransform() const { return transform; }
 		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
 		const shared_ptr<Material>& GetMaterial() const { return material; }
+		const vector<shared_ptr<Component>> GetComponents() const { return components; }
 		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
@@ -301,6 +341,7 @@ namespace Graphics::Shape
 		shared_ptr<Transform> transform;
 		shared_ptr<Mesh> mesh;
 		shared_ptr<Material> material;
+		vector<shared_ptr<Component>> components;
 		shared_ptr<BasicShape_Variables> basicShape;
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;
