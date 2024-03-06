@@ -169,6 +169,22 @@ namespace Graphics::GUI
 		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
 
 		//
+		// FONT SCALE
+		//
+
+		ImGui::Separator();
+
+		ImGui::Text("Font scale");
+		ImGui::Text("");
+
+		if (ImGui::DragFloat("##fontScale", &EngineGUI::fontScale, 0.1f, 1.0f, 3.0f))
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			io.FontGlobalScale = EngineGUI::fontScale;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		//
 		// CAMERA CLIP RANGE
 		//
 
