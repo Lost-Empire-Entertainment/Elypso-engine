@@ -17,12 +17,15 @@
 
 #pragma once
 
+#include <memory>
+
 //external
 #include "glm.hpp"
 
 //engine
 #include "gameobject.hpp"
 
+using std::shared_ptr;
 using glm::vec3;
 
 using Graphics::Shape::GameObject;

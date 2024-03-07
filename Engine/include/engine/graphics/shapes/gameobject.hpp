@@ -215,6 +215,8 @@ namespace Graphics::Shape
 			type(type),
 			nodes(nodes){}
 
+		void AddNode(const shared_ptr<Node> newNode) { nodes.push_back(newNode); }
+
 		string GetName() const { return name; }
 		ComponentType GetType() const { return type; }
 		vector<shared_ptr<Node>> GetNodes() const { return nodes; }

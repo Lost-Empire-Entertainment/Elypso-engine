@@ -17,11 +17,52 @@
 
 #pragma once
 
+#include <string>
+#include <memory>
+
+//external
+#include "glm.hpp"
+
+using std::string;
+using std::shared_ptr;
+using glm::vec2;
+
 namespace Graphics::GUI
 {
 	class Node
 	{
 	public:
+		static inline string tempName = "123456789";
+		static inline unsigned int tempID = 123456789;
 
+		Node(
+			const vec2& pos,
+			const vec2& scale,
+			string& name,
+			unsigned int& ID) :
+			pos(pos),
+			scale(scale),
+			name(name),
+			ID(ID){}
+
+		static shared_ptr<Node> InitializeNode(
+			const vec2& pos = vec2(0),
+			const vec2& scale = vec2(0),
+			string& name = tempName,
+			unsigned int& id = tempID);
+
+		void SetName(const string& newName) { name = newName; }
+		void SetID(const unsigned int& newID) { ID = newID; }
+		void SetPos(const vec2& newPos) { pos = newPos; }
+
+		string GetName() const { return name; }
+		unsigned int GetID() const { return ID; }
+		vec2 GetPos() const { return pos; }
+
+	private:
+		vec2 pos;
+		vec2 scale;
+		string name;
+		unsigned int ID;
 	};
 }

@@ -245,7 +245,9 @@ namespace Core
         //toggle camera input on and off
         if (key == GLFW_KEY_ESCAPE
             && action == GLFW_PRESS
-            && !ImGui::GetIO().WantCaptureMouse)
+            && ((!ImGui::GetIO().WantCaptureMouse
+            && !cameraEnabled)
+            || cameraEnabled))
         {
             cameraEnabled = !cameraEnabled;
             cameraModeSwitched = true;

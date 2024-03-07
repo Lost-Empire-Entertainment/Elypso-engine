@@ -36,6 +36,7 @@
 using std::cout;
 using std::max;
 using std::min;
+using std::to_string;
 using std::filesystem::exists;
 
 using Core::Engine;
@@ -147,21 +148,73 @@ namespace Graphics::GUI
 			ImGui::SetCursorPos(imagePos);
 			ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(textureID)), imageSize);
 
-			if (!Input::cameraEnabled
-				&& ImGui::IsWindowHovered()
-				&& ImGui::IsMouseClicked(1))
+			if (selectedComponent != nullptr)
 			{
-				ImGui::OpenPopup("rightclickpopup");
-			}
-
-			if (ImGui::BeginPopupContextItem("rightclickpopup"))
-			{
-				if (ImGui::MenuItem("Add node"))
+				if (!Input::cameraEnabled
+					&& ImGui::IsWindowHovered()
+					&& ImGui::IsMouseClicked(1))
 				{
-
+					cout << selectedComponent->GetName() << "\n";
+					ImGui::OpenPopup("rightclickpopup");
 				}
 
-				ImGui::EndPopup();
+				if (ImGui::BeginPopupContextItem("rightclickpopup"))
+				{
+					if (ImGui::MenuItem("Add node"))
+					{
+						shared_ptr<Node> newNode = Node::InitializeNode();
+						selectedComponent->AddNode(newNode);
+						vec2 pos = vec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+						newNode->SetPos(pos);
+
+						cout << "added node " << newNode->GetName() << " to component " << selectedComponent->GetName() << "\n";
+					}
+
+					ImGui::EndPopup();
+				}
+
+				if (selectedComponent->GetNodes().size() > 0)
+				{
+					for (const auto& node : selectedComponent->GetNodes())
+					{
+						string nodeWindowName = node->GetName() + to_string(node->GetID());
+						ImVec2 nodePos = ImVec2(node->GetPos().x, node->GetPos().y);
+						ImVec2 nodeSize = ImVec2(250, 120);
+
+						//draw a draggable rectangle
+						ImGui::SetCursorPos(nodePos);
+						ImGui::InvisibleButton(nodeWindowName.c_str(), nodeSize);
+						bool isNodeHovered = ImGui::IsItemHovered();
+						bool isNodeActive = ImGui::IsItemActive();
+						bool isNodeClicked = ImGui::IsItemClicked();
+
+						//draw node background
+						ImGui::GetWindowDrawList()->AddRectFilled(
+							nodePos,
+							ImVec2(nodeSize.x + nodePos.y, nodePos.y + nodeSize.y),
+							IM_COL32(0, 125, 255, 255));
+
+						//handle node interaction
+						if (isNodeHovered
+							&& isNodeClicked)
+						{
+							cout << "clicked " << nodeWindowName << "\n";
+						}
+
+						ImVec2 textPos = ImVec2(nodePos.x + 10, nodePos.y - 100);
+
+						string nodeTitleName = node->GetName() + " | " + to_string(node->GetID());
+						ImGui::SetCursorPos(textPos);
+						ImGui::Text(nodeTitleName.c_str());
+
+						textPos = ImVec2(nodePos.x + 10, nodePos.y - 85);
+						ImGui::SetCursorPos(textPos);
+
+						//ImGui::Separator();
+
+						ImGui::Text("this is a node...");
+					}
+				}
 			}
 
 			ImGui::EndChild();
