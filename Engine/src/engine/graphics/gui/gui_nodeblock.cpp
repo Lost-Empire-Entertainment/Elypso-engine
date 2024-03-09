@@ -102,9 +102,7 @@ namespace Graphics::GUI
 				renderNodeBlock = false;
 			}
 
-			ImGuiChildFlags childWindowFlags = 
-				ImGuiWindowFlags_HorizontalScrollbar
-				| ImGuiWindowFlags_AlwaysHorizontalScrollbar;
+			ImGuiChildFlags childWindowFlags = ImGuiWindowFlags_NoScrollbar;
 
 			ImGui::BeginChild("NodeblockScrolling", ImVec2(0, 0), true, childWindowFlags);
 
@@ -153,8 +151,6 @@ namespace Graphics::GUI
 							node->SetPos(nodePos);
 						}
 					}
-
-
 
 					lastMousePos = currentMousePos;
 				}
@@ -227,6 +223,12 @@ namespace Graphics::GUI
 						ImGui::Text("this is a node...");
 
 						ImGui::EndChild();
+
+						if (ImGui::IsItemHovered()
+							&& ImGui::IsItemClicked())
+						{
+							cout << "clicked on " << node->GetName() << " | " << to_string(node->GetID()) << "\n";
+						}
 					}
 				}
 			}
