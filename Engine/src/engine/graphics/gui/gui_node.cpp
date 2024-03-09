@@ -37,6 +37,7 @@ namespace Graphics::GUI
 
 		shared_ptr<Node> node = make_shared<Node>(
 			pos,
+			pos,
 			scale,
 			name,
 			id);

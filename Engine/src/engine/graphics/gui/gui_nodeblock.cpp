@@ -148,10 +148,21 @@ namespace Graphics::GUI
 					{
 						for (auto& node : selectedComponent->GetNodes())
 						{
-							vec2 nodePos = node->GetPos();
-							nodePos.x += screenDelta.x / zoomFactor;
-							nodePos.y += screenDelta.y / zoomFactor;
-							node->SetPos(nodePos);
+							if (node == selectedNode)
+							{
+								ImVec2 initialPos = ImVec2(node->GetInitialPos().x, node->GetInitialPos().y);
+								ImVec2 newNodePos = ImVec2(
+									initialPos.x + screenDelta.x / zoomFactor,
+									initialPos.y + screenDelta.y / zoomFactor);
+								node->SetPos(vec2(newNodePos.x, newNodePos.y));
+							}
+							else
+							{
+								vec2 nodePos = node->GetPos();
+								nodePos.x += screenDelta.x / zoomFactor;
+								nodePos.y += screenDelta.y / zoomFactor;
+								node->SetPos(nodePos);
+							}
 						}
 					}
 
@@ -249,6 +260,8 @@ namespace Graphics::GUI
 
 					if (isDraggingNode)
 					{
+						selectedNode->SetInitialPos(selectedNode->GetPos());
+
 						ImVec2 currentMousePos = ImGui::GetMousePos();
 						ImVec2 screenDelta = ImVec2(
 							currentMousePos.x - lastNodeDragPos.x,

@@ -37,30 +37,35 @@ namespace Graphics::GUI
 
 		Node(
 			const vec2& pos,
+			const vec2& initialPos,
 			const vec2& scale,
 			string& name,
 			unsigned int& ID) :
-			pos(pos),
+			pos(initialPos),
+			initialPos(initialPos),
 			scale(scale),
 			name(name),
 			ID(ID){}
 
 		static shared_ptr<Node> InitializeNode(
-			const vec2& pos = vec2(0),
+			const vec2& initialPos = vec2(0),
 			const vec2& scale = vec2(0),
 			string& name = tempName,
 			unsigned int& id = tempID);
 
+		void SetPos(const vec2& newPos) { pos = newPos; }
+		void SetInitialPos(const vec2& newInitialPos) { initialPos = newInitialPos; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
-		void SetPos(const vec2& newPos) { pos = newPos; }
-
+		
+		vec2 GetPos() const { return pos; }
+		vec2 GetInitialPos() const { return initialPos; }
 		string GetName() const { return name; }
 		unsigned int GetID() const { return ID; }
-		vec2 GetPos() const { return pos; }
-
+		
 	private:
 		vec2 pos;
+		vec2 initialPos;
 		vec2 scale;
 		string name;
 		unsigned int ID;
