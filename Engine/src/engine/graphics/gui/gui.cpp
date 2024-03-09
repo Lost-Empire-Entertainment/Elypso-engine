@@ -189,17 +189,6 @@ namespace Graphics::GUI
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
 		if (renderUnsavedSceneSwitchWindow) ConfirmUnsavedSceneSwitch();
 
-		if (Input::printIMGUIToConsole)
-		{
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::IMGUI, 
-					Type::DEBUG, 
-					"Left mouse button clicked!\n");
-			}
-		}
-
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}

@@ -231,7 +231,7 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//camera transformation
-		Input::ProcessInput(window);
+		Input::ProcessKeyboardInput(window);
 
 		//calculate the new projection matrix
 		projection = perspective(

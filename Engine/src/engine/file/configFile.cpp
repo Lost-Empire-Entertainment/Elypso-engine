@@ -84,14 +84,14 @@ namespace EngineFile
 		vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
 		Render::camera.SetCameraPosition(newPosition);
 		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
-		GUIConsole::allowScrollToBottom = true;
-		ConsoleManager::sendDebugMessages = false;
 		GUIDebugMenu::renderDebugMenu = false;
 		GUIConsole::renderConsole = false;
 		GUIInspector::renderInspector = false;
 		GUIProjectHierarchy::renderProjectHierarchy = false;
 		GUISceneHierarchy::renderSceneHierarchy = false;
 		GUINodeBlock::renderNodeBlock = false;
+		GUIConsole::allowScrollToBottom = true;
+		ConsoleManager::sendDebugMessages = false;
 	}
 	
 	void ConfigFileManager::ProcessFirstConfigValues()
@@ -361,27 +361,6 @@ namespace EngineFile
 						"X, Y or Z rotation value " + lineVariables[0] + " for camera is out of range or not a float! Resetting to default.\n");
 				}
 			}
-			else if (name == "consoleForceScroll")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUIConsole::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set console force scroll to " + to_string(GUIConsole::allowScrollToBottom) + ".\n");
-				}
-				else
-				{
-					GUIConsole::allowScrollToBottom = true;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
 			else if (name == "showSceneHierarchy")
 			{
 				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
@@ -496,7 +475,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::DEBUG,
-						"Set show scene hierarchy window to " + to_string(GUIProjectHierarchy::renderProjectHierarchy) + ".\n");
+						"Set show scene hierarchy window to " + to_string(GUISceneHierarchy::renderSceneHierarchy) + ".\n");
 				}
 				else
 				{
@@ -517,7 +496,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::DEBUG,
-						"Set show node block window to " + to_string(GUIProjectHierarchy::renderProjectHierarchy) + ".\n");
+						"Set show node block window to " + to_string(GUINodeBlock::renderNodeBlock) + ".\n");
 				}
 				else
 				{
@@ -527,6 +506,48 @@ namespace EngineFile
 						Caller::ENGINE,
 						Type::EXCEPTION,
 						"Show node block window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+				}
+			}
+			else if (name == "consoleForceScroll")
+			{
+				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+				{
+					GUIConsole::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::DEBUG,
+						"Set console force scroll to " + to_string(GUIConsole::allowScrollToBottom) + ".\n");
+				}
+				else
+				{
+					GUIConsole::allowScrollToBottom = true;
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+				}
+			}
+			else if (name == "sendDebugMessages")
+			{
+				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+				{
+					ConsoleManager::sendDebugMessages = static_cast<bool>(stoi(lineVariables[0]));
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::DEBUG,
+						"Set send console messages to " + to_string(ConsoleManager::sendDebugMessages) + ".\n");
+				}
+				else
+				{
+					ConsoleManager::sendDebugMessages = false;
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Send console messages value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 				}
 			}
 		}
@@ -674,14 +695,6 @@ namespace EngineFile
 			ConfigFileValue::Type::type_vec3);
 		AddValue(camRot);
 
-		ConfigFileValue consoleForceScroll(
-			"consoleForceScroll",
-			to_string(GUIConsole::allowScrollToBottom),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(consoleForceScroll);
-
 		ConfigFileValue showSceneHierarchy(
 			"showSceneHierarchy",
 			to_string(GUISceneHierarchy::renderSceneHierarchy),
@@ -737,6 +750,22 @@ namespace EngineFile
 			"1",
 			ConfigFileValue::Type::type_int);
 		AddValue(showNodeBlockWindow);
+
+		ConfigFileValue consoleForceScroll(
+			"consoleForceScroll",
+			to_string(GUIConsole::allowScrollToBottom),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(consoleForceScroll);
+
+		ConfigFileValue sendDebugMessages(
+			"sendDebugMessages",
+			to_string(ConsoleManager::sendDebugMessages),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(sendDebugMessages);
 	}
 
 	bool ConfigFileManager::IsValueInRange(

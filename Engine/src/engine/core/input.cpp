@@ -73,38 +73,6 @@ namespace Core
         cameraFront(vec3(0.0f, 0.0f, -1.0f)), 
         cameraUp(vec3(0.0f, 1.0f, 0.0f)) {}
 
-	void Input::ProcessInput(GLFWwindow* window)
-	{
-        Input::ProcessKeyboardInput(Render::window);
-
-        if (printInputToConsole)
-        {
-            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS 
-                && !printCheck)
-            {
-                double mouseX, mouseY;
-                glfwGetCursorPos(window, &mouseX, &mouseY);
-                ostringstream messageStream;
-                messageStream 
-                    << "Left mouse button pressed at (" 
-                    << fixed 
-                    << setprecision(2)
-                    << mouseX 
-                    << ", " 
-                    << mouseY 
-                    << ")\n";
-
-                ConsoleManager::WriteConsoleMessage(Caller::INPUT, Type::DEBUG, messageStream.str());
-
-                printCheck = true;
-            }
-            else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
-            {
-                printCheck = false;
-            }
-        }
-	}
-
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
         if (cameraEnabled)
@@ -339,17 +307,6 @@ namespace Core
 
             Select::Ray ray = Select::RayFromMouse(mouseX, mouseY, Render::view, Render::projection);
 
-            if (printSelectRayDirectionToConsole)
-            {
-                string output =
-                    "\nMouse X: " + to_string(mouseX) + ", Mouse Y: " + to_string(mouseY) + "\n" +
-                    "Ray Direction: " + to_string(ray.direction.x) + ", " + to_string(ray.direction.y) + ", " + to_string(ray.direction.z) + "\n";
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::DEBUG,
-                    output);
-            }
-
             vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
             int index = Select::CheckRayObjectIntersections(ray, objects);
 
@@ -360,26 +317,12 @@ namespace Core
                 {
                     Select::isObjectSelected;
                 }
-                if (printSelectRayDirectionToConsole)
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::INPUT,
-                        Type::DEBUG,
-                        "Hit ImGui content...\n");
-                }
             }
             //if user did not press any valid gameobject
             else if (index == -1)
             {
                 Select::isObjectSelected = false;
                 Select::selectedObj = nullptr;
-                if (printSelectRayDirectionToConsole)
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::INPUT,
-                        Type::DEBUG,
-                        "Did not hit anything...\n");
-                }
             }
             else
             {
@@ -392,14 +335,6 @@ namespace Core
                 Select::selectedObj = objects[index];
                 Select::isObjectSelected = true;
                 Input::objectAction = Input::ObjectAction::move;
-                if (printSelectRayDirectionToConsole)
-                {
-                    string output = "Hit " + Select::selectedObj->GetName() + "!\n";
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::INPUT,
-                        Type::DEBUG,
-                        output);
-                }
             }
         }
     }

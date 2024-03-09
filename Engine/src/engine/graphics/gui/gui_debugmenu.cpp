@@ -146,27 +146,13 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
-		ImGui::Separator();
-
-		ImGui::Text("Print ImGui messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##imguimsg", &Input::printIMGUIToConsole);
-
-		ImGui::Text("Print input messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##inputmsg", &Input::printInputToConsole);
-
-		ImGui::Text("Print ray direction messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##raymsg", &Input::printSelectRayDirectionToConsole);
-
 		ImGui::Text("Print console debug messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages);
+		if (ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages))
+		{
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		//
 		// FONT SCALE

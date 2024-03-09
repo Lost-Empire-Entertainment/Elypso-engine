@@ -60,14 +60,10 @@ namespace Core
         };
         static inline ObjectAction objectAction = ObjectAction::none;
 
-        static inline bool printIMGUIToConsole;
-        static inline bool printInputToConsole;
-        static inline bool printSelectRayDirectionToConsole;
-
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;
 
-        static void ProcessInput(GLFWwindow* window);
+        static void ProcessKeyboardInput(GLFWwindow* window);
 
         vec3 GetCameraPosition() const { return cameraPos; }
         void SetCameraPosition(const vec3& newPosition) { cameraPos = newPosition; }
@@ -109,6 +105,5 @@ namespace Core
         vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
 
         void ProcessMouseMovement(double xpos, double ypos);
-        static void ProcessKeyboardInput(GLFWwindow* window);
     };
 }

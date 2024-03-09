@@ -74,6 +74,11 @@ namespace Graphics::GUI
 
 	void GUINodeBlock::RenderNodeBlock()
 	{
+		static ImVec2 lastBackgroundDragPos{};
+		static ImVec2 lastNodeDragPos{};
+		static bool isDraggingBackground = false;
+		static bool isDraggingNode = false;
+
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
 		ImGui::SetNextWindowPos(EngineGUI::initialPos, ImGuiCond_FirstUseEver);
 
@@ -85,8 +90,6 @@ namespace Graphics::GUI
 		{
 			static float zoomFactor = 1.0f;
 			static ImVec2 imagePos(0.0f, 0.0f);
-			static ImVec2 lastMousePos;
-			static bool isDragging = false;
 
 			if (selectedGameObject != nullptr
 				&& selectedComponent != nullptr)
@@ -120,22 +123,22 @@ namespace Graphics::GUI
 
 				//dragging with left mouse key
 				if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)
-					&& !isDragging)
+					&& !isDraggingBackground)
 				{
-					isDragging = true;
-					lastMousePos = ImGui::GetMousePos();
+					isDraggingBackground = true;
+					lastBackgroundDragPos = ImGui::GetMousePos();
 				}
 				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 				{
-					isDragging = false;
+					isDraggingBackground = false;
 				}
 
-				if (isDragging)
+				if (isDraggingBackground)
 				{
 					ImVec2 currentMousePos = ImGui::GetMousePos();
 					ImVec2 screenDelta = ImVec2(
-						currentMousePos.x - lastMousePos.x,
-						currentMousePos.y - lastMousePos.y);
+						currentMousePos.x - lastBackgroundDragPos.x,
+						currentMousePos.y - lastBackgroundDragPos.y);
 
 					imagePos.x += screenDelta.x;
 					imagePos.y += screenDelta.y;
@@ -152,7 +155,7 @@ namespace Graphics::GUI
 						}
 					}
 
-					lastMousePos = currentMousePos;
+					lastBackgroundDragPos = currentMousePos;
 				}
 			}
 
@@ -225,10 +228,38 @@ namespace Graphics::GUI
 						ImGui::EndChild();
 
 						if (ImGui::IsItemHovered()
-							&& ImGui::IsItemClicked())
+							&& ImGui::IsItemClicked(0))
 						{
-							cout << "clicked on " << node->GetName() << " | " << to_string(node->GetID()) << "\n";
+							selectedNode = node;
+							cout << "selected " << selectedNode->GetName() << " | " << selectedNode->GetID() << "\n";
 						}
+					}
+
+					if (selectedNode != nullptr
+						&& ImGui::IsMouseDragging(ImGuiMouseButton_Left)
+						&& !isDraggingNode)
+					{
+						isDraggingNode = true;
+						lastNodeDragPos = ImGui::GetMousePos();
+					}
+					if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+					{
+						isDraggingNode = false;
+					}
+
+					if (isDraggingNode)
+					{
+						ImVec2 currentMousePos = ImGui::GetMousePos();
+						ImVec2 screenDelta = ImVec2(
+							currentMousePos.x - lastNodeDragPos.x,
+							currentMousePos.y - lastNodeDragPos.y);
+
+						vec2 nodePos = selectedNode->GetPos();
+						nodePos.x += screenDelta.x / zoomFactor;
+						nodePos.y += screenDelta.y / zoomFactor;
+						selectedNode->SetPos(nodePos);
+
+						lastNodeDragPos = currentMousePos;
 					}
 				}
 			}
