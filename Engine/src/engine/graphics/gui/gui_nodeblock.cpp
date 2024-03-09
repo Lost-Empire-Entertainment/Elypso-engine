@@ -134,12 +134,29 @@ namespace Graphics::GUI
 
 				if (isDragging)
 				{
-					ImVec2 mouseDelta;
-					mouseDelta.x = ImGui::GetMousePos().x - lastMousePos.x;
-					mouseDelta.y = ImGui::GetMousePos().y - lastMousePos.y;
-					imagePos.x += mouseDelta.x;
-					imagePos.y += mouseDelta.y;
-					lastMousePos = ImGui::GetMousePos();
+					ImVec2 currentMousePos = ImGui::GetMousePos();
+					ImVec2 screenDelta = ImVec2(
+						currentMousePos.x - lastMousePos.x,
+						currentMousePos.y - lastMousePos.y);
+
+					imagePos.x += screenDelta.x;
+					imagePos.y += screenDelta.y;
+
+					if (selectedComponent != nullptr 
+						&& selectedComponent->GetNodes().size() > 0)
+					{
+						for (auto& node : selectedComponent->GetNodes())
+						{
+							vec2 nodePos = node->GetPos();
+							nodePos.x += screenDelta.x / zoomFactor;
+							nodePos.y += screenDelta.y / zoomFactor;
+							node->SetPos(nodePos);
+						}
+					}
+
+
+
+					lastMousePos = currentMousePos;
 				}
 			}
 
@@ -178,41 +195,38 @@ namespace Graphics::GUI
 					for (const auto& node : selectedComponent->GetNodes())
 					{
 						string nodeWindowName = node->GetName() + to_string(node->GetID());
-						ImVec2 nodePos = ImVec2(node->GetPos().x, node->GetPos().y);
-						ImVec2 nodeSize = ImVec2(250, 120);
+						string nodeWindowTitle = node->GetName() + " | " + to_string(node->GetID());
+						ImVec2 nodePos = ImVec2(
+							node->GetPos().x * zoomFactor,
+							node->GetPos().y * zoomFactor);
+						ImVec2 nodeSize = ImVec2(
+							250 * zoomFactor * 1.5f, 
+							180 * zoomFactor * 1.5f);
 
-						//draw a draggable rectangle
 						ImGui::SetCursorPos(nodePos);
-						ImGui::InvisibleButton(nodeWindowName.c_str(), nodeSize);
-						bool isNodeHovered = ImGui::IsItemHovered();
-						bool isNodeActive = ImGui::IsItemActive();
-						bool isNodeClicked = ImGui::IsItemClicked();
 
-						//draw node background
+						ImGui::BeginChild(nodeWindowName.c_str(), nodeSize);
+
+						//draw background
+						ImVec2 padding = ImVec2(5.0f, 5.0f);
+						ImVec4 backgroundColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+						ImVec2 bgMin = ImVec2(
+							ImGui::GetWindowPos().x - padding.x,
+							ImGui::GetWindowPos().y - padding.y);
+						ImVec2 bgMax = ImVec2(
+							ImGui::GetWindowPos().x + nodeSize.x + padding.x,
+							ImGui::GetWindowPos().y + nodeSize.y + padding.y);
 						ImGui::GetWindowDrawList()->AddRectFilled(
-							nodePos,
-							ImVec2(nodeSize.x + nodePos.y, nodePos.y + nodeSize.y),
-							IM_COL32(0, 125, 255, 255));
+							bgMin,
+							bgMax,
+							ImColor(backgroundColor),
+							5.0f);
 
-						//handle node interaction
-						if (isNodeHovered
-							&& isNodeClicked)
-						{
-							cout << "clicked " << nodeWindowName << "\n";
-						}
-
-						ImVec2 textPos = ImVec2(nodePos.x + 10, nodePos.y - 100);
-
-						string nodeTitleName = node->GetName() + " | " + to_string(node->GetID());
-						ImGui::SetCursorPos(textPos);
-						ImGui::Text(nodeTitleName.c_str());
-
-						textPos = ImVec2(nodePos.x + 10, nodePos.y - 85);
-						ImGui::SetCursorPos(textPos);
-
-						//ImGui::Separator();
-
+						ImGui::Text(nodeWindowTitle.c_str());
+						ImGui::Separator();
 						ImGui::Text("this is a node...");
+
+						ImGui::EndChild();
 					}
 				}
 			}
