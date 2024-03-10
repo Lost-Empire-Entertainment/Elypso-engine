@@ -210,10 +210,13 @@ namespace Graphics::GUI
 							node->GetPos().x * zoomFactor,
 							node->GetPos().y * zoomFactor);
 						ImVec2 nodeSize = ImVec2(
-							250 * zoomFactor * 1.5f, 
-							180 * zoomFactor * 1.5f);
+							250 * zoomFactor, 
+							180 * zoomFactor);
 
 						ImGui::SetCursorPos(nodePos);
+
+						ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4 * zoomFactor, 4 * zoomFactor));
+						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8 * zoomFactor, 8 * zoomFactor));
 
 						ImGui::BeginChild(nodeWindowName.c_str(), nodeSize);
 
@@ -238,11 +241,44 @@ namespace Graphics::GUI
 
 						ImGui::EndChild();
 
+						ImGui::PopStyleVar(2);
+
 						if (ImGui::IsItemHovered()
 							&& ImGui::IsItemClicked(0))
 						{
 							selectedNode = node;
 							cout << "selected " << selectedNode->GetName() << " | " << selectedNode->GetID() << "\n";
+						}
+
+						if (ImGui::IsItemHovered()
+							&& ImGui::IsMouseClicked(1))
+						{
+							selectedNode = node;
+							cout << selectedNode->GetName() << "\n";
+							ImGui::OpenPopup("rightclickpopup2");
+						}
+
+						if (ImGui::BeginPopupContextItem("rightclickpopup2"))
+						{
+							if (ImGui::MenuItem("Delete"))
+							{
+								string nodeName = selectedNode->GetName();
+
+								DestroyNode(selectedNode);
+
+								cout << "deleted node " << nodeName << "\n";
+							}
+
+							ImGui::EndPopup();
+						}
+
+						else if (!ImGui::IsItemHovered()
+								 && ImGui::IsMouseClicked(0)
+								 && selectedNode != nullptr)
+						{
+							string nodeName = selectedNode->GetName();
+							selectedNode = nullptr;
+							cout << "deselected " << nodeName << "\n";
 						}
 					}
 
@@ -280,6 +316,19 @@ namespace Graphics::GUI
 			ImGui::EndChild();
 
 			ImGui::End();
+		}
+	}
+
+	void GUINodeBlock::DestroyNode(const shared_ptr<Node>& node)
+	{
+		if (selectedNode == node) selectedNode = nullptr;
+
+		if (selectedComponent != nullptr
+			&& selectedComponent->GetNodes().size() > 0)
+		{
+			vector<shared_ptr<Node>> nodes = selectedComponent->GetNodes();
+			auto it = find(nodes.begin(), nodes.end(), node);
+			if (it != nodes.end()) nodes.erase(it);
 		}
 	}
 }

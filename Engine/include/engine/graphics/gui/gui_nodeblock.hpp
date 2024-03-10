@@ -43,6 +43,8 @@ namespace Graphics::GUI
 
 		static void SetBackgroundTexture();
 		static void RenderNodeBlock();
+
+		static void DestroyNode(const shared_ptr<Node>& node);
 	private:
 		static inline unsigned int backgroundID;
 	};

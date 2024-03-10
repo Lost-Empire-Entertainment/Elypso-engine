@@ -101,20 +101,20 @@ target_link_libraries(Elypso_hub PRIVATE external_libs glad ${GLFW_LIBRARY_PATH}
 target_compile_definitions(Elypso_hub PRIVATE GLFW_INCLUDE_NONE)
 
 # Set the subsystem to WINDOWS
-set_target_properties(Elypso_hub PROPERTIES
-    WIN32_EXECUTABLE TRUE
-)
+#set_target_properties(Elypso_hub PROPERTIES
+#    WIN32_EXECUTABLE TRUE
+#)
 
 # Set the entry point (MSVC-specific)
-if (MSVC)
-	set_target_properties(Elypso_hub PROPERTIES
-    LINK_FLAGS "/ENTRY:mainCRTStartup"
-)
-endif()
+#if (MSVC)
+#	set_target_properties(Elypso_hub PROPERTIES
+#    LINK_FLAGS "/ENTRY:mainCRTStartup"
+#)
+#endif()
 
 # Set the folder inside the install folder where the exe will be placed for this project
-set(CMAKE_INSTALL_BINDIR bin)
-install(TARGETS Elypso_hub DESTINATION ${CMAKE_INSTALL_BINDIR})
+#set(CMAKE_INSTALL_BINDIR bin)
+#install(TARGETS Elypso_hub DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Copy "files" directory to the install directory after build
 add_custom_command(TARGET Elypso_hub POST_BUILD

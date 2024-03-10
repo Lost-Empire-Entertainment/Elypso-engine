@@ -367,6 +367,14 @@ namespace Graphics::GUI
 							GUINodeBlock::selectedComponent = nullptr;
 						}
 
+						if (component->GetNodes().size() > 0)
+						{
+							for (auto& node : component->GetNodes())
+							{
+								GUINodeBlock::DestroyNode(node);
+							}
+						}
+
 						Select::selectedObj->RemoveComponent(component);
 					}
 
