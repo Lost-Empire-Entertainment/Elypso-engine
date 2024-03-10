@@ -121,13 +121,14 @@ namespace Graphics::GUI
 					zoomFactor = min(zoomFactor, 5.0f);
 				}
 
-				//dragging with left mouse key
+				//start dragging background
 				if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)
 					&& !isDraggingBackground)
 				{
 					isDraggingBackground = true;
 					lastBackgroundDragPos = ImGui::GetMousePos();
 				}
+				//stop dragging background
 				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 				{
 					isDraggingBackground = false;
@@ -146,6 +147,7 @@ namespace Graphics::GUI
 					if (selectedComponent != nullptr 
 						&& selectedComponent->GetNodes().size() > 0)
 					{
+						//update each node position when dragging background
 						for (auto& node : selectedComponent->GetNodes())
 						{
 							if (node == selectedNode)
@@ -185,6 +187,7 @@ namespace Graphics::GUI
 					ImGui::OpenPopup("rightclickpopup");
 				}
 
+				//right click popup for node background
 				if (ImGui::BeginPopupContextItem("rightclickpopup"))
 				{
 					if (ImGui::MenuItem("Add node"))
@@ -204,6 +207,7 @@ namespace Graphics::GUI
 				{
 					bool wasNodeSelected = false;
 
+					//render each node
 					for (const auto& node : selectedComponent->GetNodes())
 					{
 						string nodeWindowName = node->GetName() + to_string(node->GetID());
@@ -245,6 +249,7 @@ namespace Graphics::GUI
 
 						ImGui::PopStyleVar(2);
 
+						//select node
 						if (ImGui::IsItemHovered()
 							&& ImGui::IsItemClicked(0))
 						{
@@ -254,14 +259,9 @@ namespace Graphics::GUI
 
 							wasNodeSelected = true;
 						}
-
-						if (selectedNode == node
-							&& ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
-						{
-							DestroyNode(selectedNode);
-						}
 					}
 
+					//deselect node
 					if (ImGui::IsMouseClicked(0)
 						&& !wasNodeSelected
 						&& selectedNode != nullptr)
@@ -271,6 +271,14 @@ namespace Graphics::GUI
 						cout << "deselected " << nodeName << "\n";
 					}
 
+					//delete selected node with delete key
+					if (selectedNode != nullptr
+						&& ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
+					{
+						DestroyNode(selectedNode);
+					}
+
+					//start dragging node
 					if (selectedNode != nullptr
 						&& ImGui::IsMouseDragging(ImGuiMouseButton_Left)
 						&& !isDraggingNode)
@@ -278,11 +286,13 @@ namespace Graphics::GUI
 						isDraggingNode = true;
 						lastNodeDragPos = ImGui::GetMousePos();
 					}
+					//stop dragging node
 					if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 					{
 						isDraggingNode = false;
 					}
 
+					//drag selected node
 					if (isDraggingNode)
 					{
 						selectedNode->SetInitialPos(selectedNode->GetPos());
