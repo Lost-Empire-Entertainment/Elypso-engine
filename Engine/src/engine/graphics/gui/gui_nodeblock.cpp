@@ -202,6 +202,8 @@ namespace Graphics::GUI
 
 				if (selectedComponent->GetNodes().size() > 0)
 				{
+					bool wasNodeSelected = false;
+
 					for (const auto& node : selectedComponent->GetNodes())
 					{
 						string nodeWindowName = node->GetName() + to_string(node->GetID());
@@ -247,32 +249,26 @@ namespace Graphics::GUI
 							&& ImGui::IsItemClicked(0))
 						{
 							selectedNode = node;
-							cout << "selected " << selectedNode->GetName() << " | " << selectedNode->GetID() << "\n";
+							string nodeName = selectedNode->GetName() + " | " + to_string(selectedNode->GetID());
+							cout << "selected " << nodeName << "\n";
+
+							wasNodeSelected = true;
 						}
 
-						if (ImGui::IsItemHovered()
-							&& ImGui::IsMouseClicked(1))
+						if (selectedNode == node
+							&& ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
 						{
-							selectedNode = node;
-							cout << selectedNode->GetName() << "\n";
-							ImGui::OpenPopup("rightclickpopup2");
+							DestroyNode(selectedNode);
 						}
+					}
 
-						if (ImGui::BeginPopupContextItem("rightclickpopup2"))
-						{
-							if (ImGui::MenuItem("Delete")) DestroyNode(selectedNode);
-
-							ImGui::EndPopup();
-						}
-
-						else if (!ImGui::IsItemHovered()
-								 && ImGui::IsMouseClicked(0)
-								 && selectedNode != nullptr)
-						{
-							string nodeName = selectedNode->GetName();
-							selectedNode = nullptr;
-							cout << "deselected " << nodeName << "\n";
-						}
+					if (ImGui::IsMouseClicked(0)
+						&& !wasNodeSelected
+						&& selectedNode != nullptr)
+					{
+						string nodeName = selectedNode->GetName() + " | " + to_string(selectedNode->GetID());
+						selectedNode = nullptr;
+						cout << "deselected " << nodeName << "\n";
 					}
 
 					if (selectedNode != nullptr
