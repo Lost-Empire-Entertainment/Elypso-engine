@@ -260,14 +260,7 @@ namespace Graphics::GUI
 
 						if (ImGui::BeginPopupContextItem("rightclickpopup2"))
 						{
-							if (ImGui::MenuItem("Delete"))
-							{
-								string nodeName = selectedNode->GetName();
-
-								DestroyNode(selectedNode);
-
-								cout << "deleted node " << nodeName << "\n";
-							}
+							if (ImGui::MenuItem("Delete")) DestroyNode(selectedNode);
 
 							ImGui::EndPopup();
 						}
@@ -321,14 +314,17 @@ namespace Graphics::GUI
 
 	void GUINodeBlock::DestroyNode(const shared_ptr<Node>& node)
 	{
-		if (selectedNode == node) selectedNode = nullptr;
+		string nodeName = node->GetName();
 
-		if (selectedComponent != nullptr
-			&& selectedComponent->GetNodes().size() > 0)
+		if (selectedComponent->GetNodes().size() > 0)
 		{
-			vector<shared_ptr<Node>> nodes = selectedComponent->GetNodes();
+			vector<shared_ptr<Node>>& nodes = selectedComponent->GetNodes();
 			auto it = find(nodes.begin(), nodes.end(), node);
 			if (it != nodes.end()) nodes.erase(it);
 		}
+
+		if (selectedNode == node) selectedNode = nullptr;
+
+		cout << "deleted node " << nodeName << ", new node count is " << selectedComponent->GetNodes().size() << "\n";
 	}
 }

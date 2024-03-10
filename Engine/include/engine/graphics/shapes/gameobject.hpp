@@ -219,7 +219,7 @@ namespace Graphics::Shape
 
 		string GetName() const { return name; }
 		ComponentType GetType() const { return type; }
-		vector<shared_ptr<Node>> GetNodes() const { return nodes; }
+		vector<shared_ptr<Node>>& GetNodes() { return nodes; }
 
 	private:
 		string name;
