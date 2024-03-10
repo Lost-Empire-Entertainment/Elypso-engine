@@ -72,7 +72,7 @@ namespace Graphics::GUI
 				if (ImGui::MenuItem("Nodeblock"))
 				{
 					static unsigned int ID = 1;
-					vector<shared_ptr<Node>> nodes;
+					vector<shared_ptr<GUINode>> nodes;
 					shared_ptr<Component> comp = make_shared<Component>("comp" + to_string(ID), Component::ComponentType::Nodeblock, nodes);
 					Select::selectedObj->AddComponent(comp);
 

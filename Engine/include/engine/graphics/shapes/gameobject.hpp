@@ -34,7 +34,7 @@ using glm::vec3;
 using glm::mat4;
 
 using Graphics::Shader;
-using Graphics::GUI::Node;
+using Graphics::GUI::GUINode;
 
 namespace Graphics::Shape
 {
@@ -210,21 +210,21 @@ namespace Graphics::Shape
 		Component(
 			const string& name,
 			const ComponentType& type,
-			const vector<shared_ptr<Node>> nodes) :
+			const vector<shared_ptr<GUINode>> nodes) :
 			name(name),
 			type(type),
 			nodes(nodes){}
 
-		void AddNode(const shared_ptr<Node> newNode) { nodes.push_back(newNode); }
+		void AddNode(const shared_ptr<GUINode> newNode) { nodes.push_back(newNode); }
 
 		string GetName() const { return name; }
 		ComponentType GetType() const { return type; }
-		vector<shared_ptr<Node>>& GetNodes() { return nodes; }
+		vector<shared_ptr<GUINode>>& GetNodes() { return nodes; }
 
 	private:
 		string name;
 		ComponentType type;
-		vector<shared_ptr<Node>> nodes;
+		vector<shared_ptr<GUINode>> nodes;
 	};
 
 	class GameObject

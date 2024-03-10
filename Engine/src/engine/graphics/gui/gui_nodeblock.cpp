@@ -179,29 +179,7 @@ namespace Graphics::GUI
 
 			if (selectedComponent != nullptr)
 			{
-				if (!Input::cameraEnabled
-					&& ImGui::IsWindowHovered()
-					&& ImGui::IsMouseClicked(1))
-				{
-					cout << selectedComponent->GetName() << "\n";
-					ImGui::OpenPopup("rightclickpopup");
-				}
-
-				//right click popup for node background
-				if (ImGui::BeginPopupContextItem("rightclickpopup"))
-				{
-					if (ImGui::MenuItem("Add node"))
-					{
-						shared_ptr<Node> newNode = Node::InitializeNode();
-						selectedComponent->AddNode(newNode);
-						vec2 pos = vec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
-						newNode->SetPos(pos);
-
-						cout << "added node " << newNode->GetName() << " to component " << selectedComponent->GetName() << "\n";
-					}
-
-					ImGui::EndPopup();
-				}
+				GUINodeBlock::AddNode();
 
 				if (selectedComponent->GetNodes().size() > 0)
 				{
@@ -318,13 +296,101 @@ namespace Graphics::GUI
 		}
 	}
 
-	void GUINodeBlock::DestroyNode(const shared_ptr<Node>& node)
+	void GUINodeBlock::AddNode()
+	{
+		if (!Input::cameraEnabled
+			&& ImGui::IsWindowHovered()
+			&& ImGui::IsMouseClicked(1))
+		{
+			cout << selectedComponent->GetName() << "\n";
+			ImGui::OpenPopup("rightclickpopup");
+		}
+
+		//right click popup for node background
+		if (ImGui::BeginPopupContextItem("rightclickpopup"))
+		{
+			vec2 pos = vec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+
+			if (ImGui::MenuItem("Left 1 Right 1"))
+			{
+				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+
+				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
+					vec2(0),
+					vec2(0),
+					GUINode::tempName,
+					GUINode::tempID,
+					nodeCircles);
+
+				selectedComponent->AddNode(newNode);
+				newNode->SetPos(pos);
+				cout << "added node " << newNode->GetName()
+					<< " to component " << selectedComponent->GetName()
+					<< " with 1 left and 1 right circle\n";
+			}
+			if (ImGui::MenuItem("Left 1 Right 2"))
+			{
+				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+
+				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
+					vec2(0),
+					vec2(0),
+					GUINode::tempName,
+					GUINode::tempID,
+					nodeCircles);
+
+				selectedComponent->AddNode(newNode);
+				newNode->SetPos(pos);
+				cout << "added node " << newNode->GetName()
+					<< " to component " << selectedComponent->GetName()
+					<< " with 1 left and 2 right circles\n";
+			}
+			if (ImGui::MenuItem("Left 1 Right 3"))
+			{
+				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+
+				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
+					vec2(0),
+					vec2(0),
+					GUINode::tempName,
+					GUINode::tempID,
+					nodeCircles);
+
+				selectedComponent->AddNode(newNode);
+				newNode->SetPos(pos);
+				cout << "added node " << newNode->GetName() 
+					<< " to component " << selectedComponent->GetName() 
+					<< " with 1 left and 3 right circles\n";
+			}
+			if (ImGui::MenuItem("Left 1 Right 4"))
+			{
+				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+
+				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
+					vec2(0),
+					vec2(0),
+					GUINode::tempName,
+					GUINode::tempID,
+					nodeCircles);
+
+				selectedComponent->AddNode(newNode);
+				newNode->SetPos(pos);
+				cout << "added node " << newNode->GetName()
+					<< " to component " << selectedComponent->GetName()
+					<< " with 1 left and 4 right circles\n";
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
+	void GUINodeBlock::DestroyNode(const shared_ptr<GUINode>& node)
 	{
 		string nodeName = node->GetName();
 
 		if (selectedComponent->GetNodes().size() > 0)
 		{
-			vector<shared_ptr<Node>>& nodes = selectedComponent->GetNodes();
+			vector<shared_ptr<GUINode>>& nodes = selectedComponent->GetNodes();
 			auto it = find(nodes.begin(), nodes.end(), node);
 			if (it != nodes.end()) nodes.erase(it);
 		}

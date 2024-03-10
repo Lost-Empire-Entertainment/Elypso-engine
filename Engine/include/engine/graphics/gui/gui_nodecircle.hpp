@@ -17,47 +17,60 @@
 
 #pragma once
 
-#include <string>
+#include <iostream>
 #include <memory>
-#include <vector>
 
 //external
 #include "glm.hpp"
+
+//engine
 #include "gui_nodecircle.hpp"
 
 using std::string;
 using std::shared_ptr;
-using std::vector;
 using glm::vec2;
 
 namespace Graphics::GUI
 {
-	class GUINode
+	class GUINodeCircle
 	{
 	public:
 		static inline string tempName = "123456789";
 		static inline unsigned int tempID = 123456789;
 
-		GUINode(
+		enum class Side
+		{
+			left,
+			right
+		};
+		enum class Slot
+		{
+			first,
+			second,
+			third,
+			fourth
+		};
+
+		GUINodeCircle(
 			const vec2& pos,
 			const vec2& initialPos,
-			const vec2& scale,
-			string& name,
-			unsigned int& ID,
-			const vector<shared_ptr<GUINodeCircle>> nodeCircles) :
-			pos(initialPos),
+			string name,
+			unsigned int ID,
+			const Side& side,
+			const Slot& slot) :
+			pos(pos),
 			initialPos(initialPos),
-			scale(scale),
 			name(name),
 			ID(ID),
-			nodeCircles(nodeCircles){}
+			side(side),
+			slot(slot) {}
 
-		static shared_ptr<GUINode> InitializeNode(
-			const vec2& pos = vec2(0),
-			const vec2& scale = vec2(0),
-			string& name = tempName,
-			unsigned int& id = tempID,
-		    const vector<shared_ptr<GUINodeCircle>> nodeCircles = {});
+		static shared_ptr<GUINodeCircle> InitializeNodeCircle(
+			const vec2& pos,
+			string name,
+			unsigned int ID,
+			const Side& side,
+			const Slot& slot);
 
 		void SetPos(const vec2& newPos) { pos = newPos; }
 		void SetInitialPos(const vec2& newInitialPos) { initialPos = newInitialPos; }
@@ -69,16 +82,12 @@ namespace Graphics::GUI
 		string GetName() const { return name; }
 		unsigned int GetID() const { return ID; }
 
-		vector<shared_ptr<GUINodeCircle>>& GetNodeCircles() { return nodeCircles; }
-
-		static void DestroyNodeCircle(const shared_ptr<GUINodeCircle>& nodeCircle);
-		
 	private:
 		vec2 pos;
 		vec2 initialPos;
-		vec2 scale;
 		string name;
 		unsigned int ID;
-		vector<shared_ptr<GUINodeCircle>> nodeCircles;
+		Side side;
+		Slot slot;
 	};
 }

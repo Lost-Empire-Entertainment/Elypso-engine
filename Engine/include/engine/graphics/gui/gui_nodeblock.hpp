@@ -39,12 +39,13 @@ namespace Graphics::GUI
 		static inline bool renderNodeBlock;
 		static inline shared_ptr<GameObject> selectedGameObject;
 		static inline shared_ptr<Component> selectedComponent;
-		static inline shared_ptr<Node> selectedNode;
+		static inline shared_ptr<GUINode> selectedNode;
 
 		static void SetBackgroundTexture();
 		static void RenderNodeBlock();
+		static void AddNode();
 
-		static void DestroyNode(const shared_ptr<Node>& node);
+		static void DestroyNode(const shared_ptr<GUINode>& node);
 	private:
 		static inline unsigned int backgroundID;
 	};

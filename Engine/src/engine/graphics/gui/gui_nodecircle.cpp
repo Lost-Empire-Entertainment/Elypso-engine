@@ -15,53 +15,32 @@
 //    and a copy of the EULA in EULA.md along with this program. 
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
-#include <iostream>
-
 //engine
-#include "gui_node.hpp"
-#include "gui_nodeblock.hpp"
+#include "gui_nodecircle.hpp"
 #include "gameobject.hpp"
-
-using std::cout;
-using std::to_string;
-using std::make_shared;
 
 using Graphics::Shape::GameObject;
 
 namespace Graphics::GUI
 {
-	shared_ptr<GUINode> GUINode::InitializeNode(
+	shared_ptr<GUINodeCircle> GUINodeCircle::InitializeNodeCircle(
 		const vec2& pos,
-		const vec2& scale,
-		string& name,
-		unsigned int& id,
-		const vector<shared_ptr<GUINodeCircle>> nodeCircles)
+		string name,
+		unsigned int ID,
+		const Side& side,
+		const Slot& slot)
 	{
-		if (name == tempName) name = "Node";
+		if (name == tempName) name = "NodeCircle";
 		if (id == tempID) id = GameObject::nextID++;
 
-		shared_ptr<GUINode> node = make_shared<GUINode>(
+		shared_ptr<GUINodeCircle> nodeCircle = make_shared<GUINodeCircle>(
 			pos,
 			pos,
-			scale,
 			name,
 			id,
-			nodeCircles);
+			side,
+			slot);
 
-		return node;
-	}
-
-	void GUINode::DestroyNodeCircle(const shared_ptr<GUINodeCircle>& nodeCircle)
-	{
-		string nodeCircleName = nodeCircle->GetName();
-
-		if (GUINodeBlock::selectedComponent->GetNodes().size() > 0)
-		{
-			vector<shared_ptr<GUINodeCircle>>& nodes = GUINodeBlock::selectedNode->GetNodeCircles();
-			auto it = find(nodes.begin(), nodes.end(), nodeCircle);
-			if (it != nodes.end()) nodes.erase(it);
-		}
-
-		cout << "deleted node " << nodeCircleName << ", new node count is " << GUINodeBlock::selectedNode->GetNodeCircles().size() << "\n";
+		return nodeCircle;
 	}
 }
