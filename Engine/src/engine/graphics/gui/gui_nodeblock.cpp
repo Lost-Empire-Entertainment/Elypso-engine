@@ -219,9 +219,50 @@ namespace Graphics::GUI
 							ImColor(backgroundColor),
 							5.0f);
 
+						//draw node circles
+						if (node->GetNodeCircles().size() > 0)
+						{
+							for (const auto& nodeCircle : node->GetNodeCircles())
+							{
+								ImVec2 circlePos = {};
+								float posX = ImGui::GetWindowPos().x + nodeSize.x / 2;
+								posX = nodeCircle->GetSide() ==
+									GUINodeCircle::Side::left ? posX - 100 : posX + 100;
+								float posY = ImGui::GetWindowPos().y + nodeSize.y / 2;
+
+								switch (nodeCircle->GetSlot())
+								{
+								case GUINodeCircle::Slot::first:
+									circlePos = ImVec2(
+										posX,
+										posY = posY - 35);
+									break;
+								case GUINodeCircle::Slot::second:
+									circlePos = ImVec2(
+										posX,
+										posY = posY - 5);
+									break;
+								case GUINodeCircle::Slot::third:
+									circlePos = ImVec2(
+										posX,
+										posY = posY + 25);
+									break;
+								case GUINodeCircle::Slot::fourth:
+									circlePos = ImVec2(
+										posX,
+										posY = posY + 55);
+									break;
+								}
+								float circleRadius = 5.0f;
+								ImGui::GetWindowDrawList()->AddCircleFilled(
+									circlePos,
+									circleRadius,
+									ImColor(255, 255, 0, 255));
+							}
+						}
+
 						ImGui::Text(nodeWindowTitle.c_str());
 						ImGui::Separator();
-						ImGui::Text("this is a node...");
 
 						ImGui::EndChild();
 
@@ -314,6 +355,18 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Left 1 Right 1"))
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleLeft1);
+				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleRight1);
 
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
@@ -332,6 +385,25 @@ namespace Graphics::GUI
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 
+				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleLeft1);
+				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleRight1);
+				shared_ptr<GUINodeCircle> nodeCircleRight2 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::second);
+				nodeCircles.push_back(nodeCircleRight2);
+
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
@@ -349,6 +421,31 @@ namespace Graphics::GUI
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 
+				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleLeft1);
+				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleRight1);
+				shared_ptr<GUINodeCircle> nodeCircleRight2 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::second);
+				nodeCircles.push_back(nodeCircleRight2);
+				shared_ptr<GUINodeCircle> nodeCircleRight3 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::third);
+				nodeCircles.push_back(nodeCircleRight3);
+
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
@@ -365,6 +462,37 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Left 1 Right 4"))
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+
+				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleLeft1);
+				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleRight1);
+				shared_ptr<GUINodeCircle> nodeCircleRight2 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::second);
+				nodeCircles.push_back(nodeCircleRight2);
+				shared_ptr<GUINodeCircle> nodeCircleRight3 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::third);
+				nodeCircles.push_back(nodeCircleRight3);
+				shared_ptr<GUINodeCircle> nodeCircleRight4 = GUINodeCircle::InitializeNodeCircle(
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::fourth);
+				nodeCircles.push_back(nodeCircleRight4);
 
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),

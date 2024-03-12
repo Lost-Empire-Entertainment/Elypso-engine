@@ -24,7 +24,6 @@ using Graphics::Shape::GameObject;
 namespace Graphics::GUI
 {
 	shared_ptr<GUINodeCircle> GUINodeCircle::InitializeNodeCircle(
-		const vec2& pos,
 		string name,
 		unsigned int ID,
 		const Side& side,
@@ -34,8 +33,6 @@ namespace Graphics::GUI
 		if (ID == tempID) ID = GameObject::nextID++;
 
 		shared_ptr<GUINodeCircle> nodeCircle = make_shared<GUINodeCircle>(
-			pos,
-			pos,
 			name,
 			ID,
 			side,

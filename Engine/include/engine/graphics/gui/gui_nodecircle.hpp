@@ -52,39 +52,30 @@ namespace Graphics::GUI
 		};
 
 		GUINodeCircle(
-			const vec2& pos,
-			const vec2& initialPos,
 			string name,
 			unsigned int ID,
 			const Side& side,
 			const Slot& slot) :
-			pos(pos),
-			initialPos(initialPos),
 			name(name),
 			ID(ID),
 			side(side),
 			slot(slot) {}
 
 		static shared_ptr<GUINodeCircle> InitializeNodeCircle(
-			const vec2& pos,
 			string name,
 			unsigned int ID,
 			const Side& side,
 			const Slot& slot);
 
-		void SetPos(const vec2& newPos) { pos = newPos; }
-		void SetInitialPos(const vec2& newInitialPos) { initialPos = newInitialPos; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
 		
-		vec2 GetPos() const { return pos; }
-		vec2 GetInitialPos() const { return initialPos; }
 		string GetName() const { return name; }
 		unsigned int GetID() const { return ID; }
+		Side GetSide() const { return side; }
+		Slot GetSlot() const { return slot; }
 
 	private:
-		vec2 pos;
-		vec2 initialPos;
 		string name;
 		unsigned int ID;
 		Side side;
