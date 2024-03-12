@@ -225,6 +225,7 @@ namespace Graphics::Shape
 		string name;
 		ComponentType type;
 		vector<shared_ptr<GUINode>> nodes;
+
 	};
 
 	class GameObject

@@ -19,7 +19,6 @@
 #include <iostream>
 
 //external
-#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
@@ -184,16 +183,18 @@ namespace Graphics::GUI
 				if (selectedComponent->GetNodes().size() > 0)
 				{
 					bool wasNodeSelected = false;
+					static ImVec2 nodePos = {};
+					static ImVec2 nodeSize = {};
 
 					//render each node
 					for (const auto& node : selectedComponent->GetNodes())
 					{
 						string nodeWindowName = node->GetName() + to_string(node->GetID());
 						string nodeWindowTitle = node->GetName() + " | " + to_string(node->GetID());
-						ImVec2 nodePos = ImVec2(
+						nodePos = ImVec2(
 							node->GetPos().x * zoomFactor,
 							node->GetPos().y * zoomFactor);
-						ImVec2 nodeSize = ImVec2(
+						nodeSize = ImVec2(
 							250 * zoomFactor, 
 							180 * zoomFactor);
 
@@ -258,6 +259,25 @@ namespace Graphics::GUI
 									circlePos,
 									circleRadius,
 									ImColor(255, 255, 0, 255));
+
+								//calculate distance between mouse cursor and circle center
+								float distance = sqrt(pow(
+									ImGui::GetMousePos().x - circlePos.x, 2) 
+									+ pow(ImGui::GetMousePos().y - circlePos.y, 2));
+
+								//select circle with left mouse
+								if (distance <= circleRadius
+									&& ImGui::IsMouseClicked(0)
+									&& !wasNodeCircleSelected)
+								{
+									string nodeCircleName = nodeCircle->GetName() + " | " + to_string(nodeCircle->GetID());
+									cout << "selected " << nodeCircleName << "\n";
+									wasNodeCircleSelected = true;
+									circleCenter = circlePos;
+								}
+
+								//first bezier curve draw on top of nodes
+								DrawBezierCurve();
 							}
 						}
 
@@ -270,7 +290,8 @@ namespace Graphics::GUI
 
 						//select node
 						if (ImGui::IsItemHovered()
-							&& ImGui::IsItemClicked(0))
+							&& ImGui::IsItemClicked(0)
+							&& !wasNodeCircleSelected)
 						{
 							selectedNode = node;
 							string nodeName = selectedNode->GetName() + " | " + to_string(selectedNode->GetID());
@@ -278,6 +299,16 @@ namespace Graphics::GUI
 
 							wasNodeSelected = true;
 						}
+					}
+
+					if (wasNodeCircleSelected)
+					{
+						cout << "currently selecting node circle...\n";
+					}
+					if (wasNodeCircleSelected
+						&& ImGui::IsMouseReleased(0))
+					{
+						wasNodeCircleSelected = false;
 					}
 
 					//deselect node
@@ -328,6 +359,9 @@ namespace Graphics::GUI
 
 						lastNodeDragPos = currentMousePos;
 					}
+
+					//second bezier curve draw underneath nodes
+					DrawBezierCurve();
 				}
 			}
 
@@ -337,13 +371,36 @@ namespace Graphics::GUI
 		}
 	}
 
+	void GUINodeBlock::DrawBezierCurve()
+	{
+		if (wasNodeCircleSelected)
+		{
+			ImVec2 mousePos = ImGui::GetMousePos();
+
+			ImVec2 controlPoint1 = ImVec2(circleCenter.x + (mousePos.x - circleCenter.x) * 0.5f, circleCenter.y);
+			ImVec2 controlPoint2 = ImVec2(mousePos.x, mousePos.y);
+
+			const int segments = 20;
+			ImVec2 prevPoint = circleCenter;
+			for (int i = 1; i <= segments; ++i)
+			{
+				float t = static_cast<float>(i) / segments;
+				ImVec2 bezierPoint = ImVec2(
+					(1 - t) * (1 - t) * circleCenter.x + 2 * (1 - t) * t * controlPoint1.x + t * t * controlPoint2.x,
+					(1 - t) * (1 - t) * circleCenter.y + 2 * (1 - t) * t * controlPoint1.y + t * t * controlPoint2.y);
+
+				ImGui::GetWindowDrawList()->AddLine(prevPoint, bezierPoint, ImColor(255, 255, 12, 255));
+				prevPoint = bezierPoint;
+			}
+		}
+	}
+
 	void GUINodeBlock::AddNode()
 	{
 		if (!Input::cameraEnabled
 			&& ImGui::IsWindowHovered()
 			&& ImGui::IsMouseClicked(1))
 		{
-			cout << selectedComponent->GetName() << "\n";
 			ImGui::OpenPopup("rightclickpopup");
 		}
 
@@ -377,9 +434,6 @@ namespace Graphics::GUI
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
-				cout << "added node " << newNode->GetName()
-					<< " to component " << selectedComponent->GetName()
-					<< " with 1 left and 1 right circle\n";
 			}
 			if (ImGui::MenuItem("Left 1 Right 2"))
 			{
@@ -413,9 +467,6 @@ namespace Graphics::GUI
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
-				cout << "added node " << newNode->GetName()
-					<< " to component " << selectedComponent->GetName()
-					<< " with 1 left and 2 right circles\n";
 			}
 			if (ImGui::MenuItem("Left 1 Right 3"))
 			{
@@ -455,9 +506,6 @@ namespace Graphics::GUI
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
-				cout << "added node " << newNode->GetName() 
-					<< " to component " << selectedComponent->GetName() 
-					<< " with 1 left and 3 right circles\n";
 			}
 			if (ImGui::MenuItem("Left 1 Right 4"))
 			{
@@ -503,9 +551,6 @@ namespace Graphics::GUI
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
-				cout << "added node " << newNode->GetName()
-					<< " to component " << selectedComponent->GetName()
-					<< " with 1 left and 4 right circles\n";
 			}
 
 			ImGui::EndPopup();
