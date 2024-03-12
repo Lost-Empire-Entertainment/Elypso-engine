@@ -31,13 +31,13 @@ namespace Graphics::GUI
 		const Slot& slot)
 	{
 		if (name == tempName) name = "NodeCircle";
-		if (id == tempID) id = GameObject::nextID++;
+		if (ID == tempID) ID = GameObject::nextID++;
 
 		shared_ptr<GUINodeCircle> nodeCircle = make_shared<GUINodeCircle>(
 			pos,
 			pos,
 			name,
-			id,
+			ID,
 			side,
 			slot);
 

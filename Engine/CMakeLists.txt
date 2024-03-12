@@ -68,6 +68,7 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_node.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_nodeblock.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_nodecircle.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_projecthierarchy.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_scenehierarchy.cpp
 	${SRC_GRAPHICS_DIR}/grid.cpp

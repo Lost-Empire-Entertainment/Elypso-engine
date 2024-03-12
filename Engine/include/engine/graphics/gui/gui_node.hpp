@@ -70,8 +70,6 @@ namespace Graphics::GUI
 		unsigned int GetID() const { return ID; }
 
 		vector<shared_ptr<GUINodeCircle>>& GetNodeCircles() { return nodeCircles; }
-
-		static void DestroyNodeCircle(const shared_ptr<GUINodeCircle>& nodeCircle);
 		
 	private:
 		vec2 pos;

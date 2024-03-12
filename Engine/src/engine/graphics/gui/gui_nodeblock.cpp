@@ -391,6 +391,9 @@ namespace Graphics::GUI
 		if (selectedComponent->GetNodes().size() > 0)
 		{
 			vector<shared_ptr<GUINode>>& nodes = selectedComponent->GetNodes();
+
+			for (auto& node : nodes) node->GetNodeCircles().clear();
+
 			auto it = find(nodes.begin(), nodes.end(), node);
 			if (it != nodes.end()) nodes.erase(it);
 		}

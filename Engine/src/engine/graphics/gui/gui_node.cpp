@@ -50,18 +50,4 @@ namespace Graphics::GUI
 
 		return node;
 	}
-
-	void GUINode::DestroyNodeCircle(const shared_ptr<GUINodeCircle>& nodeCircle)
-	{
-		string nodeCircleName = nodeCircle->GetName();
-
-		if (GUINodeBlock::selectedComponent->GetNodes().size() > 0)
-		{
-			vector<shared_ptr<GUINodeCircle>>& nodes = GUINodeBlock::selectedNode->GetNodeCircles();
-			auto it = find(nodes.begin(), nodes.end(), nodeCircle);
-			if (it != nodes.end()) nodes.erase(it);
-		}
-
-		cout << "deleted node " << nodeCircleName << ", new node count is " << GUINodeBlock::selectedNode->GetNodeCircles().size() << "\n";
-	}
 }
