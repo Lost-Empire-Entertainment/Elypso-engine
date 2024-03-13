@@ -53,11 +53,11 @@ namespace Graphics::GUI
 			nodeCircles(nodeCircles){}
 
 		static shared_ptr<GUINode> InitializeNode(
-			const vec2& pos = vec2(0),
-			const vec2& scale = vec2(0),
-			string& name = tempName,
-			unsigned int& id = tempID,
-		    const vector<shared_ptr<GUINodeCircle>> nodeCircles = {});
+			const vec2& pos,
+			const vec2& scale,
+			string& name,
+			unsigned int&,
+		    const vector<shared_ptr<GUINodeCircle>> nodeCircles);
 
 		void SetPos(const vec2& newPos) { pos = newPos; }
 		void SetInitialPos(const vec2& newInitialPos) { initialPos = newInitialPos; }

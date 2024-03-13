@@ -228,7 +228,7 @@ namespace Graphics::GUI
 								ImVec2 circlePos = {};
 								float posX = ImGui::GetWindowPos().x + nodeSize.x / 2;
 								posX = nodeCircle->GetSide() ==
-									GUINodeCircle::Side::left ? posX - 100 : posX + 100;
+									GUINodeCircle::Side::left ? posX - 100 * zoomFactor : posX + 100 * zoomFactor;
 								float posY = ImGui::GetWindowPos().y + nodeSize.y / 2;
 
 								switch (nodeCircle->GetSlot())
@@ -236,22 +236,22 @@ namespace Graphics::GUI
 								case GUINodeCircle::Slot::first:
 									circlePos = ImVec2(
 										posX,
-										posY = posY - 35);
+										posY = posY - 35 * zoomFactor);
 									break;
 								case GUINodeCircle::Slot::second:
 									circlePos = ImVec2(
 										posX,
-										posY = posY - 5);
+										posY = posY - 5 * zoomFactor);
 									break;
 								case GUINodeCircle::Slot::third:
 									circlePos = ImVec2(
 										posX,
-										posY = posY + 25);
+										posY = posY + 25 * zoomFactor);
 									break;
 								case GUINodeCircle::Slot::fourth:
 									circlePos = ImVec2(
 										posX,
-										posY = posY + 55);
+										posY = posY + 55 * zoomFactor);
 									break;
 								}
 								float circleRadius = 5.0f;
@@ -259,6 +259,18 @@ namespace Graphics::GUI
 									circlePos,
 									circleRadius,
 									ImColor(255, 255, 0, 255));
+
+								nodeCircle->SetPos(vec2(posX, posY));
+								if (theStartCircle != nullptr
+									&& theStartCircle == nodeCircle)
+								{
+									theStartCircle->SetPos(vec2(posX, posY));
+								}
+								if (theEndCircle != nullptr
+									&& theEndCircle == nodeCircle)
+								{
+									theEndCircle->SetPos(vec2(posX, posY));
+								}
 
 								//calculate distance between mouse cursor and circle center
 								float distance = sqrt(pow(
@@ -270,10 +282,35 @@ namespace Graphics::GUI
 									&& ImGui::IsMouseClicked(0)
 									&& !wasNodeCircleSelected)
 								{
-									string nodeCircleName = nodeCircle->GetName() + " | " + to_string(nodeCircle->GetID());
-									cout << "selected " << nodeCircleName << "\n";
 									wasNodeCircleSelected = true;
+
 									circleCenter = circlePos;
+									theStartCircle = nodeCircle;
+								}
+
+								//release curve on selected circle
+								if (distance <= circleRadius
+									&& ImGui::IsMouseReleased(0)
+									&& wasNodeCircleSelected)
+								{
+									theEndCircle = nodeCircle;
+
+									shared_ptr<GUINodeConnection> nodeConnection = GUINodeConnection::InitializeNodeConnection(
+										GUINodeConnection::tempName,
+										GUINodeConnection::tempID,
+										theStartCircle,
+										theEndCircle);
+									selectedComponent->GetNodeConnections().push_back(nodeConnection);
+
+									string startCircleName = theStartCircle->GetName() + " | " + to_string(theStartCircle->GetID());
+									string endCircleName = theEndCircle->GetName() + " | " + to_string(theEndCircle->GetID());
+
+									theStartCircle = nullptr;
+									theEndCircle = nullptr;
+
+									cout << "created new curve from " 
+										<< startCircleName << " to "
+										<< endCircleName << "\n";
 								}
 
 								//first bezier curve draw on top of nodes
@@ -294,21 +331,17 @@ namespace Graphics::GUI
 							&& !wasNodeCircleSelected)
 						{
 							selectedNode = node;
-							string nodeName = selectedNode->GetName() + " | " + to_string(selectedNode->GetID());
-							cout << "selected " << nodeName << "\n";
 
 							wasNodeSelected = true;
 						}
 					}
 
-					if (wasNodeCircleSelected)
-					{
-						cout << "currently selecting node circle...\n";
-					}
 					if (wasNodeCircleSelected
 						&& ImGui::IsMouseReleased(0))
 					{
 						wasNodeCircleSelected = false;
+						theStartCircle = nullptr;
+						theEndCircle = nullptr;
 					}
 
 					//deselect node
@@ -316,9 +349,7 @@ namespace Graphics::GUI
 						&& !wasNodeSelected
 						&& selectedNode != nullptr)
 					{
-						string nodeName = selectedNode->GetName() + " | " + to_string(selectedNode->GetID());
 						selectedNode = nullptr;
-						cout << "deselected " << nodeName << "\n";
 					}
 
 					//delete selected node with delete key
@@ -377,8 +408,8 @@ namespace Graphics::GUI
 		{
 			ImVec2 mousePos = ImGui::GetMousePos();
 
-			ImVec2 controlPoint1 = ImVec2(circleCenter.x + (mousePos.x - circleCenter.x) * 0.5f, circleCenter.y);
-			ImVec2 controlPoint2 = ImVec2(mousePos.x, mousePos.y);
+			curveStart = ImVec2(circleCenter.x + (mousePos.x - circleCenter.x) * 0.5f, circleCenter.y);
+			curveEnd = ImVec2(mousePos.x, mousePos.y);
 
 			const int segments = 20;
 			ImVec2 prevPoint = circleCenter;
@@ -386,11 +417,37 @@ namespace Graphics::GUI
 			{
 				float t = static_cast<float>(i) / segments;
 				ImVec2 bezierPoint = ImVec2(
-					(1 - t) * (1 - t) * circleCenter.x + 2 * (1 - t) * t * controlPoint1.x + t * t * controlPoint2.x,
-					(1 - t) * (1 - t) * circleCenter.y + 2 * (1 - t) * t * controlPoint1.y + t * t * controlPoint2.y);
+					(1 - t) * (1 - t) * circleCenter.x + 2 * (1 - t) * t * curveStart.x + t * t * curveEnd.x,
+					(1 - t) * (1 - t) * circleCenter.y + 2 * (1 - t) * t * curveStart.y + t * t * curveEnd.y);
 
 				ImGui::GetWindowDrawList()->AddLine(prevPoint, bezierPoint, ImColor(255, 255, 12, 255));
 				prevPoint = bezierPoint;
+			}
+		}
+		if (selectedComponent != nullptr
+			&& selectedComponent->GetNodeConnections().size() > 0)
+		{
+			for (auto& nodeConnection : selectedComponent->GetNodeConnections())
+			{
+				ImVec2 start = ImVec2(
+					nodeConnection->GetCurveStart()->GetPos().x,
+					nodeConnection->GetCurveStart()->GetPos().y);
+				ImVec2 end = ImVec2(
+					nodeConnection->GetCurveEnd()->GetPos().x,
+					nodeConnection->GetCurveEnd()->GetPos().y);
+
+				const int segments = 20;
+				ImVec2 prevPoint = start;
+				for (int i = 1; i <= segments; ++i)
+				{
+					float t = static_cast<float>(i) / segments;
+					ImVec2 bezierPoint = ImVec2(
+						(1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * start.x + t * t * end.x,
+						(1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * start.y + t * t * end.y);
+
+					ImGui::GetWindowDrawList()->AddLine(prevPoint, bezierPoint, ImColor(255, 255, 12, 255));
+					prevPoint = bezierPoint;
+				}
 			}
 		}
 	}
@@ -413,89 +470,19 @@ namespace Graphics::GUI
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
 					GUINodeCircle::tempName,
 					GUINodeCircle::tempID,
 					GUINodeCircle::Side::left,
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleLeft1);
 				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
 					GUINodeCircle::tempName,
 					GUINodeCircle::tempID,
 					GUINodeCircle::Side::right,
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleRight1);
-
-				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
-					vec2(0),
-					vec2(0),
-					GUINode::tempName,
-					GUINode::tempID,
-					nodeCircles);
-
-				selectedComponent->AddNode(newNode);
-				newNode->SetPos(pos);
-			}
-			if (ImGui::MenuItem("Left 1 Right 2"))
-			{
-				vector<shared_ptr<GUINodeCircle>> nodeCircles;
-
-				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
-					GUINodeCircle::tempName,
-					GUINodeCircle::tempID,
-					GUINodeCircle::Side::left,
-					GUINodeCircle::Slot::first);
-				nodeCircles.push_back(nodeCircleLeft1);
-				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
-					GUINodeCircle::tempName,
-					GUINodeCircle::tempID,
-					GUINodeCircle::Side::right,
-					GUINodeCircle::Slot::first);
-				nodeCircles.push_back(nodeCircleRight1);
-				shared_ptr<GUINodeCircle> nodeCircleRight2 = GUINodeCircle::InitializeNodeCircle(
-					GUINodeCircle::tempName,
-					GUINodeCircle::tempID,
-					GUINodeCircle::Side::right,
-					GUINodeCircle::Slot::second);
-				nodeCircles.push_back(nodeCircleRight2);
-
-				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
-					vec2(0),
-					vec2(0),
-					GUINode::tempName,
-					GUINode::tempID,
-					nodeCircles);
-
-				selectedComponent->AddNode(newNode);
-				newNode->SetPos(pos);
-			}
-			if (ImGui::MenuItem("Left 1 Right 3"))
-			{
-				vector<shared_ptr<GUINodeCircle>> nodeCircles;
-
-				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
-					GUINodeCircle::tempName,
-					GUINodeCircle::tempID,
-					GUINodeCircle::Side::left,
-					GUINodeCircle::Slot::first);
-				nodeCircles.push_back(nodeCircleLeft1);
-				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
-					GUINodeCircle::tempName,
-					GUINodeCircle::tempID,
-					GUINodeCircle::Side::right,
-					GUINodeCircle::Slot::first);
-				nodeCircles.push_back(nodeCircleRight1);
-				shared_ptr<GUINodeCircle> nodeCircleRight2 = GUINodeCircle::InitializeNodeCircle(
-					GUINodeCircle::tempName,
-					GUINodeCircle::tempID,
-					GUINodeCircle::Side::right,
-					GUINodeCircle::Slot::second);
-				nodeCircles.push_back(nodeCircleRight2);
-				shared_ptr<GUINodeCircle> nodeCircleRight3 = GUINodeCircle::InitializeNodeCircle(
-					GUINodeCircle::tempName,
-					GUINodeCircle::tempID,
-					GUINodeCircle::Side::right,
-					GUINodeCircle::Slot::third);
-				nodeCircles.push_back(nodeCircleRight3);
 
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
@@ -512,35 +499,133 @@ namespace Graphics::GUI
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 
 				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
 					GUINodeCircle::tempName,
 					GUINodeCircle::tempID,
 					GUINodeCircle::Side::left,
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleLeft1);
 				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
 					GUINodeCircle::tempName,
 					GUINodeCircle::tempID,
 					GUINodeCircle::Side::right,
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleRight1);
 				shared_ptr<GUINodeCircle> nodeCircleRight2 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
 					GUINodeCircle::tempName,
 					GUINodeCircle::tempID,
 					GUINodeCircle::Side::right,
 					GUINodeCircle::Slot::second);
 				nodeCircles.push_back(nodeCircleRight2);
 				shared_ptr<GUINodeCircle> nodeCircleRight3 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
 					GUINodeCircle::tempName,
 					GUINodeCircle::tempID,
 					GUINodeCircle::Side::right,
 					GUINodeCircle::Slot::third);
 				nodeCircles.push_back(nodeCircleRight3);
 				shared_ptr<GUINodeCircle> nodeCircleRight4 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
 					GUINodeCircle::tempName,
 					GUINodeCircle::tempID,
 					GUINodeCircle::Side::right,
 					GUINodeCircle::Slot::fourth);
 				nodeCircles.push_back(nodeCircleRight4);
+
+				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
+					vec2(0),
+					vec2(0),
+					GUINode::tempName,
+					GUINode::tempID,
+					nodeCircles);
+
+				selectedComponent->AddNode(newNode);
+				newNode->SetPos(pos);
+			}
+			if (ImGui::MenuItem("Left 2 Right 2"))
+			{
+				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+
+				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleLeft1);
+				shared_ptr<GUINodeCircle> nodeCircleLeft2 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::second);
+				nodeCircles.push_back(nodeCircleLeft2);
+				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleRight1);
+				shared_ptr<GUINodeCircle> nodeCircleRight2 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::second);
+				nodeCircles.push_back(nodeCircleRight2);
+
+				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
+					vec2(0),
+					vec2(0),
+					GUINode::tempName,
+					GUINode::tempID,
+					nodeCircles);
+
+				selectedComponent->AddNode(newNode);
+				newNode->SetPos(pos);
+			}
+			if (ImGui::MenuItem("Left 4 Right 1"))
+			{
+				vector<shared_ptr<GUINodeCircle>> nodeCircles;
+
+				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleLeft1);
+				shared_ptr<GUINodeCircle> nodeCircleLeft2 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::second);
+				nodeCircles.push_back(nodeCircleLeft2);
+				shared_ptr<GUINodeCircle> nodeCircleLeft3 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::third);
+				nodeCircles.push_back(nodeCircleLeft3);
+				shared_ptr<GUINodeCircle> nodeCircleLeft4 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::left,
+					GUINodeCircle::Slot::fourth);
+				nodeCircles.push_back(nodeCircleLeft4);
+				shared_ptr<GUINodeCircle> nodeCircleRight1 = GUINodeCircle::InitializeNodeCircle(
+					vec2(0),
+					GUINodeCircle::tempName,
+					GUINodeCircle::tempID,
+					GUINodeCircle::Side::right,
+					GUINodeCircle::Slot::first);
+				nodeCircles.push_back(nodeCircleRight1);
 
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
@@ -559,14 +644,42 @@ namespace Graphics::GUI
 
 	void GUINodeBlock::DestroyNode(const shared_ptr<GUINode>& node)
 	{
-		string nodeName = node->GetName();
+		string nodeName = node->GetName() + " | " + to_string(node->GetID());
 
 		if (selectedComponent->GetNodes().size() > 0)
 		{
 			vector<shared_ptr<GUINode>>& nodes = selectedComponent->GetNodes();
 
-			for (auto& node : nodes) node->GetNodeCircles().clear();
+			//erase each connection if it is attached to a node circle on this node
+			for (int i = 0; i < selectedComponent->GetNodeConnections().size();)
+			{
+				shared_ptr<GUINodeConnection> nodeConnection = selectedComponent->GetNodeConnections().at(i);
+				shared_ptr<GUINodeCircle> start = nodeConnection->GetCurveStart();
+				shared_ptr<GUINodeCircle> end = nodeConnection->GetCurveEnd();
 
+				bool eraseConnection = false;
+
+				for (auto& nodeCircle : node->GetNodeCircles())
+				{
+					if (nodeCircle == start
+						|| nodeCircle == end)
+					{
+						eraseConnection = true;
+						break;
+					}
+				}
+
+				if (eraseConnection)
+				{
+					selectedComponent->GetNodeConnections().erase(selectedComponent->GetNodeConnections().begin() + i);
+				}
+				else i++;
+			}
+
+			//remove current node circles
+			node->GetNodeCircles().clear();
+
+			//remove current node from selected component nodes vector
 			auto it = find(nodes.begin(), nodes.end(), node);
 			if (it != nodes.end()) nodes.erase(it);
 		}

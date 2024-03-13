@@ -54,5 +54,9 @@ namespace Graphics::GUI
 		static inline unsigned int backgroundID;
 		static inline bool wasNodeCircleSelected;
 		static inline ImVec2 circleCenter = {};
+		static inline ImVec2 curveStart = {};
+		static inline ImVec2 curveEnd = {};
+		static inline shared_ptr<GUINodeCircle> theStartCircle;
+		static inline shared_ptr<GUINodeCircle> theEndCircle;
 	};
 }

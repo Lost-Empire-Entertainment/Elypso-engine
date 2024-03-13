@@ -26,6 +26,7 @@
 //engine
 #include "shader.hpp"
 #include "gui_node.hpp"
+#include "gui_nodeconnection.hpp"
 
 using std::vector;
 using std::shared_ptr;
@@ -35,6 +36,7 @@ using glm::mat4;
 
 using Graphics::Shader;
 using Graphics::GUI::GUINode;
+using Graphics::GUI::GUINodeConnection;
 
 namespace Graphics::Shape
 {
@@ -220,12 +222,13 @@ namespace Graphics::Shape
 		string GetName() const { return name; }
 		ComponentType GetType() const { return type; }
 		vector<shared_ptr<GUINode>>& GetNodes() { return nodes; }
+		vector<shared_ptr<GUINodeConnection>>& GetNodeConnections() { return nodeConnections; }
 
 	private:
 		string name;
 		ComponentType type;
 		vector<shared_ptr<GUINode>> nodes;
-
+		vector<shared_ptr<GUINodeConnection>> nodeConnections;
 	};
 
 	class GameObject
