@@ -441,9 +441,15 @@ namespace Graphics::GUI
 				for (int i = 1; i <= segments; ++i)
 				{
 					float t = static_cast<float>(i) / segments;
+					ImVec2 curveStart = ImVec2(
+						start.x + (end.x - start.x) * 0.5f,
+						start.y);
+					ImVec2 curveEnd = ImVec2(
+						start.x + (end.x - start.x) * 0.5f,
+						end.y);
 					ImVec2 bezierPoint = ImVec2(
-						(1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * start.x + t * t * end.x,
-						(1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * start.y + t * t * end.y);
+						(1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * curveStart.x + t * t * end.x,
+						(1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * curveStart.y + t * t * end.y);
 
 					ImGui::GetWindowDrawList()->AddLine(prevPoint, bezierPoint, ImColor(255, 255, 12, 255));
 					prevPoint = bezierPoint;
