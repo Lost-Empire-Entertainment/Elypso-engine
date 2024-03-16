@@ -32,7 +32,6 @@
 #include "core.hpp"
 #include "gui.hpp"
 #include "render.hpp"
-#include "shutdown.hpp"
 #include "texture.hpp"
 #include "timeManager.hpp"
 #include "cube.hpp"
@@ -80,7 +79,7 @@ namespace Graphics
 
 		Render::ContentSetup();
 
-		EngineGUI::GetInstance().Initialize();
+		EngineGUI::Initialize();
 
 		TimeManager::InitializeDeltaTime();
 	}
@@ -247,7 +246,7 @@ namespace Graphics
 
 		GameObjectManager::RenderAll(view, projection);
 
-		EngineGUI::GetInstance().Render();
+		EngineGUI::Render();
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);

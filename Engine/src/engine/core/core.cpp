@@ -243,7 +243,7 @@ namespace Core
 				else if (is_regular_file(entryPath)) remove(entryPath);
 			}
 
-			EngineGUI::GetInstance().Shutdown();
+			EngineGUI::Shutdown();
 
 			//clean all glfw resources after program is closed
 			glfwTerminate();

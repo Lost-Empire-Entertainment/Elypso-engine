@@ -36,7 +36,6 @@
 #include "render.hpp"
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
-#include "shutdown.hpp"
 
 using std::cout;
 using std::to_string;

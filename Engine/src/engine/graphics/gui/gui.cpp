@@ -38,7 +38,6 @@
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
 #include "browserUtils.hpp"
-#include "shutdown.hpp"
 #include "gameobject.hpp"
 #include "timeManager.hpp"
 #include "cube.hpp"

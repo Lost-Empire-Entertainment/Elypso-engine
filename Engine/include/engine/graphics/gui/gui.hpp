@@ -46,15 +46,15 @@ namespace Graphics::GUI
 		static inline bool renderUnsavedSceneSwitchWindow;
 		static inline string targetScene;
 
-		void Initialize();
+		static void Initialize();
 
-		void CustomizeImGuiStyle();
+		static void CustomizeImGuiStyle();
 
 		int GetScreenWidth();
 		int GetScreenHeight();
 		static float GetScreenRefreshRate();
 
-		void Render();
+		static void Render();
 		static void Shutdown();
 		static EngineGUI& GetInstance();
 	private:
@@ -63,19 +63,19 @@ namespace Graphics::GUI
 
 		static inline bool filterTextProcessed;
 
-		void RenderTopBar();
+		static void RenderTopBar();
 
 		//top bar interactions
-		void TB_CheckVersion();
-		void TB_ReportIssue();
+		static void TB_CheckVersion();
+		static void TB_ReportIssue();
 
 		//top bar rendered windows
 		static inline string versionCompare;
 		static inline string versionConfirm;
-		void RenderVersionCheckWindow();
+		static void RenderVersionCheckWindow();
 
-		void ConfirmUnsavedShutdown();
+		static void ConfirmUnsavedShutdown();
 
-		void ConfirmUnsavedSceneSwitch();
+		static void ConfirmUnsavedSceneSwitch();
 	};
 }

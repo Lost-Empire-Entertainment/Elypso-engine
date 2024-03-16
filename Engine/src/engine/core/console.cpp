@@ -32,7 +32,6 @@
 #include "stringUtils.hpp"
 #include "gui_console.hpp"
 #include "core.hpp"
-#include "shutdown.hpp"
 #include "render.hpp"
 
 using std::endl;
