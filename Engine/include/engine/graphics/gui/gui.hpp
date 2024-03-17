@@ -56,7 +56,6 @@ namespace Graphics::GUI
 
 		static void Render();
 		static void Shutdown();
-		static EngineGUI& GetInstance();
 	private:
 		//text filter for searching
 		static inline ImGuiTextFilter textFilter;
