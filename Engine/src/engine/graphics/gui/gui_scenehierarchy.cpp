@@ -81,7 +81,9 @@ namespace Graphics::GUI
 
 	void GUISceneHierarchy::DrawGameObject(const shared_ptr<GameObject> obj)
 	{
-		ImGui::Selectable(obj->GetName().c_str(), false, ImGuiSelectableFlags_AllowItemOverlap);
+		string name = obj->GetName().c_str();
+		if (name == "") name = ".";
+		ImGui::Selectable(name.c_str(), false, ImGuiSelectableFlags_AllowItemOverlap);
 
 		if (ImGui::IsItemHovered())
 		{
