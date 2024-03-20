@@ -38,12 +38,28 @@ set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/physics")
 set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/engine/utils")
 set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
 
+# Add the executable
+add_executable(Elypso_engine ${SOURCE_FILES} ${RESOURCE_FILE})
+
+# Forces the name to be Elypso engine
+set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
+
+target_compile_features(Elypso_engine PRIVATE cxx_std_20)
+
+# Set the runtime library option
+# target_compile_options(Elypso_engine PRIVATE /MD)
+
 # Add GLAD
 add_library(glad STATIC ${SRC_DIR}/external/glad/glad.c)
 target_include_directories(glad PUBLIC ${INCLUDE_DIR})
 
 # Add GLFW
 set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
+
+# Add Assimp
+set(ASSIMP_LIBRARY_PATH "${LIB_DIR}/assimp")
+target_include_directories(Elypso_engine PRIVATE ${INCLUDE_DIR}/assimp)
+target_link_directories(Elypso_engine PRIVATE ${ASSIMP_LIBRARY_PATH})
 
 # Add magic_enum
 add_library(magic_enum INTERFACE)
@@ -103,17 +119,6 @@ list(APPEND SOURCE_FILES
 	${EXTERNAL_DIR}/stb_image/stb_image.cpp
 )
 
-# Add the executable
-add_executable(Elypso_engine ${SOURCE_FILES} ${RESOURCE_FILE})
-
-# Forces the name to be Elypso engine
-set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
-
-target_compile_features(Elypso_engine PRIVATE cxx_std_20)
-
-# Set the runtime library option
-# target_compile_options(Elypso_engine PRIVATE /MD)
-
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR}/engine
 	${INCLUDE_DIR}/engine/core
@@ -124,6 +129,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/engine/physics
 	${INCLUDE_DIR}/engine/utils
 	${INCLUDE_DIR}/external
+	${INCLUDE_DIR}/external/assimp
 	${INCLUDE_DIR}/external/glad
 	${INCLUDE_DIR}/external/glfw
 	${INCLUDE_DIR}/external/glm
@@ -137,7 +143,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${INCLUDE_DIR}/external/stb_image
 )
 
-target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
+target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)

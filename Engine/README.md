@@ -25,6 +25,7 @@ These are the external libraries Elypso engine uses natively, you do not need to
 * [magic enum](https://github.com/Neargye/magic_enum) - provides static reflection for enums, work with any enum type without any macro or boilerplate code
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - image loading library that is able to load most popular file formats
 * [Dear ImGui](https://github.com/ocornut/imgui) - immediate mode GUI library
+* [Assimp](https://github.com/assimp/assimp) - loads 40+ 3D file formats into one unified and clean data structure
   
 # How to build Elypso engine from source
 

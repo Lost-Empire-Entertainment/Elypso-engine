@@ -755,7 +755,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 	else if (selectType == SelectType::engine_path)
 	{
-		//restrict file selection to .txt only
+		//restrict file selection to .exe only
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Executables", L"*.exe"} };
 		hr = pFileOpen->SetFileTypes(1, filterSpec);
 		if (FAILED(hr))
