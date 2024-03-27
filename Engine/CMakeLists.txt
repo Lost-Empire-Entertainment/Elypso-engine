@@ -57,7 +57,7 @@ target_include_directories(glad PUBLIC ${INCLUDE_DIR})
 set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
 
 # Add Assimp
-set(ASSIMP_LIBRARY_PATH "${LIB_DIR}/assimp")
+set(ASSIMP_LIBRARY_PATH "${LIB_DIR}/assimp/assimp-vc143-mt.lib")
 
 # Add magic_enum
 add_library(magic_enum INTERFACE)
