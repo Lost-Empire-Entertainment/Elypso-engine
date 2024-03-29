@@ -53,10 +53,12 @@ namespace Graphics
             vector<string> vertSplit = String::Split(vertexPath, '/');
             vector<string> fragSplit = String::Split(fragmentPath, '/');
 
+            /*
             ConsoleManager::WriteConsoleMessage(
                 Caller::SHADER,
                 Type::DEBUG,
                 "Initializing " + vertSplit.back() + " and " + fragSplit.back() + ".\n");
+            */
 
             string vertexCode;
             string fragmentCode;
@@ -127,10 +129,12 @@ namespace Graphics
             glDeleteShader(vertex);
             glDeleteShader(fragment);
 
+            /*
             ConsoleManager::WriteConsoleMessage(
                 Caller::SHADER,
                 Type::DEBUG,
                 "Successfully initialized " + vertSplit.back() + " and " + fragSplit.back() + " with ID " + to_string(ID) + "!\n\n");
+            */
         }
 	}
 

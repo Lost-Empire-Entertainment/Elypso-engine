@@ -161,6 +161,7 @@ namespace Graphics::GUI
 		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 200);
 
 		RenderTopBar();
+		CubeSpawnTest();
 
 		ImGuiDockNodeFlags dockFlags =
 			ImGuiDockNodeFlags_PassthruCentralNode;
@@ -291,21 +292,6 @@ namespace Graphics::GUI
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
 
-					unsigned int ID = obj->GetID();
-					vec3 pos = obj->GetTransform()->GetPosition();
-					string posX = to_string(pos.x);
-					string posY = to_string(pos.y);
-					string posZ = to_string(pos.z);
-
-					string output =
-						"Successfully created " + obj->GetName() +
-						" with ID " + to_string(obj->GetID()) +
-						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::INFO,
-						output);
-
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
@@ -321,21 +307,6 @@ namespace Graphics::GUI
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
 
-					unsigned int ID = obj->GetID();
-					vec3 pos = obj->GetTransform()->GetPosition();
-					string posX = to_string(pos.x);
-					string posY = to_string(pos.y);
-					string posZ = to_string(pos.z);
-
-					string output =
-						"Successfully created " + obj->GetName() +
-						" with ID " + to_string(obj->GetID()) +
-						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::INFO,
-						output);
-
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				if (ImGui::MenuItem("Spotlight"))
@@ -344,21 +315,6 @@ namespace Graphics::GUI
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
-
-					unsigned int ID = obj->GetID();
-					vec3 pos = obj->GetTransform()->GetPosition();
-					string posX = to_string(pos.x);
-					string posY = to_string(pos.y);
-					string posZ = to_string(pos.z);
-
-					string output =
-						"Successfully created " + obj->GetName() +
-						" with ID " + to_string(obj->GetID()) +
-						" at position (" + posX + ", " + posY + ", " + posZ + ")\n";
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::INFO,
-						output);
 
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
@@ -682,6 +638,48 @@ namespace Graphics::GUI
 		}
 
 		ImGui::End();
+	}
+
+	void EngineGUI::CubeSpawnTest()
+	{
+		bool isHeld = glfwGetKey(Render::window, GLFW_KEY_M) == GLFW_PRESS;
+		static double timer = 0.0f;
+		static int totalCount = 0;
+		static vec3 newPos{};
+		if (isHeld
+			&& totalCount < 100000)
+		{
+			timer += 1.0f * TimeManager::deltaTime;
+			if (timer >= 0.001f)
+			{
+				newPos.x += 1;
+				if (totalCount % 1000 == 0
+					&& totalCount != 0)
+				{
+					newPos.z += 1;
+					newPos.x = 0;
+				}
+				if (totalCount % 10000 == 0
+					&& totalCount != 0)
+				{
+					newPos.y += 1;
+					newPos.x = 0;
+				}
+
+				shared_ptr<GameObject> obj = Cube::InitializeCube();
+				obj->GetTransform()->SetPosition(newPos);
+
+				totalCount++;
+				cout << "total count: " << totalCount << "\n";
+
+				timer = 0.0f;
+			}
+		}
+		else if (!isHeld
+				 && timer > 0.0f)
+		{
+			timer = 0.0f;
+		}
 	}
 
 	void EngineGUI::Shutdown()

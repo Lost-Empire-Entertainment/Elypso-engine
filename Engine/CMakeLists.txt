@@ -38,17 +38,6 @@ set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/physics")
 set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/engine/utils")
 set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
 
-# Add the executable
-add_executable(Elypso_engine ${SOURCE_FILES} ${RESOURCE_FILE})
-
-# Forces the name to be Elypso engine
-set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
-
-target_compile_features(Elypso_engine PRIVATE cxx_std_20)
-
-# Set the runtime library option
-# target_compile_options(Elypso_engine PRIVATE /MD)
-
 # Add GLAD
 add_library(glad STATIC ${SRC_DIR}/external/glad/glad.c)
 target_include_directories(glad PUBLIC ${INCLUDE_DIR})
@@ -116,6 +105,17 @@ list(APPEND SOURCE_FILES
 	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
 	${EXTERNAL_DIR}/stb_image/stb_image.cpp
 )
+
+# Add the executable
+add_executable(Elypso_engine ${SOURCE_FILES} ${RESOURCE_FILE})
+
+# Forces the name to be Elypso engine
+set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
+
+target_compile_features(Elypso_engine PRIVATE cxx_std_20)
+
+# Set the runtime library option
+# target_compile_options(Elypso_engine PRIVATE /MD)
 
 target_include_directories(Elypso_engine PRIVATE 
 	${INCLUDE_DIR}/engine

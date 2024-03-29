@@ -40,10 +40,12 @@ namespace Graphics
 
 	void Texture::LoadTexture(const shared_ptr<GameObject>& obj, const string& textureName, bool flipTexture, GLenum pixelFormat)
 	{
+		/*
 		ConsoleManager::WriteConsoleMessage(
 			Caller::TEXTURE,
 			Type::DEBUG,
 			"Initializing texture " + textureName + "...\n");
+		*/
 
 		unsigned int texture;
 		glGenTextures(1, &texture);
@@ -65,10 +67,12 @@ namespace Graphics
 
 			obj->GetMaterial()->AddTexture(textureName, texture);
 
+			/*
 			ConsoleManager::WriteConsoleMessage(
 				Caller::TEXTURE,
 				Type::DEBUG,
 				"Texture " + textureName + " initialized successfully!\n\n");
+			*/
 		}
 		else
 		{

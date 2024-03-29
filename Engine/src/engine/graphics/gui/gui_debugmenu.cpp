@@ -114,6 +114,7 @@ namespace Graphics::GUI
 		ImGui::Text("Toggle camera: Escape");
 		ImGui::Text("Select GameObject: Left Mouse Button");
 		ImGui::Text("Delete selected GameObject or node: Delete");
+		ImGui::Text("Spawn cubes for performance test: M");
 		ImGui::Text("Switch to X axis: X");
 		ImGui::Text("Switch to Y axis: Y");
 		ImGui::Text("Switch to Z axis: Z");

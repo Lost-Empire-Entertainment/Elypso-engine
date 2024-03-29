@@ -27,7 +27,9 @@
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "billboard.hpp"
+#include "console.hpp"
 
+using std::to_string;
 using glm::translate;
 using glm::rotate;
 using glm::radians;
@@ -36,12 +38,15 @@ using glm::scale;
 
 using Graphics::Shader;
 using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
+using MeshType = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Material;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
 using Physics::Select;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
@@ -97,7 +102,7 @@ namespace Graphics::Shape
 		    0.5f, -0.5f,  0.5f
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::spot_light);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::spot_light);
 
 		Shader spotlightShader = Shader(
 			Engine::enginePath + "/" + vertShader,
@@ -158,6 +163,11 @@ namespace Graphics::Shape
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddSpotLight(obj);
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::DEBUG,
+			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}

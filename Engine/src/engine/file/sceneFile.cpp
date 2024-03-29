@@ -335,6 +335,8 @@ namespace EngineFile
 				shininess,
 				name,
 				id);
+
+			GameObject::nextID++;
 		}
 		else if (meshType == Mesh::MeshType::point_light)
 		{
@@ -355,6 +357,8 @@ namespace EngineFile
 				billboardShininess,
 				billboardName,
 				billboardID);
+
+			GameObject::nextID++;
 		}
 		else if (meshType == Mesh::MeshType::spot_light)
 		{
@@ -377,6 +381,8 @@ namespace EngineFile
 				billboardShininess,
 				billboardName,
 				billboardID);
+
+			GameObject::nextID++;
 		}
 	}
 
