@@ -47,6 +47,13 @@ namespace Graphics
 			"Initializing texture " + textureName + "...\n");
 		*/
 
+		auto it = textures.find(textureName);
+		if (it != textures.end())
+		{
+			obj->GetMaterial()->AddTexture(textureName, it->second);
+			return;
+		}
+
 		unsigned int texture;
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
@@ -66,6 +73,8 @@ namespace Graphics
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			obj->GetMaterial()->AddTexture(textureName, texture);
+
+			textures[textureName] = texture;
 
 			/*
 			ConsoleManager::WriteConsoleMessage(

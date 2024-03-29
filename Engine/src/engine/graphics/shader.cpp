@@ -34,9 +34,10 @@ using std::endl;
 using std::ios_base;
 using std::ifstream;
 using std::stringstream;
-using std::filesystem::absolute;
 using std::to_string;
 using std::vector;
+using std::filesystem::absolute;
+using std::filesystem::path;
 
 using Utils::String;
 using Core::ConsoleManager;
@@ -45,8 +46,29 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-	Shader::Shader(const string& vertexPath, const string& fragmentPath)
-	{
+    unordered_map<string, unsigned int> Shader::shaders;
+
+    Shader Shader::LoadShader(const string& vertexPath, const string& fragmentPath)
+    {
+        Shader shader;
+
+        path vertexStemPath = vertexPath;
+        string vertexStemExtension = vertexStemPath.extension().string();
+        vertexStemPath = vertexStemPath.stem();
+
+        path fragmentStemPath = fragmentPath;
+        string fragmentStemExtension = fragmentStemPath.extension().string();
+        fragmentStemPath = fragmentStemPath.stem();
+
+        string shaderKey = vertexStemPath.string() + vertexStemExtension + "|" + fragmentStemPath.string() + fragmentStemExtension;
+
+        auto it = shaders.find(shaderKey);
+        if (it != shaders.end())
+        {
+            shader.ID = it->second;
+            return shader;
+        }
+
         if (vertexPath != ""
             && fragmentPath != "")
         {
@@ -81,7 +103,7 @@ namespace Graphics
                         Type::EXCEPTION,
                         "ERROR::SHADER::FILE_NOT_OPEN: \nVertex: " + absolute(vertexPath).string() +
                         "\nFragment: " + absolute(fragmentPath).string() + "\n\n");
-                    return;
+                    return shader;
                 }
 
                 stringstream vShaderStream, fShaderStream;
@@ -120,14 +142,17 @@ namespace Graphics
             glCompileShader(fragment);
             CheckCompileErrors(fragment, "FRAGMENT");
             //shader program
-            ID = glCreateProgram();
-            glAttachShader(ID, vertex);
-            glAttachShader(ID, fragment);
-            glLinkProgram(ID);
-            CheckCompileErrors(ID, "PROGRAM");
+            shader.ID = glCreateProgram();
+            glAttachShader(shader.ID, vertex);
+            glAttachShader(shader.ID, fragment);
+            glLinkProgram(shader.ID);
+            CheckCompileErrors(shader.ID, "PROGRAM");
             //delete shaders as they are no longer needed
             glDeleteShader(vertex);
             glDeleteShader(fragment);
+
+            shaders.emplace(shaderKey, shader.ID);
+            cout << "shader key: " << shaderKey << ", shader ID: " << shader.ID << "\n";
 
             /*
             ConsoleManager::WriteConsoleMessage(
@@ -135,8 +160,12 @@ namespace Graphics
                 Type::DEBUG,
                 "Successfully initialized " + vertSplit.back() + " and " + fragSplit.back() + " with ID " + to_string(ID) + "!\n\n");
             */
+
+            return shader;
         }
-	}
+
+        return shader;
+    }
 
 	void Shader::Use() const
 	{

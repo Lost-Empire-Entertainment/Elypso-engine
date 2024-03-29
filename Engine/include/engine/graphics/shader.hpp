@@ -18,17 +18,19 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 //external
 #include "glm.hpp"
 
+using std::string;
+using std::unordered_map;
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
 using glm::mat2;
 using glm::mat3;
 using glm::mat4;
-using std::string;
 
 namespace Graphics
 {
@@ -37,7 +39,7 @@ namespace Graphics
 	public:
 		unsigned int ID;
 
-		Shader(const string& vertexPath = "", const string& fragmentPath = "");
+		static Shader LoadShader(const string& vertexPath = "", const string& fragmentPath = "");
 
 		void Use() const;
 
@@ -58,6 +60,8 @@ namespace Graphics
 		void SetMat3(const string& name, const mat3& mat) const;
 		void SetMat4(const string& name, const mat4& mat) const;
 	private:
-		void CheckCompileErrors(GLuint shader, string type);
+		static unordered_map<string, unsigned int> shaders;
+
+		static void CheckCompileErrors(GLuint shader, string type);
 	};
 }

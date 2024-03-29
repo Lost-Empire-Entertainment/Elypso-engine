@@ -57,7 +57,7 @@ namespace Graphics
 			vertices[i * 4 * 3 + 11] = offset;
 		}
 
-		shader = Shader(
+		shader = Shader::LoadShader(
 			Engine::enginePath + "/shaders/Basic.vert",
 			Engine::enginePath + "/shaders/Basic.frag");
 

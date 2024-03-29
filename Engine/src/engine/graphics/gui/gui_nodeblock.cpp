@@ -273,9 +273,9 @@ namespace Graphics::GUI
 								}
 
 								//calculate distance between mouse cursor and circle center
-								float distance = sqrt(pow(
+								float distance = static_cast<float>(sqrt(pow(
 									ImGui::GetMousePos().x - circlePos.x, 2) 
-									+ pow(ImGui::GetMousePos().y - circlePos.y, 2));
+									+ pow(ImGui::GetMousePos().y - circlePos.y, 2)));
 
 								//select circle with left mouse
 								if (distance <= circleRadius

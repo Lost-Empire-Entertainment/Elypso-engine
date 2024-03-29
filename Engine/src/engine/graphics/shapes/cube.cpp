@@ -116,7 +116,7 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::cube);
 
-		Shader cubeShader = Shader(
+		Shader cubeShader = Shader::LoadShader(
 			Engine::enginePath + "/" + vertShader,
 			Engine::enginePath + "/" + fragShader);
 

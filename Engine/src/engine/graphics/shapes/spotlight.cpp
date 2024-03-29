@@ -104,7 +104,7 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::spot_light);
 
-		Shader spotlightShader = Shader(
+		Shader spotlightShader = Shader::LoadShader(
 			Engine::enginePath + "/" + vertShader,
 			Engine::enginePath + "/" + fragShader);
 

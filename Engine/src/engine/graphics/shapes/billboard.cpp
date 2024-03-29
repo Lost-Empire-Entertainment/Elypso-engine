@@ -75,7 +75,7 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
 
-		Shader billboardShader = Shader(
+		Shader billboardShader = Shader::LoadShader(
 			Engine::enginePath + "/" + vertShader,
 			Engine::enginePath + "/" + fragShader);
 

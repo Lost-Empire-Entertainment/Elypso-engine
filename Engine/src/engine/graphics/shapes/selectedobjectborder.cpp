@@ -91,7 +91,7 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border);
 
-		Shader borderShader = Shader(
+		Shader borderShader = Shader::LoadShader(
 			Engine::enginePath + "/shaders/Basic_model.vert",
 			Engine::enginePath + "/shaders/Basic.frag");
 

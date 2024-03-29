@@ -65,7 +65,7 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::actionTex);
 
-		Shader borderShader = Shader(
+		Shader borderShader = Shader::LoadShader(
 			Engine::enginePath + "/shaders/Basic_texture.vert",
 			Engine::enginePath + "/shaders/Basic_texture.frag");
 

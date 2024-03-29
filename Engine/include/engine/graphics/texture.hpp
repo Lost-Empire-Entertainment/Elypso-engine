@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <vector>
+#include <unordered_map>
 
 //external
 #include "glad.h"
@@ -25,7 +25,7 @@
 //engine
 #include "gameobject.hpp"
 
-using std::vector;
+using std::unordered_map;
 
 using Graphics::Shape::GameObject;
 
@@ -48,5 +48,7 @@ namespace Graphics
 		{
 			glDeleteTextures(1, &texture);
 		}
+	private:
+		unordered_map<string, unsigned int> textures;
 	};
 }
