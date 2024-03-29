@@ -50,7 +50,7 @@ namespace Graphics
 
     Shader Shader::LoadShader(const string& vertexPath, const string& fragmentPath)
     {
-        Shader shader;
+        Shader shader{};
 
         path vertexStemPath = vertexPath;
         string vertexStemExtension = vertexStemPath.extension().string();
@@ -152,7 +152,6 @@ namespace Graphics
             glDeleteShader(fragment);
 
             shaders.emplace(shaderKey, shader.ID);
-            cout << "shader key: " << shaderKey << ", shader ID: " << shader.ID << "\n";
 
             /*
             ConsoleManager::WriteConsoleMessage(
