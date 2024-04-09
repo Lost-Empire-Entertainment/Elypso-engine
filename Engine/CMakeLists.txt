@@ -23,7 +23,7 @@ set(eninf "[ENGINE_INFO]")
 # Paths to frequently used directories
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
-set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/engine/icon.rc")
+set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/engine/icon.rc")
 
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
@@ -160,8 +160,6 @@ target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 #    )
 #endif()
 
-
-
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -183,7 +181,7 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
+    ${CMAKE_SOURCE_DIR}/files/engine/external\ dlls/assimp-vc143-mt.dll
     $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
 )
 

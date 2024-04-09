@@ -107,7 +107,7 @@ namespace Core
 		// SET FILES PATH
 		//
 
-		path fsFilesPath = current_path().generic_string() + "/files";
+		path fsFilesPath = current_path().generic_string() + "/files/engine";
 		if (!exists(fsFilesPath))
 		{
 			Engine::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
