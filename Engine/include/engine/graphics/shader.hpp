@@ -43,9 +43,9 @@ namespace Graphics
 
 		void Use() const;
 
-		void SetBool(const string &name, bool value) const;
-		void SetInt(const string &name, int value) const;
-		void SetFloat(const string &name, float value) const;
+		void SetBool(const string& name, bool value) const;
+		void SetInt(const string& name, int value) const;
+		void SetFloat(const string& name, float value) const;
 
 		void SetVec2(const string& name, const vec2& value) const;
 		void SetVec2(const string& name, float x, float y) const;
@@ -60,7 +60,7 @@ namespace Graphics
 		void SetMat3(const string& name, const mat3& mat) const;
 		void SetMat4(const string& name, const mat4& mat) const;
 	private:
-		static unordered_map<string, unsigned int> shaders;
+		static inline unordered_map<string, unsigned int> shaders;
 
 		static void CheckCompileErrors(GLuint shader, string type);
 	};

@@ -46,8 +46,6 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-    unordered_map<string, unsigned int> Shader::shaders;
-
     Shader Shader::LoadShader(const string& vertexPath, const string& fragmentPath)
     {
         Shader shader{};
@@ -75,12 +73,7 @@ namespace Graphics
             vector<string> vertSplit = String::Split(vertexPath, '/');
             vector<string> fragSplit = String::Split(fragmentPath, '/');
 
-            /*
-            ConsoleManager::WriteConsoleMessage(
-                Caller::SHADER,
-                Type::DEBUG,
-                "Initializing " + vertSplit.back() + " and " + fragSplit.back() + ".\n");
-            */
+            //cout << "Initializing " << vertSplit.back() << " and " << fragSplit.back() << ".\n";
 
             string vertexCode;
             string fragmentCode;
@@ -153,12 +146,7 @@ namespace Graphics
 
             shaders.emplace(shaderKey, shader.ID);
 
-            /*
-            ConsoleManager::WriteConsoleMessage(
-                Caller::SHADER,
-                Type::DEBUG,
-                "Successfully initialized " + vertSplit.back() + " and " + fragSplit.back() + " with ID " + to_string(ID) + "!\n\n");
-            */
+            //cout << "Successfully initialized " << vertSplit.back() << " and " << fragSplit.back() << " with ID " << to_string(ID) << "!\n\n";
 
             return shader;
         }
@@ -166,23 +154,23 @@ namespace Graphics
         return shader;
     }
 
-	void Shader::Use() const
-	{
+    void Shader::Use() const
+    {
         glUseProgram(ID);
-	}
+    }
 
-	void Shader::SetBool(const string &name, bool value) const
-	{
+    void Shader::SetBool(const string& name, bool value) const
+    {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
-	}
-	void Shader::SetInt(const string& name, int value) const
-	{
+    }
+    void Shader::SetInt(const string& name, int value) const
+    {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
-	}
-	void Shader::SetFloat(const string& name, float value) const
-	{
+    }
+    void Shader::SetFloat(const string& name, float value) const
+    {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
-	}
+    }
 
     void Shader::SetVec2(const string& name, const vec2& value) const
     {
@@ -224,8 +212,8 @@ namespace Graphics
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-	void Shader::CheckCompileErrors(GLuint shader, string type)
-	{
+    void Shader::CheckCompileErrors(GLuint shader, string type)
+    {
         GLint success;
         GLchar infoLog[1024];
         if (type != "PROGRAM")
@@ -256,5 +244,5 @@ namespace Graphics
                     string(infoLog) + "\n\n");
             }
         }
-	}
+    }
 }

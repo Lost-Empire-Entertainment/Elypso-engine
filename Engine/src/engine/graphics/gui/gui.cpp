@@ -228,59 +228,18 @@ namespace Graphics::GUI
 				SceneFile::CreateScene(newFolderPath + "/scene.txt");
 			}
 
+			if (ImGui::MenuItem("Open scene"))
+			{
+				string scenePath = FileExplorer::Select(FileExplorer::SearchType::txt);
+				SceneFile::LoadScene(scenePath);
+			}
+
 			if (ImGui::MenuItem("Exit")) Engine::Shutdown();
 
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(50 * fontScale * 0.75f);
-
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("Undo"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Undo is a placeholder button and does not yet have any functions.\n");
-			}
-
-			if (ImGui::MenuItem("Redo"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Redo is a placeholder button and does not yet have any functions.\n");
-			}
-
-			if (ImGui::MenuItem("Cut"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Cut is a placeholder button and does not yet have any functions.\n");
-			}
-
-			if (ImGui::MenuItem("Copy"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Copy is a placeholder button and does not yet have any functions.\n");
-			}
-
-			if (ImGui::MenuItem("Paste"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::DEBUG,
-					"Paste is a placeholder button and does not yet have any functions.\n");
-			}
-
-			ImGui::EndMenu();
-		}
-
-		ImGui::SameLine(100 * fontScale * 0.75f);
+		ImGui::SameLine(40 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Asset"))
 		{
@@ -447,7 +406,7 @@ namespace Graphics::GUI
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(160 * fontScale * 0.75f);
+		ImGui::SameLine(100 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Window"))
 		{
@@ -484,7 +443,7 @@ namespace Graphics::GUI
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(240 * fontScale * 0.75f);
+		ImGui::SameLine(180 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Help"))
 		{
