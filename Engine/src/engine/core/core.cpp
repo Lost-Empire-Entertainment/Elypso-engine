@@ -203,7 +203,7 @@ namespace Core
 				Type::INFO,
 				"Cleaning up resources...\n");
 
-			string files = current_path().generic_string() + "/files";
+			string files = current_path().generic_string() + "/files/project";
 			for (const auto& entry : directory_iterator(files))
 			{
 				path entryPath(entry);

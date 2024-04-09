@@ -22,6 +22,10 @@
 
 //engine
 #include "gameobject.hpp"
+#include "core.hpp"
+
+using Graphics::Shape::GameObject;
+using Core::Engine;
 
 using Graphics::Shape::GameObject;
 
@@ -40,8 +44,8 @@ namespace Graphics::Shape
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
-			const string& vertShader = "shaders/Basic_model.vert",
-			const string& fragShader = "shaders/Basic.frag",
+			const string& vertShader = Engine::filesPath + "/shaders/Basic_model.vert",
+			const string& fragShader = Engine::filesPath + "/shaders/Basic.frag",
 			const vec3& diffuse = vec3(1),
 			const float& intensity = 1.0f,
 			const float& distance = 1.0f,
@@ -49,14 +53,14 @@ namespace Graphics::Shape
 			const float& outerAngle = 17.5f,
 			string& name = tempName,
 			unsigned int& id = tempID,
-			
+
 			//
 			// BILLBOARD VALUES
 			//
 
-			const string& billboardVertShader = "shaders/Basic_texture.vert",
-			const string& billboardFragShader = "shaders/Basic_texture.frag",
-			const string& billboardDiffTexture = "icons/spotLight.png",
+			const string& billboardVertShader = Engine::filesPath + "/shaders/Basic_texture.vert",
+			const string& billboardFragShader = Engine::filesPath + "/shaders/Basic_texture.frag",
+			const string& billboardDiffTexture = Engine::filesPath + "/icons/spotLight.png",
 			const float& billboardShininess = 32,
 			string& billboardName = tempName,
 			unsigned int& billboardID = tempID);
