@@ -578,7 +578,7 @@ void GUI::RunProject(const string& targetProject)
 	}
 
 	//empty engine folder content if any content exists
-	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
+	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files/project";
 	for (const auto& entry : directory_iterator(engineFilesFolderPath))
 	{
 		path entryPath = entry.path();

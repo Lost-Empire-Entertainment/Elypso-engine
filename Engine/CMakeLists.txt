@@ -160,12 +160,14 @@ target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 #    )
 #endif()
 
+
+
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Create "files" directory in source directory if it doesnt exist
-file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/files)
+# Create "project" directory in files folder if it doesnt exist
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/files/project)
 
 # Copy "files" directory to the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
