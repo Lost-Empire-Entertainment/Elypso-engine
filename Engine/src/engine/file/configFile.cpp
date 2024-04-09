@@ -27,7 +27,7 @@
 #include "configFile.hpp"
 #include "render.hpp"
 #include "console.hpp"
-#include "stringUtils.hpp"
+#include "stringutils.hpp"
 #include "gui.hpp"
 #include "gui_console.hpp"
 #include "gui_debugmenu.hpp"
@@ -71,550 +71,19 @@ using Type = Core::ConsoleManager::Type;
 
 namespace EngineFile
 {
-	void ConfigFileManager::SetConfigValuesToDefaultValues()
+	void ConfigFileManager::SetDefaultConfigValues()
 	{
 		EngineGUI::fontScale = 1.5f;
-		//Render::SCR_WIDTH = 1280; //do not uncomment! edit in render.hpp instead!
-		//Render::SCR_WIDTH = 720; //do not uncomment! edit in render.hpp instead!
+		Render::windowWidth = 1280;
+		Render::windowHeight = 720;
 		Render::useMonitorRefreshRate = true;
-		Input::fov = 90.0f;
 		Input::moveSpeedMultiplier = 1.0f;
 		Input::nearClip = 0.001f;
 		Input::farClip = 100.0f;
-		vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
-		Render::camera.SetCameraPosition(newPosition);
-		//Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f)); //editing this has no effect because camera is initialized later
-		GUIDebugMenu::renderDebugMenu = false;
-		GUIConsole::renderConsole = false;
-		GUIInspector::renderInspector = false;
-		GUIProjectHierarchy::renderProjectHierarchy = false;
-		GUISceneHierarchy::renderSceneHierarchy = false;
-		GUINodeBlock::renderNodeBlock = false;
-		GUIConsole::allowScrollToBottom = true;
-		ConsoleManager::sendDebugMessages = false;
-	}
-	
-	void ConfigFileManager::ProcessFirstConfigValues()
-	{
-		string configFilePath = Engine::docsPath + "/config.txt";
-		string debugMessagesCheck = "consoleDebugMessages";
-		string fontScale = "fontScale";
-
-		SetConfigValuesToDefaultValues();
-
-		ifstream configFileStream(configFilePath);
-
-		if (!configFileStream.is_open())
-		{
-			cout << "Error opening config file at " << configFilePath << endl;
-			return;
-		}
-
-		string line;
-		while (getline(configFileStream, line))
-		{
-			vector<string> splitLine = String::Split(line, ' ');
-			string cleanedVariable = String::StringReplace(splitLine[0], ":", "");
-			string cleanedValue = splitLine[1];
-			if (cleanedVariable == debugMessagesCheck
-				&& String::CanConvertStringToInt(cleanedValue)
-				&& (stoi(cleanedValue) == 0
-				|| stoi(cleanedValue) == 1))
-			{
-				ConsoleManager::sendDebugMessages = stoi(cleanedValue) == 1;
-			}
-			else if (cleanedVariable == fontScale
-					 && String::CanConvertStringToFloat(cleanedValue) 
-					 && stof(cleanedValue) >= 1.0f
-					 && stof(cleanedValue) <= 2.0f)
-			{
-				EngineGUI::fontScale = stof(cleanedValue);
-			}
-		}
-
-		configFileStream.close();
-	}
-
-	void ConfigFileManager::ProcessConfigFile(const string& fileName)
-	{
-		ifstream configFile(Engine::docsPath + "/config.txt");
-		if (!configFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Couldn't open config.txt!\n\n");
-			return;
-		}
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::DEBUG,
-			"Reading from config.txt...\n");
-
-		string line;
-		while (getline(configFile, line))
-		{
-			line.erase(remove(line.begin(), line.end(), ' '), line.end());
-			vector<string> lineSplit = String::Split(line, ':');
-			vector<string> lineVariables;
-
-			string name = lineSplit[0];
-			string variables = lineSplit[1];
-			if (variables.find(',') != string::npos)
-			{
-				variables = lineSplit[1];
-				lineVariables = String::Split(variables, ',');
-			}
-			else lineVariables.push_back(lineSplit[1]);
-
-			if (name == "fontScale")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					EngineGUI::fontScale = stof(lineVariables[0]);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set font scale to " + to_string(EngineGUI::fontScale) + ".\n");
-				}
-				else
-				{
-					EngineGUI::fontScale = 1.5f;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Font scale value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "resolution")
-			{
-				if (ConfigFileManager::IsValueInRange("width", lineVariables[0])
-					&& ConfigFileManager::IsValueInRange("height", lineVariables[1]))
-				{
-					unsigned int width = stoul(lineVariables[0]);
-					Render::SCR_WIDTH = width;
-					unsigned int height = stoul(lineVariables[1]);
-					Render::SCR_HEIGHT = height;
-					glfwSetWindowSize(Render::window, width, height);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set resolution to " +
-						to_string(Render::SCR_WIDTH) + ", " +
-						to_string(Render::SCR_HEIGHT) + ".\n");
-				}
-				else
-				{
-					glfwSetWindowSize(Render::window, 1280, 720);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Height or width value " + lineVariables[0] + " for resolution is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "vsync")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					Render::useMonitorRefreshRate = static_cast<bool>(stoi(lineVariables[0]));
-					glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set vsync to " + to_string(Render::useMonitorRefreshRate) + ".\n");
-				}
-				else
-				{
-					Render::useMonitorRefreshRate = true;
-					glfwSwapInterval(1);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"VSync value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "fov")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					Input::fov = stof(lineVariables[0]);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set fov to " + to_string(Input::fov) + ".\n");
-				}
-				else
-				{
-					Input::fov = 90;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"FOV value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "camNearClip")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					Input::nearClip = stof(lineVariables[0]);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set camera near clip to " + to_string(Input::nearClip) + ".\n");
-				}
-				else
-				{
-					Input::nearClip = 0.001f;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Camera near clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "camFarClip")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					Input::farClip = stof(lineVariables[0]);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set camera far clip to " + to_string(Input::farClip) + ".\n");
-				}
-				else
-				{
-					Input::farClip = 100.0f;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Camera far clip value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "camPos")
-			{
-				if (ConfigFileManager::IsValueInRange(name + "X", lineVariables[0])
-					&& ConfigFileManager::IsValueInRange(name + "Y", lineVariables[1])
-					&& ConfigFileManager::IsValueInRange(name + "Z", lineVariables[2]))
-				{
-					vec3 newPosition = vec3(
-						stof(lineVariables[0]),
-						stof(lineVariables[1]),
-						stof(lineVariables[2]));
-					Render::camera.SetCameraPosition(newPosition);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set camera position to to " +
-						to_string(Render::camera.GetCameraPosition().x) + ", " +
-						to_string(Render::camera.GetCameraPosition().y) + ", " +
-						to_string(Render::camera.GetCameraPosition().z) + ".\n");
-				}
-				else
-				{
-					Render::camera.SetCameraPosition(vec3(0));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"X, Y or Z position for value " + lineVariables[0] + " camera is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "camRot")
-			{
-				if (ConfigFileManager::IsValueInRange(name + "X", lineVariables[0])
-					&& ConfigFileManager::IsValueInRange(name + "Y", lineVariables[1])
-					&& ConfigFileManager::IsValueInRange(name + "Z", lineVariables[2]))
-				{
-					Render::camera.SetCameraRotation(vec3(
-						stof(lineVariables[0]),
-						stof(lineVariables[1]),
-						stof(lineVariables[2])));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set camera rotation to to " +
-						to_string(Render::camera.GetCameraRotation().x) + ", " +
-						to_string(Render::camera.GetCameraRotation().y) + ", " +
-						to_string(Render::camera.GetCameraRotation().z) + ".\n");
-				}
-				else
-				{
-					Render::camera.SetCameraRotation(vec3(0));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"X, Y or Z rotation value " + lineVariables[0] + " for camera is out of range or not a float! Resetting to default.\n");
-				}
-			}
-			else if (name == "showSceneHierarchy")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUISceneHierarchy::renderSceneHierarchy = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set show scene hierarchy to " + to_string(GUISceneHierarchy::renderSceneHierarchy) + ".\n");
-				}
-				else
-				{
-					GUISceneHierarchy::renderSceneHierarchy = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Show scene hierarchy value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "showDebugMenu")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUIDebugMenu::renderDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set show debug menu to " + to_string(GUIDebugMenu::renderDebugMenu) + ".\n");
-				}
-				else
-				{
-					GUIDebugMenu::renderDebugMenu = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Show debug menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "showConsole")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUIConsole::renderConsole = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set show console to " + to_string(GUIConsole::renderConsole) + ".\n");
-				}
-				else
-				{
-					GUIConsole::renderConsole = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Show console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "showInspector")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUIInspector::renderInspector = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set show inspector to " + to_string(GUIInspector::renderInspector) + ".\n");
-				}
-				else
-				{
-					GUIInspector::renderInspector = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Show inspector value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "showProjectHierarchyWindow")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUIProjectHierarchy::renderProjectHierarchy = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set show project hierarchy window to " + to_string(GUIProjectHierarchy::renderProjectHierarchy) + ".\n");
-				}
-				else
-				{
-					GUIProjectHierarchy::renderProjectHierarchy = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Show project hierarchy window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "showSceneHierarchyWindow")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUISceneHierarchy::renderSceneHierarchy = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set show scene hierarchy window to " + to_string(GUISceneHierarchy::renderSceneHierarchy) + ".\n");
-				}
-				else
-				{
-					GUISceneHierarchy::renderSceneHierarchy = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Show scene hierarchy window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "showNodeBlockWindow")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUINodeBlock::renderNodeBlock = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set show node block window to " + to_string(GUINodeBlock::renderNodeBlock) + ".\n");
-				}
-				else
-				{
-					GUINodeBlock::renderNodeBlock = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Show node block window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "consoleForceScroll")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					GUIConsole::allowScrollToBottom = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set console force scroll to " + to_string(GUIConsole::allowScrollToBottom) + ".\n");
-				}
-				else
-				{
-					GUIConsole::allowScrollToBottom = true;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Console force scroll value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-			else if (name == "sendDebugMessages")
-			{
-				if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-				{
-					ConsoleManager::sendDebugMessages = static_cast<bool>(stoi(lineVariables[0]));
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::DEBUG,
-						"Set send console messages to " + to_string(ConsoleManager::sendDebugMessages) + ".\n");
-				}
-				else
-				{
-					ConsoleManager::sendDebugMessages = false;
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Send console messages value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-				}
-			}
-		}
-
-		configFile.close();
+		vec3 camPos = vec3(0.0f, 1.0f, 0.0f);
+		Render::camera.SetCameraPosition(camPos);
 
 		UpdateValues();
-	}
-
-	void ConfigFileManager::SaveData()
-	{
-		UpdateValues();
-
-		if (exists(Engine::docsPath + "/config.txt"))
-		{
-			if (!remove(Engine::docsPath + "/config.txt"))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Couldn't delete config.txt!\n\n");
-				return;
-			}
-
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::DEBUG,
-				"Deleted file: config.txt\n");
-		}
-
-		//open the file for writing
-		ofstream configFile(Engine::docsPath + "/config.txt");
-
-		if (!configFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Couldn't open new config.txt!\n\n");
-			return;
-		}
-
-		for (const auto& variable : values)
-		{
-			configFile << variable.GetName() << ": " << variable.GetValue() << "\n";
-		}
-
-		configFile.close();
-
-		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"Sucessfully saved data to config.txt!\n");
-	}
-
-	string ConfigFileManager::GetValue(const string& name)
-	{
-		for (const auto& configFileValue : values)
-		{
-			if (configFileValue.GetName() == name)
-			{
-				return configFileValue.GetValue();
-			}
-		}
-		return "";
 	}
 
 	void ConfigFileManager::UpdateValues()
@@ -631,9 +100,11 @@ namespace EngineFile
 
 		int width, height;
 		glfwGetWindowSize(Render::window, &width, &height);
+		string finalWidth = width == 0 ? to_string(Render::windowWidth) : to_string(width);
+		string finalHeight = height == 0 ? to_string(Render::windowHeight) : to_string(height);
 		ConfigFileValue resolution(
 			"resolution",
-			to_string(width) + ", " + to_string(height),
+			finalWidth + ", " + finalHeight,
 			"1280, 720",
 			"7860, 3840",
 			ConfigFileValue::Type::type_vec2);
@@ -694,78 +165,238 @@ namespace EngineFile
 			"359.99, 359.99, 359.99",
 			ConfigFileValue::Type::type_vec3);
 		AddValue(camRot);
+	}
 
-		ConfigFileValue showSceneHierarchy(
-			"showSceneHierarchy",
-			to_string(GUISceneHierarchy::renderSceneHierarchy),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(showSceneHierarchy);
+	void ConfigFileManager::LoadConfigFile()
+	{
+		if (configFilePath == "")
+		{
+			configFilePath = Engine::docsPath + "/config.txt";
 
-		ConfigFileValue showDebugMenu(
-			"showDebugMenu",
-			to_string(GUIDebugMenu::renderDebugMenu),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(showDebugMenu);
+			if (!exists(configFilePath))
+			{
+				SetDefaultConfigValues();
+				CreateNewConfigFile();
+			}
+		}
 
-		ConfigFileValue showConsole(
-			"showConsole",
-			to_string(GUIConsole::renderConsole),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(showConsole);
+		ifstream configFile(configFilePath);
 
-		ConfigFileValue showInspector(
-			"showInspector",
-			to_string(GUIInspector::renderInspector),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(showInspector);
+		if (!configFile)
+		{
+			string title = "Failed to open config file";
+			string description = "Couldn't open config file at " + configFilePath + "!";
+			Engine::CreateErrorPopup(title.c_str(), description.c_str());
+		}
 
-		ConfigFileValue showProjectHierarchyWindow(
-			"showProjectHierarchyWindow",
-			to_string(GUIProjectHierarchy::renderProjectHierarchy),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(showProjectHierarchyWindow);
+		string line;
+		while (getline(configFile, line))
+		{
+			if (line.find(':') != string::npos)
+			{
+				line.erase(remove(line.begin(), line.end(), ' '), line.end());
+				vector<string> lineSplit = String::Split(line, ':');
+				vector<string> lineVariables;
 
-		ConfigFileValue showSceneHierarchyWindow(
-			"showSceneHierarchyWindow",
-			to_string(GUISceneHierarchy::renderSceneHierarchy),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(showSceneHierarchyWindow);
+				string name = lineSplit[0];
+				string variables = lineSplit[1];
+				if (variables.find(',') != string::npos)
+				{
+					variables = lineSplit[1];
+					lineVariables = String::Split(variables, ',');
+				}
+				else lineVariables.push_back(lineSplit[1]);
 
-		ConfigFileValue showNodeBlockWindow(
-			"showNodeBlockWindow",
-			to_string(GUINodeBlock::renderNodeBlock),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(showNodeBlockWindow);
+				if (name == "fontScale")
+				{
+					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					{
+						EngineGUI::fontScale = stof(lineVariables[0]);
 
-		ConfigFileValue consoleForceScroll(
-			"consoleForceScroll",
-			to_string(GUIConsole::allowScrollToBottom),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(consoleForceScroll);
+						cout << "Set font scale to " << to_string(EngineGUI::fontScale) << ".\n";
+					}
+					else
+					{
+						EngineGUI::fontScale = 1.5f;
 
-		ConfigFileValue sendDebugMessages(
-			"sendDebugMessages",
-			to_string(ConsoleManager::sendDebugMessages),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(sendDebugMessages);
+						cout << "Error: Font scale value " << lineVariables[0] << " is out of range or not a float! Resetting to default.\n";
+					}
+				}
+				else if (name == "resolution")
+				{
+					if (ConfigFileManager::IsValueInRange("width", lineVariables[0])
+						&& ConfigFileManager::IsValueInRange("height", lineVariables[1]))
+					{
+						unsigned int width = stoul(lineVariables[0]);
+						Render::windowWidth = width;
+						unsigned int height = stoul(lineVariables[1]);
+						Render::windowHeight = height;
+						glfwSetWindowSize(Render::window, width, height);
+
+						cout << "Set resolution to "
+							<< to_string(Render::windowWidth) << ", "
+							<< to_string(Render::windowHeight) << ".\n";
+					}
+					else
+					{
+						glfwSetWindowSize(Render::window, 1280, 720);
+
+						cout << "Error: Height or width value " << lineVariables[0]
+							<< " for resolution is out of range or not a float! Resetting to default.\n";
+					}
+				}
+				else if (name == "vsync")
+				{
+					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					{
+						Render::useMonitorRefreshRate = static_cast<bool>(stoi(lineVariables[0]));
+						glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
+
+						cout << "Set vsync to " << to_string(Render::useMonitorRefreshRate) << ".\n";
+					}
+					else
+					{
+						Render::useMonitorRefreshRate = true;
+						glfwSwapInterval(1);
+
+						cout << "Error: VSync value " << lineVariables[0] << " is out of range or not an int! Resetting to default.\n";
+					}
+				}
+				else if (name == "fov")
+				{
+					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					{
+						Input::fov = stof(lineVariables[0]);
+
+						cout << "Set fov to " << to_string(Input::fov) << ".\n";
+					}
+					else
+					{
+						Input::fov = 90;
+
+						cout << "Error: FOV value " << lineVariables[0] << " is out of range or not a float! Resetting to default.\n";
+					}
+				}
+				else if (name == "camNearClip")
+				{
+					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					{
+						Input::nearClip = stof(lineVariables[0]);
+
+						cout << "Set camera near clip to " << to_string(Input::nearClip) << ".\n";
+					}
+					else
+					{
+						Input::nearClip = 0.001f;
+
+						cout << "Error: Camera near clip value " << lineVariables[0]
+							<< " is out of range or not a float! Resetting to default.\n";
+					}
+				}
+				else if (name == "camFarClip")
+				{
+					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					{
+						Input::farClip = stof(lineVariables[0]);
+
+						cout << "Set camera far clip to " << to_string(Input::farClip) << ".\n";
+					}
+					else
+					{
+						Input::farClip = 100.0f;
+
+						cout << "Error: Camera far clip value " << lineVariables[0]
+							<< " is out of range or not a float! Resetting to default.\n";
+					}
+				}
+				else if (name == "camPos")
+				{
+					if (ConfigFileManager::IsValueInRange(name + "X", lineVariables[0])
+						&& ConfigFileManager::IsValueInRange(name + "Y", lineVariables[1])
+						&& ConfigFileManager::IsValueInRange(name + "Z", lineVariables[2]))
+					{
+						vec3 newPosition = vec3(
+							stof(lineVariables[0]),
+							stof(lineVariables[1]),
+							stof(lineVariables[2]));
+						Render::camera.SetCameraPosition(newPosition);
+
+						cout << "Set camera position to to "
+							<< to_string(Render::camera.GetCameraPosition().x) << ", "
+							<< to_string(Render::camera.GetCameraPosition().y) << ", "
+							<< to_string(Render::camera.GetCameraPosition().z) << ".\n";
+					}
+					else
+					{
+						Render::camera.SetCameraPosition(vec3(0));
+
+						cout << "Error: X, Y or Z position for value " << lineVariables[0]
+							<< " camera is out of range or not a float! Resetting to default.\n";
+					}
+				}
+				else if (name == "camRot")
+				{
+					if (ConfigFileManager::IsValueInRange(name + "X", lineVariables[0])
+						&& ConfigFileManager::IsValueInRange(name + "Y", lineVariables[1])
+						&& ConfigFileManager::IsValueInRange(name + "Z", lineVariables[2]))
+					{
+						Render::camera.SetCameraRotation(vec3(
+							stof(lineVariables[0]),
+							stof(lineVariables[1]),
+							stof(lineVariables[2])));
+
+						cout << "Set camera rotation to to "
+							<< to_string(Render::camera.GetCameraRotation().x) << ", "
+							<< to_string(Render::camera.GetCameraRotation().y) << ", "
+							<< to_string(Render::camera.GetCameraRotation().z) << ".\n";
+					}
+					else
+					{
+						Render::camera.SetCameraRotation(vec3(0));
+
+						cout << "Error: X, Y or Z rotation value " << lineVariables[0]
+							<< " for camera is out of range or not a float! Resetting to default.\n";
+					}
+				}
+			}
+		}
+
+		configFile.close();
+
+		UpdateValues();
+
+		cout << "Successfully loaded config file!\n";
+	}
+
+	void ConfigFileManager::SaveConfigFile()
+	{
+		if (exists(configFilePath)) remove(configFilePath);
+		UpdateValues();
+		CreateNewConfigFile();
+
+		cout << "Successfully saved config file!\n";
+	}
+
+	void ConfigFileManager::CreateNewConfigFile()
+	{
+		ofstream configFile(configFilePath);
+
+		if (!configFile)
+		{
+			string title = "Failed to create config file";
+			string description = "Couldn't create config file at " + configFilePath + "!";
+			Engine::CreateErrorPopup(title.c_str(), description.c_str());
+		}
+
+		configFile << "This is a configuration file for the Level Editor created by Lost Empire Entertainment.\n";
+		configFile << "Manually editing this file changes settings in the level editor as well.\n\n";
+
+		for (const auto& variable : values)
+		{
+			configFile << variable.GetName() << ": " << variable.GetValue() << "\n";
+		}
+
+		configFile.close();
 	}
 
 	bool ConfigFileManager::IsValueInRange(

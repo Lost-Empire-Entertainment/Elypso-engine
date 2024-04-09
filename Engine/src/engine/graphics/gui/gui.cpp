@@ -40,12 +40,13 @@
 #include "browserUtils.hpp"
 #include "gameobject.hpp"
 #include "timeManager.hpp"
-#include "cube.hpp"
+#include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "selectobject.hpp"
 #include "sceneFile.hpp"
 #include "configFile.hpp"
+#include "fileexplorer.hpp"
 
 using std::cout;
 using std::endl;
@@ -67,13 +68,14 @@ using Physics::Select;
 using Utils::File;
 using Utils::Browser;
 using Utils::String;
-using Graphics::Shape::Cube;
+using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using EngineFile::SceneFile;
 using EngineFile::ConfigFileManager;
+using EngineFile::FileExplorer;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -104,7 +106,7 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Engine::enginePath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
 
 		bgrColor.x = Render::backgroundColor.x;
 		bgrColor.y = Render::backgroundColor.y;
@@ -161,7 +163,6 @@ namespace Graphics::GUI
 		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 200);
 
 		RenderTopBar();
-		CubeSpawnTest();
 
 		ImGuiDockNodeFlags dockFlags =
 			ImGuiDockNodeFlags_PassthruCentralNode;
@@ -195,8 +196,8 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Save"))
 			{
-				SceneFile::SaveCurrentScene();
-				ConfigFileManager::SaveData();
+				SceneFile::SaveScene();
+				ConfigFileManager::SaveConfigFile();
 			}
 
 			if (ImGui::MenuItem("New Scene"))
@@ -224,7 +225,7 @@ namespace Graphics::GUI
 				}
 				string newFolderPath = Engine::filesPath + "/Scene" + to_string(highestFolderNumber);
 				create_directory(newFolderPath);
-				SceneFile::CreateNewScene(newFolderPath + "/scene.txt");
+				SceneFile::CreateScene(newFolderPath + "/scene.txt");
 			}
 
 			if (ImGui::MenuItem("Exit")) Engine::Shutdown();
@@ -283,16 +284,121 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Asset"))
 		{
+			if (ImGui::MenuItem("Import model"))
+			{
+				bool canPlaceAssets = SceneFile::currentScenePath != "";
+				if (!canPlaceAssets)
+				{
+					cout << "Error: Cannot place assets because no scene is loaded!\n";
+				}
+				else
+				{
+					string path = FileExplorer::Select(FileExplorer::SearchType::asset);
+					if (path == "") cout << "Error: Did not get path!\n\n";
+					else
+					{
+						Model::targetModel = path;
+						shared_ptr<GameObject> obj = Model::Initialize();
+
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+				}
+			}
+
 			if (ImGui::BeginMenu("Shape"))
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					shared_ptr<GameObject> obj = Cube::InitializeCube();
+					bool canPlaceAssets = SceneFile::currentScenePath != "";
+					if (!canPlaceAssets)
+					{
+						cout << "Error: Cannot place assets because no scene is loaded!\n";
+					}
+					else
+					{
+						Model::targetModel = Engine::filesPath + "/models/cube.fbx";
+						shared_ptr<GameObject> obj = Model::Initialize();
 
-					Select::selectedObj = obj;
-					Select::isObjectSelected = true;
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+				}
+				else if (ImGui::MenuItem("Sphere"))
+				{
+					bool canPlaceAssets = SceneFile::currentScenePath != "";
+					if (!canPlaceAssets)
+					{
+						cout << "Error: Cannot place assets because no scene is loaded!\n";
+					}
+					else
+					{
+						Model::targetModel = Engine::filesPath + "/models/sphere.fbx";
+						shared_ptr<GameObject> obj = Model::Initialize();
+
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+				}
+				else if (ImGui::MenuItem("Cylinder"))
+				{
+					bool canPlaceAssets = SceneFile::currentScenePath != "";
+					if (!canPlaceAssets)
+					{
+						cout << "Error: Cannot place assets because no scene is loaded!\n";
+					}
+					else
+					{
+						Model::targetModel = Engine::filesPath + "/models/cylinder.fbx";
+						shared_ptr<GameObject> obj = Model::Initialize();
+
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+				}
+				else if (ImGui::MenuItem("Cone"))
+				{
+					bool canPlaceAssets = SceneFile::currentScenePath != "";
+					if (!canPlaceAssets)
+					{
+						cout << "Error: Cannot place assets because no scene is loaded!\n";
+					}
+					else
+					{
+						Model::targetModel = Engine::filesPath + "/models/cone.fbx";
+						shared_ptr<GameObject> obj = Model::Initialize();
+
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+				}
+				else if (ImGui::MenuItem("Pyramid"))
+				{
+					bool canPlaceAssets = SceneFile::currentScenePath != "";
+					if (!canPlaceAssets)
+					{
+						cout << "Error: Cannot place assets because no scene is loaded!\n";
+					}
+					else
+					{
+						Model::targetModel = Engine::filesPath + "/models/pyramid.fbx";
+						shared_ptr<GameObject> obj = Model::Initialize();
+
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
 
 				ImGui::EndMenu();
@@ -302,21 +408,37 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					shared_ptr<GameObject> obj = PointLight::InitializePointLight();
+					bool canPlaceAssets = SceneFile::currentScenePath != "";
+					if (!canPlaceAssets)
+					{
+						cout << "Error: Cannot place assets because no scene is loaded!\n";
+					}
+					else
+					{
+						shared_ptr<GameObject> obj = PointLight::InitializePointLight();
 
-					Select::selectedObj = obj;
-					Select::isObjectSelected = true;
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
+					bool canPlaceAssets = SceneFile::currentScenePath != "";
+					if (!canPlaceAssets)
+					{
+						cout << "Error: Cannot place assets because no scene is loaded!\n";
+					}
+					else
+					{
+						shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
 
-					Select::selectedObj = obj;
-					Select::isObjectSelected = true;
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
 
 				ImGui::EndMenu();
@@ -384,7 +506,7 @@ namespace Graphics::GUI
 
 	void EngineGUI::TB_CheckVersion()
 	{
-		string batFilePath = Engine::enginePath + "/bat scripts/checkVersion.bat";
+		string batFilePath = Engine::filesPath + "/bat scripts/checkVersion.bat";
 
 		if (exists(batFilePath))
 		{
@@ -550,7 +672,7 @@ namespace Graphics::GUI
 		ImGui::SetCursorPos(button1Pos);
 		if (ImGui::Button("Save", buttonSize))
 		{
-			SceneFile::SaveCurrentScene(SceneFile::SaveType::shutDown);
+			SceneFile::SaveScene(SceneFile::SaveType::shutDown);
 			renderUnsavedShutdownWindow = false;
 		}
 
@@ -612,7 +734,7 @@ namespace Graphics::GUI
 		ImGui::SetCursorPos(button1Pos);
 		if (ImGui::Button("Save", buttonSize))
 		{
-			SceneFile::SaveCurrentScene(SceneFile::SaveType::sceneSwitch, targetScene);
+			SceneFile::SaveScene(SceneFile::SaveType::sceneSwitch, targetScene);
 			renderUnsavedSceneSwitchWindow = false;
 		}
 
@@ -638,48 +760,6 @@ namespace Graphics::GUI
 		}
 
 		ImGui::End();
-	}
-
-	void EngineGUI::CubeSpawnTest()
-	{
-		bool isHeld = glfwGetKey(Render::window, GLFW_KEY_M) == GLFW_PRESS;
-		static double timer = 0.0f;
-		static int totalCount = 0;
-		static vec3 newPos{};
-		if (isHeld
-			&& totalCount < 100000)
-		{
-			timer += 1.0f * TimeManager::deltaTime;
-			if (timer >= 0.001f)
-			{
-				newPos.x += 1;
-				if (totalCount % 1000 == 0
-					&& totalCount != 0)
-				{
-					newPos.z += 1;
-					newPos.x = 0;
-				}
-				if (totalCount % 10000 == 0
-					&& totalCount != 0)
-				{
-					newPos.y += 1;
-					newPos.x = 0;
-				}
-
-				shared_ptr<GameObject> obj = Cube::InitializeCube();
-				obj->GetTransform()->SetPosition(newPos);
-
-				totalCount++;
-				cout << "total count: " << totalCount << "\n";
-
-				timer = 0.0f;
-			}
-		}
-		else if (!isHeld
-				 && timer > 0.0f)
-		{
-			timer = 0.0f;
-		}
 	}
 
 	void EngineGUI::Shutdown()

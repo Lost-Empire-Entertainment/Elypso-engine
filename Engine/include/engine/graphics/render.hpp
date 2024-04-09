@@ -35,8 +35,8 @@ namespace Graphics
 	class Render
 	{
 	public:
-		static inline unsigned int SCR_WIDTH = 1280;
-		static inline unsigned int SCR_HEIGHT = 720;
+		static inline unsigned int windowWidth;
+		static inline unsigned int windowHeight;
 
 		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
@@ -44,7 +44,7 @@ namespace Graphics
 		static inline vec3 directionalDiffuse = vec3(0.4f, 0.4f, 0.4f);
 		static inline float directionalIntensity = 1.0f;
 
-		static inline bool useMonitorRefreshRate = true;
+		static inline bool useMonitorRefreshRate;
 
 		static inline GLFWwindow* window;
 

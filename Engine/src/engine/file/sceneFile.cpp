@@ -17,63 +17,51 @@
 
 #include <vector>
 #include <memory>
-#include <iostream>
-#include <fstream>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
 
 //external
 #include "magic_enum.hpp"
 
 //engine
-#include "sceneFile.hpp"
+#include "scenefile.hpp"
+#include "core.hpp"
 #include "gameobject.hpp"
-#include "cube.hpp"
+#include "selectobject.hpp"
+#include "stringutils.hpp"
+#include "render.hpp"
+#include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
-#include "selectobject.hpp"
-#include "console.hpp"
-#include "core.hpp"
-#include "render.hpp"
-#include "fileUtils.hpp"
-#include "stringUtils.hpp"
+#include "fileutils.hpp"
 
+using std::ifstream;
+using std::ofstream;
 using std::cout;
 using std::to_string;
-using std::vector;
-using std::shared_ptr;
-using std::ofstream;
-using std::ifstream;
-using std::getline;
-using std::replace;
-using std::filesystem::current_path;
 using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
-using std::filesystem::create_directory;
-using std::filesystem::copy;
 
-using Graphics::Shape::GameObjectManager;
+using Core::Engine;
+using Physics::Select;
 using Graphics::Shape::GameObject;
+using Graphics::Shape::GameObjectManager;
+using Utils::String;
+using Graphics::Render;
 using Graphics::Shape::Mesh;
-using Graphics::Shape::Material;
-using Graphics::Shape::Cube;
+using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
-using Graphics::Render;
-using Physics::Select;
-using Core::Engine;
 using Utils::File;
-using Utils::String;
-using Core::ConsoleManager;
-using Caller = Core::ConsoleManager::Caller;
-using Type = Core::ConsoleManager::Type;
+using Graphics::Shape::Material;
 
 namespace EngineFile
 {
 	void SceneFile::CheckForProjectFile()
 	{
-		path engineParentPath = path(Engine::enginePath).parent_path();
-		string projectPath = engineParentPath.string() + "/files/project.txt";
+		string projectPath = Engine::filesPath + "/files/project.txt";
 		if (!exists(projectPath))
 		{
 			Engine::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
@@ -125,44 +113,50 @@ namespace EngineFile
 		currentScenePath = targetScene;
 	}
 
-	void SceneFile::CreateNewScene(const string& filePath)
+
+	void SceneFile::CreateScene(const string& targetPath)
 	{
-		if (exists(filePath))
+		int highestIndex = 1;
+		for (const auto& entry : directory_iterator(currentProjectPath))
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Tried to create scene '" + filePath + "' but it already exists!\n");
+			path entryPath = entry;
+			string entryName = entryPath.stem().string();
+
+			string removedPart = "Save";
+			size_t pos = entryName.find(removedPart);
+			if (pos != string::npos
+				&& entryName.size() >= 5)
+			{
+				entryName.erase(pos, removedPart.length());
+				if (String::CanConvertStringToInt(entryName))
+				{
+					int index = stoi(entryName);
+					if (highestIndex <= index) highestIndex = ++index;
+				}
+			}
+		}
+		currentScenePath = currentProjectPath + "/Save" + to_string(highestIndex) + ".txt";
+
+		ofstream levelFile(currentScenePath);
+
+		if (!levelFile.is_open())
+		{
+			cout << "Error: Couldn't open level file '" << currentScenePath << "'!\n";
 			return;
 		}
 
-		ofstream sceneFile(filePath);
+		levelFile.close();
 
-		if (!sceneFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Couldn't open scene file '" + filePath + "'!\n");
-			return;
-		}
+		cout << "\nSuccessfully created new level '" << currentScenePath << "'!\n";
 
-		sceneFile.close();
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"Successfully created new scene '" + filePath + "'!\n");
+		LoadScene(currentScenePath);
 	}
 
-	void SceneFile::LoadScene(const string& filePath)
+	void SceneFile::LoadScene(const string& scenePath)
 	{
-		if (!exists(filePath))
+		if (!exists(scenePath))
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Tried to load scene '" + filePath + "' but it doesn't exist!\n");
+			cout << "Error: Tried to load scene '" << scenePath << "' but it doesn't exist!\n";
 			return;
 		}
 
@@ -178,13 +172,10 @@ namespace EngineFile
 			}
 		}
 
-		ifstream sceneFile(filePath);
+		ifstream sceneFile(scenePath);
 		if (!sceneFile.is_open())
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Failed to open scene file '" + filePath + "'!\n\n");
+			cout << "Error: Failed to open scene file '" << scenePath << "'!\n\n";
 			return;
 		}
 
@@ -227,14 +218,11 @@ namespace EngineFile
 
 		if (!obj.empty()) LoadGameObject(obj);
 
-		currentScenePath = filePath;
+		currentScenePath = scenePath;
 
-		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
+		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"Successfully loaded scene '" + currentScenePath + "'!\n");
+		cout << "Successfully loaded scenePath '" << currentScenePath << "'!\n";
 	}
 
 	void SceneFile::LoadGameObject(const map<string, string> obj)
@@ -322,16 +310,19 @@ namespace EngineFile
 		// CREATE GAMEOBJECTS
 		//
 
-		if (meshType == Mesh::MeshType::cube)
+		if (meshType == Mesh::MeshType::model)
 		{
-			Cube::InitializeCube(
+			Model::Initialize(
 				pos,
 				rot,
 				scale,
+				Model::targetModel,
 				shaders[0],
 				shaders[1],
 				textures[0],
 				textures[1],
+				textures[2],
+				textures[3],
 				shininess,
 				name,
 				id);
@@ -386,61 +377,21 @@ namespace EngineFile
 		}
 	}
 
-	void SceneFile::SaveCurrentScene(SaveType saveType, const string& targetScene)
+	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
 	{
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-		if (objects.size() < 2)
+
+		if (currentScenePath == "")
 		{
-			string tempFullScenePath = path(currentScenePath).replace_extension().string() + "_TEMP.txt";
-
-			ofstream sceneFile(tempFullScenePath);
-
-			if (!sceneFile.is_open())
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Couldn't open temp scene file '" + tempFullScenePath + "'!\n");
-				return;
-			}
-
-			sceneFile.close();
-
-			path fsPath = currentScenePath;
-			path tempFSPath = tempFullScenePath;
-			File::DeleteFileOrfolder(fsPath);
-			File::MoveOrRenameFileOrFolder(tempFSPath, fsPath, true);
-			currentScenePath = fsPath.string();
-
-			path tempProjectPath = currentProjectPath + "_TEMP";
-			for (const auto& entry : directory_iterator(Engine::filesPath))
-			{
-				path entryPath = entry.path();
-				File::CopyFileOrFolder(entryPath, tempProjectPath);
-			}
-			File::DeleteFileOrfolder(currentProjectPath);
-			File::MoveOrRenameFileOrFolder(tempProjectPath, currentProjectPath, true);
-
-			if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
-
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::INFO,
-				"Successfully saved scene '" + currentScenePath + "'!\n");
-
+			cout << "Error: Couldn't save scene file '" << currentScenePath << "' because no scene is open!\n";
 			return;
 		}
 
-		string tempFullScenePath = path(currentScenePath).replace_extension().string() + "_TEMP.txt";
-
-		ofstream sceneFile(tempFullScenePath);
+		ofstream sceneFile(currentScenePath);
 
 		if (!sceneFile.is_open())
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Couldn't open temp scene file '" + tempFullScenePath + "'!\n");
+			cout << "Error: Couldn't write into level file '" << currentScenePath << "'!\n";
 			return;
 		}
 
@@ -481,11 +432,18 @@ namespace EngineFile
 
 				//object textures
 				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
-				if (meshType == Mesh::MeshType::cube)
+				if (meshType == Mesh::MeshType::modelChild)
 				{
-					string diffuseTexture = obj->GetMaterial()->GetTextureName(0);
-					string specularTexture = obj->GetMaterial()->GetTextureName(1);
-					sceneFile << "textures: " << diffuseTexture << ", " << specularTexture << "\n";
+					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
+					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
+					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
+					sceneFile
+						<< "textures: "
+						<< diffuseTexture << ", "
+						<< specularTexture << ", "
+						<< normalTexture << ", "
+						<< heightTexture << "\n";
 				}
 
 				//shaders
@@ -494,7 +452,7 @@ namespace EngineFile
 				sceneFile << "shaders: " << vertexShader << ", " << fragmentShader << "\n";
 
 				//material variables
-				if (meshType == Mesh::MeshType::cube)
+				if (meshType == Mesh::MeshType::model)
 				{
 					sceneFile << "shininess: " << obj->GetBasicShape()->GetShininess() << "\n";
 				}
@@ -541,7 +499,7 @@ namespace EngineFile
 					string billboardFragShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(1);
 					sceneFile << "billboard shaders: " << billboardVertShader << ", " << billboardFragShader << "\n";
 
-					sceneFile << "billboard texture: " << obj->GetChildBillboard()->GetMaterial()->GetTextureName(0) << "\n";
+					sceneFile << "billboard texture: " << obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse) << "\n";
 
 					sceneFile << "billboard shininess: " << obj->GetChildBillboard()->GetBasicShape()->GetShininess() << "\n";
 				}
@@ -554,32 +512,14 @@ namespace EngineFile
 
 		sceneFile.close();
 
-		path fsPath = currentScenePath;
-		path tempFSPath = tempFullScenePath;
-		File::DeleteFileOrfolder(fsPath);
-		File::MoveOrRenameFileOrFolder(tempFSPath, fsPath, true);
-		currentScenePath = fsPath.string();
+		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
-		path tempProjectPath = currentProjectPath + "_TEMP";
-		for (const auto& entry : directory_iterator(Engine::filesPath))
-		{
-			path entryPath = entry.path();
-			File::CopyFileOrFolder(entryPath, tempProjectPath);
-		}
-		File::DeleteFileOrfolder(currentProjectPath);
-		File::MoveOrRenameFileOrFolder(tempProjectPath, currentProjectPath, true);
-
-		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"Successfully saved scene '" + currentScenePath + "'!\n");
+		cout << "\nSuccessfully saved scene '" << currentScenePath + "'!\n";
 
 		switch (saveType)
 		{
 		case SaveType::sceneSwitch:
-			LoadScene(targetScene);
+			LoadScene(targetLevel);
 			break;
 		case SaveType::shutDown:
 			Engine::Shutdown();

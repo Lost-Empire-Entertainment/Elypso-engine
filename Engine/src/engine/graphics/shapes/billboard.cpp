@@ -62,7 +62,7 @@ namespace Graphics::Shape
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
-		float vertices[] = 
+		float vertices[] =
 		{
 			//positions             //normals            //texture coords
 			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
@@ -73,13 +73,7 @@ namespace Graphics::Shape
 			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard);
-
-		Shader billboardShader = Shader::LoadShader(
-			Engine::enginePath + "/" + vertShader,
-			Engine::enginePath + "/" + fragShader);
-
-		GLuint vao, vbo;
+		GLuint vao, vbo, ebo;
 
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
@@ -99,10 +93,12 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
-		mat->AddShader(vertShader, fragShader, billboardShader);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard, vao, vbo, ebo);
 
-		vector<shared_ptr<Component>> components;
+		Shader billboardShader = Shader::LoadShader(vertShader, fragShader);
+
+		shared_ptr<Material> mat = make_shared<Material>();
+		mat->AddShader(vertShader, fragShader, billboardShader);
 
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
@@ -115,11 +111,9 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
-			components,
 			basicShape);
 
-		Texture tex(Engine::enginePath);
-		tex.LoadTexture(obj, diffTexture, true, GL_RGBA);
+		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, true);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();
@@ -160,10 +154,10 @@ namespace Graphics::Shape
 
 		//bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(0));
+		glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse));
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMaterial()->GetVAO();
+		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

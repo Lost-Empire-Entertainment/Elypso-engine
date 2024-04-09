@@ -64,6 +64,7 @@ set(SOURCE_FILES
 	${SRC_CORE_DIR}/input.cpp
 	${SRC_CORE_DIR}/timeManager.cpp
 	${SRC_FILE_DIR}/configFile.cpp
+	${SRC_FILE_DIR}/fileexplorer.cpp
 	${SRC_FILE_DIR}/sceneFile.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_console.cpp
@@ -75,19 +76,20 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/gui/gui_nodeconnection.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_projecthierarchy.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_scenehierarchy.cpp
-	${SRC_GRAPHICS_DIR}/grid.cpp
-	${SRC_GRAPHICS_DIR}/render.cpp
-	${SRC_GRAPHICS_DIR}/shader.cpp
-	${SRC_GRAPHICS_DIR}/texture.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/cube.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
+	${SRC_GRAPHICS_SHAPE_DIR}/model.cpp
+	${SRC_GRAPHICS_SHAPE_DIR}/modelchild.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/selectedobjectaction.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/selectedobjectborder.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/spotlight.cpp
-	${SRC_PHYSICS_DIR}/selectobject.cpp
+	${SRC_GRAPHICS_DIR}/grid.cpp
+	${SRC_GRAPHICS_DIR}/render.cpp
+	${SRC_GRAPHICS_DIR}/shader.cpp
+	${SRC_GRAPHICS_DIR}/texture.cpp
 	${SRC_PHYSICS_DIR}/collision.cpp
+	${SRC_PHYSICS_DIR}/selectobject.cpp
 	${SRC_UTILS_DIR}/browserUtils.cpp
 	${SRC_UTILS_DIR}/fileUtils.cpp
 	${SRC_UTILS_DIR}/stringUtils.cpp
@@ -170,15 +172,17 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove_directory
     $<TARGET_FILE_DIR:Elypso_engine>/files
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_engine>/files
+    ${CMAKE_SOURCE_DIR}/files 
+	$<TARGET_FILE_DIR:Elypso_engine>/files
 )
 
-# Copy "engine" directory to the install directory after build
+# Copy assimp dll to the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove_directory
-    $<TARGET_FILE_DIR:Elypso_engine>/engine
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/engine $<TARGET_FILE_DIR:Elypso_engine>/engine
+	COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
+    $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
 )
 
 # Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build

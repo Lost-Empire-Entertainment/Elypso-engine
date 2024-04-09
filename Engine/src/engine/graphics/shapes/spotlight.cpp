@@ -63,7 +63,7 @@ namespace Graphics::Shape
 		const float& outerAngle,
 		string& name,
 		unsigned int& id,
-		
+
 		const string& billboardVertShader,
 		const string& billboardFragShader,
 		const string& billboardDiffTexture,
@@ -76,39 +76,33 @@ namespace Graphics::Shape
 		float vertices[] =
 		{
 			//four corner edges
-			0.0f,  0.5f,  0.0f, 
+			0.0f,  0.5f,  0.0f,
 		   -0.5f, -0.5f, -0.5f,
 
 			0.0f,  0.5f,  0.0f,
-		    0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
 
 			0.0f,  0.5f,  0.0f,
 		   -0.5f, -0.5f,  0.5f,
 
 			0.0f,  0.5f,  0.0f,
-		    0.5f, -0.5f,  0.5f,
+			0.5f, -0.5f,  0.5f,
 
 			//four bottom edges
 			0.5f, -0.5f,  0.5f,
 		   -0.5f, -0.5f,  0.5f,
 
-		    0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f, -0.5f,
 		   -0.5f, -0.5f, -0.5f,
 
 		   -0.5f, -0.5f, -0.5f,
 		   -0.5f, -0.5f,  0.5f,
 
-		    0.5f, -0.5f, -0.5f,
-		    0.5f, -0.5f,  0.5f
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f,  0.5f
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::spot_light);
-
-		Shader spotlightShader = Shader::LoadShader(
-			Engine::enginePath + "/" + vertShader,
-			Engine::enginePath + "/" + fragShader);
-
-		GLuint vao, vbo;
+		GLuint vao, vbo, ebo;
 
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
@@ -121,23 +115,25 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::spot_light, vao, vbo, ebo);
+
+		Shader spotlightShader = Shader::LoadShader(vertShader, fragShader);
+
+		shared_ptr<Material> mat = make_shared<Material>();
 		mat->AddShader(vertShader, fragShader, spotlightShader);
 
-		vector<shared_ptr<Component>> components;
-
-		shared_ptr<SpotLight_Variables> spotLight = 
+		shared_ptr<SpotLight_Variables> spotLight =
 			make_shared<SpotLight_Variables>(
-				diffuse, 
-				intensity, 
+				diffuse,
+				intensity,
 				distance,
 				innerAngle,
 				outerAngle);
 
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
-			pos, 
-			rot, 
-			scale, 
+			pos,
+			rot,
+			scale,
 			billboardVertShader,
 			billboardFragShader,
 			billboardDiffTexture,
@@ -154,7 +150,6 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
-			components,
 			spotLight);
 
 		billboard->SetParentBillboardHolder(obj);
@@ -164,10 +159,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddSpotLight(obj);
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::DEBUG,
-			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+		cout << "Successfully initialized " << obj->GetName() << " with ID " << to_string(obj->GetID()) << "\n";
 
 		return obj;
 	}
@@ -180,8 +172,8 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		float transparency = Select::selectedObj == 
-			obj 
+		float transparency = Select::selectedObj ==
+			obj
 			&& Select::isObjectSelected ? 1.0f : 0.5f;
 		shader.SetFloat("transparency", transparency);
 		shader.SetVec3("color", obj->GetSpotLight()->GetDiffuse());
@@ -193,7 +185,7 @@ namespace Graphics::Shape
 		model = scale(model, obj->GetTransform()->GetScale());
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMaterial()->GetVAO();
+		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 32);
 	}

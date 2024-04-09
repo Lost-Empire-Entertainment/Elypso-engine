@@ -28,27 +28,31 @@
 using std::unordered_map;
 
 using Graphics::Shape::GameObject;
+using Graphics::Shape::Material;
 
 namespace Graphics
 {
 	class Texture
 	{
 	public:
-		const string texturePath;
-		Texture(const string& path);
-
 		/// <summary>
 		/// Handles the loading of each game texture.
 		/// </summary>
-		/// <param name="textureName">What is the actual texture name we are trying to load?</param>
-		/// <param name="flipTexture">Should the texture be flipped 180 degrees?</param>
-		/// <param name="pixelFormat">What is the pixel format of the texture? (GL_RGB/GL_RGBA etc.)</param>
-		void LoadTexture(const shared_ptr<GameObject>& obj, const string& textureName, bool flipTexture = false, GLenum pixelFormat = GL_RGB);
-		void DeleteTexture(unsigned int texture)
+		/// <param name="obj">The target gameobject</param>
+		/// <param name="texturePath">Full path to the texture file</param>
+		/// <param name="type">What kind of a texture is it</param>
+		/// <param name="flipTexture">Should the texture be flipped 180 degrees</param>
+		static void LoadTexture(
+			const shared_ptr<GameObject>& obj,
+			const string& texturePath,
+			const Material::TextureType type = Material::TextureType::diffuse,
+			bool flipTexture = false);
+		static void DeleteTexture(unsigned int texture)
 		{
 			glDeleteTextures(1, &texture);
 		}
+
 	private:
-		unordered_map<string, unsigned int> textures;
+		static inline unordered_map<string, unsigned int> textures;
 	};
 }

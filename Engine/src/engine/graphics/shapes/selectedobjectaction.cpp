@@ -63,13 +63,7 @@ namespace Graphics::Shape
 			-0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,   0.0f, 0.0f, // Bottom-left
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::actionTex);
-
-		Shader borderShader = Shader::LoadShader(
-			Engine::enginePath + "/shaders/Basic_texture.vert",
-			Engine::enginePath + "/shaders/Basic_texture.frag");
-
-		GLuint vao, vbo;
+		GLuint vao, vbo, ebo;
 
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
@@ -89,10 +83,14 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
-		mat->AddShader("shaders/Basic_texture.vert", "shaders/Basic_texture.frag", borderShader);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::actionTex, vao, vbo, ebo);
 
-		vector<shared_ptr<Component>> components;
+		Shader borderShader = Shader::LoadShader(
+			Engine::filesPath + "/shaders/Basic_texture.vert",
+			Engine::filesPath + "/shaders/Basic_texture.frag");
+
+		shared_ptr<Material> mat = make_shared<Material>();
+		mat->AddShader("shaders/Basic_texture.vert", "shaders/Basic_texture.frag", borderShader);
 
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
@@ -104,16 +102,14 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
-			components,
 			basicShape);
 
 		GameObjectManager::AddGameObject(obj);
 
-		Texture tex(Engine::enginePath);
-		tex.LoadTexture(obj, "icons/blank.png", true, GL_RGBA);
-		tex.LoadTexture(obj, "icons/move.png", true, GL_RGBA);
-		tex.LoadTexture(obj, "icons/rotate.png", true, GL_RGBA);
-		tex.LoadTexture(obj, "icons/scale.png", true, GL_RGBA);
+		Texture::LoadTexture(obj, Engine::filesPath + "/icons/blank.png", Material::TextureType::misc_icon_blank, true);
+		Texture::LoadTexture(obj, Engine::filesPath + "/icons/move.png", Material::TextureType::misc_icon_move, true);
+		Texture::LoadTexture(obj, Engine::filesPath + "/icons/rotate.png", Material::TextureType::misc_icon_rotate, true);
+		Texture::LoadTexture(obj, Engine::filesPath + "/icons/scale.png", Material::TextureType::misc_icon_scale, true);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();
@@ -202,23 +198,23 @@ namespace Graphics::Shape
 		glActiveTexture(GL_TEXTURE0);
 		if (Input::objectAction == Input::ObjectAction::none)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(0));
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_blank));
 		}
 		else if (Input::objectAction == Input::ObjectAction::move)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(1));
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_move));
 		}
 		else if (Input::objectAction == Input::ObjectAction::rotate)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(2));
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_rotate));
 		}
 		else if (Input::objectAction == Input::ObjectAction::scale)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(3));
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_scale));
 		}
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMaterial()->GetVAO();
+		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

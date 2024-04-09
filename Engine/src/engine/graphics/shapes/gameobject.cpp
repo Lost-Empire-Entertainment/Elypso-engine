@@ -23,7 +23,8 @@
 
 //engine
 #include "gameobject.hpp"
-#include "cube.hpp"
+#include "model.hpp"
+#include "modelchild.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "selectedobjectaction.hpp"
@@ -31,7 +32,6 @@
 #include "billboard.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
-#include "gui_nodeblock.hpp"
 
 using std::cout;
 using std::endl;
@@ -46,7 +46,6 @@ using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
 using Graphics::Render;
-using Graphics::GUI::GUINodeBlock;
 
 namespace Graphics::Shape
 {
@@ -62,8 +61,8 @@ namespace Graphics::Shape
 				Type type = obj->GetMesh()->GetMeshType();
 				switch (type)
 				{
-				case Type::cube:
-					Cube::RenderCube(obj, view, projection);
+				case Type::modelChild:
+					ModelChild::Render(obj, view, projection);
 					break;
 				case Type::point_light:
 					PointLight::RenderPointLight(obj, view, projection);
@@ -124,15 +123,24 @@ namespace Graphics::Shape
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
 
-		if (GUINodeBlock::selectedGameObject == obj)
+		//destroy all children if parent is destroyed
+		if (obj->GetChildren().size() > 0)
 		{
-			GUINodeBlock::selectedComponent = nullptr;
-			GUINodeBlock::selectedGameObject = nullptr;
+			for (const auto& child : obj->GetChildren())
+			{
+				GameObjectManager::DestroyGameObject(child);
+			}
+		}
+		//remove object from parent children vector
+		if (obj->GetParent() != nullptr)
+		{
+			obj->GetParent()->RemoveChild(obj);
 		}
 
 		switch (type)
 		{
-		case Type::cube:
+		case Type::model:
+		case Type::modelChild:
 			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;

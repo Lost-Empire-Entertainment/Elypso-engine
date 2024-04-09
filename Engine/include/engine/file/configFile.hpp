@@ -74,22 +74,25 @@ namespace EngineFile
 	class ConfigFileManager
 	{
 	public:
-		static void ProcessFirstConfigValues();
-		static void ProcessConfigFile(const string& fileName);
-		static void SaveData();
+		static void SetDefaultConfigValues();
+
+		static void LoadConfigFile();
+		static void SaveConfigFile();
 	private:
+		static inline string configFilePath;
 		static inline vector<ConfigFileValue> values;
 
-		static void SetConfigValuesToDefaultValues();
-
-		static void AddValue(const ConfigFileValue& value) { values.push_back(value); };
-
-		static string GetValue(const string& name);
+		static void AddValue(const ConfigFileValue& value)
+		{
+			values.push_back(value);
+		};
 
 		static void UpdateValues();
 
 		static bool IsValueInRange(
 			const string& name,
 			const string& value);
+
+		static void CreateNewConfigFile();
 	};
 }

@@ -34,7 +34,6 @@
 #include "render.hpp"
 #include "texture.hpp"
 #include "timeManager.hpp"
-#include "cube.hpp"
 #include "pointlight.hpp"
 #include "gameobject.hpp"
 #include "grid.hpp"
@@ -57,7 +56,6 @@ using Core::TimeManager;
 using Core::Engine;
 using Graphics::Shape::GameObjectManager;
 using Graphics::GUI::EngineGUI;
-using Graphics::Shape::Cube;
 using Graphics::Shape::PointLight;
 using Graphics::Grid;
 using Graphics::Shape::ActionTex;
@@ -110,8 +108,8 @@ namespace Graphics
 
 		//create a window object holding all the windowing data
 		window = glfwCreateWindow(
-			SCR_WIDTH,
-			SCR_HEIGHT,
+			windowWidth,
+			windowHeight,
 			("Elypso engine " + Engine::version).c_str(),
 			NULL,
 			NULL);
@@ -132,7 +130,7 @@ namespace Graphics
 		glfwSwapInterval(1);
 
 		int width, height, channels;
-		string iconpath = Engine::enginePath + "/icon.png";
+		string iconpath = Engine::filesPath + "/icon.png";
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};
@@ -198,7 +196,7 @@ namespace Graphics
 		GameObjectManager::SetActionTex(actionTex);
 		GameObjectManager::AddTransparentObject(actionTex);
 
-		UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
+		UpdateAfterRescale(window, windowWidth, windowHeight);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)

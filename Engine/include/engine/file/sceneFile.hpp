@@ -38,11 +38,12 @@ namespace EngineFile
 		static inline bool unsavedChanges;
 		static inline string currentProjectPath;
 		static inline string currentScenePath;
+		static inline string targetLevel;
 
 		static void CheckForProjectFile();
-		static void CreateNewScene(const string& fileName);
-		static void LoadScene(const string& fileName);
+		static void CreateScene(const string& targetPath);
+		static void LoadScene(const string& levelName);
 		static void LoadGameObject(const map<string, string> obj);
-		static void SaveCurrentScene(SaveType saveType = SaveType::defaultSave, const string& targetScene = "");
+		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
 	};
 }

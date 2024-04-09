@@ -25,6 +25,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "gui_node.hpp"
 
 using std::shared_ptr;
 

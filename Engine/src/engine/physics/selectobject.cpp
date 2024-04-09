@@ -63,7 +63,7 @@ namespace Physics
 			for (int i = 0; i < objects.size(); i++)
 			{
 				Type objType = objects[i]->GetMesh()->GetMeshType();
-				if ((objType == Type::cube
+				if ((objType == Type::model
 					|| objType == Type::point_light
 					|| objType == Type::spot_light)
 					&& Collision::IsRayIntersectingCube(ray, objects[i]))

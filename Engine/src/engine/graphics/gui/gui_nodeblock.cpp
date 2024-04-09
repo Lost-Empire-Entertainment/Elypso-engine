@@ -45,7 +45,7 @@ namespace Graphics::GUI
 {
 	void GUINodeBlock::SetBackgroundTexture()
 	{
-		string backgroundPath = Engine::enginePath + "/textures/node_background.png";
+		string backgroundPath = Engine::filesPath + "/textures/node_background.png";
 		if (!exists(backgroundPath))
 		{
 			Engine::CreateErrorPopup("Node window setup error", "Couldn't find node window background texture!");

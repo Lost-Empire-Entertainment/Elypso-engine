@@ -243,8 +243,8 @@ namespace Core
                 && mods == GLFW_MOD_CONTROL
                 && action == GLFW_PRESS)
             {
-                SceneFile::SaveCurrentScene();
-                ConfigFileManager::SaveData();
+                SceneFile::SaveScene();
+                ConfigFileManager::SaveConfigFile();
             }
 
             if (Select::selectedObj != nullptr)

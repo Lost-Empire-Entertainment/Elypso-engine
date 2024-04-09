@@ -89,13 +89,7 @@ namespace Graphics::Shape
 			-0.5f,  0.5f,  0.5f,
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border);
-
-		Shader borderShader = Shader::LoadShader(
-			Engine::enginePath + "/shaders/Basic_model.vert",
-			Engine::enginePath + "/shaders/Basic.frag");
-
-		GLuint vao, vbo;
+		GLuint vao, vbo, ebo;
 
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
@@ -108,10 +102,14 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
-		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", borderShader);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border, vao, vbo, ebo);
 
-		vector<shared_ptr<Component>> components;
+		Shader borderShader = Shader::LoadShader(
+			Engine::filesPath + "/shaders/Basic_model.vert",
+			Engine::filesPath + "/shaders/Basic.frag");
+
+		shared_ptr<Material> mat = make_shared<Material>();
+		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", borderShader);
 
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
@@ -123,7 +121,6 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
-			components,
 			basicShape);
 
 		GameObjectManager::AddGameObject(obj);
@@ -162,7 +159,7 @@ namespace Graphics::Shape
 		}
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMaterial()->GetVAO();
+		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
 	}

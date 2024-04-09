@@ -63,7 +63,6 @@ namespace Graphics::GUI
 		static inline bool filterTextProcessed;
 
 		static void RenderTopBar();
-		static void CubeSpawnTest();
 
 		//top bar interactions
 		static void TB_CheckVersion();

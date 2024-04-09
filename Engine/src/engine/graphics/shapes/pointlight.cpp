@@ -61,7 +61,7 @@ namespace Graphics::Shape
 		const float& distance,
 		string& name,
 		unsigned int& id,
-		
+
 		const string& billboardVertShader,
 		const string& billboardFragShader,
 		const string& billboardDiffTexture,
@@ -112,13 +112,7 @@ namespace Graphics::Shape
 			-0.5f,  0.5f,  0.5f,
 		};
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::point_light);
-
-		Shader pointLightShader = Shader::LoadShader(
-			Engine::enginePath + "/" + vertShader,
-			Engine::enginePath + "/" + fragShader);
-
-		GLuint vao, vbo;
+		GLuint vao, vbo, ebo;
 
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
@@ -131,15 +125,17 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Material> mat = make_shared<Material>(vao, vbo);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::point_light, vao, vbo, ebo);
+
+		Shader pointLightShader = Shader::LoadShader(vertShader, fragShader);
+
+		shared_ptr<Material> mat = make_shared<Material>();
 		mat->AddShader(vertShader, fragShader, pointLightShader);
 
-		vector<shared_ptr<Component>> components;
-
-		shared_ptr<PointLight_Variables> pointLight = 
+		shared_ptr<PointLight_Variables> pointLight =
 			make_shared<PointLight_Variables>(
-				diffuse, 
-				intensity, 
+				diffuse,
+				intensity,
 				distance);
 
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
@@ -156,13 +152,12 @@ namespace Graphics::Shape
 		if (name == tempName) name = "Point light";
 		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true, 
-			name, 
+			true,
+			name,
 			id,
-			transform, 
-			mesh, 
-			mat, 
-			components,
+			transform,
+			mesh,
+			mat,
 			pointLight);
 
 		billboard->SetParentBillboardHolder(obj);
@@ -172,10 +167,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddPointLight(obj);
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::DEBUG,
-			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+		cout << "Successfully initialized " << obj->GetName() << " with ID " << to_string(obj->GetID()) << "\n";
 
 		return obj;
 	}
@@ -188,8 +180,8 @@ namespace Graphics::Shape
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
-		float transparency = 
-			Select::selectedObj == obj 
+		float transparency =
+			Select::selectedObj == obj
 			&& Select::isObjectSelected ? 1.0f : 0.5f;
 		shader.SetFloat("transparency", transparency);
 		shader.SetVec3("color", obj->GetPointLight()->GetDiffuse());
@@ -201,7 +193,7 @@ namespace Graphics::Shape
 		model = scale(model, obj->GetTransform()->GetScale());
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMaterial()->GetVAO();
+		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
 	}

@@ -56,7 +56,7 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
-	void Engine::PreInitializePathChecks()
+	void Engine::InitializeEngine()
 	{
 		//
 		// SET DOCUMENTS PATH
@@ -115,33 +115,9 @@ namespace Core
 		}
 		filesPath = fsFilesPath.string();
 
-		//
-		// SET ENGINE PATH
-		//
+		ConfigFileManager::LoadConfigFile();
 
-		path fsEnginePath = current_path().generic_string() + "/engine";
-		if (!exists(fsEnginePath))
-		{
-			Engine::CreateErrorPopup("Path load error", "Couldn't find engine folder! Shutting down.");
-			return;
-		}
-		enginePath = fsEnginePath.string();
-
-		//
-		// COPY config.txt TO ENGINE DOCUMENTS FOLDER IF config.txt DOESNT EXIST
-		//
-
-		if (!exists(Engine::docsPath + "/config.txt"))
-		{
-			copy_file(Engine::enginePath + "/template files/config.txt", Engine::docsPath + "/config.txt");
-		}
-	}
-
-	void Engine::InitializeEngine()
-	{
 		SceneFile::CheckForProjectFile();
-
-		ConfigFileManager::ProcessFirstConfigValues();
 
 		Logger::InitializeLogger();
 
@@ -164,15 +140,7 @@ namespace Core
 			Type::DEBUG,
 			output);
 
-		output = "Engine files path: " + Engine::enginePath + "\n\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::DEBUG,
-			output);
-
 		Render::RenderSetup();
-
-		ConfigFileManager::ProcessConfigFile("config.txt");
 
 		//first scene is actually loaded when engine is ready for use
 		SceneFile::LoadScene(SceneFile::currentScenePath);
@@ -222,7 +190,7 @@ namespace Core
 		}
 		else
 		{
-			ConfigFileManager::SaveData();
+			ConfigFileManager::SaveConfigFile();
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,

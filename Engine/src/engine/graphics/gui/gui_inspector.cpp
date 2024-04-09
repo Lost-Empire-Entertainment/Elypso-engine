@@ -16,6 +16,7 @@
 //    If not, see < https://github.com/Lost-Empire-Entertainment/Elypso-engine >.
 
 #include <iostream>
+#include <filesystem>
 
 //external
 #include "imgui.h"
@@ -34,10 +35,14 @@
 #include "sceneFile.hpp"
 #include "input.hpp"
 #include "gui_nodeblock.hpp"
+#include "texture.hpp"
+#include "core.hpp"
+#include "fileexplorer.hpp"
 
 using std::cout;
 using std::endl;
 using std::to_string;
+using std::filesystem::path;
 
 using Graphics::Render;
 using Physics::Select;
@@ -48,6 +53,9 @@ using Graphics::Shape::Material;
 using Graphics::Shape::Component;
 using EngineFile::SceneFile;
 using Core::Input;
+using Graphics::Texture;
+using Core::Engine;
+using EngineFile::FileExplorer;
 
 namespace Graphics::GUI
 {
@@ -203,13 +211,13 @@ namespace Graphics::GUI
 			ImGui::Text("Material");
 			ImGui::Separator();
 
-			if (objType == Type::cube)
+			if (objType == Type::modelChild)
 			{
-				float cubeShininess = obj->GetBasicShape()->GetShininess();
+				float modelShininess = obj->GetBasicShape()->GetShininess();
 				ImGui::Text("Shininess");
-				if (ImGui::DragFloat("##shininess", &cubeShininess, 0.1f, 3.0f, 128.0f))
+				if (ImGui::DragFloat("##shininess", &modelShininess, 0.1f, 3.0f, 128.0f))
 				{
-					obj->GetBasicShape()->SetShininess(cubeShininess);
+					obj->GetBasicShape()->SetShininess(modelShininess);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::SameLine();
@@ -218,6 +226,23 @@ namespace Graphics::GUI
 					obj->GetBasicShape()->SetShininess(32.0f);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
+
+				ImGui::Spacing();
+
+				ImGui::Text("Diffuse texture");
+				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+				path texturePath = path(
+					Engine::filesPath
+					+ obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse));
+				string textureName = texturePath.stem().string();
+				ImGui::PushItemWidth(200.0f);
+				if (ImGui::Button(textureName.c_str()))
+				{
+					string texture = FileExplorer::Select(FileExplorer::SearchType::texture);
+					Texture::LoadTexture(obj, texture, Material::TextureType::diffuse, true);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::PopItemWidth();
 			}
 			else if (objType == Type::point_light)
 			{
