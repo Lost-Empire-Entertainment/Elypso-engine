@@ -43,6 +43,7 @@ using std::to_string;
 using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
+using std::filesystem::create_directory;
 
 using Core::Engine;
 using Physics::Select;
@@ -115,40 +116,55 @@ namespace EngineFile
 	}
 
 
-	void SceneFile::CreateScene(const string& targetPath)
+	void SceneFile::CreateScene()
 	{
-		int highestIndex = 1;
-		for (const auto& entry : directory_iterator(currentProjectPath))
-		{
-			path entryPath = entry;
-			string entryName = entryPath.stem().string();
+		int highestFolderNumber = 1;
+		string parentPath = path(Engine::filesPath).parent_path().string();
+		string projectsPath = parentPath + "/project";
+		string newFolderPath = projectsPath + "/Scene";
+		cout << "Setting projects path to\n" << projectsPath << "\nand new folder path to\n" << newFolderPath << "\n\n";
 
-			string removedPart = "Save";
-			size_t pos = entryName.find(removedPart);
-			if (pos != string::npos
-				&& entryName.size() >= 5)
+		for (const auto& entry : directory_iterator(projectsPath))
+		{
+			path entryPath = entry.path();
+			
+			if (is_directory(entryPath))
 			{
-				entryName.erase(pos, removedPart.length());
-				if (String::CanConvertStringToInt(entryName))
+				cout << "found " << entryPath.string() << "\n\n";
+
+				string folderName = entryPath.stem().string();
+
+				if (folderName.find("Scene") != string::npos)
 				{
-					int index = stoi(entryName);
-					if (highestIndex <= index) highestIndex = ++index;
+					size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
+					string result = folderName.substr(pos + 1);
+					if (result != ""
+						&& String::CanConvertStringToInt(result))
+					{
+						int number = stoi(result);
+						if (number == highestFolderNumber) highestFolderNumber = ++number;
+					}
 				}
 			}
 		}
-		currentScenePath = currentProjectPath + "/Save" + to_string(highestIndex) + ".txt";
+		newFolderPath = newFolderPath + to_string(highestFolderNumber);
+		cout << "new folder path is updated to\n" << newFolderPath << "\n\n";
+		create_directory(newFolderPath);
 
-		ofstream levelFile(currentScenePath);
+		currentScenePath = newFolderPath + "/Scene.txt";
+		cout << "creating new scene file at " << currentScenePath << "\n\n";
 
-		if (!levelFile.is_open())
+		ofstream sceneFile(currentScenePath);
+
+		if (!sceneFile.is_open())
 		{
-			cout << "Error: Couldn't open level file '" << currentScenePath << "'!\n";
+			cout << "Error: Couldn't open scene file '" << currentScenePath << "'!\n";
 			return;
 		}
 
-		levelFile.close();
+		sceneFile.close();
 
-		cout << "\nSuccessfully created new level '" << currentScenePath << "'!\n";
+		cout << "\nSuccessfully created new scene '" << currentScenePath << "'!\n";
 
 		LoadScene(currentScenePath);
 	}
@@ -313,6 +329,7 @@ namespace EngineFile
 
 		if (meshType == Mesh::MeshType::model)
 		{
+			/*
 			Model::Initialize(
 				pos,
 				rot,
@@ -329,6 +346,7 @@ namespace EngineFile
 				id);
 
 			GameObject::nextID++;
+			*/
 		}
 		else if (meshType == Mesh::MeshType::point_light)
 		{
@@ -400,9 +418,14 @@ namespace EngineFile
 		{
 			//ignore border gameobject
 			//billboards and actiontex
+
+			Mesh::MeshType type = obj->GetMesh()->GetMeshType();
+
 			if (obj->GetID() != 10000000
 				&& obj->GetID() != 10000001
-				&& obj->GetMesh()->GetMeshType() != Mesh::MeshType::billboard)
+				&& type != Mesh::MeshType::billboard
+				&& type != Mesh::MeshType::model
+				&& type != Mesh::MeshType::modelChild)
 			{
 				sceneFile << "id: " << to_string(obj->GetID()) << "\n";
 

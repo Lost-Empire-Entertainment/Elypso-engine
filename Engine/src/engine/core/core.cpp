@@ -203,6 +203,9 @@ namespace Core
 				Type::INFO,
 				"Cleaning up resources...\n");
 
+			//todo: copy scene files to external project scenes folder
+			//todo: fix crash when loading scene with pointlight or spotlight
+
 			string files = current_path().generic_string() + "/files/project";
 			for (const auto& entry : directory_iterator(files))
 			{

@@ -202,30 +202,7 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("New Scene"))
 			{
-				int highestFolderNumber = 1;
-				for (const auto& entry : directory_iterator(Engine::filesPath))
-				{
-					path entryPath = entry.path();
-					if (is_directory(entryPath))
-					{
-						string folderName = entryPath.stem().string();
-
-						if (folderName.find("Scene") != string::npos)
-						{
-							size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
-							string result = folderName.substr(pos + 1);
-							if (result != ""
-								&& String::CanConvertStringToInt(result))
-							{
-								int number = stoi(result);
-								if (number == highestFolderNumber) highestFolderNumber = ++number;
-							}
-						}
-					}
-				}
-				string newFolderPath = Engine::filesPath + "/Scene" + to_string(highestFolderNumber);
-				create_directory(newFolderPath);
-				SceneFile::CreateScene(newFolderPath + "/scene.txt");
+				SceneFile::CreateScene();
 			}
 
 			if (ImGui::MenuItem("Open scene"))
