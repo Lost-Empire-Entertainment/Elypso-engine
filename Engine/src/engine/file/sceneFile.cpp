@@ -267,8 +267,6 @@ namespace EngineFile
 		}
 
 		vector<string> shaders = String::Split(obj.at("shaders"), ',');
-		cout << "vert shader\n" << shaders[0] << "\n"
-			<< "frag shader\n" << shaders[1] << "\n";
 
 		//
 		// EXTRA VALUES
@@ -302,6 +300,9 @@ namespace EngineFile
 		float outerAngle;
 		if (obj.count("outer angle")) outerAngle = stof(obj.at("outer angle"));
 
+		string modelPath;
+		if (obj.count("model path")) modelPath = obj.at("model path");
+
 		cout << "reached end of extra values...\n";
 
 		//
@@ -316,8 +317,6 @@ namespace EngineFile
 
 		vector<string> billboardShaders{};
 		if (obj.count("billboard shaders")) billboardShaders = String::Split(obj.at("billboard shaders"), ',');
-		cout << "billboard vert shader\n" << billboardShaders[0] << "\n"
-			<< "billboard frag shader\n" << billboardShaders[1] << "\n";
 
 		string billboardDiffTexture;
 		if (obj.count("billboard texture")) billboardDiffTexture = obj.at("billboard texture");
@@ -331,12 +330,11 @@ namespace EngineFile
 
 		if (meshType == Mesh::MeshType::model)
 		{
-			/*
 			Model::Initialize(
 				pos,
 				rot,
 				scale,
-				Model::targetModel,
+				modelPath,
 				shaders[0],
 				shaders[1],
 				textures[0],
@@ -348,7 +346,6 @@ namespace EngineFile
 				id);
 
 			GameObject::nextID++;
-			*/
 		}
 		else if (meshType == Mesh::MeshType::point_light)
 		{
@@ -456,7 +453,7 @@ namespace EngineFile
 
 				//object textures
 				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
-				if (meshType == Mesh::MeshType::modelChild)
+				if (meshType == Mesh::MeshType::model)
 				{
 					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
 					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
@@ -476,9 +473,11 @@ namespace EngineFile
 				sceneFile << "shaders= " << vertexShader << ", " << fragmentShader << "\n";
 
 				//material variables
-				if (meshType == Mesh::MeshType::modelChild)
+				if (meshType == Mesh::MeshType::model)
 				{
 					sceneFile << "shininess= " << obj->GetBasicShape()->GetShininess() << "\n";
+
+					sceneFile << "model path= " << obj->GetDirectory() << "\n";
 				}
 				else if (meshType == Mesh::MeshType::point_light)
 				{

@@ -61,7 +61,7 @@ namespace Graphics::Shape
 				Type type = obj->GetMesh()->GetMeshType();
 				switch (type)
 				{
-				case Type::modelChild:
+				case Type::model:
 					ModelChild::Render(obj, view, projection);
 					break;
 				case Type::point_light:
@@ -140,7 +140,6 @@ namespace Graphics::Shape
 		switch (type)
 		{
 		case Type::model:
-		case Type::modelChild:
 			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;

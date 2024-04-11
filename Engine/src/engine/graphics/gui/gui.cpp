@@ -234,10 +234,7 @@ namespace Graphics::GUI
 					else
 					{
 						Model::targetModel = path;
-						shared_ptr<GameObject> obj = Model::Initialize();
-
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+						Model::Initialize();
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -256,10 +253,7 @@ namespace Graphics::GUI
 					else
 					{
 						Model::targetModel = Engine::filesPath + "/models/cube.fbx";
-						shared_ptr<GameObject> obj = Model::Initialize();
-
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+						Model::Initialize();
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -274,10 +268,7 @@ namespace Graphics::GUI
 					else
 					{
 						Model::targetModel = Engine::filesPath + "/models/sphere.fbx";
-						shared_ptr<GameObject> obj = Model::Initialize();
-
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+						Model::Initialize();
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -292,10 +283,7 @@ namespace Graphics::GUI
 					else
 					{
 						Model::targetModel = Engine::filesPath + "/models/cylinder.fbx";
-						shared_ptr<GameObject> obj = Model::Initialize();
-
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+						Model::Initialize();
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -310,10 +298,7 @@ namespace Graphics::GUI
 					else
 					{
 						Model::targetModel = Engine::filesPath + "/models/cone.fbx";
-						shared_ptr<GameObject> obj = Model::Initialize();
-
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+						Model::Initialize();
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -328,10 +313,7 @@ namespace Graphics::GUI
 					else
 					{
 						Model::targetModel = Engine::filesPath + "/models/pyramid.fbx";
-						shared_ptr<GameObject> obj = Model::Initialize();
-
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+						Model::Initialize();
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}

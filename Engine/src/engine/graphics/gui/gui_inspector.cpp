@@ -211,7 +211,7 @@ namespace Graphics::GUI
 			ImGui::Text("Material");
 			ImGui::Separator();
 
-			if (objType == Type::modelChild)
+			if (objType == Type::model)
 			{
 				float modelShininess = obj->GetBasicShape()->GetShininess();
 				ImGui::Text("Shininess");

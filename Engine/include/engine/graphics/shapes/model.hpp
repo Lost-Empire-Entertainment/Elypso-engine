@@ -46,7 +46,7 @@ namespace Graphics::Shape
 		static inline unsigned int tempID = 123456789;
 		static inline string targetModel;
 
-		static shared_ptr<GameObject> Initialize(
+		static void Initialize(
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
@@ -62,12 +62,12 @@ namespace Graphics::Shape
 			unsigned int& id = tempID);
 
 		static void ProcessNode(
-			shared_ptr<GameObject>& obj,
+			string& name,
+			unsigned int& id,
 			aiNode* node,
 			const aiScene* scene);
 
 		static AssimpMesh ProcessMesh(
-			shared_ptr<GameObject>& obj,
 			aiMesh* mesh,
 			const aiScene* scene);
 	};

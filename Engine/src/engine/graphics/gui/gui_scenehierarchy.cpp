@@ -67,7 +67,8 @@ namespace Graphics::GUI
 				Mesh::MeshType type = obj->GetMesh()->GetMeshType();
 				if (type != Mesh::MeshType::actionTex
 					&& type != Mesh::MeshType::billboard
-					&& type != Mesh::MeshType::border)
+					&& type != Mesh::MeshType::border
+					&& type != Mesh::MeshType::model)
 				{
 					DrawGameObject(obj);
 				}

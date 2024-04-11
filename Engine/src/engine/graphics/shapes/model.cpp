@@ -56,7 +56,7 @@ using Core::Engine;
 
 namespace Graphics::Shape
 {
-    shared_ptr<GameObject> Model::Initialize(
+    void Model::Initialize(
         const vec3& pos,
         const vec3& rot,
         const vec3& scale,
@@ -71,34 +71,6 @@ namespace Graphics::Shape
         string& name,
         unsigned int& id)
     {
-        shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
-
-        GLuint vao, vbo, ebo;
-
-        shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::model, vao, vbo, ebo);
-
-        Shader modelShader = Shader::LoadShader(vertShader, fragShader);
-
-        shared_ptr<Material> mat = make_shared<Material>();
-        mat->AddShader(vertShader, fragShader, modelShader);
-
-        vector<AssimpMesh> assimpMeshes;
-
-        path modelPathToString = path(modelPath);
-        string modelName = modelPathToString.stem().string();
-
-        if (name == tempName) name = modelName;
-        if (id == tempID) id = GameObject::nextID++;
-
-        shared_ptr<GameObject> obj = make_shared<GameObject>(
-            true,
-            name,
-            id,
-            transform,
-            mesh,
-            assimpMeshes,
-            mat);
-
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
             modelPath,
@@ -112,24 +84,16 @@ namespace Graphics::Shape
             || !scene->mRootNode)
         {
             cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
-            return obj;
+            return;
         }
 
-        obj->SetDirectory(modelPath.substr(0, modelPath.find_last_of('/')));
-
         //process assimps root node recursively
-        ProcessNode(obj, scene->mRootNode, scene);
-
-        GameObjectManager::AddGameObject(obj);
-        GameObjectManager::AddOpaqueObject(obj);
-
-        //cout << "Successfully initialized " << obj->GetName() << " with ID " << to_string(obj->GetID()) << "\n";
-
-        return obj;
+        ProcessNode(name, id, scene->mRootNode, scene);
     }
 
     void Model::ProcessNode(
-        shared_ptr<GameObject>& obj,
+        string& name,
+        unsigned int& id,
         aiNode* node,
         const aiScene* scene)
     {
@@ -139,10 +103,10 @@ namespace Graphics::Shape
             //the node object only contains indices to index the actual objects in the scene. 
             //the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            AssimpMesh newMesh = ProcessMesh(obj, mesh, scene);
-            obj->AddAssimpMesh(newMesh);
+            AssimpMesh newMesh = ProcessMesh(mesh, scene);
 
-            string objName = obj->GetName();
+            if (name == tempName) name = "Model";
+            if (id == tempID) id = GameObject::nextID++;
 
             shared_ptr<GameObject> newChild = ModelChild::Initialize(
                 vec3(0),
@@ -157,21 +121,21 @@ namespace Graphics::Shape
                 newMesh.vertices,
                 newMesh.indices,
                 32,
-                objName,
-                ModelChild::tempID);
+                name,
+                id);
 
-            obj->AddChild(obj, newChild);
+            newChild->SetDirectory(targetModel);
         }
 
         //after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
-            ProcessNode(obj, node->mChildren[i], scene);
+            string targetModelPath = path(targetModel).stem().string();
+            ProcessNode(targetModelPath, tempID, node->mChildren[i], scene);
         }
     }
 
     AssimpMesh Model::ProcessMesh(
-        shared_ptr<GameObject>& obj,
         aiMesh* mesh,
         const aiScene* scene)
     {

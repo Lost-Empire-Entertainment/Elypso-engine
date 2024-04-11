@@ -123,7 +123,6 @@ namespace Graphics::Shape
 			border,
 			actionTex,
 			model,
-			modelChild,
 			point_light,
 			spot_light,
 			billboard

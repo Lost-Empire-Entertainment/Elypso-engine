@@ -108,7 +108,7 @@ namespace Graphics::Shape
 		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, weights));
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::modelChild, VAO, VBO, EBO);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::model, VAO, VBO, EBO);
 
 		Shader modelChildShader = Shader::LoadShader(vertShader, fragShader);
 
@@ -133,6 +133,8 @@ namespace Graphics::Shape
 
 		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, false);
 		Texture::LoadTexture(obj, specTexture, Material::TextureType::specular, false);
+		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::height, false);
+		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::normal, false);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();
