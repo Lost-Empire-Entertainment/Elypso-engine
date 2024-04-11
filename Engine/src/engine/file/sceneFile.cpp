@@ -100,16 +100,16 @@ namespace EngineFile
 		}
 		projectFile.close();
 
+		if (currentProjectPath.empty()
+			|| !exists(currentProjectPath))
+		{
+			Engine::CreateErrorPopup("Project load error", "Failed to load valid project from project file! Shutting down engine");
+		}
+
 		if (targetScene.empty()
 			|| !exists(targetScene))
 		{
 			Engine::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
-		}
-
-		if (currentProjectPath.empty()
-			|| !exists(currentProjectPath))
-		{
-			Engine::CreateErrorPopup("Project load error", "Failed to load valid scene from project file! Shutting down engine");
 		}
 
 		currentScenePath = targetScene;
@@ -122,37 +122,31 @@ namespace EngineFile
 		string parentPath = path(Engine::filesPath).parent_path().string();
 		string projectsPath = parentPath + "/project";
 		string newFolderPath = projectsPath + "/Scene";
-		cout << "Setting projects path to\n" << projectsPath << "\nand new folder path to\n" << newFolderPath << "\n\n";
 
 		for (const auto& entry : directory_iterator(projectsPath))
 		{
 			path entryPath = entry.path();
 			
-			if (is_directory(entryPath))
+			if (is_directory(entryPath)
+				&& entryPath.stem().string().find("Scene") != string::npos)
 			{
-				cout << "found " << entryPath.string() << "\n\n";
-
 				string folderName = entryPath.stem().string();
+				cout << "found " << folderName << "\n\n";
 
-				if (folderName.find("Scene") != string::npos)
+				size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
+				string result = folderName.substr(pos + 1);
+				if (result != ""
+					&& String::CanConvertStringToInt(result))
 				{
-					size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
-					string result = folderName.substr(pos + 1);
-					if (result != ""
-						&& String::CanConvertStringToInt(result))
-					{
-						int number = stoi(result);
-						if (number == highestFolderNumber) highestFolderNumber = ++number;
-					}
+					int number = stoi(result);
+					if (number == highestFolderNumber) highestFolderNumber = ++number;
 				}
 			}
 		}
 		newFolderPath = newFolderPath + to_string(highestFolderNumber);
-		cout << "new folder path is updated to\n" << newFolderPath << "\n\n";
 		create_directory(newFolderPath);
 
 		currentScenePath = newFolderPath + "/Scene.txt";
-		cout << "creating new scene file at " << currentScenePath << "\n\n";
 
 		ofstream sceneFile(currentScenePath);
 
@@ -548,6 +542,64 @@ namespace EngineFile
 		case SaveType::shutDown:
 			Engine::Shutdown();
 			break;
+		}
+	}
+
+	void SceneFile::ExportAllScenes()
+	{
+		vector<string> existingProjects;
+		string parentPath = path(Engine::filesPath).parent_path().string();
+		string projectsPath = parentPath + "/project";
+		for (const auto& entry : directory_iterator(projectsPath))
+		{
+			path entryPath = entry.path();
+
+			if (is_directory(entryPath)
+				&& entryPath.stem().string().find("Scene") != string::npos)
+			{
+				string folderName = entryPath.stem().string();
+				existingProjects.push_back(path(entry).string());
+			}
+		}
+
+		for (const auto& entry : directory_iterator(currentProjectPath))
+		{
+			path entryPath = entry.path();
+
+			if (is_directory(entryPath)
+				&& entryPath.stem().string().find("Scene") != string::npos)
+			{
+				string folderName = entryPath.stem().string();
+
+				for (auto it = existingProjects.begin(); it != existingProjects.end();)
+				{
+					string newPathEnd = path(*it).stem().string();
+					if (newPathEnd.find("Scene") != string::npos 
+						&& entryPath.stem().string() == newPathEnd)
+					{
+						cout << "found\n" << newPathEnd 
+							<< "\nand\n" << entryPath.string() << "\n";
+
+						File::DeleteFileOrfolder(entryPath.string());
+						File::CopyFileOrFolder(*it, currentProjectPath);
+
+						it = existingProjects.erase(it);
+
+						cout << "new size is " << existingProjects.size() << "\n";
+					}
+					else ++it;
+				}
+
+				
+			}
+		}
+
+		if (existingProjects.size() > 0)
+		{
+			for (const auto& remainingPath : existingProjects)
+			{
+				File::CopyFileOrFolder(remainingPath, currentProjectPath);
+			}
 		}
 	}
 }
