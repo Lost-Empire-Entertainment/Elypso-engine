@@ -48,13 +48,18 @@ Inside it are two folders
 	- engine - holds the files the engine needs to function normally
 	- project - holds the files the currently opened project uses, remains empty if no project is open
 	
-The engine folder has five created folders that are required to go along with all distributed versions of Elypso engine:
+The engine folder has several files and folders that are required to go along with all distributed versions of Elypso engine:
 	
 	- bat scripts - holds bat scripts that are ran from inside Elypso engine for different interactions.
+	- external dlls - dlls that are necessary to run the exe
 	- fonts - holds all the actual Elypso engine fonts.
 	- icons - holds all the icons the engine uses for its billboards and engine icons
+	- models - holds all template models the engine uses
 	- shaders - holds all the shaders that Elypso engine and its created games use.
 	- textures - holds all the textures that Elypso engine and its created games use.
+	- icon.ico - exe icon file
+	- icon.png - exe icon file
+	- icon.rc - data for attaching icon.ico to exe
 	
 The project folder has a folder for each scene and a project.txt file which tells the engine which project and scene to load when opening the engine. The last opened scene is the one that is always opened every time the project is opened again.
 	
