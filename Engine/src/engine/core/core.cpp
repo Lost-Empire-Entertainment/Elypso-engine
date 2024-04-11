@@ -203,16 +203,7 @@ namespace Core
 				Type::INFO,
 				"Cleaning up resources...\n");
 
-			string files = current_path().generic_string() + "/files/project";
-
-			SceneFile::ExportAllScenes();
-
-			for (const auto& entry : directory_iterator(files))
-			{
-				path entryPath(entry);
-				if (is_directory(entryPath)) remove_all(entryPath);
-				else if (is_regular_file(entryPath)) remove(entryPath);
-			}
+			SceneFile::ExportProjectFiles();
 
 			EngineGUI::Shutdown();
 

@@ -63,7 +63,6 @@ namespace EngineFile
 	void SceneFile::CheckForProjectFile()
 	{
 		string projectPath = path(Engine::filesPath).parent_path().string() + "/project/project.txt";
-		cout << projectPath << "\n";
 		if (!exists(projectPath))
 		{
 			Engine::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
@@ -545,61 +544,57 @@ namespace EngineFile
 		}
 	}
 
-	void SceneFile::ExportAllScenes()
+	void SceneFile::ExportProjectFiles()
 	{
-		vector<string> existingProjects;
-		string parentPath = path(Engine::filesPath).parent_path().string();
-		string projectsPath = parentPath + "/project";
-		for (const auto& entry : directory_iterator(projectsPath))
-		{
-			path entryPath = entry.path();
-
-			if (is_directory(entryPath)
-				&& entryPath.stem().string().find("Scene") != string::npos)
-			{
-				string folderName = entryPath.stem().string();
-				existingProjects.push_back(path(entry).string());
-			}
-		}
-
 		for (const auto& entry : directory_iterator(currentProjectPath))
 		{
-			path entryPath = entry.path();
-
-			if (is_directory(entryPath)
-				&& entryPath.stem().string().find("Scene") != string::npos)
-			{
-				string folderName = entryPath.stem().string();
-
-				for (auto it = existingProjects.begin(); it != existingProjects.end();)
-				{
-					string newPathEnd = path(*it).stem().string();
-					if (newPathEnd.find("Scene") != string::npos 
-						&& entryPath.stem().string() == newPathEnd)
-					{
-						cout << "found\n" << newPathEnd 
-							<< "\nand\n" << entryPath.string() << "\n";
-
-						File::DeleteFileOrfolder(entryPath.string());
-						File::CopyFileOrFolder(*it, currentProjectPath);
-
-						it = existingProjects.erase(it);
-
-						cout << "new size is " << existingProjects.size() << "\n";
-					}
-					else ++it;
-				}
-
-				
-			}
+			File::DeleteFileOrfolder(entry);
 		}
 
-		if (existingProjects.size() > 0)
+		string parentPath = path(Engine::filesPath).parent_path().string();
+		string projectsPath = parentPath + "/project";
+		string projectFilePath = projectsPath + "/project.txt";
+
+		ifstream projectFile(projectFilePath);
+		if (!projectFile.is_open())
 		{
-			for (const auto& remainingPath : existingProjects)
+			Engine::CreateErrorPopup(
+				"Project file load error", 
+				"Failed to open project file! Shutting down engine");
+		}
+
+		string line;
+		string fileContent;
+		while (getline(projectFile, line))
+		{
+			if (line.find("scene: ") != string::npos)
 			{
-				File::CopyFileOrFolder(remainingPath, currentProjectPath);
+				line = "scene: " + currentScenePath;
 			}
+			fileContent += line + "\n";
+		}
+		projectFile.close();
+
+		ofstream outFile(projectFilePath);
+		if (!outFile.is_open())
+		{
+			Engine::CreateErrorPopup(
+				"Project file load error",
+				"Failed to open project file! Shutting down engine");
+		}
+		else
+		{
+			outFile << fileContent;
+			outFile.close();
+		}
+
+		for (const auto& entry : directory_iterator(projectsPath))
+		{
+			string ending = entry.is_directory() 
+				? path(entry).filename().string() 
+				: path(entry).stem().string() + path(entry).extension().string();
+
+			File::MoveOrRenameFileOrFolder(entry, currentProjectPath + "\\" + ending, false);
 		}
 	}
 }

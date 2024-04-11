@@ -90,7 +90,7 @@ namespace Graphics
 
 			textures[texturePath] = texture;
 
-			cout << "Added new texture " << texturePath << " to " << obj->GetName() << "! New texture count is " << obj->GetMaterial()->GetTextureCount() << ".\n\n";
+			//cout << "Added new texture " << texturePath << " to " << obj->GetName() << "! New texture count is " << obj->GetMaterial()->GetTextureCount() << ".\n\n";
 		}
 		else
 		{

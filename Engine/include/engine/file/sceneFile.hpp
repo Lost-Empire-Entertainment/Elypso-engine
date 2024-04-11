@@ -46,8 +46,8 @@ namespace EngineFile
 		static void LoadGameObject(const map<string, string> obj);
 		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
 		/// <summary>
-		/// Export all scenes to current project folder when shutting down.
+		/// Export all project files to current project folder when shutting down.
 		/// </summary>
-		static void ExportAllScenes();
+		static void ExportProjectFiles();
 	};
 }
