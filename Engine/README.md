@@ -43,13 +43,20 @@ You can find Elypso engine.exe in one of three locations:
 		
 All the compiled versions of Elypso engine come with the cloned files folder.
 The origin is found at your_project_path\Engine\files.
-It has five created folders that are required to go along with all distributed versions of Elypso engine to ensure it runs:
+Inside it are two folders
+
+	- engine - holds the files the engine needs to function normally
+	- project - holds the files the currently opened project uses, remains empty if no project is open
+	
+The engine folder has five created folders that are required to go along with all distributed versions of Elypso engine:
 	
 	- bat scripts - holds bat scripts that are ran from inside Elypso engine for different interactions.
 	- fonts - holds all the actual Elypso engine fonts.
 	- icons - holds all the icons the engine uses for its billboards and engine icons
 	- shaders - holds all the shaders that Elypso engine and its created games use.
 	- textures - holds all the textures that Elypso engine and its created games use.
+	
+The project folder has a folder for each scene and a project.txt file which tells the engine which project and scene to load when opening the engine. The last opened scene is the one that is always opened every time the project is opened again.
 	
 Elypso engine also has three extra files for the engine icons at the root files folder directory that are required to be added alongside with the required folders.
 		
