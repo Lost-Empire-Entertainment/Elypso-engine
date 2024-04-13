@@ -571,7 +571,6 @@ namespace Graphics::Shape
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
-		void IsModelChild(const bool& newIsModelChild) { isModelChild = newIsModelChild; }
 
 		void AddComponent(const shared_ptr<Component> newComponent) { components.push_back(newComponent); }
 		void RemoveComponent(const shared_ptr<Component> removedComponent)
@@ -621,7 +620,6 @@ namespace Graphics::Shape
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const {  return ID; }
-		const bool& IsModelChild() const { return isModelChild; }
 
 		const shared_ptr<Transform>& GetTransform() const { return transform; }
 		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
@@ -640,7 +638,6 @@ namespace Graphics::Shape
 		bool isInitialized;
 		string name;
 		unsigned int ID;
-		bool isModelChild;
 
 		shared_ptr<Transform> transform;
 		shared_ptr<Mesh> mesh;

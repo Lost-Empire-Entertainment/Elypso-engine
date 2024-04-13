@@ -100,8 +100,7 @@ namespace Graphics::Shape
         //process assimps root node recursively
         ProcessNode(
             name, 
-            id, 
-            false,
+            id,
             pos, 
             rot, 
             scale,
@@ -120,7 +119,6 @@ namespace Graphics::Shape
     void Model::ProcessNode(
         string& name,
         unsigned int& id,
-        bool isModelChild,
         const vec3& pos,
         const vec3& rot,
         const vec3& scale,
@@ -165,14 +163,10 @@ namespace Graphics::Shape
                 name,
                 id);
 
-            newChild->IsModelChild(isModelChild);
             newChild->SetDirectory(modelPathNonRef);
 
-            if (isModelChild)
-            {
-                Select::selectedObj = newChild;
-                Select::isObjectSelected = true;
-            }
+            Select::selectedObj = newChild;
+            Select::isObjectSelected = true;
         }
 
         //after we've processed all of the meshes (if any) we then recursively process each of the children nodes
@@ -181,7 +175,6 @@ namespace Graphics::Shape
             ProcessNode(
                 name, 
                 tempID, 
-                true,
                 pos,
                 rot,
                 scale,

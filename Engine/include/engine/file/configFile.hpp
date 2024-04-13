@@ -34,7 +34,7 @@ namespace EngineFile
 			type_float,
 			type_int,
 			type_vec2,
-			type_vec3,
+			type_vec3
 		};
 		enum class ValueType
 		{

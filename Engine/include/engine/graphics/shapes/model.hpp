@@ -64,7 +64,6 @@ namespace Graphics::Shape
 		static void ProcessNode(
 			string& name,
 			unsigned int& id,
-			bool isModelChild,
 			const vec3& pos,
 			const vec3& rot,
 			const vec3& scale,
