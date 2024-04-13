@@ -32,6 +32,7 @@
 #include "billboard.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "gui_nodeblock.hpp"
 
 using std::cout;
 using std::endl;
@@ -46,6 +47,7 @@ using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
 using Graphics::Render;
+using Graphics::GUI::GUINodeBlock;
 
 namespace Graphics::Shape
 {
@@ -122,6 +124,12 @@ namespace Graphics::Shape
 
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
+
+		if (GUINodeBlock::selectedGameObject == obj)
+		{
+			GUINodeBlock::selectedComponent = nullptr;
+			GUINodeBlock::selectedGameObject = nullptr;
+		}
 
 		//destroy all children if parent is destroyed
 		if (obj->GetChildren().size() > 0)
