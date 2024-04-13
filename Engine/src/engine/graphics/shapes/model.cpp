@@ -33,6 +33,8 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "core.hpp"
+#include "console.hpp"
+#include "selectobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -53,6 +55,10 @@ using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Material;
 using Core::Engine;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
+using Physics::Select;
 
 namespace Graphics::Shape
 {
@@ -83,17 +89,49 @@ namespace Graphics::Shape
             || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
             || !scene->mRootNode)
         {
-            cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+            string errorString = importer.GetErrorString();
+            ConsoleManager::WriteConsoleMessage(
+                Caller::ENGINE,
+                Type::EXCEPTION,
+                "ERROR::ASSIMP:: " + errorString + "\n");
             return;
         }
 
         //process assimps root node recursively
-        ProcessNode(name, id, scene->mRootNode, scene);
+        ProcessNode(
+            name, 
+            id, 
+            false,
+            pos, 
+            rot, 
+            scale,
+            modelPath,
+            vertShader,
+            fragShader,
+            diffTexture,
+            specTexture,
+            normalTexture,
+            heightTexture,
+            shininess,
+            scene->mRootNode, 
+            scene);
     }
 
     void Model::ProcessNode(
         string& name,
         unsigned int& id,
+        bool isModelChild,
+        const vec3& pos,
+        const vec3& rot,
+        const vec3& scale,
+        const string& modelPath,
+        const string& vertShader,
+        const string& fragShader,
+        const string& diffTexture,
+        const string& specTexture,
+        const string& normalTexture,
+        const string& heightTexture,
+        const float& shininess,
         aiNode* node,
         const aiScene* scene)
     {
@@ -108,30 +146,55 @@ namespace Graphics::Shape
             if (name == tempName) name = "Model";
             if (id == tempID) id = GameObject::nextID++;
 
+            string modelPathNonRef = modelPath;
+            if (modelPathNonRef == "") modelPathNonRef = targetModel;
+
             shared_ptr<GameObject> newChild = ModelChild::Initialize(
-                vec3(0),
-                vec3(0),
-                vec3(1),
-                Engine::filesPath + "/shaders/GameObject.vert",
-                Engine::filesPath + "/shaders/GameObject.frag",
-                Engine::filesPath + "/textures/default_diffuse.png",
-                "EMPTY",
-                "EMPTY",
-                "EMPTY",
+                pos,
+                rot,
+                scale,
+                vertShader,
+                fragShader,
+                diffTexture,
+                specTexture,
+                normalTexture,
+                heightTexture,
                 newMesh.vertices,
                 newMesh.indices,
-                32,
+                shininess,
                 name,
                 id);
 
-            newChild->SetDirectory(targetModel);
+            newChild->IsModelChild(isModelChild);
+            newChild->SetDirectory(modelPathNonRef);
+
+            if (isModelChild)
+            {
+                Select::selectedObj = newChild;
+                Select::isObjectSelected = true;
+            }
         }
 
         //after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for (unsigned int i = 0; i < node->mNumChildren; i++)
         {
-            string targetModelPath = path(targetModel).stem().string();
-            ProcessNode(targetModelPath, tempID, node->mChildren[i], scene);
+            ProcessNode(
+                name, 
+                tempID, 
+                true,
+                pos,
+                rot,
+                scale,
+                modelPath,
+                vertShader,
+                fragShader,
+                diffTexture,
+                specTexture,
+                normalTexture,
+                heightTexture,
+                shininess,
+                node->mChildren[i], 
+                scene);
         }
     }
 

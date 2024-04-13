@@ -19,7 +19,7 @@
 #include <ShlObj.h>
 #include <iostream>
 
-//level editor
+//engine
 #include "fileexplorer.hpp"
 
 using std::cout;

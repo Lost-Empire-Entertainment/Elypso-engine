@@ -31,6 +31,7 @@
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "input.hpp"
+#include "console.hpp"
 
 using std::cout;
 
@@ -41,6 +42,9 @@ using EngineFile::SceneFile;
 using Graphics::Render;
 using Physics::Select;
 using Core::Input;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
@@ -67,8 +71,7 @@ namespace Graphics::GUI
 				Mesh::MeshType type = obj->GetMesh()->GetMeshType();
 				if (type != Mesh::MeshType::actionTex
 					&& type != Mesh::MeshType::billboard
-					&& type != Mesh::MeshType::border
-					&& type != Mesh::MeshType::model)
+					&& type != Mesh::MeshType::border)
 				{
 					DrawGameObject(obj);
 				}
@@ -118,7 +121,10 @@ namespace Graphics::GUI
 
 				GameObjectManager::DestroyGameObject(selectedGameObject);
 
-				cout << "Deleted " << objName << "\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::DEBUG,
+					"Deleted " + objName + "\n");
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

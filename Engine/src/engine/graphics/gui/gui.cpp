@@ -220,17 +220,27 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Asset"))
 		{
+			bool canPlaceAssets = SceneFile::currentScenePath != "";
+
 			if (ImGui::MenuItem("Import model"))
 			{
-				bool canPlaceAssets = SceneFile::currentScenePath != "";
 				if (!canPlaceAssets)
 				{
-					cout << "Error: Cannot place assets because no scene is loaded!\n";
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Cannot place assets because no scene is loaded!\n");
 				}
 				else
 				{
 					string path = FileExplorer::Select(FileExplorer::SearchType::asset);
-					if (path == "") cout << "Error: Did not get path!\n\n";
+					if (path == "")
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Did not get path!\n");
+					}
 					else
 					{
 						Model::targetModel = path;
@@ -245,10 +255,12 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					bool canPlaceAssets = SceneFile::currentScenePath != "";
 					if (!canPlaceAssets)
 					{
-						cout << "Error: Cannot place assets because no scene is loaded!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Cannot place assets because no scene is loaded!\n");
 					}
 					else
 					{
@@ -260,10 +272,12 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
-					bool canPlaceAssets = SceneFile::currentScenePath != "";
 					if (!canPlaceAssets)
 					{
-						cout << "Error: Cannot place assets because no scene is loaded!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Cannot place assets because no scene is loaded!\n");
 					}
 					else
 					{
@@ -275,10 +289,12 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
-					bool canPlaceAssets = SceneFile::currentScenePath != "";
 					if (!canPlaceAssets)
 					{
-						cout << "Error: Cannot place assets because no scene is loaded!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Cannot place assets because no scene is loaded!\n");
 					}
 					else
 					{
@@ -290,10 +306,12 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
-					bool canPlaceAssets = SceneFile::currentScenePath != "";
 					if (!canPlaceAssets)
 					{
-						cout << "Error: Cannot place assets because no scene is loaded!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Cannot place assets because no scene is loaded!\n");
 					}
 					else
 					{
@@ -305,10 +323,12 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
-					bool canPlaceAssets = SceneFile::currentScenePath != "";
 					if (!canPlaceAssets)
 					{
-						cout << "Error: Cannot place assets because no scene is loaded!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Cannot place assets because no scene is loaded!\n");
 					}
 					else
 					{
@@ -326,10 +346,12 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					bool canPlaceAssets = SceneFile::currentScenePath != "";
 					if (!canPlaceAssets)
 					{
-						cout << "Error: Cannot place assets because no scene is loaded!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Cannot place assets because no scene is loaded!\n");
 					}
 					else
 					{
@@ -343,10 +365,12 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					bool canPlaceAssets = SceneFile::currentScenePath != "";
 					if (!canPlaceAssets)
 					{
-						cout << "Error: Cannot place assets because no scene is loaded!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Cannot place assets because no scene is loaded!\n");
 					}
 					else
 					{

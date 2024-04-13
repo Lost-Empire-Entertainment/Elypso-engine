@@ -115,10 +115,6 @@ namespace Core
 		}
 		filesPath = fsFilesPath.string();
 
-		ConfigFileManager::LoadConfigFile();
-
-		SceneFile::CheckForProjectFile();
-
 		Logger::InitializeLogger();
 
 		ConsoleManager::WriteConsoleMessage(
@@ -127,6 +123,10 @@ namespace Core
 			Engine::name + " " + Engine::version + "\n" +
 			"Copyright (C) Lost Empire Entertainment 2024\n\n",
 			true);
+
+		ConfigFileManager::LoadConfigFile();
+
+		SceneFile::CheckForProjectFile();
 
 		string output = "Engine documents path: " + Engine::docsPath + "\n";
 		ConsoleManager::WriteConsoleMessage(

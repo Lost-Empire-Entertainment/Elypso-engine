@@ -49,7 +49,7 @@ namespace Graphics::Shape
 			const vec3& scale = vec3(1),
 			const string& vertShader = Engine::filesPath + "/shaders/GameObject.vert",
 			const string& fragShader = Engine::filesPath + "/shaders/GameObject.frag",
-			const string& diffTexture = "EMPTY",
+			const string& diffTexture = Engine::filesPath + "/textures/default_diffuse.png",
 			const string& specTexture = "EMPTY",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",

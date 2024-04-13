@@ -25,9 +25,14 @@
 
 //engine
 #include "texture.hpp"
+#include "console.hpp"
 
 using std::cout;
 using std::endl;
+
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
@@ -94,7 +99,10 @@ namespace Graphics
 		}
 		else
 		{
-			cout << "Failed to load " << texturePath << " texture!\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Failed to load " + texturePath + " texture!\n\n");
 		}
 		stbi_image_free(data);
 	}

@@ -203,7 +203,11 @@ namespace Graphics::GUI
 				}
 
 				copyPath = selectedItemPath;
-				cout << "Copied " << selectedItemPath.string() << endl;
+
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::DEBUG,
+					"Copied " + selectedItemPath.string() + "\n");
 			}
 
 			if (ImGui::MenuItem("Paste"))
@@ -233,7 +237,10 @@ namespace Graphics::GUI
 					}
 				}
 
-				cout << "Pasted " << copyPath.string() << " to " << selectedItemPath.string() << endl;
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::DEBUG,
+					"Pasted " + copyPath.string() + " to " + selectedItemPath.string() + "\n");
 				File::CopyFileOrFolder(copyPath, selectedItemPath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -269,7 +276,10 @@ namespace Graphics::GUI
 					return;
 				}
 
-				cout << "Deleted " << selectedItemPath.string() << endl;
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::DEBUG,
+					"Deleted " + selectedItemPath.string() + "\n");
 				File::DeleteFileOrfolder(selectedItemPath);
 				selectedItemPath = path();
 

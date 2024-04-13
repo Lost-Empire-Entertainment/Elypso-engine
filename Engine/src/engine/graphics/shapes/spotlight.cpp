@@ -159,7 +159,10 @@ namespace Graphics::Shape
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddSpotLight(obj);
 
-		cout << "Successfully initialized " << obj->GetName() << " with ID " << to_string(obj->GetID()) << "\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}

@@ -568,40 +568,20 @@ namespace Graphics::Shape
 		{
 		}
 
-		void Initialize()
-		{
-			isInitialized = true;
-		}
-		void SetName(const string& newName)
-		{
-			name = newName;
-		}
-		void SetID(const unsigned int& newID)
-		{
-			ID = newID;
-		}
+		void Initialize() { isInitialized = true; }
+		void SetName(const string& newName) { name = newName; }
+		void SetID(const unsigned int& newID) { ID = newID; }
+		void IsModelChild(const bool& newIsModelChild) { isModelChild = newIsModelChild; }
 
 		void AddComponent(const shared_ptr<Component> newComponent) { components.push_back(newComponent); }
 		void RemoveComponent(const shared_ptr<Component> removedComponent)
 		{
 			components.erase(remove(components.begin(), components.end(), removedComponent), components.end());
 		}
-		void SetTransform(const shared_ptr<Transform>& newTransform)
-		{
-			transform = newTransform;
-		}
-		void SetMesh(const shared_ptr<Mesh>& newMesh)
-		{
-			mesh = newMesh;
-		}
-		void AddAssimpMesh(const AssimpMesh& newMesh)
-		{
-			assimpMeshes.push_back(newMesh);
-		}
-		void SetMaterial(const shared_ptr<Material>& newMaterial)
-		{
-			material = newMaterial;
-		}
+		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
+		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
+		void AddAssimpMesh(const AssimpMesh& newMesh) { assimpMeshes.push_back(newMesh); }
+		void SetMaterial(const shared_ptr<Material>& newMaterial) { material = newMaterial; }
 		void SetBasicShape(const shared_ptr<BasicShape_Variables>& newBasicShape)
 		{
 			basicShape = newBasicShape;
@@ -615,14 +595,8 @@ namespace Graphics::Shape
 			spotLight = newSpotLight;
 		}
 
-		void SetParent(const shared_ptr<GameObject>& newParent)
-		{
-			parent = newParent;
-		}
-		void RemoveParent(const shared_ptr<GameObject>)
-		{
-			parent = nullptr;
-		}
+		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
+		void RemoveParent(const shared_ptr<GameObject>) { parent = nullptr; }
 		void AddChild(const shared_ptr<GameObject>& target, const shared_ptr<GameObject>& addedChild)
 		{
 			children.push_back(addedChild);
@@ -642,80 +616,31 @@ namespace Graphics::Shape
 			childBillboard = newChildBillboard;
 		}
 
-		void SetDirectory(const string& newDirectory)
-		{
-			directory = newDirectory;
-		}
+		void SetDirectory(const string& newDirectory) { directory = newDirectory; }
 
-		const bool& IsInitialized() const
-		{
-			return isInitialized;
-		}
-		const string& GetName() const
-		{
-			return name;
-		}
-		const unsigned int& GetID() const
-		{
-			return ID;
-		}
+		const bool& IsInitialized() const { return isInitialized; }
+		const string& GetName() const { return name; }
+		const unsigned int& GetID() const {  return ID; }
+		const bool& IsModelChild() const { return isModelChild; }
 
-		const shared_ptr<Transform>& GetTransform() const
-		{
-			return transform;
-		}
-		const shared_ptr<Mesh>& GetMesh() const
-		{
-			return mesh;
-		}
-		const vector<AssimpMesh>& GetAssimpMeshes() const
-		{
-			return assimpMeshes;
-		}
-		const shared_ptr<Material>& GetMaterial() const
-		{
-			return material;
-		}
-		const vector<shared_ptr<Component>> GetComponents() const
-		{
-			return components;
-		}
-		const shared_ptr<BasicShape_Variables>& GetBasicShape() const
-		{
-			return basicShape;
-		}
-		const shared_ptr<PointLight_Variables>& GetPointLight() const
-		{
-			return pointLight;
-		}
-		const shared_ptr<SpotLight_Variables>& GetSpotLight() const
-		{
-			return spotLight;
-		}
-		const shared_ptr<GameObject>& GetParent() const
-		{
-			return parent;
-		}
-		const vector<shared_ptr<GameObject>>& GetChildren() const
-		{
-			return children;
-		}
-		const shared_ptr<GameObject>& GetParentBillboardHolder() const
-		{
-			return parentBillboardHolder;
-		}
-		const shared_ptr<GameObject>& GetChildBillboard() const
-		{
-			return childBillboard;
-		}
-		const string& GetDirectory() const
-		{
-			return directory;
-		}
+		const shared_ptr<Transform>& GetTransform() const { return transform; }
+		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
+		const vector<AssimpMesh>& GetAssimpMeshes() const { return assimpMeshes; }
+		const shared_ptr<Material>& GetMaterial() const { return material; }
+		const vector<shared_ptr<Component>> GetComponents() const { return components; }
+		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
+		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
+		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
+		const shared_ptr<GameObject>& GetParent() const { return parent; }
+		const vector<shared_ptr<GameObject>>& GetChildren() const { return children; }
+		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
+		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
+		const string& GetDirectory() const { return directory; }
 	private:
 		bool isInitialized;
 		string name;
 		unsigned int ID;
+		bool isModelChild;
 
 		shared_ptr<Transform> transform;
 		shared_ptr<Mesh> mesh;

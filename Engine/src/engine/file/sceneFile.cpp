@@ -35,6 +35,7 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "fileutils.hpp"
+#include "console.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -57,6 +58,9 @@ using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Utils::File;
 using Graphics::Shape::Material;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace EngineFile
 {
@@ -130,7 +134,6 @@ namespace EngineFile
 				&& entryPath.stem().string().find("Scene") != string::npos)
 			{
 				string folderName = entryPath.stem().string();
-				cout << "found " << folderName << "\n\n";
 
 				size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
 				string result = folderName.substr(pos + 1);
@@ -151,13 +154,19 @@ namespace EngineFile
 
 		if (!sceneFile.is_open())
 		{
-			cout << "Error: Couldn't open scene file '" << currentScenePath << "'!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Error: Couldn't open scene file '" + currentScenePath + "'!\n");
 			return;
 		}
 
 		sceneFile.close();
 
-		cout << "\nSuccessfully created new scene '" << currentScenePath << "'!\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"\nSuccessfully created new scene '" + currentScenePath + "'!\n");
 
 		LoadScene(currentScenePath);
 	}
@@ -166,7 +175,10 @@ namespace EngineFile
 	{
 		if (!exists(scenePath))
 		{
-			cout << "Error: Tried to load scene '" << scenePath << "' but it doesn't exist!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Tried to load scene '" + scenePath + "' but it doesn't exist!\n");
 			return;
 		}
 
@@ -185,7 +197,10 @@ namespace EngineFile
 		ifstream sceneFile(scenePath);
 		if (!sceneFile.is_open())
 		{
-			cout << "Error: Failed to open scene file '" << scenePath << "'!\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Failed to open scene file '" + scenePath + "'!\n\n");
 			return;
 		}
 
@@ -232,7 +247,10 @@ namespace EngineFile
 
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
-		cout << "Successfully loaded scenePath '" << currentScenePath << "'!\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"Successfully loaded scenePath '" + currentScenePath + "'!\n");
 	}
 
 	void SceneFile::LoadGameObject(const map<string, string> obj)
@@ -273,10 +291,7 @@ namespace EngineFile
 		//
 
 		vector<string> textures;
-		if (obj.count("textures"))
-		{
-			textures = String::Split(obj.at("textures"), ',');
-		}
+		if (obj.count("textures")) textures = String::Split(obj.at("textures"), ',');
 
 		float shininess = 32;
 		if (obj.count("shininess")) shininess = stof(obj.at("shininess"));
@@ -303,7 +318,6 @@ namespace EngineFile
 		string modelPath;
 		if (obj.count("model path")) modelPath = obj.at("model path");
 
-		cout << "reached end of extra values...\n";
 
 		//
 		// ATTACHED BILLBOARD VALUES
@@ -401,7 +415,10 @@ namespace EngineFile
 
 		if (currentScenePath == "")
 		{
-			cout << "Error: Couldn't save scene file '" << currentScenePath << "' because no scene is open!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Couldn't save scene file '" + currentScenePath + "' because no scene is open!\n");
 			return;
 		}
 
@@ -409,7 +426,10 @@ namespace EngineFile
 
 		if (!sceneFile.is_open())
 		{
-			cout << "Error: Couldn't write into level file '" << currentScenePath << "'!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Couldn't write into level file '" + currentScenePath + "'!\n");
 			return;
 		}
 
@@ -537,7 +557,10 @@ namespace EngineFile
 
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
-		cout << "\nSuccessfully saved scene '" << currentScenePath + "'!\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			Type::INFO,
+			"\nSuccessfully saved scene '" + currentScenePath + "'!\n");
 
 		switch (saveType)
 		{
