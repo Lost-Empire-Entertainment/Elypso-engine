@@ -139,14 +139,6 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
-		ImGui::Text("Allow console scroll to bottom");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		if (ImGui::Checkbox("##consolescroll", &GUIConsole::allowScrollToBottom))
-		{
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-
 		ImGui::Text("Print console debug messages");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);

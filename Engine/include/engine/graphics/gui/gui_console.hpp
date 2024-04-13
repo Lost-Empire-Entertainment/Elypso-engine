@@ -30,7 +30,6 @@ namespace Graphics::GUI
 	public:
 		static inline bool renderConsole;
 		static inline bool firstScrollToBottom;
-		static inline bool allowScrollToBottom;
 
 		static inline char inputTextBuffer[128];
 		static inline vector<string> consoleMessages;

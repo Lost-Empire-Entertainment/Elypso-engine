@@ -76,16 +76,13 @@ namespace Graphics::GUI
 
 			//scrolls to the bottom if scrolling is allowed
 			//and if user is close to the newest console message
-			if (allowScrollToBottom)
+			bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
+			if (isNearBottom
+				|| (!firstScrollToBottom
+					&& Engine::startedWindowLoop))
 			{
-				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
-				if (isNearBottom
-					|| (!firstScrollToBottom
-						&& Engine::startedWindowLoop))
-				{
-					ImGui::SetScrollHereY(1.0f);
-					firstScrollToBottom = true;
-				}
+				ImGui::SetScrollHereY(1.0f);
+				firstScrollToBottom = true;
 			}
 
 			ImGui::EndChild();
@@ -132,7 +129,7 @@ namespace Graphics::GUI
 				}))
 			{
 				ConsoleManager::ParseConsoleCommand(inputTextBuffer);
-				if (allowScrollToBottom) ImGui::SetScrollHereY(1.0f);
+				ImGui::SetScrollHereY(1.0f);
 				memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
 			}
 
