@@ -202,11 +202,6 @@ namespace EngineFile
 
 			string gameParentPath = path(gameExePath).parent_path().string();
 			gameParentPath = String::CharReplace(gameParentPath, '/', '\\');
-
-			cout << "game exe path\n"
-				<< gameExePath << "\n"
-				<< "game parent path\n"
-				<< gameParentPath << "\n\n";
 		}
 
 		Select::isObjectSelected = false;

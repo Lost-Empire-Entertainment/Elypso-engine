@@ -750,34 +750,33 @@ namespace Graphics::GUI
 			else
 			{
 				string gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
-				if (!exists(gameExePath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Game exe path ' " + gameExePath + " ' does not exist!\n");
-				}
-				else
-				{
-					string gameParentPath = path(gameExePath).parent_path().string();
-					if (!exists(gameParentPath))
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Game parent path ' " + gameExePath + " ' does not exist!\n");
-					}
+				string gameParentPath = path(gameExePath).parent_path().string();
 
-					else
+				string gameProjectFolder = gameParentPath + "\\files\\project";
+				for (const auto& item : directory_iterator(path(gameProjectFolder)))
+				{
+					if (is_directory(item.path())
+						|| is_regular_file(item.path()))
 					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::INFO,
-							"Compile success!\n");
-
-						File::RunApplication(gameParentPath, gameExePath);
+						string itemPath = item.path().string();
+						File::DeleteFileOrfolder(itemPath);
 					}
 				}
+
+				string engineProjectPath = path(Engine::filesPath).parent_path().string() + "\\project";
+				for (const auto& item : directory_iterator(path(engineProjectPath)))
+				{
+					string itemPath = item.path().string();
+					
+					string ending = item.is_directory()
+						? path(item).filename().string()
+						: path(item).stem().string() + path(item).extension().string();
+					string targetItemPath = gameProjectFolder + "\\" + ending;
+
+					File::CopyFileOrFolder(itemPath, targetItemPath);
+				}
+
+				File::RunApplication(gameParentPath, gameExePath);
 			}
 		}
 	}

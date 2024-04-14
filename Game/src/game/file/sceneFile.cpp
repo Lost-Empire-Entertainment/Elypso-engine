@@ -578,7 +578,7 @@ namespace GameFile
 				? path(entry).filename().string() 
 				: path(entry).stem().string() + path(entry).extension().string();
 
-			File::MoveOrRenameFileOrFolder(entry, currentProjectPath + "\\" + ending, false);
+			File::CopyFileOrFolder(entry, currentProjectPath + "\\" + ending);
 		}
 	}
 }

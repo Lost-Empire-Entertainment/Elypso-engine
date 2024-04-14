@@ -89,13 +89,9 @@ namespace Utils
 
     void File::CopyFileOrFolder(const path& sourcePath, const path& destinationPath)
     {
-        string output;
-        string fileOrFolderName = sourcePath.filename().string();
-        path fixedTargetPath = destinationPath / fileOrFolderName;
-
         if (!exists(sourcePath))
         {
-            cout << "Error: Source path " << sourcePath.string() << " does not exist!\n\n";
+            cout << "Source path " << sourcePath.string() << " does not exist!\n\n";
             return;
         }
 
@@ -103,33 +99,15 @@ namespace Utils
         {
             if (is_directory(sourcePath))
             {
-                create_directories(fixedTargetPath);
+                copy(sourcePath, destinationPath, copy_options::recursive | copy_options::overwrite_existing);
 
-                for (const auto& entry : recursive_directory_iterator(sourcePath))
-                {
-                    path relativePath = relative(entry.path(), sourcePath);
-                    path destPath = fixedTargetPath / relativePath;
-
-                    if (is_directory(entry))
-                    {
-                        create_directory(destPath);
-                    }
-                    else if (is_regular_file(entry))
-                    {
-                        copy_file(entry.path(), destPath, copy_options::overwrite_existing);
-                    }
-                }
-
-                cout << "Copied folder " << sourcePath.string() << " to " << fixedTargetPath.string() << ".\n\n";
+                cout << "Copied folder " << sourcePath.string() << " to " << destinationPath.string() << ".\n\n";
             }
             else if (is_regular_file(sourcePath))
             {
-                create_directories(destinationPath);
+                copy_file(sourcePath, destinationPath, copy_options::overwrite_existing);
 
-                path destPath = destinationPath / fileOrFolderName;
-                copy_file(sourcePath, destPath, copy_options::overwrite_existing);
-
-                cout << "Copied file " << sourcePath.string() << " to " << destPath.string() << ".\n\n";
+                cout << "Copied file " << sourcePath.string() << " to " << destinationPath.string() << ".\n\n";
             }
         }
         catch (const exception& e)
