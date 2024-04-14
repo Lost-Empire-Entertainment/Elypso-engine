@@ -22,6 +22,8 @@
 #include "console.hpp"
 #include "grid.hpp"
 #include "sceneFile.hpp"
+#include "core.hpp"
+#include "fileexplorer.hpp"
 
 using std::to_string;
 using std::stof;
@@ -35,6 +37,8 @@ using Core::Input;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Core::Engine;
+using EngineFile::FileExplorer;
 
 namespace Graphics::GUI
 {
@@ -133,6 +137,21 @@ namespace Graphics::GUI
 		if (ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages))
 		{
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("");
+		ImGui::Text("Set game path");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 125);
+		if (ImGui::Button("Game path", ImVec2(100, 0)))
+		{
+			Engine::gamePath = FileExplorer::Select(FileExplorer::SearchType::exe);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		if (ImGui::IsItemHovered())
+		{
+			string hint = Engine::gamePath != "" ? Engine::gamePath : "No path set...";
+			ImGui::SetTooltip(hint.c_str());
 		}
 
 		//

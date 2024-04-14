@@ -18,7 +18,8 @@ namespace EngineFile
 		{
 			txt,
 			asset,
-			texture
+			texture,
+			exe
 		};
 
 		static string Select(const SearchType& searchType);

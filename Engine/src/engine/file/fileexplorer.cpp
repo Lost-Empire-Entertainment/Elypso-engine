@@ -88,6 +88,21 @@ namespace EngineFile
 			}
 		}
 
+		else if (searchType == SearchType::exe)
+		{
+			//restrict file selection to exe only
+			COMDLG_FILTERSPEC filterSpec[] = {
+				{ L"Executables", L"*.exe"} };
+			hr = pFileOpen->SetFileTypes(1, filterSpec);
+			if (FAILED(hr))
+			{
+				cout << "Error: Failed to set file filter!\n\n";
+				pFileOpen->Release();
+				CoUninitialize();
+				return "";
+			}
+		}
+
 		//show the File Open dialog
 		hr = pFileOpen->Show(NULL);
 		if (FAILED(hr))

@@ -170,6 +170,34 @@ namespace EngineFile
 			return;
 		}
 
+		if (Engine::gamePath == "")
+		{
+			string parentPath = path(Engine::filesPath).parent_path().string();
+			string projectFilePath = parentPath + "/project/project.txt";
+
+			ifstream projectFile(projectFilePath);
+			if (!projectFile.is_open())
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Couldn't read from project file '" + projectFilePath + "'!\n");
+				return;
+			}
+
+			string line;
+			while (getline(projectFile, line))
+			{
+				if (line.find("game: ") != string::npos)
+				{
+					line.erase(0, 6);
+					Engine::gamePath = line;
+					break;
+				}
+			}
+			projectFile.close();
+		}
+
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
 
@@ -399,16 +427,50 @@ namespace EngineFile
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
 	{
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-
-		if (currentScenePath == "")
+		if (Engine::gamePath != "")
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Couldn't save scene file '" + currentScenePath + "' because no scene is open!\n");
-			return;
+			string parentPath = path(Engine::filesPath).parent_path().string();
+			string projectFilePath = parentPath + "/project/project.txt";
+
+			ifstream projectFile(projectFilePath);
+			if (!projectFile.is_open())
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Couldn't read from project file '" + projectFilePath + "'!\n");
+				return;
+			}
+
+			string line;
+			string fileContent;
+			while (getline(projectFile, line))
+			{
+				if (line.find("game: ") != string::npos)
+				{
+					line = "game: " + Engine::gamePath;
+				}
+				fileContent += line + "\n";
+			}
+			projectFile.close();
+
+			ofstream outFile(projectFilePath);
+			if (!outFile.is_open())
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Couldn't write into project file '" + projectFilePath + "'!\n");
+				return;
+			}
+			else
+			{
+				outFile << fileContent;
+				outFile.close();
+			}
 		}
+
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 
 		ofstream sceneFile(currentScenePath);
 

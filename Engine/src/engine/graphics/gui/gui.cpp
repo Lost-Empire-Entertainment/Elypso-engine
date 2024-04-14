@@ -445,17 +445,19 @@ namespace Graphics::GUI
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();
 			}
+			else
+			{
+				//string gameBatBuildFilePath = path(Engine::filesPath).string();
+				//File::RunBatFile((gameBatBuildFilePath).c_str());
 
-			//string gameBatBuildFilePath = path(Engine::filesPath).string();
-			//File::RunBatFile((gameBatBuildFilePath).c_str());
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::INFO,
+					"Compile success!\n");
 
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::INFO,
-				"Compile success!\n");
-
-			ImGui::CloseCurrentPopup();
-			ImGui::EndMenu();
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
 		}
 
 		ImGui::EndMainMenuBar();
