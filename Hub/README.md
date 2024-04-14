@@ -1,6 +1,6 @@
 # Disclaimer
 
-Elypso hub is created and managed by Lost Empire Entertainment. All permissions and restrictions given by the EULA apply to Elypso hub.
+Elypso hub is created and managed by Lost Empire Entertainment. All permissions and restrictions given by the license apply to Elypso hub.
 
 # Description
 

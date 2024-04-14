@@ -1,7 +1,7 @@
 :: Copyright (C) 2024 Lost Empire Entertainment
 :: This program comes with ABSOLUTELY NO WARRANTY.
 :: This is free software, and you are welcome to redistribute it under certain conditions.
-:: Read LICENSE.md and EULA.md for more information.
+:: Read LICENSE.md for more information.
 
 @echo off
 :: Batch script to build the executable and create the installer for the engine
@@ -40,7 +40,7 @@ echo Copyright (C) 2024 Lost Empire Entertainment
 echo.
 echo This program comes with ABSOLUTELY NO WARRANTY.
 echo This is free software, and you are welcome to redistribute it under certain conditions.
-echo Read LICENSE.md and EULA.md for more information.
+echo Read LICENSE.md for more information.
 
 echo.
 

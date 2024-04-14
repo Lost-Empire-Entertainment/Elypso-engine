@@ -27,9 +27,10 @@ namespace Core
 	{
 	public:
 		static inline string name = "Elypso engine";
-		static inline string version = "0.0.12 Prototype";
+		static inline string version = "0.0.13 Prototype";
 		static inline string docsPath;
 		static inline string filesPath;
+		static inline string gamePath;
 
 		static inline bool startedWindowLoop;
 

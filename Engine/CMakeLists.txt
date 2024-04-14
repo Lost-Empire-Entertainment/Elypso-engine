@@ -17,9 +17,6 @@ set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 
 project("Elypso engine" VERSION ${PROJECT_VERSION})
 
-# Reusable message types printed to console
-set(eninf "[ENGINE_INFO]")
-
 # Paths to frequently used directories
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
@@ -185,14 +182,8 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
     $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
 )
 
-# Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
+# Copy "LICENSE.md" and "README.md" to install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Elypso_engine>/EULA.md
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/EULA.md
-    $<TARGET_FILE_DIR:Elypso_engine>/EULA.md
-	
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
 	COMMAND ${CMAKE_COMMAND} -E copy

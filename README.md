@@ -24,5 +24,4 @@ The engine and hub folder README.md files contain instructions how to compile th
 
 # Licenses
 
-* [GPL-3.0](LICENSE.md)
-* [EULA](EULA.md)
+* [Elypso engine propietary license](LICENSE.md)

@@ -124,14 +124,8 @@ add_custom_command(TARGET Elypso_hub POST_BUILD
     ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:Elypso_hub>/files
 )
 
-# Copy "EULA.md", "LICENSE.md" and "README.md" to install directory after build
+# Copy "LICENSE.md" and "README.md" to install directory after build
 add_custom_command(TARGET Elypso_hub POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Elypso_hub>/EULA.md
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/EULA.md
-    $<TARGET_FILE_DIR:Elypso_hub>/EULA.md
-	
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Elypso_hub>/LICENSE.md
 	COMMAND ${CMAKE_COMMAND} -E copy

@@ -1,6 +1,6 @@
 # Disclaimer
 
-The game template is created by ELypso engine but is free to use in any way under the MIT license.
+The game template is created by ELypso engine but is free to use in any way described in license.md.
 
 # Description
 

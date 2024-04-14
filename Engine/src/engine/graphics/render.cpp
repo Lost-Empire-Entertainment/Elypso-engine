@@ -110,7 +110,7 @@ namespace Graphics
 		window = glfwCreateWindow(
 			windowWidth,
 			windowHeight,
-			("Elypso engine " + Engine::version).c_str(),
+			(Engine::name + " " + Engine::version).c_str(),
 			NULL,
 			NULL);
 

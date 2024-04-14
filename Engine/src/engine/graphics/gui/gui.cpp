@@ -443,6 +443,33 @@ namespace Graphics::GUI
 			ImGui::EndMenu();
 		}
 
+		ImGui::SameLine(240 * fontScale * 0.75f);
+
+		if (ImGui::BeginMenu("Compile"))
+		{
+			if (Engine::gamePath == "")
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Game path has not been set!\n");
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+
+			//string gameBatBuildFilePath = path(Engine::filesPath).string();
+			//File::RunBatFile((gameBatBuildFilePath).c_str());
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::INFO,
+				"Compile success!\n");
+
+			ImGui::CloseCurrentPopup();
+			ImGui::EndMenu();
+		}
+
 		ImGui::EndMainMenuBar();
 	}
 

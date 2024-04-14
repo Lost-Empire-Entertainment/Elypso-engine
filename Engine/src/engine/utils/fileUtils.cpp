@@ -73,6 +73,16 @@ namespace Utils
         return result;
 	}
 
+    void File::RunBatFile(const char* file)
+    {
+        string command = "\"" + string(file) + "\"";
+        FILE* pipe = _popen(command.c_str(), "r");
+
+        if (!pipe) throw runtime_error("popen() failed!");
+
+        _pclose(pipe);
+    }
+
     void File::MoveOrRenameFileOrFolder(const path& sourcePath, const path& destinationPath, const bool isRenaming)
     {
         string output;

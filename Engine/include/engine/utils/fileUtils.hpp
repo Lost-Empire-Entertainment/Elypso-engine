@@ -36,6 +36,12 @@ namespace Utils
 		static string GetOutputFromBatFile(const char* file);
 
 		/// <summary>
+		/// Run a bat file.
+		/// </summary>
+		/// <param name="file"></param>
+		static void RunBatFile(const char* file);
+
+		/// <summary>
 		/// Move or rename the selected file or folder.
 		/// </summary>
 		/// <param name="sourcePath">Full path to the file or folder you are trying to move or rename.</param>
