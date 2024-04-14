@@ -103,6 +103,8 @@ namespace Core
 		}
 		filesPath = fsFilesPath.string();
 
+		gameBuildBatPath = filesPath + "/bat scripts/buildGame.bat";
+
 		Logger::InitializeLogger();
 
 		ConsoleManager::WriteConsoleMessage(

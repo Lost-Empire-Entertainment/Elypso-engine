@@ -145,7 +145,7 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 125);
 		if (ImGui::Button("Game path", ImVec2(100, 0)))
 		{
-			Engine::gamePath = FileExplorer::Select(FileExplorer::SearchType::exe);
+			Engine::gamePath = FileExplorer::Select(FileExplorer::SearchType::folder);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		if (ImGui::IsItemHovered())

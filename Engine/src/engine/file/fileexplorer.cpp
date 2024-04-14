@@ -103,6 +103,46 @@ namespace EngineFile
 			}
 		}
 
+		else if (searchType == SearchType::bat)
+		{
+			//restrict file selection to bat only
+			COMDLG_FILTERSPEC filterSpec[] = {
+				{ L"Batch files", L"*.bat"} };
+			hr = pFileOpen->SetFileTypes(1, filterSpec);
+			if (FAILED(hr))
+			{
+				cout << "Error: Failed to set file filter!\n\n";
+				pFileOpen->Release();
+				CoUninitialize();
+				return "";
+			}
+		}
+
+		else if (searchType == SearchType::folder)
+		{
+			//restrict the selection to folders only
+			DWORD dwOptions;
+			hr = pFileOpen->GetOptions(&dwOptions);
+			if (SUCCEEDED(hr))
+			{
+				hr = pFileOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
+				if (FAILED(hr))
+				{
+					cout << "Error: Failed to set options!\n\n";
+					pFileOpen->Release();
+					CoUninitialize();
+					return "";
+				}
+			}
+			else
+			{
+				cout << "Error: Failed to get options!\n\n";
+				pFileOpen->Release();
+				CoUninitialize();
+				return "";
+			}
+		}
+
 		//show the File Open dialog
 		hr = pFileOpen->Show(NULL);
 		if (FAILED(hr))

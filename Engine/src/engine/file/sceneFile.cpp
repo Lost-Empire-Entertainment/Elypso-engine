@@ -196,6 +196,17 @@ namespace EngineFile
 				}
 			}
 			projectFile.close();
+
+			string gameExePath = Engine::gamePath + "/build/Release/Game.exe\n";
+			gameExePath = String::CharReplace(gameExePath, '/', '\\');
+
+			string gameParentPath = path(gameExePath).parent_path().string();
+			gameParentPath = String::CharReplace(gameParentPath, '/', '\\');
+
+			cout << "game exe path\n"
+				<< gameExePath << "\n"
+				<< "game parent path\n"
+				<< gameParentPath << "\n\n";
 		}
 
 		Select::isObjectSelected = false;

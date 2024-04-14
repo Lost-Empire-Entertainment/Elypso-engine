@@ -19,7 +19,9 @@ namespace EngineFile
 			txt,
 			asset,
 			texture,
-			exe
+			exe,
+			bat,
+			folder
 		};
 
 		static string Select(const SearchType& searchType);

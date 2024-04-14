@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <Windows.h>
+#include <ShlObj.h>
 #include <iostream>
 #include <cstdio>
 #include <memory>
@@ -15,6 +17,7 @@
 
 using std::exception;
 using std::runtime_error;
+using std::wstring;
 using std::filesystem::exists;
 using std::filesystem::copy_file;
 using std::filesystem::copy;
@@ -61,14 +64,63 @@ namespace Utils
         return result;
 	}
 
-    void File::RunBatFile(const char* file)
+    int File::RunBatFile(const string& file, const string& command1)
     {
-        string command = "\"" + string(file) + "\"";
-        FILE* pipe = _popen(command.c_str(), "r");
+        string output = string("\"") + file + "\"";
+        if (command1 != "")
+        {
+            output += " " + command1;
+        }
 
-        if (!pipe) throw runtime_error("popen() failed!");
+        return system(output.c_str());
+    }
 
-        _pclose(pipe);
+    void File::RunApplication(const string& parentFolderPath, const string& exePath, const string& commands)
+    {
+        wstring wParentFolderPath(parentFolderPath.begin(), parentFolderPath.end());
+        wstring wExePath(exePath.begin(), exePath.end());
+        wstring wCommands(commands.begin(), commands.end());
+
+        //initialize structures for process creation
+        STARTUPINFOW si;
+        PROCESS_INFORMATION pi;
+        ZeroMemory(&si, sizeof(si));
+        ZeroMemory(&pi, sizeof(pi));
+        si.cb = sizeof(si);
+
+        // Create the new process
+        if (!CreateProcessW
+        (
+            wExePath.c_str(),          //path to the executable
+            const_cast<LPWSTR>(wCommands.c_str()), //command line arguments
+            nullptr,                   //process handle not inheritable
+            nullptr,                   //thread handle not inheritable
+            FALSE,                     //handle inheritance
+            0,                         //creation flags
+            nullptr,                   //use parent's environment block
+            wParentFolderPath.c_str(), //use parent's starting directory
+            &si,                       //pointer to STARTUPINFO structure
+            &pi                        //pointer to PROCESS_INFORMATION structure
+        ))
+        {
+            //retrieve the error code and print a descriptive error message
+            LPVOID lpMsgBuf = nullptr;
+            DWORD dw = GetLastError();
+            FormatMessageW(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER
+                | FORMAT_MESSAGE_FROM_SYSTEM
+                | FORMAT_MESSAGE_IGNORE_INSERTS,
+                nullptr,
+                dw,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPWSTR)&lpMsgBuf, 0, nullptr);
+            std::wcout << L"Error: " << reinterpret_cast<LPCWSTR>(lpMsgBuf) << L"\n\n";
+            LocalFree(lpMsgBuf);
+        }
+
+        // Close process and thread handles
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
     }
 
     void File::MoveOrRenameFileOrFolder(const path& sourcePath, const path& destinationPath, const bool isRenaming)

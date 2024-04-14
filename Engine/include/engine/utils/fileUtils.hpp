@@ -27,7 +27,17 @@ namespace Utils
 		/// Run a bat file.
 		/// </summary>
 		/// <param name="file"></param>
-		static void RunBatFile(const char* file);
+		/// <param name="command"></param>
+		/// <returns></returns>
+		static int RunBatFile(const string& file, const string& command1);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="parentFolderPath">Where the exe is ran from.</param>
+		/// <param name="exePath">Direct path to exe itself.</param>
+		/// <param name="commands">Additional optional commands.</param>
+		static void RunApplication(const string& parentFolderPath, const string& exePath, const string& commands = "");
 
 		/// <summary>
 		/// Move or rename the selected file or folder.

@@ -435,25 +435,9 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Compile"))
 		{
-			if (Engine::gamePath == "")
+			if (ImGui::IsItemClicked())
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Game path has not been set!\n");
-
-				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
-			}
-			else
-			{
-				//string gameBatBuildFilePath = path(Engine::filesPath).string();
-				//File::RunBatFile((gameBatBuildFilePath).c_str());
-
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::INFO,
-					"Compile success!\n");
+				EngineGUI::Compile();
 
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();
@@ -738,5 +722,63 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
+	}
+
+	void EngineGUI::Compile()
+	{
+		if (Engine::gamePath == "")
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Game path has not been set!\n");
+		}
+		else
+		{
+			Engine::gameBuildBatPath = String::CharReplace(Engine::gameBuildBatPath, '/', '\\');
+			Engine::gamePath = String::CharReplace(Engine::gamePath, '/', '\\');
+
+			int result = File::RunBatFile(Engine::gameBuildBatPath, Engine::gamePath);
+
+			if (result != 0)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Compilation failed!\n");
+			}
+			else
+			{
+				string gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
+				if (!exists(gameExePath))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Game exe path ' " + gameExePath + " ' does not exist!\n");
+				}
+				else
+				{
+					string gameParentPath = path(gameExePath).parent_path().string();
+					if (!exists(gameParentPath))
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Game parent path ' " + gameExePath + " ' does not exist!\n");
+					}
+
+					else
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::INFO,
+							"Compile success!\n");
+
+						File::RunApplication(gameParentPath, gameExePath);
+					}
+				}
+			}
+		}
 	}
 }

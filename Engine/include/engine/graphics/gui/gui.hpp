@@ -64,5 +64,7 @@ namespace Graphics::GUI
 		static void ConfirmUnsavedShutdown();
 
 		static void ConfirmUnsavedSceneSwitch();
+
+		static void Compile();
 	};
 }

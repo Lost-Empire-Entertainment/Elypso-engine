@@ -19,6 +19,7 @@ namespace Core
 		static inline string docsPath;
 		static inline string filesPath;
 		static inline string gamePath;
+		static inline string gameBuildBatPath;
 
 		static inline bool startedWindowLoop;
 
