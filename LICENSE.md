@@ -4,13 +4,13 @@ Version 1.0
 
 1. Definitions
 
-   "Engine" refers to the software used to create games, distributed by Lost Empire Entertainment.
-   "Hub" refers to the program used to launch the Engine, distributed by Lost Empire Entertainment.
-   "Content" refers to any content created with the Engine, including but not limited to game assets, levels, and scripts.
-   "You" refers to the individual or entity using the Engine, Hub, or Content under the terms of this license.
-   "Lost Empire Entertainment" refers to the entity distributing the Engine and Hub under this license.
-   "Third-Party Libraries" refer to any libraries or components used in conjunction with the Engine or Hub, including but not limited to Assimp, GLFW, GLAD, GLM, etc.
-   "Jurisdiction" refers to the legal jurisdiction in which Lost Empire Entertainment operates.
+- "Engine" refers to the software used to create games, distributed by Lost Empire Entertainment.
+- "Hub" refers to the program used to launch the Engine, distributed by Lost Empire Entertainment.
+- "Content" refers to any content created with the Engine, including but not limited to game assets, levels, and scripts.
+- "You" refers to the individual or entity using the Engine, Hub, or Content under the terms of this license.
+- "Lost Empire Entertainment" refers to the entity distributing the Engine and Hub under this license.
+- "Third-Party Libraries" refer to any libraries or components used in conjunction with the Engine or Hub, including but not limited to Assimp, GLFW, GLAD, GLM, etc.
+- "Jurisdiction" refers to the legal jurisdiction in which Lost Empire Entertainment operates.
 
 2. Grant of License
 
@@ -49,4 +49,3 @@ Version 1.0
 10. Modifications to this License
 
    Lost Empire Entertainment reserves the right to modify this license at any time. Any such modifications will be effective immediately upon posting on Lost Empire Entertainment's website or other designated location. You are responsible for regularly reviewing the license for updates. Your continued use of the Engine, Hub, or Content after the posting of any modifications constitutes acceptance of the modified license terms.
-
