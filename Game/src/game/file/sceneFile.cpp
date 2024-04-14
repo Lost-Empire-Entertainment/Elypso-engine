@@ -46,7 +46,7 @@ using Graphics::Shape::Material;
 
 namespace GameFile
 {
-	void SceneFile::CheckForProjectFile()
+	void SceneFile::CheckForGameFile()
 	{
 		string projectPath = path(Game::filesPath).parent_path().string() + "/project/project.txt";
 		if (!exists(projectPath))
@@ -528,8 +528,9 @@ namespace GameFile
 		}
 	}
 
-	void SceneFile::ExportProjectFiles()
+	void SceneFile::ExportGameFiles()
 	{
+		/*
 		for (const auto& entry : directory_iterator(currentProjectPath))
 		{
 			File::DeleteFileOrfolder(entry);
@@ -580,5 +581,6 @@ namespace GameFile
 
 			File::CopyFileOrFolder(entry, currentProjectPath + "\\" + ending);
 		}
+		*/
 	}
 }

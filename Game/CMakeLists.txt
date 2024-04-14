@@ -32,6 +32,7 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/game/core")
 set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/game/file")
 set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/game/graphics")
+set(SRC_GRAPHICS_GUI_DIR "${CMAKE_SOURCE_DIR}/src/game/graphics/gui")
 set(SRC_GRAPHICS_SHAPE_DIR "${CMAKE_SOURCE_DIR}/src/game/graphics/shapes")
 set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/game/physics")
 set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/game/utils")
@@ -64,6 +65,7 @@ set(SOURCE_FILES
 	${SRC_FILE_DIR}/configFile.cpp
 	${SRC_FILE_DIR}/fileexplorer.cpp
 	${SRC_FILE_DIR}/sceneFile.cpp
+	${SRC_GRAPHICS_GUI_DIR}/gui.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/model.cpp
@@ -106,6 +108,7 @@ target_include_directories(Game PRIVATE
 	${INCLUDE_DIR}/game/core
 	${INCLUDE_DIR}/game/file
 	${INCLUDE_DIR}/game/graphics
+	${INCLUDE_DIR}/game/graphics/gui
 	${INCLUDE_DIR}/game/graphics/shapes
 	${INCLUDE_DIR}/game/utils
 	${INCLUDE_DIR}/external

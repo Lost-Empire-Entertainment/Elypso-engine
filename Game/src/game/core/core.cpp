@@ -15,6 +15,8 @@
 #include "sceneFile.hpp"
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
+#include "model.hpp"
+#include "gameobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -35,6 +37,8 @@ using Utils::File;
 using Graphics::Render;
 using GameFile::SceneFile;
 using GameFile::ConfigFileManager;
+using Graphics::Shape::Model;
+using Graphics::Shape::GameObjectManager;
 
 namespace Core
 {
@@ -97,7 +101,7 @@ namespace Core
 
 		ConfigFileManager::LoadConfigFile();
 
-		SceneFile::CheckForProjectFile();
+		SceneFile::CheckForGameFile();
 
 		cout << "Game documents path: " << Game::docsPath << "\n";
 
@@ -114,6 +118,13 @@ namespace Core
 		cout << "Reached window loop successfully!\n\n";
 
 		cout << "==================================================\n\n";
+
+		string cubePath = filesPath + "\\models\\cube.fbx";
+		Model::targetModel = cubePath;
+		Model::Initialize();
+		shared_ptr<GameObject> obj = GameObjectManager::GetObjects()[0];
+		obj->GetTransform()->SetPosition(vec3(0.0f, -0.5f, 0.0f));
+		obj->GetTransform()->SetScale(vec3(50.0f, 1.0f, 50.0f));
 
 		startedWindowLoop = true;
 
@@ -146,7 +157,7 @@ namespace Core
 
 			cout << "Cleaning up resources...\n";
 
-			SceneFile::ExportProjectFiles();
+			SceneFile::ExportGameFiles();
 
 			//clean all glfw resources after program is closed
 			glfwTerminate();

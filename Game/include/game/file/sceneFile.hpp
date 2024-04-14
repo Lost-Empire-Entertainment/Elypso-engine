@@ -28,14 +28,14 @@ namespace GameFile
 		static inline string currentScenePath;
 		static inline string targetLevel;
 
-		static void CheckForProjectFile();
+		static void CheckForGameFile();
 		static void CreateScene();
 		static void LoadScene(const string& levelName);
 		static void LoadGameObject(const map<string, string> obj);
 		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
 		/// <summary>
-		/// Export all project files to current project folder when shutting down.
+		/// Export all game files to game folder when shutting down.
 		/// </summary>
-		static void ExportProjectFiles();
+		static void ExportGameFiles();
 	};
 }

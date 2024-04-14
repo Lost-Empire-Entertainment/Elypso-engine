@@ -23,6 +23,7 @@
 #include "pointlight.hpp"
 #include "gameobject.hpp"
 #include "sceneFile.hpp"
+#include "gui.hpp"
 
 using glm::perspective;
 using glm::radians;
@@ -40,6 +41,7 @@ using Core::Game;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::PointLight;
 using GameFile::SceneFile;
+using Graphics::GUI::GameGUI;
 
 namespace Graphics
 {
@@ -52,6 +54,8 @@ namespace Graphics
 		Render::GladSetup();
 
 		Render::ContentSetup();
+
+		GameGUI::Initialize();
 
 		TimeManager::InitializeDeltaTime();
 	}
@@ -181,6 +185,8 @@ namespace Graphics
 		view = camera.GetViewMatrix();
 
 		GameObjectManager::RenderAll(view, projection);
+
+		GameGUI::Render();
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
