@@ -4,12 +4,12 @@
 :: Read LICENSE.md for more information.
 
 @echo off
-:: Batch script to build the executable and create the installer for the engine
+:: Batch script to build the executable for the game
 
 :: Reusable message types printed to console
-set "enexc=[ENGINE_EXCEPTION]"
-set "eninf=[ENGINE_INFO]"
-set "encln=[ENGINE_CLEANUP]"
+set "gexc=[GAME_EXCEPTION]"
+set "ginf=[GAME_INFO]"
+set "gcln=[GAME_CLEANUP]"
 set "cminf=[CMAKE_INFO]"
 set "cmerr=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
@@ -17,7 +17,7 @@ set "cpinf=[CPACK_INFO]"
 set "cperr=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
-set "documentsPath=%USERPROFILE%\Documents\Elypso engine"
+set "documentsPath=%USERPROFILE%\Documents\Game"
 set "outPath=%~dp0out"
 set "vsPath=%~dp0.vs"
 
@@ -26,7 +26,7 @@ set "buildPath=%~dp0build"
 :menu
 cls
 
-echo Elypso engine setup
+echo Game setup
 echo.
 echo Copyright (C) 2024 Lost Empire Entertainment
 echo.
@@ -43,11 +43,11 @@ echo.
 echo Write the number of your choice to choose the action.
 echo.
 echo 1. Reconfigure CMake
-echo 2. Build Elypso engine
+echo 2. Build Game
 echo 3. Exit
 echo.
 echo 9. Clean Visual Studio (DELETES OUT AND .VS FOLDERS)
-echo 0. Clean engine (DELETES BUILD AND ENGINE DOCUMENTS FOLDERS)
+echo 0. Clean game (DELETES BUILD AND ENGINE DOCUMENTS FOLDERS)
 echo.
 set /p choice="Choice: "
 
@@ -57,7 +57,7 @@ if "%choice%"=="2" goto build
 if "%choice%"=="3" exit
 
 if "%choice%"=="9" goto cleanvs
-if "%choice%"=="0" goto cleanen
+if "%choice%"=="0" goto cleang
 
 echo %prexc% Invalid choice! Please enter a valid number.
 pause
@@ -69,7 +69,7 @@ cd /d "%~dp0"
 	
 :: Clean the build directory before configuration
 if exist "%buildPath%" (
-	echo %encln% Deleted folder: build
+	echo %gcln% Deleted folder: build
 	rd /s /q "%buildPath%"
 )
 mkdir "%buildPath%"
@@ -103,7 +103,7 @@ if not exist "%buildPath%" (
 	cmake --build . --config Release
 	
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed because Elypso engine.exe did not get generated properly.
+		echo %cmerr% Build failed because Game.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
 	)
@@ -116,35 +116,35 @@ goto menu
 :: Change to the script directory
 cd /d "%~dp0"
 	
-echo %eninf% Running vs clean...
+echo %ginf% Running vs clean...
 if not exist "%vsPath%" (
 	if not exist "%outPath%" (
-		echo %encln% There are no Visual Studio folders to remove.
+		echo %gcln% There are no Visual Studio folders to remove.
 		pause
 		goto menu
 	)
 )
 
 if exist "%vsPath%" (
-	echo %encln% Deleted folder: .vs
+	echo %gcln% Deleted folder: .vs
 	rd /s /q "%vsPath%"
 )
 echo "%outPath%"
 if exist "%outPath%" (
-	echo %encln% Deleted folder: out
+	echo %gcln% Deleted folder: out
 	rd /s /q "%outPath%"
 )
 	
 pause
 goto menu
 
-:cleanen
+:cleang
 :: Change to the script directory
 cd /d "%~dp0"
 	
 if not exist "%buildPath%" (
 	if not exist "%documentsPath%" (
-		echo %encln% There are no engine folders to remove.
+		echo %gcln% There are no game folders to remove.
 		pause
 		goto menu
 	)
@@ -155,7 +155,7 @@ if exist "%buildPath%" (
 	rd /s /q "%buildPath%"
 )
 if exist "%documentsPath%" (
-	echo %encln% Deleted folder: Documents/Elypso engine
+	echo %gcln% Deleted folder: Documents/Game
 	rd /s /q "%documentsPath%"
 )
 	

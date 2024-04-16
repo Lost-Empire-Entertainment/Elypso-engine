@@ -7,9 +7,9 @@
 :: Batch script to build the executable and create the installer for Elypso hub
 
 :: Reusable message types printed to console
-set "enexc=[HUB_EXCEPTION]"
-set "eninf=[HUB_INFO]"
-set "encln=[HUB_CLEANUP]"
+set "hexc=[HUB_EXCEPTION]"
+set "hinf=[HUB_INFO]"
+set "hcln=[HUB_CLEANUP]"
 set "cminf=[CMAKE_INFO]"
 set "cmerr=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
@@ -22,14 +22,6 @@ set "outPath=%~dp0out"
 set "vsPath=%~dp0.vs"
 
 set "buildPath=%~dp0build"
-
-:: Can not run build.bat without administrative privileges
-NET SESSION >nul 2>&1
-if %errorlevel% neq 0 (
-	echo %enexc% This script requires administrative privileges. Please run as administrator.
-	pause
-	exit /b 1
-)
 
 :menu
 cls
@@ -77,7 +69,7 @@ cd /d "%~dp0"
 	
 :: Clean the build directory before configuration
 if exist "%buildPath%" (
-	echo %encln% Deleted folder: build
+	echo %hcln% Deleted folder: build
 	rd /s /q "%buildPath%"
 )
 mkdir "%buildPath%"
@@ -124,22 +116,22 @@ goto menu
 :: Change to the script directory
 cd /d "%~dp0"
 	
-echo %eninf% Running vs clean...
+echo %hinf% Running vs clean...
 if not exist "%vsPath%" (
 	if not exist "%outPath%" (
-		echo %encln% There are no Visual Studio folders to remove.
+		echo %hcln% There are no Visual Studio folders to remove.
 		pause
 		goto menu
 	)
 )
 
 if exist "%vsPath%" (
-	echo %encln% Deleted folder: .vs
+	echo %hcln% Deleted folder: .vs
 	rd /s /q "%vsPath%"
 )
 echo "%outPath%"
 if exist "%outPath%" (
-	echo %encln% Deleted folder: out
+	echo %hcln% Deleted folder: out
 	rd /s /q "%outPath%"
 )
 	
@@ -152,18 +144,18 @@ cd /d "%~dp0"
 	
 if not exist "%buildPath%" (
 	if not exist "%documentsPath%" (
-		echo %encln% There are no hub folders to remove.
+		echo %hcln% There are no hub folders to remove.
 		pause
 		goto menu
 	)
 )
 
 if exist "%buildPath%" (
-	echo %encln% Deleted folder: build
+	echo %hcln% Deleted folder: build
 	rd /s /q "%buildPath%"
 )
 if exist "%documentsPath%" (
-	echo %encln% Deleted folder: Documents/Elypso hub
+	echo %hcln% Deleted folder: Documents/Elypso hub
 	rd /s /q "%documentsPath%"
 )
 	

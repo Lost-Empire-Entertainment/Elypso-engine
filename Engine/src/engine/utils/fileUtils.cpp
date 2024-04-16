@@ -64,14 +64,9 @@ namespace Utils
         return result;
 	}
 
-    int File::RunBatFile(const string& file, const string& command1)
+    int File::RunBatFile(const string& file)
     {
         string output = string("\"") + file + "\"";
-        if (command1 != "")
-        {
-            output += " " + command1;
-        }
-
         return system(output.c_str());
     }
 

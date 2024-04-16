@@ -735,10 +735,11 @@ namespace Graphics::GUI
 		}
 		else
 		{
-			Engine::gameBuildBatPath = String::CharReplace(Engine::gameBuildBatPath, '/', '\\');
+			string gameBatPath = Engine::gamePath + "\\build.bat";
+			gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
 			Engine::gamePath = String::CharReplace(Engine::gamePath, '/', '\\');
 
-			int result = File::RunBatFile(Engine::gameBuildBatPath, Engine::gamePath);
+			int result = File::RunBatFile(gameBatPath);
 
 			if (result != 0)
 			{

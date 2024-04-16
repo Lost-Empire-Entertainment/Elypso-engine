@@ -27,9 +27,8 @@ namespace Utils
 		/// Run a bat file.
 		/// </summary>
 		/// <param name="file"></param>
-		/// <param name="command"></param>
 		/// <returns></returns>
-		static int RunBatFile(const string& file, const string& command1);
+		static int RunBatFile(const string& file);
 
 		/// <summary>
 		/// 
