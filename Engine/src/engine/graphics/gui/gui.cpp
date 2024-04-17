@@ -444,6 +444,26 @@ namespace Graphics::GUI
 			}
 		}
 
+		ImGui::SameLine(320 * fontScale * 0.75f);
+
+		if (ImGui::BeginMenu("Run"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				if (!exists(Engine::gameExePath))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Game exe does not exist!\n");
+				}
+				else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+		}
+
 		ImGui::EndMainMenuBar();
 	}
 
@@ -750,10 +770,7 @@ namespace Graphics::GUI
 			}
 			else
 			{
-				string gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
-				string gameParentPath = path(gameExePath).parent_path().string();
-
-				string gameProjectFolder = gameParentPath + "\\files\\project";
+				string gameProjectFolder = Engine::gameParentPath + "\\files\\project";
 				for (const auto& item : directory_iterator(path(gameProjectFolder)))
 				{
 					if (is_directory(item.path())
@@ -777,7 +794,7 @@ namespace Graphics::GUI
 					File::CopyFileOrFolder(itemPath, targetItemPath);
 				}
 
-				File::RunApplication(gameParentPath, gameExePath);
+				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
 		}
 	}

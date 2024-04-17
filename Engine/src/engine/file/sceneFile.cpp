@@ -192,16 +192,12 @@ namespace EngineFile
 				{
 					line.erase(0, 6);
 					Engine::gamePath = line;
+					Engine::gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
+					Engine::gameParentPath = path(Engine::gameExePath).parent_path().string();
 					break;
 				}
 			}
 			projectFile.close();
-
-			string gameExePath = Engine::gamePath + "/build/Release/Game.exe\n";
-			gameExePath = String::CharReplace(gameExePath, '/', '\\');
-
-			string gameParentPath = path(gameExePath).parent_path().string();
-			gameParentPath = String::CharReplace(gameParentPath, '/', '\\');
 		}
 
 		Select::isObjectSelected = false;
