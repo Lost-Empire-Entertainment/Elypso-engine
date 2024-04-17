@@ -17,6 +17,7 @@
 #include "stringUtils.hpp"
 #include "model.hpp"
 #include "gameobject.hpp"
+#include "gui.hpp"
 
 using std::cout;
 using std::endl;
@@ -39,6 +40,7 @@ using GameFile::SceneFile;
 using GameFile::ConfigFileManager;
 using Graphics::Shape::Model;
 using Graphics::Shape::GameObjectManager;
+using Graphics::GUI::GameGUI;
 
 namespace Core
 {
@@ -158,6 +160,8 @@ namespace Core
 			cout << "Cleaning up resources...\n";
 
 			SceneFile::ExportGameFiles();
+
+			GameGUI::Shutdown();
 
 			//clean all glfw resources after program is closed
 			glfwTerminate();

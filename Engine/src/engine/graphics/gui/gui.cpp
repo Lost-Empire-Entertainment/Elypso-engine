@@ -746,30 +746,47 @@ namespace Graphics::GUI
 
 	void EngineGUI::Compile()
 	{
-		if (Engine::gamePath == "")
+		try
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Game path has not been set!\n");
-		}
-		else
-		{
-			string gameBatPath = Engine::gamePath + "\\build.bat";
-			gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
-			Engine::gamePath = String::CharReplace(Engine::gamePath, '/', '\\');
-
-			int result = File::RunBatFile(gameBatPath);
-
-			if (result != 0)
+			if (Engine::gamePath == ""
+				|| Engine::gameExePath == ""
+				|| Engine::gameParentPath == "")
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"Compilation failed!\n");
+					"Game path has not been set!\n");
 			}
 			else
 			{
+				string gameBatPath = Engine::gamePath + "\\build_engine_fast.bat";
+				gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
+
+				int result = File::RunBatFile(gameBatPath);
+
+				if (result != 0)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Compilation failed! Trying again...\n");
+
+					string gameBatPath = Engine::gamePath + "\\build_engine_full.bat";
+					gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
+
+					int result = File::RunBatFile(gameBatPath);
+
+					if (result != 0)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Compilation failed again! Something is broken, please contact engine developers...\n");
+
+						return;
+					}
+				}
+
 				string gameProjectFolder = Engine::gameParentPath + "\\files\\project";
 				for (const auto& item : directory_iterator(path(gameProjectFolder)))
 				{
@@ -777,6 +794,8 @@ namespace Graphics::GUI
 						|| is_regular_file(item.path()))
 					{
 						string itemPath = item.path().string();
+
+						cout << "attempting to delete\n" << itemPath << "\n";
 						File::DeleteFileOrfolder(itemPath);
 					}
 				}
@@ -785,17 +804,23 @@ namespace Graphics::GUI
 				for (const auto& item : directory_iterator(path(engineProjectPath)))
 				{
 					string itemPath = item.path().string();
-					
+
 					string ending = item.is_directory()
 						? path(item).filename().string()
 						: path(item).stem().string() + path(item).extension().string();
 					string targetItemPath = gameProjectFolder + "\\" + ending;
 
+					cout << "attempting to copy\n" << itemPath << "\nto\n" << targetItemPath << "\n";
 					File::CopyFileOrFolder(itemPath, targetItemPath);
 				}
 
+				cout << "attempting to run\n" << Engine::gameExePath << "\nwhose parent is\n" << Engine::gameParentPath << "\n";
 				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
+		}
+		catch (const exception& e)
+		{
+			cout << e.what() << "\n";
 		}
 	}
 }
