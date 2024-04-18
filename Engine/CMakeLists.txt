@@ -56,6 +56,7 @@ target_link_libraries(external_libs INTERFACE glad magic_enum)
 # Add your source files
 set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
+	${SRC_CORE_DIR}/compile.cpp
 	${SRC_CORE_DIR}/console.cpp
 	${SRC_CORE_DIR}/core.cpp
 	${SRC_CORE_DIR}/input.cpp
