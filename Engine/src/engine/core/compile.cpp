@@ -12,6 +12,10 @@
 #include "core.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#include "gameobject.hpp"
+#include "gui_node.hpp"
+#include "gui_nodecircle.hpp"
+#include "gui_nodeconnection.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -24,6 +28,13 @@ using Type = Core::ConsoleManager::Type;
 using Core::Engine;
 using Utils::String;
 using Utils::File;
+using Graphics::Shape::GameObject;
+using Graphics::Shape::GameObjectManager;
+using Graphics::GUI::GUINode;
+using Graphics::GUI::GUINodeCircle;
+using Graphics::GUI::GUINodeConnection;
+using Graphics::Shape::Mesh;
+using Graphics::Shape::Component;
 
 namespace Core
 {
@@ -78,8 +89,27 @@ namespace Core
 					{
 						string itemPath = item.path().string();
 
-						cout << "attempting to delete\n" << itemPath << "\n";
 						File::DeleteFileOrfolder(itemPath);
+					}
+				}
+
+				for (const auto& obj : GameObjectManager::GetObjects())
+				{
+					if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+					{
+						for (const auto& component : obj->GetComponents())
+						{
+							if (component->GetType() == Component::ComponentType::Nodeblock)
+							{
+								string objName = obj->GetName();
+								size_t nodeCount = component->GetNodes().size();
+								size_t nodeConnectionCount = component->GetNodeConnections().size();
+
+								cout << objName << " has " 
+									<< nodeCount << " nodes and "
+									<< nodeConnectionCount << " node connections...\n";
+							}
+						}
 					}
 				}
 
@@ -93,11 +123,9 @@ namespace Core
 						: path(item).stem().string() + path(item).extension().string();
 					string targetItemPath = gameProjectFolder + "\\" + ending;
 
-					cout << "attempting to copy\n" << itemPath << "\nto\n" << targetItemPath << "\n";
 					File::CopyFileOrFolder(itemPath, targetItemPath);
 				}
 
-				cout << "attempting to run\n" << Engine::gameExePath << "\nwhose parent is\n" << Engine::gameParentPath << "\n";
 				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
 		}
