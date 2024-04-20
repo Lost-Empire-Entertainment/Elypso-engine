@@ -283,7 +283,8 @@ namespace Graphics::GUI
 									&& ((theStartCircle->GetSide() == GUINodeCircle::Side::left
 									&& nodeCircle->GetSide() == GUINodeCircle::Side::right)
 									|| (theStartCircle->GetSide() == GUINodeCircle::Side::right
-									&& nodeCircle->GetSide() == GUINodeCircle::Side::left)))
+									&& nodeCircle->GetSide() == GUINodeCircle::Side::left))
+									&& theStartCircle->GetParent() != nodeCircle->GetParent())
 								{
 									theEndCircle = nodeCircle;
 
