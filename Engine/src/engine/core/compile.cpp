@@ -93,25 +93,7 @@ namespace Core
 					}
 				}
 
-				for (const auto& obj : GameObjectManager::GetObjects())
-				{
-					if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
-					{
-						for (const auto& component : obj->GetComponents())
-						{
-							if (component->GetType() == Component::ComponentType::Nodeblock)
-							{
-								string objName = obj->GetName();
-								size_t nodeCount = component->GetNodes().size();
-								size_t nodeConnectionCount = component->GetNodeConnections().size();
-
-								cout << objName << " has " 
-									<< nodeCount << " nodes and "
-									<< nodeConnectionCount << " node connections...\n";
-							}
-						}
-					}
-				}
+				PrintNodeConnections();
 
 				string engineProjectPath = path(Engine::filesPath).parent_path().string() + "\\project";
 				for (const auto& item : directory_iterator(path(engineProjectPath)))
@@ -133,5 +115,49 @@ namespace Core
 		{
 			cout << e.what() << "\n";
 		}
+	}
+
+	void Compilation::PrintNodeConnections()
+	{
+		cout << "\nPRINT START\n\n\n";
+
+		for (const auto& obj : GameObjectManager::GetObjects())
+		{
+			if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+			{
+				for (const auto& component : obj->GetComponents())
+				{
+					if (component->GetType() == Component::ComponentType::Nodeblock
+						&& component->GetNodes().size() > 0)
+					{
+						for (const auto& node : component->GetNodes())
+						{
+							for (const auto& nodeCircle : node->GetNodeCircles())
+							{
+								if (nodeCircle->GetNodeConnection() != nullptr)
+								{
+									string componentName = component->GetName();
+
+									string nodeName = node->GetName() + "_" + to_string(node->GetID());
+									string nodeCircleName = nodeCircle->GetName() + "_" + to_string(nodeCircle->GetID());
+									shared_ptr<GUINodeConnection> nodeConnection = nodeCircle->GetNodeConnection();
+									string nodeConnectionName = nodeConnection->GetName() + to_string(nodeConnection->GetID());
+
+									shared_ptr<GUINode> targetNode = nodeConnection->GetCurveEnd()->GetParent();
+									string targetNodeName = targetNode->GetName() + "_" + to_string(targetNode->GetID());
+									shared_ptr<GUINodeCircle> targetNodeCircle = nodeConnection->GetCurveEnd();
+									string targetNodeCircleName = targetNodeCircle->GetName() + "_" + to_string(targetNodeCircle->GetID());
+
+									cout << componentName << " " << nodeName << " " << nodeCircleName 
+										<< " is connected to " << targetNodeName << " " << targetNodeCircleName << "\n";
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		cout << "\n\n\nPRINT END\n";
 	}
 }

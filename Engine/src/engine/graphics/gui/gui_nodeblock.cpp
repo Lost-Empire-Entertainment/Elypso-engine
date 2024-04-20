@@ -279,7 +279,11 @@ namespace Graphics::GUI
 								//release curve on selected circle
 								if (distance <= circleRadius
 									&& ImGui::IsMouseReleased(0)
-									&& wasNodeCircleSelected)
+									&& wasNodeCircleSelected
+									&& ((theStartCircle->GetSide() == GUINodeCircle::Side::left
+									&& nodeCircle->GetSide() == GUINodeCircle::Side::right)
+									|| (theStartCircle->GetSide() == GUINodeCircle::Side::right
+									&& nodeCircle->GetSide() == GUINodeCircle::Side::left)))
 								{
 									theEndCircle = nodeCircle;
 
@@ -289,6 +293,9 @@ namespace Graphics::GUI
 										theStartCircle,
 										theEndCircle);
 									selectedComponent->GetNodeConnections().push_back(nodeConnection);
+
+									theStartCircle->SetNodeConnection(nodeConnection);
+									theEndCircle->SetNodeConnection(nodeConnection);
 
 									string startCircleName = theStartCircle->GetName() + " | " + to_string(theStartCircle->GetID());
 									string endCircleName = theEndCircle->GetName() + " | " + to_string(theEndCircle->GetID());
@@ -478,12 +485,16 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleRight1);
 
+				string nodeName = "node A";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
-					GUINode::tempName,
+					nodeName,
 					GUINode::tempID,
 					nodeCircles);
+
+				nodeCircleLeft1->SetParent(newNode);
+				nodeCircleRight1->SetParent(newNode);
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
@@ -528,12 +539,19 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::fourth);
 				nodeCircles.push_back(nodeCircleRight4);
 
+				string nodeName = "node B";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
-					GUINode::tempName,
+					nodeName,
 					GUINode::tempID,
 					nodeCircles);
+
+				nodeCircleLeft1->SetParent(newNode);
+				nodeCircleRight1->SetParent(newNode);
+				nodeCircleRight2->SetParent(newNode);
+				nodeCircleRight3->SetParent(newNode);
+				nodeCircleRight4->SetParent(newNode);
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
@@ -571,12 +589,18 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::second);
 				nodeCircles.push_back(nodeCircleRight2);
 
+				string nodeName = "node C";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
-					GUINode::tempName,
+					nodeName,
 					GUINode::tempID,
 					nodeCircles);
+
+				nodeCircleLeft1->SetParent(newNode);
+				nodeCircleLeft2->SetParent(newNode);
+				nodeCircleRight1->SetParent(newNode);
+				nodeCircleRight2->SetParent(newNode);
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
@@ -621,12 +645,19 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleRight1);
 
+				string nodeName = "node D";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
-					GUINode::tempName,
+					nodeName,
 					GUINode::tempID,
 					nodeCircles);
+
+				nodeCircleLeft1->SetParent(newNode);
+				nodeCircleLeft2->SetParent(newNode);
+				nodeCircleLeft3->SetParent(newNode);
+				nodeCircleLeft4->SetParent(newNode);
+				nodeCircleRight1->SetParent(newNode);
 
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);

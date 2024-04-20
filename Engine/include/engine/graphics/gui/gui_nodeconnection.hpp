@@ -42,8 +42,8 @@ namespace Graphics::GUI
 
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
-		void SetCurveStart(const  shared_ptr<GUINodeCircle>& newCurveStart) { curveStart = newCurveStart; }
-		void SetCurveEnd(const  shared_ptr<GUINodeCircle>& newCurveEnd) { curveEnd = newCurveEnd; }
+		void SetCurveStart(const shared_ptr<GUINodeCircle>& newCurveStart) { curveStart = newCurveStart; }
+		void SetCurveEnd(const shared_ptr<GUINodeCircle>& newCurveEnd) { curveEnd = newCurveEnd; }
 		
 		string GetName() const { return name; }
 		unsigned int GetID() const { return ID; }

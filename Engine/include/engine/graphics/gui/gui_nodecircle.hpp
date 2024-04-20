@@ -17,6 +17,9 @@ using glm::vec2;
 
 namespace Graphics::GUI
 {
+	class GUINode;
+	class GUINodeConnection;
+
 	class GUINodeCircle
 	{
 	public:
@@ -61,6 +64,8 @@ namespace Graphics::GUI
 		void SetInitialPos(const vec2& newInitialPos) { initialPos = newInitialPos; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
+		void SetParent(const shared_ptr<GUINode>& newParent) { parent = newParent; }
+		void SetNodeConnection(const shared_ptr<GUINodeConnection>& newNodeConnection) { nodeConnection = newNodeConnection; }
 		
 		vec2 GetPos() const { return pos; }
 		vec2 GetInitialPos() const { return initialPos; }
@@ -68,6 +73,8 @@ namespace Graphics::GUI
 		unsigned int GetID() const { return ID; }
 		Side GetSide() const { return side; }
 		Slot GetSlot() const { return slot; }
+		shared_ptr<GUINode> GetParent() const { return parent; }
+		shared_ptr<GUINodeConnection> GetNodeConnection() const { return nodeConnection; }
 
 	private:
 		vec2 pos;
@@ -76,5 +83,7 @@ namespace Graphics::GUI
 		unsigned int ID;
 		Side side;
 		Slot slot;
+		shared_ptr<GUINode> parent;
+		shared_ptr<GUINodeConnection> nodeConnection;
 	};
 }

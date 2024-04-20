@@ -66,5 +66,6 @@ namespace Graphics::GUI
 		string name;
 		unsigned int ID;
 		vector<shared_ptr<GUINodeCircle>> nodeCircles;
+		vector<shared_ptr<GUINode>> connectedNodes;
 	};
 }
