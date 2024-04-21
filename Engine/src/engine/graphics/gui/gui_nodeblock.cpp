@@ -19,6 +19,7 @@
 #include "gui.hpp"
 #include "core.hpp"
 #include "input.hpp"
+#include "gameobject.hpp"
 
 using std::cout;
 using std::max;
@@ -28,6 +29,9 @@ using std::filesystem::exists;
 
 using Core::Engine;
 using Core::Input;
+using Graphics::Shape::GameObjectManager;
+using Graphics::Shape::Component;
+using Graphics::Shape::Mesh;
 
 namespace Graphics::GUI
 {
@@ -279,34 +283,80 @@ namespace Graphics::GUI
 								//release curve on selected circle
 								if (distance <= circleRadius
 									&& ImGui::IsMouseReleased(0)
-									&& wasNodeCircleSelected
-									&& ((theStartCircle->GetSide() == GUINodeCircle::Side::left
-									&& nodeCircle->GetSide() == GUINodeCircle::Side::right)
-									|| (theStartCircle->GetSide() == GUINodeCircle::Side::right
-									&& nodeCircle->GetSide() == GUINodeCircle::Side::left))
-									&& theStartCircle->GetParent() != nodeCircle->GetParent())
+									&& wasNodeCircleSelected)
 								{
-									theEndCircle = nodeCircle;
+									static bool validPosition = false;
 
-									shared_ptr<GUINodeConnection> nodeConnection = GUINodeConnection::InitializeNodeConnection(
-										GUINodeConnection::tempName,
-										GUINodeConnection::tempID,
-										theStartCircle,
-										theEndCircle);
-									selectedComponent->GetNodeConnections().push_back(nodeConnection);
+									//checks if the curve starts from left and ends at right
+									//or starts from right and ends at left side of selected nodes
+									validPosition =
+										((theStartCircle->GetSide() == GUINodeCircle::Side::left
+										&& nodeCircle->GetSide() == GUINodeCircle::Side::right)
+										|| (theStartCircle->GetSide() == GUINodeCircle::Side::right
+										&& nodeCircle->GetSide() == GUINodeCircle::Side::left));
 
-									theStartCircle->SetNodeConnection(nodeConnection);
-									theEndCircle->SetNodeConnection(nodeConnection);
+									if (!validPosition)
+									{
+										cout << "two nodes cant connect on same side!\n";
+									}
+									else
+									{
+										theEndCircle = nodeCircle;
 
-									string startCircleName = theStartCircle->GetName() + " | " + to_string(theStartCircle->GetID());
-									string endCircleName = theEndCircle->GetName() + " | " + to_string(theEndCircle->GetID());
+										//checks if the start and end circle arent under the same parent
+										if (theStartCircle->GetParent() == theEndCircle->GetParent())
+										{
+											cout << "connection start and end cannot be under same parent!\n";
+										}
+										else
+										{
+											shared_ptr<GUINodeConnection> nodeConnection = GUINodeConnection::InitializeNodeConnection(
+												GUINodeConnection::tempName,
+												GUINodeConnection::tempID,
+												theStartCircle,
+												theEndCircle);
 
-									theStartCircle = nullptr;
-									theEndCircle = nullptr;
+											//checks if same connection already exists
+											auto& connections = selectedComponent->GetNodeConnections();
+											for (auto it = connections.begin(); it != connections.end();)
+											{
+												if ((*it)->GetCurveStart() == theStartCircle
+													&& (*it)->GetCurveEnd() == theEndCircle)
+												{
+													cout << "connection with same start and end already exists!\n";
+													it = connections.erase(it);
+												}
+												else ++it;
+											}
+											for (auto it = connections.begin(); it != connections.end();)
+											{
+												if ((*it)->GetCurveStart() == theEndCircle
+													&& (*it)->GetCurveEnd() == theStartCircle)
+												{
+													cout << "connection with same start and end already exists!\n";
+													it = connections.erase(it);
+												}
+												else ++it;
+											}
 
-									cout << "created new curve from " 
-										<< startCircleName << " to "
-										<< endCircleName << "\n";
+											selectedComponent->GetNodeConnections().push_back(nodeConnection);
+
+											theStartCircle->SetNodeConnection(nodeConnection);
+											theEndCircle->SetNodeConnection(nodeConnection);
+
+											string startCircleName = theStartCircle->GetName() + " | " + to_string(theStartCircle->GetID());
+											string endCircleName = theEndCircle->GetName() + " | " + to_string(theEndCircle->GetID());
+
+											theStartCircle = nullptr;
+											theEndCircle = nullptr;
+
+											cout << "created new curve from "
+												<< startCircleName << " to "
+												<< endCircleName << "\n";
+										}
+									}
+
+									cout << "total node connection count: " << selectedComponent->GetNodeConnections().size() << "\n";
 								}
 
 								//first bezier curve draw on top of nodes
