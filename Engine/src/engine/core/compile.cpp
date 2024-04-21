@@ -119,7 +119,7 @@ namespace Core
 
 	void Compilation::PrintNodeConnections()
 	{
-		cout << "\nPRINT START\n\n\n";
+		cout << "\n\n--------------------------------------------------\n\n";
 
 		for (const auto& obj : GameObjectManager::GetObjects())
 		{
@@ -148,8 +148,11 @@ namespace Core
 									shared_ptr<GUINodeCircle> targetNodeCircle = nodeConnection->GetCurveEnd();
 									string targetNodeCircleName = targetNodeCircle->GetName() + "_" + to_string(targetNodeCircle->GetID());
 
-									cout << componentName << " " << nodeName << " " << nodeCircleName 
-										<< " is connected to " << targetNodeName << " " << targetNodeCircleName << "\n";
+									if (nodeName != targetNodeName)
+									{
+										cout << componentName << " " << nodeName << " " << nodeCircleName
+											<< " is connected to " << targetNodeName << " " << targetNodeCircleName << "\n";
+									}
 								}
 							}
 						}
@@ -158,6 +161,6 @@ namespace Core
 			}
 		}
 
-		cout << "\n\n\nPRINT END\n";
+		cout << "\n\n--------------------------------------------------\n\n";
 	}
 }
