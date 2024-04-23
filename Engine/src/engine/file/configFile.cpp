@@ -19,8 +19,6 @@
 #include "gui_console.hpp"
 #include "gui_debugmenu.hpp"
 #include "gui_inspector.hpp"
-#include "gui_projecthierarchy.hpp"
-#include "gui_scenehierarchy.hpp"
 #include "gui_nodeblock.hpp"
 #include "core.hpp"
 #include "input.hpp"
@@ -49,8 +47,6 @@ using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
-using Graphics::GUI::GUIProjectHierarchy;
-using Graphics::GUI::GUISceneHierarchy;
 using Graphics::GUI::GUINodeBlock;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -183,22 +179,6 @@ namespace EngineFile
 			"1",
 			ConfigFileValue::Type::type_int);
 		AddValue(gui_nodeBlockWindow);
-
-		ConfigFileValue gui_sceneHierarchy(
-			"gui_sceneHierarchy",
-			to_string(GUISceneHierarchy::renderSceneHierarchy),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(gui_sceneHierarchy);
-
-		ConfigFileValue gui_projectHierarchy(
-			"gui_projectHierarchy",
-			to_string(GUIProjectHierarchy::renderProjectHierarchy),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(gui_projectHierarchy);
 	}
 
 	void ConfigFileManager::LoadConfigFile()
@@ -522,48 +502,6 @@ namespace EngineFile
 							Caller::ENGINE,
 							Type::EXCEPTION,
 							"Render node block window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
-				else if (name == "gui_sceneHierarchy")
-				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-					{
-						GUISceneHierarchy::renderSceneHierarchy = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render scene hierarchy to " + to_string(GUISceneHierarchy::renderSceneHierarchy) + ".\n");
-					}
-					else
-					{
-						GUISceneHierarchy::renderSceneHierarchy = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render scene hierarchy value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
-				else if (name == "gui_projectHierarchy")
-				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
-					{
-						GUIProjectHierarchy::renderProjectHierarchy = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render project hierarchy to " + to_string(GUIProjectHierarchy::renderProjectHierarchy) + ".\n");
-					}
-					else
-					{
-						GUIProjectHierarchy::renderProjectHierarchy = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render project hierarchy value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
 			}

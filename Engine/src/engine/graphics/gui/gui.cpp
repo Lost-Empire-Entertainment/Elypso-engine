@@ -18,8 +18,6 @@
 #include "gui_console.hpp"
 #include "gui_debugmenu.hpp"
 #include "gui_inspector.hpp"
-#include "gui_projecthierarchy.hpp"
-#include "gui_scenehierarchy.hpp"
 #include "gui_nodeblock.hpp"
 #include "input.hpp"
 #include "render.hpp"
@@ -162,13 +160,7 @@ namespace Graphics::GUI
 		GUIConsole::RenderConsole();
 		GUIDebugMenu::RenderDebugMenu();
 		GUIInspector::RenderInspector();
-		GUIProjectHierarchy::RenderProjectHierarchy(Engine::filesPath);
-		GUISceneHierarchy::RenderSceneHierarchy();
 		GUINodeBlock::RenderNodeBlock();
-		if (GUIProjectHierarchy::rootPath.empty())
-		{
-			GUIProjectHierarchy::rootPath = Engine::filesPath;
-		}
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
@@ -383,16 +375,6 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Window"))
 		{
-			if (ImGui::MenuItem("Scene hierarchy"))
-			{
-				GUISceneHierarchy::renderSceneHierarchy = true;
-			}
-
-			if (ImGui::MenuItem("Project hierarchy"))
-			{
-				GUIProjectHierarchy::renderProjectHierarchy = true;
-			}
-
 			if (ImGui::MenuItem("Node block"))
 			{
 				GUINodeBlock::renderNodeBlock = true;
