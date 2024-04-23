@@ -20,6 +20,7 @@
 #include "gui_debugmenu.hpp"
 #include "gui_inspector.hpp"
 #include "gui_nodeblock.hpp"
+#include "gui_assetlist.hpp"
 #include "core.hpp"
 #include "input.hpp"
 #include "sceneFile.hpp"
@@ -48,6 +49,7 @@ using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUIDebugMenu;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUINodeBlock;
+using Graphics::GUI::GUIAssetList;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -179,6 +181,14 @@ namespace EngineFile
 			"1",
 			ConfigFileValue::Type::type_int);
 		AddValue(gui_nodeBlockWindow);
+
+		ConfigFileValue gui_assetListWindow(
+			"gui_assetListWindow",
+			to_string(GUIAssetList::renderAssetList),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(gui_assetListWindow);
 	}
 
 	void ConfigFileManager::LoadConfigFile()
@@ -502,6 +512,27 @@ namespace EngineFile
 							Caller::ENGINE,
 							Type::EXCEPTION,
 							"Render node block window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "gui_assetListWindow")
+				{
+					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					{
+						GUIAssetList::renderAssetList = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set render asset list window to " + to_string(GUIAssetList::renderAssetList) + ".\n");
+					}
+					else
+					{
+						GUIAssetList::renderAssetList = false;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Render asset list window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
 			}

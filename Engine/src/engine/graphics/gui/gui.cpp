@@ -19,6 +19,7 @@
 #include "gui_debugmenu.hpp"
 #include "gui_inspector.hpp"
 #include "gui_nodeblock.hpp"
+#include "gui_assetlist.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -161,6 +162,7 @@ namespace Graphics::GUI
 		GUIDebugMenu::RenderDebugMenu();
 		GUIInspector::RenderInspector();
 		GUINodeBlock::RenderNodeBlock();
+		GUIAssetList::RenderAssetList();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
@@ -375,24 +377,34 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Window"))
 		{
+			if (ImGui::MenuItem("Asset list"))
+			{
+				GUIAssetList::renderAssetList = true;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			if (ImGui::MenuItem("Node block"))
 			{
 				GUINodeBlock::renderNodeBlock = true;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Inspector"))
 			{
 				GUIInspector::renderInspector = true;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Console"))
 			{
 				GUIConsole::renderConsole = true;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Debug menu"))
 			{
 				GUIDebugMenu::renderDebugMenu = true;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::EndMenu();
