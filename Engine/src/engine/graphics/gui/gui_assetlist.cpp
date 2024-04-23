@@ -24,7 +24,7 @@ namespace Graphics::GUI
 			ImGuiWindowFlags_NoCollapse;
 
 		if (renderAssetList
-			&& ImGui::Begin("Asset list"), NULL, windowFlags)
+			&& ImGui::Begin("Asset list", NULL, windowFlags))
 		{
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
@@ -34,7 +34,7 @@ namespace Graphics::GUI
 			}
 
 			ImGui::Spacing();
-			ImGui::Text("This is the asset list!");
+			ImGui::Text("This is the asset list window!");
 
 			ImGui::End();
 		}

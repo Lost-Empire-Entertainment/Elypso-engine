@@ -20,6 +20,7 @@
 #include "gui_inspector.hpp"
 #include "gui_nodeblock.hpp"
 #include "gui_assetlist.hpp"
+#include "gui_importAsset.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -163,6 +164,7 @@ namespace Graphics::GUI
 		GUIInspector::RenderInspector();
 		GUINodeBlock::RenderNodeBlock();
 		GUIAssetList::RenderAssetList();
+		GUIImportAsset::RenderImportAsset();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
@@ -227,10 +229,8 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						Model::targetModel = path;
-						Model::Initialize();
-
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						GUIImportAsset::renderImportAsset = true;
+						GUIImportAsset::targetModelPath = path;
 					}
 				}
 			}
