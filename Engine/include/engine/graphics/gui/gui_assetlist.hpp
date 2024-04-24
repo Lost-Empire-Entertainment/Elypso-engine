@@ -14,6 +14,7 @@ namespace Graphics::GUI
 
 		static void RenderAssetList();
 	private:
-
+		static void DrawCategoriesHierarchy();
+		static void DrawGameobjectsTable();
 	};
 }
