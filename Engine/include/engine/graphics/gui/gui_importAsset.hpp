@@ -17,7 +17,7 @@ namespace Graphics::GUI
 	{
 	public:
 		static inline bool renderImportAsset;
-		static inline string targetModelPath;
+		static inline string assetPath;
 
 		static void RenderImportAsset();
 	private:

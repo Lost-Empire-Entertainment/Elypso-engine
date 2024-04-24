@@ -56,12 +56,10 @@ namespace EngineFile
 
 		else if (searchType == SearchType::asset)
 		{
-			//restrict file selection to fbx, obj and gltf only
+			//restrict file selection to any extension
 			COMDLG_FILTERSPEC filterSpec[] = {
-				{ L"fbx objects", L"*.fbx"},
-				{ L"obj objects", L"*.obj"},
-				{ L"glTF objects", L"*.gltf"} };
-			hr = pFileOpen->SetFileTypes(3, filterSpec);
+				{ L"Assets", L"*.*"} };
+			hr = pFileOpen->SetFileTypes(1, filterSpec);
 			if (FAILED(hr))
 			{
 				cout << "Error: Failed to set file filter!\n\n";

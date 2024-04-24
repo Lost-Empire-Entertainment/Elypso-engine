@@ -22,6 +22,7 @@
 #include "gameobject.hpp"
 
 using std::filesystem::exists;
+using std::filesystem::path;
 
 using Graphics::Shape::Model;
 using EngineFile::SceneFile;
@@ -75,36 +76,10 @@ namespace Graphics::GUI
 
 			ImGui::Spacing();
 
-			ImGui::Text("Diffuse texture");
-			string defaultDiffuseTexture = Engine::filesPath + "/textures/default_diffuse.png";
-			if (assignedDiffuseTexture != ""
-				&& exists(assignedDiffuseTexture))
-			{
-				strcpy_s(inputTextBuffer_diffTexturePath, pathBufferSize, assignedDiffuseTexture.c_str());
-				defaultDiffuseTexture = assignedDiffuseTexture;
-			}
-			else
-			{
-				strcpy_s(inputTextBuffer_diffTexturePath, pathBufferSize, defaultDiffuseTexture.c_str());
-			}
-			ImGui::InputText("##diffTex", inputTextBuffer_diffTexturePath, pathBufferSize);
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text(inputTextBuffer_diffTexturePath);
-				ImGui::EndTooltip();
-			}
-
-			ImGui::SameLine();
-			if (ImGui::Button("Select", buttonSize))
-			{
-				assignedDiffuseTexture = FileExplorer::Select(FileExplorer::SearchType::texture);
-			}
-
 			ImGui::Text("Type");
 			ImVec2 childSize = ImVec2(
 				ImGui::GetWindowSize().x - 20, 
-				ImGui::GetWindowSize().y - 400);
+				ImGui::GetWindowSize().y - 200);
 			if (ImGui::BeginChild("##selectType", childSize, true))
 			{
 				for (const auto& category : GameObjectManager::GetGameObjectCategories())
@@ -146,23 +121,32 @@ namespace Graphics::GUI
 			ImGui::SetCursorPos(importButtonPos);
 			if (ImGui::Button("Import", buttonSize))
 			{
-				Model::targetModel = targetModelPath;
-				Model::Initialize(
-					vec3(0),
-					vec3(0),
-					vec3(1),
-					targetModelPath,
-					Engine::filesPath + "/shaders/GameObject.vert",
-					Engine::filesPath + "/shaders/GameObject.frag",
-					defaultDiffuseTexture,
-					"EMPTY",
-					"EMPTY",
-					"EMPTY",
-					32,
-					assignedName,
-					Model::tempID);
+				path finalPath = path(assetPath);
+				string extension = finalPath.extension().string();
+				cout << "Attempting to import asset with extension " << extension << "...\n";
 
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				if (extension == ".fbx"
+					|| extension == ".gltw"
+					|| extension == ".obj")
+				{
+					Model::targetModel = assetPath;
+					Model::Initialize(
+						vec3(0),
+						vec3(0),
+						vec3(1),
+						assetPath,
+						Engine::filesPath + "/shaders/GameObject.vert",
+						Engine::filesPath + "/shaders/GameObject.frag",
+						Engine::filesPath + "/textures/default_diffuse.png",
+						"EMPTY",
+						"EMPTY",
+						"EMPTY",
+						32,
+						assignedName,
+						Model::tempID);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
 
 				renderImportAsset = false;
 				checkBoxMapFilled = false;

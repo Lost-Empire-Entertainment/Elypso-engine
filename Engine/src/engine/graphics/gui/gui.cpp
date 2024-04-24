@@ -208,7 +208,7 @@ namespace Graphics::GUI
 		{
 			bool canPlaceAssets = SceneFile::currentScenePath != "";
 
-			if (ImGui::MenuItem("Import model"))
+			if (ImGui::MenuItem("Import asset"))
 			{
 				if (!canPlaceAssets)
 				{
@@ -230,7 +230,7 @@ namespace Graphics::GUI
 					else
 					{
 						GUIImportAsset::renderImportAsset = true;
-						GUIImportAsset::targetModelPath = path;
+						GUIImportAsset::assetPath = path;
 					}
 				}
 			}
