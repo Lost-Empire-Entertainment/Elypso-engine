@@ -12,6 +12,9 @@
 //engine
 #include "gui_assetlist.hpp"
 #include "gui.hpp"
+#include "gameobject.hpp"
+
+using Graphics::Shape::GameObjectManager;
 
 namespace Graphics::GUI
 {
@@ -33,8 +36,36 @@ namespace Graphics::GUI
 				renderAssetList = false;
 			}
 
-			ImGui::Spacing();
-			ImGui::Text("This is the asset list window!");
+			for (const auto& category : GameObjectManager::GetGameObjectCategories())
+			{
+				const string& categoryName = category.first;
+				const auto& categoryMap = category.second;
+
+				bool nodeOpen = ImGui::TreeNodeEx(categoryName.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+				if (ImGui::IsItemClicked(0)
+					&& ImGui::IsMouseDoubleClicked(0))
+				{
+					nodeOpen = !nodeOpen;
+				}
+
+				if (nodeOpen)
+				{
+					for (const auto& subCategory : categoryMap)
+					{
+						const string& subCategoryName = subCategory;
+						ImGui::Text("%s", subCategoryName.c_str());
+
+						if (ImGui::IsItemClicked(0)
+							&& ImGui::IsMouseDoubleClicked(0))
+						{
+							cout << "opening " << subCategoryName << "\n";
+						}
+					}
+
+					ImGui::TreePop();
+				}
+			}
 
 			ImGui::End();
 		}

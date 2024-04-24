@@ -19,6 +19,7 @@
 #include "render.hpp"
 #include "core.hpp"
 #include "fileexplorer.hpp"
+#include "gameobject.hpp"
 
 using std::filesystem::exists;
 
@@ -27,24 +28,44 @@ using EngineFile::SceneFile;
 using Graphics::Render;
 using Core::Engine;
 using EngineFile::FileExplorer;
+using Graphics::Shape::GameObjectManager;
 
 namespace Graphics::GUI
 {
 	void GUIImportAsset::RenderImportAsset()
 	{
-		ImVec2 size = ImVec2(600, 600);
+		ImVec2 minSize = ImVec2(600, 600);
 		ImVec2 pos = ImVec2(400, 400);
-		ImGui::SetNextWindowSizeConstraints(size, size);
+		ImGui::SetNextWindowSizeConstraints(minSize, EngineGUI::maxSize);
 		ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoResize
-			| ImGuiWindowFlags_NoSavedSettings;
+			| ImGuiWindowFlags_NoSavedSettings
+			| ImGuiWindowFlags_NoDocking;
 
 		if (renderImportAsset
 			&& ImGui::Begin("Import asset", NULL, windowFlags))
 		{
+			if (!checkBoxMapFilled)
+			{
+				checkboxStates.clear();
+
+				for (const auto& category : GameObjectManager::GetGameObjectCategories())
+				{
+					const string& categoryName = category.first;
+					const auto& categoryMap = category.second;
+					for (const auto& subCategory : categoryMap)
+					{
+						const string& subCategoryName = subCategory;
+						string uniqueName = categoryName + "_" + subCategoryName;
+						checkboxStates.insert({ subCategoryName, false });
+					}
+				}
+
+				checkBoxMapFilled = true;
+			}
+
 			ImVec2 buttonSize = ImVec2(100, 30);
 
 			ImGui::Text("Name");
@@ -80,7 +101,48 @@ namespace Graphics::GUI
 				assignedDiffuseTexture = FileExplorer::Select(FileExplorer::SearchType::texture);
 			}
 
-			ImVec2 importButtonPos = ImVec2(300 - buttonSize.x - buttonSize.x / 2, 550);
+			ImGui::Text("Type");
+			ImVec2 childSize = ImVec2(
+				ImGui::GetWindowSize().x - 20, 
+				ImGui::GetWindowSize().y - 400);
+			if (ImGui::BeginChild("##selectType", childSize, true))
+			{
+				for (const auto& category : GameObjectManager::GetGameObjectCategories())
+				{
+					const string& categoryName = category.first;
+					const auto& categoryMap = category.second;
+
+					bool nodeOpen = ImGui::TreeNodeEx(categoryName.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+					if (ImGui::IsItemClicked(0) 
+						&& ImGui::IsMouseDoubleClicked(0))
+					{
+						nodeOpen = !nodeOpen;
+					}
+
+					if (nodeOpen)
+					{
+						for (const auto& subCategory : categoryMap)
+						{
+							const string& categoryName = category.first;
+							const string& subCategoryName = subCategory;
+							string uniqueName = categoryName + "_" + subCategoryName;
+							ImGui::Text("%s", subCategoryName.c_str());
+
+							ImGui::SameLine();
+							bool& checked = checkboxStates[uniqueName];
+							ImGui::Checkbox(("##" + uniqueName).c_str(), &checked);
+						}
+
+						ImGui::TreePop();
+					}
+				}
+			}
+			ImGui::EndChild();
+
+			ImVec2 importButtonPos = ImVec2(
+				ImGui::GetWindowSize().x / 2 - buttonSize.x - buttonSize.x / 2, 
+				ImGui::GetWindowSize().y - 50);
 			ImGui::SetCursorPos(importButtonPos);
 			if (ImGui::Button("Import", buttonSize))
 			{
@@ -103,12 +165,16 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 
 				renderImportAsset = false;
+				checkBoxMapFilled = false;
 			}
-			ImVec2 cancelButtonPos = ImVec2(300 + buttonSize.x / 2, 550);
+			ImVec2 cancelButtonPos = ImVec2(
+				ImGui::GetWindowSize().x / 2 + buttonSize.x / 2,
+				ImGui::GetWindowSize().y - 50);
 			ImGui::SetCursorPos(cancelButtonPos);
 			if (ImGui::Button("Cancel", buttonSize))
 			{
 				renderImportAsset = false;
+				checkBoxMapFilled = false;
 			}
 
 			ImGui::End();

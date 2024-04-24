@@ -480,6 +480,50 @@ namespace Graphics::Shape
 	public:
 		static inline unsigned int nextID;
 
+		enum class Category
+		{
+			cat_characters,
+			cat_effects,
+			cat_audio,
+			cat_UI,
+			cat_lights,
+			cat_textures,
+			cat_static,
+			cat_all
+		};
+		enum class CategoryType_Character
+		{
+			type_placeholder
+		};
+		enum class CategoryType_Effect
+		{
+			type_placeholder
+		};
+		enum class CategoryType_Audio
+		{
+			type_placeholder
+		};
+		enum class CategoryType_UI
+		{
+			type_placeholder
+		};
+		enum class CategoryType_Light
+		{
+			type_pointLight,
+			type_spotLight
+		};
+		enum class CategoryType_Texture
+		{
+			type_diffuse,
+			type_specular,
+			type_normal,
+			type_height
+		};
+		enum class CategoryType_Static
+		{
+			type_default
+		};
+
 		//basic gameobject
 		GameObject(
 			const bool& isInitialized,
@@ -649,6 +693,10 @@ namespace Graphics::Shape
 			const mat4& view,
 			const mat4& projection);
 
+		static void SetGameObjectCategories(const map<string, vector<string>>& newGameObjectsMap)
+		{
+			gameobjects = newGameObjectsMap;
+		}
 		static void AddGameObject(const shared_ptr<GameObject>& obj)
 		{
 			objects.push_back(obj);
@@ -684,6 +732,10 @@ namespace Graphics::Shape
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
+		static map<string, vector<string>>& GetGameObjectCategories()
+		{
+			return gameobjects;
+		}
 		static vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
@@ -709,6 +761,7 @@ namespace Graphics::Shape
 			return billboards;
 		}
 	private:
+		static inline map<string, vector<string>> gameobjects;
 		static inline vector<shared_ptr<GameObject>> objects;
 		static inline vector<shared_ptr<GameObject>> opaqueObjects;
 		static inline vector<shared_ptr<GameObject>> transparentObjects;

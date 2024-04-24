@@ -17,6 +17,7 @@
 #include "sceneFile.hpp"
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
+#include "gameobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -41,6 +42,7 @@ using EngineFile::ConfigFileManager;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Graphics::Shape::GameObjectManager;
 
 namespace Core
 {
@@ -102,6 +104,50 @@ namespace Core
 			return;
 		}
 		filesPath = fsFilesPath.string();
+
+		//
+		// FILL GAMEOBJECT CATEGORY AND TYPE VECTORS
+		//
+
+		map<string, vector<string>> gameObjects;
+
+		vector<string> cat_characters;
+		cat_characters.push_back("Placeholder");
+		gameObjects.insert({ "Characters", cat_characters });
+
+		vector<string> cat_effects;
+		cat_effects.push_back("Placeholder");
+		gameObjects.insert({ "Effects", cat_effects });
+
+		vector<string> cat_audio;
+		cat_audio.push_back("Placeholder");
+		gameObjects.insert({ "Audio", cat_audio });
+
+		vector<string> cat_UI;
+		cat_UI.push_back("Placeholder");
+		gameObjects.insert({ "UI", cat_UI });
+
+		vector<string> cat_lights;
+		cat_lights.push_back("Spotlights");
+		cat_lights.push_back("Point lights");
+		gameObjects.insert({ "Lights", cat_lights });
+
+		vector<string> cat_textures;
+		cat_textures.push_back("Diffuse textures");
+		cat_textures.push_back("Specular textures");
+		cat_textures.push_back("Normal textures");
+		cat_textures.push_back("Height textures");
+		gameObjects.insert({ "Textures", cat_textures });
+
+		vector<string> cat_static;
+		cat_static.push_back("Default models");
+		gameObjects.insert({ "Static models", cat_static });
+
+		GameObjectManager::SetGameObjectCategories(gameObjects);
+
+		//
+		// REST OF THE INITIALIZATION
+		//
 
 		Logger::InitializeLogger();
 

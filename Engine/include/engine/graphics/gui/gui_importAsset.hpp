@@ -6,8 +6,10 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 
 using std::string;
+using std::map;
 
 namespace Graphics::GUI
 {
@@ -19,6 +21,9 @@ namespace Graphics::GUI
 
 		static void RenderImportAsset();
 	private:
+		static inline bool checkBoxMapFilled;
+		static inline map<string, bool> checkboxStates;
+
 		static inline const int nameBufferSize = 32;
 		static inline const int pathBufferSize = 256;
 
