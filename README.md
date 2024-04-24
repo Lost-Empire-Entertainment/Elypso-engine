@@ -16,10 +16,6 @@ Everything is still in early development and is highly likely to be modified a l
 
 * [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
 
-# Testers
-
-* [JonesyB](https://jonesyb.com/)
-
 # Licenses
 
 * [Elypso engine propietary license](LICENSE.md)
