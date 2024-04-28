@@ -31,6 +31,7 @@ using std::setw;
 using std::setfill;
 using std::ios;
 using std::to_string;
+using std::ofstream;
 using std::filesystem::remove;
 using std::filesystem::exists;
 using std::chrono::milliseconds;
@@ -51,9 +52,10 @@ namespace Core
 {
     std::vector<std::string> ConsoleManager::storedLogs;
 
-    ofstream Logger::logFile;
+    ConsoleManager consoleManager;
+    ofstream logFile;
 
-    string Timestamp::GetCurrentTimestamp()
+    string ConsoleManager::GetCurrentTimestamp()
     {
         auto now = system_clock::now();
         auto now_ms = time_point_cast<milliseconds>(now);
@@ -75,7 +77,7 @@ namespace Core
         return ss.str();
     }
 
-    void Logger::InitializeLogger()
+    void ConsoleManager::InitializeLogger()
     {
         logFile.open(Engine::docsPath + "/engine_log.txt");
         if (!logFile.is_open())
@@ -89,7 +91,7 @@ namespace Core
                 ec.message() + "\n\n");
         }
     }
-    void Logger::CloseLogger()
+    void ConsoleManager::CloseLogger()
     {
         if (logFile.is_open())
         {
@@ -97,7 +99,7 @@ namespace Core
         }
     }
 
-    void Logger::AddLog(const string& message)
+    void ConsoleManager::AddLoggerLog(const string& message)
     {
         if (logFile.is_open())
         {
@@ -105,7 +107,7 @@ namespace Core
         }
     }
 
-    void ConsoleManager::AddLog(const std::string& message)
+    void ConsoleManager::AddConsoleLog(const std::string& message)
     {
         storedLogs.push_back(message);
     }
@@ -121,7 +123,7 @@ namespace Core
 
     void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool internalMessage)
     {
-        string timeStamp = Timestamp::GetCurrentTimestamp();
+        string timeStamp = consoleManager.GetCurrentTimestamp();
         string theCaller = string(magic_enum::enum_name(caller));
         string theType = string(magic_enum::enum_name(type));
 
@@ -162,11 +164,11 @@ namespace Core
             && type != Type::DEBUG)))
         {
             if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
-            else ConsoleManager::AddLog(internalMsg);
+            else consoleManager.AddConsoleLog(internalMsg);
         }
 
         cout << externalMsg;
-        Logger::AddLog(externalMsg);
+        consoleManager.AddLoggerLog(externalMsg);
     }
 
     void ConsoleManager::ParseConsoleCommand(const string& command)
@@ -221,8 +223,10 @@ namespace Core
                  || cleanedCommands[1] == "2")
                  && cleanedCommands.size() == 2)
         {
-            wireframeMode = cleanedCommands[1] != "1";
-            glPolygonMode(GL_FRONT_AND_BACK, wireframeMode ? GL_LINE : GL_FILL);
+            consoleManager.wireframeMode = cleanedCommands[1] != "1";
+            glPolygonMode(
+                GL_FRONT_AND_BACK, 
+                consoleManager.wireframeMode ? GL_LINE : GL_FILL);
 
             string wireframeModeValue = cleanedCommands[1] == "1" ?
                 "shaded" :

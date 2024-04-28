@@ -5,6 +5,12 @@
 
 #pragma once
 
+#include <map>
+#include <string>
+
+using std::map;
+using std::string;
+
 namespace Graphics::GUI
 {
 	class GUIAssetList
@@ -14,7 +20,10 @@ namespace Graphics::GUI
 
 		static void RenderAssetList();
 	private:
-		static void DrawCategoriesHierarchy();
-		static void DrawGameobjectsTable();
+		static constexpr int nameBufferSize = 32;
+		map<string, char[nameBufferSize]> names;
+
+		void DrawCategoriesHierarchy();
+		void DrawGameobjectsTable();
 	};
 }

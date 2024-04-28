@@ -75,6 +75,8 @@ namespace Graphics::GUI
 	static ImVec4 cubeColor;
 	static ImVec4 specularColor;
 
+
+
 	void EngineGUI::Initialize()
 	{
 		IMGUI_CHECKVERSION();

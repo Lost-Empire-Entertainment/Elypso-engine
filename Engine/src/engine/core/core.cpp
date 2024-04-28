@@ -149,7 +149,7 @@ namespace Core
 		// REST OF THE INITIALIZATION
 		//
 
-		Logger::InitializeLogger();
+		ConsoleManager::InitializeLogger();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
@@ -249,7 +249,7 @@ namespace Core
 				Type::INFO,
 				"Shutdown complete!\n");
 
-			Logger::CloseLogger();
+			ConsoleManager::CloseLogger();
 		}
 	}
 }

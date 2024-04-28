@@ -11,10 +11,10 @@ set "gexc=[GAME_EXCEPTION]"
 set "ginf=[GAME_INFO]"
 set "gcln=[GAME_CLEANUP]"
 set "cminf=[CMAKE_INFO]"
-set "cmerr=[CMAKE_EXCEPTION]"
+set "cmexc=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
 set "cpinf=[CPACK_INFO]"
-set "cperr=[CPACK_EXCEPTION]"
+set "cpexc=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
 set "documentsPath=%USERPROFILE%\Documents\Game"
@@ -81,20 +81,20 @@ echo %cminf% Started CMake configuration.
 cmake -DCMAKE_BUILD_TYPE=Release ..
 
 if %errorlevel% neq 0 (
-	echo %cmerr% CMake configuration failed.
+	echo %cmexc% CMake configuration failed.
 ) else (
 	echo %cmsuc% Cmake configuration succeeded!
 )
 	
-pause
-goto menu
+goto build
 
 :build
 :: Change to the script directory
 cd /d "%~dp0"
 	
 if not exist "%buildPath%" (
-	echo Did not find build folder. Please run 'Reconfigure CMake' before building.
+	echo %gexc% Did not find build folder. Running 'Reconfigure CMake'.
+	goto cmake
 ) else (
 	cd "%buildPath%"
 		
@@ -103,7 +103,7 @@ if not exist "%buildPath%" (
 	cmake --build . --config Release
 	
 	if %errorlevel% neq 0 (
-		echo %cmerr% Build failed because Game.exe did not get generated properly.
+		echo %cmexc% Build failed because Game.exe did not get generated properly.
 	) else (
 		echo %cmsuc% Build succeeded!
 	)

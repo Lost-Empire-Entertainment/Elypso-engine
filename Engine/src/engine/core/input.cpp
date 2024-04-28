@@ -50,6 +50,8 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
+    float increment;
+
     Input::Input(GLFWwindow* window, float sensitivity) : 
         window(window), 
         yaw(-90.0f), 

@@ -40,6 +40,8 @@ namespace Core
 {
 	void Compilation::Compile()
 	{
+		Compilation compilation;
+
 		try
 		{
 			if (Engine::gamePath == ""
@@ -93,7 +95,7 @@ namespace Core
 					}
 				}
 
-				PrintNodeConnections();
+				compilation.PrintNodeConnections();
 
 				string engineProjectPath = path(Engine::filesPath).parent_path().string() + "\\project";
 				for (const auto& item : directory_iterator(path(engineProjectPath)))

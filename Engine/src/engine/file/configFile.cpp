@@ -30,6 +30,7 @@ using std::endl;
 using std::cerr;
 using std::to_string;
 using std::ifstream;
+using std::ofstream;
 using std::exception;
 using std::find_if;
 using std::filesystem::path;
@@ -55,6 +56,8 @@ using Type = Core::ConsoleManager::Type;
 
 namespace EngineFile
 {
+	ConfigFileManager configFileManager;
+
 	void ConfigFileManager::SetDefaultConfigValues()
 	{
 		EngineGUI::fontScale = 1.5f;
@@ -67,7 +70,7 @@ namespace EngineFile
 		vec3 camPos = vec3(0.0f, 1.0f, 0.0f);
 		Render::camera.SetCameraPosition(camPos);
 
-		UpdateValues();
+		configFileManager.UpdateValues();
 	}
 
 	void ConfigFileManager::UpdateValues()
@@ -193,23 +196,23 @@ namespace EngineFile
 
 	void ConfigFileManager::LoadConfigFile()
 	{
-		if (configFilePath == "")
+		if (configFileManager.configFilePath == "")
 		{
-			configFilePath = Engine::docsPath + "/config.txt";
+			configFileManager.configFilePath = Engine::docsPath + "/config.txt";
 
-			if (!exists(configFilePath))
+			if (!exists(configFileManager.configFilePath))
 			{
 				SetDefaultConfigValues();
-				CreateNewConfigFile();
+				configFileManager.CreateNewConfigFile();
 			}
 		}
 
-		ifstream configFile(configFilePath);
+		ifstream configFile(configFileManager.configFilePath);
 
 		if (!configFile)
 		{
 			string title = "Failed to open config file";
-			string description = "Couldn't open config file at " + configFilePath + "!";
+			string description = "Couldn't open config file at " + configFileManager.configFilePath + "!";
 			Engine::CreateErrorPopup(title.c_str(), description.c_str());
 		}
 
@@ -233,7 +236,7 @@ namespace EngineFile
 
 				if (name == "gui_fontScale")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						EngineGUI::fontScale = stof(lineVariables[0]);
 
@@ -254,8 +257,8 @@ namespace EngineFile
 				}
 				else if (name == "window_resolution")
 				{
-					if (ConfigFileManager::IsValueInRange("width", lineVariables[0])
-						&& ConfigFileManager::IsValueInRange("height", lineVariables[1]))
+					if (configFileManager.IsValueInRange("width", lineVariables[0])
+						&& configFileManager.IsValueInRange("height", lineVariables[1]))
 					{
 						unsigned int width = stoul(lineVariables[0]);
 						Render::windowWidth = width;
@@ -283,7 +286,7 @@ namespace EngineFile
 				}
 				else if (name == "window_vsync")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						Render::useMonitorRefreshRate = static_cast<bool>(stoi(lineVariables[0]));
 						glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
@@ -306,7 +309,7 @@ namespace EngineFile
 				}
 				else if (name == "camera_fov")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						Input::fov = stof(lineVariables[0]);
 
@@ -327,7 +330,7 @@ namespace EngineFile
 				}
 				else if (name == "camera_nearClip")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						Input::nearClip = stof(lineVariables[0]);
 
@@ -349,7 +352,7 @@ namespace EngineFile
 				}
 				else if (name == "camera_farClip")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						Input::farClip = stof(lineVariables[0]);
 
@@ -371,9 +374,9 @@ namespace EngineFile
 				}
 				else if (name == "camera_position")
 				{
-					if (ConfigFileManager::IsValueInRange(name + "X", lineVariables[0])
-						&& ConfigFileManager::IsValueInRange(name + "Y", lineVariables[1])
-						&& ConfigFileManager::IsValueInRange(name + "Z", lineVariables[2]))
+					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
+						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1])
+						&& configFileManager.IsValueInRange(name + "Z", lineVariables[2]))
 					{
 						vec3 newPosition = vec3(
 							stof(lineVariables[0]),
@@ -402,9 +405,9 @@ namespace EngineFile
 				}
 				else if (name == "camera_rotation")
 				{
-					if (ConfigFileManager::IsValueInRange(name + "X", lineVariables[0])
-						&& ConfigFileManager::IsValueInRange(name + "Y", lineVariables[1])
-						&& ConfigFileManager::IsValueInRange(name + "Z", lineVariables[2]))
+					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
+						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1])
+						&& configFileManager.IsValueInRange(name + "Z", lineVariables[2]))
 					{
 						Render::camera.SetCameraRotation(vec3(
 							stof(lineVariables[0]),
@@ -432,7 +435,7 @@ namespace EngineFile
 				}
 				else if (name == "gui_inspector")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						GUIInspector::renderInspector = static_cast<bool>(stoi(lineVariables[0]));
 
@@ -453,7 +456,7 @@ namespace EngineFile
 				}
 				else if (name == "gui_debugMenu")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						GUIDebugMenu::renderDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
 
@@ -474,7 +477,7 @@ namespace EngineFile
 				}
 				else if (name == "gui_console")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						GUIConsole::renderConsole = static_cast<bool>(stoi(lineVariables[0]));
 
@@ -495,7 +498,7 @@ namespace EngineFile
 				}
 				else if (name == "gui_nodeBlockWindow")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						GUINodeBlock::renderNodeBlock = static_cast<bool>(stoi(lineVariables[0]));
 
@@ -516,7 +519,7 @@ namespace EngineFile
 				}
 				else if (name == "gui_assetListWindow")
 				{
-					if (ConfigFileManager::IsValueInRange(name, lineVariables[0]))
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
 						GUIAssetList::renderAssetList = static_cast<bool>(stoi(lineVariables[0]));
 
@@ -540,7 +543,7 @@ namespace EngineFile
 
 		configFile.close();
 
-		UpdateValues();
+		configFileManager.UpdateValues();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
@@ -550,9 +553,12 @@ namespace EngineFile
 
 	void ConfigFileManager::SaveConfigFile()
 	{
-		if (exists(configFilePath)) remove(configFilePath);
-		UpdateValues();
-		CreateNewConfigFile();
+		if (exists(configFileManager.configFilePath))
+		{
+			remove(configFileManager.configFilePath);
+		}
+		configFileManager.UpdateValues();
+		configFileManager.CreateNewConfigFile();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,

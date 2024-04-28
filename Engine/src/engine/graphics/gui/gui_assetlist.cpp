@@ -18,6 +18,8 @@ using Graphics::Shape::GameObjectManager;
 
 namespace Graphics::GUI
 {
+	GUIAssetList assetList;
+
 	void GUIAssetList::RenderAssetList()
 	{
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
@@ -36,6 +38,9 @@ namespace Graphics::GUI
 				renderAssetList = false;
 			}
 
+			//*--------------------------------------------------*
+			//draw categories hierarchy
+			//*--------------------------------------------------*
 			ImVec2 categoriesChildSize = ImVec2(
 				280,
 				ImGui::GetWindowSize().y - 100);
@@ -43,9 +48,12 @@ namespace Graphics::GUI
 				"##categories", 
 				categoriesChildSize, 
 				true);
-			DrawCategoriesHierarchy();
+			assetList.DrawCategoriesHierarchy();
 			ImGui::EndChild();
 			
+			//*--------------------------------------------------*
+			//draw gameobject table
+			//*--------------------------------------------------*
 			ImGui::SetCursorPos(ImVec2(300, 70));
 			ImVec2 gameobjectsChildSize = ImVec2(
 				ImGui::GetWindowSize().x - 310,
@@ -55,7 +63,7 @@ namespace Graphics::GUI
 				gameobjectsChildSize, 
 				true,
 				ImGuiWindowFlags_HorizontalScrollbar);
-			DrawGameobjectsTable();
+			assetList.DrawGameobjectsTable();
 			ImGui::EndChild();
 
 			ImGui::End();
@@ -84,6 +92,7 @@ namespace Graphics::GUI
 					const string& subCategoryName = subCategory;
 					ImGui::Text("%s", subCategoryName.c_str());
 
+					//double-click a category to list its gameobjects in table
 					if (ImGui::IsItemClicked(0)
 						&& ImGui::IsMouseDoubleClicked(0))
 					{
@@ -94,6 +103,16 @@ namespace Graphics::GUI
 				ImGui::TreePop();
 			}
 		}
+
+		string all = "          All";
+		ImGui::Text("%s", all.c_str());
+
+		//double-click All to list all gameobjects in project
+		if (ImGui::IsItemClicked(0)
+			&& ImGui::IsMouseDoubleClicked(0))
+		{
+			cout << "opening All\n";
+		}
 	}
 
 	void GUIAssetList::DrawGameobjectsTable()
@@ -101,6 +120,45 @@ namespace Graphics::GUI
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
+		//*--------------------------------------------------*
+		//columns for gameobject data types
+		//*--------------------------------------------------*
+		string column_Name = "Name";
+		ImGui::SetCursorPos(ImVec2(40, 25));
+		ImGui::Text(column_Name.c_str());
+
+		string column_ID = "ID";
+		ImGui::SetCursorPos(ImVec2(150, 25));
+		ImGui::Text(column_ID.c_str());
+
+		string column_Path = "Path";
+		ImGui::SetCursorPos(ImVec2(240, 25));
+		ImGui::Text(column_Path.c_str());
+
+		//*--------------------------------------------------*
+		//rows for gameobject text fields
+		//*--------------------------------------------------*
+		for (const auto& obj : GameObjectManager::GetObjects())
+		{
+			string key = obj->GetName() + "_" + to_string(obj->GetID());
+
+			char name_char[nameBufferSize];
+			strcpy_s(name_char, nameBufferSize, obj->GetName().c_str());
+			ImGui::InputText(("##" + key).c_str(), name_char, nameBufferSize);
+			if (ImGui::IsItemEdited()
+				&& strlen(name_char) < nameBufferSize)
+			{
+				strcpy_s(names[key], nameBufferSize, name_char);
+			}
+
+			ImGui::Text(("##" + key).c_str(), obj->GetID());
+
+			string path = obj->GetDirectory();
+		}
+
+		//*--------------------------------------------------*
+		//build asset list grid
+		//*--------------------------------------------------*
 		static float horizontalStartX = 10.0f;
 		static float verticalStartY = 10.0f;
 		static float horizontalSpace = 100;
@@ -112,7 +170,8 @@ namespace Graphics::GUI
 
 		float tablePosX = windowPos.x + horizontalStartX;
 		float tablePosY = windowPos.y + verticalStartY;
-
+		
+		//draw horizontal lines
 		for (int row = 0; row <= rowCount; ++row)
 		{
 			ImVec2 horizontalStart(
@@ -129,6 +188,7 @@ namespace Graphics::GUI
 				lineThickness);
 		}
 
+		//draw vertical lines
 		for (int col = 0; col <= columnCount; ++col)
 		{
 			ImVec2 verticalStart(

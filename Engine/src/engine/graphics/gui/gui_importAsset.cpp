@@ -33,6 +33,8 @@ using Graphics::Shape::GameObjectManager;
 
 namespace Graphics::GUI
 {
+	GUIImportAsset guiImportAsset;
+
 	void GUIImportAsset::RenderImportAsset()
 	{
 		ImVec2 minSize = ImVec2(600, 600);
@@ -48,9 +50,12 @@ namespace Graphics::GUI
 		if (renderImportAsset
 			&& ImGui::Begin("Import asset", NULL, windowFlags))
 		{
-			if (!checkBoxMapFilled)
+			//*--------------------------------------------------*
+			//reset checkboxes if reopening import asset window
+			//*--------------------------------------------------*
+			if (!guiImportAsset.checkBoxMapFilled)
 			{
-				checkboxStates.clear();
+				guiImportAsset.checkboxStates.clear();
 
 				for (const auto& category : GameObjectManager::GetGameObjectCategories())
 				{
@@ -60,22 +65,31 @@ namespace Graphics::GUI
 					{
 						const string& subCategoryName = subCategory;
 						string uniqueName = categoryName + "_" + subCategoryName;
-						checkboxStates.insert({ subCategoryName, false });
+						guiImportAsset.checkboxStates.insert({ subCategoryName, false });
 					}
 				}
 
-				checkBoxMapFilled = true;
+				guiImportAsset.checkBoxMapFilled = true;
 			}
 
 			ImVec2 buttonSize = ImVec2(100, 30);
 
 			ImGui::Text("Name");
-			strcpy_s(inputTextBuffer_objName, nameBufferSize, assignedName.c_str());
-			ImGui::InputText("##objName", inputTextBuffer_objName, nameBufferSize);
-			if (ImGui::IsItemEdited()) assignedName = inputTextBuffer_objName;
+			strcpy_s(
+				guiImportAsset.inputTextBuffer_objName, 
+				nameBufferSize, 
+				guiImportAsset.assignedName.c_str());
+			ImGui::InputText(
+				"##objName", 
+				guiImportAsset.inputTextBuffer_objName,
+				nameBufferSize);
+			if (ImGui::IsItemEdited()) guiImportAsset.assignedName = guiImportAsset.inputTextBuffer_objName;
 
 			ImGui::Spacing();
 
+			//*--------------------------------------------------*
+			//list all categories imported object can be placed into
+			//*--------------------------------------------------*
 			ImGui::Text("Type");
 			ImVec2 childSize = ImVec2(
 				ImGui::GetWindowSize().x - 20, 
@@ -105,7 +119,7 @@ namespace Graphics::GUI
 							ImGui::Text("%s", subCategoryName.c_str());
 
 							ImGui::SameLine();
-							bool& checked = checkboxStates[uniqueName];
+							bool& checked = guiImportAsset.checkboxStates[uniqueName];
 							ImGui::Checkbox(("##" + uniqueName).c_str(), &checked);
 						}
 
@@ -115,6 +129,9 @@ namespace Graphics::GUI
 			}
 			ImGui::EndChild();
 
+			//*--------------------------------------------------*
+			//import asset into engine
+			//*--------------------------------------------------*
 			ImVec2 importButtonPos = ImVec2(
 				ImGui::GetWindowSize().x / 2 - buttonSize.x - buttonSize.x / 2, 
 				ImGui::GetWindowSize().y - 50);
@@ -142,14 +159,14 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
-						assignedName,
+						guiImportAsset.assignedName,
 						Model::tempID);
 
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
 				renderImportAsset = false;
-				checkBoxMapFilled = false;
+				guiImportAsset.checkBoxMapFilled = false;
 			}
 			ImVec2 cancelButtonPos = ImVec2(
 				ImGui::GetWindowSize().x / 2 + buttonSize.x / 2,
@@ -158,7 +175,7 @@ namespace Graphics::GUI
 			if (ImGui::Button("Cancel", buttonSize))
 			{
 				renderImportAsset = false;
-				checkBoxMapFilled = false;
+				guiImportAsset.checkBoxMapFilled = false;
 			}
 
 			ImGui::End();

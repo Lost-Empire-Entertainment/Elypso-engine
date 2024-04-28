@@ -67,20 +67,20 @@ namespace EngineFile
 		static void LoadConfigFile();
 		static void SaveConfigFile();
 	private:
-		static inline string configFilePath;
-		static inline vector<ConfigFileValue> values;
+		string configFilePath;
+		vector<ConfigFileValue> values;
 
-		static void AddValue(const ConfigFileValue& value)
+		void AddValue(const ConfigFileValue& value)
 		{
 			values.push_back(value);
 		};
 
-		static void UpdateValues();
+		void UpdateValues();
 
-		static bool IsValueInRange(
+		bool IsValueInRange(
 			const string& name,
 			const string& value);
 
-		static void CreateNewConfigFile();
+		void CreateNewConfigFile();
 	};
 }

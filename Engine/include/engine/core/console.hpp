@@ -11,7 +11,7 @@
 #include <vector>
 
 using std::string;
-using std::ofstream;
+
 using std::vector;
 
 namespace Core
@@ -44,6 +44,15 @@ namespace Core
 
 		static vector<string> storedLogs;
 
+		static void InitializeLogger();
+		static void CloseLogger();
+
+		/// <summary>
+		/// Prints the messages to the console directly after console has initialized.
+		/// </summary>
+		/// <param name="message"></param>
+		void AddConsoleLog(const string& message);
+
 		/// <summary>
 		/// Print selected message to in-engine console.
 		/// </summary>
@@ -54,28 +63,25 @@ namespace Core
 		/// <param name="internalMessage">Do we also print this message to the in-engine console?</param>
 		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false, bool internalMessage = true);
 
+		/// <summary>
+		/// Run inserted console command.
+		/// </summary>
+		/// <param name="command">user inserted command</param>
 		static void ParseConsoleCommand(const string& command);
 
-		static void AddLog(const std::string& message);
-
+		/// <summary>
+		/// Prints the logger messages to the console after console has initialized.
+		/// </summary>
 		static void PrintLogsToBuffer();
-	private:
-		static inline bool wireframeMode;
-	};
 
-	class Timestamp
-	{
-	public:
-		static string GetCurrentTimestamp();
-	};
-
-	class Logger
-	{
-	public:
-		static void InitializeLogger();
-		static void CloseLogger();
-		static void AddLog(const string& message);
+		/// <summary>
+		/// Store console messages separately before console has initialized.
+		/// </summary>
+		/// <param name="message"></param>
+		void AddLoggerLog(const std::string& message);
 	private:
-		static ofstream logFile;
+		string GetCurrentTimestamp();
+
+		bool wireframeMode;
 	};
 }

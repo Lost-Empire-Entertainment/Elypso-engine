@@ -85,9 +85,6 @@ namespace Core
         bool firstMouse;
         float sensitivity;
 
-        static inline bool printCheck;
-        static inline float increment;
-
         vec3 cameraPos;
         vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
         vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);

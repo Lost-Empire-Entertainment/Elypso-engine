@@ -26,37 +26,49 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
+    TimeManager timeManager;
+
     void TimeManager::InitializeDeltaTime()
     {
-        start_time = high_resolution_clock::now();
-        last_frame_time = start_time;
+        timeManager.start_time = high_resolution_clock::now();
+        timeManager.last_frame_time = timeManager.start_time;
 
-        last_smoothed_update = last_frame_time;
-        smoothing_interval = 0.1; //how often should displayed framerate update
+        timeManager.last_smoothed_update = timeManager.last_frame_time;
+
+        //how often should displayed framerate update
+        timeManager.smoothing_interval = 0.1; 
     }
 
 	void TimeManager::UpdateDeltaTime()
 	{
-        high_resolution_clock::time_point current_time = high_resolution_clock::now();
-        frame_duration = current_time - last_frame_time;
-        deltaTime = frame_duration.count();
+        high_resolution_clock::time_point current_time = 
+            high_resolution_clock::now();
+        timeManager.frame_duration = 
+            current_time 
+            - timeManager.last_frame_time;
+        deltaTime = timeManager.frame_duration.count();
 
         const double targetFPS = 60.0;
         const double targetFrameTime = 1.0 / targetFPS;
 
-        deltaTime = min(frame_duration.count(), targetFrameTime);
+        deltaTime = min(timeManager.frame_duration.count(), targetFrameTime);
 
-        last_frame_time = current_time;
+        timeManager.last_frame_time = current_time;
 
-        smoothed_frame_count++;
+        timeManager.smoothed_frame_count++;
 
         current_time = high_resolution_clock::now();
-        elapsed_seconds = current_time - last_smoothed_update;
-        if (elapsed_seconds.count() >= smoothing_interval)
+        timeManager.elapsed_seconds = 
+            current_time - 
+            timeManager.last_smoothed_update;
+        if (timeManager.elapsed_seconds.count() 
+            >= timeManager.smoothing_interval)
         {
-            displayedFPS = static_cast<double>(smoothed_frame_count) / elapsed_seconds.count();
-            smoothed_frame_count = 0;
-            last_smoothed_update = current_time;
+            displayedFPS = 
+                static_cast<double>(timeManager.smoothed_frame_count) 
+                / timeManager.elapsed_seconds.count();
+            timeManager.smoothed_frame_count = 0;
+            timeManager.last_smoothed_update = current_time;
         }
 	}
 }
