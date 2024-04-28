@@ -13,11 +13,11 @@ namespace Graphics::GUI
 		static inline bool renderInspector;
 		static void RenderInspector();
 	private:
-		static inline const int bufferSize = 32;
+		static constexpr int bufferSize = 32;
 
-		static inline char inputTextBuffer_objName[bufferSize];
+		char inputTextBuffer_objName[bufferSize];
 
-		static void RI_PermanentComponents();
-		static void RI_DynamicComponents();
+		void RI_PermanentComponents();
+		void RI_DynamicComponents();
 	};
 }

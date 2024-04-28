@@ -47,6 +47,8 @@ using EngineFile::FileExplorer;
 
 namespace Graphics::GUI
 {
+	GUIInspector guiInspector;
+
 	void GUIInspector::RenderInspector()
 	{
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
@@ -87,8 +89,8 @@ namespace Graphics::GUI
 				renderInspector = false;
 			}
 
-			RI_PermanentComponents();
-			RI_DynamicComponents();
+			guiInspector.RI_PermanentComponents();
+			guiInspector.RI_DynamicComponents();
 
 			ImGui::End();
 		}

@@ -48,14 +48,9 @@ namespace Graphics
 		static void SetWindowNameAsUnsaved(bool state);
 		static void WindowLoop();
 	private:
-		static inline vec3 lightPos = vec3(0.0f, 0.0f, 0.0f);
-
-		static inline int SCR_POS_X;
-		static inline int SCR_POS_Y;
-
-		static void GLFWSetup();
-		static void WindowSetup();
-		static void GladSetup();
-		static void ContentSetup();
+		void GLFWSetup();
+		void WindowSetup();
+		void GladSetup();
+		void ContentSetup();
 	};
 }

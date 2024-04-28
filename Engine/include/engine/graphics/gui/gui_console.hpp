@@ -19,12 +19,12 @@ namespace Graphics::GUI
 		static inline bool renderConsole;
 		static inline bool firstScrollToBottom;
 
-		static inline char inputTextBuffer[128];
 		static inline vector<string> consoleMessages;
 
 		static void RenderConsole();
 		static void AddTextToConsole(const string& message);
 	private:
-		static inline const int maxConsoleMessages = 1000;
+		char inputTextBuffer[128];
+		static constexpr int maxConsoleMessages = 1000;
 	};
 }

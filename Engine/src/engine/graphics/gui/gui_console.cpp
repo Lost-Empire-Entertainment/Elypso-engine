@@ -26,6 +26,8 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
+	GUIConsole guiConsole;
+
 	void GUIConsole::RenderConsole()
 	{
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
@@ -88,7 +90,7 @@ namespace Graphics::GUI
 			if (ImGui::InputTextWithHint(
 				"##inputfield",
 				"Enter command...",
-				inputTextBuffer,
+				guiConsole.inputTextBuffer,
 				sizeof(inputTextBuffer),
 				inputFieldTextFlags,
 				[](ImGuiInputTextCallbackData* data) -> int
@@ -116,9 +118,9 @@ namespace Graphics::GUI
 					return 0;
 				}))
 			{
-				ConsoleManager::ParseConsoleCommand(inputTextBuffer);
+				ConsoleManager::ParseConsoleCommand(guiConsole.inputTextBuffer);
 				ImGui::SetScrollHereY(1.0f);
-				memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
+				memset(guiConsole.inputTextBuffer, 0, sizeof(guiConsole.inputTextBuffer));
 			}
 
 			ImGui::PopItemWidth();

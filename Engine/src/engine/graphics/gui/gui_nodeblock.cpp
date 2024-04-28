@@ -35,6 +35,8 @@ using Graphics::Shape::Mesh;
 
 namespace Graphics::GUI
 {
+	GUINodeBlock guiNodeBlock;
+
 	void GUINodeBlock::SetBackgroundTexture()
 	{
 		string backgroundPath = Engine::filesPath + "/textures/node_background.png";
@@ -57,7 +59,7 @@ namespace Graphics::GUI
 		if (data)
 		{
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			textureID = texture;
+			guiNodeBlock.textureID = texture;
 		}
 		else Engine::CreateErrorPopup("Node window setup error", "Couldn't set up node window background texture!");
 		stbi_image_free(data);
@@ -141,7 +143,7 @@ namespace Graphics::GUI
 						//update each node position when dragging background
 						for (auto& node : selectedComponent->GetNodes())
 						{
-							if (node == selectedNode)
+							if (node == guiNodeBlock.selectedNode)
 							{
 								ImVec2 initialPos = ImVec2(node->GetInitialPos().x, node->GetInitialPos().y);
 								ImVec2 newNodePos = ImVec2(
@@ -166,11 +168,11 @@ namespace Graphics::GUI
 			ImVec2 imageSize(5000 * zoomFactor, 5000 * zoomFactor);
 
 			ImGui::SetCursorPos(imagePos);
-			ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(textureID)), imageSize);
+			ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(guiNodeBlock.textureID)), imageSize);
 
 			if (selectedComponent != nullptr)
 			{
-				GUINodeBlock::AddNode();
+				guiNodeBlock.AddNode();
 
 				if (selectedComponent->GetNodes().size() > 0)
 				{
@@ -253,15 +255,15 @@ namespace Graphics::GUI
 									ImColor(255, 255, 0, 255));
 
 								nodeCircle->SetPos(vec2(posX, posY));
-								if (theStartCircle != nullptr
-									&& theStartCircle == nodeCircle)
+								if (guiNodeBlock.theStartCircle != nullptr
+									&& guiNodeBlock.theStartCircle == nodeCircle)
 								{
-									theStartCircle->SetPos(vec2(posX, posY));
+									guiNodeBlock.theStartCircle->SetPos(vec2(posX, posY));
 								}
-								if (theEndCircle != nullptr
-									&& theEndCircle == nodeCircle)
+								if (guiNodeBlock.theEndCircle != nullptr
+									&& guiNodeBlock.theEndCircle == nodeCircle)
 								{
-									theEndCircle->SetPos(vec2(posX, posY));
+									guiNodeBlock.theEndCircle->SetPos(vec2(posX, posY));
 								}
 
 								//calculate distance between mouse cursor and circle center
@@ -272,27 +274,27 @@ namespace Graphics::GUI
 								//select circle with left mouse
 								if (distance <= circleRadius
 									&& ImGui::IsMouseClicked(0)
-									&& !wasNodeCircleSelected)
+									&& !guiNodeBlock.wasNodeCircleSelected)
 								{
-									wasNodeCircleSelected = true;
+									guiNodeBlock.wasNodeCircleSelected = true;
 
-									circleCenter = circlePos;
-									theStartCircle = nodeCircle;
+									guiNodeBlock.circleCenter = circlePos;
+									guiNodeBlock.theStartCircle = nodeCircle;
 								}
 
 								//release curve on selected circle
 								if (distance <= circleRadius
 									&& ImGui::IsMouseReleased(0)
-									&& wasNodeCircleSelected)
+									&& guiNodeBlock.wasNodeCircleSelected)
 								{
 									static bool validPosition = false;
 
 									//checks if the curve starts from left and ends at right
 									//or starts from right and ends at left side of selected nodes
 									validPosition =
-										((theStartCircle->GetSide() == GUINodeCircle::Side::left
+										((guiNodeBlock.theStartCircle->GetSide() == GUINodeCircle::Side::left
 										&& nodeCircle->GetSide() == GUINodeCircle::Side::right)
-										|| (theStartCircle->GetSide() == GUINodeCircle::Side::right
+										|| (guiNodeBlock.theStartCircle->GetSide() == GUINodeCircle::Side::right
 										&& nodeCircle->GetSide() == GUINodeCircle::Side::left));
 
 									if (!validPosition)
@@ -301,27 +303,29 @@ namespace Graphics::GUI
 									}
 									else
 									{
-										theEndCircle = nodeCircle;
+										guiNodeBlock.theEndCircle = nodeCircle;
 
 										//checks if the start and end circle arent under the same parent
-										if (theStartCircle->GetParent() == theEndCircle->GetParent())
+										if (guiNodeBlock.theStartCircle->GetParent() 
+											== guiNodeBlock.theEndCircle->GetParent())
 										{
 											cout << "connection start and end cannot be under same parent!\n";
 										}
 										else
 										{
-											shared_ptr<GUINodeConnection> nodeConnection = GUINodeConnection::InitializeNodeConnection(
+											shared_ptr<GUINodeConnection> nodeConnection = 
+												GUINodeConnection::InitializeNodeConnection(
 												GUINodeConnection::tempName,
 												GUINodeConnection::tempID,
-												theStartCircle,
-												theEndCircle);
+												guiNodeBlock.theStartCircle,
+												guiNodeBlock.theEndCircle);
 
 											//checks if same connection already exists
 											auto& connections = selectedComponent->GetNodeConnections();
 											for (auto it = connections.begin(); it != connections.end();)
 											{
-												if ((*it)->GetCurveStart() == theStartCircle
-													&& (*it)->GetCurveEnd() == theEndCircle)
+												if ((*it)->GetCurveStart() == guiNodeBlock.theStartCircle
+													&& (*it)->GetCurveEnd() == guiNodeBlock.theEndCircle)
 												{
 													cout << "connection with same start and end already exists!\n";
 													it = connections.erase(it);
@@ -330,8 +334,8 @@ namespace Graphics::GUI
 											}
 											for (auto it = connections.begin(); it != connections.end();)
 											{
-												if ((*it)->GetCurveStart() == theEndCircle
-													&& (*it)->GetCurveEnd() == theStartCircle)
+												if ((*it)->GetCurveStart() == guiNodeBlock.theEndCircle
+													&& (*it)->GetCurveEnd() == guiNodeBlock.theStartCircle)
 												{
 													cout << "connection with same start and end already exists!\n";
 													it = connections.erase(it);
@@ -341,14 +345,18 @@ namespace Graphics::GUI
 
 											selectedComponent->GetNodeConnections().push_back(nodeConnection);
 
-											theStartCircle->SetNodeConnection(nodeConnection);
-											theEndCircle->SetNodeConnection(nodeConnection);
+											guiNodeBlock.theStartCircle->SetNodeConnection(nodeConnection);
+											guiNodeBlock.theEndCircle->SetNodeConnection(nodeConnection);
 
-											string startCircleName = theStartCircle->GetName() + " | " + to_string(theStartCircle->GetID());
-											string endCircleName = theEndCircle->GetName() + " | " + to_string(theEndCircle->GetID());
+											string startCircleName = 
+												guiNodeBlock.theStartCircle->GetName() 
+												+ " | " + to_string(guiNodeBlock.theStartCircle->GetID());
+											string endCircleName = 
+												guiNodeBlock.theEndCircle->GetName() 
+												+ " | " + to_string(guiNodeBlock.theEndCircle->GetID());
 
-											theStartCircle = nullptr;
-											theEndCircle = nullptr;
+											guiNodeBlock.theStartCircle = nullptr;
+											guiNodeBlock.theEndCircle = nullptr;
 
 											cout << "created new curve from "
 												<< startCircleName << " to "
@@ -360,7 +368,7 @@ namespace Graphics::GUI
 								}
 
 								//first bezier curve draw on top of nodes
-								DrawBezierCurve();
+								guiNodeBlock.DrawBezierCurve();
 							}
 						}
 
@@ -374,39 +382,39 @@ namespace Graphics::GUI
 						//select node
 						if (ImGui::IsItemHovered()
 							&& ImGui::IsItemClicked(0)
-							&& !wasNodeCircleSelected)
+							&& !guiNodeBlock.wasNodeCircleSelected)
 						{
-							selectedNode = node;
+							guiNodeBlock.selectedNode = node;
 
 							wasNodeSelected = true;
 						}
 					}
 
-					if (wasNodeCircleSelected
+					if (guiNodeBlock.wasNodeCircleSelected
 						&& ImGui::IsMouseReleased(0))
 					{
-						wasNodeCircleSelected = false;
-						theStartCircle = nullptr;
-						theEndCircle = nullptr;
+						guiNodeBlock.wasNodeCircleSelected = false;
+						guiNodeBlock.theStartCircle = nullptr;
+						guiNodeBlock.theEndCircle = nullptr;
 					}
 
 					//deselect node
 					if (ImGui::IsMouseClicked(0)
 						&& !wasNodeSelected
-						&& selectedNode != nullptr)
+						&& guiNodeBlock.selectedNode != nullptr)
 					{
-						selectedNode = nullptr;
+						guiNodeBlock.selectedNode = nullptr;
 					}
 
 					//delete selected node with delete key
-					if (selectedNode != nullptr
+					if (guiNodeBlock.selectedNode != nullptr
 						&& ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
 					{
-						DestroyNode(selectedNode);
+						DestroyNode(guiNodeBlock.selectedNode);
 					}
 
 					//start dragging node
-					if (selectedNode != nullptr
+					if (guiNodeBlock.selectedNode != nullptr
 						&& ImGui::IsMouseDragging(ImGuiMouseButton_Left)
 						&& !isDraggingNode)
 					{
@@ -422,23 +430,23 @@ namespace Graphics::GUI
 					//drag selected node
 					if (isDraggingNode)
 					{
-						selectedNode->SetInitialPos(selectedNode->GetPos());
+						guiNodeBlock.selectedNode->SetInitialPos(guiNodeBlock.selectedNode->GetPos());
 
 						ImVec2 currentMousePos = ImGui::GetMousePos();
 						ImVec2 screenDelta = ImVec2(
 							currentMousePos.x - lastNodeDragPos.x,
 							currentMousePos.y - lastNodeDragPos.y);
 
-						vec2 nodePos = selectedNode->GetPos();
+						vec2 nodePos = guiNodeBlock.selectedNode->GetPos();
 						nodePos.x += screenDelta.x / zoomFactor;
 						nodePos.y += screenDelta.y / zoomFactor;
-						selectedNode->SetPos(nodePos);
+						guiNodeBlock.selectedNode->SetPos(nodePos);
 
 						lastNodeDragPos = currentMousePos;
 					}
 
 					//second bezier curve draw underneath nodes
-					DrawBezierCurve();
+					guiNodeBlock.DrawBezierCurve();
 				}
 			}
 
@@ -760,7 +768,7 @@ namespace Graphics::GUI
 			if (it != nodes.end()) nodes.erase(it);
 		}
 
-		if (selectedNode == node) selectedNode = nullptr;
+		if (guiNodeBlock.selectedNode == node) guiNodeBlock.selectedNode = nullptr;
 
 		cout << "deleted node " << nodeName << ", new node count is " << selectedComponent->GetNodes().size() << "\n";
 	}

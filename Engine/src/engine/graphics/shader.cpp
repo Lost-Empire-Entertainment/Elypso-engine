@@ -34,6 +34,8 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
+    Shader shader;
+
     Shader Shader::LoadShader(const string& vertexPath, const string& fragmentPath)
     {
         Shader shader{};
@@ -48,8 +50,8 @@ namespace Graphics
 
         string shaderKey = vertexStemPath.string() + vertexStemExtension + "|" + fragmentStemPath.string() + fragmentStemExtension;
 
-        auto it = shaders.find(shaderKey);
-        if (it != shaders.end())
+        auto it = shader.shaders.find(shaderKey);
+        if (it != shader.shaders.end())
         {
             shader.ID = it->second;
             return shader;
@@ -116,23 +118,23 @@ namespace Graphics
             vertex = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(vertex, 1, &vShaderCode, NULL);
             glCompileShader(vertex);
-            CheckCompileErrors(vertex, "VERTEX");
+            shader.CheckCompileErrors(vertex, "VERTEX");
             //fragment shader
             fragment = glCreateShader(GL_FRAGMENT_SHADER);
             glShaderSource(fragment, 1, &fShaderCode, NULL);
             glCompileShader(fragment);
-            CheckCompileErrors(fragment, "FRAGMENT");
+            shader.CheckCompileErrors(fragment, "FRAGMENT");
             //shader program
             shader.ID = glCreateProgram();
             glAttachShader(shader.ID, vertex);
             glAttachShader(shader.ID, fragment);
             glLinkProgram(shader.ID);
-            CheckCompileErrors(shader.ID, "PROGRAM");
+            shader.CheckCompileErrors(shader.ID, "PROGRAM");
             //delete shaders as they are no longer needed
             glDeleteShader(vertex);
             glDeleteShader(fragment);
 
-            shaders.emplace(shaderKey, shader.ID);
+            shader.shaders.emplace(shaderKey, shader.ID);
 
             //cout << "Successfully initialized " << vertSplit.back() << " and " << fragSplit.back() << " with ID " << to_string(ID) << "!\n\n";
 

@@ -25,27 +25,27 @@ namespace Graphics::GUI
 	class GUINodeBlock
 	{
 	public:
-		static inline unsigned int textureID;
 		static inline bool renderNodeBlock;
 		static inline shared_ptr<GameObject> selectedGameObject;
 		static inline shared_ptr<Component> selectedComponent;
-		static inline shared_ptr<GUINode> selectedNode;
 
 		static void SetBackgroundTexture();
 		static void RenderNodeBlock();
 
-		static void DrawBezierCurve();
-
-		static void AddNode();
-
 		static void DestroyNode(const shared_ptr<GUINode>& node);
 	private:
-		static inline unsigned int backgroundID;
-		static inline bool wasNodeCircleSelected;
-		static inline ImVec2 circleCenter = {};
-		static inline ImVec2 curveStart = {};
-		static inline ImVec2 curveEnd = {};
-		static inline shared_ptr<GUINodeCircle> theStartCircle;
-		static inline shared_ptr<GUINodeCircle> theEndCircle;
+		void DrawBezierCurve();
+		void AddNode();
+
+		unsigned int textureID;
+		unsigned int backgroundID;
+		bool wasNodeCircleSelected;
+		ImVec2 circleCenter = {};
+		ImVec2 curveStart = {};
+		ImVec2 curveEnd = {};
+		shared_ptr<GUINodeCircle> theStartCircle;
+		shared_ptr<GUINodeCircle> theEndCircle;
+
+		shared_ptr<GUINode> selectedNode;
 	};
 }

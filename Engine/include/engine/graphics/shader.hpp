@@ -48,8 +48,8 @@ namespace Graphics
 		void SetMat3(const string& name, const mat3& mat) const;
 		void SetMat4(const string& name, const mat4& mat) const;
 	private:
-		static inline unordered_map<string, unsigned int> shaders;
+		unordered_map<string, unsigned int> shaders;
 
-		static void CheckCompileErrors(GLuint shader, string type);
+		void CheckCompileErrors(GLuint shader, string type);
 	};
 }

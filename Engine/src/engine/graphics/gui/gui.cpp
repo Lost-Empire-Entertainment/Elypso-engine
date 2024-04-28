@@ -75,7 +75,7 @@ namespace Graphics::GUI
 	static ImVec4 cubeColor;
 	static ImVec4 specularColor;
 
-
+	EngineGUI engineGui;
 
 	void EngineGUI::Initialize()
 	{
@@ -154,7 +154,7 @@ namespace Graphics::GUI
 		ImGuiIO& io = ImGui::GetIO();
 		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 200);
 
-		RenderTopBar();
+		engineGui.RenderTopBar();
 
 		ImGuiDockNodeFlags dockFlags =
 			ImGuiDockNodeFlags_PassthruCentralNode;
@@ -168,9 +168,9 @@ namespace Graphics::GUI
 		GUIAssetList::RenderAssetList();
 		GUIImportAsset::RenderImportAsset();
 
-		RenderVersionCheckWindow();
-		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
-		if (renderUnsavedSceneSwitchWindow) ConfirmUnsavedSceneSwitch();
+		engineGui.RenderVersionCheckWindow();
+		if (renderUnsavedShutdownWindow) engineGui.ConfirmUnsavedShutdown();
+		if (renderUnsavedSceneSwitchWindow) engineGui.ConfirmUnsavedSceneSwitch();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

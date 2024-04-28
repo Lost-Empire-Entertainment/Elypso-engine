@@ -56,14 +56,15 @@ using Type = Core::ConsoleManager::Type;
 namespace Graphics
 {
 	Input Render::camera(Render::window);
+	Render render;
 
 	void Render::RenderSetup()
 	{
-		Render::GLFWSetup();
-		Render::WindowSetup();
-		Render::GladSetup();
+		render.GLFWSetup();
+		render.WindowSetup();
+		render.GladSetup();
 
-		Render::ContentSetup();
+		render.ContentSetup();
 
 		EngineGUI::Initialize();
 
