@@ -13,12 +13,19 @@
 #include "gui_assetlist.hpp"
 #include "gui.hpp"
 #include "gameobject.hpp"
+#include "selectobject.hpp"
+
+using std::exception;
 
 using Graphics::Shape::GameObjectManager;
+using Graphics::Shape::GameObject;
+using Graphics::Shape::Mesh;
+using Physics::Select;
 
 namespace Graphics::GUI
 {
 	GUIAssetList assetList;
+	static shared_ptr<GameObject> selectedObj;
 
 	void GUIAssetList::RenderAssetList()
 	{
@@ -38,9 +45,7 @@ namespace Graphics::GUI
 				renderAssetList = false;
 			}
 
-			//*--------------------------------------------------*
 			//draw categories hierarchy
-			//*--------------------------------------------------*
 			ImVec2 categoriesChildSize = ImVec2(
 				280,
 				ImGui::GetWindowSize().y - 100);
@@ -51,9 +56,7 @@ namespace Graphics::GUI
 			assetList.DrawCategoriesHierarchy();
 			ImGui::EndChild();
 			
-			//*--------------------------------------------------*
 			//draw gameobject table
-			//*--------------------------------------------------*
 			ImGui::SetCursorPos(ImVec2(300, 70));
 			ImVec2 gameobjectsChildSize = ImVec2(
 				ImGui::GetWindowSize().x - 310,
@@ -120,65 +123,41 @@ namespace Graphics::GUI
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
-		//*--------------------------------------------------*
-		//columns for gameobject data types
-		//*--------------------------------------------------*
-		string column_Name = "Name";
-		ImGui::SetCursorPos(ImVec2(40, 25));
-		ImGui::Text(column_Name.c_str());
+		vector<shared_ptr<GameObject>> models = GameObjectManager::GetModels();
 
-		string column_ID = "ID";
-		ImGui::SetCursorPos(ImVec2(150, 25));
-		ImGui::Text(column_ID.c_str());
-
-		string column_Path = "Path";
-		ImGui::SetCursorPos(ImVec2(240, 25));
-		ImGui::Text(column_Path.c_str());
-
-		//*--------------------------------------------------*
-		//rows for gameobject text fields
-		//*--------------------------------------------------*
-		for (const auto& obj : GameObjectManager::GetObjects())
-		{
-			string key = obj->GetName() + "_" + to_string(obj->GetID());
-
-			char name_char[nameBufferSize];
-			strcpy_s(name_char, nameBufferSize, obj->GetName().c_str());
-			ImGui::InputText(("##" + key).c_str(), name_char, nameBufferSize);
-			if (ImGui::IsItemEdited()
-				&& strlen(name_char) < nameBufferSize)
-			{
-				strcpy_s(names[key], nameBufferSize, name_char);
-			}
-
-			ImGui::Text(("##" + key).c_str(), obj->GetID());
-
-			string path = obj->GetDirectory();
-		}
-
-		//*--------------------------------------------------*
 		//build asset list grid
-		//*--------------------------------------------------*
 		static float horizontalStartX = 10.0f;
 		static float verticalStartY = 10.0f;
 		static float horizontalSpace = 100;
 		static float verticalSpace = 50;
 
-		static int rowCount = 15;
-		static int columnCount = 5;
+		int rowCount = static_cast<int>(models.size());
+		if (models.size() < 2)
+		{
+			rowCount = 2;
+			if (models.size() == 0)
+			{
+				ImGui::SetCursorPos(ImVec2(20, 70));
+				ImGui::SetNextItemWidth(75);
+				ImGui::Text("None");
+			}
+		}
+		else rowCount = static_cast<int>(models.size()) + 1;
+
+		static int columnCount = 1; //we only need one column for the object name
 		static float lineThickness = 1.0f;
 
 		float tablePosX = windowPos.x + horizontalStartX;
 		float tablePosY = windowPos.y + verticalStartY;
-		
+
 		//draw horizontal lines
 		for (int row = 0; row <= rowCount; ++row)
 		{
 			ImVec2 horizontalStart(
-				tablePosX, 
+				tablePosX,
 				tablePosY + row * verticalSpace);
 			ImVec2 horizontalEnd(
-				tablePosX + columnCount * horizontalSpace, 
+				tablePosX + columnCount * horizontalSpace,
 				tablePosY + row * verticalSpace);
 
 			ImGui::GetWindowDrawList()->AddLine(
@@ -192,10 +171,10 @@ namespace Graphics::GUI
 		for (int col = 0; col <= columnCount; ++col)
 		{
 			ImVec2 verticalStart(
-				tablePosX + col * horizontalSpace, 
+				tablePosX + col * horizontalSpace,
 				tablePosY);
 			ImVec2 verticalEnd(
-				tablePosX + col * horizontalSpace, 
+				tablePosX + col * horizontalSpace,
 				tablePosY + rowCount * verticalSpace);
 
 			ImGui::GetWindowDrawList()->AddLine(
@@ -203,6 +182,50 @@ namespace Graphics::GUI
 				verticalEnd,
 				IM_COL32(255, 255, 255, 255),
 				lineThickness);
+		}
+
+		//draw object name text in main column
+		string column_Name = "Name";
+		ImGui::SetCursorPos(ImVec2(40, 25));
+		ImGui::Text(column_Name.c_str());
+
+		//rows for gameobject text fields
+		for (int i = 0; i < models.size(); i++)
+		{
+			float cursorHeight = static_cast<float>(70 + (50 * i + 1));
+
+			selectedObj = models[i];
+			ImGui::SetCursorPos(ImVec2(20, cursorHeight));
+			ImGui::SetNextItemWidth(75);
+			//change selected text color to yellow, otherwise white
+			if (Select::selectedObj == selectedObj)
+			{
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", selectedObj->GetName().c_str());
+			}
+			else
+			{
+				ImGui::Text(selectedObj->GetName().c_str());
+			}
+
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			{
+				Select::selectedObj = selectedObj;
+				Select::isObjectSelected = true;
+			}
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+			{
+				ImGui::OpenPopup("popUp_AssetList");
+			}
+		}
+
+		if (ImGui::BeginPopup("popUp_AssetList"))
+		{
+			if (ImGui::MenuItem("Delete"))
+			{
+				GameObjectManager::DestroyGameObject(selectedObj);
+			}
+
+			ImGui::EndPopup();
 		}
 	}
 }

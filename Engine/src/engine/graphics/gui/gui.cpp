@@ -250,8 +250,22 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						Model::targetModel = Engine::filesPath + "/models/cube.fbx";
-						Model::Initialize();
+						string targetPath = Engine::filesPath + "/models/cube.fbx";
+						string targetName = "Cube";
+						Model::Initialize(
+							vec3(0),
+							vec3(0),
+							vec3(1),
+							targetPath,
+							Engine::filesPath + "/shaders/GameObject.vert",
+							Engine::filesPath + "/shaders/GameObject.frag",
+							Engine::filesPath + "/textures/default_diffuse.png",
+							"EMPTY",
+							"EMPTY",
+							"EMPTY",
+							32,
+							targetName,
+							Model::tempID);
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -267,8 +281,22 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						Model::targetModel = Engine::filesPath + "/models/sphere.fbx";
-						Model::Initialize();
+						string targetPath = Engine::filesPath + "/models/sphere.fbx";
+						string targetName = "Sphere";
+						Model::Initialize(
+							vec3(0),
+							vec3(0),
+							vec3(1),
+							targetPath,
+							Engine::filesPath + "/shaders/GameObject.vert",
+							Engine::filesPath + "/shaders/GameObject.frag",
+							Engine::filesPath + "/textures/default_diffuse.png",
+							"EMPTY",
+							"EMPTY",
+							"EMPTY",
+							32,
+							targetName,
+							Model::tempID);
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -284,8 +312,22 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						Model::targetModel = Engine::filesPath + "/models/cylinder.fbx";
-						Model::Initialize();
+						string targetPath = Engine::filesPath + "/models/cylinder.fbx";
+						string targetName = "Cylinder";
+						Model::Initialize(
+							vec3(0),
+							vec3(0),
+							vec3(1),
+							targetPath,
+							Engine::filesPath + "/shaders/GameObject.vert",
+							Engine::filesPath + "/shaders/GameObject.frag",
+							Engine::filesPath + "/textures/default_diffuse.png",
+							"EMPTY",
+							"EMPTY",
+							"EMPTY",
+							32,
+							targetName,
+							Model::tempID);
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -301,8 +343,22 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						Model::targetModel = Engine::filesPath + "/models/cone.fbx";
-						Model::Initialize();
+						string targetPath = Engine::filesPath + "/models/cone.fbx";
+						string targetName = "Cone";
+						Model::Initialize(
+							vec3(0),
+							vec3(0),
+							vec3(1),
+							targetPath,
+							Engine::filesPath + "/shaders/GameObject.vert",
+							Engine::filesPath + "/shaders/GameObject.frag",
+							Engine::filesPath + "/textures/default_diffuse.png",
+							"EMPTY",
+							"EMPTY",
+							"EMPTY",
+							32,
+							targetName,
+							Model::tempID);
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -318,8 +374,22 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						Model::targetModel = Engine::filesPath + "/models/pyramid.fbx";
-						Model::Initialize();
+						string targetPath = Engine::filesPath + "/models/pyramid.fbx";
+						string targetName = "Pyramid";
+						Model::Initialize(
+							vec3(0),
+							vec3(0),
+							vec3(1),
+							targetPath,
+							Engine::filesPath + "/shaders/GameObject.vert",
+							Engine::filesPath + "/shaders/GameObject.frag",
+							Engine::filesPath + "/textures/default_diffuse.png",
+							"EMPTY",
+							"EMPTY",
+							"EMPTY",
+							32,
+							targetName,
+							Model::tempID);
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}

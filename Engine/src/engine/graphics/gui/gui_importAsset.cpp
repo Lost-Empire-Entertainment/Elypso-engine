@@ -50,9 +50,7 @@ namespace Graphics::GUI
 		if (renderImportAsset
 			&& ImGui::Begin("Import asset", NULL, windowFlags))
 		{
-			//*--------------------------------------------------*
 			//reset checkboxes if reopening import asset window
-			//*--------------------------------------------------*
 			if (!guiImportAsset.checkBoxMapFilled)
 			{
 				guiImportAsset.checkboxStates.clear();
@@ -87,9 +85,7 @@ namespace Graphics::GUI
 
 			ImGui::Spacing();
 
-			//*--------------------------------------------------*
 			//list all categories imported object can be placed into
-			//*--------------------------------------------------*
 			ImGui::Text("Type");
 			ImVec2 childSize = ImVec2(
 				ImGui::GetWindowSize().x - 20, 
@@ -129,9 +125,7 @@ namespace Graphics::GUI
 			}
 			ImGui::EndChild();
 
-			//*--------------------------------------------------*
 			//import asset into engine
-			//*--------------------------------------------------*
 			ImVec2 importButtonPos = ImVec2(
 				ImGui::GetWindowSize().x / 2 - buttonSize.x - buttonSize.x / 2, 
 				ImGui::GetWindowSize().y - 50);

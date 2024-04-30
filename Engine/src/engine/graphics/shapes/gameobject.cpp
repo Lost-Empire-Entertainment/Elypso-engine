@@ -104,6 +104,13 @@ namespace Graphics::Shape
 
 			glEnable(GL_DEPTH_TEST);
 		}
+
+		static int lastCount = 0;
+		if (objects.size() != lastCount)
+		{
+			UpdateModelVector();
+			lastCount = static_cast<int>(objects.size());
+		}
 	}
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
@@ -159,6 +166,21 @@ namespace Graphics::Shape
 			transparentObjects.erase(remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
 			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
+		}
+	}
+
+	void GameObjectManager::UpdateModelVector()
+	{
+		vector<shared_ptr<GameObject>> objects = GetObjects();
+
+		models.clear();
+
+		for (const auto& obj : objects)
+		{
+			if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+			{
+				models.push_back(obj);
+			}
 		}
 	}
 }

@@ -740,6 +740,10 @@ namespace Graphics::Shape
 		{
 			return objects;
 		}
+		static vector<shared_ptr<GameObject>>& GetModels()
+		{
+			return models;
+		}
 		static vector<shared_ptr<GameObject>> GetPointLights()
 		{
 			return pointLights;
@@ -763,6 +767,8 @@ namespace Graphics::Shape
 	private:
 		static inline map<string, vector<string>> gameobjects;
 		static inline vector<shared_ptr<GameObject>> objects;
+		//Only gameobjects with the model mesh type.
+		static inline vector<shared_ptr<GameObject>> models;
 		static inline vector<shared_ptr<GameObject>> opaqueObjects;
 		static inline vector<shared_ptr<GameObject>> transparentObjects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
@@ -770,5 +776,7 @@ namespace Graphics::Shape
 		static inline shared_ptr<GameObject> actionTex;
 		static inline shared_ptr<GameObject> border;
 		static inline vector<shared_ptr<GameObject>> billboards;
+
+		static void UpdateModelVector();
 	};
 }
