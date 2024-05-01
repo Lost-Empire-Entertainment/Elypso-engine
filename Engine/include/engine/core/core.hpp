@@ -18,6 +18,7 @@ namespace Core
 		static inline string version = "0.0.13 Prototype";
 		static inline string docsPath;
 		static inline string filesPath;
+		static inline string projectPath;
 		static inline string gamePath;
 		static inline string gameExePath;
 		static inline string gameParentPath;

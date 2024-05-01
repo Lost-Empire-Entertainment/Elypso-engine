@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <ShlObj.h>
 #include <filesystem>
+#include <fstream>
 
 //engine
 #include "core.hpp"
@@ -22,16 +23,12 @@
 using std::cout;
 using std::endl;
 using std::wstring;
+using std::ifstream;
 using std::filesystem::directory_iterator;
 using std::filesystem::exists;
-using std::filesystem::remove;
-using std::filesystem::remove_all;
-using std::filesystem::is_regular_file;
-using std::filesystem::is_directory;
 using std::filesystem::path;
 using std::filesystem::current_path;
 using std::filesystem::create_directory;
-using std::filesystem::copy_file;
 
 using Utils::String;
 using Utils::File;
@@ -97,13 +94,39 @@ namespace Core
 		// SET FILES PATH
 		//
 
-		path fsFilesPath = current_path().generic_string() + "/files/engine";
+		path fsFilesPath = current_path().generic_string() + "/files";
 		if (!exists(fsFilesPath))
 		{
 			Engine::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
 			return;
 		}
 		filesPath = fsFilesPath.string();
+
+		//
+		// SET PROJECT PATH
+		//
+
+		ifstream projectFile(filesPath + "/project.txt");
+		if (!projectFile.is_open())
+		{
+			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
+		}
+
+		string line;
+		while (getline(projectFile, line))
+		{
+			if (!line.empty())
+			{
+				size_t pos_project = line.find("project:");
+				if (pos_project != string::npos)
+				{
+					string removable = "project: ";
+					size_t pos = line.find(removable);
+					projectPath = line.erase(pos, removable.length());
+				}
+			}
+		}
+		projectFile.close();
 
 		//
 		// FILL GAMEOBJECT CATEGORY AND TYPE VECTORS
@@ -237,7 +260,8 @@ namespace Core
 				Type::INFO,
 				"Cleaning up resources...\n");
 
-			SceneFile::ExportProjectFiles();
+			File::DeleteFileOrfolder(Engine::filesPath + "/project.txt");
+			cout << "deleted " << Engine::filesPath + "/project.txt\n";
 
 			EngineGUI::Shutdown();
 

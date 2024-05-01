@@ -54,7 +54,7 @@ namespace EngineFile
 {
 	void SceneFile::CheckForProjectFile()
 	{
-		string projectPath = path(Engine::filesPath).parent_path().string() + "/project/project.txt";
+		string projectPath = Engine::filesPath + "/project.txt";
 		if (!exists(projectPath))
 		{
 			Engine::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
@@ -110,11 +110,10 @@ namespace EngineFile
 	void SceneFile::CreateScene()
 	{
 		int highestFolderNumber = 1;
-		string parentPath = path(Engine::filesPath).parent_path().string();
-		string projectsPath = parentPath + "/project";
-		string newFolderPath = projectsPath + "/Scene";
+		string parentPath = path(Engine::projectPath).parent_path().string();
+		string newFolderPath = parentPath + "/Scene";
 
-		for (const auto& entry : directory_iterator(projectsPath))
+		for (const auto& entry : directory_iterator(parentPath))
 		{
 			path entryPath = entry.path();
 			
@@ -172,8 +171,7 @@ namespace EngineFile
 
 		if (Engine::gamePath == "")
 		{
-			string parentPath = path(Engine::filesPath).parent_path().string();
-			string projectFilePath = parentPath + "/project/project.txt";
+			string projectFilePath = Engine::filesPath + "/project.txt";
 
 			ifstream projectFile(projectFilePath);
 			if (!projectFile.is_open())
@@ -188,12 +186,13 @@ namespace EngineFile
 			string line;
 			while (getline(projectFile, line))
 			{
-				if (line.find("game: ") != string::npos)
+				if (line.find("game: ") != string::npos
+					&& line.length() > 6)
 				{
 					line.erase(0, 6);
 					Engine::gamePath = line;
 					Engine::gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
-					Engine::gameParentPath = path(Engine::gameExePath).parent_path().string();
+					Engine::gameParentPath = Engine::gamePath + "\\build\\Release";
 					break;
 				}
 			}
@@ -431,16 +430,13 @@ namespace EngineFile
 	{
 		if (Engine::gamePath != "")
 		{
-			string parentPath = path(Engine::filesPath).parent_path().string();
-			string projectFilePath = parentPath + "/project/project.txt";
-
-			ifstream projectFile(projectFilePath);
+			ifstream projectFile(Engine::projectPath);
 			if (!projectFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"Couldn't read from project file '" + projectFilePath + "'!\n");
+					"Couldn't read from project file '" + Engine::projectPath + "'!\n");
 				return;
 			}
 
@@ -456,13 +452,13 @@ namespace EngineFile
 			}
 			projectFile.close();
 
-			ofstream outFile(projectFilePath);
+			ofstream outFile(Engine::projectPath);
 			if (!outFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"Couldn't write into project file '" + projectFilePath + "'!\n");
+					"Couldn't write into project file '" + Engine::projectPath + "'!\n");
 				return;
 			}
 			else
@@ -622,60 +618,6 @@ namespace EngineFile
 		case SaveType::shutDown:
 			Engine::Shutdown();
 			break;
-		}
-	}
-
-	void SceneFile::ExportProjectFiles()
-	{
-		for (const auto& entry : directory_iterator(currentProjectPath))
-		{
-			File::DeleteFileOrfolder(entry);
-		}
-
-		string parentPath = path(Engine::filesPath).parent_path().string();
-		string projectsPath = parentPath + "/project";
-		string projectFilePath = projectsPath + "/project.txt";
-
-		ifstream projectFile(projectFilePath);
-		if (!projectFile.is_open())
-		{
-			Engine::CreateErrorPopup(
-				"Project file load error", 
-				"Failed to open project file! Shutting down engine");
-		}
-
-		string line;
-		string fileContent;
-		while (getline(projectFile, line))
-		{
-			if (line.find("scene: ") != string::npos)
-			{
-				line = "scene: " + currentScenePath;
-			}
-			fileContent += line + "\n";
-		}
-		projectFile.close();
-
-		ofstream outFile(projectFilePath);
-		if (!outFile.is_open())
-		{
-			Engine::CreateErrorPopup(
-				"Project file load error",
-				"Failed to open project file! Shutting down engine");
-		}
-		else
-		{
-			outFile << fileContent;
-			outFile.close();
-		}
-
-		for (const auto& entry : directory_iterator(projectsPath))
-		{
-			string ending = entry.is_directory() 
-				? path(entry).filename().string() 
-				: path(entry).stem().string() + path(entry).extension().string();
-
-			File::MoveOrRenameFileOrFolder(entry, currentProjectPath + "\\" + ending, false);
 		}
 	}
 }

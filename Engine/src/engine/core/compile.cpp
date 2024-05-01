@@ -44,9 +44,7 @@ namespace Core
 
 		try
 		{
-			if (Engine::gamePath == ""
-				|| Engine::gameExePath == ""
-				|| Engine::gameParentPath == "")
+			if (Engine::gamePath == "")
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
@@ -97,7 +95,7 @@ namespace Core
 
 				compilation.PrintNodeConnections();
 
-				string engineProjectPath = path(Engine::filesPath).parent_path().string() + "\\project";
+				string engineProjectPath = path(Engine::projectPath).parent_path().string();
 				for (const auto& item : directory_iterator(path(engineProjectPath)))
 				{
 					string itemPath = item.path().string();
@@ -116,6 +114,9 @@ namespace Core
 		catch (const exception& e)
 		{
 			cout << e.what() << "\n";
+
+			cout << "running game from folder " << Engine::gameParentPath
+				<< " and file " << Engine::gameExePath << "\n";
 		}
 	}
 

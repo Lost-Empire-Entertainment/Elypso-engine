@@ -214,6 +214,9 @@ namespace Graphics::GUI
 			}
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 			{
+				Select::selectedObj = selectedObj;
+				Select::isObjectSelected = true;
+
 				ImGui::OpenPopup("popUp_AssetList");
 			}
 		}
@@ -222,7 +225,7 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Delete"))
 			{
-				GameObjectManager::DestroyGameObject(selectedObj);
+				GameObjectManager::DestroyGameObject(Select::selectedObj);
 			}
 
 			ImGui::EndPopup();

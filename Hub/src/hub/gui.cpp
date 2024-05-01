@@ -28,6 +28,7 @@ using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 using std::filesystem::remove_all;
+using std::filesystem::remove;
 using std::filesystem::rename;
 using std::filesystem::copy;
 using std::filesystem::create_directory;
@@ -340,8 +341,8 @@ void GUI::NewProject()
 	}
 
 	string engineParentPath = Core::enginePath.parent_path().string();
-	project << "scene: " << engineParentPath + "/files/project/Scene1/scene.txt\n";
-	project << "project: " << filePath << "\n";
+	project << "scene: " << filePath + "/Scene1/scene.txt\n";
+	project << "project: " << filePath + "/project.txt" << "\n";
 	project << "game: \n";
 	project.close();
 
@@ -566,31 +567,12 @@ void GUI::RunProject(const string& targetProject)
 		return;
 	}
 
-	//empty engine folder content if any content exists
-	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files/project";
-	for (const auto& entry : directory_iterator(engineFilesFolderPath))
-	{
-		path entryPath = entry.path();
-		if (is_regular_file(entryPath)) remove(entryPath);
-		else if (is_directory(entryPath)) remove_all(entryPath);
-	}
-
-	//move temp folder content to engine files folder content
-	for (const auto& entry : directory_iterator(targetProject))
-	{
-		path entryPath = entry.path();
-		if (is_regular_file(entryPath))
-		{
-			string name = entryPath.stem().string();
-			string extension = entryPath.extension().string();
-			copy(entryPath, engineFilesFolderPath + "/" + name + extension);
-		}
-		else if (is_directory(entryPath))
-		{
-			string name = entryPath.stem().string();
-			copy(entryPath, engineFilesFolderPath + "/" + name);
-		}
-	}
+	//copy project.txt to files folder
+	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
+	string originalProjectFile = targetProject + "/project.txt";
+	string targetProjectFile = engineFilesFolderPath + "/project.txt";
+	if (exists(targetProjectFile)) remove(targetProjectFile);
+	copy(originalProjectFile, targetProjectFile);
 
 	cout << "Running engine from '" << Core::enginePath << "'!\n\n";
 

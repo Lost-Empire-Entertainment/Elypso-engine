@@ -146,7 +146,11 @@ namespace Graphics::GUI
 		if (ImGui::Button("Game path", ImVec2(100, 0)))
 		{
 			Engine::gamePath = FileExplorer::Select(FileExplorer::SearchType::folder);
+			Engine::gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
+			Engine::gameParentPath = Engine::gamePath + "\\build\\Release";
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+			cout << "set game path to " << Engine::gamePath << "\n";
 		}
 		if (ImGui::IsItemHovered())
 		{
