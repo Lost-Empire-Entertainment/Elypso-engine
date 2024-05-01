@@ -144,7 +144,7 @@ namespace Graphics::GUI
 		}
 		else rowCount = static_cast<int>(models.size()) + 1;
 
-		static int columnCount = 1; //we only need one column for the object name
+		static int columnCount = 2;
 		static float lineThickness = 1.0f;
 
 		float tablePosX = windowPos.x + horizontalStartX;
@@ -184,10 +184,13 @@ namespace Graphics::GUI
 				lineThickness);
 		}
 
-		//draw object name text in main column
 		string column_Name = "Name";
 		ImGui::SetCursorPos(ImVec2(40, 25));
 		ImGui::Text(column_Name.c_str());
+
+		string column_ID = "ID";
+		ImGui::SetCursorPos(ImVec2(150, 25));
+		ImGui::Text(column_ID.c_str());
 
 		//rows for gameobject text fields
 		for (int i = 0; i < models.size(); i++)
@@ -219,6 +222,10 @@ namespace Graphics::GUI
 
 				ImGui::OpenPopup("popUp_AssetList");
 			}
+
+			ImGui::SetCursorPos(ImVec2(120, cursorHeight));
+			ImGui::SetNextItemWidth(75);
+			ImGui::Text(to_string(selectedObj->GetID()).c_str());
 		}
 
 		if (ImGui::BeginPopup("popUp_AssetList"))
