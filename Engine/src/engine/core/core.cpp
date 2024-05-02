@@ -166,7 +166,7 @@ namespace Core
 		cat_static.push_back("Default models");
 		gameObjects.insert({ "Static models", cat_static });
 
-		GameObjectManager::SetGameObjectCategories(gameObjects);
+		GameObjectManager::SetCategoryNames(gameObjects);
 
 		//
 		// REST OF THE INITIALIZATION

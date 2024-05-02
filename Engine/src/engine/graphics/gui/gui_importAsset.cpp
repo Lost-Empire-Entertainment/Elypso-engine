@@ -55,7 +55,7 @@ namespace Graphics::GUI
 			{
 				guiImportAsset.checkboxStates.clear();
 
-				for (const auto& category : GameObjectManager::GetGameObjectCategories())
+				for (const auto& category : GameObjectManager::GetGCategoryNames())
 				{
 					const string& categoryName = category.first;
 					const auto& categoryMap = category.second;
@@ -92,7 +92,7 @@ namespace Graphics::GUI
 				ImGui::GetWindowSize().y - 200);
 			if (ImGui::BeginChild("##selectType", childSize, true))
 			{
-				for (const auto& category : GameObjectManager::GetGameObjectCategories())
+				for (const auto& category : GameObjectManager::GetGCategoryNames())
 				{
 					const string& categoryName = category.first;
 					const auto& categoryMap = category.second;

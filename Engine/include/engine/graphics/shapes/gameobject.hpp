@@ -12,6 +12,7 @@
 
 //external
 #include "glad.h"
+#include "magic_enum.hpp"
 
 //engine
 #include "shader.hpp"
@@ -481,47 +482,18 @@ namespace Graphics::Shape
 		static inline unsigned int nextID;
 
 		enum class Category
-		{
-			cat_characters,
-			cat_effects,
-			cat_audio,
-			cat_UI,
-			cat_lights,
-			cat_textures,
-			cat_static,
-			cat_all
-		};
-		enum class CategoryType_Character
-		{
-			type_placeholder
-		};
-		enum class CategoryType_Effect
-		{
-			type_placeholder
-		};
-		enum class CategoryType_Audio
-		{
-			type_placeholder
-		};
-		enum class CategoryType_UI
-		{
-			type_placeholder
-		};
-		enum class CategoryType_Light
-		{
-			type_pointLight,
-			type_spotLight
-		};
-		enum class CategoryType_Texture
-		{
-			type_diffuse,
-			type_specular,
-			type_normal,
-			type_height
-		};
-		enum class CategoryType_Static
-		{
-			type_default
+		{ 
+			cat_Characters_Placeholder, 
+			cat_Effects_Placeholder, 
+			cat_Audio_Placeholder,
+			cat_UI_Placeholder,
+			cat_Lights_Spotlights,
+			cat_Lights_Point_lights,
+			cat_Textures_Diffuse_textures,
+			cat_Textures_Specular_textures,
+			cat_Textures_Normal_textures,
+			cat_Textures_Height_textures,
+			cat_Props_Static_props
 		};
 
 		//basic gameobject
@@ -649,6 +621,41 @@ namespace Graphics::Shape
 
 		void SetDirectory(const string& newDirectory) { directory = newDirectory; }
 
+		void AddCategory(const Category& category)
+		{
+			auto enumExists = [=]() {
+				return std::find(categories.begin(), categories.end(), category) != categories.end();
+				};
+
+			if (!enumExists())
+			{
+				categories.push_back(category);
+				std::cout << "Added enum value " << magic_enum::enum_name(category) << " to the vector." << std::endl;
+			}
+			else
+			{
+				std::cout << "Enum value " << magic_enum::enum_name(category) << " already exists in the vector." << std::endl;
+			}
+		}
+
+		void RemoveCategory(const Category& category)
+		{
+			auto enumExists = [=]() {
+				return std::find(categories.begin(), categories.end(), category) != categories.end();
+				};
+
+			auto it = std::find(categories.begin(), categories.end(), category);
+			if (it != categories.end())
+			{
+				categories.erase(it);
+				std::cout << "Removed value " << magic_enum::enum_name(category) << " from the vector." << std::endl;
+			}
+			else
+			{
+				std::cout << "Value " << magic_enum::enum_name(category) << " does not exist in the vector." << std::endl;
+			}
+		}
+
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const {  return ID; }
@@ -666,6 +673,7 @@ namespace Graphics::Shape
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
 		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
 		const string& GetDirectory() const { return directory; }
+		const vector<Category>& GetCategories() const { return categories; }
 	private:
 		bool isInitialized;
 		string name;
@@ -684,6 +692,7 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> parentBillboardHolder;
 		shared_ptr<GameObject> childBillboard;
 		string directory;
+		vector<Category> categories;
 	};
 
 	class GameObjectManager
@@ -693,9 +702,9 @@ namespace Graphics::Shape
 			const mat4& view,
 			const mat4& projection);
 
-		static void SetGameObjectCategories(const map<string, vector<string>>& newGameObjectsMap)
+		static void SetCategoryNames(const map<string, vector<string>>& newCategoryNames)
 		{
-			gameobjects = newGameObjectsMap;
+			categoryNames = newCategoryNames;
 		}
 		static void AddGameObject(const shared_ptr<GameObject>& obj)
 		{
@@ -732,17 +741,13 @@ namespace Graphics::Shape
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
-		static map<string, vector<string>>& GetGameObjectCategories()
+		static map<string, vector<string>>& GetGCategoryNames()
 		{
-			return gameobjects;
+			return categoryNames;
 		}
 		static vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
-		}
-		static vector<shared_ptr<GameObject>>& GetModels()
-		{
-			return models;
 		}
 		static vector<shared_ptr<GameObject>> GetPointLights()
 		{
@@ -765,10 +770,8 @@ namespace Graphics::Shape
 			return billboards;
 		}
 	private:
-		static inline map<string, vector<string>> gameobjects;
+		static inline map<string, vector<string>> categoryNames;
 		static inline vector<shared_ptr<GameObject>> objects;
-		//Only gameobjects with the model mesh type.
-		static inline vector<shared_ptr<GameObject>> models;
 		static inline vector<shared_ptr<GameObject>> opaqueObjects;
 		static inline vector<shared_ptr<GameObject>> transparentObjects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
@@ -776,7 +779,5 @@ namespace Graphics::Shape
 		static inline shared_ptr<GameObject> actionTex;
 		static inline shared_ptr<GameObject> border;
 		static inline vector<shared_ptr<GameObject>> billboards;
-
-		static void UpdateModelVector();
 	};
 }

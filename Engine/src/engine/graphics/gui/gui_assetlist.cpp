@@ -26,6 +26,7 @@ namespace Graphics::GUI
 {
 	GUIAssetList assetList;
 	static shared_ptr<GameObject> selectedObj;
+	static vector<shared_ptr<GameObject>> currentModels;
 
 	void GUIAssetList::RenderAssetList()
 	{
@@ -75,7 +76,7 @@ namespace Graphics::GUI
 
 	void GUIAssetList::DrawCategoriesHierarchy()
 	{
-		for (const auto& category : GameObjectManager::GetGameObjectCategories())
+		for (const auto& category : GameObjectManager::GetGCategoryNames())
 		{
 			const string& categoryName = category.first;
 			const auto& categoryMap = category.second;
@@ -115,6 +116,7 @@ namespace Graphics::GUI
 			&& ImGui::IsMouseDoubleClicked(0))
 		{
 			cout << "opening All\n";
+			currentModels = GameObjectManager::GetObjects();
 		}
 	}
 
@@ -123,26 +125,24 @@ namespace Graphics::GUI
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
-		vector<shared_ptr<GameObject>> models = GameObjectManager::GetModels();
-
 		//build asset list grid
 		static float horizontalStartX = 10.0f;
 		static float verticalStartY = 10.0f;
 		static float horizontalSpace = 100;
 		static float verticalSpace = 50;
 
-		int rowCount = static_cast<int>(models.size());
-		if (models.size() < 2)
+		int rowCount = static_cast<int>(currentModels.size());
+		if (currentModels.size() < 2)
 		{
 			rowCount = 2;
-			if (models.size() == 0)
+			if (currentModels.size() == 0)
 			{
 				ImGui::SetCursorPos(ImVec2(20, 70));
 				ImGui::SetNextItemWidth(75);
 				ImGui::Text("None");
 			}
 		}
-		else rowCount = static_cast<int>(models.size()) + 1;
+		else rowCount = static_cast<int>(currentModels.size()) + 1;
 
 		static int columnCount = 2;
 		static float lineThickness = 1.0f;
@@ -193,11 +193,11 @@ namespace Graphics::GUI
 		ImGui::Text(column_ID.c_str());
 
 		//rows for gameobject text fields
-		for (int i = 0; i < models.size(); i++)
+		for (int i = 0; i < currentModels.size(); i++)
 		{
 			float cursorHeight = static_cast<float>(70 + (50 * i + 1));
 
-			selectedObj = models[i];
+			selectedObj = currentModels[i];
 			ImGui::SetCursorPos(ImVec2(20, cursorHeight));
 			ImGui::SetNextItemWidth(75);
 			//change selected text color to yellow, otherwise white
