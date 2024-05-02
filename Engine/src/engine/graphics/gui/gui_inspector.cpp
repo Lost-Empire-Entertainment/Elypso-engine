@@ -115,8 +115,24 @@ namespace Graphics::GUI
 			ImGui::SameLine();
 
 			Type objType = obj->GetMesh()->GetMeshType();
-			string objTypeValue = "     Type: " + string(magic_enum::enum_name(objType));
+			string objTypeValue = "     Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
 			ImGui::Text(objTypeValue.c_str());
+
+			ImGui::SameLine();
+
+			ImGui::SetNextItemWidth(150);
+			static const char* items[] = { "Item 1", "Item 2", "Item 3", "Item 4" };
+			static bool selectedItems[4] = { false, false, false, false };
+			if (ImGui::BeginCombo("Categories", "", ImGuiComboFlags_NoPreview))
+			{
+				for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+				{
+					ImGui::PushID(i);
+					ImGui::Checkbox(items[i], &selectedItems[i]);
+					ImGui::PopID();
+				}
+				ImGui::EndCombo();
+			}
 
 			ImGui::Spacing();
 
@@ -205,7 +221,11 @@ namespace Graphics::GUI
 			{
 				float modelShininess = obj->GetBasicShape()->GetShininess();
 				ImGui::Text("Shininess");
-				if (ImGui::DragFloat("##shininess", &modelShininess, 0.1f, 3.0f, 128.0f))
+
+				float realMin = 0.1f;
+				float realMax = 128.0f;
+				float realDefault = 32.0f;
+				if (ImGui::DragFloat("##shininess", &modelShininess, realMin, 3.0f, realMax))
 				{
 					obj->GetBasicShape()->SetShininess(modelShininess);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -213,7 +233,7 @@ namespace Graphics::GUI
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##shininess"))
 				{
-					obj->GetBasicShape()->SetShininess(32.0f);
+					obj->GetBasicShape()->SetShininess(realDefault);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
