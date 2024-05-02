@@ -85,6 +85,13 @@ namespace Graphics::GUI
 		if (!exists(imguiConfigFile))
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
+
+			GUIAssetList::renderAssetList = true;
+			GUIConsole::renderConsole = true;
+			GUIDebugMenu::renderDebugMenu = true;
+			GUIInspector::renderInspector = true;
+			GUINodeBlock::renderNodeBlock = true;
+			ConfigFileManager::SaveConfigFile();
 		}
 
 		IMGUI_CHECKVERSION();

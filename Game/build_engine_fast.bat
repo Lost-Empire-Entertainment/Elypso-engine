@@ -34,6 +34,8 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 
 if %errorlevel% neq 0 (
 	echo %cmerr% CMake configuration failed.
+	pause
+	goto menu
 ) else (
 	echo %cmsuc% Cmake configuration succeeded!
 )
