@@ -79,6 +79,14 @@ namespace Graphics::GUI
 
 	void EngineGUI::Initialize()
 	{
+		//copies template file to documents folder if imgui file does not exist
+		string imguiConfigFile = Engine::docsPath + "/imgui.ini";
+		string imguiTemplateFile = Engine::filesPath + "/imgui.ini";
+		if (!exists(imguiConfigFile))
+		{
+			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
+		}
+
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGui::SetCurrentContext(ImGui::GetCurrentContext());
