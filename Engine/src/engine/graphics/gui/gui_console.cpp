@@ -60,6 +60,13 @@ namespace Graphics::GUI
 			for (const auto& message : consoleMessages)
 			{
 				ImGui::TextWrapped("%s", message.c_str());
+
+				if (ImGui::IsItemClicked()
+					&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					cout << "Added ' " << message << " ' to clipboard.\n";
+					ImGui::SetClipboardText(message.c_str());
+				}
 			}
 
 			ImGui::PopTextWrapPos();
