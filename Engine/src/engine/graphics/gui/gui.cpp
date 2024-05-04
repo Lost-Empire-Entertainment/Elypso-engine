@@ -252,6 +252,20 @@ namespace Graphics::GUI
 				}
 			}
 
+			map<GameObject::Category, bool> categories;
+			categories[GameObject::Category::cat_Characters_Placeholder] = false;
+			categories[GameObject::Category::cat_Effects_Placeholder] = false;
+			categories[GameObject::Category::cat_Audio_Placeholder] = false;
+			categories[GameObject::Category::cat_UI_Placeholder] = false;
+			categories[GameObject::Category::cat_Lights_Spotlights] = false;
+			categories[GameObject::Category::cat_Lights_Point_lights] = false;
+			categories[GameObject::Category::cat_Textures_Diffuse_textures] = false;
+			categories[GameObject::Category::cat_Textures_Specular_textures] = false;
+			categories[GameObject::Category::cat_Textures_Normal_textures] = false;
+			categories[GameObject::Category::cat_Textures_Height_textures] = false;
+			categories[GameObject::Category::cat_Props_Static_props] = false;
+			categories[GameObject::Category::cat_All] = true;
+
 			if (ImGui::BeginMenu("Shape"))
 			{
 				if (ImGui::MenuItem("Cube"))
@@ -265,6 +279,8 @@ namespace Graphics::GUI
 					}
 					else
 					{
+						categories[GameObject::Category::cat_Props_Static_props] = true;
+
 						string targetPath = Engine::filesPath + "/models/cube.fbx";
 						string targetName = "Cube";
 						Model::Initialize(
@@ -279,6 +295,7 @@ namespace Graphics::GUI
 							"EMPTY",
 							"EMPTY",
 							32,
+							categories,
 							targetName,
 							Model::tempID);
 
@@ -296,6 +313,8 @@ namespace Graphics::GUI
 					}
 					else
 					{
+						categories[GameObject::Category::cat_Props_Static_props] = true;
+
 						string targetPath = Engine::filesPath + "/models/sphere.fbx";
 						string targetName = "Sphere";
 						Model::Initialize(
@@ -310,6 +329,7 @@ namespace Graphics::GUI
 							"EMPTY",
 							"EMPTY",
 							32,
+							categories,
 							targetName,
 							Model::tempID);
 
@@ -327,6 +347,8 @@ namespace Graphics::GUI
 					}
 					else
 					{
+						categories[GameObject::Category::cat_Props_Static_props] = true;
+
 						string targetPath = Engine::filesPath + "/models/cylinder.fbx";
 						string targetName = "Cylinder";
 						Model::Initialize(
@@ -341,6 +363,7 @@ namespace Graphics::GUI
 							"EMPTY",
 							"EMPTY",
 							32,
+							categories,
 							targetName,
 							Model::tempID);
 
@@ -358,6 +381,8 @@ namespace Graphics::GUI
 					}
 					else
 					{
+						categories[GameObject::Category::cat_Props_Static_props] = true;
+
 						string targetPath = Engine::filesPath + "/models/cone.fbx";
 						string targetName = "Cone";
 						Model::Initialize(
@@ -372,6 +397,7 @@ namespace Graphics::GUI
 							"EMPTY",
 							"EMPTY",
 							32,
+							categories,
 							targetName,
 							Model::tempID);
 
@@ -389,6 +415,8 @@ namespace Graphics::GUI
 					}
 					else
 					{
+						categories[GameObject::Category::cat_Props_Static_props] = true;
+
 						string targetPath = Engine::filesPath + "/models/pyramid.fbx";
 						string targetName = "Pyramid";
 						Model::Initialize(
@@ -403,6 +431,7 @@ namespace Graphics::GUI
 							"EMPTY",
 							"EMPTY",
 							32,
+							categories,
 							targetName,
 							Model::tempID);
 
@@ -426,6 +455,7 @@ namespace Graphics::GUI
 					}
 					else
 					{
+						categories[GameObject::Category::cat_Lights_Point_lights] = true;
 						shared_ptr<GameObject> obj = PointLight::InitializePointLight();
 
 						Select::selectedObj = obj;
@@ -445,6 +475,7 @@ namespace Graphics::GUI
 					}
 					else
 					{
+						categories[GameObject::Category::cat_Lights_Point_lights] = true;
 						shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
 
 						Select::selectedObj = obj;

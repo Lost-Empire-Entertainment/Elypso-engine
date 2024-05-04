@@ -47,6 +47,7 @@ namespace Graphics::Shape
 		const vec3& diffuse,
 		const float& intensity,
 		const float& distance,
+		const map<GameObject::Category, bool> categories,
 		string& name,
 		unsigned int& id,
 
@@ -150,6 +151,8 @@ namespace Graphics::Shape
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
+
+		obj->SetCategoriesMap(categories);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);

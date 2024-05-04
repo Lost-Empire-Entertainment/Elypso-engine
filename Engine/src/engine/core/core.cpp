@@ -163,8 +163,8 @@ namespace Core
 		gameObjects.insert({ "Textures", cat_textures });
 
 		vector<string> cat_static;
-		cat_static.push_back("Default models");
-		gameObjects.insert({ "Static models", cat_static });
+		cat_static.push_back("Props");
+		gameObjects.insert({ "Static props", cat_static });
 
 		GameObjectManager::SetCategoryNames(gameObjects);
 

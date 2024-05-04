@@ -26,7 +26,7 @@ namespace Graphics::GUI
 {
 	GUIAssetList assetList;
 	static shared_ptr<GameObject> selectedObj;
-	static vector<shared_ptr<GameObject>> currentModels;
+	static GameObject::Category chosenCategory = GameObject::Category::cat_All;
 
 	void GUIAssetList::RenderAssetList()
 	{
@@ -76,7 +76,7 @@ namespace Graphics::GUI
 
 	void GUIAssetList::DrawCategoriesHierarchy()
 	{
-		for (const auto& category : GameObjectManager::GetGCategoryNames())
+		for (const auto& category : GameObjectManager::GetCategoryNames())
 		{
 			const string& categoryName = category.first;
 			const auto& categoryMap = category.second;
@@ -101,6 +101,67 @@ namespace Graphics::GUI
 						&& ImGui::IsMouseDoubleClicked(0))
 					{
 						cout << "opening " << subCategoryName << "\n";
+						if (categoryName == "Characters"
+							&& subCategoryName == "Placeholder")
+						{
+							chosenCategory = GameObject::Category::cat_Characters_Placeholder;
+						}
+
+						if (categoryName == "Effects"
+							&& subCategoryName == "Placeholder")
+						{
+							chosenCategory = GameObject::Category::cat_Effects_Placeholder;
+						}
+
+						if (categoryName == "Audio"
+							&& subCategoryName == "Placeholder")
+						{
+							chosenCategory = GameObject::Category::cat_Audio_Placeholder;
+						}
+
+						if (categoryName == "UI"
+							&& subCategoryName == "Placeholder")
+						{
+							chosenCategory = GameObject::Category::cat_UI_Placeholder;
+						}
+
+						if (categoryName == "Lights")
+						{
+							if (subCategoryName == "Spotlights")
+							{
+								chosenCategory = GameObject::Category::cat_Lights_Spotlights;
+							}
+							else if (subCategoryName == "Point lights")
+							{
+								chosenCategory = GameObject::Category::cat_Lights_Point_lights;
+							}
+						}
+
+						if (categoryName == "Textures")
+						{
+							if (subCategoryName == "Diffuse textures")
+							{
+								chosenCategory = GameObject::Category::cat_Textures_Diffuse_textures;
+							}
+							else if (subCategoryName == "Specular textures")
+							{
+								chosenCategory = GameObject::Category::cat_Textures_Specular_textures;
+							}
+							else if (subCategoryName == "Normal textures")
+							{
+								chosenCategory = GameObject::Category::cat_Textures_Normal_textures;
+							}
+							else if (subCategoryName == "Height textures")
+							{
+								chosenCategory = GameObject::Category::cat_Textures_Height_textures;
+							}
+						}
+
+						if (categoryName == "Props"
+							&& subCategoryName == "Static props")
+						{
+							chosenCategory = GameObject::Category::cat_Props_Static_props;
+						}
 					}
 				}
 
@@ -116,7 +177,7 @@ namespace Graphics::GUI
 			&& ImGui::IsMouseDoubleClicked(0))
 		{
 			cout << "opening All\n";
-			currentModels = GameObjectManager::GetObjects();
+			chosenCategory = GameObject::Category::cat_All;
 		}
 	}
 
@@ -131,18 +192,52 @@ namespace Graphics::GUI
 		static float horizontalSpace = 100;
 		static float verticalSpace = 50;
 
-		int rowCount = static_cast<int>(currentModels.size());
-		if (currentModels.size() < 2)
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
+		vector<shared_ptr<GameObject>> displayedObjects;
+
+		//check if original has GameObjects valid doesn't
+		for (const auto& obj : objects)
+		{
+			if (find(
+				displayedObjects.begin(), 
+				displayedObjects.end(), 
+				obj) == displayedObjects.end()
+				&& obj->GetCategoryState(chosenCategory))
+			{
+				displayedObjects.push_back(obj);
+			}
+		}
+
+		//check if valid has GameObjects original doesn't have and remove them
+		auto it = displayedObjects.begin();
+		while (it != displayedObjects.end())
+		{
+			if (find(
+				objects.begin(), 
+				objects.end(), 
+				*it) == objects.end()
+				|| !(*it)->GetCategoryState(chosenCategory))
+			{
+				it = displayedObjects.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		int rowCount = static_cast<int>(displayedObjects.size());
+		if (objects.size() < 2)
 		{
 			rowCount = 2;
-			if (currentModels.size() == 0)
+			if (displayedObjects.size() == 0)
 			{
 				ImGui::SetCursorPos(ImVec2(20, 70));
 				ImGui::SetNextItemWidth(75);
 				ImGui::Text("None");
 			}
 		}
-		else rowCount = static_cast<int>(currentModels.size()) + 1;
+		else rowCount = static_cast<int>(displayedObjects.size()) + 1;
 
 		static int columnCount = 2;
 		static float lineThickness = 1.0f;
@@ -193,11 +288,13 @@ namespace Graphics::GUI
 		ImGui::Text(column_ID.c_str());
 
 		//rows for gameobject text fields
-		for (int i = 0; i < currentModels.size(); i++)
+		for (int i = 0; i < displayedObjects.size(); i++)
 		{
+			selectedObj = displayedObjects[i];
+			int index = i;
+
 			float cursorHeight = static_cast<float>(70 + (50 * i + 1));
 
-			selectedObj = currentModels[i];
 			ImGui::SetCursorPos(ImVec2(20, cursorHeight));
 			ImGui::SetNextItemWidth(75);
 			//change selected text color to yellow, otherwise white

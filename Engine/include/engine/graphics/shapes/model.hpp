@@ -46,6 +46,7 @@ namespace Graphics::Shape
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
 			const float& shininess = 32,
+			const map<GameObject::Category, bool> categories = {},
 			string& name = tempName,
 			unsigned int& id = tempID);
 
@@ -63,6 +64,7 @@ namespace Graphics::Shape
 			const string& normalTexture,
 			const string& heightTexture,
 			const float& shininess,
+			const map<GameObject::Category, bool> categories,
 			aiNode* node,
 			const aiScene* scene);
 

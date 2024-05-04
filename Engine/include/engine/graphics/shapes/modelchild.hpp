@@ -44,6 +44,7 @@ namespace Graphics::Shape
 			const vector<AssimpVertex> vertices = {},
 			const vector<unsigned int> indices = {},
 			const float& shininess = 32,
+			const map<GameObject::Category, bool> categories = {},
 			string& name = tempName,
 			unsigned int& id = tempID);
 

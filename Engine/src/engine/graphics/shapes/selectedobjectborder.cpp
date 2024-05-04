@@ -111,8 +111,6 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
-		GameObjectManager::AddGameObject(obj);
-
 		return obj;
 	}
 

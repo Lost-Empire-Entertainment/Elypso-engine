@@ -359,6 +359,8 @@ namespace EngineFile
 		// CREATE GAMEOBJECTS
 		//
 
+		map<GameObject::Category, bool> categories;
+
 		if (meshType == Mesh::MeshType::model)
 		{
 			Model::Initialize(
@@ -373,6 +375,7 @@ namespace EngineFile
 				textures[2],
 				textures[3],
 				shininess,
+				categories,
 				name,
 				id);
 
@@ -389,6 +392,7 @@ namespace EngineFile
 				diffuse,
 				intensity,
 				distance,
+				categories,
 				name,
 				id,
 				billboardShaders[0],
@@ -413,6 +417,7 @@ namespace EngineFile
 				distance,
 				innerAngle,
 				outerAngle,
+				categories,
 				name,
 				id,
 				billboardShaders[0],

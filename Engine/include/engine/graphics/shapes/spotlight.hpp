@@ -39,6 +39,7 @@ namespace Graphics::Shape
 			const float& distance = 1.0f,
 			const float& innerAngle = 12.5f,
 			const float& outerAngle = 17.5f,
+			const map<GameObject::Category, bool> categories = {},
 			string& name = tempName,
 			unsigned int& id = tempID,
 

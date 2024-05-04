@@ -92,8 +92,6 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
-		GameObjectManager::AddGameObject(obj);
-
 		Texture::LoadTexture(obj, Engine::filesPath + "/icons/blank.png", Material::TextureType::misc_icon_blank, true);
 		Texture::LoadTexture(obj, Engine::filesPath + "/icons/move.png", Material::TextureType::misc_icon_move, true);
 		Texture::LoadTexture(obj, Engine::filesPath + "/icons/rotate.png", Material::TextureType::misc_icon_rotate, true);

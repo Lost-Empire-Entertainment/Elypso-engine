@@ -121,14 +121,20 @@ namespace Graphics::GUI
 			ImGui::SameLine();
 
 			ImGui::SetNextItemWidth(150);
-			static const char* items[] = { "Item 1", "Item 2", "Item 3", "Item 4" };
-			static bool selectedItems[4] = { false, false, false, false };
+
 			if (ImGui::BeginCombo("Categories", "", ImGuiComboFlags_NoPreview))
 			{
-				for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+				for (const auto& category : Select::selectedObj->GetCategories())
 				{
-					ImGui::PushID(i);
-					ImGui::Checkbox(items[i], &selectedItems[i]);
+					string enumName = string(magic_enum::enum_name(category.first));
+					shared_ptr<GameObject> obj = Select::selectedObj;
+					bool categoryState = obj->GetCategoryState(category.first);
+
+					ImGui::PushID(enumName.c_str());
+					if (ImGui::Checkbox(enumName.c_str(), &categoryState))
+					{
+						obj->SetCategoryState(category.first, categoryState);
+					}
 					ImGui::PopID();
 				}
 				ImGui::EndCombo();

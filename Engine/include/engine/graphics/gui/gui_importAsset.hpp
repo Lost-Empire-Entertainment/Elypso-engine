@@ -22,7 +22,6 @@ namespace Graphics::GUI
 		static void RenderImportAsset();
 	private:
 		bool checkBoxMapFilled;
-		map<string, bool> checkboxStates;
 
 		static constexpr int nameBufferSize = 32;
 		static constexpr int pathBufferSize = 256;

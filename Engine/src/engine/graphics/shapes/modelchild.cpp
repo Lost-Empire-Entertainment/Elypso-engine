@@ -55,6 +55,7 @@ namespace Graphics::Shape
 		const vector<AssimpVertex> vertices,
 		const vector<unsigned int> indices,
 		const float& shininess,
+		const map<GameObject::Category, bool> categories,
 		string& name,
 		unsigned int& id)
 	{
@@ -132,6 +133,8 @@ namespace Graphics::Shape
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
 		//assignedShader.SetInt("material.specular", 1);
+
+		obj->SetCategoriesMap(categories);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);

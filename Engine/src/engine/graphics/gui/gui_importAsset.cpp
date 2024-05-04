@@ -20,6 +20,7 @@
 #include "core.hpp"
 #include "fileexplorer.hpp"
 #include "gameobject.hpp"
+#include "stringUtils.hpp"
 
 using std::filesystem::exists;
 using std::filesystem::path;
@@ -30,10 +31,14 @@ using Graphics::Render;
 using Core::Engine;
 using EngineFile::FileExplorer;
 using Graphics::Shape::GameObjectManager;
+using Graphics::Shape::GameObject;
+using Utils::String;
 
 namespace Graphics::GUI
 {
 	GUIImportAsset guiImportAsset;
+
+	static map<GameObject::Category, bool> categories;
 
 	void GUIImportAsset::RenderImportAsset()
 	{
@@ -53,19 +58,20 @@ namespace Graphics::GUI
 			//reset checkboxes if reopening import asset window
 			if (!guiImportAsset.checkBoxMapFilled)
 			{
-				guiImportAsset.checkboxStates.clear();
+				categories.clear();
 
-				for (const auto& category : GameObjectManager::GetGCategoryNames())
-				{
-					const string& categoryName = category.first;
-					const auto& categoryMap = category.second;
-					for (const auto& subCategory : categoryMap)
-					{
-						const string& subCategoryName = subCategory;
-						string uniqueName = categoryName + "_" + subCategoryName;
-						guiImportAsset.checkboxStates.insert({ subCategoryName, false });
-					}
-				}
+				categories[GameObject::Category::cat_Characters_Placeholder] = false;
+				categories[GameObject::Category::cat_Effects_Placeholder] = false;
+				categories[GameObject::Category::cat_Audio_Placeholder] = false;
+				categories[GameObject::Category::cat_UI_Placeholder] = false;
+				categories[GameObject::Category::cat_Lights_Spotlights] = false;
+				categories[GameObject::Category::cat_Lights_Point_lights] = false;
+				categories[GameObject::Category::cat_Textures_Diffuse_textures] = false;
+				categories[GameObject::Category::cat_Textures_Specular_textures] = false;
+				categories[GameObject::Category::cat_Textures_Normal_textures] = false;
+				categories[GameObject::Category::cat_Textures_Height_textures] = false;
+				categories[GameObject::Category::cat_Props_Static_props] = false;
+				categories[GameObject::Category::cat_All] = true;
 
 				guiImportAsset.checkBoxMapFilled = true;
 			}
@@ -92,7 +98,7 @@ namespace Graphics::GUI
 				ImGui::GetWindowSize().y - 200);
 			if (ImGui::BeginChild("##selectType", childSize, true))
 			{
-				for (const auto& category : GameObjectManager::GetGCategoryNames())
+				for (const auto& category : GameObjectManager::GetCategoryNames())
 				{
 					const string& categoryName = category.first;
 					const auto& categoryMap = category.second;
@@ -107,18 +113,26 @@ namespace Graphics::GUI
 
 					if (nodeOpen)
 					{
-						for (const auto& subCategory : categoryMap)
+						for (const auto& category : categories)
 						{
-							const string& categoryName = category.first;
-							const string& subCategoryName = subCategory;
+							string fullName = string(magic_enum::enum_name(category.first));
+							fullName = String::StringReplace(fullName, "cat_", "");
+
+							size_t pos = fullName.find('_');
+
+							//split the string at the position of the first underscore
+							string categoryName = fullName.substr(0, pos);
+							string subCategoryName = fullName.substr(pos + 1);
+
+							subCategoryName = String::StringReplace(subCategoryName, "_", " ");
+
 							string uniqueName = categoryName + "_" + subCategoryName;
 							ImGui::Text("%s", subCategoryName.c_str());
 
 							ImGui::SameLine();
-							bool& checked = guiImportAsset.checkboxStates[uniqueName];
+							bool checked = category.second;
 							ImGui::Checkbox(("##" + uniqueName).c_str(), &checked);
 						}
-
 						ImGui::TreePop();
 					}
 				}
@@ -153,6 +167,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
+						categories,
 						guiImportAsset.assignedName,
 						Model::tempID);
 

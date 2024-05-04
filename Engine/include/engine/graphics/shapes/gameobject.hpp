@@ -493,7 +493,8 @@ namespace Graphics::Shape
 			cat_Textures_Specular_textures,
 			cat_Textures_Normal_textures,
 			cat_Textures_Height_textures,
-			cat_Props_Static_props
+			cat_Props_Static_props,
+			cat_All
 		};
 
 		//basic gameobject
@@ -621,40 +622,11 @@ namespace Graphics::Shape
 
 		void SetDirectory(const string& newDirectory) { directory = newDirectory; }
 
-		void AddCategory(const Category& category)
+		void SetCategoryState(const Category& category, const bool& state)
 		{
-			auto enumExists = [=]() {
-				return std::find(categories.begin(), categories.end(), category) != categories.end();
-				};
-
-			if (!enumExists())
-			{
-				categories.push_back(category);
-				std::cout << "Added enum value " << magic_enum::enum_name(category) << " to the vector." << std::endl;
-			}
-			else
-			{
-				std::cout << "Enum value " << magic_enum::enum_name(category) << " already exists in the vector." << std::endl;
-			}
+			categories[category] = state;
 		}
-
-		void RemoveCategory(const Category& category)
-		{
-			auto enumExists = [=]() {
-				return std::find(categories.begin(), categories.end(), category) != categories.end();
-				};
-
-			auto it = std::find(categories.begin(), categories.end(), category);
-			if (it != categories.end())
-			{
-				categories.erase(it);
-				std::cout << "Removed value " << magic_enum::enum_name(category) << " from the vector." << std::endl;
-			}
-			else
-			{
-				std::cout << "Value " << magic_enum::enum_name(category) << " does not exist in the vector." << std::endl;
-			}
-		}
+		void SetCategoriesMap(const map<Category, bool>& newCategories) { categories = newCategories; }
 
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
@@ -673,7 +645,11 @@ namespace Graphics::Shape
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
 		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
 		const string& GetDirectory() const { return directory; }
-		const vector<Category>& GetCategories() const { return categories; }
+		bool GetCategoryState(const Category& categoryName)
+		{
+			return categories[categoryName];
+		}
+		map<Category, bool> GetCategories() const { return categories; }
 	private:
 		bool isInitialized;
 		string name;
@@ -692,7 +668,7 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> parentBillboardHolder;
 		shared_ptr<GameObject> childBillboard;
 		string directory;
-		vector<Category> categories;
+		map<Category, bool> categories;
 	};
 
 	class GameObjectManager
@@ -741,7 +717,7 @@ namespace Graphics::Shape
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
-		static map<string, vector<string>>& GetGCategoryNames()
+		static map<string, vector<string>>& GetCategoryNames()
 		{
 			return categoryNames;
 		}
