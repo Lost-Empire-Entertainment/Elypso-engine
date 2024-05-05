@@ -14,6 +14,7 @@
 #include "gui.hpp"
 #include "gameobject.hpp"
 #include "selectobject.hpp"
+#include "stringUtils.hpp"
 
 using std::exception;
 
@@ -21,6 +22,7 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Physics::Select;
+using Utils::String;
 
 namespace Graphics::GUI
 {
@@ -175,7 +177,6 @@ namespace Graphics::GUI
 		if (ImGui::IsItemClicked(0)
 			&& ImGui::IsMouseDoubleClicked(0))
 		{
-			cout << "opening All\n";
 			chosenCategory = GameObject::Category::cat_All;
 		}
 	}
@@ -187,12 +188,27 @@ namespace Graphics::GUI
 
 		//build asset list grid
 		static float horizontalStartX = 10.0f;
-		static float verticalStartY = 10.0f;
+		static float verticalStartY = 50.0f;
 		static float horizontalSpace = 100;
 		static float verticalSpace = 50;
 
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 		vector<shared_ptr<GameObject>> displayedObjects;
+
+		string fullName = string(magic_enum::enum_name(chosenCategory));
+		fullName = String::StringReplace(fullName, "cat_", "");
+
+		size_t pos = fullName.find('_');
+
+		//split the string at the position of the first underscore
+		string categoryName = fullName.substr(0, pos);
+		string subCategoryName = fullName.substr(pos + 1);
+		subCategoryName = String::StringReplace(subCategoryName, "_", " ");
+		string displayedCategoryName = categoryName == "All" ? 
+			"All" 
+			: categoryName + " - " + subCategoryName;
+
+		ImGui::Text(displayedCategoryName.c_str());
 
 		//check if original has GameObjects valid doesn't
 		for (const auto& obj : objects)
@@ -231,7 +247,7 @@ namespace Graphics::GUI
 			rowCount = 2;
 			if (displayedObjects.size() == 0)
 			{
-				ImGui::SetCursorPos(ImVec2(20, 70));
+				ImGui::SetCursorPos(ImVec2(20, 60 + verticalStartY));
 				ImGui::SetNextItemWidth(75);
 				ImGui::Text("None");
 			}
@@ -279,11 +295,11 @@ namespace Graphics::GUI
 		}
 
 		string column_Name = "Name";
-		ImGui::SetCursorPos(ImVec2(40, 25));
+		ImGui::SetCursorPos(ImVec2(40, 15 + verticalStartY));
 		ImGui::Text(column_Name.c_str());
 
 		string column_ID = "ID";
-		ImGui::SetCursorPos(ImVec2(150, 25));
+		ImGui::SetCursorPos(ImVec2(150, 15 + verticalStartY));
 		ImGui::Text(column_ID.c_str());
 
 		//rows for gameobject text fields
@@ -292,9 +308,9 @@ namespace Graphics::GUI
 			selectedObj = displayedObjects[i];
 			int index = i;
 
-			float cursorHeight = static_cast<float>(70 + (50 * i + 1));
+			float cursorHeight = static_cast<float>(60 + (50 * i + 1));
 
-			ImGui::SetCursorPos(ImVec2(20, cursorHeight));
+			ImGui::SetCursorPos(ImVec2(20, cursorHeight + verticalStartY));
 			ImGui::SetNextItemWidth(75);
 			//change selected text color to yellow, otherwise white
 			if (Select::selectedObj == selectedObj)
@@ -319,7 +335,7 @@ namespace Graphics::GUI
 				ImGui::OpenPopup("popUp_AssetList");
 			}
 
-			ImGui::SetCursorPos(ImVec2(120, cursorHeight));
+			ImGui::SetCursorPos(ImVec2(120, cursorHeight + verticalStartY));
 			ImGui::SetNextItemWidth(75);
 			ImGui::Text(to_string(selectedObj->GetID()).c_str());
 		}

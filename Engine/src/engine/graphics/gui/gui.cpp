@@ -455,8 +455,10 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						categories[GameObject::Category::cat_Lights_Point_lights] = true;
 						shared_ptr<GameObject> obj = PointLight::InitializePointLight();
+
+						obj->SetCategoriesMap(categories);
+						obj->SetCategoryState(GameObject::Category::cat_Lights_Point_lights, true);
 
 						Select::selectedObj = obj;
 						Select::isObjectSelected = true;
@@ -475,8 +477,10 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						categories[GameObject::Category::cat_Lights_Point_lights] = true;
 						shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
+
+						obj->SetCategoriesMap(categories);
+						obj->SetCategoryState(GameObject::Category::cat_Lights_Spotlights, true);
 
 						Select::selectedObj = obj;
 						Select::isObjectSelected = true;
