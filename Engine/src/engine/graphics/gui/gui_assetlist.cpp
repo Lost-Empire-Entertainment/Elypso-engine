@@ -100,32 +100,31 @@ namespace Graphics::GUI
 					if (ImGui::IsItemClicked(0)
 						&& ImGui::IsMouseDoubleClicked(0))
 					{
-						cout << "opening " << subCategoryName << "\n";
 						if (categoryName == "Characters"
 							&& subCategoryName == "Placeholder")
 						{
 							chosenCategory = GameObject::Category::cat_Characters_Placeholder;
 						}
 
-						if (categoryName == "Effects"
-							&& subCategoryName == "Placeholder")
+						else if (categoryName == "Effects"
+							     && subCategoryName == "Placeholder")
 						{
 							chosenCategory = GameObject::Category::cat_Effects_Placeholder;
 						}
 
-						if (categoryName == "Audio"
-							&& subCategoryName == "Placeholder")
+						else if (categoryName == "Audio"
+							     && subCategoryName == "Placeholder")
 						{
 							chosenCategory = GameObject::Category::cat_Audio_Placeholder;
 						}
 
-						if (categoryName == "UI"
-							&& subCategoryName == "Placeholder")
+						else if (categoryName == "UI"
+							     && subCategoryName == "Placeholder")
 						{
 							chosenCategory = GameObject::Category::cat_UI_Placeholder;
 						}
 
-						if (categoryName == "Lights")
+						else if (categoryName == "Lights")
 						{
 							if (subCategoryName == "Spotlights")
 							{
@@ -137,7 +136,7 @@ namespace Graphics::GUI
 							}
 						}
 
-						if (categoryName == "Textures")
+						else if (categoryName == "Textures")
 						{
 							if (subCategoryName == "Diffuse textures")
 							{
@@ -157,8 +156,8 @@ namespace Graphics::GUI
 							}
 						}
 
-						if (categoryName == "Props"
-							&& subCategoryName == "Static props")
+						else if (categoryName == "Props"
+							     && subCategoryName == "Static props")
 						{
 							chosenCategory = GameObject::Category::cat_Props_Static_props;
 						}

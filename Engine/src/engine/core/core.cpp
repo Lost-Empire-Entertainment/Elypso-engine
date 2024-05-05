@@ -162,9 +162,9 @@ namespace Core
 		cat_textures.push_back("Height textures");
 		gameObjects.insert({ "Textures", cat_textures });
 
-		vector<string> cat_static;
-		cat_static.push_back("Props");
-		gameObjects.insert({ "Static props", cat_static });
+		vector<string> cat_props;
+		cat_props.push_back("Static props");
+		gameObjects.insert({ "Props", cat_props });
 
 		GameObjectManager::SetCategoryNames(gameObjects);
 

@@ -26,6 +26,7 @@
 #include "texture.hpp"
 #include "core.hpp"
 #include "fileexplorer.hpp"
+#include "stringUtils.hpp"
 
 using std::cout;
 using std::endl;
@@ -44,10 +45,26 @@ using Core::Input;
 using Graphics::Texture;
 using Core::Engine;
 using EngineFile::FileExplorer;
+using Utils::String;
 
 namespace Graphics::GUI
 {
 	GUIInspector guiInspector;
+	static vector<GameObject::Category> categories = 
+	{
+		GameObject::Category::cat_Characters_Placeholder,
+		GameObject::Category::cat_Effects_Placeholder,
+		GameObject::Category::cat_Audio_Placeholder,
+		GameObject::Category::cat_UI_Placeholder,
+		GameObject::Category::cat_Lights_Spotlights,
+		GameObject::Category::cat_Lights_Point_lights,
+		GameObject::Category::cat_Textures_Diffuse_textures,
+		GameObject::Category::cat_Textures_Specular_textures,
+		GameObject::Category::cat_Textures_Normal_textures,
+		GameObject::Category::cat_Textures_Height_textures,
+		GameObject::Category::cat_Props_Static_props,
+		GameObject::Category::cat_All
+	};
 
 	void GUIInspector::RenderInspector()
 	{
@@ -124,18 +141,31 @@ namespace Graphics::GUI
 
 			if (ImGui::BeginCombo("Categories", "", ImGuiComboFlags_NoPreview))
 			{
-				for (const auto& category : Select::selectedObj->GetCategories())
+				for (const auto& category : categories)
 				{
-					string enumName = string(magic_enum::enum_name(category.first));
-					shared_ptr<GameObject> obj = Select::selectedObj;
-					bool categoryState = obj->GetCategoryState(category.first);
-
-					ImGui::PushID(enumName.c_str());
-					if (ImGui::Checkbox(enumName.c_str(), &categoryState))
+					if (category != GameObject::Category::cat_All)
 					{
-						obj->SetCategoryState(category.first, categoryState);
+						string fullName = string(magic_enum::enum_name(category));
+						fullName = String::StringReplace(fullName, "cat_", "");
+
+						size_t pos = fullName.find('_');
+
+						//split the string at the position of the first underscore
+						string categoryName = fullName.substr(0, pos);
+						string subCategoryName = fullName.substr(pos + 1);
+						subCategoryName = String::StringReplace(subCategoryName, "_", " ");
+						string displayedCategoryName = categoryName + " - " + subCategoryName;
+
+						shared_ptr<GameObject> obj = Select::selectedObj;
+						bool categoryState = obj->GetCategoryState(category);
+
+						ImGui::PushID(fullName.c_str());
+						if (ImGui::Checkbox(displayedCategoryName.c_str(), &categoryState))
+						{
+							obj->SetCategoryState(category, categoryState);
+						}
+						ImGui::PopID();
 					}
-					ImGui::PopID();
 				}
 				ImGui::EndCombo();
 			}

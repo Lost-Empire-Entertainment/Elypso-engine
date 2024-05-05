@@ -101,7 +101,7 @@ namespace Graphics::GUI
 				for (const auto& category : GameObjectManager::GetCategoryNames())
 				{
 					const string& categoryName = category.first;
-					const auto& categoryMap = category.second;
+					const auto& subcategories = category.second;
 
 					bool nodeOpen = ImGui::TreeNodeEx(categoryName.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
@@ -113,25 +113,30 @@ namespace Graphics::GUI
 
 					if (nodeOpen)
 					{
-						for (const auto& category : categories)
+						for (auto& categoryType : categories)
 						{
-							string fullName = string(magic_enum::enum_name(category.first));
+							string fullName = string(magic_enum::enum_name(categoryType.first));
 							fullName = String::StringReplace(fullName, "cat_", "");
 
 							size_t pos = fullName.find('_');
 
 							//split the string at the position of the first underscore
-							string categoryName = fullName.substr(0, pos);
-							string subCategoryName = fullName.substr(pos + 1);
+							string categoryTypeName = fullName.substr(0, pos);
+							string subCategoryTypeName = fullName.substr(pos + 1);
+							subCategoryTypeName = String::StringReplace(subCategoryTypeName, "_", " ");
 
-							subCategoryName = String::StringReplace(subCategoryName, "_", " ");
+							if (categoryName == categoryTypeName)
+							{
+								string uniqueName = categoryTypeName + "_" + subCategoryTypeName;
+								ImGui::Text("%s", subCategoryTypeName.c_str());
 
-							string uniqueName = categoryName + "_" + subCategoryName;
-							ImGui::Text("%s", subCategoryName.c_str());
-
-							ImGui::SameLine();
-							bool checked = category.second;
-							ImGui::Checkbox(("##" + uniqueName).c_str(), &checked);
+								ImGui::SameLine();
+								bool& checked = categoryType.second;
+								if (ImGui::Checkbox(("##" + uniqueName).c_str(), &checked))
+								{
+									categoryType.second = checked;
+								}
+							}
 						}
 						ImGui::TreePop();
 					}
