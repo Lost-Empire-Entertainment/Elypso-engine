@@ -22,7 +22,7 @@ Notes:
 	- 0.4) Everything past here is same for both compiling from source and running through Github releases download.
 1) Launch Elypso Hub
 2) Click 'Set engine path'
-	- 2.1) File explorer will open - find and select Elypso Hub.exe
+	- 2.1) File explorer will open - find and select Elypso Engine.exe
 3) Click 'New Project'
 	- 3.1) File explorer will open - create a new folder anywhere (this will be the folder where all projects are stored inside of)
 	- 3.2) open the newly created folder and create another folder inside that (this will be the project folder itself)
