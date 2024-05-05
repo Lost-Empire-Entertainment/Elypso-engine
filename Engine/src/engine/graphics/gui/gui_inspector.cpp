@@ -50,21 +50,6 @@ using Utils::String;
 namespace Graphics::GUI
 {
 	GUIInspector guiInspector;
-	static vector<GameObject::Category> categories = 
-	{
-		GameObject::Category::cat_Characters_Placeholder,
-		GameObject::Category::cat_Effects_Placeholder,
-		GameObject::Category::cat_Audio_Placeholder,
-		GameObject::Category::cat_UI_Placeholder,
-		GameObject::Category::cat_Lights_Spotlights,
-		GameObject::Category::cat_Lights_Point_lights,
-		GameObject::Category::cat_Textures_Diffuse_textures,
-		GameObject::Category::cat_Textures_Specular_textures,
-		GameObject::Category::cat_Textures_Normal_textures,
-		GameObject::Category::cat_Textures_Height_textures,
-		GameObject::Category::cat_Props_Static_props,
-		GameObject::Category::cat_All
-	};
 
 	void GUIInspector::RenderInspector()
 	{
@@ -141,7 +126,7 @@ namespace Graphics::GUI
 
 			if (ImGui::BeginCombo("Categories", "", ImGuiComboFlags_NoPreview))
 			{
-				for (const auto& category : categories)
+				for (const auto& category : GameObject::categoriesVector)
 				{
 					if (category != GameObject::Category::cat_All)
 					{

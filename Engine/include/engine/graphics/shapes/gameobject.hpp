@@ -496,6 +496,21 @@ namespace Graphics::Shape
 			cat_Props_Static_props,
 			cat_All
 		};
+		static inline vector<Category> categoriesVector =
+		{
+			Category::cat_Characters_Placeholder,
+			Category::cat_Effects_Placeholder,
+			Category::cat_Audio_Placeholder,
+			Category::cat_UI_Placeholder,
+			Category::cat_Lights_Spotlights,
+			Category::cat_Lights_Point_lights,
+			Category::cat_Textures_Diffuse_textures,
+			Category::cat_Textures_Specular_textures,
+			Category::cat_Textures_Normal_textures,
+			Category::cat_Textures_Height_textures,
+			Category::cat_Props_Static_props,
+			Category::cat_All
+		};
 
 		//basic gameobject
 		GameObject(

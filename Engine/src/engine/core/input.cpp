@@ -218,7 +218,8 @@ namespace Core
         {
             //delete selected gameobject
             if (key == GLFW_KEY_DELETE
-                && action == GLFW_PRESS)
+                && action == GLFW_PRESS
+                && Select::selectedObj != nullptr)
             {
                 Select::isObjectSelected = false;
                 shared_ptr<GameObject> selectedObj = Select::selectedObj;
