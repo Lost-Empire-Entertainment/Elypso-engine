@@ -16,8 +16,6 @@
 #include "selectobject.hpp"
 #include "stringUtils.hpp"
 
-using std::exception;
-
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
@@ -344,7 +342,11 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Delete"))
 			{
-				GameObjectManager::DestroyGameObject(Select::selectedObj);
+				shared_ptr<GameObject> deletedObj = Select::selectedObj;
+				selectedObj = nullptr;
+				Select::selectedObj = nullptr;
+				
+				GameObjectManager::DestroyGameObject(deletedObj);
 			}
 
 			ImGui::EndPopup();
