@@ -142,10 +142,6 @@ namespace Core
 		cat_effects.push_back("Placeholder");
 		gameObjects.insert({ "Effects", cat_effects });
 
-		vector<string> cat_audio;
-		cat_audio.push_back("Placeholder");
-		gameObjects.insert({ "Audio", cat_audio });
-
 		vector<string> cat_UI;
 		cat_UI.push_back("Placeholder");
 		gameObjects.insert({ "UI", cat_UI });
@@ -154,13 +150,6 @@ namespace Core
 		cat_lights.push_back("Spotlights");
 		cat_lights.push_back("Point lights");
 		gameObjects.insert({ "Lights", cat_lights });
-
-		vector<string> cat_textures;
-		cat_textures.push_back("Diffuse textures");
-		cat_textures.push_back("Specular textures");
-		cat_textures.push_back("Normal textures");
-		cat_textures.push_back("Height textures");
-		gameObjects.insert({ "Textures", cat_textures });
 
 		vector<string> cat_props;
 		cat_props.push_back("Static props");

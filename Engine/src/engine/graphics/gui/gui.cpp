@@ -253,18 +253,10 @@ namespace Graphics::GUI
 			}
 
 			map<GameObject::Category, bool> categories;
-			categories[GameObject::Category::cat_Characters_Placeholder] = false;
-			categories[GameObject::Category::cat_Effects_Placeholder] = false;
-			categories[GameObject::Category::cat_Audio_Placeholder] = false;
-			categories[GameObject::Category::cat_UI_Placeholder] = false;
-			categories[GameObject::Category::cat_Lights_Spotlights] = false;
-			categories[GameObject::Category::cat_Lights_Point_lights] = false;
-			categories[GameObject::Category::cat_Textures_Diffuse_textures] = false;
-			categories[GameObject::Category::cat_Textures_Specular_textures] = false;
-			categories[GameObject::Category::cat_Textures_Normal_textures] = false;
-			categories[GameObject::Category::cat_Textures_Height_textures] = false;
-			categories[GameObject::Category::cat_Props_Static_props] = false;
-			categories[GameObject::Category::cat_All] = true;
+			for (const auto& category : GameObject::categoriesVector)
+			{
+				categories[category] = category == GameObject::Category::cat_All ? true : false;
+			}
 
 			if (ImGui::BeginMenu("Shape"))
 			{

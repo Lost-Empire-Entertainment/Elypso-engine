@@ -274,6 +274,17 @@ namespace Graphics::GUI
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::PopItemWidth();
+
+				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
+				path defaultTexturePath = path(Engine::filesPath + "/textures/default_diffuse.png");
+				string reset = "Reset";
+				ImGui::PushItemWidth(200.0f);
+				if (ImGui::Button(reset.c_str()))
+				{
+					Texture::LoadTexture(obj, defaultTexturePath.string(), Material::TextureType::diffuse, true);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::PopItemWidth();
 			}
 			else if (objType == Type::point_light)
 			{

@@ -112,12 +112,6 @@ namespace Graphics::GUI
 							chosenCategory = GameObject::Category::cat_Effects_Placeholder;
 						}
 
-						else if (categoryName == "Audio"
-							     && subCategoryName == "Placeholder")
-						{
-							chosenCategory = GameObject::Category::cat_Audio_Placeholder;
-						}
-
 						else if (categoryName == "UI"
 							     && subCategoryName == "Placeholder")
 						{
@@ -133,26 +127,6 @@ namespace Graphics::GUI
 							else if (subCategoryName == "Point lights")
 							{
 								chosenCategory = GameObject::Category::cat_Lights_Point_lights;
-							}
-						}
-
-						else if (categoryName == "Textures")
-						{
-							if (subCategoryName == "Diffuse textures")
-							{
-								chosenCategory = GameObject::Category::cat_Textures_Diffuse_textures;
-							}
-							else if (subCategoryName == "Specular textures")
-							{
-								chosenCategory = GameObject::Category::cat_Textures_Specular_textures;
-							}
-							else if (subCategoryName == "Normal textures")
-							{
-								chosenCategory = GameObject::Category::cat_Textures_Normal_textures;
-							}
-							else if (subCategoryName == "Height textures")
-							{
-								chosenCategory = GameObject::Category::cat_Textures_Height_textures;
 							}
 						}
 

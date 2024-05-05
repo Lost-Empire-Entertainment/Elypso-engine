@@ -485,14 +485,9 @@ namespace Graphics::Shape
 		{ 
 			cat_Characters_Placeholder, 
 			cat_Effects_Placeholder, 
-			cat_Audio_Placeholder,
 			cat_UI_Placeholder,
 			cat_Lights_Spotlights,
 			cat_Lights_Point_lights,
-			cat_Textures_Diffuse_textures,
-			cat_Textures_Specular_textures,
-			cat_Textures_Normal_textures,
-			cat_Textures_Height_textures,
 			cat_Props_Static_props,
 			cat_All
 		};
@@ -500,14 +495,9 @@ namespace Graphics::Shape
 		{
 			Category::cat_Characters_Placeholder,
 			Category::cat_Effects_Placeholder,
-			Category::cat_Audio_Placeholder,
 			Category::cat_UI_Placeholder,
 			Category::cat_Lights_Spotlights,
 			Category::cat_Lights_Point_lights,
-			Category::cat_Textures_Diffuse_textures,
-			Category::cat_Textures_Specular_textures,
-			Category::cat_Textures_Normal_textures,
-			Category::cat_Textures_Height_textures,
 			Category::cat_Props_Static_props,
 			Category::cat_All
 		};
