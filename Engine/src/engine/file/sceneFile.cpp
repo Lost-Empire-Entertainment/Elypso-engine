@@ -506,9 +506,6 @@ namespace EngineFile
 
 		for (const auto& obj : objects)
 		{
-			//ignore border gameobject
-			//billboards and actiontex
-
 			Mesh::MeshType type = obj->GetMesh()->GetMeshType();
 
 			if (obj->GetID() != 10000000

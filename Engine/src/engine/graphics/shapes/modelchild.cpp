@@ -132,7 +132,7 @@ namespace Graphics::Shape
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
-		//assignedShader.SetInt("material.specular", 1);
+		assignedShader.SetInt("material.specular", 1);
 
 		obj->SetCategoriesMap(categories);
 
@@ -235,13 +235,22 @@ namespace Graphics::Shape
 
 		model = scale(model, obj->GetTransform()->GetScale());
 
-		//bind diffuse texture
 		shared_ptr<Material> mat = obj->GetMaterial();
+
+		//bind diffuse texture
 		unsigned int diffuseTextureID = mat->GetTextureID(Material::TextureType::diffuse);
 		if (diffuseTextureID != 0)
 		{
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+		}
+
+		//bind specular texture
+		unsigned int specularTextureID = mat->GetTextureID(Material::TextureType::specular);
+		if (specularTextureID != 0)
+		{
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, specularTextureID);
 		}
 
 		shader.SetMat4("model", model);
