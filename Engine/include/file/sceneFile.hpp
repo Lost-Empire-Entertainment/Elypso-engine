@@ -32,5 +32,6 @@ namespace EngineFile
 		static void CreateScene();
 		static void LoadScene(const string& levelName);
 		static void LoadGameObject(const map<string, string> obj);
-		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");	};
+		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = ""); 
+	};
 }
