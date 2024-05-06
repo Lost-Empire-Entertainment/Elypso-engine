@@ -7,12 +7,14 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 
 //external
 #include "glm.hpp"
 
 using std::string;
 using std::shared_ptr;
+using std::vector;
 using glm::vec2;
 
 namespace Graphics::GUI
@@ -65,7 +67,18 @@ namespace Graphics::GUI
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
 		void SetParent(const shared_ptr<GUINode>& newParent) { parent = newParent; }
-		void SetNodeConnection(const shared_ptr<GUINodeConnection>& newNodeConnection) { nodeConnection = newNodeConnection; }
+		void AddNodeConnection(const shared_ptr<GUINodeConnection>& newNodeConnection) { nodeConnections.push_back(newNodeConnection); }
+		void RemoveNodeConnection(const shared_ptr<GUINodeConnection>& removedNodeConnection)
+		{
+			auto it = find(
+				nodeConnections.begin(), 
+				nodeConnections.end(), 
+				removedNodeConnection);
+			if (it != nodeConnections.end())
+			{
+				nodeConnections.erase(it);
+			}
+		}
 		
 		vec2 GetPos() const { return pos; }
 		vec2 GetInitialPos() const { return initialPos; }
@@ -74,7 +87,7 @@ namespace Graphics::GUI
 		Side GetSide() const { return side; }
 		Slot GetSlot() const { return slot; }
 		shared_ptr<GUINode> GetParent() const { return parent; }
-		shared_ptr<GUINodeConnection> GetNodeConnection() const { return nodeConnection; }
+		vector<shared_ptr<GUINodeConnection>> GetNodeConnections() const { return nodeConnections; }
 
 	private:
 		vec2 pos;
@@ -84,6 +97,6 @@ namespace Graphics::GUI
 		Side side;
 		Slot slot;
 		shared_ptr<GUINode> parent;
-		shared_ptr<GUINodeConnection> nodeConnection;
+		vector<shared_ptr<GUINodeConnection>> nodeConnections;
 	};
 }

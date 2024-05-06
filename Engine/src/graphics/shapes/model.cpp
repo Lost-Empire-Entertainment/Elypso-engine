@@ -166,7 +166,7 @@ namespace Graphics::Shape
         {
             ProcessNode(
                 name, 
-                tempID, 
+                id, 
                 pos,
                 rot,
                 scale,

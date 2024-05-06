@@ -11,7 +11,5 @@ namespace Core
 	{
 	public:
 		static void Compile();
-	private:
-		void PrintNodeConnections();
 	};
 }

@@ -345,8 +345,8 @@ namespace Graphics::GUI
 
 											selectedComponent->GetNodeConnections().push_back(nodeConnection);
 
-											guiNodeBlock.theStartCircle->SetNodeConnection(nodeConnection);
-											guiNodeBlock.theEndCircle->SetNodeConnection(nodeConnection);
+											guiNodeBlock.theStartCircle->AddNodeConnection(nodeConnection);
+											guiNodeBlock.theEndCircle->AddNodeConnection(nodeConnection);
 
 											string startCircleName = 
 												guiNodeBlock.theStartCircle->GetName() 
@@ -755,6 +755,9 @@ namespace Graphics::GUI
 
 				if (eraseConnection)
 				{
+					start->RemoveNodeConnection(nodeConnection);
+					end->RemoveNodeConnection(nodeConnection);
+
 					selectedComponent->GetNodeConnections().erase(selectedComponent->GetNodeConnections().begin() + i);
 				}
 				else i++;

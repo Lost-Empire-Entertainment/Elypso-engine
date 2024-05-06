@@ -40,8 +40,6 @@ namespace Core
 {
 	void Compilation::Compile()
 	{
-		Compilation compilation;
-
 		try
 		{
 			if (Engine::gamePath == "")
@@ -93,8 +91,6 @@ namespace Core
 					}
 				}
 
-				compilation.PrintNodeConnections();
-
 				string engineProjectPath = path(Engine::projectPath).parent_path().string();
 				for (const auto& item : directory_iterator(path(engineProjectPath)))
 				{
@@ -118,52 +114,5 @@ namespace Core
 			cout << "running game from folder " << Engine::gameParentPath
 				<< " and file " << Engine::gameExePath << "\n";
 		}
-	}
-
-	void Compilation::PrintNodeConnections()
-	{
-		cout << "\n\n--------------------------------------------------\n\n";
-
-		for (const auto& obj : GameObjectManager::GetObjects())
-		{
-			if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
-			{
-				for (const auto& component : obj->GetComponents())
-				{
-					if (component->GetType() == Component::ComponentType::Nodeblock
-						&& component->GetNodes().size() > 0)
-					{
-						for (const auto& node : component->GetNodes())
-						{
-							for (const auto& nodeCircle : node->GetNodeCircles())
-							{
-								if (nodeCircle->GetNodeConnection() != nullptr)
-								{
-									string componentName = component->GetName();
-
-									string nodeName = node->GetName() + "_" + to_string(node->GetID());
-									string nodeCircleName = nodeCircle->GetName() + "_" + to_string(nodeCircle->GetID());
-									shared_ptr<GUINodeConnection> nodeConnection = nodeCircle->GetNodeConnection();
-									string nodeConnectionName = nodeConnection->GetName() + to_string(nodeConnection->GetID());
-
-									shared_ptr<GUINode> targetNode = nodeConnection->GetCurveEnd()->GetParent();
-									string targetNodeName = targetNode->GetName() + "_" + to_string(targetNode->GetID());
-									shared_ptr<GUINodeCircle> targetNodeCircle = nodeConnection->GetCurveEnd();
-									string targetNodeCircleName = targetNodeCircle->GetName() + "_" + to_string(targetNodeCircle->GetID());
-
-									if (nodeName != targetNodeName)
-									{
-										cout << componentName << " " << nodeName << " " << nodeCircleName
-											<< " is connected to " << targetNodeName << " " << targetNodeCircleName << "\n";
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		cout << "\n\n--------------------------------------------------\n\n";
 	}
 }

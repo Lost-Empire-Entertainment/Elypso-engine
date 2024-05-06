@@ -24,6 +24,7 @@
 #include "spotlight.hpp"
 #include "fileutils.hpp"
 #include "console.hpp"
+#include "gui_nodecircle.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -49,6 +50,8 @@ using Graphics::Shape::Material;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Graphics::Shape::Component;
+using Graphics::GUI::GUINodeCircle;
 
 namespace EngineFile
 {
@@ -397,7 +400,7 @@ namespace EngineFile
 				name,
 				id);
 
-			GameObject::nextID++;
+			GameObject::nextID = id + 1;
 		}
 		else if (meshType == Mesh::MeshType::point_light)
 		{
@@ -420,7 +423,7 @@ namespace EngineFile
 				billboardName,
 				billboardID);
 
-			GameObject::nextID++;
+			GameObject::nextID = id + 1;
 		}
 		else if (meshType == Mesh::MeshType::spot_light)
 		{
@@ -445,7 +448,7 @@ namespace EngineFile
 				billboardName,
 				billboardID);
 
-			GameObject::nextID++;
+			GameObject::nextID = id + 1;
 		}
 	}
 
@@ -552,6 +555,10 @@ namespace EngineFile
 
 				sceneFile << "\n";
 
+				sceneFile << "nodeBlock= NONE\n";
+
+				sceneFile << "\n";
+
 				//object textures
 				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
 				if (meshType == Mesh::MeshType::model)
@@ -642,6 +649,57 @@ namespace EngineFile
 			Caller::ENGINE,
 			Type::INFO,
 			"\nSuccessfully saved scene '" + currentScenePath + "'!\n");
+
+		cout << "\n\n--------------------------------------------------\n\n";
+
+		for (const auto& obj : GameObjectManager::GetObjects())
+		{
+			if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+			{
+				for (const auto& component : obj->GetComponents())
+				{
+					if (component->GetType() == Component::ComponentType::Nodeblock
+						&& component->GetNodes().size() > 0)
+					{
+						for (const auto& node : component->GetNodes())
+						{
+							for (const auto& nodeCircle : node->GetNodeCircles())
+							{
+								cout << "node circle " << nodeCircle->GetName() << "_" << nodeCircle->GetID() 
+									<< " from node " << node->GetName() << "_" << node->GetID() 
+									<< " has " << nodeCircle->GetNodeConnections().size() << " connections\n";
+
+								if (nodeCircle->GetNodeConnections().size() != 0)
+								{
+									string componentName = component->GetName();
+
+									string nodeName = node->GetName() + "_" + to_string(node->GetID());
+									string nodeCircleName = nodeCircle->GetName() + "_" + to_string(nodeCircle->GetID());
+
+									for (const auto& nodeConnection : nodeCircle->GetNodeConnections())
+									{
+										string nodeConnectionName = nodeConnection->GetName() + to_string(nodeConnection->GetID());
+
+										shared_ptr<GUINode> targetNode = nodeConnection->GetCurveEnd()->GetParent();
+										string targetNodeName = targetNode->GetName() + "_" + to_string(targetNode->GetID());
+										shared_ptr<GUINodeCircle> targetNodeCircle = nodeConnection->GetCurveEnd();
+										string targetNodeCircleName = targetNodeCircle->GetName() + "_" + to_string(targetNodeCircle->GetID());
+
+										if (nodeName != targetNodeName)
+										{
+											cout << componentName << " " << nodeName << " " << nodeCircleName
+												<< " is connected to " << targetNodeName << " " << targetNodeCircleName << "\n";
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		cout << "\n\n--------------------------------------------------\n\n";
 
 		switch (saveType)
 		{
