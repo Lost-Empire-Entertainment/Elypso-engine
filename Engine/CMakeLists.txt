@@ -22,32 +22,35 @@ get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
 set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
 
+# Engine files
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
-set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
-set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+
+# Externally added files
+set(EXT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/include")
+set(EXT_LIB_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/lib")
+set(EXT_SRC_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/src")
 
 # Manually added source file paths
-set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/engine/core")
-set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/engine/file")
-set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics")
-set(SRC_GRAPHICS_SHAPE_DIR "${CMAKE_SOURCE_DIR}/src/engine/graphics/shapes")
-set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/engine/physics")
-set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/engine/utils")
-set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/src/external")
+set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/core")
+set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/file")
+set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/graphics")
+set(SRC_GRAPHICS_SHAPE_DIR "${CMAKE_SOURCE_DIR}/src/graphics/shapes")
+set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/physics")
+set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/utils")
 
 # Add GLAD
-add_library(glad STATIC ${SRC_DIR}/external/glad/glad.c)
-target_include_directories(glad PUBLIC ${INCLUDE_DIR})
+add_library(glad STATIC ${EXT_SRC_DIR}/glad/glad.c)
+target_include_directories(glad PUBLIC ${EXT_INCLUDE_DIR})
 
 # Add GLFW
-set(GLFW_LIBRARY_PATH "${LIB_DIR}/glfw/glfw3.lib")
+set(GLFW_LIBRARY_PATH "${EXT_LIB_DIR}/glfw/glfw3.lib")
 
 # Add Assimp
-set(ASSIMP_LIBRARY_PATH "${LIB_DIR}/assimp/assimp-vc143-mt.lib")
+set(ASSIMP_LIBRARY_PATH "${EXT_LIB_DIR}/assimp/assimp-vc143-mt.lib")
 
 # Add magic_enum
 add_library(magic_enum INTERFACE)
-target_include_directories(magic_enum INTERFACE ${INCLUDE_DIR}/magic_enum)
+target_include_directories(magic_enum INTERFACE ${EXT_INCLUDE_DIR}/magic_enum)
 
 # Group external libraries
 add_library(external_libs INTERFACE)
@@ -55,7 +58,7 @@ target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
 set(SOURCE_FILES
-	${CMAKE_SOURCE_DIR}/src/engine/main.cpp
+	${CMAKE_SOURCE_DIR}/src/main.cpp
 	${SRC_CORE_DIR}/compile.cpp
 	${SRC_CORE_DIR}/console.cpp
 	${SRC_CORE_DIR}/core.cpp
@@ -95,15 +98,15 @@ set(SOURCE_FILES
 
 # Add your external files
 list(APPEND SOURCE_FILES
-	${EXTERNAL_DIR}/glad/glad.c
-	${EXTERNAL_DIR}/imgui/imgui.cpp
-	${EXTERNAL_DIR}/imgui/imgui_demo.cpp
-	${EXTERNAL_DIR}/imgui/imgui_draw.cpp
-	${EXTERNAL_DIR}/imgui/imgui_impl_glfw.cpp
-	${EXTERNAL_DIR}/imgui/imgui_impl_opengl3.cpp
-	${EXTERNAL_DIR}/imgui/imgui_tables.cpp
-	${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
-	${EXTERNAL_DIR}/stb_image/stb_image.cpp
+	${EXT_SRC_DIR}/glad/glad.c
+	${EXT_SRC_DIR}/imgui/imgui.cpp
+	${EXT_SRC_DIR}/imgui/imgui_demo.cpp
+	${EXT_SRC_DIR}/imgui/imgui_draw.cpp
+	${EXT_SRC_DIR}/imgui/imgui_impl_glfw.cpp
+	${EXT_SRC_DIR}/imgui/imgui_impl_opengl3.cpp
+	${EXT_SRC_DIR}/imgui/imgui_tables.cpp
+	${EXT_SRC_DIR}/imgui/imgui_widgets.cpp
+	${EXT_SRC_DIR}/stb_image/stb_image.cpp
 )
 
 # Add the executable
@@ -114,31 +117,26 @@ set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
-# Set the runtime library option
-# target_compile_options(Elypso_engine PRIVATE /MD)
-
 target_include_directories(Elypso_engine PRIVATE 
-	${INCLUDE_DIR}/engine
-	${INCLUDE_DIR}/engine/core
-	${INCLUDE_DIR}/engine/file
-	${INCLUDE_DIR}/engine/graphics
-	${INCLUDE_DIR}/engine/graphics/gui
-	${INCLUDE_DIR}/engine/graphics/shapes
-	${INCLUDE_DIR}/engine/physics
-	${INCLUDE_DIR}/engine/utils
-	${INCLUDE_DIR}/external
-	${INCLUDE_DIR}/external/assimp
-	${INCLUDE_DIR}/external/glad
-	${INCLUDE_DIR}/external/glfw
-	${INCLUDE_DIR}/external/glm
-	${INCLUDE_DIR}/external/glm/detail
-	${INCLUDE_DIR}/external/glm/ext
-	${INCLUDE_DIR}/external/glm/gtc
-	${INCLUDE_DIR}/external/glm/gtx
-	${INCLUDE_DIR}/external/glm/simd
-	${INCLUDE_DIR}/external/magic_enum
-	${INCLUDE_DIR}/external/imgui
-	${INCLUDE_DIR}/external/stb_image
+	${INCLUDE_DIR}/core
+	${INCLUDE_DIR}/file
+	${INCLUDE_DIR}/graphics
+	${INCLUDE_DIR}/graphics/gui
+	${INCLUDE_DIR}/graphics/shapes
+	${INCLUDE_DIR}/physics
+	${INCLUDE_DIR}/utils
+	${EXT_INCLUDE_DIR}/assimp
+	${EXT_INCLUDE_DIR}/glad
+	${EXT_INCLUDE_DIR}/glfw
+	${EXT_INCLUDE_DIR}/glm
+	${EXT_INCLUDE_DIR}/glm/detail
+	${EXT_INCLUDE_DIR}/glm/ext
+	${EXT_INCLUDE_DIR}/glm/gtc
+	${EXT_INCLUDE_DIR}/glm/gtx
+	${EXT_INCLUDE_DIR}/glm/simd
+	${EXT_INCLUDE_DIR}/magic_enum
+	${EXT_INCLUDE_DIR}/imgui
+	${EXT_INCLUDE_DIR}/stb_image
 )
 
 target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
