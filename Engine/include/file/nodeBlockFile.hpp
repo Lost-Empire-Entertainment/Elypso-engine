@@ -12,6 +12,7 @@ using std::string;
 using std::shared_ptr;
 
 using Graphics::Shape::GameObject;
+using Graphics::Shape::Component;
 
 namespace EngineFile
 {
@@ -19,6 +20,6 @@ namespace EngineFile
 	{
 	public:
 		static void LoadNodeBlock(const shared_ptr<GameObject> target, const string& nodeBlockFilePath);
-		static void SaveNodeBlock(const shared_ptr<GameObject> target, const string& nodeBlockFilePath);
+		static string SaveNodeBlock(const shared_ptr<Component> component, const shared_ptr<GameObject> target);
 	};
 }

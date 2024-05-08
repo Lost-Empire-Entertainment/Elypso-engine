@@ -526,7 +526,7 @@ namespace Graphics::GUI
 		{
 			vec2 pos = vec2(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
 
-			if (ImGui::MenuItem("Left 1 Right 1"))
+			if (ImGui::MenuItem("A (Left 1 Right 1)"))
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 				shared_ptr<GUINodeCircle> nodeCircleLeft1 = GUINodeCircle::InitializeNodeCircle(
@@ -544,7 +544,7 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleRight1);
 
-				string nodeName = "node A";
+				string nodeName = "A";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
@@ -558,7 +558,7 @@ namespace Graphics::GUI
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
 			}
-			if (ImGui::MenuItem("Left 1 Right 4"))
+			if (ImGui::MenuItem("B (Left 1 Right 4)"))
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 
@@ -598,7 +598,7 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::fourth);
 				nodeCircles.push_back(nodeCircleRight4);
 
-				string nodeName = "node B";
+				string nodeName = "B";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
@@ -615,7 +615,7 @@ namespace Graphics::GUI
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
 			}
-			if (ImGui::MenuItem("Left 2 Right 2"))
+			if (ImGui::MenuItem("C (Left 2 Right 2)"))
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 
@@ -648,7 +648,7 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::second);
 				nodeCircles.push_back(nodeCircleRight2);
 
-				string nodeName = "node C";
+				string nodeName = "C";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
@@ -664,7 +664,7 @@ namespace Graphics::GUI
 				selectedComponent->AddNode(newNode);
 				newNode->SetPos(pos);
 			}
-			if (ImGui::MenuItem("Left 4 Right 1"))
+			if (ImGui::MenuItem("D (Left 4 Right 1)"))
 			{
 				vector<shared_ptr<GUINodeCircle>> nodeCircles;
 
@@ -704,7 +704,7 @@ namespace Graphics::GUI
 					GUINodeCircle::Slot::first);
 				nodeCircles.push_back(nodeCircleRight1);
 
-				string nodeName = "node D";
+				string nodeName = "D";
 				shared_ptr<GUINode> newNode = GUINode::InitializeNode(
 					vec2(0),
 					vec2(0),
