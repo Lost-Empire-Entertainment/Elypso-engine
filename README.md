@@ -6,6 +6,28 @@ The main branch holds a stable version of the engine that is up to date with the
 
 Everything is still in early development and is highly likely to be modified a lot before alpha is released so there is no documentation provided at the current stage. Alpha is aimed for june 2024 and will include a bare-bones structure for making very basic games and the engine will significantly improve during alpha. Beta will release at the beginning of 2025 and is aimed to be worked on for the entirety of 2025 so the full release of this engine is aimed for the start of 2026.
 
+---
+
+### Links
+
+[Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
+
+[Join the discord community server](https://discord.gg/wPYCSSenX2)
+
+[Check out the trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
+
+---
+
+### Team
+
+* [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
+
+---
+
+### Licenses
+
+* [Elypso engine propietary license](LICENSE.md)
+
 # Setup
 
 If you still wish to set up the hub, engine and game for testing or to see how it all runs on your end then here is the current setup.
@@ -33,19 +55,3 @@ Notes:
 	- 7.1) File explorer will open - find and select the Game folder (same directory where Engine and Hub are at)
 8) Click 'Compile' at the top bar
 	- 8.1) Wait for the cmd window to finish compiling, the game exe should open if no errors were encountered. If you made it this far then that means you successfully set up the engine for making games!
-
-# Links
-
-[Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
-
-[Join the discord community server](https://discord.gg/wPYCSSenX2)
-
-[Check out the trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
-
-# Team
-
-* [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
-
-# Licenses
-
-* [Elypso engine propietary license](LICENSE.md)
