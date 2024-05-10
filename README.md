@@ -12,6 +12,8 @@ Everything is still in early development and is highly likely to be modified a l
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
 
+[Official website (documentation coming soon)](https://elypsoengine.com)
+
 [Join the discord community server](https://discord.gg/wPYCSSenX2)
 
 [Check out the trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
