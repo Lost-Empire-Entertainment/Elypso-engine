@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 //external
 #include "glm.hpp"
@@ -15,12 +16,16 @@
 
 //engine
 #include "input.hpp"
+#include "gameobject.hpp"
 
 using glm::vec3;
 using glm::mat4;
 using glm::radians;
 using std::unordered_map;
 using std::string;
+using std::shared_ptr;
+
+using Graphics::Shape::GameObject;
 
 namespace Core
 {
@@ -47,6 +52,8 @@ namespace Core
             scale
         };
         static inline ObjectAction objectAction = ObjectAction::none;
+
+        static inline shared_ptr<GameObject> copiedObject;
 
         Input(GLFWwindow* window, float sensitivity = 0.05f);
         mat4 GetViewMatrix() const;

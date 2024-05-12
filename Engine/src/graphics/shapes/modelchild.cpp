@@ -18,6 +18,7 @@
 #include "texture.hpp"
 #include "core.hpp"
 #include "console.hpp"
+#include "selectobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -39,6 +40,7 @@ using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Physics::Select;
 
 namespace Graphics::Shape
 {
@@ -138,6 +140,9 @@ namespace Graphics::Shape
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
+
+		Select::selectedObj = obj;
+		Select::isObjectSelected = true;
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
