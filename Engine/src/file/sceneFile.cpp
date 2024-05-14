@@ -267,6 +267,12 @@ namespace EngineFile
 					Render::directionalIntensity = stof(value);
 				}
 
+				else if (type == "backgroundColor")
+				{
+					vector<string> values = String::Split(value, ',');
+					Render::backgroundColor = String::StringToVec3(values);
+				}
+
 				else if (type == "id")
 				{
 					if (!obj.empty()) LoadGameObject(obj);
@@ -531,7 +537,6 @@ namespace EngineFile
 		float dirRotZ = Render::directionalDirection.z;
 		sceneFile << "dirDirection= " << dirRotX << ", " << dirRotY << ", " << dirRotZ << "\n";
 
-		vec3 dirDiffuse = Render::directionalDiffuse;
 		float dirDiffX = Render::directionalDiffuse.x;
 		float dirDiffY = Render::directionalDiffuse.y;
 		float dirDiffZ = Render::directionalDiffuse.z;
@@ -539,6 +544,13 @@ namespace EngineFile
 
 		float dirIntensity = Render::directionalIntensity;
 		sceneFile << "dirIntensity= " << Render::directionalIntensity << "\n";
+
+		sceneFile << "\n";
+
+		float bgrR = Render::backgroundColor.r;
+		float bgrG = Render::backgroundColor.g;
+		float bgrB = Render::backgroundColor.b;
+		sceneFile << "backgroundColor= " << bgrR << ", " << bgrG << ", " << bgrB << "\n";
 
 		sceneFile << "\n==================================================\n\n";
 

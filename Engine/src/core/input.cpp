@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -29,6 +30,8 @@
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
+#include "compile.hpp"
+#include "fileUtils.hpp"
 
 using std::cout;
 using std::endl;
@@ -41,6 +44,7 @@ using std::fixed;
 using std::setprecision;
 using std::to_string;
 using std::numeric_limits;
+using std::filesystem::exists;
 
 using Physics::Select;
 using Graphics::Render;
@@ -54,6 +58,8 @@ using Graphics::Shape::Model;
 using Graphics::Shape::Material;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
+using Core::Compilation;
+using Utils::File;
 
 namespace Core
 {
@@ -220,89 +226,112 @@ namespace Core
             if (!cameraEnabled) lastKnownRotation = Render::camera.GetCameraRotation();
         }
 
-        //copy selected object
-        if (key == GLFW_KEY_C
-            && mods == GLFW_MOD_CONTROL
-            && action == GLFW_PRESS
-            && Select::selectedObj != nullptr)
-        {
-            copiedObject = Select::selectedObj;
-            cout << "copied " << copiedObject->GetName() 
-                << "_" << to_string(copiedObject->GetID()) << "\n";
-        }
-
-        //paste selected object
-        if (key == GLFW_KEY_V
-            && mods == GLFW_MOD_CONTROL
-            && action == GLFW_PRESS
-            && copiedObject != nullptr)
-        {
-            string name = copiedObject->GetName();
-            unsigned int nextID = GameObject::nextID++;
-
-            //if a regular model was pasted
-            if (copiedObject->GetBasicShape() != nullptr)
-            {
-                Model::Initialize(
-                    copiedObject->GetTransform()->GetPosition(),
-                    copiedObject->GetTransform()->GetRotation(),
-                    copiedObject->GetTransform()->GetScale(),
-                    copiedObject->GetDirectory(),
-                    copiedObject->GetMaterial()->GetShaderName(0),
-                    copiedObject->GetMaterial()->GetShaderName(1),
-                    copiedObject->GetMaterial()->GetTextureName(Material::TextureType::diffuse),
-                    copiedObject->GetMaterial()->GetTextureName(Material::TextureType::specular),
-                    copiedObject->GetMaterial()->GetTextureName(Material::TextureType::normal),
-                    copiedObject->GetMaterial()->GetTextureName(Material::TextureType::height),
-                    copiedObject->GetBasicShape()->GetShininess(),
-                    copiedObject->GetCategories(),
-                    name,
-                    nextID);
-            }
-
-            //if a point light was copied
-            else if (copiedObject->GetPointLight() != nullptr)
-            {
-                shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
-                    copiedObject->GetTransform()->GetPosition(),
-                    copiedObject->GetTransform()->GetRotation(),
-                    copiedObject->GetTransform()->GetScale(),
-                    copiedObject->GetMaterial()->GetShaderName(0),
-                    copiedObject->GetMaterial()->GetShaderName(1),
-                    copiedObject->GetPointLight()->GetDiffuse(),
-                    copiedObject->GetPointLight()->GetIntensity(),
-                    copiedObject->GetPointLight()->GetDistance(),
-                    copiedObject->GetCategories(),
-                    name,
-                    nextID);
-            }
-
-            //if a spot light was copied
-            else if (copiedObject->GetSpotLight() != nullptr)
-            {
-                shared_ptr<GameObject> newPointLight = SpotLight::InitializeSpotLight(
-                    copiedObject->GetTransform()->GetPosition(),
-                    copiedObject->GetTransform()->GetRotation(),
-                    copiedObject->GetTransform()->GetScale(),
-                    copiedObject->GetMaterial()->GetShaderName(0),
-                    copiedObject->GetMaterial()->GetShaderName(1),
-                    copiedObject->GetSpotLight()->GetDiffuse(),
-                    copiedObject->GetSpotLight()->GetIntensity(),
-                    copiedObject->GetSpotLight()->GetDistance(),
-                    copiedObject->GetSpotLight()->GetInnerAngle(),
-                    copiedObject->GetSpotLight()->GetOuterAngle(),
-                    copiedObject->GetCategories(),
-                    name,
-                    nextID);
-            }
-
-            cout << "pasted " << copiedObject->GetName()
-                << "_" << to_string(copiedObject->GetID()) << "\n";
-        }
-
         if (!cameraEnabled
             && !ImGui::GetIO().WantCaptureMouse)
         {
+            //compile game
+            if (key == GLFW_KEY_B
+                && mods == GLFW_MOD_CONTROL
+                && action == GLFW_PRESS)
+            {
+                Compilation::Compile();
+            }
+
+            //run game
+            if (key == GLFW_KEY_R
+                && mods == GLFW_MOD_CONTROL
+                && action == GLFW_PRESS)
+            {
+                if (!exists(Engine::gameExePath))
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::ENGINE,
+                        Type::EXCEPTION,
+                        "Game exe does not exist!\n");
+                }
+                else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+            }
+
+            //copy selected object
+            if (key == GLFW_KEY_C
+                && mods == GLFW_MOD_CONTROL
+                && action == GLFW_PRESS
+                && Select::selectedObj != nullptr)
+            {
+                copiedObject = Select::selectedObj;
+                cout << "copied " << copiedObject->GetName()
+                    << "_" << to_string(copiedObject->GetID()) << "\n";
+            }
+
+            //paste selected object
+            if (key == GLFW_KEY_V
+                && mods == GLFW_MOD_CONTROL
+                && action == GLFW_PRESS
+                && copiedObject != nullptr)
+            {
+                string name = copiedObject->GetName();
+                unsigned int nextID = GameObject::nextID++;
+
+                //if a regular model was pasted
+                if (copiedObject->GetBasicShape() != nullptr)
+                {
+                    Model::Initialize(
+                        copiedObject->GetTransform()->GetPosition(),
+                        copiedObject->GetTransform()->GetRotation(),
+                        copiedObject->GetTransform()->GetScale(),
+                        copiedObject->GetDirectory(),
+                        copiedObject->GetMaterial()->GetShaderName(0),
+                        copiedObject->GetMaterial()->GetShaderName(1),
+                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::diffuse),
+                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::specular),
+                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::normal),
+                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::height),
+                        copiedObject->GetBasicShape()->GetShininess(),
+                        copiedObject->GetCategories(),
+                        name,
+                        nextID);
+                }
+
+                //if a point light was copied
+                else if (copiedObject->GetPointLight() != nullptr)
+                {
+                    shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
+                        copiedObject->GetTransform()->GetPosition(),
+                        copiedObject->GetTransform()->GetRotation(),
+                        copiedObject->GetTransform()->GetScale(),
+                        copiedObject->GetMaterial()->GetShaderName(0),
+                        copiedObject->GetMaterial()->GetShaderName(1),
+                        copiedObject->GetPointLight()->GetDiffuse(),
+                        copiedObject->GetPointLight()->GetIntensity(),
+                        copiedObject->GetPointLight()->GetDistance(),
+                        copiedObject->GetCategories(),
+                        name,
+                        nextID);
+                }
+
+                //if a spot light was copied
+                else if (copiedObject->GetSpotLight() != nullptr)
+                {
+                    shared_ptr<GameObject> newPointLight = SpotLight::InitializeSpotLight(
+                        copiedObject->GetTransform()->GetPosition(),
+                        copiedObject->GetTransform()->GetRotation(),
+                        copiedObject->GetTransform()->GetScale(),
+                        copiedObject->GetMaterial()->GetShaderName(0),
+                        copiedObject->GetMaterial()->GetShaderName(1),
+                        copiedObject->GetSpotLight()->GetDiffuse(),
+                        copiedObject->GetSpotLight()->GetIntensity(),
+                        copiedObject->GetSpotLight()->GetDistance(),
+                        copiedObject->GetSpotLight()->GetInnerAngle(),
+                        copiedObject->GetSpotLight()->GetOuterAngle(),
+                        copiedObject->GetCategories(),
+                        name,
+                        nextID);
+                }
+
+                cout << "pasted " << copiedObject->GetName()
+                    << "_" << to_string(copiedObject->GetID()) << "\n";
+            }
+
             //delete selected gameobject
             if (key == GLFW_KEY_DELETE
                 && action == GLFW_PRESS

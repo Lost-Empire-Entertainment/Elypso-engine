@@ -7,13 +7,14 @@
 
 namespace Graphics::GUI
 {
-	class GUIDebugMenu
+	class GUISettings
 	{
 	public:
-		static inline bool renderDebugMenu;
-		static void RenderDebugMenu();
+		static inline bool renderSettings;
+		static void RenderSettings();
 
-		static void RD_DebugMenuInfo();
-		static void RD_Interactions();
+	private:
+		static void InputSettings();
+		static void OtherSettings();
 	};
 }

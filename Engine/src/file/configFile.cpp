@@ -17,10 +17,11 @@
 #include "stringutils.hpp"
 #include "gui.hpp"
 #include "gui_console.hpp"
-#include "gui_debugmenu.hpp"
+#include "gui_settings.hpp"
 #include "gui_inspector.hpp"
 #include "gui_nodeblock.hpp"
 #include "gui_assetlist.hpp"
+#include "gui_scenemenu.hpp"
 #include "core.hpp"
 #include "input.hpp"
 #include "sceneFile.hpp"
@@ -47,10 +48,11 @@ using Core::ConsoleManager;
 using Utils::String;
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUIConsole;
-using Graphics::GUI::GUIDebugMenu;
+using Graphics::GUI::GUISettings;
 using Graphics::GUI::GUIInspector;
 using Graphics::GUI::GUINodeBlock;
 using Graphics::GUI::GUIAssetList;
+using Graphics::GUI::GUISceneMenu;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
@@ -161,14 +163,6 @@ namespace EngineFile
 			ConfigFileValue::Type::type_int);
 		AddValue(gui_inspector);
 
-		ConfigFileValue gui_debugMenu(
-			"gui_debugMenu",
-			to_string(GUIDebugMenu::renderDebugMenu),
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(gui_debugMenu);
-
 		ConfigFileValue gui_console(
 			"gui_console",
 			to_string(GUIConsole::renderConsole),
@@ -192,6 +186,14 @@ namespace EngineFile
 			"1",
 			ConfigFileValue::Type::type_int);
 		AddValue(gui_assetListWindow);
+
+		ConfigFileValue gui_sceneMenuWindow(
+			"gui_sceneMenuWindow",
+			to_string(GUISceneMenu::renderSceneMenu),
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(gui_sceneMenuWindow);
 	}
 
 	void ConfigFileManager::LoadConfigFile()
@@ -454,27 +456,6 @@ namespace EngineFile
 							"Render inspector value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
-				else if (name == "gui_debugMenu")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						GUIDebugMenu::renderDebugMenu = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render debug menu to " + to_string(GUIDebugMenu::renderDebugMenu) + ".\n");
-					}
-					else
-					{
-						GUIDebugMenu::renderDebugMenu = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render debug menu value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
 				else if (name == "gui_console")
 				{
 					if (configFileManager.IsValueInRange(name, lineVariables[0]))
@@ -536,6 +517,27 @@ namespace EngineFile
 							Caller::ENGINE,
 							Type::EXCEPTION,
 							"Render asset list window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+					}
+				}
+				else if (name == "gui_sceneMenuWindow")
+				{
+					if (configFileManager.IsValueInRange(name, lineVariables[0]))
+					{
+						GUISceneMenu::renderSceneMenu = static_cast<bool>(stoi(lineVariables[0]));
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::DEBUG,
+							"Set render scene menu window to " + to_string(GUISceneMenu::renderSceneMenu) + ".\n");
+					}
+					else
+					{
+						GUISceneMenu::renderSceneMenu = false;
+
+						ConsoleManager::WriteConsoleMessage(
+							Caller::ENGINE,
+							Type::EXCEPTION,
+							"Render scene menu window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
 					}
 				}
 			}

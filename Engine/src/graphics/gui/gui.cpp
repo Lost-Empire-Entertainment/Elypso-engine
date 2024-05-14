@@ -15,12 +15,14 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "gui.hpp"
+#include "gui_floatingdebugmenu.hpp"
 #include "gui_console.hpp"
-#include "gui_debugmenu.hpp"
+#include "gui_settings.hpp"
 #include "gui_inspector.hpp"
 #include "gui_nodeblock.hpp"
 #include "gui_assetlist.hpp"
 #include "gui_importAsset.hpp"
+#include "gui_scenemenu.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -88,9 +90,7 @@ namespace Graphics::GUI
 
 			GUIAssetList::renderAssetList = true;
 			GUIConsole::renderConsole = true;
-			GUIDebugMenu::renderDebugMenu = true;
 			GUIInspector::renderInspector = true;
-			GUINodeBlock::renderNodeBlock = true;
 			ConfigFileManager::SaveConfigFile();
 		}
 
@@ -176,12 +176,14 @@ namespace Graphics::GUI
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
+		GUIFloatingDebugMenu::RenderFloatingDebugMenu();
 		GUIConsole::RenderConsole();
-		GUIDebugMenu::RenderDebugMenu();
+		GUISettings::RenderSettings();
 		GUIInspector::RenderInspector();
 		GUINodeBlock::RenderNodeBlock();
 		GUIAssetList::RenderAssetList();
 		GUIImportAsset::RenderImportAsset();
+		GUISceneMenu::RenderSceneMenu();
 
 		engineGui.RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) engineGui.ConfirmUnsavedShutdown();
@@ -509,15 +511,21 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
+			if (ImGui::MenuItem("Scene menu"))
+			{
+				GUISceneMenu::renderSceneMenu = true;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			if (ImGui::MenuItem("Console"))
 			{
 				GUIConsole::renderConsole = true;
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			if (ImGui::MenuItem("Debug menu"))
+			if (ImGui::MenuItem("Settings"))
 			{
-				GUIDebugMenu::renderDebugMenu = true;
+				GUISettings::renderSettings = true;
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 

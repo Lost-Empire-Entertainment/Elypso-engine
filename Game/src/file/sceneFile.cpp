@@ -215,6 +215,12 @@ namespace GameFile
 					Render::directionalIntensity = stof(value);
 				}
 
+				else if (type == "backgroundColor")
+				{
+					vector<string> values = String::Split(value, ',');
+					Render::backgroundColor = String::StringToVec3(values);
+				}
+
 				else if (type == "id")
 				{
 					if (!obj.empty()) LoadGameObject(obj);
@@ -447,6 +453,13 @@ namespace GameFile
 
 		float dirIntensity = Render::directionalIntensity;
 		sceneFile << "dirIntensity= " << Render::directionalIntensity << "\n";
+
+		sceneFile << "\n";
+
+		float bgrR = Render::backgroundColor.r;
+		float bgrG = Render::backgroundColor.g;
+		float bgrB = Render::backgroundColor.b;
+		sceneFile << "backgroundColor= " << bgrR << ", " << bgrG << ", " << bgrB << "\n";
 
 		sceneFile << "\n==================================================\n\n";
 
