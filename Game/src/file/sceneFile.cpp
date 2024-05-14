@@ -22,6 +22,7 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "fileutils.hpp"
+#include "nodeBlockFile.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -43,6 +44,8 @@ using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Utils::File;
 using Graphics::Shape::Material;
+using Graphics::Shape::Component;
+using GameFile::NodeBlockFile;
 
 namespace GameFile
 {
@@ -167,7 +170,7 @@ namespace GameFile
 		ifstream sceneFile(scenePath);
 		if (!sceneFile.is_open())
 		{
-			cout << "Error: Failed to open scene file '" << scenePath << "'!\n\n";
+			cout << "Failed to open scene file '" << scenePath << "'!\n\n";
 			return;
 		}
 
@@ -195,7 +198,24 @@ namespace GameFile
 					}
 				}
 
-				if (type == "id")
+				if (type == "dirRotation")
+				{
+					vector<string> values = String::Split(value, ',');
+					Render::directionalDirection = String::StringToVec3(values);
+				}
+				
+				else if (type == "dirDiffuse")
+				{
+					vector<string> values = String::Split(value, ',');
+					Render::directionalDiffuse = String::StringToVec3(values);
+				}
+
+				else if (type == "dirRotation")
+				{
+					Render::directionalIntensity = stof(value);
+				}
+
+				else if (type == "id")
 				{
 					if (!obj.empty()) LoadGameObject(obj);
 
@@ -223,89 +243,109 @@ namespace GameFile
 		// VALUES USED FOR ALL GAMEOBJECTS
 		//
 
-		unsigned int id = stoul(obj.at("id"));
-		string name = obj.at("name");
-		auto meshType = magic_enum::enum_cast<Mesh::MeshType>(obj.at("type"));
-
+		unsigned int id;
+		string name;
+		Mesh::MeshType meshType = {};
 		vec3 pos{};
-		if (obj.count("position"))
-		{
-			vector<string> vect = String::Split(obj.at("position"), ',');
-			pos = String::StringToVec3(vect);
-		}
-
 		vec3 rot{};
-		if (obj.count("rotation"))
-		{
-			vector<string> vect = String::Split(obj.at("rotation"), ',');
-			rot = String::StringToVec3(vect);
-		}
-
 		vec3 scale{};
-		if (obj.count("scale"))
-		{
-			vector<string> vect = String::Split(obj.at("scale"), ',');
-			scale = String::StringToVec3(vect);
-		}
-
-		vector<string> shaders = String::Split(obj.at("shaders"), ',');
+		map<GameObject::Category, bool> categories;
+		vector<string> shaders;
 
 		//
 		// EXTRA VALUES
 		//
 
 		vector<string> textures;
-		if (obj.count("textures")) textures = String::Split(obj.at("textures"), ',');
-
 		float shininess = 32;
-		if (obj.count("shininess")) shininess = stof(obj.at("shininess"));
-
 		vec3 diffuse{};
-		if (obj.count("diffuse"))
-		{
-			vector<string> vect = String::Split(obj.at("diffuse"), ',');
-			diffuse = String::StringToVec3(vect);
-		}
-
 		float intensity;
-		if (obj.count("intensity")) intensity = stof(obj.at("intensity"));
-
 		float distance;
-		if (obj.count("distance")) distance = stof(obj.at("distance"));
-
 		float innerAngle;
-		if (obj.count("inner angle")) innerAngle = stof(obj.at("inner angle"));
-
 		float outerAngle;
-		if (obj.count("outer angle")) outerAngle = stof(obj.at("outer angle"));
-
 		string modelPath;
-		if (obj.count("model path")) modelPath = obj.at("model path");
-
 
 		//
 		// ATTACHED BILLBOARD VALUES
 		//
 
 		string billboardName;
-		if (obj.count("billboard name")) billboardName = obj.at("billboard name");
-
 		unsigned int billboardID;
-		if (obj.count("billboard id")) billboardID = stoul(obj.at("billboard id"));
-
 		vector<string> billboardShaders{};
-		if (obj.count("billboard shaders")) billboardShaders = String::Split(obj.at("billboard shaders"), ',');
-
 		string billboardDiffTexture;
-		if (obj.count("billboard texture")) billboardDiffTexture = obj.at("billboard texture");
-
 		float billboardShininess;
-		if (obj.count("billboard shininess")) billboardShininess = stof(obj.at("billboard shininess"));
+
+		for (const auto& entry : obj)
+		{
+			//
+			// VALUES USED FOR ALL GAMEOBJECTS
+			//
+
+			string type = entry.first;
+			string value = entry.second;
+
+			if (type == "id") id = stoul(value);
+			if (type == "name") name = value;
+			if (type == "type") meshType = magic_enum::enum_cast<Mesh::MeshType>(value).value_or(Mesh::MeshType::model);
+			if (type == "position")
+			{
+				vector<string> values = String::Split(value, ',');
+				pos = String::StringToVec3(values);
+			}
+			if (type == "rotation")
+			{
+				vector<string> values = String::Split(value, ',');
+				rot = String::StringToVec3(values);
+			}
+			if (type == "scale")
+			{
+				vector<string> values = String::Split(value, ',');
+				scale = String::StringToVec3(values);
+			}
+			for (const auto& category : GameObject::categoriesVector)
+			{
+				string categoryName = string(magic_enum::enum_name(category));
+				if (type == categoryName) categories[category] = stoi(value);
+			}
+			if (type == "shaders")
+			{
+				shaders = String::Split(value, ',');
+			}
+
+			//
+			// EXTRA VALUES
+			//
+
+			
+			if (type == "textures") textures = String::Split(value, ',');
+			if (type == "shininess") shininess = stof(value);
+			if (type == "diffuse")
+			{
+				vector<string> values = String::Split(value, ',');
+				diffuse = String::StringToVec3(values);
+			}
+			if (type == "intensity") intensity = stof(value);
+			if (type == "distance") distance = stof(value);
+			if (type == "inner angle") innerAngle = stof(value);
+			if (type == "outer angle") outerAngle = stof(value);
+			if (type == "model path") modelPath = value;
+
+
+			//
+			// ATTACHED BILLBOARD VALUES
+			//
+
+			if (type == "billboard name") billboardName = value;
+			if (type == "billboard id") billboardID = stoul(value);
+			if (type == "billboard shaders") billboardShaders = String::Split(value, ',');
+			if (type == "billboard texture") billboardDiffTexture = value;
+			if (type == "billboard shininess") billboardShininess = stof(value);
+		}
 
 		//
 		// CREATE GAMEOBJECTS
 		//
-
+		
 		if (meshType == Mesh::MeshType::model)
 		{
 			Model::Initialize(
@@ -320,10 +360,11 @@ namespace GameFile
 				textures[2],
 				textures[3],
 				shininess,
+				categories,
 				name,
 				id);
 
-			GameObject::nextID++;
+			GameObject::nextID = id + 1;
 		}
 		else if (meshType == Mesh::MeshType::point_light)
 		{
@@ -336,6 +377,7 @@ namespace GameFile
 				diffuse,
 				intensity,
 				distance,
+				categories,
 				name,
 				id,
 				billboardShaders[0],
@@ -345,7 +387,7 @@ namespace GameFile
 				billboardName,
 				billboardID);
 
-			GameObject::nextID++;
+			GameObject::nextID = id + 1;
 		}
 		else if (meshType == Mesh::MeshType::spot_light)
 		{
@@ -360,6 +402,7 @@ namespace GameFile
 				distance,
 				innerAngle,
 				outerAngle,
+				categories,
 				name,
 				id,
 				billboardShaders[0],
@@ -369,7 +412,7 @@ namespace GameFile
 				billboardName,
 				billboardID);
 
-			GameObject::nextID++;
+			GameObject::nextID = id + 1;
 		}
 	}
 
@@ -391,11 +434,24 @@ namespace GameFile
 			return;
 		}
 
+		float dirRotX = Render::directionalDirection.x;
+		float dirRotY = Render::directionalDirection.y;
+		float dirRotZ = Render::directionalDirection.z;
+		sceneFile << "dirDirection= " << dirRotX << ", " << dirRotY << ", " << dirRotZ << "\n";
+
+		vec3 dirDiffuse = Render::directionalDiffuse;
+		float dirDiffX = Render::directionalDiffuse.x;
+		float dirDiffY = Render::directionalDiffuse.y;
+		float dirDiffZ = Render::directionalDiffuse.z;
+		sceneFile << "dirDiffuse= " << dirDiffX << ", " << dirDiffY << ", " << dirDiffZ << "\n";
+
+		float dirIntensity = Render::directionalIntensity;
+		sceneFile << "dirIntensity= " << Render::directionalIntensity << "\n";
+
+		sceneFile << "\n==================================================\n\n";
+
 		for (const auto& obj : objects)
 		{
-			//ignore border gameobject
-			//billboards and actiontex
-
 			Mesh::MeshType type = obj->GetMesh()->GetMeshType();
 
 			if (obj->GetID() != 10000000
@@ -428,6 +484,45 @@ namespace GameFile
 				float scaleY = obj->GetTransform()->GetScale().y;
 				float scaleZ = obj->GetTransform()->GetScale().z;
 				sceneFile << "scale= " << scaleX << ", " << scaleY << ", " << scaleZ << "\n";
+
+				sceneFile << "\n";
+
+				//categories
+				for (const auto& category : obj->GetCategories())
+				{
+					string categoryName = string(magic_enum::enum_name(category.first));
+					bool categoryActivated = category.second;
+
+					sceneFile << categoryName << "= " << categoryActivated << "\n";
+				}
+
+				sceneFile << "\n";
+
+				bool hasComponents = false;
+				if (obj->GetComponents().size() > 0)
+				{
+					for (const auto& component : obj->GetComponents())
+					{
+						if (component->GetType() == Component::ComponentType::Nodeblock)
+						{
+							if (!hasComponents) hasComponents = true;
+
+							string nodeBlockPath = NodeBlockFile::SaveNodeBlock(component, obj);
+							string output = nodeBlockPath != "NONE"
+								? "nodeBlock_" + component->GetName() + "= " + nodeBlockPath + "\n"
+								: "NO NODEBLOCKS IN GAMEOBJECT";
+
+							sceneFile << output;
+						}
+					}
+				}
+
+				if (!hasComponents)
+				{
+					sceneFile << "NO NODEBLOCKS IN GAMEOBJECT\n";
+				}
+
+				sceneFile << "\n";
 
 				//object textures
 				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
@@ -544,7 +639,7 @@ namespace GameFile
 		if (!projectFile.is_open())
 		{
 			Game::CreateErrorPopup(
-				"Project file load error", 
+				"Project file load error",
 				"Failed to open project file! Shutting down game");
 		}
 
@@ -575,8 +670,8 @@ namespace GameFile
 
 		for (const auto& entry : directory_iterator(projectsPath))
 		{
-			string ending = entry.is_directory() 
-				? path(entry).filename().string() 
+			string ending = entry.is_directory()
+				? path(entry).filename().string()
 				: path(entry).stem().string() + path(entry).extension().string();
 
 			File::CopyFileOrFolder(entry, currentProjectPath + "\\" + ending);

@@ -56,6 +56,7 @@ namespace Graphics::Shape
         const string& normalTexture,
         const string& heightTexture,
         const float& shininess,
+        const map<GameObject::Category, bool> categories,
         string& name,
         unsigned int& id)
     {
@@ -91,6 +92,7 @@ namespace Graphics::Shape
             normalTexture,
             heightTexture,
             shininess,
+            categories,
             scene->mRootNode, 
             scene);
     }
@@ -109,6 +111,7 @@ namespace Graphics::Shape
         const string& normalTexture,
         const string& heightTexture,
         const float& shininess,
+        const map<GameObject::Category, bool> categories,
         aiNode* node,
         const aiScene* scene)
     {
@@ -139,6 +142,7 @@ namespace Graphics::Shape
                 newMesh.vertices,
                 newMesh.indices,
                 shininess,
+                categories,
                 name,
                 id);
 
@@ -162,6 +166,7 @@ namespace Graphics::Shape
                 normalTexture,
                 heightTexture,
                 shininess,
+                categories,
                 node->mChildren[i], 
                 scene);
         }
