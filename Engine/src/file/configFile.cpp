@@ -63,8 +63,6 @@ namespace EngineFile
 	void ConfigFileManager::SetDefaultConfigValues()
 	{
 		EngineGUI::fontScale = 1.5f;
-		Render::windowWidth = 1280;
-		Render::windowHeight = 720;
 		Render::useMonitorRefreshRate = true;
 		Input::moveSpeedMultiplier = 1.0f;
 		Input::nearClip = 0.001f;
@@ -86,18 +84,6 @@ namespace EngineFile
 			"2.0",
 			ConfigFileValue::Type::type_float);
 		AddValue(gui_fontScale);
-
-		int width, height;
-		glfwGetWindowSize(Render::window, &width, &height);
-		string finalWidth = width == 0 ? to_string(Render::windowWidth) : to_string(width);
-		string finalHeight = height == 0 ? to_string(Render::windowHeight) : to_string(height);
-		ConfigFileValue graphics_resolution(
-			"window_resolution",
-			finalWidth + ", " + finalHeight,
-			"1280, 720",
-			"7860, 3840",
-			ConfigFileValue::Type::type_vec2);
-		AddValue(graphics_resolution);
 
 		ConfigFileValue graphics_vsync(
 			"window_vsync",
@@ -255,35 +241,6 @@ namespace EngineFile
 							Caller::ENGINE,
 							Type::EXCEPTION,
 							"Font scale value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-					}
-				}
-				else if (name == "window_resolution")
-				{
-					if (configFileManager.IsValueInRange("width", lineVariables[0])
-						&& configFileManager.IsValueInRange("height", lineVariables[1]))
-					{
-						unsigned int width = stoul(lineVariables[0]);
-						Render::windowWidth = width;
-						unsigned int height = stoul(lineVariables[1]);
-						Render::windowHeight = height;
-						glfwSetWindowSize(Render::window, width, height);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set resolution to "
-							+ to_string(Render::windowWidth) + ", "
-							+ to_string(Render::windowHeight) + ".\n");
-					}
-					else
-					{
-						glfwSetWindowSize(Render::window, 1280, 720);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Height or width value " + lineVariables[0]
-							+ " for resolution is out of range or not a float! Resetting to default.\n");
 					}
 				}
 				else if (name == "window_vsync")

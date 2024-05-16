@@ -231,6 +231,13 @@ namespace Core
 	{
 		if (SceneFile::unsavedChanges == true)
 		{
+			//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
+			if (glfwGetWindowAttrib(Render::window, GLFW_ICONIFIED))
+			{
+				glfwRestoreWindow(Render::window);
+			}
+			glfwFocusWindow(Render::window);
+
 			glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
 			EngineGUI::renderUnsavedShutdownWindow = true;
 		}

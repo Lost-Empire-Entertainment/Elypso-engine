@@ -6,6 +6,8 @@
 @echo off
 :: Batch script to build the executable for the game, intended for use with the engine only.
 
+title Build Game [Fast]
+
 :: Reusable message types printed to console
 set "gcln=[GAME_CLEANUP]"
 set "cminf=[CMAKE_INFO]"

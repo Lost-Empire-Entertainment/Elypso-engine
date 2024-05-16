@@ -42,27 +42,27 @@ namespace Graphics::GUI
 		static void Shutdown();
 	private:
 		//text filter for searching
-		ImGuiTextFilter textFilter;
+		static ImGuiTextFilter textFilter;
 
-		bool filterTextProcessed;
+		static inline bool filterTextProcessed;
 
-		void RenderTopBar();
+		static void RenderTopBar();
 
-		int GetScreenWidth();
-		int GetScreenHeight();
-		float GetScreenRefreshRate();
+		static inline int GetScreenWidth();
+		static inline int GetScreenHeight();
+		static inline float GetScreenRefreshRate();
 
 		//top bar interactions
-		void TB_CheckVersion();
-		void TB_ReportIssue();
+		static void TB_CheckVersion();
+		static void TB_ReportIssue();
 
 		//top bar rendered windows
-		string versionCompare;
-		string versionConfirm;
-		void RenderVersionCheckWindow();
+		static inline string versionCompare;
+		static inline string versionConfirm;
+		static void RenderVersionCheckWindow();
 
-		void ConfirmUnsavedShutdown();
+		static void ConfirmUnsavedShutdown();
 
-		void ConfirmUnsavedSceneSwitch();
+		static void ConfirmUnsavedSceneSwitch();
 	};
 }

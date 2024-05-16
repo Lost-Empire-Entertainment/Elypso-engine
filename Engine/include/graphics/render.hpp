@@ -17,15 +17,13 @@ using glm::vec3;
 using glm::mat4;
 
 using Graphics::Shape::GameObject;
+using Core::Input;
 
 namespace Graphics
 {
 	class Render
 	{
 	public:
-		static inline unsigned int windowWidth;
-		static inline unsigned int windowHeight;
-
 		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
 		static inline vec3 directionalDirection = vec3(-0.2f, -1.0f, -0.3f);
@@ -41,16 +39,19 @@ namespace Graphics
 		static inline mat4 projection;
 		static inline mat4 view;
 
-		static Core::Input camera;
+		static Input camera;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 		static void SetWindowNameAsUnsaved(bool state);
 		static void WindowLoop();
 	private:
-		void GLFWSetup();
-		void WindowSetup();
-		void GladSetup();
-		void ContentSetup();
+		static inline unsigned int windowWidth = 1280;
+		static inline unsigned int windowHeight = 720;
+
+		static void GLFWSetup();
+		static void WindowSetup();
+		static void GladSetup();
+		static void ContentSetup();
 	};
 }

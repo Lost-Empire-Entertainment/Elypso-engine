@@ -6,6 +6,8 @@
 @echo off
 :: Batch script to build the executable and create the installer for the engine
 
+title Build Elypso Engine
+
 :: Reusable message types printed to console
 set "enexc=[ENGINE_EXCEPTION]"
 set "eninf=[ENGINE_INFO]"

@@ -6,6 +6,8 @@
 @echo off
 :: Batch script to build the executable and create the installer for Elypso hub
 
+title Build Elypso Hub
+
 :: Reusable message types printed to console
 set "hexc=[HUB_EXCEPTION]"
 set "hinf=[HUB_INFO]"

@@ -56,15 +56,14 @@ using Type = Core::ConsoleManager::Type;
 namespace Graphics
 {
 	Input Render::camera(Render::window);
-	Render render;
 
 	void Render::RenderSetup()
 	{
-		render.GLFWSetup();
-		render.WindowSetup();
-		render.GladSetup();
+		GLFWSetup();
+		WindowSetup();
+		GladSetup();
 
-		render.ContentSetup();
+		ContentSetup();
 
 		EngineGUI::Initialize();
 
@@ -172,8 +171,6 @@ namespace Graphics
 		glEnable(GL_BLEND);
 		//set blending function
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//set depth function (optional, but typically set during initialization)
-		//glDepthFunc(GL_LEQUAL);
 
 		Grid::InitializeGrid();
 
@@ -185,7 +182,7 @@ namespace Graphics
 		GameObjectManager::SetActionTex(actionTex);
 		GameObjectManager::AddTransparentObject(actionTex);
 
-		UpdateAfterRescale(window, windowWidth, windowHeight);
+		glfwMaximizeWindow(window);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)

@@ -6,6 +6,8 @@
 @echo off
 :: Batch script to build the executable for the game
 
+title Build Game exe
+
 :: Reusable message types printed to console
 set "gexc=[GAME_EXCEPTION]"
 set "ginf=[GAME_INFO]"
