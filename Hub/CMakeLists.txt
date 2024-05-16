@@ -131,5 +131,14 @@ add_custom_command(TARGET Elypso_hub POST_BUILD
     $<TARGET_FILE_DIR:Elypso_hub>/LICENSE.md
 )
 
+# Copy "README.md" to install directory after build
+add_custom_command(TARGET Elypso_hub POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Elypso_hub>/README.md
+	COMMAND ${CMAKE_COMMAND} -E copy
+    ${PARENT_DIR_PATH}/README.md
+    $<TARGET_FILE_DIR:Elypso_hub>/README.md
+)
+
 # Include CPack to enable packaging
 include(CPack)
