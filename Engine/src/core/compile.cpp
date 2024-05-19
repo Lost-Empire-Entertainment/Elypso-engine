@@ -35,84 +35,52 @@ using Graphics::GUI::GUINodeCircle;
 using Graphics::GUI::GUINodeConnection;
 using Graphics::Shape::Mesh;
 using Graphics::Shape::Component;
+using std::filesystem::exists;
 
 namespace Core
 {
 	void Compilation::Compile()
 	{
-		try
+		string gameBatPath = Engine::gamePath + "\\build_engine_fast.bat";
+		gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
+		if (!exists(gameBatPath))
 		{
-			if (Engine::gamePath == "")
+			cout << "game bat path " << gameBatPath << " does not exist!\n";
+			return;
+		}
+		int result = File::RunBatFile(gameBatPath);
+
+		if (result != 0)
+		{
+			cout << "compilation failed! something isnt right...\n";
+			return;
+		}
+
+		string gameProjectFolder = Engine::gameParentPath + "\\files\\project";
+		for (const auto& item : directory_iterator(path(gameProjectFolder)))
+		{
+			if (is_directory(item.path())
+				|| is_regular_file(item.path()))
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Game path has not been set!\n");
-			}
-			else
-			{
-				string gameBatPath = Engine::gamePath + "\\build_engine_fast.bat";
-				gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
+				string itemPath = item.path().string();
 
-				int result = File::RunBatFile(gameBatPath);
-
-				if (result != 0)
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Compilation failed! Trying again...\n");
-
-					string gameBatPath = Engine::gamePath + "\\build_engine_full.bat";
-					gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
-
-					int result = File::RunBatFile(gameBatPath);
-
-					if (result != 0)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Compilation failed again! Something is broken, please contact engine developers...\n");
-
-						return;
-					}
-				}
-
-				string gameProjectFolder = Engine::gameParentPath + "\\files\\project";
-				for (const auto& item : directory_iterator(path(gameProjectFolder)))
-				{
-					if (is_directory(item.path())
-						|| is_regular_file(item.path()))
-					{
-						string itemPath = item.path().string();
-
-						File::DeleteFileOrfolder(itemPath);
-					}
-				}
-
-				string engineProjectPath = path(Engine::projectPath).parent_path().string();
-				for (const auto& item : directory_iterator(path(engineProjectPath)))
-				{
-					string itemPath = item.path().string();
-
-					string ending = item.is_directory()
-						? path(item).filename().string()
-						: path(item).stem().string() + path(item).extension().string();
-					string targetItemPath = gameProjectFolder + "\\" + ending;
-
-					File::CopyFileOrFolder(itemPath, targetItemPath);
-				}
-
-				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+				File::DeleteFileOrfolder(itemPath);
 			}
 		}
-		catch (const exception& e)
-		{
-			cout << e.what() << "\n";
 
-			cout << "running game from folder " << Engine::gameParentPath
-				<< " and file " << Engine::gameExePath << "\n";
+		string engineProjectPath = path(Engine::projectPath).parent_path().string();
+		for (const auto& item : directory_iterator(path(engineProjectPath)))
+		{
+			string itemPath = item.path().string();
+
+			string ending = item.is_directory()
+				? path(item).filename().string()
+				: path(item).stem().string() + path(item).extension().string();
+			string targetItemPath = gameProjectFolder + "\\" + ending;
+
+			File::CopyFileOrFolder(itemPath, targetItemPath);
 		}
+
+		File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 	}
 }

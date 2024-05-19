@@ -4,11 +4,8 @@
 //Read LICENSE.md for more information.
 
 #include <Windows.h>
-#include <ShlObj.h>
 #include <iostream>
-#include <cstdio>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 //engine
@@ -66,8 +63,8 @@ namespace Utils
 
     int File::RunBatFile(const string& file)
     {
-        string output = string("\"") + file + "\"";
-        return system(output.c_str());
+        string batchFile = string("\"") + file + "\"";
+        return system(batchFile.c_str());
     }
 
     void File::RunApplication(const string& parentFolderPath, const string& exePath, const string& commands)

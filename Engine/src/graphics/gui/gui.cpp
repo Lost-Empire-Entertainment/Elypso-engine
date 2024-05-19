@@ -23,7 +23,6 @@
 #include "gui_assetlist.hpp"
 #include "gui_importAsset.hpp"
 #include "gui_scenemenu.hpp"
-#include "gui_batoutput.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -135,7 +134,7 @@ namespace Graphics::GUI
 		style.DisabledAlpha = 0.6000000238418579f;
 		style.WindowPadding = ImVec2(8.0f, 8.0f);
 		style.WindowRounding = 4.0f;
-		style.WindowBorderSize = 0.0f;
+		style.WindowBorderSize = 1.0f;
 		style.WindowMinSize = ImVec2(32.0f, 32.0f);
 		style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
 		style.WindowMenuButtonPosition = ImGuiDir_Left;
@@ -264,7 +263,6 @@ namespace Graphics::GUI
 		GUIAssetList::RenderAssetList();
 		GUIImportAsset::RenderImportAsset();
 		GUISceneMenu::RenderSceneMenu();
-		GUIBatOutput::RenderBatOutput();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
