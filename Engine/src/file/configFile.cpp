@@ -1253,13 +1253,17 @@ namespace EngineFile
 
 	void ConfigFileManager::LoadConfigFile()
 	{
+		//always set config file values to default first 
+		//to ensure missing or invalid values are not gonna crash the engine
+		SetDefaultConfigValues();
+
+		//create new config file if it does not exist
 		if (configFileManager.configFilePath == "")
 		{
 			configFileManager.configFilePath = Engine::docsPath + "/config.txt";
 
 			if (!exists(configFileManager.configFilePath))
 			{
-				SetDefaultConfigValues();
 				configFileManager.CreateNewConfigFile();
 			}
 		}

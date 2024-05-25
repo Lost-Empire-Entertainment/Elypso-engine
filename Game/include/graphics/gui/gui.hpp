@@ -38,6 +38,9 @@ namespace Graphics::GUI
 		static float GetScreenRefreshRate();
 
 		static void Render();
+
+		static void FloatingWindow();
+
 		static void Shutdown();
 	};
 }

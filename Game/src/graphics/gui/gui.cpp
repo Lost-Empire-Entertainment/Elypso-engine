@@ -12,9 +12,11 @@
 #include "gui.hpp"
 #include "core.hpp"
 #include "render.hpp"
+#include "timeManager.hpp"
 
 using Core::Game;
 using Graphics::Render;
+using Core::TimeManager;
 
 namespace Graphics::GUI
 {
@@ -100,8 +102,42 @@ namespace Graphics::GUI
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
+		FloatingWindow();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void GameGUI::FloatingWindow()
+	{
+		//ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(2000, 2000));
+		//ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_NoDocking;
+
+		if (ImGui::Begin("Floating debug menu", NULL, windowFlags))
+		{
+			/*
+			ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
+
+			ImGui::Text(
+				"Position: %.2f, %.2f, %.2f",
+				Render::camera.GetCameraPosition().x,
+				Render::camera.GetCameraPosition().y,
+				Render::camera.GetCameraPosition().z);
+			ImGui::Text(
+				"Angle: %.2f, %.2f, %.2f",
+				Render::camera.GetCameraRotation().x,
+				Render::camera.GetCameraRotation().y,
+				Render::camera.GetCameraRotation().z);
+			*/
+
+			ImGui::Text("1234");
+
+			ImGui::End();
+		}
 	}
 
 	void GameGUI::Shutdown()
