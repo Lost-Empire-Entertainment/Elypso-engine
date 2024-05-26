@@ -39,8 +39,6 @@ namespace Graphics::GUI
 
 		static void Render();
 
-		static void FloatingWindow();
-
 		static void Shutdown();
 	};
 }
