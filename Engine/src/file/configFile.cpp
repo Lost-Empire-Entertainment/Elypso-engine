@@ -88,8 +88,6 @@ namespace EngineFile
 		EngineGUI::gui_WindowPadding = ImVec2(8.0f, 8.0f);
 		EngineGUI::gui_WindowRounding = 4.0f;
 		EngineGUI::gui_WindowBorderSize = 1.0f;
-		EngineGUI::gui_WindowMinSize = ImVec2(32.0f, 32.0f);
-		EngineGUI::gui_WindowTitleAlign = ImVec2(0.0f, 0.5f);
 		EngineGUI::gui_WindowMenuButtonPosition = ImGuiDir_Left;
 		EngineGUI::gui_ChildRounding = 0.0f;
 		EngineGUI::gui_ChildBorderSize = 1.0f;
@@ -329,31 +327,6 @@ namespace EngineFile
 			"10.0",
 			ConfigFileValue::Type::type_float);
 		AddValue(gui_WindowBorderSize);
-
-		string gui_WindowMinSize_value =
-			to_string(EngineGUI::gui_WindowMinSize.x) + ", " +
-			to_string(EngineGUI::gui_WindowMinSize.y);
-		ConfigFileValue gui_WindowMinSize(
-			"gui_WindowMinSize",
-			gui_WindowMinSize_value,
-			"0.0, 0.0",
-			"128.0, 128.0",
-			ConfigFileValue::Type::type_imvec2);
-		cout << "window min size is " 
-			<< EngineGUI::gui_WindowMinSize.x << ", " 
-			<< EngineGUI::gui_WindowMinSize.x << "\n\n\n";
-		AddValue(gui_WindowMinSize);
-
-		string gui_WindowTitleAlign_value =
-			to_string(EngineGUI::gui_WindowTitleAlign.x) + ", " +
-			to_string(EngineGUI::gui_WindowTitleAlign.y);
-		ConfigFileValue gui_WindowTitleAlign(
-			"gui_WindowTitleAlign",
-			gui_WindowTitleAlign_value,
-			"0.0, 0.0",
-			"5.0, 5.0",
-			ConfigFileValue::Type::type_imvec2);
-		AddValue(gui_WindowTitleAlign);
 
 		ConfigFileValue gui_WindowMenuButtonPosition(
 			"gui_WindowMenuButtonPosition",

@@ -171,6 +171,211 @@ namespace Graphics::GUI
 			style.WindowBorderSize = EngineGUI::gui_WindowBorderSize;
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
+
+		const char* choice_windowMenuButtonPosition[] = 
+		{ 
+			"Left", 
+			"Right", 
+			"None"
+		};
+		static int index_windowMenuButtonPosition = 0;
+		ImGui::Text("Window menu button position");
+		if (ImGui::Combo(
+			"##gui_WindowMenuButtonPosition", 
+			&index_windowMenuButtonPosition,
+			choice_windowMenuButtonPosition,
+			IM_ARRAYSIZE(choice_windowMenuButtonPosition)))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+
+			string choice = choice_windowMenuButtonPosition[index_windowMenuButtonPosition];
+			auto imgui_dir = magic_enum::enum_cast<ImGuiDir_>("ImGuiDir_" + choice);
+			ImGuiDir_ chosenDir = imgui_dir.value();
+			EngineGUI::gui_WindowMenuButtonPosition = chosenDir;
+			style.WindowMenuButtonPosition = chosenDir;
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Child rounding");
+		if (ImGui::DragFloat("##gui_ChildRounding", &EngineGUI::gui_ChildRounding, 0.01f, 0.1f, 1.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.ChildRounding = EngineGUI::gui_ChildRounding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Child border size");
+		if (ImGui::DragFloat("##gui_ChildBorderSize", &EngineGUI::gui_ChildBorderSize, 0.01f, 0.1f, 1.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.ChildBorderSize = EngineGUI::gui_ChildBorderSize;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Popup rounding");
+		if (ImGui::DragFloat("##gui_PopupRounding", &EngineGUI::gui_PopupRounding, 0.01f, 0.1f, 1.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.PopupRounding = EngineGUI::gui_PopupRounding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Popup border size");
+		if (ImGui::DragFloat("##gui_PopupBorderSize", &EngineGUI::gui_PopupBorderSize, 0.01f, 0.1f, 1.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.PopupBorderSize = EngineGUI::gui_PopupBorderSize;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		vec2 gui_FramePadding = vec2(
+			EngineGUI::gui_FramePadding.x,
+			EngineGUI::gui_FramePadding.y);
+		ImGui::Text("Frame padding");
+		if (ImGui::DragFloat2("##gui_FramePadding", value_ptr(gui_FramePadding), 0.01f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			EngineGUI::gui_FramePadding = ImVec2(
+				gui_FramePadding.x,
+				gui_FramePadding.y);
+			style.FramePadding = EngineGUI::gui_FramePadding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Frame rounding");
+		if (ImGui::DragFloat("##gui_FrameRounding", &EngineGUI::gui_FrameRounding, 0.01f, 0.1f, 1.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.FrameRounding = EngineGUI::gui_FrameRounding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Frame border size");
+		if (ImGui::DragFloat("##gui_FrameBorderSize", &EngineGUI::gui_FrameBorderSize, 0.01f, 0.1f, 1.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.FrameBorderSize = EngineGUI::gui_FrameBorderSize;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		vec2 gui_ItemSpacing = vec2(
+			EngineGUI::gui_ItemSpacing.x,
+			EngineGUI::gui_ItemSpacing.y);
+		ImGui::Text("Item spacing");
+		if (ImGui::DragFloat2("##gui_ItemSpacing", value_ptr(gui_ItemSpacing), 0.01f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			EngineGUI::gui_ItemSpacing = ImVec2(
+				gui_ItemSpacing.x,
+				gui_ItemSpacing.y);
+			style.ItemSpacing = EngineGUI::gui_ItemSpacing;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		vec2 gui_ItemInnerSpacing = vec2(
+			EngineGUI::gui_ItemInnerSpacing.x,
+			EngineGUI::gui_ItemInnerSpacing.y);
+		ImGui::Text("Item inner spacing");
+		if (ImGui::DragFloat2("##gui_ItemInnerSpacing", value_ptr(gui_ItemInnerSpacing), 0.01f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			EngineGUI::gui_ItemInnerSpacing = ImVec2(
+				gui_ItemInnerSpacing.x,
+				gui_ItemInnerSpacing.y);
+			style.ItemInnerSpacing = EngineGUI::gui_ItemInnerSpacing;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		vec2 gui_CellPadding = vec2(
+			EngineGUI::gui_CellPadding.x,
+			EngineGUI::gui_CellPadding.y);
+		ImGui::Text("Cell padding");
+		if (ImGui::DragFloat2("##gui_CellPadding", value_ptr(gui_CellPadding), 0.01f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			EngineGUI::gui_CellPadding = ImVec2(
+				gui_CellPadding.x,
+				gui_CellPadding.y);
+			style.CellPadding = EngineGUI::gui_CellPadding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Indent spacing");
+		if (ImGui::DragFloat("##gui_IndentSpacing", &EngineGUI::gui_IndentSpacing, 0.1f, 0.1f, 50.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.IndentSpacing = EngineGUI::gui_IndentSpacing;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Columns min spacing");
+		if (ImGui::DragFloat("##gui_ColumnsMinSpacing", &EngineGUI::gui_ColumnsMinSpacing, 0.1f, 0.1f, 50.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.ColumnsMinSpacing = EngineGUI::gui_ColumnsMinSpacing;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Scrollbar size");
+		if (ImGui::DragFloat("##gui_ScrollbarSize", &EngineGUI::gui_ScrollbarSize, 0.1f, 0.1f, 50.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.ScrollbarSize = EngineGUI::gui_ScrollbarSize;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Scrollbar rounding");
+		if (ImGui::DragFloat("##gui_ScrollbarRounding", &EngineGUI::gui_ScrollbarRounding, 0.01f, 0.1f, 10.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.ScrollbarRounding = EngineGUI::gui_ScrollbarRounding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Grab min size");
+		if (ImGui::DragFloat("##gui_GrabMinSize", &EngineGUI::gui_GrabMinSize, 0.1f, 0.1f, 50.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.GrabMinSize = EngineGUI::gui_GrabMinSize;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Grab rounding");
+		if (ImGui::DragFloat("##gui_GrabRounding", &EngineGUI::gui_GrabRounding, 0.01f, 0.1f, 10.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.GrabRounding = EngineGUI::gui_GrabRounding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Tab rounding");
+		if (ImGui::DragFloat("##gui_TabRounding", &EngineGUI::gui_TabRounding, 0.01f, 0.1f, 10.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.TabRounding = EngineGUI::gui_TabRounding;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Tab border size");
+		if (ImGui::DragFloat("##gui_TabBorderSize", &EngineGUI::gui_TabBorderSize, 0.01f, 0.1f, 10.0f))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.TabBorderSize = EngineGUI::gui_TabBorderSize;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 	}
 
 	void GUISettings::OtherSettings()

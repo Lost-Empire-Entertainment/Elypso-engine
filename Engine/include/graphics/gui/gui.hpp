@@ -33,8 +33,6 @@ namespace Graphics::GUI
 		static inline ImVec2 gui_WindowPadding;
 		static inline float gui_WindowRounding;
 		static inline float gui_WindowBorderSize;
-		static inline ImVec2 gui_WindowMinSize;
-		static inline ImVec2 gui_WindowTitleAlign;
 		static inline ImGuiDir_ gui_WindowMenuButtonPosition;
 		static inline float gui_ChildRounding;
 		static inline float gui_ChildBorderSize;

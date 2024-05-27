@@ -139,8 +139,6 @@ namespace Graphics::GUI
 		style.WindowPadding = gui_WindowPadding;
 		style.WindowRounding = gui_WindowRounding;
 		style.WindowBorderSize = gui_WindowBorderSize;
-		style.WindowMinSize = gui_WindowMinSize;
-		style.WindowTitleAlign = gui_WindowTitleAlign;
 		style.WindowMenuButtonPosition = gui_WindowMenuButtonPosition;
 		style.ChildRounding = gui_ChildRounding;
 		style.ChildBorderSize = gui_ChildBorderSize;
