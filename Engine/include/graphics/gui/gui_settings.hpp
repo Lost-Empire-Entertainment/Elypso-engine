@@ -16,6 +16,7 @@ namespace Graphics::GUI
 	private:
 		static void InputSettings();
 		static void GUIStyleSettings();
+		static void GUIColorSettings();
 		static void OtherSettings();
 	};
 }
