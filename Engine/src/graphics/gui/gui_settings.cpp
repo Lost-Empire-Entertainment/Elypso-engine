@@ -578,268 +578,261 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Checkmark");
+		if (ImGui::ColorEdit4("##gui_Color_CheckMark", (float*)&EngineGUI::gui_Color_CheckMark))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_CheckMark] = EngineGUI::gui_Color_CheckMark;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Slider grab");
+		if (ImGui::ColorEdit4("##gui_Color_SliderGrab", (float*)&EngineGUI::gui_Color_SliderGrab))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_SliderGrab] = EngineGUI::gui_Color_SliderGrab;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Slider grab active");
+		if (ImGui::ColorEdit4("##gui_Color_SliderGrabActive", (float*)&EngineGUI::gui_Color_SliderGrabActive))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_SliderGrabActive] = EngineGUI::gui_Color_SliderGrabActive;
 		}
 
 		ImGui::Separator();
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Button");
+		if (ImGui::ColorEdit4("##gui_Color_Button", (float*)&EngineGUI::gui_Color_Button))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_Button] = EngineGUI::gui_Color_Button;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Button hovered");
+		if (ImGui::ColorEdit4("##gui_Color_ButtonHovered", (float*)&EngineGUI::gui_Color_ButtonHovered))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_ButtonHovered] = EngineGUI::gui_Color_ButtonHovered;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Button active");
+		if (ImGui::ColorEdit4("##gui_Color_ButtonActive", (float*)&EngineGUI::gui_Color_ButtonActive))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Separator();
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_ButtonActive] = EngineGUI::gui_Color_ButtonActive;
 		}
 
 		ImGui::Separator();
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Header");
+		if (ImGui::ColorEdit4("##gui_Color_Header", (float*)&EngineGUI::gui_Color_Header))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_Header] = EngineGUI::gui_Color_Header;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Header hovered");
+		if (ImGui::ColorEdit4("##gui_Color_HeaderHovered", (float*)&EngineGUI::gui_Color_HeaderHovered))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_HeaderHovered] = EngineGUI::gui_Color_HeaderHovered;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Header active");
+		if (ImGui::ColorEdit4("##gui_Color_HeaderActive", (float*)&EngineGUI::gui_Color_HeaderActive))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_HeaderActive] = EngineGUI::gui_Color_HeaderActive;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Separator");
+		if (ImGui::ColorEdit4("##gui_Color_Separator", (float*)&EngineGUI::gui_Color_Separator))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_Separator] = EngineGUI::gui_Color_Separator;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Separator hovered");
+		if (ImGui::ColorEdit4("##gui_Color_SeparatorHovered", (float*)&EngineGUI::gui_Color_SeparatorHovered))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_SeparatorHovered] = EngineGUI::gui_Color_SeparatorHovered;
 		}
 
-		ImGui::Separator();
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Separator active");
+		if (ImGui::ColorEdit4("##gui_Color_SeparatorActive", (float*)&EngineGUI::gui_Color_SeparatorActive))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_SeparatorActive] = EngineGUI::gui_Color_SeparatorActive;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Resize grip");
+		if (ImGui::ColorEdit4("##gui_Color_ResizeGrip", (float*)&EngineGUI::gui_Color_ResizeGrip))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_ResizeGrip] = EngineGUI::gui_Color_ResizeGrip;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Resize grip hovered");
+		if (ImGui::ColorEdit4("##gui_Color_ResizeGripHovered", (float*)&EngineGUI::gui_Color_ResizeGripHovered))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_ResizeGripHovered] = EngineGUI::gui_Color_ResizeGripHovered;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Resize grip active");
+		if (ImGui::ColorEdit4("##gui_Color_ResizeGripActive", (float*)&EngineGUI::gui_Color_ResizeGripActive))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Separator();
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
-		}
-
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_ResizeGripActive] = EngineGUI::gui_Color_ResizeGripActive;
 		}
 
 		ImGui::Separator();
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Tab");
+		if (ImGui::ColorEdit4("##gui_Color_Tab", (float*)&EngineGUI::gui_Color_Tab))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_Tab] = EngineGUI::gui_Color_Tab;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Tab hovered");
+		if (ImGui::ColorEdit4("##gui_Color_TabHovered", (float*)&EngineGUI::gui_Color_TabHovered))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_TabHovered] = EngineGUI::gui_Color_TabHovered;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Tab active");
+		if (ImGui::ColorEdit4("##gui_Color_TabActive", (float*)&EngineGUI::gui_Color_TabActive))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_TabActive] = EngineGUI::gui_Color_TabActive;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Tab unfocused");
+		if (ImGui::ColorEdit4("##gui_Color_TabUnfocused", (float*)&EngineGUI::gui_Color_TabUnfocused))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_TabUnfocused] = EngineGUI::gui_Color_TabUnfocused;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Text("Tab unfocused active");
+		if (ImGui::ColorEdit4("##gui_Color_TabUnfocusedActive", (float*)&EngineGUI::gui_Color_TabUnfocusedActive))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_TabUnfocusedActive] = EngineGUI::gui_Color_TabUnfocusedActive;
 		}
 
-		ImGui::Text("Text color");
-		if (ImGui::ColorEdit4("##gui_Color_Text", (float*)&EngineGUI::gui_Color_Text))
+		ImGui::Separator();
+
+		ImGui::Text("Plot lines");
+		if (ImGui::ColorEdit4("##gui_Color_PlotLines", (float*)&EngineGUI::gui_Color_PlotLines))
 		{
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.Colors[ImGuiCol_Text] = EngineGUI::gui_Color_Text;
+			style.Colors[ImGuiCol_PlotLines] = EngineGUI::gui_Color_PlotLines;
+		}
+
+		ImGui::Text("Plot lines hovered");
+		if (ImGui::ColorEdit4("##gui_Color_PlotLinesHovered", (float*)&EngineGUI::gui_Color_PlotLinesHovered))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_PlotLinesHovered] = EngineGUI::gui_Color_PlotLinesHovered;
+		}
+
+		ImGui::Text("Plot histogram");
+		if (ImGui::ColorEdit4("##gui_Color_PlotHistogram", (float*)&EngineGUI::gui_Color_PlotHistogram))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_PlotHistogram] = EngineGUI::gui_Color_PlotHistogram;
+		}
+
+		ImGui::Text("Plot histogram hovered");
+		if (ImGui::ColorEdit4("##gui_Color_PlotHistogramHovered", (float*)&EngineGUI::gui_Color_PlotHistogramHovered))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_PlotHistogramHovered] = EngineGUI::gui_Color_PlotHistogramHovered;
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Table header bg");
+		if (ImGui::ColorEdit4("##gui_Color_TableHeaderBg", (float*)&EngineGUI::gui_Color_TableHeaderBg))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_TableHeaderBg] = EngineGUI::gui_Color_TableHeaderBg;
+		}
+
+		ImGui::Text("Table border strong");
+		if (ImGui::ColorEdit4("##gui_Color_TableBorderStrong", (float*)&EngineGUI::gui_Color_TableBorderStrong))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_TableBorderStrong] = EngineGUI::gui_Color_TableBorderStrong;
+		}
+
+		ImGui::Text("Table border light");
+		if (ImGui::ColorEdit4("##gui_Color_TableBorderLight", (float*)&EngineGUI::gui_Color_TableBorderLight))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_TableBorderLight] = EngineGUI::gui_Color_TableBorderLight;
+		}
+
+		ImGui::Text("Table row bg");
+		if (ImGui::ColorEdit4("##gui_Color_TableRowBg", (float*)&EngineGUI::gui_Color_TableRowBg))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_TableRowBg] = EngineGUI::gui_Color_TableRowBg;
+		}
+
+		ImGui::Text("Table row bg alt");
+		if (ImGui::ColorEdit4("##gui_Color_TableRowBgAlt", (float*)&EngineGUI::gui_Color_TableRowBgAlt))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_TableRowBgAlt] = EngineGUI::gui_Color_TableRowBgAlt;
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Text selected bg");
+		if (ImGui::ColorEdit4("##gui_Color_TextSelectedBg", (float*)&EngineGUI::gui_Color_TextSelectedBg))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_TextSelectedBg] = EngineGUI::gui_Color_TextSelectedBg;
+		}
+
+		ImGui::Text("Drag drop target");
+		if (ImGui::ColorEdit4("##gui_Color_DragDropTarget", (float*)&EngineGUI::gui_Color_DragDropTarget))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_DragDropTarget] = EngineGUI::gui_Color_DragDropTarget;
+		}
+
+		ImGui::Text("Nav highlight");
+		if (ImGui::ColorEdit4("##gui_Color_NavHighlight", (float*)&EngineGUI::gui_Color_NavHighlight))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_NavHighlight] = EngineGUI::gui_Color_NavHighlight;
+		}
+
+		ImGui::Text("Nav windowing highlight");
+		if (ImGui::ColorEdit4("##gui_Color_NavWindowingHighlight", (float*)&EngineGUI::gui_Color_NavWindowingHighlight))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_NavWindowingHighlight] = EngineGUI::gui_Color_NavWindowingHighlight;
+		}
+
+		ImGui::Text("Nav windowing dim bg");
+		if (ImGui::ColorEdit4("##gui_Color_NavWindowingDimBg", (float*)&EngineGUI::gui_Color_NavWindowingDimBg))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_NavWindowingDimBg] = EngineGUI::gui_Color_NavWindowingDimBg;
+		}
+
+		ImGui::Text("Modal window dim bg");
+		if (ImGui::ColorEdit4("##gui_Color_ModalWindowDimBg", (float*)&EngineGUI::gui_Color_ModalWindowDimBg))
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.Colors[ImGuiCol_ModalWindowDimBg] = EngineGUI::gui_Color_ModalWindowDimBg;
 		}
 	}
 
