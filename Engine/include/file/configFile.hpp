@@ -42,6 +42,7 @@ namespace EngineFile
 			const Type& type) :
 			name(name),
 			currentValue(currentValue),
+			defaultValue(currentValue),
 			minValue(minValue),
 			maxValue(maxValue),
 			type(type) {}
@@ -54,14 +55,17 @@ namespace EngineFile
 			const Type& type) :
 			name(name),
 			currentValue(currentValue),
+			defaultValue(currentValue),
 			values(values),
 			type(type) {}
 
 		string GetName() const { return name; }
 
+		string GetValue() const { return currentValue; }
+		string GetDefaultValue() const { return defaultValue; }
 		string GetMinValue() const { return minValue; }
 		string GetMaxValue() const { return maxValue; }
-		string GetValue() const { return currentValue; };
+
 		void SetValue(const string& newValue) { currentValue = newValue; }
 		string GetVectorValue(int index) const { return values[index]; }
 
@@ -69,6 +73,7 @@ namespace EngineFile
 	private:
 		string name;
 		string currentValue;
+		string defaultValue;
 		string minValue;
 		string maxValue;
 		vector<string> values;
@@ -82,9 +87,11 @@ namespace EngineFile
 
 		static void LoadConfigFile();
 		static void SaveConfigFile();
+
+		static inline vector<ConfigFileValue> values;
 	private:
 		string configFilePath;
-		vector<ConfigFileValue> values;
+		
 
 		void AddValue(const ConfigFileValue& value)
 		{

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
+#include <variant>
 
 //external
 #include "glm.hpp"
@@ -26,6 +27,7 @@
 #include "input.hpp"
 #include "sceneFile.hpp"
 
+using std::variant;
 using glm::vec3;
 using std::endl;
 using std::cerr;
@@ -67,6 +69,13 @@ namespace EngineFile
 		"ImGuiDir_Right",
 		"ImGuiDir_None"
 	};
+
+	template <typename T>
+	static string VariantToString(const T& value) {
+		ostringstream oss;
+		oss << value;
+		return oss.str();
+	}
 
 	void ConfigFileManager::SetDefaultConfigValues()
 	{
@@ -1251,6 +1260,23 @@ namespace EngineFile
 		}
 
 		string line;
+
+		ConfigFileValue::Type type{};
+
+		//variable names
+		map<string, variant<bool, string, float, int, vec2, vec3, ImVec2, ImVec4>> gui_ValueNames;
+		for (const auto& value : ConfigFileManager::values)
+		{
+			gui_ValueNames[value.GetName()] = value.GetValue();
+		}
+
+		//variable default values
+		map<string, variant<bool, string, float, int, vec2, vec3, ImVec2, ImVec4>> gui_DefaultValues;
+		for (const auto& value : ConfigFileManager::values)
+		{
+			gui_ValueNames[value.GetName()] = value.GetDefaultValue();
+		}
+
 		while (getline(configFile, line))
 		{
 			if (line.find(':') != string::npos)
@@ -1268,285 +1294,92 @@ namespace EngineFile
 				}
 				else lineVariables.push_back(lineSplit[1]);
 
-				if (name == "gui_fontScale")
+				if (gui_ValueNames.find(name) == gui_ValueNames.end())
 				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Value " + name + " does not exist in config settings!");
+					return;
+				}
+
+				static bool isInRange = false;
+				switch (type)
+				{
+				case ConfigFileValue::Type::type_float:
 					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
-						EngineGUI::fontScale = stof(lineVariables[0]);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set font scale to " + to_string(EngineGUI::fontScale) + ".\n");
+						isInRange = true;
+						gui_ValueNames[name] = stof(lineVariables[0]);
 					}
-					else
-					{
-						EngineGUI::fontScale = 1.5f;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Font scale value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-					}
-				}
-				else if (name == "window_vsync")
-				{
+					break;
+				case ConfigFileValue::Type::type_int:
 					if (configFileManager.IsValueInRange(name, lineVariables[0]))
 					{
-						Render::useMonitorRefreshRate = static_cast<bool>(stoi(lineVariables[0]));
-						glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set vsync to " + to_string(Render::useMonitorRefreshRate) + ".\n");
+						isInRange = true;
+						gui_ValueNames[name] = stoi(lineVariables[0]);
 					}
-					else
+					break;
+				case ConfigFileValue::Type::type_vec2:
+					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
+						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1]))
 					{
-						Render::useMonitorRefreshRate = true;
-						glfwSwapInterval(1);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"VSync value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
+						isInRange = true;
 					}
-				}
-				else if (name == "camera_fov")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						Input::fov = stof(lineVariables[0]);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set fov to " + to_string(Input::fov) + ".\n");
-					}
-					else
-					{
-						Input::fov = 90;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"FOV value " + lineVariables[0] + " is out of range or not a float! Resetting to default.\n");
-					}
-				}
-				else if (name == "camera_nearClip")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						Input::nearClip = stof(lineVariables[0]);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set camera near clip to " + to_string(Input::nearClip) + ".\n");
-					}
-					else
-					{
-						Input::nearClip = 0.001f;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Camera near clip value " + lineVariables[0]
-							+ " is out of range or not a float! Resetting to default.\n");
-					}
-				}
-				else if (name == "camera_farClip")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						Input::farClip = stof(lineVariables[0]);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set camera far clip to " + to_string(Input::farClip) + ".\n");
-					}
-					else
-					{
-						Input::farClip = 100.0f;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Camera far clip value " + lineVariables[0]
-							+ " is out of range or not a float! Resetting to default.\n");
-					}
-				}
-				else if (name == "camera_position")
-				{
+					break;
+				case ConfigFileValue::Type::type_vec3:
 					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
 						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1])
 						&& configFileManager.IsValueInRange(name + "Z", lineVariables[2]))
 					{
-						vec3 newPosition = vec3(
-							stof(lineVariables[0]),
-							stof(lineVariables[1]),
-							stof(lineVariables[2]));
-						Render::camera.SetCameraPosition(newPosition);
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set camera position to to "
-							+ to_string(Render::camera.GetCameraPosition().x) + ", "
-							+ to_string(Render::camera.GetCameraPosition().y) + ", "
-							+ to_string(Render::camera.GetCameraPosition().z) + ".\n");
+						isInRange = true;
 					}
-					else
-					{
-						Render::camera.SetCameraPosition(vec3(0));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"X, Y or Z position for value " + lineVariables[0]
-							+ " camera is out of range or not a float! Resetting to default.\n");
-					}
+					break;
 				}
-				else if (name == "camera_rotation")
+
+				if (isInRange)
 				{
-					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
-						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1])
-						&& configFileManager.IsValueInRange(name + "Z", lineVariables[2]))
-					{
-						Render::camera.SetCameraRotation(vec3(
-							stof(lineVariables[0]),
-							stof(lineVariables[1]),
-							stof(lineVariables[2])));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set camera rotation to to "
-							+ to_string(Render::camera.GetCameraRotation().x) + ", "
-							+ to_string(Render::camera.GetCameraRotation().y) + ", "
-							+ to_string(Render::camera.GetCameraRotation().z) + ".\n");
-					}
-					else
-					{
-						Render::camera.SetCameraRotation(vec3(0));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"X, Y or Z rotation value " + lineVariables[0]
-							+ " for camera is out of range or not a float! Resetting to default.\n");
-					}
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::DEBUG,
+						"Set " + name + " to " + VariantToString(gui_ValueNames[name]) + ".\n");
 				}
-				else if (name == "gui_inspector")
+				else 
 				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						GUIInspector::renderInspector = static_cast<bool>(stoi(lineVariables[0]));
+					gui_ValueNames[name] = gui_DefaultValues[name];
 
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render inspector to " + to_string(GUIInspector::renderInspector) + ".\n");
-					}
-					else
-					{
-						GUIInspector::renderInspector = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render inspector value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
-				else if (name == "gui_console")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						GUIConsole::renderConsole = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render console to " + to_string(GUIConsole::renderConsole) + ".\n");
-					}
-					else
-					{
-						GUIConsole::renderConsole = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render console value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
-				else if (name == "gui_nodeBlockWindow")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						GUINodeBlock::renderNodeBlock = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render node block window to " + to_string(GUINodeBlock::renderNodeBlock) + ".\n");
-					}
-					else
-					{
-						GUINodeBlock::renderNodeBlock = false;
-						
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render node block window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
-				else if (name == "gui_assetListWindow")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						GUIAssetList::renderAssetList = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render asset list window to " + to_string(GUIAssetList::renderAssetList) + ".\n");
-					}
-					else
-					{
-						GUIAssetList::renderAssetList = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render asset list window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
-				}
-				else if (name == "gui_sceneMenuWindow")
-				{
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						GUISceneMenu::renderSceneMenu = static_cast<bool>(stoi(lineVariables[0]));
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::DEBUG,
-							"Set render scene menu window to " + to_string(GUISceneMenu::renderSceneMenu) + ".\n");
-					}
-					else
-					{
-						GUISceneMenu::renderSceneMenu = false;
-
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Render scene menu window value " + lineVariables[0] + " is out of range or not an int! Resetting to default.\n");
-					}
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						name + " value " + lineVariables[0] + " is out of range or not a valid value for the current value type! Resetting to default.\n");
 				}
 			}
 		}
 
 		configFile.close();
+
+		//assign specific values
+		for (const auto& value : ConfigFileManager::values)
+		{
+			ConfigFileValue val = value;
+			if (val.GetName() == "window_vsync")
+			{
+				glfwSwapInterval(stoi(val.GetValue()));
+				break;
+			}
+			if (val.GetName() == "camera_position")
+			{
+				vector<string> currentSplitValue = String::Split(val.GetValue(), ',');
+				vec3 vec3Value = vec3(stof(currentSplitValue[0]), stof(currentSplitValue[1]), stof(currentSplitValue[2]));
+				Render::camera.SetCameraPosition(vec3Value);
+			}
+			if (val.GetName() == "camera_rotation")
+			{
+				vector<string> currentSplitValue = String::Split(val.GetValue(), ',');
+				vec3 vec3Value = vec3(stof(currentSplitValue[0]), stof(currentSplitValue[1]), stof(currentSplitValue[2]));
+				Render::camera.SetCameraPosition(vec3Value);
+			}
+		}
 
 		configFileManager.UpdateValues();
 
@@ -1600,6 +1433,8 @@ namespace EngineFile
 		int currentIntValue{}, minIntValue{}, maxIntValue{};
 		vec2 currentVec2Value{}, minVec2Value{}, maxVec2Value{};
 		vec3 currentVec3Value{}, minVec3Value{}, maxVec3Value{};
+		ImVec2 currentImvec2Value{}, minImvec2Value{}, maxImvec2Value{};
+		ImVec4 currentImvec4Value{}, minImvec4Value{}, maxImvec4Value{};
 
 		for (auto& configFileValue : values)
 		{
@@ -1641,6 +1476,40 @@ namespace EngineFile
 					vector<string> maxSplitValue = String::Split(configFileValue.GetMaxValue(), ',');
 					maxVec3Value = vec3(stof(maxSplitValue[0]), stof(maxSplitValue[1]), stof(maxSplitValue[2]));
 				}
+				else if (type == ConfigFileValue::Type::type_imvec2)
+				{
+					vector<string> currentSplitValue = String::Split(configFileValue.GetValue(), ',');
+					currentImvec2Value = ImVec2(stof(currentSplitValue[0]), stof(currentSplitValue[1]));
+
+					vector<string> minSplitValue = String::Split(configFileValue.GetMinValue(), ',');
+					minImvec2Value = ImVec2(stof(minSplitValue[0]), stof(minSplitValue[1]));
+
+					vector<string> maxSplitValue = String::Split(configFileValue.GetMaxValue(), ',');
+					maxImvec2Value = ImVec2(stof(maxSplitValue[0]), stof(maxSplitValue[1]));
+				}
+				else if (type == ConfigFileValue::Type::type_imvec4)
+				{
+					vector<string> currentSplitValue = String::Split(configFileValue.GetValue(), ',');
+					currentImvec4Value = ImVec4(
+						stof(currentSplitValue[0]), 
+						stof(currentSplitValue[1]), 
+						stof(currentSplitValue[2]), 
+						stof(currentSplitValue[3]));
+
+					vector<string> minSplitValue = String::Split(configFileValue.GetMinValue(), ',');
+					minImvec4Value = ImVec4(
+						stof(minSplitValue[0]), 
+						stof(minSplitValue[1]), 
+						stof(minSplitValue[2]), 
+						stof(minSplitValue[3]));
+
+					vector<string> maxSplitValue = String::Split(configFileValue.GetMaxValue(), ',');
+					maxImvec4Value = ImVec4(
+						stof(maxSplitValue[0]), 
+						stof(maxSplitValue[1]), 
+						stof(maxSplitValue[2]), 
+						stof(maxSplitValue[3]));
+				}
 
 				break;
 			}
@@ -1649,10 +1518,18 @@ namespace EngineFile
 		bool isCorrectType = false;
 		vec2 vec2Value{};
 		vec3 vec3Value{};
+		ImVec2 imvec2Value{};
+		ImVec4 imvec4Value{};
+
 		switch (type)
 		{
 		case ConfigFileValue::Type::type_string:
-			return true;
+			if (name == "gui_WindowMenuButtonPosition"
+				|| name == "gui_ColorButtonPosition")
+			{
+				return find(imgui_dir.begin(), imgui_dir.end(), value) != imgui_dir.end();
+			}
+			else return false;
 		case ConfigFileValue::Type::type_float:
 			isCorrectType = String::CanConvertStringToFloat(value);
 			break;
@@ -1674,6 +1551,22 @@ namespace EngineFile
 				string newValue = String::StringReplace(value, ", ", ",");
 				vector<string> splitVec3 = String::Split(newValue, ',');
 				vec3Value = vec3(stof(splitVec3[0]), stof(splitVec3[1]), stof(splitVec3[2]));
+			}
+			break;
+		case ConfigFileValue::Type::type_imvec2:
+			if (String::ContainsString(value, ", "))
+			{
+				string newValue = String::StringReplace(value, ", ", ",");
+				vector<string> splitImvec2 = String::Split(newValue, ',');
+				imvec2Value = ImVec2(stof(splitImvec2[0]), stof(splitImvec2[1]));
+			}
+			break;
+		case ConfigFileValue::Type::type_imvec4:
+			if (String::ContainsString(value, ", "))
+			{
+				string newValue = String::StringReplace(value, ", ", ",");
+				vector<string> splitImvec4 = String::Split(newValue, ',');
+				imvec4Value = ImVec4(stof(splitImvec4[0]), stof(splitImvec4[1]), stof(splitImvec4[2]), stof(splitImvec4[3]));
 			}
 			break;
 		}
@@ -1706,6 +1599,24 @@ namespace EngineFile
 				&& vec3Value.x <= maxVec3Value.x
 				&& vec3Value.y <= maxVec3Value.y
 				&& vec3Value.z <= maxVec3Value.z;
+		}
+		else if (type == ConfigFileValue::Type::type_imvec2)
+		{
+			return imvec2Value.x >= minImvec2Value.x
+				&& imvec2Value.y >= minImvec2Value.y
+				&& imvec2Value.x <= maxImvec2Value.x
+				&& imvec2Value.y <= maxImvec2Value.y;
+		}
+		else if (type == ConfigFileValue::Type::type_imvec4)
+		{
+			return imvec4Value.x >= minImvec4Value.x
+				&& imvec4Value.y >= minImvec4Value.y
+				&& imvec4Value.z >= minImvec4Value.z
+				&& imvec4Value.w >= minImvec4Value.w
+				&& imvec4Value.x <= maxImvec4Value.x
+				&& imvec4Value.y <= maxImvec4Value.y
+				&& imvec4Value.z <= maxImvec4Value.z
+				&& imvec4Value.w <= maxImvec4Value.w;
 		}
 
 		return false;
