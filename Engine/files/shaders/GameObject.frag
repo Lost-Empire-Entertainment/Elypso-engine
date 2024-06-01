@@ -68,6 +68,7 @@ uniform DirLight dirLight;
 uniform SpotLight spotLight;
 uniform Material material;
 
+float GetAlpha(sampler2D tex, vec2 coords);
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -94,7 +95,16 @@ void main()
         }
     }
 
-    FragColor = vec4(result, 1.0);
+    float alpha = GetAlpha(material.diffuse, TexCoords);
+
+    if (alpha < 0.1) discard;
+
+    FragColor = vec4(result, alpha);
+}
+
+float GetAlpha(sampler2D tex, vec2 coords)
+{
+    return texture(tex, coords).a;
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
