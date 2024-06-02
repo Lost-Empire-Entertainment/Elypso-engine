@@ -354,6 +354,39 @@ namespace GameFile
 		
 		if (meshType == Mesh::MeshType::model)
 		{
+			string diff_missing = Game::filesPath + "/textures/diff_missing.png";
+			string diffuseTexture = textures[0];
+			if (diffuseTexture != "EMPTY"
+				&& !exists(diffuseTexture))
+			{
+				cout << "Diffuse texture " << diffuseTexture << " for " << name << " not found!\n";
+				diffuseTexture = diff_missing;
+			}
+
+			string specularTexture = textures[1];
+			if (specularTexture != "EMPTY"
+				&& !exists(specularTexture))
+			{
+				cout << "Specular texture " << specularTexture << " for " << name << " not found!\n";
+				specularTexture = diff_missing;
+			}
+
+			string normalTexture = textures[2];
+			if (normalTexture != "EMPTY"
+				&& !exists(normalTexture))
+			{
+				cout << "Normal texture " << normalTexture << " for " << name << " not found!\n";
+				normalTexture = diff_missing;
+			}
+
+			string heightTexture = textures[3];
+			if (heightTexture != "EMPTY"
+				&& !exists(heightTexture))
+			{
+				cout << "Height texture " << heightTexture << " for " << name << " not found!\n";
+				heightTexture = diff_missing;
+			}
+
 			Model::Initialize(
 				pos,
 				rot,
@@ -361,10 +394,10 @@ namespace GameFile
 				modelPath,
 				shaders[0],
 				shaders[1],
-				textures[0],
-				textures[1],
-				textures[2],
-				textures[3],
+				diffuseTexture,
+				specularTexture,
+				normalTexture,
+				heightTexture,
 				shininess,
 				categories,
 				name,

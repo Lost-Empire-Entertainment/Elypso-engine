@@ -409,6 +409,51 @@ namespace EngineFile
 		
 		if (meshType == Mesh::MeshType::model)
 		{
+			string diff_missing = Engine::filesPath + "/textures/diff_missing.png";
+			string diffuseTexture = textures[0];
+			if (diffuseTexture != "EMPTY"
+				&& !exists(diffuseTexture))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
+				diffuseTexture = diff_missing;
+			}
+
+			string specularTexture = textures[1];
+			if (specularTexture != "EMPTY"
+				&& !exists(specularTexture))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Specular texture " + specularTexture + " for " + name + " not found!\n");
+				specularTexture = diff_missing;
+			}
+
+			string normalTexture = textures[2];
+			if (normalTexture != "EMPTY"
+				&& !exists(normalTexture))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Normal texture " + normalTexture + " for " + name + " not found!\n");
+				normalTexture = diff_missing;
+			}
+
+			string heightTexture = textures[3];
+			if (heightTexture != "EMPTY"
+				&& !exists(heightTexture))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Height texture " + heightTexture + " for " + name + " not found!\n");
+				heightTexture = diff_missing;
+			}
+
 			Model::Initialize(
 				pos,
 				rot,
@@ -416,10 +461,10 @@ namespace EngineFile
 				modelPath,
 				shaders[0],
 				shaders[1],
-				textures[0],
-				textures[1],
-				textures[2],
-				textures[3],
+				diffuseTexture,
+				specularTexture,
+				normalTexture,
+				heightTexture,
 				shininess,
 				categories,
 				name,
