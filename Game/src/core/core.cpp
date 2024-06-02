@@ -113,13 +113,6 @@ namespace Core
 
 		//first scene is actually loaded when game is ready for use
 		SceneFile::LoadScene(SceneFile::currentScenePath);
-
-		string cubePath = filesPath + "\\models\\cube.fbx";
-		Model::targetModel = cubePath;
-		Model::Initialize();
-		shared_ptr<GameObject> obj = GameObjectManager::GetObjects()[GameObjectManager::GetObjects().size() -1];
-		obj->GetTransform()->SetPosition(vec3(0.0f, -5.0f, 0.0f));
-		obj->GetTransform()->SetScale(vec3(250.0f, 1.0f, 250.0f));
 	}
 
 	void Game::RunGame()

@@ -101,7 +101,7 @@ namespace Graphics::GUI
 		ImGui::Text("Up: Space");
 		ImGui::Text("Down: Left Control");
 		ImGui::Text("Sprint: Left Shift");
-		ImGui::Text("Toggle camera: Escape");
+		ImGui::Text("Enable camera movement: Hold right mouse button");
 		ImGui::Text("Compile game: Ctrl + B");
 		ImGui::Text("Run compiled game: Ctrl + R");
 		ImGui::Text("Select GameObject: Left Mouse Button");

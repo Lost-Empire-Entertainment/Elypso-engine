@@ -43,12 +43,14 @@ using Graphics::Shape::GameObjectManager;
 
 namespace Core
 {
+    static bool startedHolding;
+    static bool appliedUpdate;
+
     Input::Input(GLFWwindow* window, float sensitivity) : 
         window(window), 
         yaw(-90.0f), 
         pitch(0.0f), 
-        lastX(0.0), lastY(0.0), 
-        firstMouse(true),
+        lastX(0.0), lastY(0.0),
         sensitivity(sensitivity),
         cameraPos(vec3(0.0f, 1.0f, 0.0f)), 
         cameraFront(vec3(0.0f, 0.0f, -1.0f)), 
@@ -56,6 +58,26 @@ namespace Core
 
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
+        cameraEnabled =
+            glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS
+            && !ImGui::GetIO().WantCaptureMouse;
+
+        if (cameraEnabled
+            && !startedHolding)
+        {
+            startedHolding = true;
+            appliedUpdate = false;
+        }
+        if (!cameraEnabled
+            && (startedHolding
+            || (!startedHolding
+            && lastKnownRotation == vec3(0)
+            && Render::camera.GetCameraRotation() != vec3(0))))
+        {
+            lastKnownRotation = Render::camera.GetCameraRotation();
+            startedHolding = false;
+        }
+
         if (cameraEnabled)
         {
             bool isLeftShiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
@@ -113,16 +135,14 @@ namespace Core
     {
         if (cameraEnabled)
         {
-            if (firstMouse 
-                || cameraModeSwitched)
+            if (!appliedUpdate)
             {
-                firstMouse = false;
-                cameraModeSwitched = false;
-
                 SetCameraRotation(lastKnownRotation);
 
                 lastX = xpos;
                 lastY = ypos;
+
+                appliedUpdate = true;
             }
 
             double xOffset = xpos - lastX;
@@ -163,28 +183,9 @@ namespace Core
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
-        //toggle camera input on and off
-        if (key == GLFW_KEY_ESCAPE
-            && action == GLFW_PRESS
-            && ((!ImGui::GetIO().WantCaptureMouse
-            && !cameraEnabled)
-            || cameraEnabled))
-        {
-            cameraEnabled = !cameraEnabled;
-            cameraModeSwitched = true;
-
-            if (!cameraEnabled) lastKnownRotation = Render::camera.GetCameraRotation();
-        }
-
         if (!cameraEnabled
             && !ImGui::GetIO().WantCaptureMouse)
         {
-            //delete selected gameobject
-            if (key == GLFW_KEY_DELETE
-                && action == GLFW_PRESS)
-            {
-            }
-
             //save current scene
             if (key == GLFW_KEY_S
                 && mods == GLFW_MOD_CONTROL

@@ -1296,7 +1296,7 @@ namespace EngineFile
 					return;
 				}
 
-				static bool isInRange = false;
+				bool isInRange = false;
 				switch (type)
 				{
 				case ConfigFileValue::Type::type_float:
@@ -1324,6 +1324,22 @@ namespace EngineFile
 					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
 						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1])
 						&& configFileManager.IsValueInRange(name + "Z", lineVariables[2]))
+					{
+						isInRange = true;
+					}
+					break;
+				case ConfigFileValue::Type::type_imvec2:
+					if (configFileManager.IsValueInRange(name, lineVariables[0])
+						&& configFileManager.IsValueInRange(name, lineVariables[1]))
+					{
+						isInRange = true;
+					}
+					break;
+				case ConfigFileValue::Type::type_imvec4:
+					if (configFileManager.IsValueInRange(name, lineVariables[0])
+						&& configFileManager.IsValueInRange(name, lineVariables[1])
+						&& configFileManager.IsValueInRange(name, lineVariables[2])
+						&& configFileManager.IsValueInRange(name, lineVariables[3]))
 					{
 						isInRange = true;
 					}

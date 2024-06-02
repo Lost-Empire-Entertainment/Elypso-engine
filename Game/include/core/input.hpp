@@ -36,7 +36,6 @@ namespace Core
         static inline float fov = 90.0f;
         static inline float aspectRatio = 0.0f;
         static inline bool cameraEnabled;
-        static inline bool cameraModeSwitched;
 
         static inline string axis = "X";
         enum class ObjectAction
@@ -82,7 +81,6 @@ namespace Core
         float pitch;
         double lastX;
         double lastY;
-        bool firstMouse;
         float sensitivity;
 
         static inline bool printCheck;
