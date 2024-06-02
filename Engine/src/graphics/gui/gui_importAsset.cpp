@@ -159,7 +159,7 @@ namespace Graphics::GUI
 						assetPath,
 						Engine::filesPath + "/shaders/GameObject.vert",
 						Engine::filesPath + "/shaders/GameObject.frag",
-						Engine::filesPath + "/textures/default_diffuse.png",
+						Engine::filesPath + "/textures/diff_default.png",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",

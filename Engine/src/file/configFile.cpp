@@ -70,13 +70,6 @@ namespace EngineFile
 		"ImGuiDir_None"
 	};
 
-	template <typename T>
-	static string VariantToString(const T& value) {
-		ostringstream oss;
-		oss << value;
-		return oss.str();
-	}
-
 	void ConfigFileManager::SetDefaultConfigValues()
 	{
 		Render::useMonitorRefreshRate = true;
@@ -1342,7 +1335,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::DEBUG,
-						"Set " + name + " to " + VariantToString(gui_ValueNames[name]) + ".\n");
+						"Set " + name + " to " + lineSplit[1] + ".\n");
 				}
 				else 
 				{

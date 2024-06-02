@@ -284,7 +284,7 @@ namespace Graphics::GUI
 
 				//reset diffuse texture
 				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
-				path diff_defaultTexturePath = path(Engine::filesPath + "/textures/default_diffuse.png");
+				path diff_defaultTexturePath = path(Engine::filesPath + "/textures/diff_default.png");
 				string diff_reset = "Reset";
 				ImGui::PushID("diffreset");
 				ImGui::PushItemWidth(200.0f);

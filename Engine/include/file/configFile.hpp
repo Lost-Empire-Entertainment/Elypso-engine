@@ -88,6 +88,8 @@ namespace EngineFile
 		static void LoadConfigFile();
 		static void SaveConfigFile();
 
+		static void ConvertToString();
+
 		static inline vector<ConfigFileValue> values;
 	private:
 		string configFilePath;

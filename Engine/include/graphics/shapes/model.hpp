@@ -41,7 +41,7 @@ namespace Graphics::Shape
 			const string& modelPath = targetModel,
 			const string& vertShader = Engine::filesPath + "/shaders/GameObject.vert",
 			const string& fragShader = Engine::filesPath + "/shaders/GameObject.frag",
-			const string& diffTexture = Engine::filesPath + "/textures/default_diffuse.png",
+			const string& diffTexture = Engine::filesPath + "/textures/diff_default.png",
 			const string& specTexture = "EMPTY",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
