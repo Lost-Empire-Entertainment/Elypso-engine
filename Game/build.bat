@@ -66,6 +66,8 @@ pause
 goto menu
 
 :cmake
+cls
+
 :: Change to the script directory
 cd /d "%~dp0"
 	
@@ -93,6 +95,8 @@ if %errorlevel% neq 0 (
 goto build
 
 :build
+cls
+
 :: Change to the script directory
 cd /d "%~dp0"
 	
@@ -117,6 +121,8 @@ pause
 goto menu
 
 :cleanvs
+cls
+
 :: Change to the script directory
 cd /d "%~dp0"
 	
@@ -143,6 +149,8 @@ pause
 goto menu
 
 :cleang
+cls
+
 :: Change to the script directory
 cd /d "%~dp0"
 	

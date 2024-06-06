@@ -23,6 +23,15 @@ using std::filesystem::current_path;
 
 int main()
 {
+	cout << "\n==================================================\n"
+		<< "\n"
+		<< "ENTERED ELYPSO HUB\n"
+		<< "\n"
+		<< "==================================================\n"
+		<< ".\n"
+		<< ".\n"
+		<< ".\n\n";
+
 	Core::Initialize();
 
 	//get all files if any new ones were added

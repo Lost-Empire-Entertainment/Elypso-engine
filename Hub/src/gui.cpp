@@ -574,10 +574,6 @@ void GUI::RunProject(const string& targetProject)
 	if (exists(targetProjectFile)) remove(targetProjectFile);
 	copy(originalProjectFile, targetProjectFile);
 
-	cout << "Running engine from '" << Core::enginePath << "'!\n\n";
-
-	cout << ".\n.\n.\n\n";
-
 	GUI::RunApplication(
 		Core::enginePath.parent_path().string(),
 		Core::enginePath.string());

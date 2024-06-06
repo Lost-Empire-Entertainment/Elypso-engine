@@ -10,6 +10,7 @@
 
 //external
 #include "glm.hpp"
+#include "magic_enum.hpp"
 
 //engine
 #include "configFile.hpp"
@@ -290,7 +291,7 @@ namespace EngineFile
 		ConfigFileValue gui_Alpha(
 			"gui_Alpha",
 			to_string(EngineGUI::gui_Alpha),
-			"0.0000000000000001",
+			"0.000000",
 			"1.0",
 			ConfigFileValue::Type::type_float);
 		AddValue(gui_Alpha);
@@ -298,7 +299,7 @@ namespace EngineFile
 		ConfigFileValue gui_DisabledAlpha(
 			"gui_DisabledAlpha",
 			to_string(EngineGUI::gui_DisabledAlpha),
-			"0.0000000000000001",
+			"0.000000",
 			"1.0",
 			ConfigFileValue::Type::type_float);
 		AddValue(gui_DisabledAlpha);
@@ -334,7 +335,7 @@ namespace EngineFile
 			"gui_WindowMenuButtonPosition",
 			to_string(EngineGUI::gui_WindowMenuButtonPosition),
 			imgui_dir,
-			ConfigFileValue::Type::type_string);
+			ConfigFileValue::Type::type_int);
 		AddValue(gui_WindowMenuButtonPosition);
 
 		ConfigFileValue gui_ChildRounding(
@@ -505,7 +506,7 @@ namespace EngineFile
 			"gui_ColorButtonPosition",
 			to_string(EngineGUI::gui_ColorButtonPosition),
 			imgui_dir,
-			ConfigFileValue::Type::type_string);
+			ConfigFileValue::Type::type_int);
 		AddValue(gui_ColorButtonPosition);
 
 		string gui_ButtonTextAlign_value =
@@ -540,7 +541,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_Text(
 			"gui_Color_Text",
 			gui_Color_Text_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_Text);
@@ -553,7 +554,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TextDisabled(
 			"gui_Color_TextDisabled",
 			gui_Color_TextDisabled_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TextDisabled);
@@ -566,7 +567,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_WindowBg(
 			"gui_Color_WindowBg",
 			gui_Color_WindowBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_WindowBg);
@@ -579,7 +580,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ChildBg(
 			"gui_Color_ChildBg",
 			gui_Color_ChildBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ChildBg);
@@ -592,7 +593,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_PopupBg(
 			"gui_Color_PopupBg",
 			gui_Color_PopupBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_PopupBg);
@@ -605,7 +606,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_Border(
 			"gui_Color_Border",
 			gui_Color_Border_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_Border);
@@ -618,7 +619,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_BorderShadow(
 			"gui_Color_BorderShadow",
 			gui_Color_BorderShadow_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_BorderShadow);
@@ -631,7 +632,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_FrameBg(
 			"gui_Color_FrameBg",
 			gui_Color_FrameBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_FrameBg);
@@ -644,7 +645,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_FrameBgHovered(
 			"gui_Color_FrameBgHovered",
 			gui_Color_FrameBgHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_FrameBgHovered);
@@ -657,7 +658,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_FrameBgActive(
 			"gui_Color_FrameBgActive",
 			gui_Color_FrameBgActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_FrameBgActive);
@@ -670,7 +671,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TitleBg(
 			"gui_Color_TitleBg",
 			gui_Color_TitleBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TitleBg);
@@ -683,7 +684,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TitleBgActive(
 			"gui_Color_TitleBgActive",
 			gui_Color_TitleBgActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TitleBgActive);
@@ -696,7 +697,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TitleBgCollapsed(
 			"gui_Color_TitleBgCollapsed",
 			gui_Color_TitleBgCollapsed_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TitleBgCollapsed);
@@ -709,7 +710,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_MenuBarBg(
 			"gui_Color_MenuBarBg",
 			gui_Color_MenuBarBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_MenuBarBg);
@@ -722,7 +723,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ScrollbarBg(
 			"gui_Color_ScrollbarBg",
 			gui_Color_ScrollbarBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ScrollbarBg);
@@ -735,7 +736,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ScrollbarGrab(
 			"gui_Color_ScrollbarGrab",
 			gui_Color_ScrollbarGrab_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ScrollbarGrab);
@@ -748,7 +749,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ScrollbarGrabHovered(
 			"gui_Color_ScrollbarGrabHovered",
 			gui_Color_ScrollbarGrabHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ScrollbarGrabHovered);
@@ -761,7 +762,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ScrollbarGrabActive(
 			"gui_Color_ScrollbarGrabActive",
 			gui_Color_ScrollbarGrabActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ScrollbarGrabActive);
@@ -774,7 +775,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_CheckMark(
 			"gui_Color_CheckMark",
 			gui_Color_CheckMark_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_CheckMark);
@@ -787,7 +788,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_SliderGrab(
 			"gui_Color_SliderGrab",
 			gui_Color_SliderGrab_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_SliderGrab);
@@ -800,7 +801,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_SliderGrabActive(
 			"gui_Color_SliderGrabActive",
 			gui_Color_SliderGrabActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_SliderGrabActive);
@@ -813,7 +814,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_Button(
 			"gui_Color_Button",
 			gui_Color_Button_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_Button);
@@ -826,7 +827,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ButtonHovered(
 			"gui_Color_ButtonHovered",
 			gui_Color_ButtonHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ButtonHovered);
@@ -839,7 +840,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ButtonActive(
 			"gui_Color_ButtonActive",
 			gui_Color_ButtonActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ButtonActive);
@@ -852,7 +853,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_Header(
 			"gui_Color_Header",
 			gui_Color_Header_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_Header);
@@ -865,7 +866,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_HeaderHovered(
 			"gui_Color_HeaderHovered",
 			gui_Color_HeaderHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_HeaderHovered);
@@ -878,7 +879,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_HeaderActive(
 			"gui_Color_HeaderActive",
 			gui_Color_HeaderActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_HeaderActive);
@@ -891,7 +892,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_Separator(
 			"gui_Color_Separator",
 			gui_Color_Separator_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_Separator);
@@ -904,7 +905,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_SeparatorHovered(
 			"gui_Color_SeparatorHovered",
 			gui_Color_SeparatorHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_SeparatorHovered);
@@ -917,7 +918,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_SeparatorActive(
 			"gui_Color_SeparatorActive",
 			gui_Color_SeparatorActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_SeparatorActive);
@@ -930,7 +931,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ResizeGrip(
 			"gui_Color_ResizeGrip",
 			gui_Color_ResizeGrip_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ResizeGrip);
@@ -943,7 +944,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ResizeGripHovered(
 			"gui_Color_ResizeGripHovered",
 			gui_Color_ResizeGripHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ResizeGripHovered);
@@ -956,7 +957,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ResizeGripActive(
 			"gui_Color_ResizeGripActive",
 			gui_Color_ResizeGripActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ResizeGripActive);
@@ -969,7 +970,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_Tab(
 			"gui_Color_Tab",
 			gui_Color_Tab_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_Tab);
@@ -982,7 +983,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TabHovered(
 			"gui_Color_TabHovered",
 			gui_Color_TabHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TabHovered);
@@ -995,7 +996,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TabActive(
 			"gui_Color_TabActive",
 			gui_Color_TabActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TabActive);
@@ -1008,7 +1009,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TabUnfocused(
 			"gui_Color_TabUnfocused",
 			gui_Color_TabUnfocused_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TabUnfocused);
@@ -1021,7 +1022,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TabUnfocusedActive(
 			"gui_Color_TabUnfocusedActive",
 			gui_Color_TabUnfocusedActive_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TabUnfocusedActive);
@@ -1034,7 +1035,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_PlotLines(
 			"gui_Color_PlotLines",
 			gui_Color_PlotLines_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_PlotLines);
@@ -1047,7 +1048,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_PlotLinesHovered(
 			"gui_Color_PlotLinesHovered",
 			gui_Color_PlotLinesHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_PlotLinesHovered);
@@ -1060,7 +1061,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_PlotHistogram(
 			"gui_Color_PlotHistogram",
 			gui_Color_PlotHistogram_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_PlotHistogram);
@@ -1073,7 +1074,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_PlotHistogramHovered(
 			"gui_Color_PlotHistogramHovered",
 			gui_Color_PlotHistogramHovered_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_PlotHistogramHovered);
@@ -1086,7 +1087,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TableHeaderBg(
 			"gui_Color_TableHeaderBg",
 			gui_Color_TableHeaderBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TableHeaderBg);
@@ -1099,7 +1100,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TableBorderStrong(
 			"gui_Color_TableBorderStrong",
 			gui_Color_TableBorderStrong_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TableBorderStrong);
@@ -1112,7 +1113,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TableBorderLight(
 			"gui_Color_TableBorderLight",
 			gui_Color_TableBorderLight_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TableBorderLight);
@@ -1125,7 +1126,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TableRowBg(
 			"gui_Color_TableRowBg",
 			gui_Color_TableRowBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TableRowBg);
@@ -1138,7 +1139,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TableRowBgAlt(
 			"gui_Color_TableRowBgAlt",
 			gui_Color_TableRowBgAlt_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TableRowBgAlt);
@@ -1151,7 +1152,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_TextSelectedBg(
 			"gui_Color_TextSelectedBg",
 			gui_Color_TextSelectedBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_TextSelectedBg);
@@ -1164,7 +1165,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_DragDropTarget(
 			"gui_Color_DragDropTarget",
 			gui_Color_DragDropTarget_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_DragDropTarget);
@@ -1177,7 +1178,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_NavHighlight(
 			"gui_Color_NavHighlight",
 			gui_Color_NavHighlight_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_NavHighlight);
@@ -1190,7 +1191,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_NavWindowingHighlight(
 			"gui_Color_NavWindowingHighlight",
 			gui_Color_NavWindowingHighlight_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_NavWindowingHighlight);
@@ -1203,7 +1204,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_NavWindowingDimBg(
 			"gui_Color_NavWindowingDimBg",
 			gui_Color_NavWindowingDimBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_NavWindowingDimBg);
@@ -1216,7 +1217,7 @@ namespace EngineFile
 		ConfigFileValue gui_Color_ModalWindowDimBg(
 			"gui_Color_ModalWindowDimBg",
 			gui_Color_ModalWindowDimBg_value,
-			"0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f, 0.0000000000000001f",
+			"0.000000, 0.000000, 0.000000, 0.000000",
 			"1.0, 1.0, 1.0, 1.0",
 			ConfigFileValue::Type::type_imvec4);
 		AddValue(gui_Color_ModalWindowDimBg);
@@ -1254,22 +1255,6 @@ namespace EngineFile
 
 		string line;
 
-		ConfigFileValue::Type type{};
-
-		//variable names
-		map<string, variant<bool, string, float, int, vec2, vec3, ImVec2, ImVec4>> gui_ValueNames;
-		for (const auto& value : ConfigFileManager::values)
-		{
-			gui_ValueNames[value.GetName()] = value.GetValue();
-		}
-
-		//variable default values
-		map<string, variant<bool, string, float, int, vec2, vec3, ImVec2, ImVec4>> gui_DefaultValues;
-		for (const auto& value : ConfigFileManager::values)
-		{
-			gui_ValueNames[value.GetName()] = value.GetDefaultValue();
-		}
-
 		while (getline(configFile, line))
 		{
 			if (line.find(':') != string::npos)
@@ -1287,63 +1272,111 @@ namespace EngineFile
 				}
 				else lineVariables.push_back(lineSplit[1]);
 
-				if (gui_ValueNames.find(name) == gui_ValueNames.end())
+				bool isInRange = false;
+				if (lineVariables.size() == 0
+					|| lineVariables.size() > 4)
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Value " + name + " does not exist in config settings!");
-					return;
+						name + " has too many or no variables! Resetting to default.");
+					isInRange = false;
 				}
-
-				bool isInRange = false;
-				switch (type)
+				else
 				{
-				case ConfigFileValue::Type::type_float:
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
+					for (auto& configFileValue : values)
 					{
-						isInRange = true;
-						gui_ValueNames[name] = stof(lineVariables[0]);
+						string configName = configFileValue.GetName();
+						ConfigFileValue::Type configType = configFileValue.GetType();
+
+						if (configName == name)
+						{
+							try
+							{
+								if (name == "gui_ColorButtonPosition") break;
+
+								if (lineVariables.size() == 1)
+								{
+									if (configType == ConfigFileValue::Type::type_float
+										&& String::CanConvertStringToFloat(lineVariables[0])
+										&& configFileManager.IsValueInRange(configFileValue, lineVariables))
+									{
+										configFileValue.SetValue(variables);
+
+										isInRange = true;
+										break;
+									}
+									else if (configType == ConfigFileValue::Type::type_int
+										&& String::CanConvertStringToInt(lineVariables[0])
+										&& configFileManager.IsValueInRange(configFileValue, lineVariables))
+									{
+										configFileValue.SetValue(variables);
+
+										isInRange = true;
+										break;
+									}
+								}
+								else
+								{
+									if (lineVariables.size() == 2
+										&& configType == ConfigFileValue::Type::type_imvec2
+										&& String::CanConvertStringToFloat(lineVariables[0])
+										&& String::CanConvertStringToFloat(lineVariables[1])
+										&& configFileManager.IsValueInRange(configFileValue, lineVariables))
+									{
+										configFileValue.SetValue(variables);
+
+										isInRange = true;
+										break;
+									}
+									else if (lineVariables.size() == 2
+										&& configType == ConfigFileValue::Type::type_vec2
+										&& String::CanConvertStringToFloat(lineVariables[0])
+										&& String::CanConvertStringToFloat(lineVariables[1])
+										&& configFileManager.IsValueInRange(configFileValue, lineVariables))
+									{
+										configFileValue.SetValue(variables);
+
+										isInRange = true;
+										break;
+									}
+									else if (lineVariables.size() == 3
+										&& configType == ConfigFileValue::Type::type_vec3
+										&& String::CanConvertStringToFloat(lineVariables[0])
+										&& String::CanConvertStringToFloat(lineVariables[1])
+										&& String::CanConvertStringToFloat(lineVariables[2])
+										&& configFileManager.IsValueInRange(configFileValue, lineVariables))
+									{
+										configFileValue.SetValue(variables);
+
+										isInRange = true;
+										break;
+									}
+									else if (lineVariables.size() == 4
+										&& configType == ConfigFileValue::Type::type_imvec4
+										&& String::CanConvertStringToFloat(lineVariables[0])
+										&& String::CanConvertStringToFloat(lineVariables[1])
+										&& String::CanConvertStringToFloat(lineVariables[2])
+										&& String::CanConvertStringToFloat(lineVariables[3])
+										&& configFileManager.IsValueInRange(configFileValue, lineVariables))
+									{
+										configFileValue.SetValue(variables);
+
+										isInRange = true;
+										break;
+									}
+								}
+							}
+							catch (const exception& e)
+							{
+								string title = "Engine crash";
+								string message = "Error '" + string(e.what()) + "' caught at 'configFile.cpp'";
+								message += "\n\nConfig type '" + name + "' value '" + variables + "' was not accepted!";
+
+								Engine::CreateErrorPopup(title.c_str(), message.c_str());
+							}
+						}
 					}
-					break;
-				case ConfigFileValue::Type::type_int:
-					if (configFileManager.IsValueInRange(name, lineVariables[0]))
-					{
-						isInRange = true;
-						gui_ValueNames[name] = stoi(lineVariables[0]);
-					}
-					break;
-				case ConfigFileValue::Type::type_vec2:
-					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
-						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1]))
-					{
-						isInRange = true;
-					}
-					break;
-				case ConfigFileValue::Type::type_vec3:
-					if (configFileManager.IsValueInRange(name + "X", lineVariables[0])
-						&& configFileManager.IsValueInRange(name + "Y", lineVariables[1])
-						&& configFileManager.IsValueInRange(name + "Z", lineVariables[2]))
-					{
-						isInRange = true;
-					}
-					break;
-				case ConfigFileValue::Type::type_imvec2:
-					if (configFileManager.IsValueInRange(name, lineVariables[0])
-						&& configFileManager.IsValueInRange(name, lineVariables[1]))
-					{
-						isInRange = true;
-					}
-					break;
-				case ConfigFileValue::Type::type_imvec4:
-					if (configFileManager.IsValueInRange(name, lineVariables[0])
-						&& configFileManager.IsValueInRange(name, lineVariables[1])
-						&& configFileManager.IsValueInRange(name, lineVariables[2])
-						&& configFileManager.IsValueInRange(name, lineVariables[3]))
-					{
-						isInRange = true;
-					}
-					break;
 				}
 
 				if (isInRange)
@@ -1351,16 +1384,24 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::DEBUG,
-						"Set " + name + " to " + lineSplit[1] + ".\n");
+						"Set " + name + " to '" + variables + "'.\n");
 				}
-				else 
+				else
 				{
-					gui_ValueNames[name] = gui_DefaultValues[name];
+					for (auto& configFileValue : values)
+					{
+						if (configFileValue.GetName() == name)
+						{
+							configFileValue.SetValue(configFileValue.GetDefaultValue());
 
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						name + " value " + lineVariables[0] + " is out of range or not a valid value for the current value type! Resetting to default.\n");
+							ConsoleManager::WriteConsoleMessage(
+								Caller::ENGINE,
+								Type::EXCEPTION,
+								name + " value '" + variables + "' is not valid! Resetting to default '" + configFileValue.GetDefaultValue() +"'\n");
+
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -1413,7 +1454,7 @@ namespace EngineFile
 			"Successfully saved config file!\n");
 	}
 
-	void ConfigFileManager::CreateNewConfigFile()
+	void ConfigFileManager::CreateNewConfigFile() const
 	{
 		ofstream configFile(configFilePath);
 
@@ -1433,199 +1474,129 @@ namespace EngineFile
 	}
 
 	bool ConfigFileManager::IsValueInRange(
-		const string& name,
-		const string& value)
+		const ConfigFileValue& type,
+		const vector<string>& value)
 	{
-		ConfigFileValue::Type type{};
+		ConfigFileValue::Type configType = type.GetType();
+		string minValue = type.GetMinValue();
+		string maxValue = type.GetMaxValue();
 
-		float currentFloatValue{}, minFloatValue{}, maxFloatValue{};
-		int currentIntValue{}, minIntValue{}, maxIntValue{};
-		vec2 currentVec2Value{}, minVec2Value{}, maxVec2Value{};
-		vec3 currentVec3Value{}, minVec3Value{}, maxVec3Value{};
-		ImVec2 currentImvec2Value{}, minImvec2Value{}, maxImvec2Value{};
-		ImVec4 currentImvec4Value{}, minImvec4Value{}, maxImvec4Value{};
-
-		for (auto& configFileValue : values)
+		switch (configType)
 		{
-			if (configFileValue.GetName() == name)
-			{
-				type = configFileValue.GetType();
-
-				if (type == ConfigFileValue::Type::type_float)
-				{
-					currentFloatValue = stof(configFileValue.GetValue());
-					minFloatValue = stof(configFileValue.GetMinValue());
-					maxFloatValue = stof(configFileValue.GetMaxValue());
-				}
-				else if (type == ConfigFileValue::Type::type_int)
-				{
-					currentIntValue = stoi(configFileValue.GetValue());
-					minIntValue = stoi(configFileValue.GetMinValue());
-					maxIntValue = stoi(configFileValue.GetMaxValue());
-				}
-				else if (type == ConfigFileValue::Type::type_vec2)
-				{
-					vector<string> currentSplitValue = String::Split(configFileValue.GetValue(), ',');
-					currentVec2Value = vec2(stof(currentSplitValue[0]), stof(currentSplitValue[1]));
-
-					vector<string> minSplitValue = String::Split(configFileValue.GetMinValue(), ',');
-					minVec2Value = vec2(stof(minSplitValue[0]), stof(minSplitValue[1]));
-
-					vector<string> maxSplitValue = String::Split(configFileValue.GetMaxValue(), ',');
-					maxVec2Value = vec2(stof(maxSplitValue[0]), stof(maxSplitValue[1]));
-				}
-				else if (type == ConfigFileValue::Type::type_vec3)
-				{
-					vector<string> currentSplitValue = String::Split(configFileValue.GetValue(), ',');
-					currentVec3Value = vec3(stof(currentSplitValue[0]), stof(currentSplitValue[1]), stof(currentSplitValue[2]));
-
-					vector<string> minSplitValue = String::Split(configFileValue.GetMinValue(), ',');
-					minVec3Value = vec3(stof(minSplitValue[0]), stof(minSplitValue[1]), stof(minSplitValue[2]));
-
-					vector<string> maxSplitValue = String::Split(configFileValue.GetMaxValue(), ',');
-					maxVec3Value = vec3(stof(maxSplitValue[0]), stof(maxSplitValue[1]), stof(maxSplitValue[2]));
-				}
-				else if (type == ConfigFileValue::Type::type_imvec2)
-				{
-					vector<string> currentSplitValue = String::Split(configFileValue.GetValue(), ',');
-					currentImvec2Value = ImVec2(stof(currentSplitValue[0]), stof(currentSplitValue[1]));
-
-					vector<string> minSplitValue = String::Split(configFileValue.GetMinValue(), ',');
-					minImvec2Value = ImVec2(stof(minSplitValue[0]), stof(minSplitValue[1]));
-
-					vector<string> maxSplitValue = String::Split(configFileValue.GetMaxValue(), ',');
-					maxImvec2Value = ImVec2(stof(maxSplitValue[0]), stof(maxSplitValue[1]));
-				}
-				else if (type == ConfigFileValue::Type::type_imvec4)
-				{
-					vector<string> currentSplitValue = String::Split(configFileValue.GetValue(), ',');
-					currentImvec4Value = ImVec4(
-						stof(currentSplitValue[0]), 
-						stof(currentSplitValue[1]), 
-						stof(currentSplitValue[2]), 
-						stof(currentSplitValue[3]));
-
-					vector<string> minSplitValue = String::Split(configFileValue.GetMinValue(), ',');
-					minImvec4Value = ImVec4(
-						stof(minSplitValue[0]), 
-						stof(minSplitValue[1]), 
-						stof(minSplitValue[2]), 
-						stof(minSplitValue[3]));
-
-					vector<string> maxSplitValue = String::Split(configFileValue.GetMaxValue(), ',');
-					maxImvec4Value = ImVec4(
-						stof(maxSplitValue[0]), 
-						stof(maxSplitValue[1]), 
-						stof(maxSplitValue[2]), 
-						stof(maxSplitValue[3]));
-				}
-
-				break;
-			}
-		}
-
-		bool isCorrectType = false;
-		vec2 vec2Value{};
-		vec3 vec3Value{};
-		ImVec2 imvec2Value{};
-		ImVec4 imvec4Value{};
-
-		switch (type)
-		{
-		case ConfigFileValue::Type::type_string:
-			if (name == "gui_WindowMenuButtonPosition"
-				|| name == "gui_ColorButtonPosition")
-			{
-				return find(imgui_dir.begin(), imgui_dir.end(), value) != imgui_dir.end();
-			}
-			else return false;
 		case ConfigFileValue::Type::type_float:
-			isCorrectType = String::CanConvertStringToFloat(value);
-			break;
+		{
+			float val = stof(value[0]);
+			float minVal = stof(minValue);
+			float maxVal = stof(maxValue);
+			return val >= minVal && val <= maxVal;
+		}
 		case ConfigFileValue::Type::type_int:
-			isCorrectType = String::CanConvertStringToInt(value);
-			break;
-		case ConfigFileValue::Type::type_vec2:
-			if (String::ContainsString(value, ", "))
+		{
+			if (type.GetName() == "gui_WindowMenuButtonPosition"
+				|| type.GetName() == "gui_TabMinWidthForCloseButton")
 			{
-				string newValue = String::StringReplace(value, ", ", ",");
-				vector<string> splitVec2 = String::Split(newValue, ',');
-				vec2Value = vec2(stof(splitVec2[0]), stof(splitVec2[1]));
+				int val = stoi(value[0]);
+				return val >= 0 && val <= 2;
 			}
-			else return false;
-			break;
-		case ConfigFileValue::Type::type_vec3:
-			if (String::ContainsString(value, ", "))
+			else
 			{
-				string newValue = String::StringReplace(value, ", ", ",");
-				vector<string> splitVec3 = String::Split(newValue, ',');
-				vec3Value = vec3(stof(splitVec3[0]), stof(splitVec3[1]), stof(splitVec3[2]));
+				int val = stoi(value[0]);
+				int minVal = stoi(minValue);
+				int maxVal = stoi(maxValue);
+				return val >= minVal && val <= maxVal;
 			}
-			break;
+		}
 		case ConfigFileValue::Type::type_imvec2:
-			if (String::ContainsString(value, ", "))
-			{
-				string newValue = String::StringReplace(value, ", ", ",");
-				vector<string> splitImvec2 = String::Split(newValue, ',');
-				imvec2Value = ImVec2(stof(splitImvec2[0]), stof(splitImvec2[1]));
-			}
-			break;
+		{
+			float valX = stof(value[0]);
+			float valY = stof(value[1]);
+
+			vector<string> minVec = String::Split(minValue, ',');
+			float minX = stof(minVec[0]);
+			float minY = stof(minVec[1]);
+
+			vector<string> maxVec = String::Split(maxValue, ',');
+			float maxX = stof(maxVec[0]);
+			float maxY = stof(maxVec[1]);
+
+			return
+				valX >= minX
+				&& valX <= maxX
+				&& valY >= minY
+				&& valY <= maxY;
+		}
+		case ConfigFileValue::Type::type_vec2:
+		{
+			float valX = stof(value[0]);
+			float valY = stof(value[1]);
+
+			vector<string> minVec = String::Split(minValue, ',');
+			float minX = stof(minVec[0]);
+			float minY = stof(minVec[1]);
+
+			vector<string> maxVec = String::Split(maxValue, ',');
+			float maxX = stof(maxVec[0]);
+			float maxY = stof(maxVec[1]);
+
+			return
+				valX >= minX
+				&& valX <= maxX
+				&& valY >= minY
+				&& valY <= maxY;
+		}
+		case ConfigFileValue::Type::type_vec3:
+		{
+			float valX = stof(value[0]);
+			float valY = stof(value[1]);
+			float valZ = stof(value[2]);
+
+			vector<string> minVec = String::Split(minValue, ',');
+			float minX = stof(minVec[0]);
+			float minY = stof(minVec[1]);
+			float minZ = stof(minVec[2]);
+
+			vector<string> maxVec = String::Split(maxValue, ',');
+			float maxX = stof(maxVec[0]);
+			float maxY = stof(maxVec[1]);
+			float maxZ = stof(maxVec[2]);
+
+			return
+				valX >= minX
+				&& valX <= maxX
+				&& valY >= minY
+				&& valY <= maxY
+				&& valZ >= minZ
+				&& valZ <= maxZ;
+		}
 		case ConfigFileValue::Type::type_imvec4:
-			if (String::ContainsString(value, ", "))
-			{
-				string newValue = String::StringReplace(value, ", ", ",");
-				vector<string> splitImvec4 = String::Split(newValue, ',');
-				imvec4Value = ImVec4(stof(splitImvec4[0]), stof(splitImvec4[1]), stof(splitImvec4[2]), stof(splitImvec4[3]));
-			}
-			break;
-		}
+		{
+			float valX = stof(value[0]);
+			float valY = stof(value[1]);
+			float valZ = stof(value[2]);
+			float valW = stof(value[3]);
 
-		if (!isCorrectType) return false;
+			vector<string> minVec = String::Split(minValue, ',');
+			float minX = stof(minVec[0]);
+			float minY = stof(minVec[1]);
+			float minZ = stof(minVec[2]);
+			float minW = stof(minVec[3]);
 
-		float floatValue = stof(value);
-		int intValue = stoi(value);
+			vector<string> maxVec = String::Split(maxValue, ',');
+			float maxX = stof(maxVec[0]);
+			float maxY = stof(maxVec[1]);
+			float maxZ = stof(maxVec[2]);
+			float maxW = stof(maxVec[3]);
 
-		if (type == ConfigFileValue::Type::type_float)
-		{
-			return floatValue >= minFloatValue && floatValue <= maxFloatValue;
+			return
+				valX >= minX
+				&& valX <= maxX
+				&& valY >= minY
+				&& valY <= maxY
+				&& valZ >= minZ
+				&& valZ <= maxZ
+				&& valW >= minW
+				&& valW <= maxW;
 		}
-		else if (type == ConfigFileValue::Type::type_int)
-		{
-			return intValue >= minIntValue && intValue <= maxIntValue;
-		}
-		else if (type == ConfigFileValue::Type::type_vec2)
-		{
-			return vec2Value.x >= minVec2Value.x
-				&& vec2Value.y >= minVec2Value.y
-				&& vec2Value.x <= maxVec2Value.x
-				&& vec2Value.y <= maxVec2Value.y;
-		}
-		else if (type == ConfigFileValue::Type::type_vec3)
-		{
-			return vec3Value.x >= minVec3Value.x
-				&& vec3Value.y >= minVec3Value.y
-				&& vec3Value.z >= minVec3Value.z
-				&& vec3Value.x <= maxVec3Value.x
-				&& vec3Value.y <= maxVec3Value.y
-				&& vec3Value.z <= maxVec3Value.z;
-		}
-		else if (type == ConfigFileValue::Type::type_imvec2)
-		{
-			return imvec2Value.x >= minImvec2Value.x
-				&& imvec2Value.y >= minImvec2Value.y
-				&& imvec2Value.x <= maxImvec2Value.x
-				&& imvec2Value.y <= maxImvec2Value.y;
-		}
-		else if (type == ConfigFileValue::Type::type_imvec4)
-		{
-			return imvec4Value.x >= minImvec4Value.x
-				&& imvec4Value.y >= minImvec4Value.y
-				&& imvec4Value.z >= minImvec4Value.z
-				&& imvec4Value.w >= minImvec4Value.w
-				&& imvec4Value.x <= maxImvec4Value.x
-				&& imvec4Value.y <= maxImvec4Value.y
-				&& imvec4Value.z <= maxImvec4Value.z
-				&& imvec4Value.w <= maxImvec4Value.w;
 		}
 
 		return false;

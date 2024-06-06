@@ -46,6 +46,15 @@ namespace Core
 {
 	void Game::InitializeGame()
 	{
+		cout << "\n==================================================\n"
+			<< "\n"
+			<< "ENTERED GAME\n"
+			<< "\n"
+			<< "==================================================\n"
+			<< ".\n"
+			<< ".\n"
+			<< ".\n\n";
+
 		//
 		// SET DOCUMENTS PATH
 		//
@@ -159,7 +168,14 @@ namespace Core
 			//clean all glfw resources after program is closed
 			glfwTerminate();
 
-			cout << "Shutdown complete!\n";
+			cout << "\n==================================================\n"
+				<< "\n"
+				<< "EXITED GAME\n"
+				<< "\n"
+				<< "==================================================\n"
+				<< ".\n"
+				<< ".\n"
+				<< ".\n\n";
 		}
 	}
 }

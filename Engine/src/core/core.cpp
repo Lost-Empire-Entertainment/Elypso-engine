@@ -45,6 +45,15 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
+		cout << "\n==================================================\n"
+			<< "\n"
+			<< "ENTERED ELYPSO ENGINE\n"
+			<< "\n"
+			<< "==================================================\n"
+			<< ".\n"
+			<< ".\n"
+			<< ".\n\n";
+
 		//
 		// SET DOCUMENTS PATH
 		//
@@ -268,6 +277,15 @@ namespace Core
 				Caller::SHUTDOWN,
 				Type::INFO,
 				"Shutdown complete!\n");
+
+			cout << "\n==================================================\n"
+				<< "\n"
+				<< "EXITED ELYPSO ENGINE\n"
+				<< "\n"
+				<< "==================================================\n"
+				<< ".\n"
+				<< ".\n"
+				<< ".\n\n";
 
 			ConsoleManager::CloseLogger();
 		}

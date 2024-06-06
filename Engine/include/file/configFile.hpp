@@ -88,8 +88,6 @@ namespace EngineFile
 		static void LoadConfigFile();
 		static void SaveConfigFile();
 
-		static void ConvertToString();
-
 		static inline vector<ConfigFileValue> values;
 	private:
 		string configFilePath;
@@ -103,9 +101,9 @@ namespace EngineFile
 		void UpdateValues();
 
 		bool IsValueInRange(
-			const string& name,
-			const string& value);
+			const ConfigFileValue& type,
+			const vector<string>& value);
 
-		void CreateNewConfigFile();
+		void CreateNewConfigFile() const;
 	};
 }
