@@ -16,8 +16,6 @@ namespace Graphics::GUI
 	class GUIAssetList
 	{
 	public:
-		static inline bool renderAssetList;
-
 		static void RenderAssetList();
 	private:
 		static constexpr int nameBufferSize = 32;

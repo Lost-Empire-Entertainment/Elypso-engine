@@ -38,6 +38,7 @@
 #include "configFile.hpp"
 #include "fileexplorer.hpp"
 #include "compile.hpp"
+#include "configFile.hpp"
 
 using std::cout;
 using std::endl;
@@ -66,6 +67,7 @@ using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using EngineFile::SceneFile;
 using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFileValue;
 using EngineFile::FileExplorer;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -86,9 +88,9 @@ namespace Graphics::GUI
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
 
-			GUIAssetList::renderAssetList = true;
-			GUIConsole::renderConsole = true;
-			GUIInspector::renderInspector = true;
+			ConfigFileManager::valuesMap["gui_assetListWindow"].SetValue("1");
+			ConfigFileManager::valuesMap["gui_console"].SetValue("1");
+			ConfigFileManager::valuesMap["gui_inspector"].SetValue("1");
 			ConfigFileManager::SaveConfigFile();
 		}
 
@@ -122,104 +124,182 @@ namespace Graphics::GUI
 
 		GUINodeBlock::SetBackgroundTexture();
 	}
+	void EngineGUI::AssignGuiColorValue(const string& name, ImGuiCol col)
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		ConfigFileValue valueConfig = ConfigFileManager::valuesMap[name];
+		string value = valueConfig.GetValue();
+		vector<string> valueSplit = String::Split(value, ',');
+		ImVec4 finalValue = ImVec4(
+			stof(valueSplit[0]),
+			stof(valueSplit[1]),
+			stof(valueSplit[2]),
+			stof(valueSplit[3]));
+
+		style.Colors[col] = finalValue;
+	}
 	void EngineGUI::CustomizeImGuiStyle()
 	{
 		ImGui::StyleColorsDark();
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImGuiIO& io = ImGui::GetIO();
-		io.FontGlobalScale = fontScale;
+		io.FontGlobalScale = stof(ConfigFileManager::valuesMap["gui_fontScale"].GetValue());
 
 		//
 		// GUI STYLE START
 		//
 
-		style.Alpha = gui_Alpha;
-		style.DisabledAlpha = gui_DisabledAlpha;
-		style.WindowPadding = gui_WindowPadding;
-		style.WindowRounding = gui_WindowRounding;
-		style.WindowBorderSize = gui_WindowBorderSize;
-		style.WindowMenuButtonPosition = gui_WindowMenuButtonPosition;
-		style.ChildRounding = gui_ChildRounding;
-		style.ChildBorderSize = gui_ChildBorderSize;
-		style.PopupRounding = gui_PopupRounding;
-		style.PopupBorderSize = gui_PopupBorderSize;
-		style.FramePadding = gui_FramePadding;
-		style.FrameRounding = gui_FrameRounding;
-		style.FrameBorderSize = gui_FrameBorderSize;
-		style.ItemSpacing = gui_ItemSpacing;
-		style.ItemInnerSpacing = gui_ItemInnerSpacing;
-		style.CellPadding = gui_CellPadding;
-		style.IndentSpacing = gui_IndentSpacing;
-		style.ColumnsMinSpacing = gui_ColumnsMinSpacing;
-		style.ScrollbarSize = gui_ScrollbarSize;
-		style.ScrollbarRounding = gui_ScrollbarRounding;
-		style.GrabMinSize = gui_GrabMinSize;
-		style.GrabRounding = gui_GrabRounding;
-		style.TabRounding = gui_TabRounding;
-		style.TabBorderSize = gui_TabBorderSize;
-		style.TabMinWidthForCloseButton = gui_TabMinWidthForCloseButton;
-		style.ColorButtonPosition = gui_ColorButtonPosition;
-		style.ButtonTextAlign = gui_ButtonTextAlign;
-		style.SelectableTextAlign = gui_SelectableTextAlign;
+		style.Alpha = stof(ConfigFileManager::valuesMap["gui_Alpha"].GetValue());
+		style.DisabledAlpha = stof(ConfigFileManager::valuesMap["gui_DisabledAlpha"].GetValue());
 
-		style.Colors[ImGuiCol_Text] = gui_Color_Text;
-		style.Colors[ImGuiCol_TextDisabled] = gui_Color_TextDisabled;
-		style.Colors[ImGuiCol_WindowBg] = gui_Color_WindowBg;
-		style.Colors[ImGuiCol_ChildBg] = gui_Color_ChildBg;
-		style.Colors[ImGuiCol_PopupBg] = gui_Color_PopupBg;
-		style.Colors[ImGuiCol_Border] = gui_Color_Border;
-		style.Colors[ImGuiCol_BorderShadow] = gui_Color_BorderShadow;
-		style.Colors[ImGuiCol_FrameBg] = gui_Color_FrameBg;
-		style.Colors[ImGuiCol_FrameBgHovered] = gui_Color_FrameBgHovered;
-		style.Colors[ImGuiCol_FrameBgActive] = gui_Color_FrameBgActive;
-		style.Colors[ImGuiCol_TitleBg] = gui_Color_TitleBg;
-		style.Colors[ImGuiCol_TitleBgActive] = gui_Color_TitleBgActive;
-		style.Colors[ImGuiCol_TitleBgCollapsed] = gui_Color_TitleBgCollapsed;
-		style.Colors[ImGuiCol_MenuBarBg] = gui_Color_MenuBarBg;
-		style.Colors[ImGuiCol_ScrollbarBg] = gui_Color_ScrollbarBg;
-		style.Colors[ImGuiCol_ScrollbarGrab] = gui_Color_ScrollbarGrab;
-		style.Colors[ImGuiCol_ScrollbarGrabHovered] = gui_Color_ScrollbarGrabHovered;
-		style.Colors[ImGuiCol_ScrollbarGrabActive] = gui_Color_ScrollbarGrabActive;
-		style.Colors[ImGuiCol_CheckMark] = gui_Color_CheckMark;
-		style.Colors[ImGuiCol_SliderGrab] = gui_Color_SliderGrab;
-		style.Colors[ImGuiCol_SliderGrabActive] = gui_Color_SliderGrabActive;
-		style.Colors[ImGuiCol_Button] = gui_Color_Button;
-		style.Colors[ImGuiCol_ButtonHovered] = gui_Color_ButtonHovered;
-		style.Colors[ImGuiCol_ButtonActive] = gui_Color_ButtonActive;
-		style.Colors[ImGuiCol_Header] = gui_Color_Header;
-		style.Colors[ImGuiCol_HeaderHovered] = gui_Color_HeaderHovered;
-		style.Colors[ImGuiCol_HeaderActive] = gui_Color_HeaderActive;
-		style.Colors[ImGuiCol_Separator] = gui_Color_Separator;
-		style.Colors[ImGuiCol_SeparatorHovered] = gui_Color_SeparatorHovered;
-		style.Colors[ImGuiCol_SeparatorActive] = gui_Color_SeparatorActive;
-		style.Colors[ImGuiCol_ResizeGrip] = gui_Color_ResizeGrip;
-		style.Colors[ImGuiCol_ResizeGripHovered] = gui_Color_ResizeGripHovered;
-		style.Colors[ImGuiCol_ResizeGripActive] = gui_Color_ResizeGripActive;
-		style.Colors[ImGuiCol_Tab] = gui_Color_Tab;
-		style.Colors[ImGuiCol_TabHovered] = gui_Color_TabHovered;
-		style.Colors[ImGuiCol_TabActive] = gui_Color_TabActive;
-		style.Colors[ImGuiCol_TabUnfocused] = gui_Color_TabUnfocused;
-		style.Colors[ImGuiCol_TabUnfocusedActive] = gui_Color_TabUnfocusedActive;
-		style.Colors[ImGuiCol_PlotLines] = gui_Color_PlotLines;
-		style.Colors[ImGuiCol_PlotLinesHovered] = gui_Color_PlotLinesHovered;
-		style.Colors[ImGuiCol_PlotHistogram] = gui_Color_PlotHistogram;
-		style.Colors[ImGuiCol_PlotHistogramHovered] = gui_Color_PlotHistogramHovered;
-		style.Colors[ImGuiCol_TableHeaderBg] = gui_Color_TableHeaderBg;
-		style.Colors[ImGuiCol_TableBorderStrong] = gui_Color_TableBorderStrong;
-		style.Colors[ImGuiCol_TableBorderLight] = gui_Color_TableBorderLight;
-		style.Colors[ImGuiCol_TableRowBg] = gui_Color_TableRowBg;
-		style.Colors[ImGuiCol_TableRowBgAlt] = gui_Color_TableRowBgAlt;
-		style.Colors[ImGuiCol_TextSelectedBg] = gui_Color_TextSelectedBg;
-		style.Colors[ImGuiCol_DragDropTarget] = gui_Color_DragDropTarget;
-		style.Colors[ImGuiCol_NavHighlight] = gui_Color_NavHighlight;
-		style.Colors[ImGuiCol_NavWindowingHighlight] = gui_Color_NavWindowingHighlight;
-		style.Colors[ImGuiCol_NavWindowingDimBg] = gui_Color_NavWindowingDimBg;
-		style.Colors[ImGuiCol_ModalWindowDimBg] = gui_Color_ModalWindowDimBg;
+		string gui_WindowPadding_string = ConfigFileManager::valuesMap["gui_WindowPadding"].GetValue();
+		vector<string> gui_WindowPadding_split = String::Split(gui_WindowPadding_string, ',');
+		ImVec2 gui_WindowPadding_value = ImVec2(
+			stof(gui_WindowPadding_split[0]),
+			stof(gui_WindowPadding_split[1]));
+		style.WindowPadding = gui_WindowPadding_value;
+
+		style.WindowRounding = stof(ConfigFileManager::valuesMap["gui_WindowRounding"].GetValue());
+		style.WindowBorderSize = stof(ConfigFileManager::valuesMap["gui_WindowBorderSize"].GetValue());
+
+		string gui_WindowMenuButtonPosition_string = ConfigFileManager::valuesMap["gui_WindowMenuButtonPosition"].GetValue();
+		auto gui_WindowMenuButtonPosition_dir = magic_enum::enum_cast<ImGuiDir_>(gui_WindowMenuButtonPosition_string);
+		if (gui_WindowMenuButtonPosition_dir.has_value())
+		{
+			style.WindowMenuButtonPosition = gui_WindowMenuButtonPosition_dir.value();
+		}
+		else cout << "'gui_WindowMenuButtonPosition_dir' has no value!\n"; 
+
+		style.ChildRounding = stof(ConfigFileManager::valuesMap["gui_ChildRounding"].GetValue());
+		style.ChildBorderSize = stof(ConfigFileManager::valuesMap["gui_ChildBorderSize"].GetValue());
+		style.PopupRounding = stof(ConfigFileManager::valuesMap["gui_PopupRounding"].GetValue());
+		style.PopupBorderSize = stof(ConfigFileManager::valuesMap["gui_PopupBorderSize"].GetValue());
+
+		string gui_FramePadding_string = ConfigFileManager::valuesMap["gui_FramePadding"].GetValue();
+		vector<string> gui_FramePadding_split = String::Split(gui_FramePadding_string, ',');
+		ImVec2 gui_FramePadding_value = ImVec2(
+			stof(gui_FramePadding_split[0]),
+			stof(gui_FramePadding_split[1]));
+		style.FramePadding = gui_FramePadding_value;
+
+		style.FrameRounding = stof(ConfigFileManager::valuesMap["gui_FrameRounding"].GetValue());
+		style.FrameBorderSize = stof(ConfigFileManager::valuesMap["gui_FrameBorderSize"].GetValue());
+
+		string gui_ItemSpacing_string = ConfigFileManager::valuesMap["gui_ItemSpacing"].GetValue();
+		vector<string> gui_ItemSpacing_split = String::Split(gui_ItemSpacing_string, ',');
+		ImVec2 gui_ItemSpacing_value = ImVec2(
+			stof(gui_ItemSpacing_split[0]),
+			stof(gui_ItemSpacing_split[1]));
+		style.ItemSpacing = gui_ItemSpacing_value;
+
+		string gui_ItemInnerSpacing_string = ConfigFileManager::valuesMap["gui_ItemInnerSpacing"].GetValue();
+		vector<string> gui_ItemInnerSpacing_split = String::Split(gui_ItemInnerSpacing_string, ',');
+		ImVec2 gui_ItemInnerSpacing_value = ImVec2(
+			stof(gui_ItemInnerSpacing_split[0]),
+			stof(gui_ItemInnerSpacing_split[1]));
+		style.ItemInnerSpacing = gui_ItemInnerSpacing_value;
+
+		string gui_CellPadding_string = ConfigFileManager::valuesMap["gui_CellPadding"].GetValue();
+		vector<string> gui_CellPadding_split = String::Split(gui_CellPadding_string, ',');
+		ImVec2 gui_CellPadding_value = ImVec2(
+			stof(gui_CellPadding_split[0]),
+			stof(gui_CellPadding_split[1]));
+		style.CellPadding = gui_CellPadding_value;
+
+		style.IndentSpacing = stof(ConfigFileManager::valuesMap["gui_IndentSpacing"].GetValue());
+		style.ColumnsMinSpacing = stof(ConfigFileManager::valuesMap["gui_ColumnsMinSpacing"].GetValue());
+		style.ScrollbarSize = stof(ConfigFileManager::valuesMap["gui_ScrollbarSize"].GetValue());
+		style.ScrollbarRounding = stof(ConfigFileManager::valuesMap["gui_ScrollbarRounding"].GetValue());
+		style.GrabMinSize = stof(ConfigFileManager::valuesMap["gui_GrabMinSize"].GetValue());
+		style.GrabRounding = stof(ConfigFileManager::valuesMap["gui_GrabRounding"].GetValue());
+		style.TabRounding = stof(ConfigFileManager::valuesMap["gui_TabRounding"].GetValue());
+		style.TabBorderSize = stof(ConfigFileManager::valuesMap["gui_TabBorderSize"].GetValue());
+		style.TabMinWidthForCloseButton = stof(ConfigFileManager::valuesMap["gui_TabMinWidthForCloseButton"].GetValue());
+
+		string gui_ColorButtonPosition_string = ConfigFileManager::valuesMap["gui_ColorButtonPosition"].GetValue();
+		auto gui_ColorButtonPosition_dir = magic_enum::enum_cast<ImGuiDir_>(gui_ColorButtonPosition_string);
+		if (gui_ColorButtonPosition_dir.has_value())
+		{
+			style.ColorButtonPosition = gui_ColorButtonPosition_dir.value();
+		}
+		else cout << "'gui_ColorButtonPosition_dir' has no value!\n";
+
+		string gui_ButtonTextAlign_string = ConfigFileManager::valuesMap["gui_ButtonTextAlign"].GetValue();
+		vector<string> gui_ButtonTextAlign_split = String::Split(gui_ButtonTextAlign_string, ',');
+		ImVec2 gui_ButtonTextAlign_value = ImVec2(
+			stof(gui_ButtonTextAlign_split[0]),
+			stof(gui_ButtonTextAlign_split[1]));
+		style.ButtonTextAlign = gui_ButtonTextAlign_value;
+
+		string gui_SelectableTextAlign_string = ConfigFileManager::valuesMap["gui_SelectableTextAlign"].GetValue();
+		vector<string> gui_SelectableTextAlign_split = String::Split(gui_SelectableTextAlign_string, ',');
+		ImVec2 gui_SelectableTextAlign_value = ImVec2(
+			stof(gui_SelectableTextAlign_split[0]),
+			stof(gui_SelectableTextAlign_split[1]));
+		style.SelectableTextAlign = gui_SelectableTextAlign_value;
 
 		//
-		// GUI STYLE END
+		// GUI COLOR START
 		//
+
+		AssignGuiColorValue("gui_Color_Text", ImGuiCol_Text);
+		AssignGuiColorValue("gui_Color_TextDisabled", ImGuiCol_TextDisabled);
+		AssignGuiColorValue("gui_Color_WindowBg", ImGuiCol_WindowBg);
+		AssignGuiColorValue("gui_Color_ChildBg", ImGuiCol_ChildBg);
+		AssignGuiColorValue("gui_Color_PopupBg", ImGuiCol_PopupBg);
+		AssignGuiColorValue("gui_Color_Border", ImGuiCol_Border);
+		AssignGuiColorValue("gui_Color_BorderShadow", ImGuiCol_BorderShadow);
+		AssignGuiColorValue("gui_Color_FrameBg", ImGuiCol_FrameBg);
+		AssignGuiColorValue("gui_Color_FrameBgHovered", ImGuiCol_FrameBgHovered);
+		AssignGuiColorValue("gui_Color_FrameBgActive", ImGuiCol_FrameBgActive);
+		AssignGuiColorValue("gui_Color_TitleBg", ImGuiCol_TitleBg);
+
+		AssignGuiColorValue("gui_Color_TitleBgActive", ImGuiCol_TitleBgActive);
+		AssignGuiColorValue("gui_Color_TitleBgCollapsed", ImGuiCol_TitleBgCollapsed);
+		AssignGuiColorValue("gui_Color_MenuBarBg", ImGuiCol_MenuBarBg);
+		AssignGuiColorValue("gui_Color_ScrollbarBg", ImGuiCol_ScrollbarBg);
+		AssignGuiColorValue("gui_Color_ScrollbarGrab", ImGuiCol_ScrollbarGrab);
+		AssignGuiColorValue("gui_Color_ScrollbarGrabHovered", ImGuiCol_ScrollbarGrabHovered);
+		AssignGuiColorValue("gui_Color_ScrollbarGrabActive", ImGuiCol_ScrollbarGrabActive);
+		AssignGuiColorValue("gui_Color_CheckMark", ImGuiCol_CheckMark);
+		AssignGuiColorValue("gui_Color_SliderGrab", ImGuiCol_SliderGrab);
+		AssignGuiColorValue("gui_Color_SliderGrabActive", ImGuiCol_SliderGrabActive);
+		AssignGuiColorValue("gui_Color_Button", ImGuiCol_Button);
+		AssignGuiColorValue("gui_Color_ButtonHovered", ImGuiCol_ButtonHovered);
+		AssignGuiColorValue("gui_Color_ButtonActive", ImGuiCol_ButtonActive);
+		AssignGuiColorValue("gui_Color_Header", ImGuiCol_Header);
+		AssignGuiColorValue("gui_Color_HeaderHovered", ImGuiCol_HeaderHovered);
+
+		AssignGuiColorValue("gui_Color_HeaderActive", ImGuiCol_HeaderActive);
+		AssignGuiColorValue("gui_Color_Separator", ImGuiCol_Separator);
+		AssignGuiColorValue("gui_Color_SeparatorHovered", ImGuiCol_SeparatorHovered);
+		AssignGuiColorValue("gui_Color_SeparatorActive", ImGuiCol_SeparatorActive);
+		AssignGuiColorValue("gui_Color_ResizeGrip", ImGuiCol_ResizeGrip);
+		AssignGuiColorValue("gui_Color_ResizeGripHovered", ImGuiCol_ResizeGripHovered);
+		AssignGuiColorValue("gui_Color_ResizeGripActive", ImGuiCol_ResizeGripActive);
+		AssignGuiColorValue("gui_Color_Tab", ImGuiCol_Tab);
+		AssignGuiColorValue("gui_Color_TabHovered", ImGuiCol_TabHovered);
+		AssignGuiColorValue("gui_Color_TabActive", ImGuiCol_TabActive);
+		AssignGuiColorValue("gui_Color_TabUnfocused", ImGuiCol_TabUnfocused);
+		AssignGuiColorValue("gui_Color_TitleBg", ImGuiCol_TitleBg);
+		AssignGuiColorValue("gui_Color_TabUnfocusedActive", ImGuiCol_TabUnfocusedActive);
+		AssignGuiColorValue("gui_Color_PlotLines", ImGuiCol_PlotLines);
+		AssignGuiColorValue("gui_Color_PlotLinesHovered", ImGuiCol_PlotLinesHovered);
+		AssignGuiColorValue("gui_Color_PlotHistogram", ImGuiCol_PlotHistogram);
+		AssignGuiColorValue("gui_Color_PlotHistogramHovered", ImGuiCol_PlotHistogramHovered);
+		AssignGuiColorValue("gui_Color_TableHeaderBg", ImGuiCol_TableHeaderBg);
+		AssignGuiColorValue("gui_Color_TableBorderStrong", ImGuiCol_TableBorderStrong);
+		AssignGuiColorValue("gui_Color_TableBorderLight", ImGuiCol_TableBorderLight);
+		AssignGuiColorValue("gui_Color_TableRowBg", ImGuiCol_TableRowBg);
+		AssignGuiColorValue("gui_Color_TableRowBgAlt", ImGuiCol_TableRowBgAlt);
+		AssignGuiColorValue("gui_Color_TextSelectedBg", ImGuiCol_TextSelectedBg);
+		AssignGuiColorValue("gui_Color_DragDropTarget", ImGuiCol_DragDropTarget);
+		AssignGuiColorValue("gui_Color_NavHighlight", ImGuiCol_NavHighlight);
+		AssignGuiColorValue("gui_Color_NavWindowingHighlight", ImGuiCol_NavWindowingHighlight);
+		AssignGuiColorValue("gui_Color_NavWindowingDimBg", ImGuiCol_NavWindowingDimBg);
+		AssignGuiColorValue("gui_Color_ModalWindowDimBg", ImGuiCol_ModalWindowDimBg);
 	}
 
 	int EngineGUI::GetScreenWidth()
@@ -280,6 +360,8 @@ namespace Graphics::GUI
 
 	void EngineGUI::RenderTopBar()
 	{
+		float fontScale = stof(ConfigFileManager::valuesMap["gui_fontScale"].GetValue());
+
 		ImGui::BeginMainMenuBar();
 
 		if (ImGui::BeginMenu("File"))
@@ -580,31 +662,31 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Asset list"))
 			{
-				GUIAssetList::renderAssetList = true;
+				ConfigFileManager::valuesMap["gui_assetListWindow"].SetValue("1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Node block"))
 			{
-				GUINodeBlock::renderNodeBlock = true;
+				ConfigFileManager::valuesMap["gui_nodeBlockWindow"].SetValue("1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Inspector"))
 			{
-				GUIInspector::renderInspector = true;
+				ConfigFileManager::valuesMap["gui_inspector"].SetValue("1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Scene menu"))
 			{
-				GUISceneMenu::renderSceneMenu = true;
+				ConfigFileManager::valuesMap["gui_sceneMenuWindow"].SetValue("1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Console"))
 			{
-				GUIConsole::renderConsole = true;
+				ConfigFileManager::valuesMap["gui_console"].SetValue("1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 

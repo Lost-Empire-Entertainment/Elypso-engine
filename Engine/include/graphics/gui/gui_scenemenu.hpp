@@ -10,7 +10,6 @@ namespace Graphics::GUI
 	class GUISceneMenu
 	{
 	public:
-		static inline bool renderSceneMenu;
 		static void RenderSceneMenu();
 	private:
 		void SceneMenuContent();

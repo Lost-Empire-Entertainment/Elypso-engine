@@ -16,7 +16,6 @@ namespace Graphics::GUI
 	class GUIConsole
 	{
 	public:
-		static inline bool renderConsole;
 		static inline bool firstScrollToBottom;
 
 		static inline vector<string> consoleMessages;

@@ -5,6 +5,10 @@
 
 #pragma once
 
+#include "configFile.hpp"
+
+using EngineFile::ConfigFileValue;
+
 namespace Graphics::GUI
 {
 	class GUISettings
@@ -18,5 +22,8 @@ namespace Graphics::GUI
 		static void GUIStyleSettings();
 		static void GUIColorSettings();
 		static void OtherSettings();
+
+		static void HandleConfigValue(const string& name, const ConfigFileValue::Type& type, ImGuiCol col = ImGuiCol_Border);
+		static void AssignGUIValue(const string& name, const ConfigFileValue::Type& type, ImGuiCol col = ImGuiCol_Border);
 	};
 }

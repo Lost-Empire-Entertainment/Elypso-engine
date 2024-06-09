@@ -10,7 +10,6 @@ namespace Graphics::GUI
 	class GUIInspector
 	{
 	public:
-		static inline bool renderInspector;
 		static void RenderInspector();
 	private:
 		static constexpr int bufferSize = 32;

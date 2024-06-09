@@ -7,9 +7,11 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 using std::string;
 using std::vector;
+using std::map;
 
 namespace EngineFile
 {
@@ -32,6 +34,14 @@ namespace EngineFile
 			min_value,
 			max_value
 		};
+
+		ConfigFileValue() :
+			name(""),
+			currentValue(""),
+			defaultValue(""),
+			minValue(""),
+			maxValue(""),
+			type(Type::type_string) {}
 
 		//Constructor for config values that accept float, int, vec2, vec3, imvec2 and imvec4.
 		ConfigFileValue(
@@ -83,27 +93,38 @@ namespace EngineFile
 	class ConfigFileManager
 	{
 	public:
-		static void SetDefaultConfigValues();
+		static inline vector<string> imgui_dir =
+		{
+			"ImGuiDir_Up",
+			"ImGuiDir_Down",
+			"ImGuiDir_Left",
+			"ImGuiDir_Right",
+			"ImGuiDir_None"
+		};
 
 		static void LoadConfigFile();
 		static void SaveConfigFile();
 
 		static inline vector<ConfigFileValue> values;
+		static inline map<string, ConfigFileValue> valuesMap;
 	private:
-		string configFilePath;
+		static inline string configFilePath;
 		
-
-		void AddValue(const ConfigFileValue& value)
+		static void AddValue(const ConfigFileValue& value)
 		{
 			values.push_back(value);
 		};
 
-		void UpdateValues();
+		/// <param name="reset">Optional bool state to reset all values to default</param>
+		static void UpdateValues(bool reset = false);
+		static void ResetConfigValues();
+		static void ResetGUIValues();
+		static void ResetGUIColorValues();
 
-		bool IsValueInRange(
+		static bool IsValueInRange(
 			const ConfigFileValue& type,
 			const vector<string>& value);
 
-		void CreateNewConfigFile() const;
+		static void CreateNewConfigFile();
 	};
 }

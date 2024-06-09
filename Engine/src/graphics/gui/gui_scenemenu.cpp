@@ -18,6 +18,7 @@
 #include "sceneFile.hpp"
 #include "core.hpp"
 #include "fileexplorer.hpp"
+#include "configFile.hpp"
 
 using std::cout;
 
@@ -25,6 +26,8 @@ using Graphics::Render;
 using EngineFile::SceneFile;
 using Core::Engine;
 using EngineFile::FileExplorer;
+using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
@@ -37,6 +40,12 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
+
+		static bool renderSceneMenu;
+		if (ConfigFileManager::valuesMap.size() > 0)
+		{
+			renderSceneMenu = stoi(ConfigFileManager::valuesMap["gui_sceneMenuWindow"].GetValue());
+		}
 
 		if (renderSceneMenu
 			&& ImGui::Begin("Scene menu", NULL, windowFlags))

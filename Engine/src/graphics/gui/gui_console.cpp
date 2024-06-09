@@ -15,16 +15,20 @@
 #include "console.hpp"
 #include "gui_console.hpp"
 #include "render.hpp"
+#include "configFile.hpp"
 
 using Graphics::Render;
 using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
 	GUIConsole guiConsole;
+
 
 	void GUIConsole::RenderConsole()
 	{
@@ -33,6 +37,12 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
+
+		static bool renderConsole;
+		if (ConfigFileManager::valuesMap.size() > 0)
+		{
+			renderConsole = stoi(ConfigFileManager::valuesMap["gui_console"].GetValue());
+		}
 
 		if (renderConsole
 			&& ImGui::Begin("Console", NULL, windowFlags))

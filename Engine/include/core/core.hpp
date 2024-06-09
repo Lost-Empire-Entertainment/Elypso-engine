@@ -30,6 +30,9 @@ namespace Core
 
 		static void CreateErrorPopup(const char* errorTitle = "INSERT ERROR TITLE", const char* errorMessage = "INSERT ERROR MESSAGE");
 
-		static void Shutdown();
+		static bool IsThisProcessAlreadyRunning(const string& processName);
+
+		/// <param name="immediate">Does the engine need to be shut down immediately?</param>
+		static void Shutdown(bool immediate = false);
 	};
 }

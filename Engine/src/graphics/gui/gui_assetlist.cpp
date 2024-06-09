@@ -15,12 +15,15 @@
 #include "gameobject.hpp"
 #include "selectobject.hpp"
 #include "stringUtils.hpp"
+#include "configFile.hpp"
 
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Physics::Select;
 using Utils::String;
+using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
@@ -35,6 +38,12 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
+
+		static bool renderAssetList;
+		if (ConfigFileManager::valuesMap.size() > 0)
+		{
+			renderAssetList = stoi(ConfigFileManager::valuesMap["gui_assetListWindow"].GetValue());
+		}
 
 		if (renderAssetList
 			&& ImGui::Begin("Asset list", NULL, windowFlags))

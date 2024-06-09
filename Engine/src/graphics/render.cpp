@@ -28,6 +28,7 @@
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "sceneFile.hpp"
+#include "configFile.hpp"
 
 using glm::perspective;
 using glm::radians;
@@ -52,6 +53,8 @@ using EngineFile::SceneFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFileValue;
 
 namespace Graphics
 {
@@ -217,11 +220,14 @@ namespace Graphics
 		Input::ProcessKeyboardInput(window);
 
 		//calculate the new projection matrix
+		float fov = stof(ConfigFileManager::valuesMap["camera_fov"].GetValue());
+		float nearClip = stof(ConfigFileManager::valuesMap["camera_nearClip"].GetValue());
+		float farClip = stof(ConfigFileManager::valuesMap["camera_farClip"].GetValue());
 		projection = perspective(
-			radians(Input::fov),
+			radians(fov),
 			Input::aspectRatio,
-			Input::nearClip,
-			Input::farClip);
+			nearClip,
+			farClip);
 
 		//update the camera
 		view = camera.GetViewMatrix();

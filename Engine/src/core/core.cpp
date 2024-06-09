@@ -7,6 +7,8 @@
 #include <ShlObj.h>
 #include <filesystem>
 #include <fstream>
+#include <TlHelp32.h>
+#include <tchar.h>
 
 //engine
 #include "core.hpp"
@@ -45,6 +47,14 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
+		if (IsThisProcessAlreadyRunning(name + ".exe"))
+		{
+			string title = "Engine already running";
+			string message = "Error: '" + name + "' is already running!";
+
+			CreateErrorPopup(title.c_str(), message.c_str());
+		}
+
 		cout << "\n==================================================\n"
 			<< "\n"
 			<< "ENTERED ELYPSO ENGINE\n"
@@ -233,61 +243,113 @@ namespace Core
 	{
 		int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
 
-		if (result == IDOK) Shutdown();
+		if (result == IDOK) Shutdown(true);
 	}
 
-	void Engine::Shutdown()
+	bool Engine::IsThisProcessAlreadyRunning(const string& processName)
 	{
-		if (SceneFile::unsavedChanges == true)
-		{
-			//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
-			if (glfwGetWindowAttrib(Render::window, GLFW_ICONIFIED))
-			{
-				glfwRestoreWindow(Render::window);
-			}
-			glfwFocusWindow(Render::window);
+		HANDLE hProcessSnap;
+		PROCESSENTRY32 pe32{};
+		bool processFound = false;
+		DWORD currentProcessId = GetCurrentProcessId();
 
-			glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
-			EngineGUI::renderUnsavedShutdownWindow = true;
+		//take a snapshot of all processes
+		hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (hProcessSnap == INVALID_HANDLE_VALUE)
+		{
+			cout << "Error: CreateToolhelp32Snapshot failed!\n";
+			return false;
+		}
+
+		pe32.dwSize = sizeof(PROCESSENTRY32);
+
+		if (!Process32First(hProcessSnap, &pe32))
+		{
+			cout << "Error: Process32First failed!\n";
+			CloseHandle(hProcessSnap);
+			return false;
+		}
+
+		do
+		{
+			//compare the current process name with the one to check
+			if (_stricmp(pe32.szExeFile, processName.c_str()) == 0)
+			{
+				//check if this is not the current process
+				if (pe32.th32ProcessID != currentProcessId)
+				{
+					processFound = true;
+					break;
+				}
+			}
+		}
+		while (Process32Next(hProcessSnap, &pe32));
+
+		CloseHandle(hProcessSnap);
+		return processFound;
+	}
+
+	void Engine::Shutdown(bool immediate)
+	{
+		if (immediate)
+		{
+			ConsoleManager::CloseLogger();
+			glfwTerminate();
+			ExitProcess(1);
 		}
 		else
 		{
-			ConfigFileManager::SaveConfigFile();
+			if (SceneFile::unsavedChanges == true)
+			{
+				//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
+				if (glfwGetWindowAttrib(Render::window, GLFW_ICONIFIED))
+				{
+					glfwRestoreWindow(Render::window);
+				}
+				glfwFocusWindow(Render::window);
 
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::INFO,
-				"==================================================\n\n",
-				true);
+				glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+				EngineGUI::renderUnsavedShutdownWindow = true;
+			}
+			else
+			{
+				ConfigFileManager::SaveConfigFile();
 
-			ConsoleManager::WriteConsoleMessage(
-				Caller::SHUTDOWN,
-				Type::INFO,
-				"Cleaning up resources...\n");
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::INFO,
+					"==================================================\n\n",
+					true);
 
-			File::DeleteFileOrfolder(Engine::filesPath + "/project.txt");
-			cout << "deleted " << Engine::filesPath + "/project.txt\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::SHUTDOWN,
+					Type::INFO,
+					"Cleaning up resources...\n");
 
-			EngineGUI::Shutdown();
+				File::DeleteFileOrfolder(Engine::filesPath + "/project.txt");
+				cout << "deleted " << Engine::filesPath + "/project.txt\n";
 
-			//clean all glfw resources after program is closed
-			glfwTerminate();
+				EngineGUI::Shutdown();
 
-			ConsoleManager::WriteConsoleMessage(
-				Caller::SHUTDOWN,
-				Type::INFO,
-				"Shutdown complete!\n");
+				//clean all glfw resources after program is closed
+				glfwTerminate();
 
-			cout << "\n==================================================\n"
-				<< "\n"
-				<< "EXITED ELYPSO ENGINE\n"
-				<< "\n"
-				<< "==================================================\n"
-				<< ".\n"
-				<< ".\n"
-				<< ".\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::SHUTDOWN,
+					Type::INFO,
+					"Shutdown complete!\n");
 
-			ConsoleManager::CloseLogger();
+				cout << "\n==================================================\n"
+					<< "\n"
+					<< "EXITED ELYPSO ENGINE\n"
+					<< "\n"
+					<< "==================================================\n"
+					<< ".\n"
+					<< ".\n"
+					<< ".\n\n";
+
+				ConsoleManager::CloseLogger();
+			}
 		}
 	}
 }

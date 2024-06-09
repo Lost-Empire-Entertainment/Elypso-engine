@@ -25,7 +25,6 @@ namespace Graphics::GUI
 	class GUINodeBlock
 	{
 	public:
-		static inline bool renderNodeBlock;
 		static inline shared_ptr<GameObject> selectedGameObject;
 		static inline shared_ptr<Component> selectedComponent;
 

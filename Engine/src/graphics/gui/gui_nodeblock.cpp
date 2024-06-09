@@ -13,6 +13,7 @@
 #include "stb_image.h"
 #include "glfw3.h"
 #include "glad.h"
+#include "configFile.hpp"
 
 //engine
 #include "gui_nodeblock.hpp"
@@ -32,6 +33,8 @@ using Core::Input;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::Component;
 using Graphics::Shape::Mesh;
+using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
@@ -77,6 +80,12 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
+
+		static bool renderNodeBlock;
+		if (ConfigFileManager::valuesMap.size() > 0)
+		{
+			renderNodeBlock = stoi(ConfigFileManager::valuesMap["gui_nodeBlockWindow"].GetValue());
+		}
 
 		if (renderNodeBlock
 			&& ImGui::Begin("Nodeblock", NULL, windowFlags))

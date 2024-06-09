@@ -27,6 +27,7 @@
 #include "core.hpp"
 #include "fileexplorer.hpp"
 #include "stringUtils.hpp"
+#include "configFile.hpp"
 
 using std::cout;
 using std::endl;
@@ -46,6 +47,8 @@ using Graphics::Texture;
 using Core::Engine;
 using EngineFile::FileExplorer;
 using Utils::String;
+using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
@@ -58,6 +61,12 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
+
+		static bool renderInspector;
+		if (ConfigFileManager::valuesMap.size() > 0)
+		{
+			renderInspector = stoi(ConfigFileManager::valuesMap["gui_inspector"].GetValue());
+		}
 
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
