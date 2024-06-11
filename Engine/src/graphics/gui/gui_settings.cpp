@@ -143,8 +143,12 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat(("##" + name).c_str(), &value, increment, min, max))
 			{
 				ImGuiIO& io = ImGui::GetIO();
-				io.FontGlobalScale = value;
+				AssignGUIValue(name, type);
 				ConfigFileManager::valuesMap[name].SetValue(to_string(value));
+
+				cout << "set '" + config.GetName() + "' to '" 
+					+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
+
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			break;
@@ -161,10 +165,14 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat2("##gui_WindowPadding", value_ptr(value), 0.01f))
 			{
 				ImGuiStyle& style = ImGui::GetStyle();
-				style.WindowPadding = ImVec2(value.x, value.y);
+				AssignGUIValue(name, type);
 				ConfigFileManager::valuesMap[name].SetValue(
 					to_string(value.x) + ", "
 					+ to_string(value.y));
+
+				cout << "set '" + config.GetName() + "' to '"
+					+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
+
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			break;
@@ -177,10 +185,14 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat2("##gui_WindowPadding", value_ptr(value), 0.01f))
 			{
 				ImGuiStyle& style = ImGui::GetStyle();
-				style.WindowPadding = ImVec2(value.x, value.y);
+				AssignGUIValue(name, type);
 				ConfigFileManager::valuesMap[name].SetValue(
 					to_string(value.x) + ", "
 					+ to_string(value.y));
+
+				cout << "set '" + config.GetName() + "' to '"
+					+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
+
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			break;
@@ -200,6 +212,7 @@ namespace Graphics::GUI
 		const ConfigFileValue::Type& type,
 		ImGuiCol col)
 	{
+		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
 
 		ConfigFileValue config = ConfigFileManager::valuesMap[name];
@@ -207,6 +220,26 @@ namespace Graphics::GUI
 		if (type == ConfigFileValue::Type::type_float)
 		{
 			float value = stof(config.GetValue());
+
+			if (name == "gui_fontScale") io.FontGlobalScale = value;
+			if (name == "gui_Alpha") style.Alpha = value;
+			if (name == "gui_DisabledAlpha") style.DisabledAlpha = value;
+			if (name == "gui_WindowRounding") style.WindowRounding = value;
+			if (name == "gui_WindowBorderSize") style.WindowBorderSize = value;
+			if (name == "gui_ChildRounding") style.ChildRounding = value;
+			if (name == "gui_ChildBorderSize") style.ChildBorderSize = value;
+			if (name == "gui_PopupRounding") style.PopupRounding = value;
+			if (name == "gui_PopupBorderSize") style.PopupBorderSize = value;
+			if (name == "gui_FrameRounding") style.FrameRounding = value;
+			if (name == "gui_FrameBorderSize") style.FrameBorderSize = value;
+			if (name == "gui_IndentSpacing") style.IndentSpacing = value;
+			if (name == "gui_ColumnsMinSpacing") style.ColumnsMinSpacing = value;
+			if (name == "gui_ScrollbarSize") style.ScrollbarSize = value;
+			if (name == "gui_ScrollbarRounding") style.ScrollbarRounding = value;
+			if (name == "gui_GrabMinSize") style.GrabMinSize = value;
+			if (name == "gui_GrabRounding") style.GrabRounding = value;
+			if (name == "gui_TabRounding") style.TabRounding = value;
+			if (name == "gui_TabBorderSize") style.TabBorderSize = value;
 		}
 
 		if (type == ConfigFileValue::Type::type_int)
@@ -219,6 +252,14 @@ namespace Graphics::GUI
 			string stringValue = config.GetValue();
 			vector<string> split = String::Split(stringValue, ',');
 			ImVec2 value = ImVec2(stof(split[0]), stof(split[1]));
+
+			if (name == "gui_WindowPadding") style.WindowPadding = value;
+			if (name == "gui_FramePadding") style.FramePadding = value;
+			if (name == "gui_ItemSpacing") style.ItemSpacing = value;
+			if (name == "gui_ItemInnerSpacing") style.ItemInnerSpacing = value;
+			if (name == "gui_CellPadding") style.CellPadding = value;
+			if (name == "gui_ButtonTextAlign") style.ButtonTextAlign = value;
+			if (name == "gui_SelectableTextAlign") style.SelectableTextAlign = value;
 		}
 
 		if (type == ConfigFileValue::Type::type_imvec4)
