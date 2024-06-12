@@ -146,7 +146,7 @@ namespace Graphics::GUI
 				AssignGUIValue(name, type);
 				ConfigFileManager::valuesMap[name].SetValue(to_string(value));
 
-				cout << "set '" + config.GetName() + "' to '" 
+				cout << "1.1- set '" + config.GetName() + "' to '" 
 					+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -162,7 +162,7 @@ namespace Graphics::GUI
 			string stringValue = config.GetValue();
 			vector<string> split = String::Split(stringValue, ',');
 			vec2 value = vec2(stof(split[0]), stof(split[1]));
-			if (ImGui::DragFloat2("##gui_WindowPadding", value_ptr(value), 0.01f))
+			if (ImGui::DragFloat2(("##" + name).c_str(), value_ptr(value), 0.01f))
 			{
 				ImGuiStyle& style = ImGui::GetStyle();
 				AssignGUIValue(name, type);
@@ -170,7 +170,7 @@ namespace Graphics::GUI
 					to_string(value.x) + ", "
 					+ to_string(value.y));
 
-				cout << "set '" + config.GetName() + "' to '"
+				cout << "1.2- set '" + config.GetName() + "' to '"
 					+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -182,7 +182,7 @@ namespace Graphics::GUI
 			string stringValue = config.GetValue();
 			vector<string> split = String::Split(stringValue, ',');
 			vec2 value = vec2(stof(split[0]), stof(split[1]));
-			if (ImGui::DragFloat2("##gui_WindowPadding", value_ptr(value), 0.01f))
+			if (ImGui::DragFloat2(("##" + name).c_str(), value_ptr(value), 0.01f))
 			{
 				ImGuiStyle& style = ImGui::GetStyle();
 				AssignGUIValue(name, type);
@@ -190,7 +190,7 @@ namespace Graphics::GUI
 					to_string(value.x) + ", "
 					+ to_string(value.y));
 
-				cout << "set '" + config.GetName() + "' to '"
+				cout << "1.3- set '" + config.GetName() + "' to '"
 					+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -203,6 +203,25 @@ namespace Graphics::GUI
 		}
 		case ConfigFileValue::Type::type_imvec4:
 		{
+			string stringValue = config.GetValue();
+			vector<string> split = String::Split(stringValue, ',');
+			vec4 value = vec4(stof(split[0]), stof(split[1]), stof(split[2]), stof(split[3]));
+
+			if (ImGui::ColorEdit4(("##" + name).c_str(), (float*)&value))
+			{
+				ImGuiStyle& style = ImGui::GetStyle();
+				AssignGUIValue(name, type);
+				ConfigFileManager::valuesMap[name].SetValue(
+					to_string(value.x) + ", "
+					+ to_string(value.y) + ", "
+					+ to_string(value.z) + ", "
+					+ to_string(value.w));
+
+				cout << "1.4- set '" + config.GetName() + "' to '"
+					+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
 			break;
 		}
 		}
@@ -270,6 +289,9 @@ namespace Graphics::GUI
 
 			style.Colors[col] = value;
 		}
+
+		cout << "2.1- set '" + config.GetName() + "' to '"
+			+ ConfigFileManager::valuesMap[name].GetValue() + "'\n";
 	}
 	void GUISettings::GUIStyleSettings()
 	{

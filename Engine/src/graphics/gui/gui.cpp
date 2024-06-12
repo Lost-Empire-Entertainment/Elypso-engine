@@ -693,7 +693,6 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Settings"))
 			{
 				GUISettings::renderSettings = true;
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::EndMenu();

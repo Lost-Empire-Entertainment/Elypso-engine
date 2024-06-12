@@ -76,6 +76,8 @@ namespace EngineFile
 			{
 				string valueName = value.GetName();
 				valuesMap[valueName] = value;
+
+				cout << "added '" << valueName << "' to config values list!\n";
 			}
 		}
 		else
