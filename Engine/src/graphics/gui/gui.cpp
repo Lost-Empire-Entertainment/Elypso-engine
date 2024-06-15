@@ -19,7 +19,6 @@
 #include "gui_console.hpp"
 #include "gui_settings.hpp"
 #include "gui_inspector.hpp"
-#include "gui_nodeblock.hpp"
 #include "gui_assetlist.hpp"
 #include "gui_importAsset.hpp"
 #include "gui_scenemenu.hpp"
@@ -121,8 +120,6 @@ namespace Graphics::GUI
 		bgrColor.w = 1.0f;
 
 		CustomizeImGuiStyle();
-
-		GUINodeBlock::SetBackgroundTexture();
 	}
 	void EngineGUI::AssignGuiColorValue(const string& name, ImGuiCol col)
 	{
@@ -345,7 +342,6 @@ namespace Graphics::GUI
 		GUIConsole::RenderConsole();
 		GUISettings::RenderSettings();
 		GUIInspector::RenderInspector();
-		GUINodeBlock::RenderNodeBlock();
 		GUIAssetList::RenderAssetList();
 		GUIImportAsset::RenderImportAsset();
 		GUISceneMenu::RenderSceneMenu();

@@ -66,7 +66,6 @@ set(SOURCE_FILES
 	${SRC_CORE_DIR}/timeManager.cpp
 	${SRC_FILE_DIR}/configFile.cpp
 	${SRC_FILE_DIR}/fileexplorer.cpp
-	${SRC_FILE_DIR}/nodeBlockFile.cpp
 	${SRC_FILE_DIR}/sceneFile.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_assetlist.cpp
@@ -74,10 +73,6 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/gui/gui_floatingdebugmenu.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_importAsset.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_node.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_nodeblock.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_nodecircle.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_nodeconnection.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_scenemenu.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_settings.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp

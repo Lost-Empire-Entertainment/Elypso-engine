@@ -16,8 +16,6 @@
 
 //engine
 #include "shader.hpp"
-#include "gui_node.hpp"
-#include "gui_nodeconnection.hpp"
 
 using std::vector;
 using std::map;
@@ -29,8 +27,6 @@ using glm::vec3;
 using glm::mat4;
 
 using Graphics::Shader;
-using Graphics::GUI::GUINode;
-using Graphics::GUI::GUINodeConnection;
 
 namespace Graphics::Shape
 {
@@ -429,53 +425,6 @@ namespace Graphics::Shape
 		float distance;
 	};
 
-	class Component
-	{
-	public:
-		enum class ComponentType
-		{
-			Nodeblock
-		};
-
-		Component(
-			const string& name,
-			const ComponentType& type,
-			const vector<shared_ptr<GUINode>> nodes) :
-			name(name),
-			type(type),
-			nodes(nodes)
-		{
-		}
-
-		void AddNode(const shared_ptr<GUINode> newNode)
-		{
-			nodes.push_back(newNode);
-		}
-
-		string GetName() const
-		{
-			return name;
-		}
-		ComponentType GetType() const
-		{
-			return type;
-		}
-		vector<shared_ptr<GUINode>>& GetNodes()
-		{
-			return nodes;
-		}
-		vector<shared_ptr<GUINodeConnection>>& GetNodeConnections()
-		{
-			return nodeConnections;
-		}
-
-	private:
-		string name;
-		ComponentType type;
-		vector<shared_ptr<GUINode>> nodes;
-		vector<shared_ptr<GUINodeConnection>> nodeConnections;
-	};
-
 	class GameObject
 	{
 	public:
@@ -582,11 +531,6 @@ namespace Graphics::Shape
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
 
-		void AddComponent(const shared_ptr<Component> newComponent) { components.push_back(newComponent); }
-		void RemoveComponent(const shared_ptr<Component> removedComponent)
-		{
-			components.erase(remove(components.begin(), components.end(), removedComponent), components.end());
-		}
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
 		void AddAssimpMesh(const AssimpMesh& newMesh) { assimpMeshes.push_back(newMesh); }
@@ -641,7 +585,6 @@ namespace Graphics::Shape
 		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
 		const vector<AssimpMesh>& GetAssimpMeshes() const { return assimpMeshes; }
 		const shared_ptr<Material>& GetMaterial() const { return material; }
-		const vector<shared_ptr<Component>> GetComponents() const { return components; }
 		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
@@ -664,7 +607,6 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh;
 		vector<AssimpMesh> assimpMeshes;
 		shared_ptr<Material> material;
-		vector<shared_ptr<Component>> components;
 		shared_ptr<BasicShape_Variables> basicShape;
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;

@@ -13,14 +13,12 @@
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
 #include "gameobject.hpp"
-#include "gui_node.hpp"
-#include "gui_nodecircle.hpp"
-#include "gui_nodeconnection.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
 using std::filesystem::path;
 using std::exception;
+using std::filesystem::exists;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -30,12 +28,7 @@ using Utils::String;
 using Utils::File;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
-using Graphics::GUI::GUINode;
-using Graphics::GUI::GUINodeCircle;
-using Graphics::GUI::GUINodeConnection;
 using Graphics::Shape::Mesh;
-using Graphics::Shape::Component;
-using std::filesystem::exists;
 
 namespace Core
 {

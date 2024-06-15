@@ -22,7 +22,6 @@
 #include "gameobject.hpp"
 #include "sceneFile.hpp"
 #include "input.hpp"
-#include "gui_nodeblock.hpp"
 #include "texture.hpp"
 #include "core.hpp"
 #include "fileexplorer.hpp"
@@ -40,7 +39,6 @@ using Graphics::Shape::GameObject;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Transform;
 using Graphics::Shape::Material;
-using Graphics::Shape::Component;
 using EngineFile::SceneFile;
 using Core::Input;
 using Graphics::Texture;
@@ -71,28 +69,6 @@ namespace Graphics::GUI
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
-			if (Select::selectedObj != nullptr
-				&& ImGui::Button("Add component"))
-			{
-				ImGui::OpenPopup("rightclickpopup");
-			}
-			if (ImGui::BeginPopupContextItem("rightclickpopup"))
-			{
-				if (ImGui::MenuItem("Nodeblock"))
-				{
-					static unsigned int ID = 1;
-					vector<shared_ptr<GUINode>> nodes;
-					shared_ptr<Component> comp = make_shared<Component>("comp" + to_string(ID), Component::ComponentType::Nodeblock, nodes);
-					Select::selectedObj->AddComponent(comp);
-
-					ID++;
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				ImGui::EndPopup();
-			}
-
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -101,7 +77,6 @@ namespace Graphics::GUI
 			}
 
 			guiInspector.RI_PermanentComponents();
-			guiInspector.RI_DynamicComponents();
 
 			ImGui::End();
 		}
@@ -473,63 +448,6 @@ namespace Graphics::GUI
 			}
 
 			ImGui::EndChild();
-		}
-	}
-
-	void GUIInspector::RI_DynamicComponents()
-	{
-		if (Select::isObjectSelected
-			&& Select::selectedObj->IsInitialized())
-		{
-			for (const auto& component : Select::selectedObj->GetComponents())
-			{
-				ImGuiChildFlags childWindowFlags{};
-
-				ImGui::BeginChild(component->GetName().c_str(), ImVec2(ImGui::GetWindowWidth() - 20, 225), true, childWindowFlags);
-
-				ImGui::Text(component->GetName().c_str());
-				ImGui::Separator();
-
-				if (!Input::cameraEnabled
-					&& ImGui::IsWindowHovered()
-					&& ImGui::IsMouseClicked(1))
-				{
-					ImGui::OpenPopup("rightclickpopup");
-				}
-
-				if (ImGui::BeginPopupContextItem("rightclickpopup"))
-				{
-					if (ImGui::MenuItem("Select"))
-					{
-						GUINodeBlock::selectedGameObject = Select::selectedObj;
-						GUINodeBlock::selectedComponent = component;
-					}
-
-					if (ImGui::MenuItem("Remove"))
-					{
-						string componentName = component->GetName();
-
-						if (GUINodeBlock::selectedComponent == component)
-						{
-							GUINodeBlock::selectedComponent = nullptr;
-						}
-
-						if (component->GetNodes().size() > 0)
-						{
-							for (auto& node : component->GetNodes())
-							{
-								GUINodeBlock::DestroyNode(node);
-							}
-						}
-
-						Select::selectedObj->RemoveComponent(component);
-					}
-
-					ImGui::EndPopup();
-				}
-
-				ImGui::EndChild();
-			}
 		}
 	}
 }

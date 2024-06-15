@@ -21,7 +21,6 @@
 #include "gui_console.hpp"
 #include "gui_settings.hpp"
 #include "gui_inspector.hpp"
-#include "gui_nodeblock.hpp"
 #include "gui_assetlist.hpp"
 #include "gui_scenemenu.hpp"
 #include "core.hpp"
@@ -53,7 +52,6 @@ using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUISettings;
 using Graphics::GUI::GUIInspector;
-using Graphics::GUI::GUINodeBlock;
 using Graphics::GUI::GUIAssetList;
 using Graphics::GUI::GUISceneMenu;
 using Caller = Core::ConsoleManager::Caller;
@@ -179,14 +177,6 @@ namespace EngineFile
 			"1",
 			ConfigFileValue::Type::type_int);
 		AddValue(gui_console);
-
-		ConfigFileValue gui_nodeBlockWindow(
-			"gui_nodeBlockWindow",
-			"0",
-			"0",
-			"1",
-			ConfigFileValue::Type::type_int);
-		AddValue(gui_nodeBlockWindow);
 
 		ConfigFileValue gui_assetListWindow(
 			"gui_assetListWindow",

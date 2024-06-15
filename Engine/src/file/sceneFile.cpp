@@ -24,8 +24,6 @@
 #include "spotlight.hpp"
 #include "fileutils.hpp"
 #include "console.hpp"
-#include "gui_nodecircle.hpp"
-#include "nodeBlockFile.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -51,9 +49,6 @@ using Graphics::Shape::Material;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Graphics::Shape::Component;
-using Graphics::GUI::GUINodeCircle;
-using EngineFile::NodeBlockFile;
 
 namespace EngineFile
 {
@@ -643,32 +638,6 @@ namespace EngineFile
 					bool categoryActivated = category.second;
 
 					sceneFile << categoryName << "= " << categoryActivated << "\n";
-				}
-
-				sceneFile << "\n";
-
-				bool hasComponents = false;
-				if (obj->GetComponents().size() > 0)
-				{
-					for (const auto& component : obj->GetComponents())
-					{
-						if (component->GetType() == Component::ComponentType::Nodeblock)
-						{
-							if (!hasComponents) hasComponents = true;
-
-							string nodeBlockPath = NodeBlockFile::SaveNodeBlock(component, obj);
-							string output = nodeBlockPath != "NONE"
-								? "nodeBlock_" + component->GetName() + "= " + nodeBlockPath + "\n"
-								: "NO NODEBLOCKS IN GAMEOBJECT";
-
-							sceneFile << output;
-						}
-					}
-				}
-
-				if (!hasComponents)
-				{
-					sceneFile << "NO NODEBLOCKS IN GAMEOBJECT\n";
 				}
 
 				sceneFile << "\n";

@@ -17,6 +17,5 @@ namespace Graphics::GUI
 		char inputTextBuffer_objName[bufferSize];
 
 		void RI_PermanentComponents();
-		void RI_DynamicComponents();
 	};
 }
