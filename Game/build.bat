@@ -44,9 +44,8 @@ echo.
 
 echo Write the number of your choice to choose the action.
 echo.
-echo 1. Reconfigure CMake
-echo 2. Build Game
-echo 3. Exit
+echo 1. Build Game
+echo 2. Exit
 echo.
 echo 9. Clean Visual Studio (DELETES OUT AND .VS FOLDERS)
 echo 0. Clean game (DELETES BUILD AND ENGINE DOCUMENTS FOLDERS)
@@ -54,9 +53,8 @@ echo.
 set /p choice="Choice: "
 
 :: Process user input
-if "%choice%"=="1" goto cmake
-if "%choice%"=="2" goto build
-if "%choice%"=="3" exit
+if "%choice%"=="1" goto build
+if "%choice%"=="2" exit
 
 if "%choice%"=="9" goto cleanvs
 if "%choice%"=="0" goto cleang
