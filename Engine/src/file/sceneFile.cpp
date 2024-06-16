@@ -489,46 +489,6 @@ namespace EngineFile
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
 	{
-		if (Engine::gamePath != "")
-		{
-			ifstream projectFile(Engine::projectPath);
-			if (!projectFile.is_open())
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Couldn't read from project file '" + Engine::projectPath + "'!\n");
-				return;
-			}
-
-			string line;
-			string fileContent;
-			while (getline(projectFile, line))
-			{
-				if (line.find("game: ") != string::npos)
-				{
-					line = "game: " + Engine::gamePath;
-				}
-				fileContent += line + "\n";
-			}
-			projectFile.close();
-
-			ofstream outFile(Engine::projectPath);
-			if (!outFile.is_open())
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Couldn't write into project file '" + Engine::projectPath + "'!\n");
-				return;
-			}
-			else
-			{
-				outFile << fileContent;
-				outFile.close();
-			}
-		}
-
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 
 		ofstream sceneFile(currentScenePath);

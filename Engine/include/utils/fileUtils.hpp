@@ -23,12 +23,19 @@ namespace Utils
 		/// <returns></returns>
 		static string GetOutputFromBatFile(const char* file);
 
+		enum class BatType
+		{
+			none,
+			compile
+		};
 		/// <summary>
 		/// Run a bat file.
 		/// </summary>
 		/// <param name="file"></param>
+		/// <param name="run separate"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
-		static int RunBatFile(const string& file);
+		static int RunBatFile(const string& file, bool runSeparate, BatType type);
 
 		/// <summary>
 		/// 

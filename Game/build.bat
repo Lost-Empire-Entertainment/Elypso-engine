@@ -25,6 +25,20 @@ set "vsPath=%~dp0.vs"
 
 set "buildPath=%~dp0build"
 
+:: If no parameter was inserted
+if "%~1"=="" (
+	goto menu
+)
+
+:: Check if first parameter is build
+if "%~1"=="build" (
+	goto build
+) else (
+	echo %gexc% Invalid parameter '"%~1"'! Use 'build' to build the game.
+	pause
+	exit /b 1
+)
+
 :menu
 cls
 
@@ -115,8 +129,12 @@ if not exist "%buildPath%" (
 	)
 )
 
-pause
-goto menu
+if "%~1"=="" (
+	pause
+	goto menu
+) else (
+	exit
+)
 
 :cleanvs
 cls

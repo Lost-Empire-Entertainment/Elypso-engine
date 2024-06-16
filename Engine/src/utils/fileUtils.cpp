@@ -11,6 +11,7 @@
 //engine
 #include "fileUtils.hpp"
 #include "console.hpp"
+#include "core.hpp"
 
 using std::exception;
 using std::runtime_error;
@@ -31,6 +32,7 @@ using std::filesystem::recursive_directory_iterator;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Core::Engine;
 
 namespace Utils
 {
@@ -61,10 +63,20 @@ namespace Utils
         return result;
 	}
 
-    int File::RunBatFile(const string& file)
+    int File::RunBatFile(const string& file, bool runSeparate, BatType type)
     {
-        string batchFile = string("\"") + file + "\"";
-        return system(batchFile.c_str());
+        string command = runSeparate == true
+            ? "start cmd /c \"" + file + "\""
+            : "\"" + file + "\"";
+
+        if (type == BatType::compile)
+        {
+            string param1 = " build";
+
+            command += param1;
+        }
+
+        return system(command.c_str());
     }
 
     void File::RunApplication(const string& parentFolderPath, const string& exePath, const string& commands)

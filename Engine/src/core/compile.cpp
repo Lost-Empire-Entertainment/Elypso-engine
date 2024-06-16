@@ -34,18 +34,17 @@ namespace Core
 {
 	void Compilation::Compile()
 	{
-		string gameBatPath = Engine::gamePath + "\\build_engine_fast.bat";
+		string gameBatPath = Engine::gamePath + "\\build.bat";
 		gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
 		if (!exists(gameBatPath))
 		{
-			cout << "game bat path " << gameBatPath << " does not exist!\n";
 			return;
 		}
-		int result = File::RunBatFile(gameBatPath);
+		int result = File::RunBatFile(gameBatPath, false, File::BatType::compile);
 
 		if (result != 0)
 		{
-			cout << "compilation failed! something isnt right...\n";
+			cout << "compilation failed! something isnt right... please contact developers for more info.\n";
 			return;
 		}
 
