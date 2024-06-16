@@ -662,12 +662,6 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			if (ImGui::MenuItem("Node block"))
-			{
-				ConfigFileManager::valuesMap["gui_nodeBlockWindow"].SetValue("1");
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
 			if (ImGui::MenuItem("Inspector"))
 			{
 				ConfigFileManager::valuesMap["gui_inspector"].SetValue("1");
@@ -686,15 +680,20 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			if (ImGui::MenuItem("Settings"))
-			{
-				GUISettings::renderSettings = true;
-			}
-
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(180 * fontScale * 0.75f);
+		ImGui::SameLine(170 * fontScale * 0.75f);
+
+		if (ImGui::BeginMenu("Settings"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				GUISettings::renderSettings = true;
+			}
+		}
+
+		ImGui::SameLine(240 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Help"))
 		{
@@ -711,7 +710,7 @@ namespace Graphics::GUI
 			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(240 * fontScale * 0.75f);
+		ImGui::SameLine(290 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Compile"))
 		{
@@ -724,7 +723,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		ImGui::SameLine(320 * fontScale * 0.75f);
+		ImGui::SameLine(360 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Run"))
 		{

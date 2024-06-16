@@ -499,20 +499,54 @@ namespace Graphics::GUI
 
 		ImGui::Text("Set game path");
 		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 125);
-		if (ImGui::Button("Game path", ImVec2(100, 0)))
-		{
-			Engine::gamePath = FileExplorer::Select(FileExplorer::SearchType::folder);
-			Engine::gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
-			Engine::gameParentPath = Engine::gamePath + "\\build\\Release";
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-			cout << "set game path to " << Engine::gamePath << "\n";
-		}
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 250);
+		static char textBuffer[16] = "Game";
+		ImGui::PushItemWidth(150);
+		ImGui::InputText("##GameName", textBuffer, IM_ARRAYSIZE(textBuffer));
+		ImGui::PopItemWidth();
 		if (ImGui::IsItemHovered())
 		{
-			string hint = Engine::gamePath != "" ? Engine::gamePath : "No path set...";
-			ImGui::SetTooltip(hint.c_str());
+			ImGui::SetTooltip(Engine::gameExePath.c_str());
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Apply"))
+		{
+			bool canApply = true;
+
+			// Validation logic (if needed)
+			for (char c : textBuffer)
+			{
+				if (!String::IsValidSymbolInPath(c))
+				{
+					canApply = false;
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Character ' " + to_string(c) + " ' is not allowed to use in file paths! Please use english alphabet letters, numbers 0-9, symbols ' . ', ' - ', ' _ ' or empty space only!");
+
+					strcpy_s(textBuffer, sizeof(textBuffer), "Game");
+
+					break;
+				}
+			}
+
+			if (!canApply)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Game name '" + string(textBuffer) + "' is not valid! Please use english alphabet letters!");
+
+				strcpy_s(textBuffer, sizeof(textBuffer), "Game");
+			}
+			else
+			{
+				string finalPath = Engine::gamePath + "/build/Release/" + textBuffer + ".exe";
+				Engine::gameExePath = finalPath;
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
 		}
 	}
 }

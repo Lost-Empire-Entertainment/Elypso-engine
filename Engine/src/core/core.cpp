@@ -131,6 +131,13 @@ namespace Core
 			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
 		}
 
+		//
+		// SET GAME PATH
+		//
+		gamePath = current_path().parent_path().parent_path().parent_path().generic_string() + "/Game";
+		gameExePath = gamePath + "/build/Release/Game.exe";
+		gameParentPath = gamePath + "/build/Release";
+
 		string line;
 		while (getline(projectFile, line))
 		{

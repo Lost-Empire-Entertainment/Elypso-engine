@@ -343,7 +343,6 @@ void GUI::NewProject()
 	string engineParentPath = Core::enginePath.parent_path().string();
 	project << "scene: " << filePath + "/Scene1/scene.txt\n";
 	project << "project: " << filePath + "/project.txt" << "\n";
-	project << "game: \n";
 	project.close();
 
 	ofstream projectsFile(Core::projectsFilePath, ios::app);

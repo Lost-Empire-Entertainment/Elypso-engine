@@ -94,5 +94,12 @@ namespace Utils
 		static bool CanConvertStringToFloat(const string& value);
 
 		static bool CanConvertStringToInt(const string& value);
+
+		/// <summary>
+		/// Check if the character is allowed in paths in Windows
+		/// </summary>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		static bool IsValidSymbolInPath(const char& c);
 	};
 }

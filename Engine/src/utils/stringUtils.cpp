@@ -141,4 +141,15 @@ namespace Utils
 
 		return pos == value.length();
 	}
+
+	bool String::IsValidSymbolInPath(const char& c)
+	{
+		return c == '-'
+			|| c == '.'
+			|| c == '_'
+			|| c == ' '
+			|| (c >= '0' && c <= '9')
+			|| (c >= 'A' && c <= 'Z') 
+			|| (c >= 'a' && c <= 'z');
+	}
 }

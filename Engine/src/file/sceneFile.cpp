@@ -169,36 +169,6 @@ namespace EngineFile
 			return;
 		}
 
-		if (Engine::gamePath == "")
-		{
-			string projectFilePath = Engine::filesPath + "/project.txt";
-
-			ifstream projectFile(projectFilePath);
-			if (!projectFile.is_open())
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Couldn't read from project file '" + projectFilePath + "'!\n");
-				return;
-			}
-
-			string line;
-			while (getline(projectFile, line))
-			{
-				if (line.find("game: ") != string::npos
-					&& line.length() > 6)
-				{
-					line.erase(0, 6);
-					Engine::gamePath = line;
-					Engine::gameExePath = Engine::gamePath + "\\build\\Release\\Game.exe";
-					Engine::gameParentPath = Engine::gamePath + "\\build\\Release";
-					break;
-				}
-			}
-			projectFile.close();
-		}
-
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
 
