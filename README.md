@@ -48,6 +48,6 @@ Notes:
 3) Click 'New Project'
 	- 3.1) File explorer will open - create a new folder anywhere outside Engine, Hub or Game folders (this will be the folder where all projects are stored inside of)
 	- 3.2) open the newly created folder and create another folder inside that (this will be the project folder itself)
-5) A new project is created inside Elypso Hub! Click 'Launch' to run it with Elypso Engine
-6) Click 'Compile' at the top bar or press 'Left Control' + 'B'
-	- 8.1) Wait for the cmd window to finish compiling, the game exe should open if no errors were encountered. If you made it this far then that means you successfully set up the engine for making games!
+4) A new project is created inside Elypso Hub! Click 'Launch' to run it with Elypso Engine
+5) Click 'Compile' at the top bar or press 'Left Control' + 'B'
+	- 5.1) Wait for the cmd window to finish compiling, the game exe should open if no errors were encountered. If you made it this far then that means you successfully set up the engine for making games!
