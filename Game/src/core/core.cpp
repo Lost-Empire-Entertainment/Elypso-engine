@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <ShlObj.h>
 #include <filesystem>
+#include <TlHelp32.h>
 
 //game
 #include "core.hpp"
@@ -46,6 +47,14 @@ namespace Core
 {
 	void Game::InitializeGame()
 	{
+		if (IsThisProcessAlreadyRunning(name + ".exe"))
+		{
+			string title = "Engine already running";
+			string message = "Error: '" + name + "' is already running!";
+
+			CreateErrorPopup(title.c_str(), message.c_str());
+		}
+
 		cout << "\n==================================================\n"
 			<< "\n"
 			<< "ENTERED GAME\n"
@@ -147,35 +156,86 @@ namespace Core
 		if (result == IDOK) Shutdown();
 	}
 
-	void Game::Shutdown()
+	bool Game::IsThisProcessAlreadyRunning(const string& processName)
 	{
-		if (SceneFile::unsavedChanges == true)
+		HANDLE hProcessSnap;
+		PROCESSENTRY32 pe32{};
+		bool processFound = false;
+		DWORD currentProcessId = GetCurrentProcessId();
+
+		//take a snapshot of all processes
+		hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (hProcessSnap == INVALID_HANDLE_VALUE)
 		{
-			glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+			cout << "Error: CreateToolhelp32Snapshot failed!\n";
+			return false;
+		}
+
+		pe32.dwSize = sizeof(PROCESSENTRY32);
+
+		if (!Process32First(hProcessSnap, &pe32))
+		{
+			cout << "Error: Process32First failed!\n";
+			CloseHandle(hProcessSnap);
+			return false;
+		}
+
+		do
+		{
+			//compare the current process name with the one to check
+			if (_stricmp(pe32.szExeFile, processName.c_str()) == 0)
+			{
+				//check if this is not the current process
+				if (pe32.th32ProcessID != currentProcessId)
+				{
+					processFound = true;
+					break;
+				}
+			}
+		} while (Process32Next(hProcessSnap, &pe32));
+
+		CloseHandle(hProcessSnap);
+		return processFound;
+	}
+
+	void Game::Shutdown(bool immediate)
+	{
+		if (immediate)
+		{
+			GameGUI::Shutdown();
+			glfwTerminate();
+			ExitProcess(1);
 		}
 		else
 		{
-			ConfigFileManager::SaveConfigFile();
+			if (SceneFile::unsavedChanges == true)
+			{
+				glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+			}
+			else
+			{
+				ConfigFileManager::SaveConfigFile();
 
-			cout << "==================================================\n\n";
+				cout << "==================================================\n\n";
 
-			cout << "Cleaning up resources...\n";
+				cout << "Cleaning up resources...\n";
 
-			SceneFile::ExportGameFiles();
+				SceneFile::ExportGameFiles();
 
-			GameGUI::Shutdown();
+				GameGUI::Shutdown();
 
-			//clean all glfw resources after program is closed
-			glfwTerminate();
+				//clean all glfw resources after program is closed
+				glfwTerminate();
 
-			cout << "\n==================================================\n"
-				<< "\n"
-				<< "EXITED GAME\n"
-				<< "\n"
-				<< "==================================================\n"
-				<< ".\n"
-				<< ".\n"
-				<< ".\n\n";
+				cout << "\n==================================================\n"
+					<< "\n"
+					<< "EXITED GAME\n"
+					<< "\n"
+					<< "==================================================\n"
+					<< ".\n"
+					<< ".\n"
+					<< ".\n\n";
+			}
 		}
 	}
 }

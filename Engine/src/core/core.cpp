@@ -303,6 +303,7 @@ namespace Core
 		if (immediate)
 		{
 			ConsoleManager::CloseLogger();
+			EngineGUI::Shutdown();
 			glfwTerminate();
 			ExitProcess(1);
 		}

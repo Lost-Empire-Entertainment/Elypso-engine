@@ -5,6 +5,9 @@
 
 #include <iostream>
 #include <algorithm>
+#include <Windows.h>
+#include <ShlObj.h>
+#include <TlHelp32.h>
 
 //external
 #include "glad.h"
@@ -23,6 +26,14 @@ using std::filesystem::current_path;
 
 int main()
 {
+	if (Core::IsThisProcessAlreadyRunning("Elypso hub.exe"))
+	{
+		string title = "Engine already running";
+		string message = "Error: 'Elypso hub' is already running!";
+
+		Core::CreateErrorPopup(title.c_str(), message.c_str());
+	}
+
 	cout << "\n==================================================\n"
 		<< "\n"
 		<< "ENTERED ELYPSO HUB\n"
@@ -130,7 +141,57 @@ void Core::Render()
 	glfwPollEvents();
 }
 
-void Core::Shutdown()
+void Core::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
+{
+	int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
+
+	if (result == IDOK) Shutdown(true);
+}
+
+
+bool Core::IsThisProcessAlreadyRunning(const string& processName)
+{
+	HANDLE hProcessSnap;
+	PROCESSENTRY32 pe32{};
+	bool processFound = false;
+	DWORD currentProcessId = GetCurrentProcessId();
+
+	//take a snapshot of all processes
+	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (hProcessSnap == INVALID_HANDLE_VALUE)
+	{
+		cout << "Error: CreateToolhelp32Snapshot failed!\n";
+		return false;
+	}
+
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+
+	if (!Process32First(hProcessSnap, &pe32))
+	{
+		cout << "Error: Process32First failed!\n";
+		CloseHandle(hProcessSnap);
+		return false;
+	}
+
+	do
+	{
+		//compare the current process name with the one to check
+		if (_stricmp(pe32.szExeFile, processName.c_str()) == 0)
+		{
+			//check if this is not the current process
+			if (pe32.th32ProcessID != currentProcessId)
+			{
+				processFound = true;
+				break;
+			}
+		}
+	} while (Process32Next(hProcessSnap, &pe32));
+
+	CloseHandle(hProcessSnap);
+	return processFound;
+}
+
+void Core::Shutdown(bool immediate)
 {
 	GUI::Shutdown();
 
