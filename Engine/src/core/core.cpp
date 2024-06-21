@@ -21,6 +21,7 @@
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
+#include "gui_settings.hpp"
 
 using std::cout;
 using std::endl;
@@ -42,6 +43,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
+using Graphics::GUI::GUISettings;
 
 namespace Core
 {
@@ -135,7 +137,7 @@ namespace Core
 		// SET GAME PATH
 		//
 		gamePath = current_path().parent_path().parent_path().parent_path().generic_string() + "/Game";
-		gameExePath = gamePath + "/build/Release/Game.exe";
+		gameExePath = gamePath + "/build/Release/" + GUISettings::gameName + ".exe";
 		gameParentPath = gamePath + "/build/Release";
 
 		string line;

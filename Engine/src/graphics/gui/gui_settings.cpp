@@ -32,6 +32,7 @@ using std::to_string;
 using std::stof;
 using std::round;
 using glm::value_ptr;
+using std::exception;
 
 using EngineFile::SceneFile;
 using Graphics::GUI::GUIConsole;
@@ -499,51 +500,50 @@ namespace Graphics::GUI
 
 		ImGui::Text("Set game path");
 		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 250);
-		static char textBuffer[16] = "Game";
 		ImGui::PushItemWidth(150);
-		ImGui::InputText("##GameName", textBuffer, IM_ARRAYSIZE(textBuffer));
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 250);
+		if (gameName == "") gameName = "Game";
+		strcpy_s(gameNameChar, bufferSize, gameName.c_str());
+		if (ImGui::InputText("##objName", gameNameChar, bufferSize))
+		{
+			gameName = gameNameChar;
+		}
 		ImGui::PopItemWidth();
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetTooltip(Engine::gameExePath.c_str());
 		}
-		ImGui::SameLine();
+
 		if (ImGui::Button("Apply"))
 		{
 			bool canApply = true;
 
-			// Validation logic (if needed)
-			for (char c : textBuffer)
+			for (char c : gameName)
 			{
 				if (!String::IsValidSymbolInPath(c))
 				{
-					canApply = false;
-
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Character ' " + to_string(c) + " ' is not allowed to use in file paths! Please use english alphabet letters, numbers 0-9, symbols ' . ', ' - ', ' _ ' or empty space only!");
+						"Invalid character detected in game name! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
-					strcpy_s(textBuffer, sizeof(textBuffer), "Game");
+					gameName = "Game";
+
+					canApply = false;
 
 					break;
 				}
 			}
 
-			if (!canApply)
+			if (canApply)
 			{
+				string finalPath = Engine::gamePath + "/build/Release/" + gameName + ".exe";
+				Engine::gameExePath = finalPath;
+
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Game name '" + string(textBuffer) + "' is not valid! Please use english alphabet letters!");
-
-				strcpy_s(textBuffer, sizeof(textBuffer), "Game");
-			}
-			else
-			{
-				string finalPath = Engine::gamePath + "/build/Release/" + textBuffer + ".exe";
-				Engine::gameExePath = finalPath;
+					Type::INFO,
+					"Successfully set game name to '" + gameName + "' and game path as '" + Engine::gameExePath + "'!\n");
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

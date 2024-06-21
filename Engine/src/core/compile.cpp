@@ -41,10 +41,17 @@ namespace Core
 			return;
 		}
 		int result = File::RunBatFile(gameBatPath, false, File::BatType::compile);
+		File::MoveOrRenameFileOrFolder(
+			Engine::gameParentPath + "/Game.exe",
+			Engine::gameExePath,
+			true);
 
 		if (result != 0)
 		{
-			cout << "compilation failed! something isnt right... please contact developers for more info.\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Compilation failed! Please contact developers for more info.\n");
 			return;
 		}
 
@@ -72,6 +79,8 @@ namespace Core
 
 			File::CopyFileOrFolder(itemPath, targetItemPath);
 		}
+
+		cout << "started running game exe...\n";
 
 		File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 	}

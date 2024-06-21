@@ -101,8 +101,10 @@ list(APPEND SOURCE_FILES
 # Add the executable
 add_executable(Game ${SOURCE_FILES} ${RESOURCE_FILE})
 
-# Forces the name to be Game
-set_target_properties(Game PROPERTIES OUTPUT_NAME "Game")
+# Set a default game name if not provided
+set(GAME_NAME "Game" CACHE STRING "Name of the game")
+# Set a new name for the game if a new one was assigned
+set_target_properties(Game PROPERTIES OUTPUT_NAME "${GAME_NAME}")
 
 target_compile_features(Game PRIVATE cxx_std_20)
 

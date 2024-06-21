@@ -14,10 +14,15 @@ namespace Graphics::GUI
 	class GUISettings
 	{
 	public:
+		static inline string gameName = "Game";
+
 		static inline bool renderSettings;
 		static void RenderSettings();
 
 	private:
+		static constexpr int bufferSize = 32;
+		static inline char gameNameChar[bufferSize];
+
 		static void InputSettings();
 		static void GUIStyleSettings();
 		static void GUIColorSettings();

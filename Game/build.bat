@@ -23,6 +23,7 @@ set "documentsPath=%USERPROFILE%\Documents\Game"
 set "outPath=%~dp0out"
 set "vsPath=%~dp0.vs"
 
+set "gamePath=%~dp0build\Release"
 set "buildPath=%~dp0build"
 
 :: If no parameter was inserted
@@ -78,7 +79,9 @@ pause
 goto menu
 
 :cmake
-cls
+if not "%~1"=="build" (
+	cls
+)
 
 :: Change to the script directory
 cd /d "%~dp0"
@@ -107,7 +110,9 @@ if %errorlevel% neq 0 (
 goto build
 
 :build
-cls
+if not "%~1"=="build" (
+	cls
+)
 
 :: Change to the script directory
 cd /d "%~dp0"
@@ -117,6 +122,12 @@ if not exist "%buildPath%" (
 	goto cmake
 ) else (
 	cd "%buildPath%"
+	
+	:: Deletes existing Release folder and creates a new one
+	if exist "%gamePath%" (
+		rd /s /q "%gamePath%"
+		mkdir "%gamePath%"
+	)
 		
 	:: Build the project
 	echo %cminf% Started build generation.
