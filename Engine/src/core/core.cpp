@@ -345,7 +345,8 @@ namespace Core
 					"Cleaning up resources...\n");
 
 				File::DeleteFileOrfolder(Engine::filesPath + "/project.txt");
-				cout << "deleted " << Engine::filesPath + "/project.txt\n";
+
+				SceneFile::RemoveUnusedFiles();
 
 				EngineGUI::Shutdown();
 

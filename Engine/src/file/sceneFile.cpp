@@ -678,6 +678,9 @@ namespace EngineFile
 	{
 		//store paths to all files in models folder
 		string modelsFolder = path(Engine::scenePath).parent_path().string() + "/models";
+
+		if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
+
 		for (const path& model : directory_iterator(modelsFolder))
 		{
 			models[model.string()] = false;

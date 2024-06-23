@@ -8,6 +8,8 @@
 #include <Windows.h>
 #include <ShlObj.h>
 #include <TlHelp32.h>
+#include <fstream>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -23,6 +25,12 @@
 using std::cout;
 using std::exception;
 using std::filesystem::current_path;
+using std::ofstream;
+using std::ifstream;
+using std::wstring;
+using std::getline;
+using std::istringstream;
+using std::to_string;
 
 int main()
 {
@@ -48,9 +56,6 @@ int main()
 	//get all files if any new ones were added
 	GUI::UpdateFileList();
 
-	//assign engine path from config file
-	GUI::SetEnginePathFromConfigFile();
-
 	cout << "Successfully reached render loop!\n\n";
 	cout << "==================================================\n\n";
 
@@ -70,6 +75,78 @@ int main()
 
 void Core::Initialize()
 {
+	cout << "Initializing Elypso Hub...\n";
+
+	PWSTR path;
+	HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &path);
+	if (SUCCEEDED(result))
+	{
+		wstring wPath(path);
+		CoTaskMemFree(path); //free the allocated memory
+
+		//get the required buffer size
+		int size_needed = WideCharToMultiByte(
+			CP_UTF8,
+			0,
+			wPath.c_str(),
+			static_cast<int>(wPath.length()),
+			NULL,
+			0,
+			NULL,
+			NULL);
+
+		//convert wide string to utf-8 encoded narrow string
+		string narrowPath(size_needed, 0);
+		WideCharToMultiByte(
+			CP_UTF8,
+			0,
+			wPath.c_str(),
+			static_cast<int>(wPath.length()),
+			&narrowPath[0],
+			size_needed,
+			NULL,
+			NULL);
+
+		size_t pos = 0;
+		string incorrectSlash = "\\";
+		string correctSlash = "/";
+		while ((pos = narrowPath.find(incorrectSlash, pos)) != string::npos)
+		{
+			narrowPath.replace(pos, incorrectSlash.length(), correctSlash);
+			pos += correctSlash.length();
+		}
+		Core::docsPath = narrowPath + "/Elypso hub";
+	}
+
+	if (!exists(Core::docsPath)) create_directory(Core::docsPath);
+
+	Core::projectsFilePath = Core::docsPath.string() + "/projects.txt";
+	if (!exists(Core::projectsFilePath))
+	{
+		ofstream projectsFile(Core::projectsFilePath);
+		if (!projectsFile.is_open())
+		{
+			CreateErrorPopup(
+				"Initialization failed",
+				"Failed to create projects file!");
+		}
+		projectsFile.close();
+	}
+
+	Core::configFilePath = Core::docsPath.string() + "/config.txt";
+	if (!exists(Core::configFilePath))
+	{
+		ofstream configFile(Core::configFilePath);
+		if (!configFile.is_open())
+		{
+			CreateErrorPopup(
+				"Initialization failed", 
+				"Fauled to create config file!");
+		}
+		configFile.close();
+	}
+	Core::LoadConfigFile();
+
 	cout << "Initializing GLFW...\n";
 
 	glfwInit();
@@ -79,9 +156,11 @@ void Core::Initialize()
 
 	cout << "Initializing window...\n";
 
+	if (currentWidth == 0) currentWidth = 1280;
+	if (currentHeight == 0) currentHeight = 720;
 	window = glfwCreateWindow(
-		SCR_WIDTH,
-		SCR_HEIGHT,
+		currentWidth,
+		currentHeight,
 		"Elypso hub 1.0.0",
 		NULL,
 		NULL);
@@ -89,7 +168,7 @@ void Core::Initialize()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
 	glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
-	glfwSetWindowSizeLimits(window, 800, 500, 7680, 4320);
+	glfwSetWindowSizeLimits(window, 600, 300, 7680, 4320);
 	glfwSwapInterval(1);
 
 	defaultPath = current_path().generic_string();
@@ -111,9 +190,92 @@ void Core::Initialize()
 
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-	UpdateAfterRescale(window, SCR_WIDTH, SCR_HEIGHT);
+	UpdateAfterRescale(window, currentWidth, currentHeight);
 
 	GUI::Initialize();
+}
+
+void Core::LoadConfigFile()
+{
+	string line;
+	ifstream configFile (configFilePath);
+	if (!configFile.is_open())
+	{
+		cout << "Error: Failed to open config file!\n";
+		return;
+	}
+
+	while (getline(configFile, line))
+	{
+		if (!line.empty()
+			&& line.find("=") != string::npos)
+		{
+			vector<string> splitLine = Core::StringSplit(line, '=');
+			string type = splitLine[0];
+			string value = splitLine[1];
+
+			//remove one space in front of value if it exists
+			if (value[0] == ' ') value.erase(0, 1);
+			//remove one space in front of each value comma if it exists
+			for (size_t i = 0; i < value.length(); i++)
+			{
+				if (value[i] == ','
+					&& i + 1 < value.length()
+					&& value[i + 1] == ' ')
+				{
+					value.erase(i + 1, 1);
+				}
+			}
+
+			if (type == "resolution")
+			{
+				vector<string> resolution = Core::StringSplit(value, ',');
+				currentWidth = stoul(resolution.at(0));
+				currentHeight = stoul(resolution.at(1));
+			}
+
+			if (type == "engine path")
+			{
+				enginePath = value;
+			}
+		}
+	}
+	configFile.close();
+
+	cout << "Successfully loaded config file!\n";
+}
+
+void Core::SaveConfigFile()
+{
+	if (exists(configFilePath)) remove(configFilePath);
+
+	ofstream configFile(configFilePath);
+
+	configFile << "resolution= " << to_string(currentWidth) << ", " << to_string(currentHeight) << "\n";
+
+	if (enginePath.string() == "")
+	{
+		configFile << "engine path= " << "\n";
+	}
+	else
+	{
+		cout << enginePath.string() << "\n";
+		configFile << "engine path= " << enginePath.string() << "\n";
+	}
+	
+	configFile.close();
+}
+
+vector<string> Core::StringSplit(const string& input, char delimiter)
+{
+	vector<string> tokens;
+	string token;
+	istringstream tokenStream(input);
+	while (getline(tokenStream, token, delimiter))
+	{
+		tokens.push_back(token);
+	}
+	return tokens;
 }
 
 void Core::UpdateAfterRescale(GLFWwindow* window, int width, int height)
@@ -123,6 +285,9 @@ void Core::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 
 	//Set the viewport based on the aspect ratio
 	glViewport(0, 0, width, height);
+
+	currentWidth = width;
+	currentHeight = height;
 }
 
 void Core::Render()
@@ -147,7 +312,6 @@ void Core::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
 
 	if (result == IDOK) Shutdown(true);
 }
-
 
 bool Core::IsThisProcessAlreadyRunning(const string& processName)
 {
@@ -193,6 +357,8 @@ bool Core::IsThisProcessAlreadyRunning(const string& processName)
 
 void Core::Shutdown(bool immediate)
 {
+	SaveConfigFile();
+
 	GUI::Shutdown();
 
 	glfwTerminate();

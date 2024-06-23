@@ -44,74 +44,6 @@ void GUI::Initialize()
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-	PWSTR path;
-	HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &path);
-	if (SUCCEEDED(result))
-	{
-		wstring wPath(path);
-		CoTaskMemFree(path); //free the allocated memory
-
-		//get the required buffer size
-		int size_needed = WideCharToMultiByte(
-			CP_UTF8,
-			0,
-			wPath.c_str(),
-			static_cast<int>(wPath.length()),
-			NULL,
-			0,
-			NULL,
-			NULL);
-
-		//convert wide string to utf-8 encoded narrow string
-		string narrowPath(size_needed, 0);
-		WideCharToMultiByte(
-			CP_UTF8,
-			0,
-			wPath.c_str(),
-			static_cast<int>(wPath.length()),
-			&narrowPath[0],
-			size_needed,
-			NULL,
-			NULL);
-
-		size_t pos = 0;
-		string incorrectSlash = "\\";
-		string correctSlash = "/";
-		while ((pos = narrowPath.find(incorrectSlash, pos)) != string::npos)
-		{
-			narrowPath.replace(pos, incorrectSlash.length(), correctSlash);
-			pos += correctSlash.length();
-		}
-		Core::docsPath = narrowPath + "/Elypso hub";
-	}
-
-	if (!exists(Core::docsPath))
-	{
-		create_directory(Core::docsPath);
-	}
-
-	Core::projectsFilePath = Core::docsPath.string() + "/projects.txt";
-	if (!exists(Core::projectsFilePath))
-	{
-		ofstream projectsFile(Core::projectsFilePath);
-		if (!projectsFile.is_open())
-		{
-			cout << "Error: Failed to create " << Core::projectsFilePath << "!\n\n";
-		}
-		projectsFile.close();
-	}
-
-	Core::configFilePath = Core::docsPath.string() + "/config.txt";
-	if (!exists(Core::configFilePath))
-	{
-		ofstream configFile(Core::configFilePath);
-		if (!configFile.is_open())
-		{
-			cout << "Error: Failed to create " << Core::configFilePath << "!\n\n";
-		}
-		configFile.close();
-	}
-
 	static string tempString = Core::docsPath.string() + "/imgui.ini";
 	const char* customConfigPath = tempString.c_str();
 	io.IniFilename = customConfigPath;
@@ -261,14 +193,14 @@ void GUI::RenderButtons()
 
 	ImGui::Begin("Buttons", NULL, mainWindowFlags);
 
-	if (ImGui::Button("New Project", ImVec2(285, 50)))
+	if (ImGui::Button("Create new project", ImVec2(285, 50)))
 	{
 		if (!renderConfirmWindow) GUI::NewProject();
 	}
 
 	ImGui::Dummy(ImVec2(0.0f, 15.0f));
 
-	if (ImGui::Button("Add Project", ImVec2(285, 50)))
+	if (ImGui::Button("Add existing project", ImVec2(285, 50)))
 	{
 		if (!renderConfirmWindow) GUI::AddProject();
 	}
@@ -409,64 +341,9 @@ void GUI::SetEnginePathBySelection()
 		return;
 	}
 
-	ofstream configFile(Core::configFilePath);
-	if (!configFile.is_open())
-	{
-		cout << "Error: Failed to open config file!\n\n";
-		return;
-	}
-	configFile << filePath << "\n";
-	configFile.close();
-
 	Core::enginePath = filePath;
 
 	cout << "Set engine path to '" << Core::enginePath << "'!\n\n";
-}
-void GUI::SetEnginePathFromConfigFile()
-{
-	ifstream configFile(Core::configFilePath);
-	if (!configFile.is_open())
-	{
-		cout << "Error: Failed to open config file at '" << Core::configFilePath << "'!\n\n";
-		return;
-	}
-
-	string firstLine;
-	if (!getline(configFile, firstLine))
-	{
-		if (configFile.eof()) cout << "Error: Config file is empty!\n\n";
-		else cout << "Error: Couldn't read first line from file!\n\n";
-		configFile.close();
-		return;
-	}
-
-	if (firstLine.empty())
-	{
-		cout << "Error: Config file is empty!\n\n";
-		configFile.close();
-		return;
-	}
-
-	if (!exists(firstLine))
-	{
-		cout << "Error: Engine path '" << firstLine << "' read from config file does not exist!\n\n";
-		configFile.close();
-		return;
-	}
-
-	path enginePath(firstLine);
-	if (enginePath.stem().string() != "Elypso engine"
-		|| enginePath.extension().string() != ".exe")
-	{
-		cout << "Error: Path '" << firstLine << "' does not lead to Elypso engine.exe!\n\n";
-		configFile.close();
-		return;
-	}
-	Core::enginePath = enginePath.string();
-
-	configFile.close();
-
-	cout << "Set engine path to " << Core::enginePath << "!\n\n";
 }
 
 void GUI::ConfirmRemove(const string& projectName, const string& projectPath)
@@ -530,11 +407,6 @@ void GUI::RemoveProject(const string& projectPath)
 
 bool GUI::IsValidEnginePath(const string& enginePath)
 {
-	if (Core::enginePath == "")
-	{
-		SetEnginePathFromConfigFile();
-	}
-
 	if (Core::enginePath == "")
 	{
 		cout << "Error: Couldn't run engine because no valid path could be loaded!\n\n";

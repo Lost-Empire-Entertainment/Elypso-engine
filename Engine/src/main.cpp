@@ -6,8 +6,6 @@
 //engine
 #include "core.hpp"
 
-using std::exception;
-
 using Core::Engine;
 
 int main()

@@ -44,7 +44,6 @@ public:
 	static void AddProject();
 
 	static void SetEnginePathBySelection();
-	static void SetEnginePathFromConfigFile();
 
 	static void RemoveProject(const string& projectName);
 	static void ConfirmRemove(const string& projectName, const string& projectPath);

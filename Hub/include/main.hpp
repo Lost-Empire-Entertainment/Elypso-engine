@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <string>
+#include <vector>
 
 //external
 #include "glfw3.h"
@@ -16,14 +17,15 @@
 using std::string;
 using std::filesystem::path;
 using glm::vec3;
+using std::vector;
 
 class Core
 {
 public:
 	static inline GLFWwindow* window;
 
-	static inline unsigned int SCR_WIDTH = 1280;
-	static inline unsigned int SCR_HEIGHT = 720;
+	static inline unsigned int currentWidth;
+	static inline unsigned int currentHeight;
 
 	static inline int windowedWidth;
 	static inline int windowedHeight;
@@ -39,6 +41,11 @@ public:
 	static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
 	static void Initialize();
+
+	static void LoadConfigFile();
+	static void SaveConfigFile();
+	static vector<string> StringSplit(const string& input, char delimiter);
+
 	static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 	static void Render();
 
