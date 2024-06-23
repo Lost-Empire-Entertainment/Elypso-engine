@@ -430,27 +430,6 @@ namespace Graphics::Shape
 	public:
 		static inline unsigned int nextID;
 
-		enum class Category
-		{ 
-			cat_Characters_Placeholder, 
-			cat_Effects_Placeholder, 
-			cat_UI_Placeholder,
-			cat_Lights_Spotlights,
-			cat_Lights_Point_lights,
-			cat_Props_Static_props,
-			cat_All
-		};
-		static inline vector<Category> categoriesVector =
-		{
-			Category::cat_Characters_Placeholder,
-			Category::cat_Effects_Placeholder,
-			Category::cat_UI_Placeholder,
-			Category::cat_Lights_Spotlights,
-			Category::cat_Lights_Point_lights,
-			Category::cat_Props_Static_props,
-			Category::cat_All
-		};
-
 		//basic gameobject
 		GameObject(
 			const bool& isInitialized,
@@ -571,12 +550,6 @@ namespace Graphics::Shape
 
 		void SetDirectory(const string& newDirectory) { directory = newDirectory; }
 
-		void SetCategoryState(const Category& category, const bool& state)
-		{
-			categories[category] = state;
-		}
-		void SetCategoriesMap(const map<Category, bool>& newCategories) { categories = newCategories; }
-
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const {  return ID; }
@@ -593,11 +566,6 @@ namespace Graphics::Shape
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
 		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
 		const string& GetDirectory() const { return directory; }
-		bool GetCategoryState(const Category& categoryName)
-		{
-			return categories[categoryName];
-		}
-		map<Category, bool> GetCategories() const { return categories; }
 	private:
 		bool isInitialized;
 		string name;
@@ -615,7 +583,6 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> parentBillboardHolder;
 		shared_ptr<GameObject> childBillboard;
 		string directory;
-		map<Category, bool> categories;
 	};
 
 	class GameObjectManager
@@ -664,10 +631,6 @@ namespace Graphics::Shape
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
 
-		static map<string, vector<string>>& GetCategoryNames()
-		{
-			return categoryNames;
-		}
 		static vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;

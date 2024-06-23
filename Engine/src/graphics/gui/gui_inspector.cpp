@@ -108,37 +108,6 @@ namespace Graphics::GUI
 
 			ImGui::SetNextItemWidth(150);
 
-			if (ImGui::BeginCombo("Categories", "", ImGuiComboFlags_NoPreview))
-			{
-				for (const auto& category : GameObject::categoriesVector)
-				{
-					if (category != GameObject::Category::cat_All)
-					{
-						string fullName = string(magic_enum::enum_name(category));
-						fullName = String::StringReplace(fullName, "cat_", "");
-
-						size_t pos = fullName.find('_');
-
-						//split the string at the position of the first underscore
-						string categoryName = fullName.substr(0, pos);
-						string subCategoryName = fullName.substr(pos + 1);
-						subCategoryName = String::StringReplace(subCategoryName, "_", " ");
-						string displayedCategoryName = categoryName + " - " + subCategoryName;
-
-						shared_ptr<GameObject> obj = Select::selectedObj;
-						bool categoryState = obj->GetCategoryState(category);
-
-						ImGui::PushID(fullName.c_str());
-						if (ImGui::Checkbox(displayedCategoryName.c_str(), &categoryState))
-						{
-							obj->SetCategoryState(category, categoryState);
-						}
-						ImGui::PopID();
-					}
-				}
-				ImGui::EndCombo();
-			}
-
 			ImGui::Spacing();
 
 			ImGui::Text("Name");

@@ -44,7 +44,7 @@ namespace Graphics::GUI
 		static bool renderSceneMenu;
 		if (ConfigFileManager::valuesMap.size() > 0)
 		{
-			renderSceneMenu = stoi(ConfigFileManager::valuesMap["gui_sceneMenuWindow"].GetValue());
+			renderSceneMenu = stoi(ConfigFileManager::valuesMap["gui_sceneMenu"].GetValue());
 		}
 
 		if (renderSceneMenu

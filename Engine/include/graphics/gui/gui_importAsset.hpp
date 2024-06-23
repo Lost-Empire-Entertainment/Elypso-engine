@@ -21,15 +21,13 @@ namespace Graphics::GUI
 
 		static void RenderImportAsset();
 	private:
-		bool checkBoxMapFilled;
-
 		static constexpr int nameBufferSize = 32;
 		static constexpr int pathBufferSize = 256;
 
-		string assignedName = "Model";
-		string assignedDiffuseTexture;
+		static inline string assignedName = "Model";
+		static inline string assignedDiffuseTexture;
 
-		char inputTextBuffer_objName[nameBufferSize];
-		char inputTextBuffer_diffTexturePath[pathBufferSize];
+		static inline char inputTextBuffer_objName[nameBufferSize];
+		static inline char inputTextBuffer_diffTexturePath[pathBufferSize];
 	};
 }

@@ -255,7 +255,6 @@ namespace GameFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-		map<GameObject::Category, bool> categories;
 		vector<string> shaders;
 
 		//
@@ -307,11 +306,6 @@ namespace GameFile
 			{
 				vector<string> values = String::Split(value, ',');
 				scale = String::StringToVec3(values);
-			}
-			for (const auto& category : GameObject::categoriesVector)
-			{
-				string categoryName = string(magic_enum::enum_name(category));
-				if (type == categoryName) categories[category] = stoi(value);
 			}
 			if (type == "shaders")
 			{
@@ -399,7 +393,6 @@ namespace GameFile
 				normalTexture,
 				heightTexture,
 				shininess,
-				categories,
 				name,
 				id);
 
@@ -416,7 +409,6 @@ namespace GameFile
 				diffuse,
 				intensity,
 				distance,
-				categories,
 				name,
 				id,
 				billboardShaders[0],
@@ -441,7 +433,6 @@ namespace GameFile
 				distance,
 				innerAngle,
 				outerAngle,
-				categories,
 				name,
 				id,
 				billboardShaders[0],
@@ -532,15 +523,6 @@ namespace GameFile
 				sceneFile << "scale= " << scaleX << ", " << scaleY << ", " << scaleZ << "\n";
 
 				sceneFile << "\n";
-
-				//categories
-				for (const auto& category : obj->GetCategories())
-				{
-					string categoryName = string(magic_enum::enum_name(category.first));
-					bool categoryActivated = category.second;
-
-					sceneFile << categoryName << "= " << categoryActivated << "\n";
-				}
 
 				sceneFile << "\n";
 

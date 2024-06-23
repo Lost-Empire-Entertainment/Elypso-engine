@@ -43,7 +43,6 @@ namespace Graphics::Shape
 		const float& distance,
 		const float& innerAngle,
 		const float& outerAngle,
-		const map<GameObject::Category, bool> categories,
 		string& name,
 		unsigned int& id,
 
@@ -137,8 +136,6 @@ namespace Graphics::Shape
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
-
-		obj->SetCategoriesMap(categories);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);

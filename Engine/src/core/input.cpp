@@ -293,7 +293,6 @@ namespace Core
                         copiedObject->GetMaterial()->GetTextureName(Material::TextureType::normal),
                         copiedObject->GetMaterial()->GetTextureName(Material::TextureType::height),
                         copiedObject->GetBasicShape()->GetShininess(),
-                        copiedObject->GetCategories(),
                         name,
                         nextID);
                 }
@@ -310,7 +309,6 @@ namespace Core
                         copiedObject->GetPointLight()->GetDiffuse(),
                         copiedObject->GetPointLight()->GetIntensity(),
                         copiedObject->GetPointLight()->GetDistance(),
-                        copiedObject->GetCategories(),
                         name,
                         nextID);
                 }
@@ -329,7 +327,6 @@ namespace Core
                         copiedObject->GetSpotLight()->GetDistance(),
                         copiedObject->GetSpotLight()->GetInnerAngle(),
                         copiedObject->GetSpotLight()->GetOuterAngle(),
-                        copiedObject->GetCategories(),
                         name,
                         nextID);
                 }

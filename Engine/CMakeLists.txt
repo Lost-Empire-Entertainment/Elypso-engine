@@ -68,11 +68,12 @@ set(SOURCE_FILES
 	${SRC_FILE_DIR}/fileexplorer.cpp
 	${SRC_FILE_DIR}/sceneFile.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_assetlist.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_console.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_floatingdebugmenu.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_importAsset.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_projecthierarchy.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_scenehierarchy.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_scenemenu.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_settings.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp

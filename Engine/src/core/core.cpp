@@ -165,35 +165,6 @@ namespace Core
 		projectFile.close();
 
 		//
-		// FILL GAMEOBJECT CATEGORY AND TYPE VECTORS
-		//
-
-		map<string, vector<string>> gameObjects;
-
-		vector<string> cat_characters;
-		cat_characters.push_back("Placeholder");
-		gameObjects.insert({ "Characters", cat_characters });
-
-		vector<string> cat_effects;
-		cat_effects.push_back("Placeholder");
-		gameObjects.insert({ "Effects", cat_effects });
-
-		vector<string> cat_UI;
-		cat_UI.push_back("Placeholder");
-		gameObjects.insert({ "UI", cat_UI });
-
-		vector<string> cat_lights;
-		cat_lights.push_back("Spotlights");
-		cat_lights.push_back("Point lights");
-		gameObjects.insert({ "Lights", cat_lights });
-
-		vector<string> cat_props;
-		cat_props.push_back("Static props");
-		gameObjects.insert({ "Props", cat_props });
-
-		GameObjectManager::SetCategoryNames(gameObjects);
-
-		//
 		// REST OF THE INITIALIZATION
 		//
 

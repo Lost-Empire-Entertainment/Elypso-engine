@@ -22,6 +22,7 @@
 #include "gameobject.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#include "texture.hpp"
 
 using std::filesystem::exists;
 using std::filesystem::path;
@@ -36,13 +37,10 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Utils::String;
 using Utils::File;
+using Graphics::Texture;
 
 namespace Graphics::GUI
 {
-	GUIImportAsset guiImportAsset;
-
-	static map<GameObject::Category, bool> categories;
-
 	void GUIImportAsset::RenderImportAsset()
 	{
 		ImVec2 minSize = ImVec2(600, 600);
@@ -58,86 +56,20 @@ namespace Graphics::GUI
 		if (renderImportAsset
 			&& ImGui::Begin("Import asset", NULL, windowFlags))
 		{
-			//reset checkboxes if reopening import asset window
-			if (!guiImportAsset.checkBoxMapFilled)
-			{
-				categories.clear();
-
-				for (const auto& category : GameObject::categoriesVector)
-				{
-					categories[category] = category == GameObject::Category::cat_All ? true : false;
-				}
-
-				guiImportAsset.checkBoxMapFilled = true;
-			}
-
 			ImVec2 buttonSize = ImVec2(100, 30);
 
 			ImGui::Text("Name");
 			strcpy_s(
-				guiImportAsset.inputTextBuffer_objName, 
+				inputTextBuffer_objName, 
 				nameBufferSize, 
-				guiImportAsset.assignedName.c_str());
+				assignedName.c_str());
 			ImGui::InputText(
 				"##objName", 
-				guiImportAsset.inputTextBuffer_objName,
+				inputTextBuffer_objName,
 				nameBufferSize);
-			if (ImGui::IsItemEdited()) guiImportAsset.assignedName = guiImportAsset.inputTextBuffer_objName;
+			if (ImGui::IsItemEdited()) assignedName = inputTextBuffer_objName;
 
 			ImGui::Spacing();
-
-			//list all categories imported object can be placed into
-			ImGui::Text("Type");
-			ImVec2 childSize = ImVec2(
-				ImGui::GetWindowSize().x - 20, 
-				ImGui::GetWindowSize().y - 200);
-			if (ImGui::BeginChild("##selectType", childSize, true))
-			{
-				for (const auto& category : GameObjectManager::GetCategoryNames())
-				{
-					const string& categoryName = category.first;
-					const auto& subcategories = category.second;
-
-					bool nodeOpen = ImGui::TreeNodeEx(categoryName.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
-
-					if (ImGui::IsItemClicked(0) 
-						&& ImGui::IsMouseDoubleClicked(0))
-					{
-						nodeOpen = !nodeOpen;
-					}
-
-					if (nodeOpen)
-					{
-						for (auto& categoryType : categories)
-						{
-							string fullName = string(magic_enum::enum_name(categoryType.first));
-							fullName = String::StringReplace(fullName, "cat_", "");
-
-							size_t pos = fullName.find('_');
-
-							//split the string at the position of the first underscore
-							string categoryTypeName = fullName.substr(0, pos);
-							string subCategoryTypeName = fullName.substr(pos + 1);
-							subCategoryTypeName = String::StringReplace(subCategoryTypeName, "_", " ");
-
-							if (categoryName == categoryTypeName)
-							{
-								string uniqueName = categoryTypeName + "_" + subCategoryTypeName;
-								ImGui::Text("%s", subCategoryTypeName.c_str());
-
-								ImGui::SameLine();
-								bool& checked = categoryType.second;
-								if (ImGui::Checkbox(("##" + uniqueName).c_str(), &checked))
-								{
-									categoryType.second = checked;
-								}
-							}
-						}
-						ImGui::TreePop();
-					}
-				}
-			}
-			ImGui::EndChild();
 
 			//import asset into engine
 			ImVec2 importButtonPos = ImVec2(
@@ -146,23 +78,16 @@ namespace Graphics::GUI
 			ImGui::SetCursorPos(importButtonPos);
 			if (ImGui::Button("Import", buttonSize))
 			{
-				string scenePath = path(Engine::scenePath).parent_path().string();
-				string modelsFolder = scenePath + "/models";
-				if (!exists(modelsFolder))
-				{
-					File::CreateNewFolder(modelsFolder);
-					cout << "created new folder\n" << modelsFolder << "\n";
-				}
-
-				string newFilePath = modelsFolder + "/" + path(assetPath).filename().string();
-				File::CopyFileOrFolder(assetPath, newFilePath);
-
-				string extension = path(newFilePath).extension().string();
+				string extension = path(assetPath).extension().string();
 
 				if (extension == ".fbx"
 					|| extension == ".gltw"
 					|| extension == ".obj")
 				{
+					string scenePath = path(Engine::scenePath).parent_path().string();
+					string newFilePath = scenePath + "/models/" + path(assetPath).filename().string();
+					File::CopyFileOrFolder(assetPath, newFilePath);
+
 					Model::targetModel = newFilePath;
 					Model::Initialize(
 						vec3(0),
@@ -176,15 +101,22 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
-						categories,
-						guiImportAsset.assignedName,
+						assignedName,
 						Model::tempID);
 
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
+				else if (extension == ".png"
+						 || extension == ".jpg"
+						 || extension == ".jpeg")
+				{
+					string scenePath = path(Engine::scenePath).parent_path().string();
+					string newFilePath = scenePath + "/textures/" + path(assetPath).filename().string();
+					File::CopyFileOrFolder(assetPath, newFilePath);
+				}
+
 				renderImportAsset = false;
-				guiImportAsset.checkBoxMapFilled = false;
 			}
 			ImVec2 cancelButtonPos = ImVec2(
 				ImGui::GetWindowSize().x / 2 + buttonSize.x / 2,
@@ -193,7 +125,6 @@ namespace Graphics::GUI
 			if (ImGui::Button("Cancel", buttonSize))
 			{
 				renderImportAsset = false;
-				guiImportAsset.checkBoxMapFilled = false;
 			}
 
 			ImGui::End();

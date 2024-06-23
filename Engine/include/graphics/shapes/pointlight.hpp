@@ -35,7 +35,6 @@ namespace Graphics::Shape
 			const vec3& diffuse = vec3(1),
 			const float& intensity = 1.0f,
 			const float& distance = 1.0f,
-			const map<GameObject::Category, bool> categories = {},
 			string& name = tempName,
 			unsigned int& id = tempID,
 

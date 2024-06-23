@@ -19,9 +19,10 @@
 #include "gui_console.hpp"
 #include "gui_settings.hpp"
 #include "gui_inspector.hpp"
-#include "gui_assetlist.hpp"
 #include "gui_importAsset.hpp"
 #include "gui_scenemenu.hpp"
+#include "gui_scenehierarchy.hpp"
+#include "gui_projecthierarchy.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -342,9 +343,10 @@ namespace Graphics::GUI
 		GUIConsole::RenderConsole();
 		GUISettings::RenderSettings();
 		GUIInspector::RenderInspector();
-		GUIAssetList::RenderAssetList();
 		GUIImportAsset::RenderImportAsset();
 		GUISceneMenu::RenderSceneMenu();
+		GUISceneHierarchy::RenderSceneHierarchy();
+		GUIProjectHierarchy::RenderProjectHierarchy();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
@@ -403,7 +405,10 @@ namespace Graphics::GUI
 				string extension = path(assetPath).extension().string();
 				if (extension != ".fbx"
 					&& extension != ".gltw"
-					&& extension != ".obj")
+					&& extension != ".obj"
+					&& extension != ".png"
+					&& extension != ".jpg"
+					&& extension != ".jpeg")
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -446,18 +451,10 @@ namespace Graphics::GUI
 				}
 			}
 
-			map<GameObject::Category, bool> categories;
-			for (const auto& category : GameObject::categoriesVector)
-			{
-				categories[category] = category == GameObject::Category::cat_All ? true : false;
-			}
-
 			if (ImGui::BeginMenu("Shape"))
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					categories[GameObject::Category::cat_Props_Static_props] = true;
-
 					string targetPath = Engine::filesPath + "/models/cube.fbx";
 					string targetName = "Cube";
 					Model::Initialize(
@@ -472,7 +469,6 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
-						categories,
 						targetName,
 						Model::tempID);
 
@@ -480,8 +476,6 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
-					categories[GameObject::Category::cat_Props_Static_props] = true;
-
 					string targetPath = Engine::filesPath + "/models/sphere.fbx";
 					string targetName = "Sphere";
 					Model::Initialize(
@@ -496,7 +490,6 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
-						categories,
 						targetName,
 						Model::tempID);
 
@@ -504,8 +497,6 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
-					categories[GameObject::Category::cat_Props_Static_props] = true;
-
 					string targetPath = Engine::filesPath + "/models/cylinder.fbx";
 					string targetName = "Cylinder";
 					Model::Initialize(
@@ -520,7 +511,6 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
-						categories,
 						targetName,
 						Model::tempID);
 
@@ -528,8 +518,6 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
-					categories[GameObject::Category::cat_Props_Static_props] = true;
-
 					string targetPath = Engine::filesPath + "/models/cone.fbx";
 					string targetName = "Cone";
 					Model::Initialize(
@@ -544,7 +532,6 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
-						categories,
 						targetName,
 						Model::tempID);
 
@@ -552,8 +539,6 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
-					categories[GameObject::Category::cat_Props_Static_props] = true;
-
 					string targetPath = Engine::filesPath + "/models/pyramid.fbx";
 					string targetName = "Pyramid";
 					Model::Initialize(
@@ -568,7 +553,6 @@ namespace Graphics::GUI
 						"EMPTY",
 						"EMPTY",
 						32,
-						categories,
 						targetName,
 						Model::tempID);
 
@@ -584,9 +568,6 @@ namespace Graphics::GUI
 				{
 					shared_ptr<GameObject> obj = PointLight::InitializePointLight();
 
-					obj->SetCategoriesMap(categories);
-					obj->SetCategoryState(GameObject::Category::cat_Lights_Point_lights, true);
-
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
 
@@ -595,9 +576,6 @@ namespace Graphics::GUI
 				if (ImGui::MenuItem("Spotlight"))
 				{
 					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
-
-					obj->SetCategoriesMap(categories);
-					obj->SetCategoryState(GameObject::Category::cat_Lights_Spotlights, true);
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
@@ -615,9 +593,15 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Window"))
 		{
-			if (ImGui::MenuItem("Asset list"))
+			if (ImGui::MenuItem("Scene hierarchy"))
 			{
-				ConfigFileManager::valuesMap["gui_assetListWindow"].SetValue("1");
+				ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("1");
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			if (ImGui::MenuItem("Project hierarchy"))
+			{
+				ConfigFileManager::valuesMap["gui_projectHierarchy"].SetValue("1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
@@ -629,7 +613,7 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Scene menu"))
 			{
-				ConfigFileManager::valuesMap["gui_sceneMenuWindow"].SetValue("1");
+				ConfigFileManager::valuesMap["gui_sceneMenu"].SetValue("1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 

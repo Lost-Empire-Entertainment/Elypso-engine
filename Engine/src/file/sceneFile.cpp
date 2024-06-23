@@ -170,6 +170,14 @@ namespace EngineFile
 		}
 		else Engine::scenePath = scenePath;
 
+		//create models folder inside current scene folder if it doesnt exist
+		string modelsFolder = path(Engine::scenePath).parent_path().string() + "/models";
+		if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
+
+		//create textures folder inside current scene folder if it doesnt exist
+		string texturesFolder = path(Engine::scenePath).parent_path().string() + "/textures";
+		if (!exists(texturesFolder)) File::CreateNewFolder(texturesFolder);
+
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
 
@@ -276,7 +284,6 @@ namespace EngineFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-		map<GameObject::Category, bool> categories;
 		vector<string> shaders;
 
 		//
@@ -328,11 +335,6 @@ namespace EngineFile
 			{
 				vector<string> values = String::Split(value, ',');
 				scale = String::StringToVec3(values);
-			}
-			for (const auto& category : GameObject::categoriesVector)
-			{
-				string categoryName = string(magic_enum::enum_name(category));
-				if (type == categoryName) categories[category] = stoi(value);
 			}
 			if (type == "shaders")
 			{
@@ -431,7 +433,6 @@ namespace EngineFile
 				normalTexture,
 				heightTexture,
 				shininess,
-				categories,
 				name,
 				id);
 
@@ -448,7 +449,6 @@ namespace EngineFile
 				diffuse,
 				intensity,
 				distance,
-				categories,
 				name,
 				id,
 				billboardShaders[0],
@@ -473,7 +473,6 @@ namespace EngineFile
 				distance,
 				innerAngle,
 				outerAngle,
-				categories,
 				name,
 				id,
 				billboardShaders[0],
@@ -558,17 +557,6 @@ namespace EngineFile
 				float scaleY = obj->GetTransform()->GetScale().y;
 				float scaleZ = obj->GetTransform()->GetScale().z;
 				sceneFile << "scale= " << scaleX << ", " << scaleY << ", " << scaleZ << "\n";
-
-				sceneFile << "\n";
-
-				//categories
-				for (const auto& category : obj->GetCategories())
-				{
-					string categoryName = string(magic_enum::enum_name(category.first));
-					bool categoryActivated = category.second;
-
-					sceneFile << categoryName << "= " << categoryActivated << "\n";
-				}
 
 				sceneFile << "\n";
 
@@ -678,8 +666,6 @@ namespace EngineFile
 	{
 		//store paths to all files in models folder
 		string modelsFolder = path(Engine::scenePath).parent_path().string() + "/models";
-
-		if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
 
 		for (const path& model : directory_iterator(modelsFolder))
 		{

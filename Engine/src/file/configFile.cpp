@@ -21,7 +21,6 @@
 #include "gui_console.hpp"
 #include "gui_settings.hpp"
 #include "gui_inspector.hpp"
-#include "gui_assetlist.hpp"
 #include "gui_scenemenu.hpp"
 #include "core.hpp"
 #include "input.hpp"
@@ -52,7 +51,6 @@ using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUIConsole;
 using Graphics::GUI::GUISettings;
 using Graphics::GUI::GUIInspector;
-using Graphics::GUI::GUIAssetList;
 using Graphics::GUI::GUISceneMenu;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -178,21 +176,29 @@ namespace EngineFile
 			ConfigFileValue::Type::type_int);
 		AddValue(gui_console);
 
-		ConfigFileValue gui_assetListWindow(
-			"gui_assetListWindow",
+		ConfigFileValue gui_sceneHierarchy(
+			"gui_sceneHierarchy",
 			"1",
 			"0",
 			"1",
 			ConfigFileValue::Type::type_int);
-		AddValue(gui_assetListWindow);
+		AddValue(gui_sceneHierarchy);
 
-		ConfigFileValue gui_sceneMenuWindow(
-			"gui_sceneMenuWindow",
+		ConfigFileValue gui_projectHierarchy(
+			"gui_projectHierarchy",
+			"1",
+			"0",
+			"1",
+			ConfigFileValue::Type::type_int);
+		AddValue(gui_projectHierarchy);
+
+		ConfigFileValue gui_sceneMenu(
+			"gui_sceneMenu",
 			"0",
 			"0",
 			"1",
 			ConfigFileValue::Type::type_int);
-		AddValue(gui_sceneMenuWindow);
+		AddValue(gui_sceneMenu);
 	}
 	void ConfigFileManager::ResetGUIValues()
 	{
