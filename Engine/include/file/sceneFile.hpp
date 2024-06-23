@@ -25,13 +25,15 @@ namespace EngineFile
 
 		static inline bool unsavedChanges;
 		static inline string currentProjectPath;
-		static inline string currentScenePath;
 		static inline string targetLevel;
 
 		static void CheckForProjectFile();
 		static void CreateScene();
-		static void LoadScene(const string& levelName);
+		static void LoadScene(const string& scenePath);
 		static void LoadGameObject(const map<string, string> obj);
 		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = ""); 
+		static void RemoveUnusedFiles();
+	private:
+		static inline map<string, bool> models;
 	};
 }

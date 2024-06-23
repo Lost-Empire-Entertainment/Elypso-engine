@@ -21,9 +21,11 @@
 #include "fileexplorer.hpp"
 #include "gameobject.hpp"
 #include "stringUtils.hpp"
+#include "fileUtils.hpp"
 
 using std::filesystem::exists;
 using std::filesystem::path;
+using std::exception;
 
 using Graphics::Shape::Model;
 using EngineFile::SceneFile;
@@ -33,6 +35,7 @@ using EngineFile::FileExplorer;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Utils::String;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -143,20 +146,29 @@ namespace Graphics::GUI
 			ImGui::SetCursorPos(importButtonPos);
 			if (ImGui::Button("Import", buttonSize))
 			{
-				path finalPath = path(assetPath);
-				string extension = finalPath.extension().string();
-				cout << "Attempting to import asset with extension " << extension << "...\n";
+				string scenePath = path(Engine::scenePath).parent_path().string();
+				string modelsFolder = scenePath + "/models";
+				if (!exists(modelsFolder))
+				{
+					File::CreateNewFolder(modelsFolder);
+					cout << "created new folder\n" << modelsFolder << "\n";
+				}
+
+				string newFilePath = modelsFolder + "/" + path(assetPath).filename().string();
+				File::CopyFileOrFolder(assetPath, newFilePath);
+
+				string extension = path(newFilePath).extension().string();
 
 				if (extension == ".fbx"
 					|| extension == ".gltw"
 					|| extension == ".obj")
 				{
-					Model::targetModel = assetPath;
+					Model::targetModel = newFilePath;
 					Model::Initialize(
 						vec3(0),
 						vec3(0),
 						vec3(1),
-						assetPath,
+						newFilePath,
 						Engine::filesPath + "/shaders/GameObject.vert",
 						Engine::filesPath + "/shaders/GameObject.frag",
 						Engine::filesPath + "/textures/diff_default.png",

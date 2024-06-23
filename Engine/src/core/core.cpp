@@ -145,6 +145,14 @@ namespace Core
 		{
 			if (!line.empty())
 			{
+				size_t pos_scene = line.find("scene:");
+				if (pos_scene != string::npos)
+				{
+					string removable = "scene: ";
+					size_t pos = line.find(removable);
+					scenePath = line.erase(pos, removable.length());
+				}
+
 				size_t pos_project = line.find("project:");
 				if (pos_project != string::npos)
 				{
@@ -217,7 +225,7 @@ namespace Core
 		Render::RenderSetup();
 
 		//first scene is actually loaded when engine is ready for use
-		SceneFile::LoadScene(SceneFile::currentScenePath);
+		SceneFile::LoadScene(scenePath);
 	}
 
 	void Engine::RunEngine()

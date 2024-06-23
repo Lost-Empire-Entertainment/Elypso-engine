@@ -47,6 +47,10 @@ namespace Graphics::GUI
 		if (renderConsole
 			&& ImGui::Begin("Console", NULL, windowFlags))
 		{
+			if (ImGui::Button("Clear"))
+			{
+				consoleMessages.clear();
+			}
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))

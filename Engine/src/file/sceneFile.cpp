@@ -103,7 +103,7 @@ namespace EngineFile
 			Engine::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
 		}
 
-		currentScenePath = targetScene;
+		Engine::scenePath = targetScene;
 	}
 
 
@@ -135,16 +135,16 @@ namespace EngineFile
 		newFolderPath = newFolderPath + to_string(highestFolderNumber);
 		create_directory(newFolderPath);
 
-		currentScenePath = newFolderPath + "/Scene.txt";
+		Engine::scenePath = newFolderPath + "/Scene.txt";
 
-		ofstream sceneFile(currentScenePath);
+		ofstream sceneFile(Engine::scenePath);
 
 		if (!sceneFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Error: Couldn't open scene file '" + currentScenePath + "'!\n");
+				"Error: Couldn't open scene file '" + Engine::scenePath + "'!\n");
 			return;
 		}
 
@@ -153,9 +153,9 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"\nSuccessfully created new scene '" + currentScenePath + "'!\n");
+			"\nSuccessfully created new scene '" + Engine::scenePath + "'!\n");
 
-		LoadScene(currentScenePath);
+		LoadScene(Engine::scenePath);
 	}
 
 	void SceneFile::LoadScene(const string& scenePath)
@@ -168,6 +168,7 @@ namespace EngineFile
 				"Tried to load scene '" + scenePath + "' but it doesn't exist!\n");
 			return;
 		}
+		else Engine::scenePath = scenePath;
 
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
@@ -181,13 +182,13 @@ namespace EngineFile
 			}
 		}
 
-		ifstream sceneFile(scenePath);
+		ifstream sceneFile(Engine::scenePath);
 		if (!sceneFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Failed to open scene file '" + scenePath + "'!\n\n");
+				"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 			return;
 		}
 
@@ -253,14 +254,14 @@ namespace EngineFile
 
 		if (!obj.empty()) LoadGameObject(obj);
 
-		currentScenePath = scenePath;
+		RemoveUnusedFiles();
 
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Successfully loaded scenePath '" + currentScenePath + "'!\n");
+			"Successfully loaded scenePath '" + Engine::scenePath + "'!\n");
 	}
 
 	void SceneFile::LoadGameObject(const map<string, string> obj)
@@ -355,7 +356,6 @@ namespace EngineFile
 			if (type == "inner angle") innerAngle = stof(value);
 			if (type == "outer angle") outerAngle = stof(value);
 			if (type == "model path") modelPath = value;
-
 
 			//
 			// ATTACHED BILLBOARD VALUES
@@ -491,14 +491,14 @@ namespace EngineFile
 	{
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 
-		ofstream sceneFile(currentScenePath);
+		ofstream sceneFile(Engine::scenePath);
 
 		if (!sceneFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Couldn't write into level file '" + currentScenePath + "'!\n");
+				"Couldn't write into level file '" + Engine::scenePath + "'!\n");
 			return;
 		}
 
@@ -661,7 +661,7 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"\nSuccessfully saved scene '" + currentScenePath + "'!\n");
+			"\nSuccessfully saved scene '" + Engine::scenePath + "'!\n");
 
 		switch (saveType)
 		{
@@ -671,6 +671,85 @@ namespace EngineFile
 		case SaveType::shutDown:
 			Engine::Shutdown();
 			break;
+		}
+	}
+
+	void SceneFile::RemoveUnusedFiles()
+	{
+		//store paths to all files in models folder
+		string modelsFolder = path(Engine::scenePath).parent_path().string() + "/models";
+		for (const path& model : directory_iterator(modelsFolder))
+		{
+			models[model.string()] = false;
+		}
+
+		ifstream sceneFile(Engine::scenePath);
+		if (!sceneFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::ENGINE,
+				Type::EXCEPTION,
+				"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
+			return;
+		}
+
+		string line;
+		map<string, string> obj;
+		while (getline(sceneFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string type = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (type == "model path")
+				{
+					//check if the file in the model path is also found in the models map
+					for (const auto& pair : models)
+					{
+						string pairKey = pair.first;
+						bool pairValue = pair.second;
+
+						if (pairValue != true
+							&& value == pairKey)
+						{
+							cout << "found existing model\n" << path(value).filename().string() << "\n";
+							pairValue = true;
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		sceneFile.close();
+
+		//delete all files in the models folder that dont also exist in the scene file
+		for (const auto& pair : models)
+		{
+			string pairKey = pair.first;
+			bool pairValue = pair.second;
+
+			if (!pairValue)
+			{
+				cout << pairKey << " does not exist in this scene and will be deleted...\n";
+				File::DeleteFileOrfolder(pairKey);
+			}
 		}
 	}
 }

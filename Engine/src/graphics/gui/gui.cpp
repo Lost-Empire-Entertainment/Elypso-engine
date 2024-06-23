@@ -388,31 +388,60 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Asset"))
 		{
-			bool canPlaceAssets = SceneFile::currentScenePath != "";
-
 			if (ImGui::MenuItem("Import asset"))
 			{
-				if (!canPlaceAssets)
+				string assetPath = FileExplorer::Select(FileExplorer::SearchType::asset);
+				if (assetPath == "")
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Cannot place assets because no scene is loaded!\n");
+						"Did not get path!\n");
+				}
+
+				string name = path(assetPath).stem().string();
+				string extension = path(assetPath).extension().string();
+				if (extension != ".fbx"
+					&& extension != ".gltw"
+					&& extension != ".obj")
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"File '" + name + "' with extension '" + extension + "' is not yet supported!");
 				}
 				else
 				{
-					string path = FileExplorer::Select(FileExplorer::SearchType::asset);
-					if (path == "")
+					bool foundExisting;
+					string existingFilePath;
+					string existingFileName;
+					string importedFileName = path(assetPath).filename().string();
+					for (const auto& file : directory_iterator(Engine::filesPath + "/models"))
+					{
+						existingFilePath = file.path().string();
+						existingFileName = path(existingFilePath).filename().string();
+
+						if (importedFileName == existingFileName)
+						{
+							cout << "comparing " + importedFileName + "\n" << assetPath
+								<< "\nto " + existingFileName + "\n" << existingFilePath << "\n\n";
+
+							foundExisting = true;
+							break;
+						}
+					}
+
+					if (foundExisting)
 					{
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"Did not get path!\n");
+							"File '" + importedFileName + "' already exists in engine!");
 					}
 					else
 					{
 						GUIImportAsset::renderImportAsset = true;
-						GUIImportAsset::assetPath = path;
+						GUIImportAsset::assetPath = assetPath;
 					}
 				}
 			}
@@ -427,173 +456,123 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					if (!canPlaceAssets)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Cannot place assets because no scene is loaded!\n");
-					}
-					else
-					{
-						categories[GameObject::Category::cat_Props_Static_props] = true;
+					categories[GameObject::Category::cat_Props_Static_props] = true;
 
-						string targetPath = Engine::filesPath + "/models/cube.fbx";
-						string targetName = "Cube";
-						Model::Initialize(
-							vec3(0),
-							vec3(0),
-							vec3(1),
-							targetPath,
-							Engine::filesPath + "/shaders/GameObject.vert",
-							Engine::filesPath + "/shaders/GameObject.frag",
-							Engine::filesPath + "/textures/diff_default.png",
-							"EMPTY",
-							"EMPTY",
-							"EMPTY",
-							32,
-							categories,
-							targetName,
-							Model::tempID);
+					string targetPath = Engine::filesPath + "/models/cube.fbx";
+					string targetName = "Cube";
+					Model::Initialize(
+						vec3(0),
+						vec3(0),
+						vec3(1),
+						targetPath,
+						Engine::filesPath + "/shaders/GameObject.vert",
+						Engine::filesPath + "/shaders/GameObject.frag",
+						Engine::filesPath + "/textures/diff_default.png",
+						"EMPTY",
+						"EMPTY",
+						"EMPTY",
+						32,
+						categories,
+						targetName,
+						Model::tempID);
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
-					if (!canPlaceAssets)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Cannot place assets because no scene is loaded!\n");
-					}
-					else
-					{
-						categories[GameObject::Category::cat_Props_Static_props] = true;
+					categories[GameObject::Category::cat_Props_Static_props] = true;
 
-						string targetPath = Engine::filesPath + "/models/sphere.fbx";
-						string targetName = "Sphere";
-						Model::Initialize(
-							vec3(0),
-							vec3(0),
-							vec3(1),
-							targetPath,
-							Engine::filesPath + "/shaders/GameObject.vert",
-							Engine::filesPath + "/shaders/GameObject.frag",
-							Engine::filesPath + "/textures/diff_default.png",
-							"EMPTY",
-							"EMPTY",
-							"EMPTY",
-							32,
-							categories,
-							targetName,
-							Model::tempID);
+					string targetPath = Engine::filesPath + "/models/sphere.fbx";
+					string targetName = "Sphere";
+					Model::Initialize(
+						vec3(0),
+						vec3(0),
+						vec3(1),
+						targetPath,
+						Engine::filesPath + "/shaders/GameObject.vert",
+						Engine::filesPath + "/shaders/GameObject.frag",
+						Engine::filesPath + "/textures/diff_default.png",
+						"EMPTY",
+						"EMPTY",
+						"EMPTY",
+						32,
+						categories,
+						targetName,
+						Model::tempID);
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
-					if (!canPlaceAssets)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Cannot place assets because no scene is loaded!\n");
-					}
-					else
-					{
-						categories[GameObject::Category::cat_Props_Static_props] = true;
+					categories[GameObject::Category::cat_Props_Static_props] = true;
 
-						string targetPath = Engine::filesPath + "/models/cylinder.fbx";
-						string targetName = "Cylinder";
-						Model::Initialize(
-							vec3(0),
-							vec3(0),
-							vec3(1),
-							targetPath,
-							Engine::filesPath + "/shaders/GameObject.vert",
-							Engine::filesPath + "/shaders/GameObject.frag",
-							Engine::filesPath + "/textures/diff_default.png",
-							"EMPTY",
-							"EMPTY",
-							"EMPTY",
-							32,
-							categories,
-							targetName,
-							Model::tempID);
+					string targetPath = Engine::filesPath + "/models/cylinder.fbx";
+					string targetName = "Cylinder";
+					Model::Initialize(
+						vec3(0),
+						vec3(0),
+						vec3(1),
+						targetPath,
+						Engine::filesPath + "/shaders/GameObject.vert",
+						Engine::filesPath + "/shaders/GameObject.frag",
+						Engine::filesPath + "/textures/diff_default.png",
+						"EMPTY",
+						"EMPTY",
+						"EMPTY",
+						32,
+						categories,
+						targetName,
+						Model::tempID);
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
-					if (!canPlaceAssets)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Cannot place assets because no scene is loaded!\n");
-					}
-					else
-					{
-						categories[GameObject::Category::cat_Props_Static_props] = true;
+					categories[GameObject::Category::cat_Props_Static_props] = true;
 
-						string targetPath = Engine::filesPath + "/models/cone.fbx";
-						string targetName = "Cone";
-						Model::Initialize(
-							vec3(0),
-							vec3(0),
-							vec3(1),
-							targetPath,
-							Engine::filesPath + "/shaders/GameObject.vert",
-							Engine::filesPath + "/shaders/GameObject.frag",
-							Engine::filesPath + "/textures/diff_default.png",
-							"EMPTY",
-							"EMPTY",
-							"EMPTY",
-							32,
-							categories,
-							targetName,
-							Model::tempID);
+					string targetPath = Engine::filesPath + "/models/cone.fbx";
+					string targetName = "Cone";
+					Model::Initialize(
+						vec3(0),
+						vec3(0),
+						vec3(1),
+						targetPath,
+						Engine::filesPath + "/shaders/GameObject.vert",
+						Engine::filesPath + "/shaders/GameObject.frag",
+						Engine::filesPath + "/textures/diff_default.png",
+						"EMPTY",
+						"EMPTY",
+						"EMPTY",
+						32,
+						categories,
+						targetName,
+						Model::tempID);
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
-					if (!canPlaceAssets)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Cannot place assets because no scene is loaded!\n");
-					}
-					else
-					{
-						categories[GameObject::Category::cat_Props_Static_props] = true;
+					categories[GameObject::Category::cat_Props_Static_props] = true;
 
-						string targetPath = Engine::filesPath + "/models/pyramid.fbx";
-						string targetName = "Pyramid";
-						Model::Initialize(
-							vec3(0),
-							vec3(0),
-							vec3(1),
-							targetPath,
-							Engine::filesPath + "/shaders/GameObject.vert",
-							Engine::filesPath + "/shaders/GameObject.frag",
-							Engine::filesPath + "/textures/diff_default.png",
-							"EMPTY",
-							"EMPTY",
-							"EMPTY",
-							32,
-							categories,
-							targetName,
-							Model::tempID);
+					string targetPath = Engine::filesPath + "/models/pyramid.fbx";
+					string targetName = "Pyramid";
+					Model::Initialize(
+						vec3(0),
+						vec3(0),
+						vec3(1),
+						targetPath,
+						Engine::filesPath + "/shaders/GameObject.vert",
+						Engine::filesPath + "/shaders/GameObject.frag",
+						Engine::filesPath + "/textures/diff_default.png",
+						"EMPTY",
+						"EMPTY",
+						"EMPTY",
+						32,
+						categories,
+						targetName,
+						Model::tempID);
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();
@@ -603,47 +582,27 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					if (!canPlaceAssets)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Cannot place assets because no scene is loaded!\n");
-					}
-					else
-					{
-						shared_ptr<GameObject> obj = PointLight::InitializePointLight();
+					shared_ptr<GameObject> obj = PointLight::InitializePointLight();
 
-						obj->SetCategoriesMap(categories);
-						obj->SetCategoryState(GameObject::Category::cat_Lights_Point_lights, true);
+					obj->SetCategoriesMap(categories);
+					obj->SetCategoryState(GameObject::Category::cat_Lights_Point_lights, true);
 
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+					Select::selectedObj = obj;
+					Select::isObjectSelected = true;
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					if (!canPlaceAssets)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
-							Type::EXCEPTION,
-							"Cannot place assets because no scene is loaded!\n");
-					}
-					else
-					{
-						shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
+					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
 
-						obj->SetCategoriesMap(categories);
-						obj->SetCategoryState(GameObject::Category::cat_Lights_Spotlights, true);
+					obj->SetCategoriesMap(categories);
+					obj->SetCategoryState(GameObject::Category::cat_Lights_Spotlights, true);
 
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
+					Select::selectedObj = obj;
+					Select::isObjectSelected = true;
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();

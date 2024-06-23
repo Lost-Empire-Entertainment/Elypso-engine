@@ -200,8 +200,7 @@ namespace Core
                 "help - lists all console commands\n" <<
                 "qqq - quits the engine\n" <<
                 "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n" <<
-                "rc - resets the camera back to its original position and rotation\n" <<
-                "ccc - cleans the console\n";
+                "rc - resets the camera back to its original position and rotation\n";
 
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
@@ -247,11 +246,6 @@ namespace Core
                 Caller::INPUT,
                 Type::INFO,
                 "Reset camera position and rotation.\n");
-        }
-        else if (cleanedCommands[0] == "ccc"
-                 && cleanedCommands.size() == 1)
-        {
-            GUIConsole::consoleMessages.clear();
         }
         else
         {
