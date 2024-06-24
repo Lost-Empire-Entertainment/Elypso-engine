@@ -639,33 +639,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		ImGui::SameLine(240 * fontScale * 0.75f);
-
-		if (ImGui::BeginMenu("Version"))
-		{
-			if (ImGui::IsItemClicked())
-			{
-				TB_CheckVersion();
-
-				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
-			}
-		}
-
-		ImGui::SameLine(310 * fontScale * 0.75f);
-
-		if (ImGui::BeginMenu("Report issue"))
-		{
-			if (ImGui::IsItemClicked())
-			{
-				TB_ReportIssue();
-
-				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
-			}
-		}
-
-		ImGui::SameLine(410 * fontScale * 0.75f);
+		ImGui::SameLine(245 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Create scene"))
 		{
@@ -678,7 +652,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		ImGui::SameLine(510 * fontScale * 0.75f);
+		ImGui::SameLine(350 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Compile"))
 		{
@@ -691,7 +665,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		ImGui::SameLine(580 * fontScale * 0.75f);
+		ImGui::SameLine(425 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Run"))
 		{
@@ -705,6 +679,34 @@ namespace Graphics::GUI
 						"Game exe does not exist!\n");
 				}
 				else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+		}
+
+		//on the right side
+		ImGui::SameLine(ImGui::GetWindowWidth() - 240);
+
+		if (ImGui::BeginMenu("Check version"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				TB_CheckVersion();
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+		}
+
+		//on the right side
+		ImGui::SameLine(ImGui::GetWindowWidth() - 115);
+
+		if (ImGui::BeginMenu("Report issue"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				TB_ReportIssue();
 
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();
