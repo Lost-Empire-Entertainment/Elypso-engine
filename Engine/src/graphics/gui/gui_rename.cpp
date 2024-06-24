@@ -105,13 +105,13 @@ namespace Graphics::GUI
 			}
 			if (foundIllegalChar)
 			{
-				strcpy_s(name, bufferSize, "Name");
-				newName = "Name";
-
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
 					"Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+
+				strcpy_s(name, bufferSize, "Name");
+				newName = "Name";
 
 				extension = "";
 				originalName = "";
@@ -156,14 +156,14 @@ namespace Graphics::GUI
 				return;
 			}
 
+			//
+			// FIND OLD MODEL PATH FROM SCENE FILE AND WRITE WITH NEW PATH INTO BUFFER
+			//
+
 			string originalPath = parentFolder + "\\" + originalName + extension;
 			string newPath = parentFolder + "\\" + newName + extension;
 
 			stringstream buffer;
-
-			//
-			// FIND OLD MODEL PATH FROM SCENE FILE AND WRITE WITH NEW PATH INTO BUFFER
-			//
 
 			ifstream readSceneFile(Engine::scenePath);
 			if (!readSceneFile.is_open())
@@ -185,12 +185,12 @@ namespace Graphics::GUI
 			string readFileLine;
 			while (getline(readSceneFile, readFileLine))
 			{
-				if (readFileLine.find(originalPath))
+				if (readFileLine.find(originalPath) != string::npos)
 				{
 					cout << "found and replaced old model path '" << originalPath << "' with new path '" << newPath << "'\n";
 					buffer << "model path= " << newPath << "\n";
 				}
-				else buffer << readFileLine;
+				else buffer << readFileLine << "\n";
 			}
 			readSceneFile.close();
 

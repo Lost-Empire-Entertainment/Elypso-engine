@@ -112,13 +112,13 @@ namespace Graphics::GUI
 			}
 			if (foundIllegalChar)
 			{
-				strcpy_s(name, bufferSize, "Name");
-				newName = "Name";
-
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
 					"Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+
+				strcpy_s(name, bufferSize, "Name");
+				newName = "Name";
 
 				renderImportAsset = false;
 

@@ -101,13 +101,13 @@ namespace Graphics::GUI
 			}
 			if (foundIllegalChar)
 			{
-				strcpy_s(sceneName, bufferSize, "Scene");
-				assignedSceneName = "Scene";
-
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
 					"Invalid character detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+
+				strcpy_s(sceneName, bufferSize, "Scene");
+				assignedSceneName = "Scene";
 
 				renderCreateSceneWindow = false;
 
