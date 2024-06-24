@@ -317,8 +317,6 @@ namespace Core
 
 				File::DeleteFileOrfolder(Engine::filesPath + "/project.txt");
 
-				SceneFile::RemoveUnusedFiles();
-
 				EngineGUI::Shutdown();
 
 				//clean all glfw resources after program is closed

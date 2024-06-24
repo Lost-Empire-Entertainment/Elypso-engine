@@ -23,6 +23,7 @@
 #include "gui_scenemenu.hpp"
 #include "gui_scenehierarchy.hpp"
 #include "gui_projecthierarchy.hpp"
+#include "gui_createscene.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -348,6 +349,7 @@ namespace Graphics::GUI
 		GUISceneMenu::RenderSceneMenu();
 		GUISceneHierarchy::RenderSceneHierarchy();
 		GUIProjectHierarchy::RenderProjectHierarchy();
+		GUICreateScene::RenderCreateSceneWindow();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
@@ -639,22 +641,44 @@ namespace Graphics::GUI
 
 		ImGui::SameLine(240 * fontScale * 0.75f);
 
-		if (ImGui::BeginMenu("Help"))
+		if (ImGui::BeginMenu("Version"))
 		{
-			if (ImGui::MenuItem("Check for Updates"))
+			if (ImGui::IsItemClicked())
 			{
 				TB_CheckVersion();
-			}
 
-			if (ImGui::MenuItem("Report an Issue"))
-			{
-				TB_ReportIssue();
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
 			}
-
-			ImGui::EndMenu();
 		}
 
-		ImGui::SameLine(290 * fontScale * 0.75f);
+		ImGui::SameLine(310 * fontScale * 0.75f);
+
+		if (ImGui::BeginMenu("Report issue"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				TB_ReportIssue();
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+		}
+
+		ImGui::SameLine(410 * fontScale * 0.75f);
+
+		if (ImGui::BeginMenu("Create scene"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				GUICreateScene::renderCreateSceneWindow = true;
+				 
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+		}
+
+		ImGui::SameLine(510 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Compile"))
 		{
@@ -667,7 +691,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		ImGui::SameLine(360 * fontScale * 0.75f);
+		ImGui::SameLine(580 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Run"))
 		{

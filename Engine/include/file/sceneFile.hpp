@@ -31,8 +31,7 @@ namespace EngineFile
 		static void CreateScene();
 		static void LoadScene(const string& scenePath);
 		static void LoadGameObject(const map<string, string> obj);
-		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = ""); 
-		static void RemoveUnusedFiles();
+		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
 	private:
 		static inline map<string, bool> models;
 	};

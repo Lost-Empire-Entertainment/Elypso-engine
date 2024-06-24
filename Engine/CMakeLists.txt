@@ -69,6 +69,7 @@ set(SOURCE_FILES
 	${SRC_FILE_DIR}/sceneFile.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_console.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_createscene.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_floatingdebugmenu.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_importAsset.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp

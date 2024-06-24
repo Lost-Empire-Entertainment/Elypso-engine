@@ -71,5 +71,12 @@ namespace Utils
 		/// </summary>
 		/// <param name="folderPath">Full path to the new folder you are trying to create the folder to.</param>
 		static void CreateNewFolder(const path& folderPath);
+
+		/// <summary>
+		/// Add an index (1), etc after this file name.
+		/// </summary>
+		/// <param name="folderPath">Parent folder of this file</param>
+		/// <param name="fileName">Name of the file the index will be added after</param>
+		static string AddIndex(const path& folderPath, const string& fileName, const string& extension = "");
 	};
 }

@@ -11,6 +11,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "glfw3.h"
 
 //engine
 #include "gui_projecthierarchy.hpp"
@@ -21,12 +22,15 @@
 #include "console.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#include "render.hpp"
 
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using std::cout;
 using std::filesystem::exists;
 using std::to_string;
+using std::filesystem::is_directory;
+using std::filesystem::is_regular_file;
 
 using EngineFile::ConfigFileManager;
 using EngineFile::ConfigFileValue;
@@ -37,6 +41,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::String;
 using Utils::File;
+using Graphics::Render;
 
 namespace Graphics::GUI
 {
@@ -102,6 +107,7 @@ namespace Graphics::GUI
 		{
 			if (ImGui::BeginPopupContextWindow())
 			{
+				//create new folder inside parent folder
 				if (ImGui::MenuItem("Create folder"))
 				{
 					string cleanedScenePath = String::StringReplace(
@@ -109,37 +115,7 @@ namespace Graphics::GUI
 
 					string newFolderPath = cleanedScenePath + "\\New Folder";
 
-					if (exists(newFolderPath))
-					{
-						//try to create new folder with nr 1 after it
-						newFolderPath = cleanedScenePath + "\\New Folder (1)";
-
-						//try to create new folder with first highest available number
-						if (exists(newFolderPath))
-						{
-							int highestNumber = 1;
-							for (const auto& entry : directory_iterator(cleanedScenePath))
-							{
-								path entryPath = entry.path();
-								string entryString = entry.path().string();
-
-								if (is_directory(entryPath)
-									&& entryString.find("New Folder (") != string::npos)
-								{
-									vector<string> split = String::Split(entryString, '(');
-									string cleanedNumberString = String::StringReplace(split[1], ")", "");
-									int number = stoi(cleanedNumberString);
-
-									if (number >= highestNumber) highestNumber = number + 1;
-
-									cout << "found folder with number " << number
-										<< ", setting new highest number to " << highestNumber << "\n";
-								}
-							}
-
-							newFolderPath = cleanedScenePath + "\\New Folder (" + to_string(highestNumber) + ")";
-						}
-					}
+					if (exists(newFolderPath)) newFolderPath = File::AddIndex(cleanedScenePath, "New Folder");
 
 					File::CreateNewFolder(newFolderPath);
 				}
@@ -156,6 +132,7 @@ namespace Graphics::GUI
 						| ImGuiTreeNodeFlags_OpenOnDoubleClick;
 					bool nodeOpen = ImGui::TreeNodeEx(entry.name.c_str(), nodeFlags);
 
+					//hover over folder to show its path in tooltip
 					if (ImGui::IsItemHovered()
 						&& showPathTooltip)
 					{
@@ -166,17 +143,18 @@ namespace Graphics::GUI
 
 					if (ImGui::BeginPopupContextItem())
 					{
+						//rename selected folder
 						if (ImGui::MenuItem("Rename"))
 						{
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
-							string cleanedScenePath = String::StringReplace(
+							string cleanedSceneFolder = String::StringReplace(
 								path(Engine::scenePath).parent_path().string(), "/", "\\");
 							string cleanedModelsFolder = String::StringReplace(
 								path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
 							string cleanedTexturesFolder = String::StringReplace(
 								path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
 
-							if (cleanedEntryPath == cleanedScenePath
+							if (cleanedEntryPath == cleanedSceneFolder
 								|| cleanedEntryPath == cleanedModelsFolder
 								|| cleanedEntryPath == cleanedTexturesFolder)
 							{
@@ -193,54 +171,29 @@ namespace Graphics::GUI
 									"Renaming folder '" + entry.path + "'\n");
 							}
 						}
+						//create folder inside selected folder
 						if (ImGui::MenuItem("Create folder"))
 						{
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
 
 							string newFolderPath = cleanedEntryPath + "\\New Folder";
 
-							if (exists(newFolderPath))
-							{
-								//try to create new folder with nr 1 after it
-								newFolderPath = cleanedEntryPath + "\\New Folder (1)";
-
-								//try to create new folder with first highest available number
-								if (exists(newFolderPath))
-								{
-									int highestNumber = 1;
-									for (const auto& entry : directory_iterator(cleanedEntryPath))
-									{
-										path entryPath = entry.path();
-										string entryString = entry.path().string();
-
-										if (is_directory(entryPath)
-											&& entryString.find("New Folder (") != string::npos)
-										{
-											vector<string> split = String::Split(entryString, '(');
-											string cleanedNumberString = String::StringReplace(split[1], ")", "");
-											int number = stoi(cleanedNumberString);
-
-											if (number >= highestNumber) highestNumber = number + 1;
-										}
-									}
-
-									newFolderPath = cleanedEntryPath + "\\New Folder (" + to_string(highestNumber) + ")";
-								}
-							}
+							if (exists(newFolderPath)) newFolderPath = File::AddIndex(cleanedEntryPath, "New Folder");
 
 							File::CreateNewFolder(newFolderPath);
 						}
+						//delete selected folder
 						if (ImGui::MenuItem("Delete"))
 						{
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
-							string cleanedScenePath = String::StringReplace(
+							string cleanedSceneFolder = String::StringReplace(
 								path(Engine::scenePath).parent_path().string(), "/", "\\");
 							string cleanedModelsFolder = String::StringReplace(
 								path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
 							string cleanedTexturesFolder = String::StringReplace(
 								path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
 
-							if (cleanedEntryPath == cleanedScenePath
+							if (cleanedEntryPath == cleanedSceneFolder
 								|| cleanedEntryPath == cleanedModelsFolder
 								|| cleanedEntryPath == cleanedTexturesFolder)
 							{
@@ -254,20 +207,6 @@ namespace Graphics::GUI
 								File::DeleteFileOrfolder(cleanedEntryPath);
 							}
 						}
-						if (ImGui::MenuItem("Copy"))
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::ENGINE,
-								Type::DEBUG,
-								"Copying folder '" + entry.path + "'\n");
-						}
-						if (ImGui::MenuItem("Paste"))
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::ENGINE,
-								Type::DEBUG,
-								"Pasting folder '" + entry.path + "'\n");
-						}
 
 						ImGui::EndPopup();
 					}
@@ -280,11 +219,13 @@ namespace Graphics::GUI
 				}
 				else
 				{
+					//if user clicked on file
 					if (ImGui::Selectable(entry.name.c_str()))
 					{
 						cout << "clicked on " << entry.path << "\n";
 					}
 
+					//hover over file to show its path in tooltip
 					if (ImGui::IsItemHovered()
 						&& showPathTooltip)
 					{
@@ -295,6 +236,13 @@ namespace Graphics::GUI
 
 					if (ImGui::BeginPopupContextItem())
 					{
+						//open selected scene file
+						if (entry.name == "scene.txt"
+							&& ImGui::MenuItem("Open scene"))
+						{
+							SceneFile::LoadScene(entry.path);
+						}
+						//rename selected file
 						if (ImGui::MenuItem("Rename"))
 						{
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
@@ -318,6 +266,7 @@ namespace Graphics::GUI
 									"Renaming file '" + cleanedEntryPath + "'\n");
 							}
 						}
+						//delete selected file
 						if (ImGui::MenuItem("Delete"))
 						{
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
@@ -336,20 +285,6 @@ namespace Graphics::GUI
 							{
 								File::DeleteFileOrfolder(cleanedEntryPath);
 							}
-						}
-						if (ImGui::MenuItem("Copy"))
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::ENGINE,
-								Type::DEBUG,
-								"Copying file '" + entry.path + "'...\n");
-						}
-						if (ImGui::MenuItem("Paste"))
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::ENGINE,
-								Type::DEBUG,
-								"Pasting file '" + entry.path + "'...\n");
 						}
 
 						ImGui::EndPopup();

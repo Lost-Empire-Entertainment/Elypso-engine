@@ -12,6 +12,7 @@
 #include "fileUtils.hpp"
 #include "console.hpp"
 #include "core.hpp"
+#include "stringUtils.hpp"
 
 using std::exception;
 using std::runtime_error;
@@ -29,11 +30,13 @@ using std::filesystem::create_directories;
 using std::filesystem::rename;
 using std::filesystem::recursive_directory_iterator;
 using std::filesystem::directory_iterator;
+using std::to_string;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Engine;
+using Utils::String;
 
 namespace Utils
 {
@@ -241,7 +244,10 @@ namespace Utils
                     if (is_directory(entry))
                     {
                         hasChildDirectories = true;
-                        break;
+                    }
+                    else if (is_regular_file(entry))
+                    {
+                        remove(entry);
                     }
                 }
 
@@ -251,9 +257,9 @@ namespace Utils
                     {
                         DeleteFileOrfolder(entry.path());
                     }
-                    remove(sourcePath);
+                    remove_all(sourcePath);
                 }
-                else remove(sourcePath);
+                else remove_all(sourcePath);
             }
 
             output = "Deleted " + sourcePath.string() + ".\n\n";
@@ -315,5 +321,35 @@ namespace Utils
                 Type::EXCEPTION,
                 output);
         }
+    }
+
+    string File::AddIndex(const path& parentFolderPath, const string& fileName, const string& extension)
+    {
+        string newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
+
+        //try to create new file/folder with first highest available number
+        if (exists(newFilePath))
+        {
+            int highestNumber = 1;
+            for (const auto& entry : directory_iterator(parentFolderPath))
+            {
+                path entryPath = entry.path();
+                string entryString = entry.path().string();
+
+                if (is_directory(entryPath)
+                    && entryString.find(fileName + " (") != string::npos)
+                {
+                    vector<string> split = String::Split(entryString, '(');
+                    string cleanedNumberString = String::StringReplace(split[1], ")", "");
+                    int number = stoi(cleanedNumberString);
+
+                    if (number >= highestNumber) highestNumber = number + 1;
+                }
+            }
+
+            newFilePath = parentFolderPath.string() + "\\" + fileName + " (" + to_string(highestNumber) + ")" + extension;
+        }
+
+        return newFilePath;
     }
 }
