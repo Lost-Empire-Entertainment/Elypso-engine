@@ -73,7 +73,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				renderInspector = false;
+				ConfigFileManager::valuesMap["gui_inspector"].SetValue("0");
 			}
 
 			guiInspector.RI_PermanentComponents();

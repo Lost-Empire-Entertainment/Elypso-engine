@@ -40,7 +40,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				renderSceneHierarchy = false;
+				ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("0");
 			}
 
 			ImGui::End();

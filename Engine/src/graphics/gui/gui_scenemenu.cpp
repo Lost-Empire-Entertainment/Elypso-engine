@@ -54,7 +54,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				renderSceneMenu = false;
+				ConfigFileManager::valuesMap["gui_sceneMenu"].SetValue("0");
 			}
 
 			sceneMenu.SceneMenuContent();

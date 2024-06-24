@@ -55,7 +55,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				renderConsole = false;
+				ConfigFileManager::valuesMap["gui_console"].SetValue("0");
 			}
 
 			//text area with scrollable region

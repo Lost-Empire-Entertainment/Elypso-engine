@@ -88,7 +88,8 @@ namespace Graphics::GUI
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
 
-			ConfigFileManager::valuesMap["gui_assetListWindow"].SetValue("1");
+			ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("1");
+			ConfigFileManager::valuesMap["gui_projectHierarchy"].SetValue("1");
 			ConfigFileManager::valuesMap["gui_console"].SetValue("1");
 			ConfigFileManager::valuesMap["gui_inspector"].SetValue("1");
 			ConfigFileManager::SaveConfigFile();
