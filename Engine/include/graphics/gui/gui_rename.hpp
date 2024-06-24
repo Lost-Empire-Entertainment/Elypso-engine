@@ -11,18 +11,22 @@ using std::string;
 
 namespace Graphics::GUI
 {
-	class GUICreateScene
+	class GUIRename
 	{
 	public:
-		static inline bool renderCreateSceneWindow;
+		static inline string extension;
+		static inline string originalName;
+		static inline string parentFolder;
 
-		static void RenderCreateSceneWindow();
+		static inline bool renderRenameWindow;
+
+		static void RenderRenameWindow();
 	private:
-		static inline string assignedSceneName = "Scene";
+		static inline string newName = "Name";
 		static constexpr int bufferSize = 16;
 
-		static inline char sceneName[bufferSize];
+		static inline char name[bufferSize];
 
-		static void RenderCreateSceneWindowContent();
+		static void RenderRenameContent();
 	};
 }

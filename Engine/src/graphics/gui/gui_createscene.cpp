@@ -86,6 +86,10 @@ namespace Graphics::GUI
 		ImGui::SetCursorPos(createButtonPos);
 		if (ImGui::Button("Create", buttonSize))
 		{
+			//
+			// CHECK IF NAME HAS ILLEGAL CHARACTER
+			//
+
 			bool foundIllegalChar = false;
 			for (char c : assignedSceneName)
 			{
@@ -104,48 +108,60 @@ namespace Graphics::GUI
 					Caller::ENGINE,
 					Type::EXCEPTION,
 					"Invalid character detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+
+				renderCreateSceneWindow = false;
+
+				return;
 			}
-			else
+			
+			//
+			// CHECK IF SCENE FOLDER WITH SAME NAME ALREADY EXISTS
+			//
+
+			bool foundExistingScene = false;
+
+			string parentPath = path(Engine::scenePath).parent_path().parent_path().string();
+
+			for (const auto& entry : directory_iterator(parentPath))
 			{
-				bool foundExistingScene = false;
-
-				string parentPath = path(Engine::scenePath).parent_path().parent_path().string();
-
-				for (const auto& entry : directory_iterator(parentPath))
+				if (entry.path().filename().string() == assignedSceneName)
 				{
-					if (entry.path().filename().string() == assignedSceneName)
-					{
-						foundExistingScene = true;
-						break;
-					}
-				}
-
-				if (foundExistingScene)
-				{
-					strcpy_s(sceneName, bufferSize, "Scene");
-					assignedSceneName = "Scene";
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
-						Type::EXCEPTION,
-						"Scene name '" + assignedSceneName+ "' already exists in this project! Please pick a new scene name.");
-				}
-				else
-				{
-					string newSceneFolder = parentPath + "\\" + assignedSceneName;
-					string newSceneFile = newSceneFolder + "\\scene.txt";
-
-					File::CreateNewFolder(newSceneFolder);
-					ofstream sceneFile(newSceneFile);
-					sceneFile.close();
-
-					SceneFile::LoadScene(newSceneFile);
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-					renderCreateSceneWindow = false;
+					foundExistingScene = true;
+					break;
 				}
 			}
+
+			if (foundExistingScene)
+			{
+				strcpy_s(sceneName, bufferSize, "Scene");
+				assignedSceneName = "Scene";
+
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Scene name '" + assignedSceneName + "' already exists in this project! Please pick a new scene name.");
+
+				renderCreateSceneWindow = false;
+
+				return;
+			}
+
+			//
+			// CREATE NEW SCENE
+			//
+
+			string newSceneFolder = parentPath + "\\" + assignedSceneName;
+			string newSceneFile = newSceneFolder + "\\scene.txt";
+
+			File::CreateNewFolder(newSceneFolder);
+			ofstream sceneFile(newSceneFile);
+			sceneFile.close();
+
+			SceneFile::LoadScene(newSceneFile);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+			renderCreateSceneWindow = false;
 		}
 
 		ImVec2 cancelButtonPos = ImVec2(

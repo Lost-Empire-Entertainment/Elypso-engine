@@ -3,6 +3,9 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <filesystem>
 
 //external
@@ -12,41 +15,35 @@
 #include "imgui_internal.h"
 
 //engine
-#include "gui_importAsset.hpp"
+#include "gui_rename.hpp"
 #include "gui.hpp"
-#include "model.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
-#include "core.hpp"
-#include "fileexplorer.hpp"
-#include "gameobject.hpp"
-#include "stringUtils.hpp"
 #include "fileUtils.hpp"
-#include "texture.hpp"
+#include "core.hpp"
+#include "stringUtils.hpp"
 #include "console.hpp"
 
+using std::cout;
+using std::ifstream;
+using std::ofstream;
 using std::filesystem::exists;
-using std::filesystem::path;
-using std::exception;
 using std::filesystem::directory_iterator;
+using std::getline;
+using std::stringstream;
 
-using Graphics::Shape::Model;
 using EngineFile::SceneFile;
 using Graphics::Render;
-using Core::Engine;
-using EngineFile::FileExplorer;
-using Graphics::Shape::GameObjectManager;
-using Graphics::Shape::GameObject;
-using Utils::String;
 using Utils::File;
-using Graphics::Texture;
+using Core::Engine;
+using Utils::String;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
-	void GUIImportAsset::RenderImportAsset()
+	void GUIRename::RenderRenameWindow()
 	{
 		ImVec2 pos = ImVec2(400, 400);
 		ImGui::SetNextWindowSize(ImVec2(400, 400));
@@ -58,16 +55,16 @@ namespace Graphics::GUI
 			| ImGuiWindowFlags_NoDocking
 			| ImGuiWindowFlags_NoResize;
 
-		if (renderImportAsset
-			&& ImGui::Begin("Import asset", NULL, windowFlags))
+		if (renderRenameWindow
+			&& ImGui::Begin("Rename", NULL, windowFlags))
 		{
-			RenderImportAssetContent();
+			RenderRenameContent();
 
 			ImGui::End();
 		}
 	}
 
-	void GUIImportAsset::RenderImportAssetContent()
+	void GUIRename::RenderRenameContent()
 	{
 		ImVec2 windowSize = ImGui::GetWindowSize();
 		ImVec2 textfieldPos = ImVec2(
@@ -87,16 +84,12 @@ namespace Graphics::GUI
 
 		ImVec2 buttonSize = ImVec2(100, 30);
 
-		//import asset into engine
-		ImVec2 importButtonPos = ImVec2(
+		ImVec2 createButtonPos = ImVec2(
 			ImGui::GetWindowSize().x / 2 - buttonSize.x - buttonSize.x / 2,
 			ImGui::GetWindowSize().y - 50);
-		ImGui::SetCursorPos(importButtonPos);
-		if (ImGui::Button("Import", buttonSize))
+		ImGui::SetCursorPos(createButtonPos);
+		if (ImGui::Button("Rename", buttonSize))
 		{
-			string stem = path(assetPath).stem().string();
-			string extension = path(assetPath).extension().string();
-
 			//
 			// CHECK IF NAME HAS ILLEGAL CHARACTER
 			//
@@ -118,9 +111,13 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+					"Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
-				renderImportAsset = false;
+				extension = "";
+				originalName = "";
+				parentFolder = "";
+
+				renderRenameWindow = false;
 
 				return;
 			}
@@ -131,21 +128,7 @@ namespace Graphics::GUI
 
 			bool foundExistingFile = false;
 
-			string cleanedModelsFolder = String::StringReplace(
-				path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
-			string cleanedTexturesFolder = String::StringReplace(
-				path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
-
-			for (const auto& entry : directory_iterator(cleanedModelsFolder))
-			{
-				if (entry.path().filename().string() == newName)
-				{
-					foundExistingFile = true;
-					break;
-				}
-			}
-
-			for (const auto& entry : directory_iterator(cleanedTexturesFolder))
+			for (const auto& entry : directory_iterator(parentFolder))
 			{
 				if (entry.path().filename().string() == newName)
 				{
@@ -162,66 +145,103 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"File name '" + newName + "' already exists in this project! Please pick a new file name.");
+					"File/folder name '" + newName + "' already exists in this folder! Please pick a new file/folder name.");
 
-				renderImportAsset = false;
+				extension = "";
+				originalName = "";
+				parentFolder = "";
+
+				renderRenameWindow = false;
 
 				return;
 			}
 
+			string originalPath = parentFolder + "\\" + originalName + extension;
+			string newPath = parentFolder + "\\" + newName + extension;
+
+			stringstream buffer;
+
 			//
-			// IMPORT MODEL
+			// FIND OLD MODEL PATH FROM SCENE FILE AND WRITE WITH NEW PATH INTO BUFFER
 			//
 
-			if (extension == ".fbx"
-				|| extension == ".gltw"
-				|| extension == ".obj")
+			ifstream readSceneFile(Engine::scenePath);
+			if (!readSceneFile.is_open())
 			{
-				string scenePath = path(Engine::scenePath).parent_path().string();
-				string newFilePath = scenePath + "/models/" + path(assetPath).filename().string();
-				File::CopyFileOrFolder(assetPath, newFilePath);
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 
-				Model::targetModel = newFilePath;
-				Model::Initialize(
-					vec3(0),
-					vec3(0),
-					vec3(1),
-					newFilePath,
-					Engine::filesPath + "/shaders/GameObject.vert",
-					Engine::filesPath + "/shaders/GameObject.frag",
-					Engine::filesPath + "/textures/diff_default.png",
-					"EMPTY",
-					"EMPTY",
-					"EMPTY",
-					32,
-					newName,
-					Model::tempID);
+				extension = "";
+				originalName = "";
+				parentFolder = "";
 
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				renderRenameWindow = false;
+
+				return;
 			}
 
+			string readFileLine;
+			while (getline(readSceneFile, readFileLine))
+			{
+				if (readFileLine.find(originalPath))
+				{
+					cout << "found and replaced old model path '" << originalPath << "' with new path '" << newPath << "'\n";
+					buffer << "model path= " << newPath << "\n";
+				}
+				else buffer << readFileLine;
+			}
+			readSceneFile.close();
+
 			//
-			// IMPORT TEXTURE
+			// WRITE NEW MODEL PATH INTO SCENE FILE
 			//
 
-			else if (extension == ".png"
-				|| extension == ".jpg"
-				|| extension == ".jpeg")
+			string bufferContent = buffer.str();
+			ofstream writeSceneFile(Engine::scenePath);
+			if (!writeSceneFile.is_open())
 			{
-				string scenePath = path(Engine::scenePath).parent_path().string();
-				string newFilePath = scenePath + "/textures/" + path(assetPath).filename().string();
-				File::CopyFileOrFolder(assetPath, newFilePath);
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::EXCEPTION,
+					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
+
+				extension = "";
+				originalName = "";
+				parentFolder = "";
+
+				renderRenameWindow = false;
+
+				return;
 			}
 
-			renderImportAsset = false;
+			writeSceneFile << bufferContent;
+
+			writeSceneFile.close();
+
+			File::MoveOrRenameFileOrFolder(originalPath, newPath, true);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+			extension = "";
+			originalName = "";
+			parentFolder = "";
+
+			renderRenameWindow = false;
 		}
+
 		ImVec2 cancelButtonPos = ImVec2(
 			ImGui::GetWindowSize().x / 2 + buttonSize.x / 2,
 			ImGui::GetWindowSize().y - 50);
 		ImGui::SetCursorPos(cancelButtonPos);
 		if (ImGui::Button("Cancel", buttonSize))
 		{
-			renderImportAsset = false;
+			extension = "";
+			originalName = "";
+			parentFolder = "";
+
+			renderRenameWindow = false;
 		}
 	}
 }

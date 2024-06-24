@@ -23,6 +23,7 @@
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
 #include "render.hpp"
+#include "gui_rename.hpp"
 
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
@@ -169,6 +170,15 @@ namespace Graphics::GUI
 									Caller::ENGINE,
 									Type::DEBUG,
 									"Renaming folder '" + entry.path + "'\n");
+
+								GUIRename::originalName = path(entry.path).stem().string();
+								if (is_regular_file(path(entry.path)))
+								{
+									GUIRename::extension = path(entry.path).extension().string();
+								}
+								GUIRename::parentFolder = path(entry.path).parent_path().string();
+
+								GUIRename::renderRenameWindow = true;
 							}
 						}
 						//create folder inside selected folder
@@ -256,7 +266,7 @@ namespace Graphics::GUI
 								ConsoleManager::WriteConsoleMessage(
 									Caller::ENGINE,
 									Type::EXCEPTION,
-									"Cannot delete file '" + cleanedEntryPath + "' because it is used by this scene!\n");
+									"Cannot rename file '" + cleanedEntryPath + "' because it is used by this scene!\n");
 							}
 							else
 							{
@@ -264,6 +274,15 @@ namespace Graphics::GUI
 									Caller::ENGINE,
 									Type::DEBUG,
 									"Renaming file '" + cleanedEntryPath + "'\n");
+
+								GUIRename::originalName = path(entry.path).stem().string();
+								if (is_regular_file(path(entry.path)))
+								{
+									GUIRename::extension = path(entry.path).extension().string();
+								}
+								GUIRename::parentFolder = path(entry.path).parent_path().string();
+
+								GUIRename::renderRenameWindow = true;
 							}
 						}
 						//delete selected file

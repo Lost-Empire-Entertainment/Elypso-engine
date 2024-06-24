@@ -24,6 +24,7 @@
 #include "gui_scenehierarchy.hpp"
 #include "gui_projecthierarchy.hpp"
 #include "gui_createscene.hpp"
+#include "gui_rename.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -350,6 +351,7 @@ namespace Graphics::GUI
 		GUISceneHierarchy::RenderSceneHierarchy();
 		GUIProjectHierarchy::RenderProjectHierarchy();
 		GUICreateScene::RenderCreateSceneWindow();
+		GUIRename::RenderRenameWindow();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
@@ -420,7 +422,7 @@ namespace Graphics::GUI
 				}
 				else
 				{
-					bool foundExisting;
+					bool foundExisting = false;
 					string existingFilePath;
 					string existingFileName;
 					string importedFileName = path(assetPath).filename().string();
@@ -444,7 +446,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							Caller::ENGINE,
 							Type::EXCEPTION,
-							"File '" + importedFileName + "' already exists in engine!");
+							"File '" + importedFileName + "' already exists in the engine!\n");
 					}
 					else
 					{

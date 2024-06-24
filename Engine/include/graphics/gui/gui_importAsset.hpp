@@ -21,13 +21,11 @@ namespace Graphics::GUI
 
 		static void RenderImportAsset();
 	private:
-		static constexpr int nameBufferSize = 32;
-		static constexpr int pathBufferSize = 256;
+		static inline string newName = "Name";
+		static constexpr int bufferSize = 16;
 
-		static inline string assignedName = "Model";
-		static inline string assignedDiffuseTexture;
+		static inline char name[bufferSize];
 
-		static inline char inputTextBuffer_objName[nameBufferSize];
-		static inline char inputTextBuffer_diffTexturePath[pathBufferSize];
+		static void RenderImportAssetContent();
 	};
 }

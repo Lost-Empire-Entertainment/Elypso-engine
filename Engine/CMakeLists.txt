@@ -74,6 +74,7 @@ set(SOURCE_FILES
 	${SRC_GRAPHICS_DIR}/gui/gui_importAsset.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_projecthierarchy.cpp
+	${SRC_GRAPHICS_DIR}/gui/gui_rename.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_scenehierarchy.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_scenemenu.cpp
 	${SRC_GRAPHICS_DIR}/gui/gui_settings.cpp
