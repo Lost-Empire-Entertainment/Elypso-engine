@@ -21,16 +21,16 @@ namespace Core
 		static void InitializeDeltaTime();
 		static void UpdateDeltaTime();
 	private:
-		int frame_count;
-		high_resolution_clock::time_point start_time;
-		high_resolution_clock::time_point last_frame_time;
-		duration<double> frame_duration;
+		static inline int frame_count;
+		static inline high_resolution_clock::time_point start_time;
+		static inline high_resolution_clock::time_point last_frame_time;
+		static inline duration<double> frame_duration;
 
 		//smooth displayed fps update
-		int smoothed_frame_count;
-		double smoothing_interval;
-		high_resolution_clock::time_point last_smoothed_update;
-		high_resolution_clock::time_point current_time;
-		duration<double> elapsed_seconds;
+		static inline int smoothed_frame_count;
+		static inline double smoothing_interval;
+		static inline high_resolution_clock::time_point last_smoothed_update;
+		static inline high_resolution_clock::time_point current_time;
+		static inline 	duration<double> elapsed_seconds;
 	};
 }

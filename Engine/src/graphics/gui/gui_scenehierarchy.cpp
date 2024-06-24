@@ -43,7 +43,14 @@ namespace Graphics::GUI
 				ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("0");
 			}
 
+			RenderSceneHierarchyContent();
+
 			ImGui::End();
 		}
+	}
+
+	void GUISceneHierarchy::RenderSceneHierarchyContent()
+	{
+
 	}
 }

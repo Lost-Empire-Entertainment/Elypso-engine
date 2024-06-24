@@ -26,11 +26,11 @@ namespace Graphics
 		static void InitializeGrid();
 		static void RenderGrid(const mat4& view, const mat4& projection);
 	private:
-		GLuint VAO, VBO;
-		Shader shader;
+		static inline GLuint VAO, VBO;
+		static inline Shader shader;
 
 		static constexpr int lineCount = 100; //BREAKS IF YOU PUT IT ABOVE 100000
-		float lineDistance = 1.0f; //BREAKS IF YOU PUT IT BELOW 1.0f
-		float vertices[lineCount * 4 * 3];
+		static inline float lineDistance = 1.0f; //BREAKS IF YOU PUT IT BELOW 1.0f
+		static inline float vertices[lineCount * 4 * 3];
 	};
 }

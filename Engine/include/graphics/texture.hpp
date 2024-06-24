@@ -41,6 +41,6 @@ namespace Graphics
 		}
 
 	private:
-		unordered_map<string, unsigned int> textures;
+		static inline unordered_map<string, unsigned int> textures;
 	};
 }

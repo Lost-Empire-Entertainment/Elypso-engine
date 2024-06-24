@@ -51,7 +51,7 @@ namespace Core
 		/// Prints the messages to the console directly after console has initialized.
 		/// </summary>
 		/// <param name="message"></param>
-		void AddConsoleLog(const string& message);
+		static void AddConsoleLog(const string& message);
 
 		/// <summary>
 		/// Print selected message to in-engine console.
@@ -78,10 +78,10 @@ namespace Core
 		/// Store console messages separately before console has initialized.
 		/// </summary>
 		/// <param name="message"></param>
-		void AddLoggerLog(const std::string& message);
+		static void AddLoggerLog(const std::string& message);
 	private:
-		string GetCurrentTimestamp();
+		static inline string GetCurrentTimestamp();
 
-		bool wireframeMode;
+		static inline bool wireframeMode;
 	};
 }

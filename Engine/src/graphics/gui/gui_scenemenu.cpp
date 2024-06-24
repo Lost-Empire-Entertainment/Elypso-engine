@@ -31,8 +31,6 @@ using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
-	GUISceneMenu sceneMenu;
-
 	void GUISceneMenu::RenderSceneMenu()
 	{
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
@@ -57,7 +55,7 @@ namespace Graphics::GUI
 				ConfigFileManager::valuesMap["gui_sceneMenu"].SetValue("0");
 			}
 
-			sceneMenu.SceneMenuContent();
+			SceneMenuContent();
 
 			ImGui::End();
 		}

@@ -24,8 +24,6 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-	Texture textureClass;
-
 	void Texture::LoadTexture(
 		const shared_ptr<GameObject>& obj,
 		const string& texturePath,
@@ -47,8 +45,8 @@ namespace Graphics
 		}
 
 		//the texture exists but hasnt yet been added to this model
-		auto it = textureClass.textures.find(texturePath);
-		if (it != textureClass.textures.end())
+		auto it = textures.find(texturePath);
+		if (it != textures.end())
 		{
 			obj->GetMaterial()->AddTexture(texturePath, it->second, type);
 			return;
@@ -83,7 +81,7 @@ namespace Graphics
 
 			obj->GetMaterial()->AddTexture(texturePath, texture, type);
 
-			textureClass.textures[texturePath] = texture;
+			textures[texturePath] = texture;
 
 			//cout << "Added new texture " << texturePath << " to " << obj->GetName() << "! New texture count is " << obj->GetMaterial()->GetTextureCount() << ".\n\n";
 		}

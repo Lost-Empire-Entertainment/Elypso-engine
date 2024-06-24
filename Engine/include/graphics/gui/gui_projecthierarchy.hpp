@@ -5,11 +5,30 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
+using std::string;
+using std::vector;
+
 namespace Graphics::GUI
 {
+	struct DirectoryEntry
+	{
+		string name;
+		string path;
+		bool isDirectory;
+	};
+
 	class GUIProjectHierarchy
 	{
 	public:
 		static void RenderProjectHierarchy();
+	private:
+		static inline bool showPathTooltip;
+
+		static vector<DirectoryEntry> GetDirectoryContents(const string& directoryPath);
+
+		static void DisplayDirectoryContents(const string& directoryPath);
 	};
 }

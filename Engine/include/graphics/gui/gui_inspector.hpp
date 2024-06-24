@@ -14,8 +14,8 @@ namespace Graphics::GUI
 	private:
 		static constexpr int bufferSize = 32;
 
-		char inputTextBuffer_objName[bufferSize];
+		static inline char inputTextBuffer_objName[bufferSize];
 
-		void RI_PermanentComponents();
+		static void RI_PermanentComponents();
 	};
 }

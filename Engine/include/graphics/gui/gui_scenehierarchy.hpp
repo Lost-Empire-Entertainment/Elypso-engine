@@ -11,5 +11,7 @@ namespace Graphics::GUI
 	{
 	public:
 		static void RenderSceneHierarchy();
+	private:
+		static void RenderSceneHierarchyContent();
 	};
 }

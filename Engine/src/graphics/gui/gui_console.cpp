@@ -27,9 +27,6 @@ using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
-	GUIConsole guiConsole;
-
-
 	void GUIConsole::RenderConsole()
 	{
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
@@ -108,7 +105,7 @@ namespace Graphics::GUI
 			if (ImGui::InputTextWithHint(
 				"##inputfield",
 				"Enter command...",
-				guiConsole.inputTextBuffer,
+				inputTextBuffer,
 				sizeof(inputTextBuffer),
 				inputFieldTextFlags,
 				[](ImGuiInputTextCallbackData* data) -> int
@@ -136,9 +133,9 @@ namespace Graphics::GUI
 					return 0;
 				}))
 			{
-				ConsoleManager::ParseConsoleCommand(guiConsole.inputTextBuffer);
+				ConsoleManager::ParseConsoleCommand(inputTextBuffer);
 				ImGui::SetScrollHereY(1.0f);
-				memset(guiConsole.inputTextBuffer, 0, sizeof(guiConsole.inputTextBuffer));
+				memset(inputTextBuffer, 0, sizeof(inputTextBuffer));
 			}
 
 			ImGui::PopItemWidth();

@@ -31,8 +31,6 @@ using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
-	GUIFloatingDebugMenu floatingDebugMenu;
-
 	void GUIFloatingDebugMenu::RenderFloatingDebugMenu()
 	{
 		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), EngineGUI::maxSize);
@@ -44,7 +42,7 @@ namespace Graphics::GUI
 
 		if (ImGui::Begin("Floating debug menu", NULL, windowFlags))
 		{
-			floatingDebugMenu.FloatingDebugMenuContent();
+			FloatingDebugMenuContent();
 
 			ImGui::End();
 		}

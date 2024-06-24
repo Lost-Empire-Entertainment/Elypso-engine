@@ -12,6 +12,6 @@ namespace Graphics::GUI
 	public:
 		static void RenderSceneMenu();
 	private:
-		void SceneMenuContent();
+		static void SceneMenuContent();
 	};
 }

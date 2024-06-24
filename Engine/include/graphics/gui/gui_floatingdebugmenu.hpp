@@ -12,6 +12,6 @@ namespace Graphics::GUI
 	public:
 		static void RenderFloatingDebugMenu();
 	private:
-		void FloatingDebugMenuContent();
+		static void FloatingDebugMenuContent();
 	};
 }

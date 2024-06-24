@@ -52,7 +52,6 @@ namespace Core
 {
     std::vector<std::string> ConsoleManager::storedLogs;
 
-    ConsoleManager consoleManager;
     ofstream logFile;
 
     string ConsoleManager::GetCurrentTimestamp()
@@ -123,7 +122,7 @@ namespace Core
 
     void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool internalMessage)
     {
-        string timeStamp = consoleManager.GetCurrentTimestamp();
+        string timeStamp = GetCurrentTimestamp();
         string theCaller = string(magic_enum::enum_name(caller));
         string theType = string(magic_enum::enum_name(type));
 
@@ -164,11 +163,11 @@ namespace Core
             && type != Type::DEBUG)))
         {
             if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
-            else consoleManager.AddConsoleLog(internalMsg);
+            else AddConsoleLog(internalMsg);
         }
 
         cout << externalMsg;
-        consoleManager.AddLoggerLog(externalMsg);
+        AddLoggerLog(externalMsg);
     }
 
     void ConsoleManager::ParseConsoleCommand(const string& command)
@@ -222,10 +221,10 @@ namespace Core
                  || cleanedCommands[1] == "2")
                  && cleanedCommands.size() == 2)
         {
-            consoleManager.wireframeMode = cleanedCommands[1] != "1";
+            wireframeMode = cleanedCommands[1] != "1";
             glPolygonMode(
                 GL_FRONT_AND_BACK, 
-                consoleManager.wireframeMode ? GL_LINE : GL_FILL);
+                wireframeMode ? GL_LINE : GL_FILL);
 
             string wireframeModeValue = cleanedCommands[1] == "1" ?
                 "shaded" :

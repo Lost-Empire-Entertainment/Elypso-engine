@@ -50,8 +50,6 @@ using EngineFile::ConfigFileValue;
 
 namespace Graphics::GUI
 {
-	GUIInspector guiInspector;
-
 	void GUIInspector::RenderInspector()
 	{
 		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
@@ -76,7 +74,7 @@ namespace Graphics::GUI
 				ConfigFileManager::valuesMap["gui_inspector"].SetValue("0");
 			}
 
-			guiInspector.RI_PermanentComponents();
+			RI_PermanentComponents();
 
 			ImGui::End();
 		}
