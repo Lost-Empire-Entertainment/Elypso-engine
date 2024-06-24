@@ -28,6 +28,7 @@ using std::filesystem::create_directory;
 using std::filesystem::create_directories;
 using std::filesystem::rename;
 using std::filesystem::recursive_directory_iterator;
+using std::filesystem::directory_iterator;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -232,7 +233,28 @@ namespace Utils
         try
         {
             if (is_regular_file(sourcePath)) remove(sourcePath);
-            else if (is_directory(sourcePath)) remove_all(sourcePath);
+            else if (is_directory(sourcePath))
+            {
+                bool hasChildDirectories = false;
+                for (const auto& entry : directory_iterator(sourcePath))
+                {
+                    if (is_directory(entry))
+                    {
+                        hasChildDirectories = true;
+                        break;
+                    }
+                }
+
+                if (hasChildDirectories)
+                {
+                    for (const auto& entry : directory_iterator(sourcePath))
+                    {
+                        DeleteFileOrfolder(entry.path());
+                    }
+                    remove(sourcePath);
+                }
+                else remove(sourcePath);
+            }
 
             output = "Deleted " + sourcePath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(

@@ -20,10 +20,13 @@
 #include "core.hpp"
 #include "console.hpp"
 #include "stringUtils.hpp"
+#include "fileUtils.hpp"
 
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using std::cout;
+using std::filesystem::exists;
+using std::to_string;
 
 using EngineFile::ConfigFileManager;
 using EngineFile::ConfigFileValue;
@@ -33,6 +36,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::String;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -96,6 +100,53 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginChild("##content"))
 		{
+			if (ImGui::BeginPopupContextWindow())
+			{
+				if (ImGui::MenuItem("Create folder"))
+				{
+					string cleanedScenePath = String::StringReplace(
+						path(Engine::scenePath).parent_path().parent_path().string(), "/", "\\");
+
+					string newFolderPath = cleanedScenePath + "\\New Folder";
+
+					if (exists(newFolderPath))
+					{
+						//try to create new folder with nr 1 after it
+						newFolderPath = cleanedScenePath + "\\New Folder (1)";
+
+						//try to create new folder with first highest available number
+						if (exists(newFolderPath))
+						{
+							int highestNumber = 1;
+							for (const auto& entry : directory_iterator(cleanedScenePath))
+							{
+								path entryPath = entry.path();
+								string entryString = entry.path().string();
+
+								if (is_directory(entryPath)
+									&& entryString.find("New Folder (") != string::npos)
+								{
+									vector<string> split = String::Split(entryString, '(');
+									string cleanedNumberString = String::StringReplace(split[1], ")", "");
+									int number = stoi(cleanedNumberString);
+
+									if (number >= highestNumber) highestNumber = number + 1;
+
+									cout << "found folder with number " << number
+										<< ", setting new highest number to " << highestNumber << "\n";
+								}
+							}
+
+							newFolderPath = cleanedScenePath + "\\New Folder (" + to_string(highestNumber) + ")";
+						}
+					}
+
+					File::CreateNewFolder(newFolderPath);
+				}
+
+				ImGui::EndPopup();
+			}
+
 			for (const auto& entry : contents)
 			{
 				if (entry.isDirectory)
@@ -120,16 +171,19 @@ namespace Graphics::GUI
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
 							string cleanedScenePath = String::StringReplace(
 								path(Engine::scenePath).parent_path().string(), "/", "\\");
+							string cleanedModelsFolder = String::StringReplace(
+								path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
+							string cleanedTexturesFolder = String::StringReplace(
+								path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
 
-							cout << "\nAttempting to delete\n'" + cleanedEntryPath + "'\n";
-							cout << "Protected scene file\n'" + cleanedScenePath + "'\n";
-
-							if (entry.path == cleanedScenePath)
+							if (cleanedEntryPath == cleanedScenePath
+								|| cleanedEntryPath == cleanedModelsFolder
+								|| cleanedEntryPath == cleanedTexturesFolder)
 							{
 								ConsoleManager::WriteConsoleMessage(
 									Caller::ENGINE,
 									Type::EXCEPTION,
-									"Cannot rename scene folder '" + entry.path + "' because it is currently open!\n");
+									"Cannot rename folder '" + cleanedEntryPath + "' because it is used by this scene!\n");
 							}
 							else
 							{
@@ -139,28 +193,65 @@ namespace Graphics::GUI
 									"Renaming folder '" + entry.path + "'\n");
 							}
 						}
+						if (ImGui::MenuItem("Create folder"))
+						{
+							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
+
+							string newFolderPath = cleanedEntryPath + "\\New Folder";
+
+							if (exists(newFolderPath))
+							{
+								//try to create new folder with nr 1 after it
+								newFolderPath = cleanedEntryPath + "\\New Folder (1)";
+
+								//try to create new folder with first highest available number
+								if (exists(newFolderPath))
+								{
+									int highestNumber = 1;
+									for (const auto& entry : directory_iterator(cleanedEntryPath))
+									{
+										path entryPath = entry.path();
+										string entryString = entry.path().string();
+
+										if (is_directory(entryPath)
+											&& entryString.find("New Folder (") != string::npos)
+										{
+											vector<string> split = String::Split(entryString, '(');
+											string cleanedNumberString = String::StringReplace(split[1], ")", "");
+											int number = stoi(cleanedNumberString);
+
+											if (number >= highestNumber) highestNumber = number + 1;
+										}
+									}
+
+									newFolderPath = cleanedEntryPath + "\\New Folder (" + to_string(highestNumber) + ")";
+								}
+							}
+
+							File::CreateNewFolder(newFolderPath);
+						}
 						if (ImGui::MenuItem("Delete"))
 						{
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
 							string cleanedScenePath = String::StringReplace(
 								path(Engine::scenePath).parent_path().string(), "/", "\\");
+							string cleanedModelsFolder = String::StringReplace(
+								path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
+							string cleanedTexturesFolder = String::StringReplace(
+								path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
 
-							cout << "\nAttempting to delete\n'" + cleanedEntryPath + "'\n";
-							cout << "Protected scene file\n'" + cleanedScenePath + "'\n";
-
-							if (cleanedEntryPath == cleanedScenePath)
+							if (cleanedEntryPath == cleanedScenePath
+								|| cleanedEntryPath == cleanedModelsFolder
+								|| cleanedEntryPath == cleanedTexturesFolder)
 							{
 								ConsoleManager::WriteConsoleMessage(
 									Caller::ENGINE,
 									Type::EXCEPTION,
-									"Cannot delete scene folder '" + cleanedEntryPath + "' because it is currently open!\n");
+									"Cannot delete folder '" + cleanedEntryPath + "' because it is used by this scene!\n");
 							}
 							else
 							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::DEBUG,
-									"Deleting folder '" + cleanedEntryPath + "'\n");
+								File::DeleteFileOrfolder(cleanedEntryPath);
 							}
 						}
 						if (ImGui::MenuItem("Copy"))
@@ -211,23 +302,13 @@ namespace Graphics::GUI
 							string cleanedScenePath = String::StringReplace(
 								path(Engine::scenePath).parent_path().parent_path().string(), "/", "\\");
 
-							cout << "\nAttempting to delete\n'" + cleanedEntryPath + "'\n";
-							cout << "Protected project file\n'" + cleanedProjectPath + "'\n";
-							cout << "Protected scene file\n'" + cleanedScenePath + "'\n";
-
-							if (cleanedEntryPath == cleanedProjectPath)
+							if (cleanedEntryPath == cleanedScenePath
+								|| cleanedEntryPath == cleanedProjectPath)
 							{
 								ConsoleManager::WriteConsoleMessage(
 									Caller::ENGINE,
 									Type::EXCEPTION,
-									"Cannot rename project file '" + cleanedEntryPath + "' because it is used by this project!\n");
-							}
-							else if (cleanedEntryPath == cleanedScenePath)
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::EXCEPTION,
-									"Cannot rename scene file '" + cleanedEntryPath + "' because it is currently open!\n");
+									"Cannot delete file '" + cleanedEntryPath + "' because it is used by this scene!\n");
 							}
 							else
 							{
@@ -243,30 +324,17 @@ namespace Graphics::GUI
 							string cleanedProjectPath = String::StringReplace(Engine::projectPath, "/", "\\");
 							string cleanedScenePath = String::StringReplace(Engine::scenePath, "/", "\\");
 
-							cout << "\nAttempting to delete\n'" + cleanedEntryPath + "'\n";
-							cout << "Protected project file\n'" + cleanedProjectPath + "'\n";
-							cout << "Protected scene file\n'" + cleanedScenePath + "'\n";
-
-							if (cleanedEntryPath == cleanedProjectPath)
+							if (cleanedEntryPath == cleanedScenePath
+								|| cleanedEntryPath == cleanedProjectPath)
 							{
 								ConsoleManager::WriteConsoleMessage(
 									Caller::ENGINE,
 									Type::EXCEPTION,
-									"Cannot delete project file '" + cleanedEntryPath + "' because it is used by this project!\n");
-							}
-							else if (cleanedEntryPath == cleanedScenePath)
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::EXCEPTION,
-									"Cannot delete scene file '" + cleanedEntryPath + "' because it is currently open!\n");
+									"Cannot delete file '" + cleanedEntryPath + "' because it is used by this scene!\n");
 							}
 							else
 							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::DEBUG,
-									"Deleting file '" + cleanedEntryPath + "'\n");
+								File::DeleteFileOrfolder(cleanedEntryPath);
 							}
 						}
 						if (ImGui::MenuItem("Copy"))
