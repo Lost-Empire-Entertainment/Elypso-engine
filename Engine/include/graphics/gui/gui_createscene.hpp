@@ -5,6 +5,10 @@
 
 #pragma once
 
+#include <string>
+
+using std::string;
+
 namespace Graphics::GUI
 {
 	class GUICreateScene
@@ -14,6 +18,11 @@ namespace Graphics::GUI
 
 		static void RenderCreateSceneWindow();
 	private:
+		static inline string assignedSceneName = "Scene";
+		static constexpr int bufferSize = 32;
+
+		static inline char sceneName[bufferSize];
+
 		static void RenderCreateSceneWindowContent();
 	};
 }
