@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <filesystem>
 
 //external
 #include "glm.hpp"
@@ -20,6 +21,10 @@
 #include "billboard.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "console.hpp"
+#include "sceneFile.hpp"
+#include "stringUtils.hpp"
+#include "fileUtils.hpp"
 
 using std::cout;
 using std::endl;
@@ -28,12 +33,19 @@ using std::to_string;
 using std::remove;
 using std::dynamic_pointer_cast;
 using glm::distance;
+using std::filesystem::directory_iterator;
 
 using Physics::Select;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
 using Graphics::Render;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
+using EngineFile::SceneFile;
+using Utils::String;
+using Utils::File;
 
 namespace Graphics::Shape
 {
@@ -106,6 +118,25 @@ namespace Graphics::Shape
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
 	{
+		string thisName = obj->GetName();
+		string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
+		string thisFolder = String::StringReplace(modelsFolder + "\\" + thisName, "/", "\\");
+
+		for (const auto& entry : directory_iterator(modelsFolder))
+		{
+			string entryPathParentFolder = entry.path().parent_path().string();
+			string entryFolderName = entry.path().filename().string();
+			string entryPath = String::StringReplace(
+				entryPathParentFolder + "\\"
+				+ entryFolderName, "/", "\\");
+
+			if (entryPath == thisFolder)
+			{
+				File::DeleteFileOrfolder(thisFolder);
+				break;
+			}
+		}
+
 		Type type = obj->GetMesh()->GetMeshType();
 
 		Select::selectedObj = nullptr;
@@ -152,5 +183,13 @@ namespace Graphics::Shape
 			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
 		}
+
+		//force-saves the game to ensure everything is up to date
+		SceneFile::SaveScene();
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::ENGINE,
+			ConsoleType::INFO,
+			"Deleted gameobject " + thisName + ".S\n");
 	}
 }

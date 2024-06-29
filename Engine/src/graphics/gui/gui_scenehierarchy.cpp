@@ -3,6 +3,10 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <memory>
+#include <filesystem>
+#include <vector>
+
 //external
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -13,9 +17,27 @@
 #include "gui_scenehierarchy.hpp"
 #include "gui.hpp"
 #include "configFile.hpp"
+#include "gameobject.hpp"
+#include "core.hpp"
+#include "fileUtils.hpp"
+#include "stringUtils.hpp"
+#include "selectobject.hpp"
+
+using std::shared_ptr;
+using std::filesystem::directory_iterator;
+using std::filesystem::exists;
+using std::filesystem::path;
+using std::exception;
+using std::vector;
 
 using EngineFile::ConfigFileManager;
 using EngineFile::ConfigFileValue;
+using Graphics::Shape::GameObject;
+using Graphics::Shape::GameObjectManager;
+using Core::Engine;
+using Utils::File;
+using Utils::String;
+using Physics::Select;
 
 namespace Graphics::GUI
 {
@@ -43,14 +65,38 @@ namespace Graphics::GUI
 				ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("0");
 			}
 
-			RenderSceneHierarchyContent();
+			DisplayGameObjects();
 
 			ImGui::End();
 		}
 	}
 
-	void GUISceneHierarchy::RenderSceneHierarchyContent()
+	void GUISceneHierarchy::DisplayGameObjects()
 	{
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 
+		for (const shared_ptr<GameObject>& obj : objects)
+		{
+			if (obj == nullptr) continue;
+
+			string name = obj->GetName();
+
+			if (ImGui::Selectable(name.c_str()))
+			{
+				Select::selectedObj = obj;
+				Select::isObjectSelected = true;
+			}
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				//delete selected gameobject
+				if (ImGui::MenuItem("Delete"))
+				{
+					GameObjectManager::DestroyGameObject(obj);
+				}
+
+				ImGui::EndPopup();
+			}
+		}
 	}
 }

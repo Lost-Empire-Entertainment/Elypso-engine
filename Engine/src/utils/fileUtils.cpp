@@ -325,7 +325,12 @@ namespace Utils
 
     string File::AddIndex(const path& parentFolderPath, const string& fileName, const string& extension)
     {
-        string newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
+        string newFilePath = parentFolderPath.string() + "/" + fileName + extension;
+
+        if (exists(newFilePath))
+        {
+            newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
+        }
 
         //try to create new file/folder with first highest available number
         if (exists(newFilePath))

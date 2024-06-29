@@ -23,7 +23,6 @@
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
 #include "render.hpp"
-#include "gui_rename.hpp"
 
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
@@ -115,8 +114,7 @@ namespace Graphics::GUI
 						path(Engine::scenePath).parent_path().parent_path().string(), "/", "\\");
 
 					string newFolderPath = cleanedScenePath + "\\New Folder";
-
-					if (exists(newFolderPath)) newFolderPath = File::AddIndex(cleanedScenePath, "New Folder");
+					newFolderPath = File::AddIndex(cleanedScenePath, "New Folder");
 
 					File::CreateNewFolder(newFolderPath);
 				}
@@ -144,51 +142,13 @@ namespace Graphics::GUI
 
 					if (ImGui::BeginPopupContextItem())
 					{
-						//rename selected folder
-						if (ImGui::MenuItem("Rename"))
-						{
-							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
-							string cleanedSceneFolder = String::StringReplace(
-								path(Engine::scenePath).parent_path().string(), "/", "\\");
-							string cleanedModelsFolder = String::StringReplace(
-								path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
-							string cleanedTexturesFolder = String::StringReplace(
-								path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
-
-							if (cleanedEntryPath == cleanedSceneFolder
-								|| cleanedEntryPath == cleanedModelsFolder
-								|| cleanedEntryPath == cleanedTexturesFolder)
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::EXCEPTION,
-									"Cannot rename folder '" + cleanedEntryPath + "' because it is used by this scene!\n");
-							}
-							else
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::DEBUG,
-									"Renaming folder '" + entry.path + "'\n");
-
-								GUIRename::originalName = path(entry.path).stem().string();
-								if (is_regular_file(path(entry.path)))
-								{
-									GUIRename::extension = path(entry.path).extension().string();
-								}
-								GUIRename::parentFolder = path(entry.path).parent_path().string();
-
-								GUIRename::renderRenameWindow = true;
-							}
-						}
 						//create folder inside selected folder
 						if (ImGui::MenuItem("Create folder"))
 						{
 							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
 
 							string newFolderPath = cleanedEntryPath + "\\New Folder";
-
-							if (exists(newFolderPath)) newFolderPath = File::AddIndex(cleanedEntryPath, "New Folder");
+							newFolderPath = File::AddIndex(cleanedEntryPath, "New Folder");
 
 							File::CreateNewFolder(newFolderPath);
 						}
@@ -251,39 +211,6 @@ namespace Graphics::GUI
 							&& ImGui::MenuItem("Open scene"))
 						{
 							SceneFile::LoadScene(entry.path);
-						}
-						//rename selected file
-						if (ImGui::MenuItem("Rename"))
-						{
-							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
-							string cleanedProjectPath = String::StringReplace(Engine::projectPath, "/", "\\");
-							string cleanedScenePath = String::StringReplace(
-								path(Engine::scenePath).parent_path().parent_path().string(), "/", "\\");
-
-							if (cleanedEntryPath == cleanedScenePath
-								|| cleanedEntryPath == cleanedProjectPath)
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::EXCEPTION,
-									"Cannot rename file '" + cleanedEntryPath + "' because it is used by this scene!\n");
-							}
-							else
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::ENGINE,
-									Type::DEBUG,
-									"Renaming file '" + cleanedEntryPath + "'\n");
-
-								GUIRename::originalName = path(entry.path).stem().string();
-								if (is_regular_file(path(entry.path)))
-								{
-									GUIRename::extension = path(entry.path).extension().string();
-								}
-								GUIRename::parentFolder = path(entry.path).parent_path().string();
-
-								GUIRename::renderRenameWindow = true;
-							}
 						}
 						//delete selected file
 						if (ImGui::MenuItem("Delete"))

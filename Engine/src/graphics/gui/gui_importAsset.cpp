@@ -82,8 +82,8 @@ namespace Graphics::GUI
 			newName = name;
 		}
 
-		if (strlen(name) == 0) strcpy_s(name, bufferSize, "_");
-		if (newName == "") newName = "_";
+		if (strlen(name) == 0) strcpy_s(name, bufferSize, path(assetPath).filename().string().c_str());
+		if (newName == "") newName = path(assetPath).filename().string();
 
 		ImVec2 buttonSize = ImVec2(100, 30);
 
@@ -117,52 +117,8 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
-				strcpy_s(name, bufferSize, "Name");
-				newName = "Name";
-
-				renderImportAsset = false;
-
-				return;
-			}
-
-			//
-			// CHECK IF FILE WITH SAME NAME ALREADY EXISTS
-			//
-
-			bool foundExistingFile = false;
-
-			string cleanedModelsFolder = String::StringReplace(
-				path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
-			string cleanedTexturesFolder = String::StringReplace(
-				path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
-
-			for (const auto& entry : directory_iterator(cleanedModelsFolder))
-			{
-				if (entry.path().filename().string() == newName)
-				{
-					foundExistingFile = true;
-					break;
-				}
-			}
-
-			for (const auto& entry : directory_iterator(cleanedTexturesFolder))
-			{
-				if (entry.path().filename().string() == newName)
-				{
-					foundExistingFile = true;
-					break;
-				}
-			}
-
-			if (foundExistingFile)
-			{
-				strcpy_s(name, bufferSize, newName.c_str());
-				newName = newName;
-
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"File name '" + newName + "' already exists in this project! Please pick a new file name.");
+				strcpy_s(name, bufferSize, path(assetPath).filename().string().c_str());
+				newName = path(assetPath).filename().string();
 
 				renderImportAsset = false;
 
@@ -177,16 +133,24 @@ namespace Graphics::GUI
 				|| extension == ".gltw"
 				|| extension == ".obj")
 			{
-				string scenePath = path(Engine::scenePath).parent_path().string();
-				string newFilePath = scenePath + "/models/" + path(assetPath).filename().string();
-				File::CopyFileOrFolder(assetPath, newFilePath);
+				string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
+				string targetExtension = path(assetPath).extension().string();
+				string fullTargetName = newName + extension;
+				string targetPath = File::AddIndex(modelsFolder, newName, "");
+				File::CreateNewFolder(targetPath);
 
-				Model::targetModel = newFilePath;
+				newName = path(targetPath).stem().string();
+				fullTargetName = path(targetPath).stem().string() + targetExtension;
+
+				string fullTargetPath = targetPath + "\\" + fullTargetName;
+				File::CopyFileOrFolder(assetPath, fullTargetPath);
+
+				Model::targetModel = fullTargetPath;
 				Model::Initialize(
 					vec3(0),
 					vec3(0),
 					vec3(1),
-					newFilePath,
+					fullTargetPath,
 					Engine::filesPath + "/shaders/GameObject.vert",
 					Engine::filesPath + "/shaders/GameObject.frag",
 					Engine::filesPath + "/textures/diff_default.png",
