@@ -74,12 +74,12 @@ namespace Graphics::GUI
 				ConfigFileManager::valuesMap["gui_inspector"].SetValue("0");
 			}
 
-			RI_PermanentComponents();
+			PermanentComponents();
 
 			ImGui::End();
 		}
 	}
-	void GUIInspector::RI_PermanentComponents()
+	void GUIInspector::PermanentComponents()
 	{
 		if (Select::isObjectSelected
 			&& Select::selectedObj->IsInitialized())

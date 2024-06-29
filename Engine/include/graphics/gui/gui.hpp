@@ -52,8 +52,7 @@ namespace Graphics::GUI
 		static inline float GetScreenRefreshRate();
 
 		//top bar interactions
-		static void TB_CheckVersion();
-		static void TB_ReportIssue();
+		static void ReportIssue();
 
 		//top bar rendered windows
 		static inline string versionCompare;

@@ -743,27 +743,13 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
-		ImGui::SameLine(ImGui::GetWindowWidth() - 240);
-
-		if (ImGui::BeginMenu("Check version"))
-		{
-			if (ImGui::IsItemClicked())
-			{
-				TB_CheckVersion();
-
-				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
-			}
-		}
-
-		//on the right side
 		ImGui::SameLine(ImGui::GetWindowWidth() - 115);
 
 		if (ImGui::BeginMenu("Report issue"))
 		{
 			if (ImGui::IsItemClicked())
 			{
-				TB_ReportIssue();
+				ReportIssue();
 
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();
@@ -773,53 +759,7 @@ namespace Graphics::GUI
 		ImGui::EndMainMenuBar();
 	}
 
-	void EngineGUI::TB_CheckVersion()
-	{
-		string batFilePath = Engine::filesPath + "/bat scripts/checkVersion.bat";
-
-		if (exists(batFilePath))
-		{
-			string batOutput = File::GetOutputFromBatFile((batFilePath).c_str());
-
-			vector<string>splitOutput = String::Split(batOutput, ' ');
-			vector<string>cleanedOutput = String::RemoveExcept(splitOutput, "0.0.");
-			vector<string>sortedOutput = String::RemoveDuplicates(cleanedOutput);
-
-			string currentVersion = String::StringReplace(Engine::version, " Prototype", "");
-
-			int versionNumber = stoi(String::Split(currentVersion, '.')[2]);
-			int currentVersionNumber = 0;
-			for (const auto& part : sortedOutput)
-			{
-				int partVersionNumber = stoi(String::Split(part, '.')[2]);
-				if (partVersionNumber > currentVersionNumber)
-				{
-					currentVersionNumber = partVersionNumber;
-				}
-			}
-
-			if (currentVersionNumber > versionNumber) outdatedVersion = true;
-
-			versionCompare = 
-				"Latest version: 0.0." + to_string(currentVersionNumber) + "\n" +
-				" Your version: " + currentVersion;
-
-			versionConfirm += outdatedVersion ?
-				"\n\nYour version is out of date!" :
-				"\n\nYour version is up to date!";
-
-			showVersionWindow = true;
-		}
-		else
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::EXCEPTION,
-				"Path " + batFilePath + " does not exist!\n\n");
-		}
-	}
-
-	void EngineGUI::TB_ReportIssue()
+	void EngineGUI::ReportIssue()
 	{
 		try
 		{

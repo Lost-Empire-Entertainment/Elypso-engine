@@ -16,6 +16,6 @@ namespace Graphics::GUI
 
 		static inline char inputTextBuffer_objName[bufferSize];
 
-		static void RI_PermanentComponents();
+		static void PermanentComponents();
 	};
 }
