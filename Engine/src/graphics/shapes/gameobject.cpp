@@ -190,6 +190,6 @@ namespace Graphics::Shape
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			ConsoleType::INFO,
-			"Deleted gameobject " + thisName + ".S\n");
+			"Deleted gameobject " + thisName + ".\n");
 	}
 }

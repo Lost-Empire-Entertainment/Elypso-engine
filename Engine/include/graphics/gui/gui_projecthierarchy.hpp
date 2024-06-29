@@ -17,7 +17,6 @@ namespace Graphics::GUI
 	{
 		string name;
 		string path;
-		bool isDirectory;
 	};
 
 	class GUIProjectHierarchy
