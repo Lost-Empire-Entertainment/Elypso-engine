@@ -25,6 +25,8 @@
 #include "gui_projecthierarchy.hpp"
 #include "gui_createscene.hpp"
 #include "gui_rename.hpp"
+#include "gui_credits.hpp"
+#include "gui_links.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -107,10 +109,6 @@ namespace Graphics::GUI
 		static string tempString = Engine::docsPath + "/imgui.ini";
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
-
-		initialPos = ImVec2(200, 150);
-		initialSize = ImVec2(400, 700);
-		minSize = ImVec2(400, 400);
 
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
@@ -332,9 +330,6 @@ namespace Graphics::GUI
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGuiIO& io = ImGui::GetIO();
-		maxSize = ImVec2(io.DisplaySize.x, io.DisplaySize.y - 200);
-
 		RenderTopBar();
 
 		ImGuiDockNodeFlags dockFlags =
@@ -352,6 +347,8 @@ namespace Graphics::GUI
 		GUIProjectHierarchy::RenderProjectHierarchy();
 		GUICreateScene::RenderCreateSceneWindow();
 		GUIRename::RenderRenameWindow();
+		GUICredits::RenderCreditsWindow();
+		GUILinks::RenderLinksWindow();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
@@ -693,6 +690,9 @@ namespace Graphics::GUI
 			if (ImGui::IsItemClicked())
 			{
 				GUISettings::renderSettings = true;
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
 			}
 		}
 
@@ -703,7 +703,7 @@ namespace Graphics::GUI
 			if (ImGui::IsItemClicked())
 			{
 				GUICreateScene::renderCreateSceneWindow = true;
-				 
+
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();
 			}
@@ -743,13 +743,55 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
+		ImGui::SameLine(ImGui::GetWindowWidth() - 250);
+
+		if (ImGui::BeginMenu("Links"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				GUILinks::renderLinksWindow = true;
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+		}
+
+		//on the right side
+		ImGui::SameLine(ImGui::GetWindowWidth() - 190);
+
+		if (ImGui::BeginMenu("Credits"))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				GUICredits::renderCreditsWindow = true;
+
+				ImGui::CloseCurrentPopup();
+				ImGui::EndMenu();
+			}
+		}
+
+		//on the right side
 		ImGui::SameLine(ImGui::GetWindowWidth() - 115);
 
 		if (ImGui::BeginMenu("Report issue"))
 		{
 			if (ImGui::IsItemClicked())
 			{
-				ReportIssue();
+				try
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::DEBUG,
+						"User opened link to Github repository issues page.\n");
+					Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine/issues");
+				}
+				catch (const exception& e)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::EXCEPTION,
+						"Failed to open link to Github repository issues page! " + string(e.what()) + "\n");
+				}
 
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();
@@ -757,25 +799,6 @@ namespace Graphics::GUI
 		}
 
 		ImGui::EndMainMenuBar();
-	}
-
-	void EngineGUI::ReportIssue()
-	{
-		try
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::DEBUG,
-				"User opened link to Github repository issues page.\n");
-			Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine/issues");
-		}
-		catch (const exception& e)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::EXCEPTION,
-				"Failed to open link to Github repository issues page! " + string(e.what()) + "\n");
-		}
 	}
 
 	void EngineGUI::RenderVersionCheckWindow()

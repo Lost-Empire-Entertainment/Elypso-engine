@@ -22,12 +22,6 @@ namespace Graphics::GUI
 		static inline bool showVersionWindow;
 		static inline bool outdatedVersion;
 
-		static inline ImVec2 initialPos;
-		static inline ImVec2 initialSize;
-
-		static inline ImVec2 minSize;
-		static inline ImVec2 maxSize;
-
 		static inline bool renderUnsavedShutdownWindow;
 		static inline bool renderUnsavedSceneSwitchWindow;
 		static inline string targetScene;
@@ -50,9 +44,6 @@ namespace Graphics::GUI
 		static inline int GetScreenWidth();
 		static inline int GetScreenHeight();
 		static inline float GetScreenRefreshRate();
-
-		//top bar interactions
-		static void ReportIssue();
 
 		//top bar rendered windows
 		static inline string versionCompare;

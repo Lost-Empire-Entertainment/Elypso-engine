@@ -48,9 +48,8 @@ namespace Graphics::GUI
 {
 	void GUIImportAsset::RenderImportAsset()
 	{
-		ImVec2 pos = ImVec2(400, 400);
 		ImGui::SetNextWindowSize(ImVec2(400, 400));
-		ImGui::SetNextWindowPos(pos, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse

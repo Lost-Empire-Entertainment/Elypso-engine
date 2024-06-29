@@ -52,8 +52,9 @@ namespace Graphics::GUI
 {
 	void GUIInspector::RenderInspector()
 	{
-		ImGui::SetNextWindowSizeConstraints(EngineGUI::minSize, EngineGUI::maxSize);
-		ImGui::SetNextWindowPos(EngineGUI::initialPos, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(2000, 2000));
+		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
