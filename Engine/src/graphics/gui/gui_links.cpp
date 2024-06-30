@@ -30,7 +30,7 @@ namespace Graphics::GUI
 			| ImGuiWindowFlags_NoDocking;
 
 		if (renderLinksWindow
-			&& ImGui::Begin("Credits", NULL, windowFlags))
+			&& ImGui::Begin("Links", NULL, windowFlags))
 		{
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
