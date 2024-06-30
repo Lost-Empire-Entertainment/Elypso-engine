@@ -10,6 +10,10 @@ namespace Core
 	class Compilation
 	{
 	public:
+		static inline bool renderBuildingWindow;
+
 		static void Compile();
+
+		static void RenderBuildingWindow();
 	};
 }

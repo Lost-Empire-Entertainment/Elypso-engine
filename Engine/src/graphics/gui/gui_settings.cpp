@@ -499,7 +499,7 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
-		ImGui::Text("Set game path");
+		ImGui::Text("Set game name");
 		ImGui::SameLine();
 		ImGui::PushItemWidth(150);
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 250);
@@ -514,6 +514,8 @@ namespace Graphics::GUI
 		{
 			ImGui::SetTooltip(Engine::gameExePath.c_str());
 		}
+
+		ImGui::SameLine();
 
 		if (ImGui::Button("Apply"))
 		{

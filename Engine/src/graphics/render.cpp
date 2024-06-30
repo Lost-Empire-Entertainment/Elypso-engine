@@ -99,8 +99,8 @@ namespace Graphics
 
 		//create a window object holding all the windowing data
 		window = glfwCreateWindow(
-			windowWidth,
-			windowHeight,
+			1280,
+			720,
 			(Engine::name + " " + Engine::version).c_str(),
 			NULL,
 			NULL);
@@ -116,7 +116,6 @@ namespace Graphics
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
-		glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
 		glfwSetWindowSizeLimits(window, 1280, 720, 7680, 4320);
 		glfwSwapInterval(1);
 

@@ -32,6 +32,7 @@
 #include "spotlight.hpp"
 #include "compile.hpp"
 #include "fileUtils.hpp"
+#include "compile.hpp"
 
 using std::cout;
 using std::endl;
@@ -60,6 +61,7 @@ using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Core::Compilation;
 using Utils::File;
+using Core::Compilation;
 
 namespace Core
 {
@@ -79,7 +81,7 @@ namespace Core
 
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
-        cameraEnabled = 
+        cameraEnabled =
             glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS
             && !ImGui::GetIO().WantCaptureMouse;
 
@@ -91,9 +93,9 @@ namespace Core
         }
         if (!cameraEnabled
             && (startedHolding
-            || (!startedHolding
-            && lastKnownRotation == vec3(0)
-            && Render::camera.GetCameraRotation() != vec3(0))))
+                || (!startedHolding
+                    && lastKnownRotation == vec3(0)
+                    && Render::camera.GetCameraRotation() != vec3(0))))
         {
             lastKnownRotation = Render::camera.GetCameraRotation();
             startedHolding = false;
@@ -196,7 +198,8 @@ namespace Core
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
-        if (!cameraEnabled
+        if (!Compilation::renderBuildingWindow
+            && !cameraEnabled
             && !ImGui::GetIO().WantCaptureMouse)
         {
             float combinedOffset = increment * static_cast<float>(yoffset);
@@ -232,7 +235,8 @@ namespace Core
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
-        if (!cameraEnabled
+        if (!Compilation::renderBuildingWindow
+            && !cameraEnabled
             && !ImGui::GetIO().WantCaptureMouse)
         {
             //compile game
@@ -408,7 +412,8 @@ namespace Core
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
-        if (!cameraEnabled
+        if (!Compilation::renderBuildingWindow
+            && !cameraEnabled
             && button == GLFW_MOUSE_BUTTON_LEFT 
             && action == GLFW_PRESS)
         {

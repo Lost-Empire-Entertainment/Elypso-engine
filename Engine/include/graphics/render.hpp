@@ -34,8 +34,6 @@ namespace Graphics
 
 		static inline GLFWwindow* window;
 
-		static inline int windowedWidth;
-		static inline int windowedHeight;
 		static inline mat4 projection;
 		static inline mat4 view;
 
@@ -46,9 +44,6 @@ namespace Graphics
 		static void SetWindowNameAsUnsaved(bool state);
 		static void WindowLoop();
 	private:
-		static inline unsigned int windowWidth = 1280;
-		static inline unsigned int windowHeight = 720;
-
 		static void GLFWSetup();
 		static void WindowSetup();
 		static void GladSetup();

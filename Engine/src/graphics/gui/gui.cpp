@@ -27,6 +27,7 @@
 #include "gui_rename.hpp"
 #include "gui_credits.hpp"
 #include "gui_links.hpp"
+#include "gui_projectitemslist.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -330,25 +331,30 @@ namespace Graphics::GUI
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		RenderTopBar();
+		if (!Compilation::renderBuildingWindow) RenderTopBar();
 
 		ImGuiDockNodeFlags dockFlags =
 			ImGuiDockNodeFlags_PassthruCentralNode;
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
-		GUIFloatingDebugMenu::RenderFloatingDebugMenu();
-		GUIConsole::RenderConsole();
-		GUISettings::RenderSettings();
-		GUIInspector::RenderInspector();
-		GUIImportAsset::RenderImportAsset();
-		GUISceneMenu::RenderSceneMenu();
-		GUISceneHierarchy::RenderSceneHierarchy();
-		GUIProjectHierarchy::RenderProjectHierarchy();
-		GUICreateScene::RenderCreateSceneWindow();
-		GUIRename::RenderRenameWindow();
-		GUICredits::RenderCreditsWindow();
-		GUILinks::RenderLinksWindow();
+		if (!Compilation::renderBuildingWindow)
+		{
+			GUIFloatingDebugMenu::RenderFloatingDebugMenu();
+			GUIConsole::RenderConsole();
+			GUISettings::RenderSettings();
+			GUIInspector::RenderInspector();
+			GUIImportAsset::RenderImportAsset();
+			GUISceneMenu::RenderSceneMenu();
+			GUISceneHierarchy::RenderSceneHierarchy();
+			GUIProjectHierarchy::RenderProjectHierarchy();
+			GUICreateScene::RenderCreateSceneWindow();
+			GUIRename::RenderRenameWindow();
+			GUICredits::RenderCreditsWindow();
+			GUILinks::RenderLinksWindow();
+			GUIProjectItemsList::RenderProjectItemsList();
+		}
+		Compilation::RenderBuildingWindow();
 
 		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
