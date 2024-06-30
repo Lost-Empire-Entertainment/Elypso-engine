@@ -59,45 +59,46 @@ namespace Graphics::GUI
 			//text area with scrollable region
 			ImVec2 scrollingRegionSize(
 				ImGui::GetContentRegionAvail().x,
-				ImGui::GetContentRegionAvail().y - 25);
-			ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, true);
-
-			float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
-			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
-
-			//display the content of the text buffer
-			for (const auto& message : consoleMessages)
+				ImGui::GetContentRegionAvail().y - 40);
+			if (ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, true))
 			{
-				ImGui::TextWrapped("%s", message.c_str());
+				float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
+				ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
 
-				if (ImGui::IsItemClicked()
-					&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				//display the content of the text buffer
+				for (const auto& message : consoleMessages)
 				{
-					cout << "Added ' " << message << " ' to clipboard.\n";
-					ImGui::SetClipboardText(message.c_str());
+					ImGui::TextWrapped("%s", message.c_str());
+
+					if (ImGui::IsItemClicked()
+						&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+					{
+						cout << "Added ' " << message << " ' to clipboard.\n";
+						ImGui::SetClipboardText(message.c_str());
+					}
 				}
-			}
 
-			ImGui::PopTextWrapPos();
+				ImGui::PopTextWrapPos();
 
-			//scrolls to the bottom if scrolling is allowed
-			//and if user is close to the newest console message
-			bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
-			if (isNearBottom
-				|| (!firstScrollToBottom
-					&& Engine::startedWindowLoop))
-			{
-				ImGui::SetScrollHereY(1.0f);
-				firstScrollToBottom = true;
+				//scrolls to the bottom if scrolling is allowed
+				//and if user is close to the newest console message
+				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
+				if (isNearBottom
+					|| (!firstScrollToBottom
+						&& Engine::startedWindowLoop))
+				{
+					ImGui::SetScrollHereY(1.0f);
+					firstScrollToBottom = true;
+				}
 			}
 
 			ImGui::EndChild();
 
 			//text filter input box
 			float textAreaHeight = ImGui::GetContentRegionAvail().y - 25.0f;
-			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight));
+			ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y + textAreaHeight - 10.0f));
 
-			// Draw the text filter input box
+			//draw the text filter input box
 			ImGui::PushItemWidth(scrollingRegionSize.x);
 			ImGuiInputTextFlags inputFieldTextFlags =
 				ImGuiInputTextFlags_EnterReturnsTrue;
