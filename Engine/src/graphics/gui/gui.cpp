@@ -749,7 +749,7 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
-		ImGui::SameLine(ImGui::GetWindowWidth() - 250);
+		ImGui::SameLine(ImGui::GetWindowWidth() - 250 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Links"))
 		{
@@ -763,7 +763,7 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
-		ImGui::SameLine(ImGui::GetWindowWidth() - 190);
+		ImGui::SameLine(ImGui::GetWindowWidth() - 190 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Credits"))
 		{
@@ -777,7 +777,7 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
-		ImGui::SameLine(ImGui::GetWindowWidth() - 115);
+		ImGui::SameLine(ImGui::GetWindowWidth() - 115 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Report issue"))
 		{

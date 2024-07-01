@@ -22,7 +22,7 @@ using Graphics::Shape::GameObjectManager;
 
 namespace Graphics::GUI
 {
-	void GUIProjectItemsList::RenderProjectItemsList(const Type& type)
+	void GUIProjectItemsList::RenderProjectItemsList()
 	{
 		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(2000, 2000));
 		ImGui::SetNextWindowSize(ImVec2(600, 600), ImGuiCond_FirstUseEver);
@@ -45,13 +45,13 @@ namespace Graphics::GUI
 				renderProjectItemsList = false;
 			}
 
-			RenderProjectItemsListContent(type);
+			RenderProjectItemsListContent();
 
 			ImGui::End();
 		}
 	}
 
-	void GUIProjectItemsList::RenderProjectItemsListContent(const Type& type)
+	void GUIProjectItemsList::RenderProjectItemsListContent()
 	{
 
 	}

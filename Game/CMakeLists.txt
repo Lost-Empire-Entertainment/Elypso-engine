@@ -65,13 +65,8 @@ set(SOURCE_FILES
 	${SRC_CORE_DIR}/timeManager.cpp
 	${SRC_FILE_DIR}/configFile.cpp
 	${SRC_FILE_DIR}/fileexplorer.cpp
-	${SRC_FILE_DIR}/nodeBlockFile.cpp
 	${SRC_FILE_DIR}/sceneFile.cpp
 	${SRC_GRAPHICS_GUI_DIR}/gui.cpp
-	${SRC_GRAPHICS_GUI_DIR}/gui_node.cpp
-	${SRC_GRAPHICS_GUI_DIR}/gui_nodeblock.cpp
-	${SRC_GRAPHICS_GUI_DIR}/gui_nodecircle.cpp
-	${SRC_GRAPHICS_GUI_DIR}/gui_nodeconnection.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
 	${SRC_GRAPHICS_SHAPE_DIR}/model.cpp

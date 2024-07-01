@@ -10,7 +10,7 @@ namespace Graphics::GUI
 	class GUIProjectItemsList
 	{
 	public:
-		static inline enum class Type
+		enum class Type
 		{
 			Gameobjects,
 			Textures,
@@ -18,9 +18,10 @@ namespace Graphics::GUI
 		};
 
 		static inline bool renderProjectItemsList;
+		static inline Type type;
 
-		static void RenderProjectItemsList(const Type& type);
+		static void RenderProjectItemsList();
 	private:
-		static void RenderProjectItemsListContent(const Type& type);
+		static void RenderProjectItemsListContent();
 	};
 }
