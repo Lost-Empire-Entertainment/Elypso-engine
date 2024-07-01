@@ -18,7 +18,6 @@ namespace Graphics::GUI
 	public:
 		enum class Type
 		{
-			Gameobjects,
 			Textures,
 			Scenes
 		};
@@ -29,7 +28,7 @@ namespace Graphics::GUI
 		static void RenderProjectItemsList();
 	private:
 		static inline bool isContentVectorFilled;
-		static inline string selectedScene;
+		static inline string selectedPath;
 		static inline vector<string> content;
 
 		static void RenderProjectItemsListContent();

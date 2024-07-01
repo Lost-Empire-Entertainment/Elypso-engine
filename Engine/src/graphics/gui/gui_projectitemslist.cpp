@@ -57,16 +57,33 @@ namespace Graphics::GUI
 		if (!isContentVectorFilled)
 		{
 			content.clear();
-			selectedScene = "";
+			selectedPath = "";
 
 			switch (type)
 			{
+			case Type::Textures:
+			{
+				string texturesFolder = path(Engine::scenePath).string() + "\\textures";
+				for (const auto& entry : directory_iterator(texturesFolder))
+				{
+					if (is_regular_file(entry))
+					{
+						string extension = path(entry).extension().string();
+						if (extension == ".png"
+							|| extension == ".jpg"
+							|| extension == ".jpeg")
+						{
+							content.push_back(entry.path().string());
+						}
+					}
+				}
+				break;
+			}
 			case Type::Scenes:
+			{
 				string projectFolder = path(Engine::scenePath).parent_path().parent_path().string();
 				for (const auto& entry : directory_iterator(projectFolder))
 				{
-					cout << entry.path().string() << "\n";
-
 					if (is_directory(entry))
 					{
 						for (const auto& child : directory_iterator(entry))
@@ -81,6 +98,7 @@ namespace Graphics::GUI
 					}
 				}
 				break;
+			}
 			}
 
 			isContentVectorFilled = true;
@@ -97,14 +115,26 @@ namespace Graphics::GUI
 
 				if (ImGui::Selectable(name.c_str()))
 				{
-					for (const auto& child : directory_iterator(entry))
+					switch (type)
 					{
-						if (is_regular_file(child)
-							&& child.path().filename().string() == "scene.txt")
+					case Type::Textures:
+					{
+						selectedPath = entry;
+						break;
+					}
+					case Type::Scenes:
+					{
+						for (const auto& child : directory_iterator(entry))
 						{
-							selectedScene = child.path().string();
-							break;
+							if (is_regular_file(child)
+								&& child.path().filename().string() == "scene.txt")
+							{
+								selectedPath = child.path().string();
+								break;
+							}
 						}
+						break;
+					}
 					}
 				}
 			}
@@ -118,9 +148,20 @@ namespace Graphics::GUI
 			ImGui::GetWindowSize().y - 50);
 		ImGui::SetCursorPos(createButtonPos);
 		if (ImGui::Button("Select", buttonSize)
-			&& selectedScene != "")
+			&& selectedPath != "")
 		{
-			SceneFile::LoadScene(selectedScene);
+			switch (type)
+			{
+			case Type::Textures:
+			{
+				break;
+			}
+			case Type::Scenes:
+			{
+				SceneFile::LoadScene(selectedPath);
+				break;
+			}
+			}
 
 			isContentVectorFilled = false;
 			renderProjectItemsList = false;
