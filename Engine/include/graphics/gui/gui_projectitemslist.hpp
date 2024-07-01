@@ -5,6 +5,12 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
+using std::string;
+using std::vector;
+
 namespace Graphics::GUI
 {
 	class GUIProjectItemsList
@@ -22,6 +28,10 @@ namespace Graphics::GUI
 
 		static void RenderProjectItemsList();
 	private:
+		static inline bool isContentVectorFilled;
+		static inline string selectedScene;
+		static inline vector<string> content;
+
 		static void RenderProjectItemsListContent();
 	};
 }

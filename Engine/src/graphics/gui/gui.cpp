@@ -380,13 +380,16 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("New Scene"))
 			{
-				SceneFile::CreateScene();
+				GUICreateScene::renderCreateSceneWindow = true;
 			}
 
 			if (ImGui::MenuItem("Open scene"))
 			{
-				string scenePath = FileExplorer::Select(FileExplorer::SearchType::txt);
-				SceneFile::LoadScene(scenePath);
+				//string scenePath = FileExplorer::Select(FileExplorer::SearchType::txt);
+				//SceneFile::LoadScene(scenePath);
+
+				GUIProjectItemsList::type = GUIProjectItemsList::Type::Scenes;
+				GUIProjectItemsList::renderProjectItemsList = true;
 			}
 
 			if (ImGui::MenuItem("Exit")) Engine::Shutdown();
@@ -702,20 +705,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		ImGui::SameLine(245 * fontScale * 0.75f);
-
-		if (ImGui::BeginMenu("Create scene"))
-		{
-			if (ImGui::IsItemClicked())
-			{
-				GUICreateScene::renderCreateSceneWindow = true;
-
-				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
-			}
-		}
-
-		ImGui::SameLine(350 * fontScale * 0.75f);
+		ImGui::SameLine(240 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Compile"))
 		{
@@ -728,7 +718,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		ImGui::SameLine(425 * fontScale * 0.75f);
+		ImGui::SameLine(310 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Run"))
 		{
@@ -749,7 +739,7 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
-		ImGui::SameLine(ImGui::GetWindowWidth() - 250 * fontScale * 0.75f);
+		ImGui::SameLine(ImGui::GetWindowWidth() - 225 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Links"))
 		{
@@ -763,7 +753,7 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
-		ImGui::SameLine(ImGui::GetWindowWidth() - 190 * fontScale * 0.75f);
+		ImGui::SameLine(ImGui::GetWindowWidth() - 175 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Credits"))
 		{
@@ -777,7 +767,7 @@ namespace Graphics::GUI
 		}
 
 		//on the right side
-		ImGui::SameLine(ImGui::GetWindowWidth() - 115 * fontScale * 0.75f);
+		ImGui::SameLine(ImGui::GetWindowWidth() - 110 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Report issue"))
 		{
