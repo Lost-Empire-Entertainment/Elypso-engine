@@ -385,9 +385,6 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Open scene"))
 			{
-				//string scenePath = FileExplorer::Select(FileExplorer::SearchType::txt);
-				//SceneFile::LoadScene(scenePath);
-
 				GUIProjectItemsList::type = GUIProjectItemsList::Type::Scenes;
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}

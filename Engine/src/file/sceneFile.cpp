@@ -106,58 +106,6 @@ namespace EngineFile
 		Engine::scenePath = targetScene;
 	}
 
-
-	void SceneFile::CreateScene()
-	{
-		int highestFolderNumber = 1;
-		string parentPath = path(Engine::projectPath).parent_path().string();
-		string newFolderPath = parentPath + "/Scene";
-
-		for (const auto& entry : directory_iterator(parentPath))
-		{
-			path entryPath = entry.path();
-			
-			if (is_directory(entryPath)
-				&& entryPath.stem().string().find("Scene") != string::npos)
-			{
-				string folderName = entryPath.stem().string();
-
-				size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
-				string result = folderName.substr(pos + 1);
-				if (result != ""
-					&& String::CanConvertStringToInt(result))
-				{
-					int number = stoi(result);
-					if (number == highestFolderNumber) highestFolderNumber = ++number;
-				}
-			}
-		}
-		newFolderPath = newFolderPath + to_string(highestFolderNumber);
-		create_directory(newFolderPath);
-
-		Engine::scenePath = newFolderPath + "/Scene.txt";
-
-		ofstream sceneFile(Engine::scenePath);
-
-		if (!sceneFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
-				Type::EXCEPTION,
-				"Error: Couldn't open scene file '" + Engine::scenePath + "'!\n");
-			return;
-		}
-
-		sceneFile.close();
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
-			Type::INFO,
-			"\nSuccessfully created new scene '" + Engine::scenePath + "'!\n");
-
-		LoadScene(Engine::scenePath);
-	}
-
 	void SceneFile::LoadScene(const string& scenePath)
 	{
 		if (!exists(scenePath))
