@@ -50,18 +50,18 @@ namespace Graphics::GUI
 			| ImGuiWindowFlags_NoDocking
 			| ImGuiWindowFlags_NoResize;
 
-		if (!renderCreateSceneWindow
-			&& closeOverride)
-		{
-			closeOverride = false;
-		}
-
 		if (renderCreateSceneWindow
 			&& ImGui::Begin("Create scene", NULL, windowFlags))
 		{
 			RenderCreateSceneWindowContent();
 
 			ImGui::End();
+		}
+
+		if (!renderCreateSceneWindow
+			&& closeOverride)
+		{
+			closeOverride = false;
 		}
 	}
 
