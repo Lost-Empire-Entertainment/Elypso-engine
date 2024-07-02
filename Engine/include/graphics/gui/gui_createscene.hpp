@@ -18,7 +18,10 @@ namespace Graphics::GUI
 
 		static void RenderCreateSceneWindow();
 	private:
-		static inline string assignedSceneName = "Scene";
+		static inline bool closeOverride;
+		static inline bool selectedText;
+
+		static inline string assignedSceneName = "Scene1";
 		static constexpr int bufferSize = 16;
 
 		static inline char sceneName[bufferSize];

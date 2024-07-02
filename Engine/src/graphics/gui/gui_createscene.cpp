@@ -50,6 +50,12 @@ namespace Graphics::GUI
 			| ImGuiWindowFlags_NoDocking
 			| ImGuiWindowFlags_NoResize;
 
+		if (!renderCreateSceneWindow
+			&& closeOverride)
+		{
+			closeOverride = false;
+		}
+
 		if (renderCreateSceneWindow
 			&& ImGui::Begin("Create scene", NULL, windowFlags))
 		{
@@ -61,6 +67,14 @@ namespace Graphics::GUI
 
 	void GUICreateScene::RenderCreateSceneWindowContent()
 	{
+		if (!closeOverride
+			&& selectedText
+			&& (ImGui::IsWindowAppearing()
+			|| ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)))
+		{
+			selectedText = false;
+		}
+
 		ImVec2 windowSize = ImGui::GetWindowSize();
 		ImVec2 textfieldPos = ImVec2(
 			windowSize.x / 2 - 125,
@@ -68,14 +82,26 @@ namespace Graphics::GUI
 
 		ImGui::SetCursorPos(textfieldPos);
 
+		if (!selectedText)
+		{
+			ImGui::SetKeyboardFocusHere();
+			selectedText = true;
+		}
+
 		strcpy_s(sceneName, bufferSize, assignedSceneName.c_str());
 		if (ImGui::InputText("##setSceneName", sceneName, bufferSize))
 		{
 			assignedSceneName = sceneName;
 		}
 
-		if (strlen(sceneName) == 0) strcpy_s(sceneName, bufferSize, "_");
-		if (assignedSceneName == "") assignedSceneName = "_";
+		if (ImGui::IsItemActive())
+		{
+			ImGui::SetItemDefaultFocus();
+			ImGui::SetKeyboardFocusHere(-1); //selects all text with -1
+		}
+
+		if (strlen(sceneName) == 0) strcpy_s(sceneName, bufferSize, "Scene1");
+		if (assignedSceneName == "") assignedSceneName = "Scene1";
 
 		ImVec2 buttonSize = ImVec2(100, 30);
 
@@ -105,8 +131,8 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Invalid character detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
-				strcpy_s(sceneName, bufferSize, "Scene");
-				assignedSceneName = "Scene";
+				strcpy_s(sceneName, bufferSize, "Scene1");
+				assignedSceneName = "Scene1";
 
 				renderCreateSceneWindow = false;
 
@@ -132,13 +158,13 @@ namespace Graphics::GUI
 
 			if (foundExistingScene)
 			{
-				strcpy_s(sceneName, bufferSize, "Scene");
-				assignedSceneName = "Scene";
-
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
 					"Scene name '" + assignedSceneName + "' already exists in this project! Please pick a new scene name.");
+
+				strcpy_s(sceneName, bufferSize, "Scene1");
+				assignedSceneName = "Scene1";
 
 				renderCreateSceneWindow = false;
 
@@ -169,6 +195,7 @@ namespace Graphics::GUI
 		ImGui::SetCursorPos(cancelButtonPos);
 		if (ImGui::Button("Cancel", buttonSize))
 		{
+			closeOverride = true;
 			renderCreateSceneWindow = false;
 		}
 	}
