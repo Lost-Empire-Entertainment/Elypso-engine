@@ -27,6 +27,7 @@
 #include "fileexplorer.hpp"
 #include "stringUtils.hpp"
 #include "configFile.hpp"
+#include "gui_projectitemslist.hpp"
 
 using std::cout;
 using std::endl;
@@ -219,11 +220,12 @@ namespace Graphics::GUI
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(diff_textureName.c_str()))
 				{
-					string texture = FileExplorer::Select(FileExplorer::SearchType::texture);
-					Texture::LoadTexture(obj, texture, Material::TextureType::diffuse, true);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					GUIProjectItemsList::obj = obj;
+					GUIProjectItemsList::textureType = Material::TextureType::diffuse;
+					GUIProjectItemsList::type = GUIProjectItemsList::Type::Textures;
+					GUIProjectItemsList::renderProjectItemsList = true;
 
-					cout << "assigned " << texture << " to " << obj->GetName() << "\n";
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::PopItemWidth();
 
@@ -270,11 +272,12 @@ namespace Graphics::GUI
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(spec_textureName.c_str()))
 				{
-					string texture = FileExplorer::Select(FileExplorer::SearchType::texture);
-					Texture::LoadTexture(obj, texture, Material::TextureType::specular, true);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					GUIProjectItemsList::obj = obj;
+					GUIProjectItemsList::textureType = Material::TextureType::specular;
+					GUIProjectItemsList::type = GUIProjectItemsList::Type::Textures;
+					GUIProjectItemsList::renderProjectItemsList = true;
 
-					cout << "assigned " << texture << " to " << obj->GetName() << "\n";
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::PopItemWidth();
 

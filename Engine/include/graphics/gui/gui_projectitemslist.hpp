@@ -7,9 +7,17 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+
+//engine
+#include "gameobject.hpp"
 
 using std::string;
 using std::vector;
+using std::shared_ptr;
+
+using Graphics::Shape::Material;
+using Graphics::Shape::GameObject;
 
 namespace Graphics::GUI
 {
@@ -23,12 +31,14 @@ namespace Graphics::GUI
 		};
 
 		static inline bool renderProjectItemsList;
+		static inline string selectedPath;
 		static inline Type type;
+		static inline Material::TextureType textureType;
+		static inline shared_ptr<GameObject> obj;
 
 		static void RenderProjectItemsList();
 	private:
 		static inline bool isContentVectorFilled;
-		static inline string selectedPath;
 		static inline vector<string> content;
 
 		static void RenderProjectItemsListContent();

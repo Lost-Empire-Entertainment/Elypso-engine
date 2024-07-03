@@ -17,6 +17,7 @@
 #include "gameobject.hpp"
 #include "core.hpp"
 #include "sceneFile.hpp"
+#include "texture.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -27,6 +28,7 @@ using std::filesystem::is_regular_file;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using EngineFile::SceneFile;
+using Graphics::Texture;
 
 namespace Graphics::GUI
 {
@@ -154,6 +156,7 @@ namespace Graphics::GUI
 			{
 			case Type::Textures:
 			{
+				Texture::LoadTexture(obj, selectedPath, textureType, true);
 				break;
 			}
 			case Type::Scenes:
@@ -162,6 +165,8 @@ namespace Graphics::GUI
 				break;
 			}
 			}
+
+			obj = nullptr;
 
 			isContentVectorFilled = false;
 			renderProjectItemsList = false;
@@ -173,6 +178,8 @@ namespace Graphics::GUI
 		ImGui::SetCursorPos(cancelButtonPos);
 		if (ImGui::Button("Cancel", buttonSize))
 		{
+			obj = nullptr;
+
 			isContentVectorFilled = false;
 			renderProjectItemsList = false;
 		}
