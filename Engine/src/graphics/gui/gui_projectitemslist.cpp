@@ -24,6 +24,7 @@ using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
+using std::exception;
 
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
@@ -65,7 +66,7 @@ namespace Graphics::GUI
 			{
 			case Type::Textures:
 			{
-				string texturesFolder = path(Engine::scenePath).string() + "\\textures";
+				string texturesFolder = path(Engine::scenePath).parent_path().string() + "\\textures";
 				for (const auto& entry : directory_iterator(texturesFolder))
 				{
 					if (is_regular_file(entry))

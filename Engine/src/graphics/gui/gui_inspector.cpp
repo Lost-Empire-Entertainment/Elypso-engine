@@ -212,20 +212,17 @@ namespace Graphics::GUI
 
 				//assign diffuse texture
 				ImGui::Text("Diffuse texture");
-				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
 				path diff_texturePath = path(
 					Engine::filesPath
 					+ obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse));
-				string diff_textureName = diff_texturePath.stem().string();
 				ImGui::PushItemWidth(200.0f);
-				if (ImGui::Button(diff_textureName.c_str()))
+				if (ImGui::Button("Diff"))
 				{
 					GUIProjectItemsList::obj = obj;
 					GUIProjectItemsList::textureType = Material::TextureType::diffuse;
 					GUIProjectItemsList::type = GUIProjectItemsList::Type::Textures;
 					GUIProjectItemsList::renderProjectItemsList = true;
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::PopItemWidth();
 
@@ -237,7 +234,7 @@ namespace Graphics::GUI
 				}
 
 				//reset diffuse texture
-				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
+				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
 				path diff_defaultTexturePath = path(Engine::filesPath + "/textures/diff_default.png");
 				string diff_reset = "Reset";
 				ImGui::PushID("diffreset");
@@ -264,20 +261,17 @@ namespace Graphics::GUI
 
 				//assign specular texture
 				ImGui::Text("Specular texture");
-				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
 				path spec_texturePath = path(
 					Engine::filesPath
 					+ obj->GetMaterial()->GetTextureName(Material::TextureType::specular));
-				string spec_textureName = spec_texturePath.stem().string() == "filesEMPTY" ? "None" : spec_texturePath.stem().string();
 				ImGui::PushItemWidth(200.0f);
-				if (ImGui::Button(spec_textureName.c_str()))
+				if (ImGui::Button("Spec"))
 				{
 					GUIProjectItemsList::obj = obj;
 					GUIProjectItemsList::textureType = Material::TextureType::specular;
 					GUIProjectItemsList::type = GUIProjectItemsList::Type::Textures;
 					GUIProjectItemsList::renderProjectItemsList = true;
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				ImGui::PopItemWidth();
 
@@ -290,7 +284,7 @@ namespace Graphics::GUI
 				}
 
 				//remove specular texture
-				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
+				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
 				string spec_reset = "Reset";
 				ImGui::PushID("specreset");
 				ImGui::PushItemWidth(200.0f);
