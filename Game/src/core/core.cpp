@@ -220,8 +220,6 @@ namespace Core
 
 				cout << "Cleaning up resources...\n";
 
-				SceneFile::ExportGameFiles();
-
 				GameGUI::Shutdown();
 
 				//clean all glfw resources after program is closed

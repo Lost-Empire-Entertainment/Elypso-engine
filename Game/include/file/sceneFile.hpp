@@ -24,18 +24,12 @@ namespace GameFile
 		};
 
 		static inline bool unsavedChanges;
-		static inline string currentProjectPath;
 		static inline string currentScenePath;
 		static inline string targetLevel;
 
 		static void CheckForGameFile();
-		static void CreateScene();
 		static void LoadScene(const string& levelName);
 		static void LoadGameObject(const map<string, string> obj);
 		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
-		/// <summary>
-		/// Export all game files to game folder when shutting down.
-		/// </summary>
-		static void ExportGameFiles();
 	};
 }

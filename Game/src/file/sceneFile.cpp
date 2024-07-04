@@ -48,7 +48,9 @@ namespace GameFile
 {
 	void SceneFile::CheckForGameFile()
 	{
-		string projectPath = path(Game::filesPath).parent_path().string() + "/project/project.txt";
+		Game::sceneFolder = path(Game::filesPath).parent_path().string() + "\\project";
+
+		string projectPath = Game::sceneFolder + "\\project.txt";
 		if (!exists(projectPath))
 		{
 			Game::CreateErrorPopup("Project file load error", "No project file was found! Shutting down game");
@@ -73,23 +75,9 @@ namespace GameFile
 					size_t pos = line.find(removable);
 					targetScene = line.erase(pos, removable.length());
 				}
-
-				size_t pos_project = line.find("project:");
-				if (pos_project != string::npos)
-				{
-					string removable = "project: ";
-					size_t pos = line.find(removable);
-					currentProjectPath = line.erase(pos, removable.length());
-				}
 			}
 		}
 		projectFile.close();
-
-		if (currentProjectPath.empty()
-			|| !exists(currentProjectPath))
-		{
-			Game::CreateErrorPopup("Project load error", "Failed to load valid project from project file! Shutting down game");
-		}
 
 		if (targetScene.empty()
 			|| !exists(targetScene))
@@ -98,53 +86,6 @@ namespace GameFile
 		}
 
 		currentScenePath = targetScene;
-	}
-
-
-	void SceneFile::CreateScene()
-	{
-		int highestFolderNumber = 1;
-		string parentPath = path(Game::filesPath).parent_path().string();
-		string projectsPath = parentPath + "/project";
-		string newFolderPath = projectsPath + "/Scene";
-
-		for (const auto& entry : directory_iterator(projectsPath))
-		{
-			path entryPath = entry.path();
-			
-			if (is_directory(entryPath)
-				&& entryPath.stem().string().find("Scene") != string::npos)
-			{
-				string folderName = entryPath.stem().string();
-
-				size_t pos = folderName.find_first_of('e', folderName.find_first_of('e') + 1);
-				string result = folderName.substr(pos + 1);
-				if (result != ""
-					&& String::CanConvertStringToInt(result))
-				{
-					int number = stoi(result);
-					if (number == highestFolderNumber) highestFolderNumber = ++number;
-				}
-			}
-		}
-		newFolderPath = newFolderPath + to_string(highestFolderNumber);
-		create_directory(newFolderPath);
-
-		currentScenePath = newFolderPath + "/Scene.txt";
-
-		ofstream sceneFile(currentScenePath);
-
-		if (!sceneFile.is_open())
-		{
-			cout << "Error: Couldn't open scene file '" << currentScenePath << "'!\n";
-			return;
-		}
-
-		sceneFile.close();
-
-		cout << "\nSuccessfully created new scene '" << currentScenePath << "'!\n";
-
-		LoadScene(currentScenePath);
 	}
 
 	void SceneFile::LoadScene(const string& scenePath)
@@ -345,7 +286,7 @@ namespace GameFile
 		
 		if (meshType == Mesh::MeshType::model)
 		{
-			string diff_missing = Game::filesPath + "/textures/diff_missing.png";
+			string diff_missing = Game::filesPath + "\\textures\\diff_missing.png";
 			string diffuseTexture = textures[0];
 			if (diffuseTexture != "EMPTY"
 				&& !exists(diffuseTexture))
@@ -618,61 +559,5 @@ namespace GameFile
 			Game::Shutdown();
 			break;
 		}
-	}
-
-	void SceneFile::ExportGameFiles()
-	{
-		/*
-		for (const auto& entry : directory_iterator(currentProjectPath))
-		{
-			File::DeleteFileOrfolder(entry);
-		}
-
-		string parentPath = path(Game::filesPath).parent_path().string();
-		string projectsPath = parentPath + "/project";
-		string projectFilePath = projectsPath + "/project.txt";
-
-		ifstream projectFile(projectFilePath);
-		if (!projectFile.is_open())
-		{
-			Game::CreateErrorPopup(
-				"Project file load error",
-				"Failed to open project file! Shutting down game");
-		}
-
-		string line;
-		string fileContent;
-		while (getline(projectFile, line))
-		{
-			if (line.find("scene: ") != string::npos)
-			{
-				line = "scene: " + currentScenePath;
-			}
-			fileContent += line + "\n";
-		}
-		projectFile.close();
-
-		ofstream outFile(projectFilePath);
-		if (!outFile.is_open())
-		{
-			Game::CreateErrorPopup(
-				"Project file load error",
-				"Failed to open project file! Shutting down game");
-		}
-		else
-		{
-			outFile << fileContent;
-			outFile.close();
-		}
-
-		for (const auto& entry : directory_iterator(projectsPath))
-		{
-			string ending = entry.is_directory()
-				? path(entry).filename().string()
-				: path(entry).stem().string() + path(entry).extension().string();
-
-			File::CopyFileOrFolder(entry, currentProjectPath + "\\" + ending);
-		}
-		*/
 	}
 }
