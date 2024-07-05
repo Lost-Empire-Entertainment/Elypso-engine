@@ -66,8 +66,7 @@ namespace Graphics::GUI
 			{
 			case Type::Textures:
 			{
-				string texturesFolder = path(Engine::scenePath).parent_path().string() + "\\textures";
-				for (const auto& entry : directory_iterator(texturesFolder))
+				for (const auto& entry : directory_iterator(Engine::texturesPath))
 				{
 					if (is_regular_file(entry))
 					{
@@ -84,8 +83,7 @@ namespace Graphics::GUI
 			}
 			case Type::Scenes:
 			{
-				string projectFolder = path(Engine::scenePath).parent_path().parent_path().string();
-				for (const auto& entry : directory_iterator(projectFolder))
+				for (const auto& entry : directory_iterator(Engine::sceneParentPath))
 				{
 					if (is_directory(entry))
 					{

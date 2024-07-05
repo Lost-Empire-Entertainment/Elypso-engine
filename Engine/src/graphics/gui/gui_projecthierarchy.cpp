@@ -81,7 +81,7 @@ namespace Graphics::GUI
 
 			if (ImGui::BeginChild("##content"))
 			{
-				DisplayDirectoryContents(path(Engine::scenePath).parent_path().parent_path().string());
+				DisplayDirectoryContents(Engine::sceneParentPath);
 			}
 			ImGui::EndChild();
 
@@ -183,7 +183,7 @@ namespace Graphics::GUI
 				if (ImGui::BeginPopupContextItem())
 				{
 					//open selected scene file
-					if (entry.name == "scene.txt"
+					if (entry.name != "project.txt"
 						&& ImGui::MenuItem("Open scene"))
 					{
 						SceneFile::LoadScene(entry.path);
@@ -204,22 +204,20 @@ namespace Graphics::GUI
 	{
 		if (is_directory(targetPath))
 		{
-			string cleanedEntryPath = String::StringReplace(targetPath, "/", "\\");
-			string cleanedSceneFolder = String::StringReplace(
-				path(Engine::scenePath).parent_path().string(), "/", "\\");
+			string cleanedEntryPath = String::StringReplace(
+				targetPath, "/", "\\");
 			string cleanedModelsFolder = String::StringReplace(
-				path(Engine::scenePath).parent_path().string() + "\\models", "/", "\\");
+				Engine::sceneParentPath + "\\models", "/", "\\");
 			string cleanedTexturesFolder = String::StringReplace(
-				path(Engine::scenePath).parent_path().string() + "\\textures", "/", "\\");
+				Engine::sceneParentPath + "\\textures", "/", "\\");
 
-			if (cleanedEntryPath == cleanedSceneFolder
-				|| cleanedEntryPath == cleanedModelsFolder
+			if (cleanedEntryPath == cleanedModelsFolder
 				|| cleanedEntryPath == cleanedTexturesFolder)
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"Cannot delete folder '" + cleanedEntryPath + "' because it is used by this scene!\n");
+					"Cannot delete folder '" + cleanedEntryPath + "' because it is used by this project!\n");
 			}
 			else
 			{

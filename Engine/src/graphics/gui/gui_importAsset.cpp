@@ -132,10 +132,9 @@ namespace Graphics::GUI
 				|| extension == ".gltw"
 				|| extension == ".obj")
 			{
-				string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
 				string targetExtension = path(assetPath).extension().string();
 				string fullTargetName = newName + extension;
-				string targetPath = File::AddIndex(modelsFolder, newName, "");
+				string targetPath = File::AddIndex(Engine::modelsPath, newName, "");
 				File::CreateNewFolder(targetPath);
 
 				newName = path(targetPath).stem().string();
@@ -171,11 +170,10 @@ namespace Graphics::GUI
 				|| extension == ".jpg"
 				|| extension == ".jpeg")
 			{
-				string scenePath = path(Engine::scenePath).parent_path().string();
-				string newFilePath = scenePath + "/textures/" + path(assetPath).filename().string();
+				string newFilePath = Engine::sceneParentPath + "\\" + path(assetPath).filename().string();
 				File::CopyFileOrFolder(assetPath, newFilePath);
 
-				string renamedFilePath = scenePath + "/textures/" + newName + extension;
+				string renamedFilePath = Engine::sceneParentPath + "\\" + newName + extension;
 
 				File::MoveOrRenameFileOrFolder(newFilePath, renamedFilePath, true);
 			}

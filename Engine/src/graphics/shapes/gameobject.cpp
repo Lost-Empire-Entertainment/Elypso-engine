@@ -119,10 +119,9 @@ namespace Graphics::Shape
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
 	{
 		string thisName = obj->GetName();
-		string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
-		string thisFolder = String::StringReplace(modelsFolder + "\\" + thisName, "/", "\\");
+		string thisFolder = String::StringReplace(Engine::modelsPath + "\\" + thisName, "/", "\\");
 
-		for (const auto& entry : directory_iterator(modelsFolder))
+		for (const auto& entry : directory_iterator(Engine::modelsPath))
 		{
 			string entryPathParentFolder = entry.path().parent_path().string();
 			string entryFolderName = entry.path().filename().string();

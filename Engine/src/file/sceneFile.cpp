@@ -116,15 +116,19 @@ namespace EngineFile
 				"Tried to load scene '" + scenePath + "' but it doesn't exist!\n");
 			return;
 		}
-		else Engine::scenePath = scenePath;
+		else
+		{
+			Engine::scenePath = scenePath;
+			Engine::sceneParentPath = path(Engine::scenePath).parent_path().parent_path().string();
+			Engine::modelsPath = Engine::sceneParentPath + "\\models";
+			Engine::texturesPath = Engine::sceneParentPath + "\\textures";
+		}
 
-		//create models folder inside current scene folder if it doesnt exist
-		string modelsFolder = path(Engine::scenePath).parent_path().string() + "/models";
-		if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
+		//create models folder if it doesnt exist
+		if (!exists(Engine::modelsPath)) File::CreateNewFolder(Engine::modelsPath);
 
-		//create textures folder inside current scene folder if it doesnt exist
-		string texturesFolder = path(Engine::scenePath).parent_path().string() + "/textures";
-		if (!exists(texturesFolder)) File::CreateNewFolder(texturesFolder);
+		//create textures folder if it doesnt exist
+		if (!exists(Engine::texturesPath)) File::CreateNewFolder(Engine::texturesPath);
 
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;

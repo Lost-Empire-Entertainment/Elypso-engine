@@ -429,7 +429,7 @@ namespace Graphics::GUI
 					string existingFilePath;
 					string existingFileName;
 					string importedFileName = path(assetPath).filename().string();
-					for (const auto& file : directory_iterator(Engine::filesPath + "/models"))
+					for (const auto& file : directory_iterator(Engine::modelsPath))
 					{
 						existingFilePath = file.path().string();
 						existingFileName = path(existingFilePath).filename().string();
@@ -463,11 +463,10 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
 					string originPath = Engine::filesPath + "/models/cube.fbx";
 					string targetName = "Cube";
 					string fullTargetName = "Cube.fbx";
-					string targetPath = File::AddIndex(modelsFolder, targetName, "");
+					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
 					File::CreateNewFolder(targetPath);
 
 					targetName = path(targetPath).stem().string();
@@ -495,11 +494,10 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
-					string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
 					string originPath = Engine::filesPath + "/models/sphere.fbx";
 					string targetName = "Sphere";
 					string fullTargetName = "Sphere.fbx";
-					string targetPath = File::AddIndex(modelsFolder, targetName, "");
+					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
 					File::CreateNewFolder(targetPath);
 
 					targetName = path(targetPath).stem().string();
@@ -527,11 +525,10 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
-					string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
 					string originPath = Engine::filesPath + "/models/cylinder.fbx";
 					string targetName = "Cylinder";
 					string fullTargetName = "Cylinder.fbx";
-					string targetPath = File::AddIndex(modelsFolder, targetName, "");
+					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
 					File::CreateNewFolder(targetPath);
 
 					targetName = path(targetPath).stem().string();
@@ -559,11 +556,10 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
-					string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
 					string originPath = Engine::filesPath + "/models/cone.fbx";
 					string targetName = "Cone";
 					string fullTargetName = "Cone.fbx";
-					string targetPath = File::AddIndex(modelsFolder, targetName, "");
+					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
 					File::CreateNewFolder(targetPath);
 
 					targetName = path(targetPath).stem().string();
@@ -591,11 +587,10 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
-					string modelsFolder = path(Engine::scenePath).parent_path().string() + "\\models";
 					string originPath = Engine::filesPath + "/models/pyramid.fbx";
 					string targetName = "Pyramid";
 					string fullTargetName = "Pyramid.fbx";
-					string targetPath = File::AddIndex(modelsFolder, targetName, "");
+					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
 					File::CreateNewFolder(targetPath);
 
 					targetName = path(targetPath).stem().string();

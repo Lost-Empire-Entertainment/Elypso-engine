@@ -16,10 +16,16 @@ namespace Core
 	public:
 		static inline string name = "Elypso engine";
 		static inline string version = "0.0.14.0004";
+
 		static inline string docsPath;
 		static inline string filesPath;
 		static inline string projectPath;
+
+		static inline string sceneParentPath;
 		static inline string scenePath;
+		static inline string modelsPath;
+		static inline string texturesPath;
+
 		static inline string gamePath;
 		static inline string gameExePath;
 		static inline string gameParentPath;

@@ -217,64 +217,47 @@ void GUI::RenderButtons()
 
 void GUI::NewProject()
 {
-	string filePath = SelectWithExplorer(SelectType::new_folder);
+	string sceneString = SelectWithExplorer(SelectType::scene_file);
+	path scenePath(sceneString);
 
-	if (filePath.empty())
+	string projectString = scenePath.parent_path().string() + "\\project.txt";
+	path projectPath(projectString);
+
+	if (sceneString.empty())
 	{
 		cout << "Cancelled folder selection...\n\n";
 		return;
 	}
 
-	if (!is_empty(filePath))
+	if (scenePath.stem().string() == "project")
 	{
-		cout << "Error: Cannot create a new project inside a folder with content inside it!\n\n";
-		remove_all(filePath);
-		return;
+		cout << "Error: Cannot create a new scene with the name 'project' because it is used for the project file!\n";
 	}
 
-	path parentPath(filePath);
-	parentPath = parentPath.parent_path();
-	path projectFile(filePath);
+	path parentPath(scenePath.parent_path());
 	for (const auto& entry : directory_iterator(parentPath))
 	{
 		path entryFile(entry);
 		if (entry.is_regular_file()
-			&& entryFile.stem() == projectFile.stem())
+			&& entryFile.stem() == projectPath.stem())
 		{
-			cout << "Error: A project with the name '" << projectFile.stem().string() << "' already exists in the same folder!\n\n";
-			remove_all(filePath);
+			cout << "Error: A scene with the name '" << projectPath.stem().string() << "' already exists in the same folder!\n\n";
 			return;
 		}
 	}
 
-	string scenePath = filePath + "/scene.txt";
-	ofstream scene(scenePath);
-	if (!scene.is_open())
-	{
-		cout << "Error: Failed to open scene file at '" << scenePath << "'!\n\n";
-		remove_all(filePath);
-		return;
-	}
-
-	scene.close();
-
-	string sceneDirectory = filePath + "/Scene1";
-	create_directory(sceneDirectory);
-
-	rename(scenePath, sceneDirectory + "/scene.txt");
-
-	string projectFilePath = filePath + "/project.txt";
-	ofstream project(projectFilePath);
+	ofstream project(projectString);
 	if (!project.is_open())
 	{
-		cout << "Error: Failed to open project file at '" << projectFilePath << "'!\n\n";
-		remove_all(filePath);
+		cout << "Error: Failed to open scene file at '" << projectString << "'!\n\n";
+		remove(sceneString);
+		remove(projectString);
 		return;
 	}
 
 	string engineParentPath = Core::enginePath.parent_path().string();
-	project << "scene: " << filePath + "/Scene1/scene.txt\n";
-	project << "project: " << filePath + "/project.txt" << "\n";
+	project << "scene: " << sceneString + "\n";
+	project << "project: " << projectString + "\n";
 	project.close();
 
 	ofstream projectsFile(Core::projectsFilePath, ios::app);
@@ -283,16 +266,16 @@ void GUI::NewProject()
 		cout << "Error: Failed to open projects file!\n\n";
 		return;
 	}
-	projectsFile << filePath << "\n";
+	projectsFile << sceneString << "\n";
 	projectsFile.close();
 	UpdateFileList();
 
-	cout << "Successfully created new project at '" << filePath << "'!\n\n";
+	cout << "Successfully created new scene at '" << sceneString << "'!\n\n";
 }
 
 void GUI::AddProject()
 {
-	string filePath = SelectWithExplorer(SelectType::existing_file);
+	string filePath = SelectWithExplorer(SelectType::scene_file);
 
 	if (filePath.empty())
 	{
@@ -565,33 +548,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 		return "";
 	}
 
-	if (selectType == SelectType::new_folder
-		|| selectType == SelectType::existing_file)
-	{
-		//restrict the selection to folders only
-		DWORD dwOptions;
-		hr = pFileOpen->GetOptions(&dwOptions);
-		if (SUCCEEDED(hr))
-		{
-			hr = pFileOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
-			if (FAILED(hr))
-			{
-				cout << "Error: Failed to set options!\n\n";
-				pFileOpen->Release();
-				CoUninitialize();
-				return "";
-			}
-		}
-		else
-		{
-			cout << "Error: Failed to get options!\n\n";
-			pFileOpen->Release();
-			CoUninitialize();
-			return "";
-		}
-	}
-
-	else if (selectType == SelectType::engine_path)
+	if (selectType == SelectType::engine_path)
 	{
 		//restrict file selection to .exe only
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Executables", L"*.exe"} };

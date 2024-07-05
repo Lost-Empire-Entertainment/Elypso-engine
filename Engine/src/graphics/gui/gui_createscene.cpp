@@ -119,9 +119,7 @@ namespace Graphics::GUI
 
 			bool foundExistingScene = false;
 
-			string parentPath = path(Engine::scenePath).parent_path().parent_path().string();
-
-			for (const auto& entry : directory_iterator(parentPath))
+			for (const auto& entry : directory_iterator(Engine::sceneParentPath))
 			{
 				if (entry.path().filename().string() == assignedSceneName)
 				{
@@ -149,10 +147,8 @@ namespace Graphics::GUI
 			// CREATE NEW SCENE
 			//
 
-			string newSceneFolder = parentPath + "\\" + assignedSceneName;
-			string newSceneFile = newSceneFolder + "\\scene.txt";
+			string newSceneFile = Engine::sceneParentPath + "\\" + assignedSceneName;
 
-			File::CreateNewFolder(newSceneFolder);
 			ofstream sceneFile(newSceneFile);
 			sceneFile.close();
 

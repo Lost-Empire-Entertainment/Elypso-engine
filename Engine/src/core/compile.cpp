@@ -6,6 +6,7 @@
 #include <iostream>
 #include <filesystem>
 #include <thread>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -30,6 +31,7 @@ using std::filesystem::path;
 using std::exception;
 using std::filesystem::exists;
 using std::thread;
+using std::ofstream;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -51,12 +53,13 @@ namespace Core
 
 		thread CompileThread([]()
 			{
+				//
+				// START BUILDING GAME FROM SOURCE CODE
+				//
+
 				string gameBatPath = Engine::gamePath + "\\build.bat";
 				gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
-				if (!exists(gameBatPath))
-				{
-					return;
-				}
+				if (!exists(gameBatPath)) return;
 				int result = File::RunBatFile(gameBatPath, false, File::BatType::compile);
 				File::MoveOrRenameFileOrFolder(
 					Engine::gameParentPath + "/Game.exe",
@@ -75,6 +78,10 @@ namespace Core
 					return;
 				}
 
+				//
+				// REMOVE OLD PROJECT FILES FROM GAME
+				//
+
 				string gameProjectFolder = Engine::gameParentPath + "\\files\\project";
 				for (const auto& item : directory_iterator(path(gameProjectFolder)))
 				{
@@ -87,8 +94,12 @@ namespace Core
 					}
 				}
 
-				string engineProjectPath = path(Engine::projectPath).parent_path().string();
-				for (const auto& item : directory_iterator(path(engineProjectPath)))
+				//
+				// ADD NEW PROJECT FILES TO GAME
+				//
+
+				string scenePath = path(Engine::projectPath).parent_path().string();
+				for (const auto& item : directory_iterator(path(scenePath)))
 				{
 					string itemPath = item.path().string();
 
@@ -100,9 +111,32 @@ namespace Core
 					File::CopyFileOrFolder(itemPath, targetItemPath);
 				}
 
+				//
+				// CREATE DUPLICATE SCENE FILES WHICH THE GAME WILL USE 
+				// TO KNOW WHERE TO FIND ITS PROJECT FILES FROM
+				//
+
+				/*
+				string gameProjectPath = path(Engine::gameExePath).parent_path().string() + "\\files\\project";
+				gameProjectPath = String::CharReplace(gameProjectPath, '/', '\\');
+				//cout << "game project path: " << gameProjectPath << "\n\n";
+
+				for (const auto& sceneFile : directory_iterator(Engine::sceneParentPath))
+				{
+
+				}
+				*/
+
+				//
+				// FINISHED COMPILATION
+				//
+
 				renderBuildingWindow = false;
 
-				cout << "started running game exe...\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::INFO,
+					"Compilation succeeded! Running game.\n");
 
 				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			});

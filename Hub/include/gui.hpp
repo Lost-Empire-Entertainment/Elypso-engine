@@ -16,8 +16,6 @@ class GUI
 public:
 	enum class SelectType
 	{
-		new_folder,
-		existing_file,
 		engine_path,
 		scene_file
 	};
