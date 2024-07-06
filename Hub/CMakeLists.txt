@@ -52,6 +52,8 @@ target_link_libraries(external_libs INTERFACE glad magic_enum)
 set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/main.cpp
 	${CMAKE_SOURCE_DIR}/src/gui.cpp
+	${CMAKE_SOURCE_DIR}/src/createproject.cpp
+	${CMAKE_SOURCE_DIR}/src/removeproject.cpp
 )
 
 # Add your external files

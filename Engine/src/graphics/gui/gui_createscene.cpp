@@ -74,8 +74,8 @@ namespace Graphics::GUI
 			assignedSceneName = sceneName;
 		}
 
-		if (strlen(sceneName) == 0) strcpy_s(sceneName, bufferSize, "_");
-		if (assignedSceneName == "") assignedSceneName = "_";
+		if (strlen(sceneName) == 0) strcpy_s(sceneName, bufferSize, "Scene");
+		if (assignedSceneName == "") assignedSceneName = "Scene";
 
 		ImVec2 buttonSize = ImVec2(100, 30);
 
@@ -90,20 +90,24 @@ namespace Graphics::GUI
 			//
 
 			bool foundIllegalChar = false;
+			char illegalChar;
 			for (char c : assignedSceneName)
 			{
 				if (!String::IsValidSymbolInPath(c))
 				{
 					foundIllegalChar = true;
+					illegalChar = c;
 					break;
 				}
 			}
 			if (foundIllegalChar)
 			{
+				string str(1, illegalChar);
+
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"Invalid character detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+					"Error: Invalid character '" + str + "' detected in project name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!");
 
 				strcpy_s(sceneName, bufferSize, "Scene");
 				assignedSceneName = "Scene";

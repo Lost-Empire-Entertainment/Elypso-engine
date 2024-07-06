@@ -6,7 +6,6 @@
 #include <Windows.h>
 #include <ShlObj.h>
 #include <iostream>
-#include <fstream>
 #include <filesystem>
 
 //external
@@ -17,12 +16,11 @@
 //hub
 #include "gui.hpp"
 #include "main.hpp"
+#include "createproject.hpp"
+#include "removeproject.hpp"
 
 using std::cout;
-using std::ifstream;
-using std::ofstream;
 using std::getline;
-using std::ios;
 using std::wstring;
 using std::filesystem::is_empty;
 using std::filesystem::exists;
@@ -32,10 +30,12 @@ using std::filesystem::remove;
 using std::filesystem::rename;
 using std::filesystem::copy;
 using std::filesystem::create_directory;
+using std::to_string;
+using std::filesystem::is_directory;
 
 void GUI::Initialize()
 {
-	cout << "Initializing ImGui...\n\n";
+	cout << "Initializing ImGui.\n\n";
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -85,8 +85,8 @@ void GUI::Render()
 
 	GUI::RenderPanels();
 	GUI::RenderButtons();
-
-	if (renderConfirmWindow) GUI::ConfirmRemove(confirmFileName, confirmFilePath);
+	CreateProject::RenderCreateProjectWindow();
+	RemoveProject::RenderRemoveProjectWindow();
 
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
@@ -135,8 +135,7 @@ void GUI::RenderPanels()
 
 			ImGui::SetWindowSize(ImVec2(static_cast<float>(framebufferWidth) - 335, 200));
 
-			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)
-				&& !renderConfirmWindow)
+			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
 			{
 				ImGui::SetWindowFocus();
 			}
@@ -146,8 +145,7 @@ void GUI::RenderPanels()
 
 			if (ImGui::Button("Launch", ImVec2(200, 50)))
 			{
-				if (!renderConfirmWindow
-					&& IsValidEnginePath(Core::enginePath.string()))
+				if (IsValidEnginePath(Core::enginePath.string()))
 				{
 					GUI::RunProject(file);
 				}
@@ -158,11 +156,12 @@ void GUI::RenderPanels()
 
 			if (ImGui::Button("Remove", ImVec2(200, 50)))
 			{
-				if (!renderConfirmWindow)
+				if (!CreateProject::renderCreateProjectWindow
+					&& !RemoveProject::renderRemoveProjectWindow)
 				{
-					confirmFileName = fileName;
-					confirmFilePath = file;
-					renderConfirmWindow = true;
+					RemoveProject::confirmFileName = fileName;
+					RemoveProject::confirmFilePath = file;
+					RemoveProject::renderRemoveProjectWindow = true;
 				}
 			}
 
@@ -195,21 +194,21 @@ void GUI::RenderButtons()
 
 	if (ImGui::Button("Create new project", ImVec2(285, 50)))
 	{
-		if (!renderConfirmWindow) GUI::NewProject();
+		GUI::NewProject();
 	}
 
 	ImGui::Dummy(ImVec2(0.0f, 15.0f));
 
-	if (ImGui::Button("Add existing project", ImVec2(285, 50)))
+	if (ImGui::Button("Set project folder", ImVec2(285, 50)))
 	{
-		if (!renderConfirmWindow) GUI::AddProject();
+		GUI::SetProjectsFolder();
 	}
 
 	ImGui::Dummy(ImVec2(0.0f, 15.0f));
 
 	if (ImGui::Button("Set engine path", ImVec2(285, 50)))
 	{
-		if (!renderConfirmWindow) GUI::SetEnginePathBySelection();
+		GUI::SetEnginePath();
 	}
 
 	ImGui::End();
@@ -217,102 +216,42 @@ void GUI::RenderButtons()
 
 void GUI::NewProject()
 {
-	string sceneString = SelectWithExplorer(SelectType::scene_file);
-	path scenePath(sceneString);
+	if (CreateProject::renderCreateProjectWindow
+		|| RemoveProject::renderRemoveProjectWindow) return;
 
-	string projectString = scenePath.parent_path().string() + "\\project.txt";
-	path projectPath(projectString);
-
-	if (sceneString.empty())
+	if (Core::projectsFolderPath == "")
 	{
-		cout << "Cancelled folder selection...\n\n";
+		cout << "Error: Projects folder has not been assigned so a new project cannot be created!\n";
 		return;
 	}
 
-	if (scenePath.stem().string() == "project")
-	{
-		cout << "Error: Cannot create a new scene with the name 'project' because it is used for the project file!\n";
-	}
-
-	path parentPath(scenePath.parent_path());
-	for (const auto& entry : directory_iterator(parentPath))
-	{
-		path entryFile(entry);
-		if (entry.is_regular_file()
-			&& entryFile.stem() == projectPath.stem())
-		{
-			cout << "Error: A scene with the name '" << projectPath.stem().string() << "' already exists in the same folder!\n\n";
-			return;
-		}
-	}
-
-	ofstream project(projectString);
-	if (!project.is_open())
-	{
-		cout << "Error: Failed to open scene file at '" << projectString << "'!\n\n";
-		remove(sceneString);
-		remove(projectString);
-		return;
-	}
-
-	string engineParentPath = Core::enginePath.parent_path().string();
-	project << "scene: " << sceneString + "\n";
-	project << "project: " << projectString + "\n";
-	project.close();
-
-	ofstream projectsFile(Core::projectsFilePath, ios::app);
-	if (!projectsFile.is_open())
-	{
-		cout << "Error: Failed to open projects file!\n\n";
-		return;
-	}
-	projectsFile << sceneString << "\n";
-	projectsFile.close();
-	UpdateFileList();
-
-	cout << "Successfully created new scene at '" << sceneString << "'!\n\n";
+	CreateProject::renderCreateProjectWindow = true;
 }
 
-void GUI::AddProject()
+void GUI::SetProjectsFolder()
 {
-	string filePath = SelectWithExplorer(SelectType::scene_file);
+	if (CreateProject::renderCreateProjectWindow
+		|| RemoveProject::renderRemoveProjectWindow) return;
 
-	if (filePath.empty())
-	{
-		cout << "Cancelled project selection...\n\n";
-		return;
-	}
-	 
-	for (const auto& element : files)
-	{
-		if (element == filePath)
-		{
-			cout << "Error: '" << filePath << "' has already been added!\n\n";
-			UpdateFileList();
-			return;
-		}
-	}
+	string filePath = SelectWithExplorer(SelectType::folder);
 
-	ofstream projectsFile(Core::projectsFilePath, ios::app);
-	if (!projectsFile.is_open())
-	{
-		cout << "Error: Failed to open projects file!\n\n";
-		return;
-	}
-	projectsFile << filePath << "\n";
-	projectsFile.close();
+	Core::projectsFolderPath = path(filePath);
+
 	UpdateFileList();
 
-	cout << "Added existing project '" << filePath << "'!\n\n";
+	Core::SaveConfigFile();
 }
 
-void GUI::SetEnginePathBySelection()
+void GUI::SetEnginePath()
 {
+	if (CreateProject::renderCreateProjectWindow
+		|| RemoveProject::renderRemoveProjectWindow) return;
+
 	string filePath = SelectWithExplorer(SelectType::engine_path);
 
 	if (filePath.empty())
 	{
-		cout << "Cancelled engine selection...\n\n";
+		cout << "Cancelled engine selection.\n\n";
 		return;
 	}
 
@@ -326,53 +265,9 @@ void GUI::SetEnginePathBySelection()
 
 	Core::enginePath = filePath;
 
-	cout << "Set engine path to '" << Core::enginePath << "'!\n\n";
+	Core::SaveConfigFile();
 }
 
-void GUI::ConfirmRemove(const string& projectName, const string& projectPath)
-{
-	ImGui::SetNextWindowPos(ImVec2(400, 200));
-	ImGui::SetNextWindowSize(ImVec2(500, 300));
-
-	ImGuiWindowFlags flags = 
-		ImGuiWindowFlags_NoResize
-		| ImGuiWindowFlags_NoMove
-		| ImGuiWindowFlags_NoCollapse
-		| ImGuiWindowFlags_NoSavedSettings;
-
-	string title = "Remove " + projectName + "?";
-	ImGui::Begin(title.c_str(), nullptr, flags);
-
-	ImVec2 windowPos = ImGui::GetWindowPos();
-	ImVec2 windowSize = ImGui::GetWindowSize();
-
-	ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
-	ImVec2 buttonSize(120, 50);
-	float buttonSpacing = 20.0f;
-
-	ImVec2 buttonYesPos(
-		windowSize.x * 0.45f - buttonSize.x,
-		windowSize.y * 0.5f - buttonSize.y * 0.5f);
-	ImVec2 buttonNoPos(
-		windowSize.x * 0.55f,
-		windowSize.y * 0.5f - buttonSize.y * 0.5f);
-	
-	ImGui::SetCursorPos(buttonYesPos);
-	if (ImGui::Button("Yes", buttonSize))
-	{
-		GUI::RemoveProject(projectPath);
-		renderConfirmWindow = false;
-	}
-
-	ImGui::SetCursorPos(buttonNoPos);
-	if (ImGui::Button("No", buttonSize))
-	{
-		cout << "Cancelled project removal...\n\n";
-		renderConfirmWindow = false;
-	}
-
-	ImGui::End();
-}
 void GUI::RemoveProject(const string& projectPath)
 {
 	if (!exists(projectPath))
@@ -385,7 +280,7 @@ void GUI::RemoveProject(const string& projectPath)
 	remove_all(projectPath);
 	UpdateFileList();
 
-	cout << "Removed '" << projectPath << "'...\n\n";
+	cout << "Removed existing project '" << projectPath << "'\n\n";
 }
 
 bool GUI::IsValidEnginePath(const string& enginePath)
@@ -414,6 +309,9 @@ bool GUI::IsValidEnginePath(const string& enginePath)
 
 void GUI::RunProject(const string& targetProject)
 {
+	if (CreateProject::renderCreateProjectWindow
+		|| RemoveProject::renderRemoveProjectWindow) return;
+
 	if (!exists(targetProject))
 	{
 		cout << "Error: Trying to run project that no longer exists!\n";
@@ -424,6 +322,9 @@ void GUI::RunProject(const string& targetProject)
 	//copy project.txt to files folder
 	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
 	string originalProjectFile = targetProject + "/project.txt";
+
+	cout << "trying to copy: " << originalProjectFile << "\n";
+
 	string targetProjectFile = engineFilesFolderPath + "/project.txt";
 	if (exists(targetProjectFile)) remove(targetProjectFile);
 	copy(originalProjectFile, targetProjectFile);
@@ -484,42 +385,15 @@ void GUI::RunApplication(const string& parentFolderPath, const string& exePath, 
 void GUI::UpdateFileList()
 {
 	files.clear();
-
-	ifstream projectsFile(Core::projectsFilePath);
-
-	if (!projectsFile.is_open())
+	if (Core::projectsFolderPath != "")
 	{
-		cout << "Error: Failed to open projects file!\n\n";
-		return;
-	}
-
-	string line;
-	while (getline(projectsFile, line))
-	{
-		if (!exists(line)) foundInvalidPath = true;
-		else files.push_back(line);
-	}
-
-	projectsFile.close();
-
-	if (files.size() > 0
-		&& foundInvalidPath)
-	{
-		ofstream editedProjectsFile(Core::projectsFilePath);
-		if (!editedProjectsFile.is_open())
+		for (const auto& entry : directory_iterator(Core::projectsFolderPath))
 		{
-			cout << "Error: Failed to open projects file!\n\n";
-			return;
+			if (is_directory(entry))
+			{
+				files.push_back(entry.path().string());
+			}
 		}
-
-		for (const auto& file : files)
-		{
-			editedProjectsFile << file << "\n";
-		}
-
-		editedProjectsFile.close();
-
-		foundInvalidPath = false;
 	}
 }
 
@@ -548,7 +422,32 @@ string GUI::SelectWithExplorer(SelectType selectType)
 		return "";
 	}
 
-	if (selectType == SelectType::engine_path)
+	if (selectType == SelectType::folder)
+	{
+		//restrict the selection to folders only
+		DWORD dwOptions;
+		hr = pFileOpen->GetOptions(&dwOptions);
+		if (SUCCEEDED(hr))
+		{
+			hr = pFileOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
+			if (FAILED(hr))
+			{
+				cout << "Error: Failed to set options!\n\n";
+				pFileOpen->Release();
+				CoUninitialize();
+				return "";
+			}
+		}
+		else
+		{
+			cout << "Error: Failed to get options!\n\n";
+			pFileOpen->Release();
+			CoUninitialize();
+			return "";
+		}
+	}
+
+	else if (selectType == SelectType::engine_path)
 	{
 		//restrict file selection to .exe only
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Executables", L"*.exe"} };
@@ -562,7 +461,7 @@ string GUI::SelectWithExplorer(SelectType selectType)
 		}
 	}
 
-	else if (selectType == SelectType::scene_file)
+	else if (selectType == SelectType::txt_file)
 	{
 		//restrict file selection to .txt only
 		COMDLG_FILTERSPEC filterSpec[] = { { L"Scene files", L"*.txt"} };

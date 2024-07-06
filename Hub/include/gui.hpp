@@ -16,15 +16,12 @@ class GUI
 public:
 	enum class SelectType
 	{
+		folder,
 		engine_path,
-		scene_file
+		txt_file
 	};
 
 	static inline bool foundInvalidPath;
-
-	static inline bool renderConfirmWindow;
-	static inline string confirmFileName;
-	static inline string confirmFilePath;
 
 	static inline int framebufferWidth, framebufferHeight;
 	static inline float panelSpacing = 10.0f;
@@ -39,12 +36,10 @@ public:
 	static void RenderButtons();
 
 	static void NewProject();
-	static void AddProject();
-
-	static void SetEnginePathBySelection();
+	static void SetProjectsFolder();
+	static void SetEnginePath();
 
 	static void RemoveProject(const string& projectName);
-	static void ConfirmRemove(const string& projectName, const string& projectPath);
 
 	static bool IsValidEnginePath(const string& enginePath);
 

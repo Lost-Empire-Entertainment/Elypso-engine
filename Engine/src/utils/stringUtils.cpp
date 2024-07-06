@@ -145,7 +145,6 @@ namespace Utils
 	bool String::IsValidSymbolInPath(const char& c)
 	{
 		return c == '-'
-			|| c == '.'
 			|| c == '_'
 			|| c == ' '
 			|| (c >= '0' && c <= '9')

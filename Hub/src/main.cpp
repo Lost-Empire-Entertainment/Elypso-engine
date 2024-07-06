@@ -120,19 +120,6 @@ void Core::Initialize()
 
 	if (!exists(Core::docsPath)) create_directory(Core::docsPath);
 
-	Core::projectsFilePath = Core::docsPath.string() + "/projects.txt";
-	if (!exists(Core::projectsFilePath))
-	{
-		ofstream projectsFile(Core::projectsFilePath);
-		if (!projectsFile.is_open())
-		{
-			CreateErrorPopup(
-				"Initialization failed",
-				"Failed to create projects file!");
-		}
-		projectsFile.close();
-	}
-
 	Core::configFilePath = Core::docsPath.string() + "/config.txt";
 	if (!exists(Core::configFilePath))
 	{
@@ -232,11 +219,19 @@ void Core::LoadConfigFile()
 				vector<string> resolution = Core::StringSplit(value, ',');
 				currentWidth = stoul(resolution.at(0));
 				currentHeight = stoul(resolution.at(1));
+				cout << "Set resolution to '" << to_string(currentWidth) << "x" << to_string(currentHeight) << "'!\n";
 			}
 
 			if (type == "engine path")
 			{
 				enginePath = value;
+				cout << "Set engine path to '" << enginePath.string() << "'!\n";
+			}
+
+			if (type == "projects folder")
+			{
+				projectsFolderPath = value;
+				cout << "Set projects folder to '" << projectsFolderPath.string() << "'!\n";
 			}
 		}
 	}
@@ -252,17 +247,16 @@ void Core::SaveConfigFile()
 	ofstream configFile(configFilePath);
 
 	configFile << "resolution= " << to_string(currentWidth) << ", " << to_string(currentHeight) << "\n";
+	cout << "Set resolution to '" << to_string(currentWidth) << "x" << to_string(currentHeight) << "'!\n";
 
-	if (enginePath.string() == "")
-	{
-		configFile << "engine path= " << "\n";
-	}
-	else
-	{
-		cout << enginePath.string() << "\n";
-		configFile << "engine path= " << enginePath.string() << "\n";
-	}
-	
+	string enginePathResult = enginePath.string() != "" ? enginePath.string() : "";
+	configFile << "engine path= " << enginePathResult << "\n";
+	cout << "Set engine path to '" << enginePath.string() << "'!\n";
+
+	string projectsFolderResult = projectsFolderPath.string() != "" ? projectsFolderPath.string() : "";
+	configFile << "projects folder= " << projectsFolderResult << "\n";
+	cout << "Set projects folder to '" << projectsFolderPath.string() << "'!\n";
+
 	configFile.close();
 }
 

@@ -33,8 +33,10 @@ public:
 	static inline float aspectRatio;
 
 	static inline path defaultPath;
+
 	static inline path docsPath;
-	static inline path projectsFilePath;
+	static inline path projectsFolderPath;
+
 	static inline path configFilePath;
 	static inline path enginePath;
 
