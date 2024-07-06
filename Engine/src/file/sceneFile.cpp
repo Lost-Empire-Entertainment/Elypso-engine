@@ -119,7 +119,7 @@ namespace EngineFile
 		else
 		{
 			Engine::scenePath = scenePath;
-			Engine::sceneParentPath = path(Engine::scenePath).parent_path().parent_path().string();
+			Engine::sceneParentPath = path(Engine::scenePath).parent_path().string();
 			Engine::modelsPath = Engine::sceneParentPath + "\\models";
 			Engine::texturesPath = Engine::sceneParentPath + "\\textures";
 		}

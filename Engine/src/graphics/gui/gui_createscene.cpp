@@ -107,7 +107,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,
 					Type::EXCEPTION,
-					"Error: Invalid character '" + str + "' detected in project name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!");
+					"Error: Invalid character '" + str + "' detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!");
 
 				strcpy_s(sceneName, bufferSize, "Scene");
 				assignedSceneName = "Scene";
@@ -151,7 +151,7 @@ namespace Graphics::GUI
 			// CREATE NEW SCENE
 			//
 
-			string newSceneFile = Engine::sceneParentPath + "\\" + assignedSceneName;
+			string newSceneFile = Engine::sceneParentPath + "\\" + assignedSceneName + ".txt";
 
 			ofstream sceneFile(newSceneFile);
 			sceneFile.close();
