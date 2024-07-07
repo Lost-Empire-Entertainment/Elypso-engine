@@ -87,8 +87,8 @@ namespace Graphics::GUI
 	void EngineGUI::Initialize()
 	{
 		//copies template file to documents folder if imgui file does not exist
-		string imguiConfigFile = Engine::docsPath + "/imgui.ini";
-		string imguiTemplateFile = Engine::filesPath + "/imgui.ini";
+		string imguiConfigFile = Engine::docsPath + "\\imgui.ini";
+		string imguiTemplateFile = Engine::filesPath + "\\imgui.ini";
 		if (!exists(imguiConfigFile))
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
@@ -107,7 +107,7 @@ namespace Graphics::GUI
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		static string tempString = Engine::docsPath + "/imgui.ini";
+		static string tempString = Engine::docsPath + "\\imgui.ini";
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
@@ -115,7 +115,7 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "\\fonts\\coda\\Coda-Regular.ttf").c_str(), 16.0f);
 
 		bgrColor.x = Render::backgroundColor.x;
 		bgrColor.y = Render::backgroundColor.y;
@@ -408,6 +408,7 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Did not get path!\n");
 				}
+				assetPath = String::CharReplace(assetPath, '/', '\\');
 
 				string name = path(assetPath).stem().string();
 				string extension = path(assetPath).extension().string();
@@ -463,7 +464,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
-					string originPath = Engine::filesPath + "/models/cube.fbx";
+					string originPath = Engine::filesPath + "\\models\\cube.fbx";
 					string targetName = "Cube";
 					string fullTargetName = "Cube.fbx";
 					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
@@ -480,9 +481,9 @@ namespace Graphics::GUI
 						vec3(0),
 						vec3(1),
 						fullTargetPath,
-						Engine::filesPath + "/shaders/GameObject.vert",
-						Engine::filesPath + "/shaders/GameObject.frag",
-						Engine::filesPath + "/textures/diff_default.png",
+						Engine::filesPath + "\\shaders\\GameObject.vert",
+						Engine::filesPath + "\\shaders\\GameObject.frag",
+						Engine::filesPath + "\\textures\\diff_default.png",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -494,7 +495,7 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
-					string originPath = Engine::filesPath + "/models/sphere.fbx";
+					string originPath = Engine::filesPath + "\\models\\sphere.fbx";
 					string targetName = "Sphere";
 					string fullTargetName = "Sphere.fbx";
 					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
@@ -511,9 +512,9 @@ namespace Graphics::GUI
 						vec3(0),
 						vec3(1),
 						fullTargetPath,
-						Engine::filesPath + "/shaders/GameObject.vert",
-						Engine::filesPath + "/shaders/GameObject.frag",
-						Engine::filesPath + "/textures/diff_default.png",
+						Engine::filesPath + "\\shaders\\GameObject.vert",
+						Engine::filesPath + "\\shaders\\GameObject.frag",
+						Engine::filesPath + "\\textures\\diff_default.png",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -525,7 +526,7 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
-					string originPath = Engine::filesPath + "/models/cylinder.fbx";
+					string originPath = Engine::filesPath + "\\models\\cylinder.fbx";
 					string targetName = "Cylinder";
 					string fullTargetName = "Cylinder.fbx";
 					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
@@ -542,9 +543,9 @@ namespace Graphics::GUI
 						vec3(0),
 						vec3(1),
 						fullTargetPath,
-						Engine::filesPath + "/shaders/GameObject.vert",
-						Engine::filesPath + "/shaders/GameObject.frag",
-						Engine::filesPath + "/textures/diff_default.png",
+						Engine::filesPath + "\\shaders\\GameObject.vert",
+						Engine::filesPath + "\\shaders\\GameObject.frag",
+						Engine::filesPath + "\\textures\\diff_default.png",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -556,7 +557,7 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
-					string originPath = Engine::filesPath + "/models/cone.fbx";
+					string originPath = Engine::filesPath + "\\models\\cone.fbx";
 					string targetName = "Cone";
 					string fullTargetName = "Cone.fbx";
 					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
@@ -573,9 +574,9 @@ namespace Graphics::GUI
 						vec3(0),
 						vec3(1),
 						fullTargetPath,
-						Engine::filesPath + "/shaders/GameObject.vert",
-						Engine::filesPath + "/shaders/GameObject.frag",
-						Engine::filesPath + "/textures/diff_default.png",
+						Engine::filesPath + "\\shaders\\GameObject.vert",
+						Engine::filesPath + "\\shaders\\GameObject.frag",
+						Engine::filesPath + "\\textures\\diff_default.png",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -587,7 +588,7 @@ namespace Graphics::GUI
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
-					string originPath = Engine::filesPath + "/models/pyramid.fbx";
+					string originPath = Engine::filesPath + "\\models\\pyramid.fbx";
 					string targetName = "Pyramid";
 					string fullTargetName = "Pyramid.fbx";
 					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
@@ -604,9 +605,9 @@ namespace Graphics::GUI
 						vec3(0),
 						vec3(1),
 						fullTargetPath,
-						Engine::filesPath + "/shaders/GameObject.vert",
-						Engine::filesPath + "/shaders/GameObject.frag",
-						Engine::filesPath + "/textures/diff_default.png",
+						Engine::filesPath + "\\shaders\\GameObject.vert",
+						Engine::filesPath + "\\shaders\\GameObject.frag",
+						Engine::filesPath + "\\textures\\diff_default.png",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",

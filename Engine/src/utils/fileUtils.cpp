@@ -345,7 +345,7 @@ namespace Utils
                     && entryString.find(fileName + " (") != string::npos)
                 {
                     vector<string> split = String::Split(entryString, '(');
-                    string cleanedNumberString = String::StringReplace(split[1], ")", "");
+                    string cleanedNumberString = String::CharReplace(split[1], ')', '\0');
                     int number = stoi(cleanedNumberString);
 
                     if (number >= highestNumber) highestNumber = number + 1;

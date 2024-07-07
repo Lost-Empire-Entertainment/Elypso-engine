@@ -48,8 +48,8 @@ namespace Graphics
 		}
 
 		shader = Shader::LoadShader(
-			Engine::filesPath + "/shaders/Basic.vert",
-			Engine::filesPath + "/shaders/Basic.frag");
+			Engine::filesPath + "\\shaders\\Basic.vert",
+			Engine::filesPath + "\\shaders\\Basic.frag");
 
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);

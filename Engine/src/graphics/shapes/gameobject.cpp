@@ -119,15 +119,15 @@ namespace Graphics::Shape
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
 	{
 		string thisName = obj->GetName();
-		string thisFolder = String::StringReplace(Engine::modelsPath + "\\" + thisName, "/", "\\");
+		string thisFolder = String::CharReplace(Engine::modelsPath + "\\" + thisName, '/', '\\');
 
 		for (const auto& entry : directory_iterator(Engine::modelsPath))
 		{
 			string entryPathParentFolder = entry.path().parent_path().string();
 			string entryFolderName = entry.path().filename().string();
-			string entryPath = String::StringReplace(
+			string entryPath = String::CharReplace(
 				entryPathParentFolder + "\\"
-				+ entryFolderName, "/", "\\");
+				+ entryFolderName, '/', '\\');
 
 			if (entryPath == thisFolder)
 			{

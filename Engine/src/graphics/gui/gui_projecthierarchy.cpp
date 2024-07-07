@@ -132,7 +132,7 @@ namespace Graphics::GUI
 					//create folder inside selected folder
 					if (ImGui::MenuItem("Create folder"))
 					{
-						string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
+						string cleanedEntryPath = String::CharReplace(entry.path, '/', '\\');
 
 						string newFolderPath = cleanedEntryPath + "\\New Folder";
 						newFolderPath = File::AddIndex(cleanedEntryPath, "New Folder");
@@ -144,7 +144,7 @@ namespace Graphics::GUI
 					{
 						if (nodeOpen)
 						{
-							string cleanedEntryPath = String::StringReplace(entry.path, "/", "\\");
+							string cleanedEntryPath = String::CharReplace(entry.path, '/', '\\');
 
 							ConsoleManager::WriteConsoleMessage(
 								Caller::ENGINE,
@@ -204,12 +204,12 @@ namespace Graphics::GUI
 	{
 		if (is_directory(targetPath))
 		{
-			string cleanedEntryPath = String::StringReplace(
-				targetPath, "/", "\\");
-			string cleanedModelsFolder = String::StringReplace(
-				Engine::sceneParentPath + "\\models", "/", "\\");
-			string cleanedTexturesFolder = String::StringReplace(
-				Engine::sceneParentPath + "\\textures", "/", "\\");
+			string cleanedEntryPath = String::CharReplace(
+				targetPath, '/', '\\');
+			string cleanedModelsFolder = String::CharReplace(
+				Engine::sceneParentPath + "\\models", '/', '\\');
+			string cleanedTexturesFolder = String::CharReplace(
+				Engine::sceneParentPath + "\\textures", '/', '\\');
 
 			if (cleanedEntryPath == cleanedModelsFolder
 				|| cleanedEntryPath == cleanedTexturesFolder)
@@ -244,9 +244,9 @@ namespace Graphics::GUI
 		}
 		else if (is_regular_file(targetPath))
 		{
-			string cleanedEntryPath = String::StringReplace(targetPath, "/", "\\");
-			string cleanedProjectPath = String::StringReplace(Engine::projectPath, "/", "\\");
-			string cleanedScenePath = String::StringReplace(Engine::scenePath, "/", "\\");
+			string cleanedEntryPath = String::CharReplace(targetPath, '/', '\\');
+			string cleanedProjectPath = String::CharReplace(Engine::projectPath, '/', '\\');
+			string cleanedScenePath = String::CharReplace(Engine::scenePath, '/', '\\');
 
 			if (cleanedEntryPath == cleanedScenePath
 				|| cleanedEntryPath == cleanedProjectPath)

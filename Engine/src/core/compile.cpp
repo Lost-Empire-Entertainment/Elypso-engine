@@ -62,7 +62,7 @@ namespace Core
 				if (!exists(gameBatPath)) return;
 				int result = File::RunBatFile(gameBatPath, false, File::BatType::compile);
 				File::MoveOrRenameFileOrFolder(
-					Engine::gameParentPath + "/Game.exe",
+					Engine::gameParentPath + "\\Game.exe",
 					Engine::gameExePath,
 					true);
 
@@ -110,22 +110,6 @@ namespace Core
 
 					File::CopyFileOrFolder(itemPath, targetItemPath);
 				}
-
-				//
-				// CREATE DUPLICATE SCENE FILES WHICH THE GAME WILL USE 
-				// TO KNOW WHERE TO FIND ITS PROJECT FILES FROM
-				//
-
-				/*
-				string gameProjectPath = path(Engine::gameExePath).parent_path().string() + "\\files\\project";
-				gameProjectPath = String::CharReplace(gameProjectPath, '/', '\\');
-				//cout << "game project path: " << gameProjectPath << "\n\n";
-
-				for (const auto& sceneFile : directory_iterator(Engine::sceneParentPath))
-				{
-
-				}
-				*/
 
 				//
 				// FINISHED COMPILATION

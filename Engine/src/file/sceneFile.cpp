@@ -54,7 +54,7 @@ namespace EngineFile
 {
 	void SceneFile::CheckForProjectFile()
 	{
-		string projectPath = Engine::filesPath + "/project.txt";
+		string projectPath = Engine::filesPath + "\\project.txt";
 		if (!exists(projectPath))
 		{
 			Engine::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
@@ -326,7 +326,7 @@ namespace EngineFile
 		
 		if (meshType == Mesh::MeshType::model)
 		{
-			string diff_missing = Engine::filesPath + "/textures/diff_missing.png";
+			string diff_missing = Engine::filesPath + "\\textures\\diff_missing.png";
 			string diffuseTexture = textures[0];
 			if (diffuseTexture != "EMPTY"
 				&& !exists(diffuseTexture))

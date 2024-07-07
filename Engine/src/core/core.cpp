@@ -100,9 +100,9 @@ namespace Core
 				NULL,
 				NULL);
 
-			docsPath = String::StringReplace(
-				string(narrowPath.begin(), narrowPath.end()), "\\", "/") +
-				"/" + "Elypso engine";
+			docsPath = String::CharReplace(
+				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
+				"\\Elypso engine";
 
 			if (!exists(docsPath)) create_directory(docsPath);
 		}
@@ -115,19 +115,19 @@ namespace Core
 		// SET FILES PATH
 		//
 
-		path fsFilesPath = current_path().generic_string() + "/files";
+		path fsFilesPath = current_path().generic_string() + "\\files";
 		if (!exists(fsFilesPath))
 		{
 			Engine::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
 			return;
 		}
-		filesPath = fsFilesPath.string();
+		filesPath = String::CharReplace(fsFilesPath.string(), '/', '\\');
 
 		//
 		// SET PROJECT PATH
 		//
 
-		ifstream projectFile(filesPath + "/project.txt");
+		ifstream projectFile(filesPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
 			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
@@ -136,9 +136,10 @@ namespace Core
 		//
 		// SET GAME PATH
 		//
-		gamePath = current_path().parent_path().parent_path().parent_path().generic_string() + "/Game";
-		gameExePath = gamePath + "/build/Release/" + GUISettings::gameName + ".exe";
-		gameParentPath = gamePath + "/build/Release";
+		gamePath = current_path().parent_path().parent_path().parent_path().generic_string() + "\\Game";
+		gamePath = String::CharReplace(gamePath, '/', '\\');
+		gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
+		gameParentPath = gamePath + "\\build\\Release";
 
 		string line;
 		while (getline(projectFile, line))

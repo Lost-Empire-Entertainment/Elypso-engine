@@ -74,11 +74,11 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::actionTex, vao, vbo, ebo);
 
 		Shader borderShader = Shader::LoadShader(
-			Engine::filesPath + "/shaders/Basic_texture.vert",
-			Engine::filesPath + "/shaders/Basic_texture.frag");
+			Engine::filesPath + "\\shaders\\Basic_texture.vert",
+			Engine::filesPath + "\\shaders\\Basic_texture.frag");
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader("shaders/Basic_texture.vert", "shaders/Basic_texture.frag", borderShader);
+		mat->AddShader("shaders\\Basic_texture.vert", "shaders\\Basic_texture.frag", borderShader);
 
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
@@ -92,10 +92,10 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
-		Texture::LoadTexture(obj, Engine::filesPath + "/icons/blank.png", Material::TextureType::misc_icon_blank, true);
-		Texture::LoadTexture(obj, Engine::filesPath + "/icons/move.png", Material::TextureType::misc_icon_move, true);
-		Texture::LoadTexture(obj, Engine::filesPath + "/icons/rotate.png", Material::TextureType::misc_icon_rotate, true);
-		Texture::LoadTexture(obj, Engine::filesPath + "/icons/scale.png", Material::TextureType::misc_icon_scale, true);
+		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\blank.png", Material::TextureType::misc_icon_blank, true);
+		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\move.png", Material::TextureType::misc_icon_move, true);
+		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\rotate.png", Material::TextureType::misc_icon_rotate, true);
+		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\scale.png", Material::TextureType::misc_icon_scale, true);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();

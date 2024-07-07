@@ -30,8 +30,8 @@ namespace Graphics::Shape
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
-			const string& vertShader = Engine::filesPath + "/shaders/Basic_model.vert",
-			const string& fragShader = Engine::filesPath + "/shaders/Basic.frag",
+			const string& vertShader = Engine::filesPath + "\\shaders\\Basic_model.vert",
+			const string& fragShader = Engine::filesPath + "\\shaders\\Basic.frag",
 			const vec3& diffuse = vec3(1),
 			const float& intensity = 1.0f,
 			const float& distance = 1.0f,
@@ -42,9 +42,9 @@ namespace Graphics::Shape
 			// BILLBOARD VALUES
 			//
 
-			const string& billboardVertShader = Engine::filesPath + "/shaders/Basic_texture.vert",
-			const string& billboardFragShader = Engine::filesPath + "/shaders/Basic_texture.frag",
-			const string& billboardDiffTexture = Engine::filesPath + "/icons/pointLight.png",
+			const string& billboardVertShader = Engine::filesPath + "\\shaders\\Basic_texture.vert",
+			const string& billboardFragShader = Engine::filesPath + "\\shaders\\Basic_texture.frag",
+			const string& billboardDiffTexture = Engine::filesPath + "\\icons\\pointLight.png",
 			const float& billboardShininess = 32,
 			string& billboardName = tempName,
 			unsigned int& billboardID = tempID);

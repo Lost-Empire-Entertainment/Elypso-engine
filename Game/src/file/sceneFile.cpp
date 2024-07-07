@@ -31,6 +31,7 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using std::filesystem::create_directory;
+using std::filesystem::current_path;
 
 using Core::Game;
 using Graphics::Shape::GameObject;
@@ -166,7 +167,47 @@ namespace GameFile
 					obj.clear();
 					obj[type] = value;
 				}
-				else obj[type] = value;
+				else
+				{
+					if (!exists(path(value))) obj[type] = value;
+					else
+					{
+						value = String::CharReplace(value, '/', '\\');
+						cout << "\nattempting to edit\n" << value << "\n\n";
+
+						string replacement = current_path().string() + "\\files\\project";
+
+						cout << "\nreplacement original path\n" << replacement << "\n\n";
+
+						replacement = String::CharReplace(replacement, '/', '\\');
+
+						string target;
+						string textures = "\\textures\\";
+						string models = "\\models\\";
+						string shaders = "\\shaders\\";
+
+						if (value.find(textures) != string::npos) target = textures;
+						else if (value.find(models) != string::npos) target = models;
+						else if (value.find(shaders) != string::npos) target = shaders;
+
+						path valuePath = path(value);
+						auto relativePart = valuePath.lexically_relative(target);
+
+						if (relativePart.empty())
+						{
+							cout << "Error: Failed to modify path " << value << " because target '" << target << "' does not exist in the path! Returning engine version path.\n";
+							obj[type] = value;
+							return;
+						}
+
+						path newPath = replacement / relativePart;
+						string result = newPath.string();
+						obj[type] = result;
+
+						cout << "\nchanged path\n" << value
+							<< "\nto new path " << result << "\n\n";
+					}
+				}
 			}
 		}
 
@@ -253,7 +294,6 @@ namespace GameFile
 			//
 			// EXTRA VALUES
 			//
-
 			
 			if (type == "textures") textures = String::Split(value, ',');
 			if (type == "shininess") shininess = stof(value);
@@ -267,7 +307,6 @@ namespace GameFile
 			if (type == "inner angle") innerAngle = stof(value);
 			if (type == "outer angle") outerAngle = stof(value);
 			if (type == "model path") modelPath = value;
-
 
 			//
 			// ATTACHED BILLBOARD VALUES

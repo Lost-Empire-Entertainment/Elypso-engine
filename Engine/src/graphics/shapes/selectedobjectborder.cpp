@@ -93,11 +93,11 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border, vao, vbo, ebo);
 
 		Shader borderShader = Shader::LoadShader(
-			Engine::filesPath + "/shaders/Basic_model.vert",
-			Engine::filesPath + "/shaders/Basic.frag");
+			Engine::filesPath + "\\shaders\\Basic_model.vert",
+			Engine::filesPath + "\\shaders\\Basic.frag");
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader("shaders/Basic_model.vert", "shaders/Basic.frag", borderShader);
+		mat->AddShader("shaders\\Basic_model.vert", "shaders\\Basic.frag", borderShader);
 
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
