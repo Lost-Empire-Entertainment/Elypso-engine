@@ -137,7 +137,7 @@ namespace GameFile
 					}
 				}
 
-				if (type == "dirRotation")
+				if (type == "dirDirection")
 				{
 					vector<string> values = String::Split(value, ',');
 					Render::directionalDirection = String::StringToVec3(values);
@@ -149,7 +149,7 @@ namespace GameFile
 					Render::directionalDiffuse = String::StringToVec3(values);
 				}
 
-				else if (type == "dirRotation")
+				else if (type == "dirIntensity")
 				{
 					Render::directionalIntensity = stof(value);
 				}
@@ -167,46 +167,114 @@ namespace GameFile
 					obj.clear();
 					obj[type] = value;
 				}
-				else
+				else if (value.find("\\textures\\") != string::npos
+						 || value.find("\\shaders\\") != string::npos
+						 || value.find("\\models\\") != string::npos)
 				{
-					if (!exists(path(value))) obj[type] = value;
-					else
+					value = String::CharReplace(value, '/', '\\');
+
+					if (value.find("\\textures\\") != string::npos
+						|| value.find("\\shaders\\") != string::npos)
 					{
-						value = String::CharReplace(value, '/', '\\');
-						cout << "\nattempting to edit\n" << value << "\n\n";
+						vector<string> valueSplit = String::Split(value, ',');
 
+						int emptyCount = 0;
+						for (const auto& entry : valueSplit)
+						{
+							if (entry == "EMPTY") emptyCount++;
+						}
+
+						vector<string> parts;
+						string combinedResult;
+						for (const auto& entry : valueSplit)
+						{
+							if (entry != "EMPTY")
+							{
+								string cleanedEntry = String::CharReplace(entry, '/', '\\');
+
+								string replacement = value.find("\\textures\\") != string::npos
+									? current_path().string() + "\\files\\project"
+									: current_path().string() + "\\files\\game";
+
+								replacement = String::CharReplace(replacement, '/', '\\');
+
+								string target;
+								string textures = "textures";
+								string shaders = "shaders";
+
+								if (entry.find(textures) != string::npos) target = textures;
+								else if (entry.find(shaders) != string::npos) target = shaders;
+
+								size_t pos = entry.find(target);
+								if (pos != string::npos)
+								{
+									string originalRemainder = entry.substr(pos + target.length());
+
+									string result = replacement + "\\" + target + originalRemainder;
+
+									if (entry != valueSplit.back())
+									{
+										parts.push_back(result + ",");
+									}
+									else
+									{
+										parts.push_back(result);
+									}
+								}
+							}
+							else
+							{
+								if (emptyCount > 1)
+								{
+									parts.push_back(entry + ",");
+									emptyCount--;
+								}
+								else
+								{
+									parts.push_back(entry);
+								}
+							}
+						}
+
+						for (const auto& entry : parts)
+						{
+							combinedResult += entry;
+						}
+
+						cout << "\nchanged paths\n" << value
+							<< "\nto new paths\n" << combinedResult << "\n\n";
+					}
+					else if (value.find("\\models\\") != string::npos)
+					{
 						string replacement = current_path().string() + "\\files\\project";
-
-						cout << "\nreplacement original path\n" << replacement << "\n\n";
 
 						replacement = String::CharReplace(replacement, '/', '\\');
 
 						string target;
-						string textures = "\\textures\\";
-						string models = "\\models\\";
-						string shaders = "\\shaders\\";
+						string textures = "textures";
+						string models = "models";
+						string shaders = "shaders";
 
 						if (value.find(textures) != string::npos) target = textures;
 						else if (value.find(models) != string::npos) target = models;
 						else if (value.find(shaders) != string::npos) target = shaders;
 
-						path valuePath = path(value);
-						auto relativePart = valuePath.lexically_relative(target);
-
-						if (relativePart.empty())
+						size_t pos = value.find(target);
+						if (pos != string::npos)
 						{
-							cout << "Error: Failed to modify path " << value << " because target '" << target << "' does not exist in the path! Returning engine version path.\n";
-							obj[type] = value;
-							return;
+							string originalRemainder = value.substr(pos + target.length());
+
+							string result = replacement + "\\" + target + originalRemainder;
+							obj[type] = result;
+
+							cout << "\nchanged path\n" << value
+								<< "\nto new path\n" << result << "\n\n";
 						}
-
-						path newPath = replacement / relativePart;
-						string result = newPath.string();
-						obj[type] = result;
-
-						cout << "\nchanged path\n" << value
-							<< "\nto new path " << result << "\n\n";
 					}
+				}
+				else
+				{
+					obj[type] = value;
 				}
 			}
 		}

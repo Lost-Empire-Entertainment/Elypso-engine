@@ -515,9 +515,13 @@ namespace EngineFile
 				if (meshType == Mesh::MeshType::model)
 				{
 					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					diffuseTexture = String::CharReplace(diffuseTexture, '/', '\\');
 					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
+					specularTexture = String::CharReplace(specularTexture, '/', '\\');
 					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
+					normalTexture = String::CharReplace(normalTexture, '/', '\\');
 					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
+					heightTexture = String::CharReplace(heightTexture, '/', '\\');
 					sceneFile
 						<< "textures= "
 						<< diffuseTexture << ", "
@@ -528,7 +532,9 @@ namespace EngineFile
 
 				//shaders
 				string vertexShader = obj->GetMaterial()->GetShaderName(0);
+				vertexShader = String::CharReplace(vertexShader, '/', '\\');
 				string fragmentShader = obj->GetMaterial()->GetShaderName(1);
+				fragmentShader = String::CharReplace(fragmentShader, '/', '\\');
 				sceneFile << "shaders= " << vertexShader << ", " << fragmentShader << "\n";
 
 				//material variables
@@ -536,7 +542,8 @@ namespace EngineFile
 				{
 					sceneFile << "shininess= " << obj->GetBasicShape()->GetShininess() << "\n";
 
-					sceneFile << "model path= " << obj->GetDirectory() << "\n";
+					string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
+					sceneFile << "model path= " << modelPath << "\n";
 				}
 				else if (meshType == Mesh::MeshType::point_light)
 				{
