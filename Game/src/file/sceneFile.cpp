@@ -113,6 +113,8 @@ namespace GameFile
 			return;
 		}
 
+		cout << "\n----- SCENE FILE MODIFY START -----\n\n";
+
 		string line;
 		map<string, string> obj;
 		while (getline(sceneFile, line))
@@ -142,7 +144,7 @@ namespace GameFile
 					vector<string> values = String::Split(value, ',');
 					Render::directionalDirection = String::StringToVec3(values);
 				}
-				
+
 				else if (type == "dirDiffuse")
 				{
 					vector<string> values = String::Split(value, ',');
@@ -170,105 +172,80 @@ namespace GameFile
 				else if (value.find("\\textures\\") != string::npos
 						 || value.find("\\shaders\\") != string::npos
 						 || value.find("\\models\\") != string::npos)
+						 //|| value.find("\\icons\\") != string::npos)
 				{
 					value = String::CharReplace(value, '/', '\\');
+
+					//load the file from project folder if it came from engine or from game folder if it came from users project
+					string target = value.find("\\Elypso-engine\\Engine\\") != string::npos
+						? current_path().string() + "\\files\\project"
+						: current_path().string() + "\\files\\game";
 
 					if (value.find("\\textures\\") != string::npos
 						|| value.find("\\shaders\\") != string::npos)
 					{
-						vector<string> valueSplit = String::Split(value, ',');
-
-						int emptyCount = 0;
-						for (const auto& entry : valueSplit)
+						if (value.find("\\textures\\") != string::npos)
 						{
-							if (entry == "EMPTY") emptyCount++;
-						}
+							cout << "\n";
 
-						vector<string> parts;
-						string combinedResult;
-						for (const auto& entry : valueSplit)
-						{
-							if (entry != "EMPTY")
+							vector<string> split = String::Split(value, ',');
+							for (const auto& entry : split)
 							{
-								string cleanedEntry = String::CharReplace(entry, '/', '\\');
-
-								string replacement = value.find("\\textures\\") != string::npos
-									? current_path().string() + "\\files\\project"
-									: current_path().string() + "\\files\\game";
-
-								replacement = String::CharReplace(replacement, '/', '\\');
-
-								string target;
-								string textures = "textures";
-								string shaders = "shaders";
-
-								if (entry.find(textures) != string::npos) target = textures;
-								else if (entry.find(shaders) != string::npos) target = shaders;
-
-								size_t pos = entry.find(target);
-								if (pos != string::npos)
+								if (entry != "EMPTY")
 								{
-									string originalRemainder = entry.substr(pos + target.length());
-
-									string result = replacement + "\\" + target + originalRemainder;
-
-									if (entry != valueSplit.back())
-									{
-										parts.push_back(result + ",");
-									}
-									else
-									{
-										parts.push_back(result);
-									}
-								}
-							}
-							else
-							{
-								if (emptyCount > 1)
-								{
-									parts.push_back(entry + ",");
-									emptyCount--;
+									cout << "texture " << path(entry).filename().string() << " target is\n" << target << "\n";
 								}
 								else
 								{
-									parts.push_back(entry);
+									cout << "EMPTY\n";
 								}
 							}
-						}
 
-						for (const auto& entry : parts)
+							cout << "\n";
+
+							obj[type] = value;
+						}
+						else if (value.find("\\shaders\\") != string::npos)
 						{
-							combinedResult += entry;
-						}
+							vector<string> split = String::Split(value, ',');
+							for (const auto& entry : split)
+							{
+								cout << "shader " << path(entry).filename().string() << " target is\n" << target << "\n";
+							}
 
-						cout << "\nchanged paths\n" << value
-							<< "\nto new paths\n" << combinedResult << "\n\n";
+							cout << "\n";
+
+							obj[type] = value;
+						}
 					}
 					else if (value.find("\\models\\") != string::npos)
 					{
-						string replacement = current_path().string() + "\\files\\project";
+						cout << "model " << path(value).filename().string() << " target is\n" << target << "\n";
 
-						replacement = String::CharReplace(replacement, '/', '\\');
-
-						string target;
-						string textures = "textures";
-						string models = "models";
-						string shaders = "shaders";
-
-						if (value.find(textures) != string::npos) target = textures;
-						else if (value.find(models) != string::npos) target = models;
-						else if (value.find(shaders) != string::npos) target = shaders;
-
-						size_t pos = value.find(target);
+						string filetype = "models";
+						size_t pos = value.find(filetype);
 						if (pos != string::npos)
 						{
-							string originalRemainder = value.substr(pos + target.length());
+							string originalRemainder = value.substr(pos + filetype.length());
 
-							string result = replacement + "\\" + target + originalRemainder;
-							obj[type] = result;
+							string result = target + "\\" + filetype + originalRemainder;
+							string name = path(result).filename().string();
+							result = path(result).parent_path().parent_path().string() + "\\" + name;
+							result = String::CharReplace(result, '/', '\\');
 
-							cout << "\nchanged path\n" << value
-								<< "\nto new path\n" << result << "\n\n";
+							if (!exists(result))
+							{
+								obj[type] = value;
+
+								cout << "-----\nError: Failed to load model from\n" << result 
+									<< "\nbecause it does not exist! Resetting to original model path\n" + value + "\n-----\n";
+							}
+							else
+							{
+								obj[type] = result;
+
+								cout << "Success loading model from\n" << result << "!\n\n";
+							}
 						}
 					}
 				}
@@ -280,6 +257,8 @@ namespace GameFile
 		}
 
 		sceneFile.close();
+
+		cout << "\n----- SCENE FILE MODIFY END -----\n\n";
 
 		if (!obj.empty()) LoadGameObject(obj);
 
