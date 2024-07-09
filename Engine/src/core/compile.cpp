@@ -79,36 +79,56 @@ namespace Core
 				}
 
 				//
-				// REMOVE OLD PROJECT FILES FROM GAME
+				// COPY FILES TO GAME FOLDER
 				//
 
 				string gameProjectFolder = Engine::gameParentPath + "\\files\\project";
-				for (const auto& item : directory_iterator(path(gameProjectFolder)))
-				{
-					if (is_directory(item.path())
-						|| is_regular_file(item.path()))
-					{
-						string itemPath = item.path().string();
+				if (exists(gameProjectFolder)) File::DeleteFileOrfolder(gameProjectFolder);
 
-						File::DeleteFileOrfolder(itemPath);
+				File::CreateNewFolder(gameProjectFolder);
+
+				string scenePath = path(Engine::projectPath).parent_path().string();
+				for (const auto& entry : directory_iterator(path(scenePath)))
+				{
+					string stem = path(entry).stem().string();
+
+					if (stem == "models"
+						|| stem == "textures"
+						|| stem == "project")
+					{
+						string origin = path(entry).string();
+						string originFileName = path(entry).filename().string();
+						string target = gameProjectFolder + "\\" + originFileName;
+
+						File::CopyFileOrFolder(origin, target);
 					}
 				}
 
 				//
-				// ADD NEW PROJECT FILES TO GAME
+				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
 				//
 
-				string scenePath = path(Engine::projectPath).parent_path().string();
-				for (const auto& item : directory_iterator(path(scenePath)))
+				string gameName = path(Engine::gameExePath).stem().string();
+				string gameDocsFolder = Engine::docsPath + "\\" + gameName;
+
+				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
+
+				File::CreateNewFolder(gameDocsFolder);
+
+				for (const auto& entry : directory_iterator(path(scenePath)))
 				{
-					string itemPath = item.path().string();
+					string stem = path(entry).stem().string();
 
-					string ending = item.is_directory()
-						? path(item).filename().string()
-						: path(item).stem().string() + path(item).extension().string();
-					string targetItemPath = gameProjectFolder + "\\" + ending;
+					if (stem != "models"
+						&& stem != "textures"
+						&& stem != "project")
+					{
+						string origin = path(entry).string();
+						string originFileName = path(entry).filename().string();
+						string target = gameDocsFolder + "\\" + originFileName;
 
-					File::CopyFileOrFolder(itemPath, targetItemPath);
+						File::CopyFileOrFolder(origin, target);
+					}
 				}
 
 				//
