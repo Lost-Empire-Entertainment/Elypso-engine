@@ -93,7 +93,6 @@ if %errorlevel% neq 0 (
 goto build
 
 :build
-cls
 
 :: Change to the script directory
 cd /d "%~dp0"

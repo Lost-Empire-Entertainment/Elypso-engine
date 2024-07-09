@@ -110,9 +110,6 @@ if %errorlevel% neq 0 (
 goto build
 
 :build
-if not "%~1"=="build" (
-	cls
-)
 
 :: Change to the script directory
 cd /d "%~dp0"
