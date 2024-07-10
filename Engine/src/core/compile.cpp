@@ -109,7 +109,7 @@ namespace Core
 				//
 
 				string gameName = path(Engine::gameExePath).stem().string();
-				string gameDocsFolder = Engine::docsPath + "\\" + gameName;
+				string gameDocsFolder = path(Engine::docsPath).parent_path().string() + "\\" + gameName;
 
 				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
 
