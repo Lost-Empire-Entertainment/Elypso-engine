@@ -49,41 +49,39 @@ namespace GameFile
 {
 	void SceneFile::CheckForGameFile()
 	{
-		Game::sceneFolder = path(Game::filesPath).parent_path().string() + "\\project";
-
-		string projectPath = Game::sceneFolder + "\\project.txt";
-		if (!exists(projectPath))
+		string scenesFilePath = path(Game::docsPath).string() + "\\scenes.txt";
+		if (!exists(scenesFilePath))
 		{
-			Game::CreateErrorPopup("Project file load error", "No project file was found! Shutting down game");
+			Game::CreateErrorPopup("Scenes file load error", "No scenes file was found! Shutting down game.");
 		}
 
 		string targetScene;
-		ifstream projectFile(projectPath);
-		if (!projectFile.is_open())
+		ifstream scenesFile(scenesFilePath);
+		if (!scenesFile.is_open())
 		{
-			Game::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down game");
+			Game::CreateErrorPopup("Scenes file load error", "Failed to open scenes file! Shutting down game.");
 		}
 
 		string line;
-		while (getline(projectFile, line))
+		while (getline(scenesFile, line))
 		{
 			if (!line.empty())
 			{
-				size_t pos_scene = line.find("scene:");
-				if (pos_scene != string::npos)
-				{
-					string removable = "scene: ";
-					size_t pos = line.find(removable);
-					targetScene = line.erase(pos, removable.length());
-				}
+				string cleanedScenePath = String::StringReplace(line, "\"", "");
+
+				targetScene = cleanedScenePath;
+
+				cout << "Attempting to load scene path\n" << targetScene << "\n\n";
+
+				break;
 			}
 		}
-		projectFile.close();
+		scenesFile.close();
 
 		if (targetScene.empty()
 			|| !exists(targetScene))
 		{
-			Game::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down game");
+			Game::CreateErrorPopup("Scene load error", "Failed to load valid scene from scenes file! Shutting down game.");
 		}
 
 		currentScenePath = targetScene;

@@ -71,7 +71,7 @@ namespace Core
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Compilation failed! Please contact developers for more info.\n");
+						"Compilation failed at bat file stage! Please contact developers for more info.\n");
 
 					renderBuildingWindow = false;
 
@@ -94,7 +94,7 @@ namespace Core
 
 					if (stem == "models"
 						|| stem == "textures"
-						|| stem == "project")
+						|| stem == "scenes")
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
@@ -130,6 +130,39 @@ namespace Core
 						File::CopyFileOrFolder(origin, target);
 					}
 				}
+
+				//
+				// CREATE SCENES FILE FOR GAME THAT LISTS ALL SCENES CREATED IN THIS PROJECT
+				//
+
+				string sceneFilesPath = gameDocsFolder + "\\scenes.txt";
+				if (exists(sceneFilesPath)) File::DeleteFileOrfolder(sceneFilesPath);
+
+				ofstream scenesFile(sceneFilesPath);
+				if (!scenesFile.is_open())
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::ENGINE,
+						Type::EXCEPTION,
+						"Compilation failed because scenes file couldnt be created! Please contact developers for more info.\n");
+
+					renderBuildingWindow = false;
+
+					return;
+				}
+
+				for (const auto& entry : directory_iterator(path(gameDocsFolder)))
+				{
+					string stem = path(entry).stem().string();
+
+					if (stem != "scenes"
+						&& stem != "config")
+					{
+						scenesFile << entry << "\n";
+					}
+				}
+
+				scenesFile.close();
 
 				//
 				// FINISHED COMPILATION
