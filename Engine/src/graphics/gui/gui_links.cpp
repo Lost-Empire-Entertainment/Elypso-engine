@@ -80,16 +80,6 @@ namespace Graphics::GUI
 
 			ImGui::Text("");
 			ImGui::Separator();
-			ImGui::Text("Join the official Discord community server and talk with the developers and share your feedback");
-			ImGui::Separator();
-
-			if (ImGui::Button("Discord"))
-			{
-				Browser::OpenLink("https://discord.gg/wPYCSSenX2");
-			}
-
-			ImGui::Text("");
-			ImGui::Separator();
 			ImGui::Text("Check out the Trello board to check what has already been done and what is coming in future updates");
 			ImGui::Separator();
 
