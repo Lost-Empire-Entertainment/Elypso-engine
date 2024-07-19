@@ -53,8 +53,7 @@ using EngineFile::SceneFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 
 namespace Graphics
 {
@@ -219,9 +218,9 @@ namespace Graphics
 		Input::ProcessKeyboardInput(window);
 
 		//calculate the new projection matrix
-		float fov = stof(ConfigFileManager::valuesMap["camera_fov"].GetValue());
-		float nearClip = stof(ConfigFileManager::valuesMap["camera_nearClip"].GetValue());
-		float farClip = stof(ConfigFileManager::valuesMap["camera_farClip"].GetValue());
+		float fov = Input::fov;
+		float nearClip = Input::nearClip;
+		float farClip = Input::farClip;
 		projection = perspective(
 			radians(fov),
 			Input::aspectRatio,

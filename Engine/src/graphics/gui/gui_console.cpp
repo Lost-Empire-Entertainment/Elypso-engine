@@ -22,8 +22,7 @@ using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 
 namespace Graphics::GUI
 {
@@ -36,11 +35,7 @@ namespace Graphics::GUI
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
 
-		static bool renderConsole;
-		if (ConfigFileManager::valuesMap.size() > 0)
-		{
-			renderConsole = stoi(ConfigFileManager::valuesMap["gui_console"].GetValue());
-		}
+		bool renderConsole = stoi(ConfigFile::GetValue("gui_console"));
 
 		if (renderConsole
 			&& ImGui::Begin("Console", NULL, windowFlags))
@@ -53,7 +48,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				ConfigFileManager::valuesMap["gui_console"].SetValue("0");
+				ConfigFile::SetValue("gui_console", "0");
 			}
 
 			//text area with scrollable region

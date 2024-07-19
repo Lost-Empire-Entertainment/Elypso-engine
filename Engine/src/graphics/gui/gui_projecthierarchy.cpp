@@ -34,8 +34,7 @@ using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::exception;
 
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 using EngineFile::SceneFile;
 using Core::Engine;
 using Core::ConsoleManager;
@@ -57,11 +56,7 @@ namespace Graphics::GUI
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
 
-		static bool renderProjectHierarchy;
-		if (ConfigFileManager::valuesMap.size() > 0)
-		{
-			renderProjectHierarchy = stoi(ConfigFileManager::valuesMap["gui_projectHierarchy"].GetValue());
-		}
+		bool renderProjectHierarchy = stof(ConfigFile::GetValue("gui_projectHierarchy"));
 
 		if (renderProjectHierarchy
 			&& ImGui::Begin("Project hierarchy", NULL, windowFlags))
@@ -76,7 +71,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				ConfigFileManager::valuesMap["gui_projectHierarchy"].SetValue("0");
+				ConfigFile::SetValue("gui_projectHierarchy", "0");
 			}
 
 			if (ImGui::BeginChild("##content"))

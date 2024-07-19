@@ -30,8 +30,7 @@ using std::filesystem::path;
 using std::exception;
 using std::vector;
 
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
@@ -50,11 +49,7 @@ namespace Graphics::GUI
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
 
-		static bool renderSceneHierarchy;
-		if (ConfigFileManager::valuesMap.size() > 0)
-		{
-			renderSceneHierarchy = stoi(ConfigFileManager::valuesMap["gui_sceneHierarchy"].GetValue());
-		}
+		bool renderSceneHierarchy = stoi(ConfigFile::GetValue("gui_sceneHierarchy"));
 
 		if (renderSceneHierarchy
 			&& ImGui::Begin("Scene hierarchy", NULL, windowFlags))
@@ -63,7 +58,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("0");
+				ConfigFile::SetValue("gui_sceneHierarchy", "0");
 			}
 
 			DisplayGameObjects();

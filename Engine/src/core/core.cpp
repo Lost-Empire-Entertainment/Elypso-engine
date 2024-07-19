@@ -38,7 +38,7 @@ using Utils::File;
 using Graphics::GUI::EngineGUI;
 using Graphics::Render;
 using EngineFile::SceneFile;
-using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -178,7 +178,7 @@ namespace Core
 			"Copyright (C) Lost Empire Entertainment 2024\n\n",
 			true);
 
-		ConfigFileManager::LoadConfigFile();
+		ConfigFile::LoadConfigFile();
 
 		SceneFile::CheckForProjectFile();
 
@@ -303,7 +303,7 @@ namespace Core
 			}
 			else
 			{
-				ConfigFileManager::SaveConfigFile();
+				ConfigFile::SaveConfigFile();
 
 				ConsoleManager::WriteConsoleMessage(
 					Caller::ENGINE,

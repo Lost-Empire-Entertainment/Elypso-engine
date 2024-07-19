@@ -26,8 +26,7 @@ using Graphics::Render;
 using EngineFile::SceneFile;
 using Core::Engine;
 using EngineFile::FileExplorer;
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 
 namespace Graphics::GUI
 {
@@ -40,11 +39,7 @@ namespace Graphics::GUI
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
 
-		static bool renderSceneMenu;
-		if (ConfigFileManager::valuesMap.size() > 0)
-		{
-			renderSceneMenu = stoi(ConfigFileManager::valuesMap["gui_sceneMenu"].GetValue());
-		}
+		bool renderSceneMenu = stoi(ConfigFile::GetValue("gui_sceneMenu"));
 
 		if (renderSceneMenu
 			&& ImGui::Begin("Scene menu", NULL, windowFlags))
@@ -53,7 +48,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				ConfigFileManager::valuesMap["gui_sceneMenu"].SetValue("0");
+				ConfigFile::SetValue("gui_sceneMenu", "0");
 			}
 
 			SceneMenuContent();

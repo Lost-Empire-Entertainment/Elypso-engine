@@ -46,8 +46,7 @@ using Graphics::Texture;
 using Core::Engine;
 using EngineFile::FileExplorer;
 using Utils::String;
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 
 namespace Graphics::GUI
 {
@@ -60,11 +59,7 @@ namespace Graphics::GUI
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
 
-		static bool renderInspector;
-		if (ConfigFileManager::valuesMap.size() > 0)
-		{
-			renderInspector = stoi(ConfigFileManager::valuesMap["gui_inspector"].GetValue());
-		}
+		bool renderInspector = stoi(ConfigFile::GetValue("gui_inspector"));
 
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
@@ -73,7 +68,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				ConfigFileManager::valuesMap["gui_inspector"].SetValue("0");
+				ConfigFile::SetValue("gui_inspector", "0");
 			}
 
 			PermanentComponents();

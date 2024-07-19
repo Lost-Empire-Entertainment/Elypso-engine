@@ -51,7 +51,7 @@ using Physics::Select;
 using Graphics::Render;
 using Core::ConsoleManager;
 using EngineFile::SceneFile;
-using EngineFile::ConfigFileManager;
+using EngineFile::ConfigFile;
 using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -358,7 +358,7 @@ namespace Core
                 && action == GLFW_PRESS)
             {
                 SceneFile::SaveScene();
-                ConfigFileManager::SaveConfigFile();
+                ConfigFile::SaveConfigFile();
             }
 
             if (Select::selectedObj != nullptr)

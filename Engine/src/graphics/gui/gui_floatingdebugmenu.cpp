@@ -26,8 +26,7 @@ using Core::Input;
 using Core::TimeManager;
 using EngineFile::SceneFile;
 using Graphics::Grid;
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 
 namespace Graphics::GUI
 {
@@ -78,16 +77,16 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("FOV");
-		float fov = stof(ConfigFileManager::valuesMap["camera_fov"].GetValue());
+		float fov = Input::fov;
 		if (ImGui::DragFloat("##fov", &fov, 0.1f, 70.0f, 110.0f))
 		{
-			ConfigFileManager::valuesMap["camera_fov"].SetValue(to_string(fov));
+			Input::fov = fov;
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##fov"))
 		{
-			ConfigFileManager::valuesMap["camera_fov"].SetValue("90.0");
+			Input::fov = 90.0f;
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
@@ -98,8 +97,8 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Camera near clip");
-		float nearClip = stof(ConfigFileManager::valuesMap["camera_nearClip"].GetValue());
-		float farClip = stof(ConfigFileManager::valuesMap["camera_farClip"].GetValue());
+		float nearClip = Input::nearClip;
+		float farClip = Input::farClip;
 		if (ImGui::DragFloat("##camNearClip", &nearClip, 0.1f, 0.001f, farClip - 0.001f))
 		{
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

@@ -71,8 +71,7 @@ using Graphics::Shape::SpotLight;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using EngineFile::SceneFile;
-using EngineFile::ConfigFileManager;
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 using EngineFile::FileExplorer;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -93,11 +92,11 @@ namespace Graphics::GUI
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
 
-			ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("1");
-			ConfigFileManager::valuesMap["gui_projectHierarchy"].SetValue("1");
-			ConfigFileManager::valuesMap["gui_console"].SetValue("1");
-			ConfigFileManager::valuesMap["gui_inspector"].SetValue("1");
-			ConfigFileManager::SaveConfigFile();
+			ConfigFile::SetValue("gui_sceneHierarchy", "1");
+			ConfigFile::SetValue("gui_projectHierarchy", "1");
+			ConfigFile::SetValue("gui_console", "1");
+			ConfigFile::SetValue("gui_inspector", "1");
+			ConfigFile::SaveConfigFile();
 		}
 
 		IMGUI_CHECKVERSION();
@@ -122,14 +121,18 @@ namespace Graphics::GUI
 		bgrColor.z = Render::backgroundColor.z;
 		bgrColor.w = 1.0f;
 
-		CustomizeImGuiStyle();
+		ImGui::StyleColorsDark();
+
+		ImGuiStyle& style = ImGui::GetStyle();
+		io.FontGlobalScale = stof(ConfigFile::GetValue("gui_fontScale"));
+
+		//CustomizeImGuiStyle();
 	}
 	void EngineGUI::AssignGuiColorValue(const string& name, ImGuiCol col)
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		ConfigFileValue valueConfig = ConfigFileManager::valuesMap[name];
-		string value = valueConfig.GetValue();
+		string value = ConfigFile::GetValue(name);
 		vector<string> valueSplit = String::Split(value, ',');
 		ImVec4 finalValue = ImVec4(
 			stof(valueSplit[0]),
@@ -141,30 +144,26 @@ namespace Graphics::GUI
 	}
 	void EngineGUI::CustomizeImGuiStyle()
 	{
-		ImGui::StyleColorsDark();
-
 		ImGuiStyle& style = ImGui::GetStyle();
-		ImGuiIO& io = ImGui::GetIO();
-		io.FontGlobalScale = stof(ConfigFileManager::valuesMap["gui_fontScale"].GetValue());
 
 		//
 		// GUI STYLE START
 		//
 
-		style.Alpha = stof(ConfigFileManager::valuesMap["gui_Alpha"].GetValue());
-		style.DisabledAlpha = stof(ConfigFileManager::valuesMap["gui_DisabledAlpha"].GetValue());
+		style.Alpha = stof(ConfigFile::GetValue("gui_Alpha"));
+		style.DisabledAlpha = stof(ConfigFile::GetValue("gui_DisabledAlpha"));
 
-		string gui_WindowPadding_string = ConfigFileManager::valuesMap["gui_WindowPadding"].GetValue();
+		string gui_WindowPadding_string = ConfigFile::GetValue("gui_WindowPadding");
 		vector<string> gui_WindowPadding_split = String::Split(gui_WindowPadding_string, ',');
 		ImVec2 gui_WindowPadding_value = ImVec2(
 			stof(gui_WindowPadding_split[0]),
 			stof(gui_WindowPadding_split[1]));
 		style.WindowPadding = gui_WindowPadding_value;
 
-		style.WindowRounding = stof(ConfigFileManager::valuesMap["gui_WindowRounding"].GetValue());
-		style.WindowBorderSize = stof(ConfigFileManager::valuesMap["gui_WindowBorderSize"].GetValue());
+		style.WindowRounding = stof(ConfigFile::GetValue("gui_WindowRounding"));
+		style.WindowBorderSize = stof(ConfigFile::GetValue("gui_WindowBorderSize"));
 
-		string gui_WindowMenuButtonPosition_string = ConfigFileManager::valuesMap["gui_WindowMenuButtonPosition"].GetValue();
+		string gui_WindowMenuButtonPosition_string = ConfigFile::GetValue("gui_WindowMenuButtonPosition");
 		auto gui_WindowMenuButtonPosition_dir = magic_enum::enum_cast<ImGuiDir_>(gui_WindowMenuButtonPosition_string);
 		if (gui_WindowMenuButtonPosition_dir.has_value())
 		{
@@ -172,53 +171,53 @@ namespace Graphics::GUI
 		}
 		else cout << "'gui_WindowMenuButtonPosition_dir' has no value!\n"; 
 
-		style.ChildRounding = stof(ConfigFileManager::valuesMap["gui_ChildRounding"].GetValue());
-		style.ChildBorderSize = stof(ConfigFileManager::valuesMap["gui_ChildBorderSize"].GetValue());
-		style.PopupRounding = stof(ConfigFileManager::valuesMap["gui_PopupRounding"].GetValue());
-		style.PopupBorderSize = stof(ConfigFileManager::valuesMap["gui_PopupBorderSize"].GetValue());
+		style.ChildRounding = stof(ConfigFile::GetValue("gui_ChildRounding"));
+		style.ChildBorderSize = stof(ConfigFile::GetValue("gui_ChildBorderSize"));
+		style.PopupRounding = stof(ConfigFile::GetValue("gui_PopupRounding"));
+		style.PopupBorderSize = stof(ConfigFile::GetValue("gui_PopupBorderSize"));
 
-		string gui_FramePadding_string = ConfigFileManager::valuesMap["gui_FramePadding"].GetValue();
+		string gui_FramePadding_string = ConfigFile::GetValue("gui_FramePadding");
 		vector<string> gui_FramePadding_split = String::Split(gui_FramePadding_string, ',');
 		ImVec2 gui_FramePadding_value = ImVec2(
 			stof(gui_FramePadding_split[0]),
 			stof(gui_FramePadding_split[1]));
 		style.FramePadding = gui_FramePadding_value;
 
-		style.FrameRounding = stof(ConfigFileManager::valuesMap["gui_FrameRounding"].GetValue());
-		style.FrameBorderSize = stof(ConfigFileManager::valuesMap["gui_FrameBorderSize"].GetValue());
+		style.FrameRounding = stof(ConfigFile::GetValue("gui_FrameRounding"));
+		style.FrameBorderSize = stof(ConfigFile::GetValue("gui_FrameBorderSize"));
 
-		string gui_ItemSpacing_string = ConfigFileManager::valuesMap["gui_ItemSpacing"].GetValue();
+		string gui_ItemSpacing_string = ConfigFile::GetValue("gui_ItemSpacing");
 		vector<string> gui_ItemSpacing_split = String::Split(gui_ItemSpacing_string, ',');
 		ImVec2 gui_ItemSpacing_value = ImVec2(
 			stof(gui_ItemSpacing_split[0]),
 			stof(gui_ItemSpacing_split[1]));
 		style.ItemSpacing = gui_ItemSpacing_value;
 
-		string gui_ItemInnerSpacing_string = ConfigFileManager::valuesMap["gui_ItemInnerSpacing"].GetValue();
+		string gui_ItemInnerSpacing_string = ConfigFile::GetValue("gui_ItemInnerSpacing");
 		vector<string> gui_ItemInnerSpacing_split = String::Split(gui_ItemInnerSpacing_string, ',');
 		ImVec2 gui_ItemInnerSpacing_value = ImVec2(
 			stof(gui_ItemInnerSpacing_split[0]),
 			stof(gui_ItemInnerSpacing_split[1]));
 		style.ItemInnerSpacing = gui_ItemInnerSpacing_value;
 
-		string gui_CellPadding_string = ConfigFileManager::valuesMap["gui_CellPadding"].GetValue();
+		string gui_CellPadding_string = ConfigFile::GetValue("gui_CellPadding");
 		vector<string> gui_CellPadding_split = String::Split(gui_CellPadding_string, ',');
 		ImVec2 gui_CellPadding_value = ImVec2(
 			stof(gui_CellPadding_split[0]),
 			stof(gui_CellPadding_split[1]));
 		style.CellPadding = gui_CellPadding_value;
 
-		style.IndentSpacing = stof(ConfigFileManager::valuesMap["gui_IndentSpacing"].GetValue());
-		style.ColumnsMinSpacing = stof(ConfigFileManager::valuesMap["gui_ColumnsMinSpacing"].GetValue());
-		style.ScrollbarSize = stof(ConfigFileManager::valuesMap["gui_ScrollbarSize"].GetValue());
-		style.ScrollbarRounding = stof(ConfigFileManager::valuesMap["gui_ScrollbarRounding"].GetValue());
-		style.GrabMinSize = stof(ConfigFileManager::valuesMap["gui_GrabMinSize"].GetValue());
-		style.GrabRounding = stof(ConfigFileManager::valuesMap["gui_GrabRounding"].GetValue());
-		style.TabRounding = stof(ConfigFileManager::valuesMap["gui_TabRounding"].GetValue());
-		style.TabBorderSize = stof(ConfigFileManager::valuesMap["gui_TabBorderSize"].GetValue());
-		style.TabMinWidthForCloseButton = stof(ConfigFileManager::valuesMap["gui_TabMinWidthForCloseButton"].GetValue());
+		style.IndentSpacing = stof(ConfigFile::GetValue("gui_IndentSpacing"));
+		style.ColumnsMinSpacing = stof(ConfigFile::GetValue("gui_ColumnsMinSpacing"));
+		style.ScrollbarSize = stof(ConfigFile::GetValue("gui_ScrollbarSize"));
+		style.ScrollbarRounding = stof(ConfigFile::GetValue("gui_ScrollbarRounding"));
+		style.GrabMinSize = stof(ConfigFile::GetValue("gui_GrabMinSize"));
+		style.GrabRounding = stof(ConfigFile::GetValue("gui_GrabRounding"));
+		style.TabRounding = stof(ConfigFile::GetValue("gui_TabRounding"));
+		style.TabBorderSize = stof(ConfigFile::GetValue("gui_TabBorderSize"));
+		style.TabMinWidthForCloseButton = stof(ConfigFile::GetValue("gui_TabMinWidthForCloseButton"));
 
-		string gui_ColorButtonPosition_string = ConfigFileManager::valuesMap["gui_ColorButtonPosition"].GetValue();
+		string gui_ColorButtonPosition_string = ConfigFile::GetValue("gui_ColorButtonPosition");
 		auto gui_ColorButtonPosition_dir = magic_enum::enum_cast<ImGuiDir_>(gui_ColorButtonPosition_string);
 		if (gui_ColorButtonPosition_dir.has_value())
 		{
@@ -226,14 +225,14 @@ namespace Graphics::GUI
 		}
 		else cout << "'gui_ColorButtonPosition_dir' has no value!\n";
 
-		string gui_ButtonTextAlign_string = ConfigFileManager::valuesMap["gui_ButtonTextAlign"].GetValue();
+		string gui_ButtonTextAlign_string = ConfigFile::GetValue("gui_ButtonTextAlign");
 		vector<string> gui_ButtonTextAlign_split = String::Split(gui_ButtonTextAlign_string, ',');
 		ImVec2 gui_ButtonTextAlign_value = ImVec2(
 			stof(gui_ButtonTextAlign_split[0]),
 			stof(gui_ButtonTextAlign_split[1]));
 		style.ButtonTextAlign = gui_ButtonTextAlign_value;
 
-		string gui_SelectableTextAlign_string = ConfigFileManager::valuesMap["gui_SelectableTextAlign"].GetValue();
+		string gui_SelectableTextAlign_string = ConfigFile::GetValue("gui_SelectableTextAlign");
 		vector<string> gui_SelectableTextAlign_split = String::Split(gui_SelectableTextAlign_string, ',');
 		ImVec2 gui_SelectableTextAlign_value = ImVec2(
 			stof(gui_SelectableTextAlign_split[0]),
@@ -366,7 +365,7 @@ namespace Graphics::GUI
 
 	void EngineGUI::RenderTopBar()
 	{
-		float fontScale = stof(ConfigFileManager::valuesMap["gui_fontScale"].GetValue());
+		float fontScale = stof(ConfigFile::GetValue("gui_fontScale"));
 
 		ImGui::BeginMainMenuBar();
 
@@ -375,7 +374,7 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Save"))
 			{
 				SceneFile::SaveScene();
-				ConfigFileManager::SaveConfigFile();
+				ConfigFile::SaveConfigFile();
 			}
 
 			if (ImGui::MenuItem("New Scene"))
@@ -654,31 +653,31 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Scene hierarchy"))
 			{
-				ConfigFileManager::valuesMap["gui_sceneHierarchy"].SetValue("1");
+				ConfigFile::SetValue("gui_sceneHierarchy", "1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Project hierarchy"))
 			{
-				ConfigFileManager::valuesMap["gui_projectHierarchy"].SetValue("1");
+				ConfigFile::SetValue("gui_projectHierarchy", "1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Inspector"))
 			{
-				ConfigFileManager::valuesMap["gui_inspector"].SetValue("1");
+				ConfigFile::SetValue("gui_inspector", "1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Scene menu"))
 			{
-				ConfigFileManager::valuesMap["gui_sceneMenu"].SetValue("1");
+				ConfigFile::SetValue("gui_sceneMenu", "1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			if (ImGui::MenuItem("Console"))
 			{
-				ConfigFileManager::valuesMap["gui_console"].SetValue("1");
+				ConfigFile::SetValue("gui_console", "1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 

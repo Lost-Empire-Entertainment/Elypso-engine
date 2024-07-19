@@ -6,125 +6,49 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <map>
 
 using std::string;
-using std::vector;
 using std::map;
 
 namespace EngineFile
 {
-	class ConfigFileValue
+	class ConfigFile
 	{
 	public:
-		enum class Type
-		{
-			type_string,
-			type_float,
-			type_int,
-			type_vec2,
-			type_vec3,
-			type_imvec2,
-			type_imvec4
-		};
-		enum class ValueType
-		{
-			current_value,
-			min_value,
-			max_value
-		};
-
-		ConfigFileValue() :
-			name(""),
-			currentValue(""),
-			defaultValue(""),
-			minValue(""),
-			maxValue(""),
-			type(Type::type_string) {}
-
-		//Constructor for config values that accept float, int, vec2, vec3, imvec2 and imvec4.
-		ConfigFileValue(
-			const string& name,
-			const string& currentValue,
-			const string& minValue,
-			const string& maxValue,
-			const Type& type) :
-			name(name),
-			currentValue(currentValue),
-			defaultValue(currentValue),
-			minValue(minValue),
-			maxValue(maxValue),
-			type(type) {}
-
-		//Constructor for config values that accept an imgui direction vector.
-		ConfigFileValue(
-			const string& name,
-			const string& currentValue,
-			const vector<string> values,
-			const Type& type) :
-			name(name),
-			currentValue(currentValue),
-			defaultValue(currentValue),
-			values(values),
-			type(type) {}
-
-		string GetName() const { return name; }
-
-		string GetValue() const { return currentValue; }
-		string GetDefaultValue() const { return defaultValue; }
-		string GetMinValue() const { return minValue; }
-		string GetMaxValue() const { return maxValue; }
-
-		void SetValue(const string& newValue) { currentValue = newValue; }
-		string GetVectorValue(int index) const { return values[index]; }
-
-		Type GetType() const { return type; };
-	private:
-		string name;
-		string currentValue;
-		string defaultValue;
-		string minValue;
-		string maxValue;
-		vector<string> values;
-		Type type;
-	};
-
-	class ConfigFileManager
-	{
-	public:
-		static inline vector<string> imgui_dir =
-		{
-			"ImGuiDir_Up",
-			"ImGuiDir_Down",
-			"ImGuiDir_Left",
-			"ImGuiDir_Right",
-			"ImGuiDir_None"
-		};
-
+		/// <summary>
+		/// Loads all config values into engine from confit txt file.
+		/// </summary>
 		static void LoadConfigFile();
+
+		/// <summary>
+		/// Saves all current config value map key values to config txt file.
+		/// </summary>
 		static void SaveConfigFile();
 
-		static inline vector<ConfigFileValue> values;
-		static inline map<string, ConfigFileValue> valuesMap;
+		/// <summary>
+		/// Gets a value by key from the config value map.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		static string GetValue(const string& key);
+		/// <summary>
+		/// Assigns a value by key to config value map.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="value"></param>
+		static void SetValue(const string& key, const string& value);
 	private:
 		static inline string configFilePath;
+
+		/// <summary>
+		/// Temporary storage for all config settings until engine is saved.
+		/// </summary>
+		static inline map<string, string> configValues;
 		
-		static void AddValue(const ConfigFileValue& value)
-		{
-			values.push_back(value);
-		};
-
-		/// <param name="reset">Optional bool state to reset all values to default</param>
-		static void UpdateValues(bool reset = false);
-		static void ResetConfigValues();
-		static void ResetGUIValues();
-		static void ResetGUIColorValues();
-
-		static bool IsValueInRange(
-			const ConfigFileValue& type,
-			const vector<string>& value);
-
+		/// <summary>
+		/// Creates a brand new config file with default values.
+		/// </summary>
 		static void CreateNewConfigFile();
 	};
 }

@@ -7,7 +7,7 @@
 
 #include "configFile.hpp"
 
-using EngineFile::ConfigFileValue;
+using EngineFile::ConfigFile;
 
 namespace Graphics::GUI
 {
@@ -25,10 +25,6 @@ namespace Graphics::GUI
 
 		static void InputSettings();
 		static void GUIStyleSettings();
-		static void GUIColorSettings();
 		static void OtherSettings();
-
-		static void HandleConfigValue(const string& name, const ConfigFileValue::Type& type, ImGuiCol col = ImGuiCol_Border);
-		static void AssignGUIValue(const string& name, const ConfigFileValue::Type& type, ImGuiCol col = ImGuiCol_Border);
 	};
 }
