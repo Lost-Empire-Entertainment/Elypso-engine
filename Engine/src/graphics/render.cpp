@@ -116,7 +116,7 @@ namespace Graphics
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
 		glfwSetWindowSizeLimits(window, 1280, 720, 7680, 4320);
-		glfwSwapInterval(1);
+		glfwSwapInterval(stoi(ConfigFile::GetValue("window_vsync")));
 
 		int width, height, channels;
 		string iconpath = Engine::filesPath + "\\icon.png";

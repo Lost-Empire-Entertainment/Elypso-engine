@@ -79,11 +79,7 @@ namespace EngineFile
 
 					configValues[type] = value;
 
-					if (type == "window_vsync")
-					{
-						glfwSwapInterval(stoi(value));
-					}
-					else if (type == "camera_position")
+					if (type == "camera_position")
 					{
 						vector<string> posSplit = String::Split(value, ',');
 						vec3 pos = vec3(

@@ -107,7 +107,7 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Reset##camFarClip"))
+		if (ImGui::Button("Reset##camNearClip"))
 		{
 			ConfigFile::SetValue("camera_nearClip", "0.001");
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
