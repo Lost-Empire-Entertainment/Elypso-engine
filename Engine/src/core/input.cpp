@@ -103,6 +103,8 @@ namespace Core
 
         if (cameraEnabled)
         {
+            float moveSpeedMultiplier = stof(ConfigFile::GetValue("camera_speedMultiplier"));
+
             bool isLeftShiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
             float currentSpeed = cameraSpeed;
             if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;

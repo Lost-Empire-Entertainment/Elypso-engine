@@ -32,13 +32,8 @@ namespace Core
     class Input
     {
     public:
-        static inline float cameraSpeed = 2.5f;
-
         static inline vec3 lastKnownRotation = vec3(0);
-        static inline float moveSpeedMultiplier = 1.0f;
-        static inline float fov = 90.0f;
-        static inline float nearClip = 0.001f;
-        static inline float farClip = 100.0f;
+        static inline float cameraSpeed = 2.5f;
         static inline float aspectRatio = 0.0f;
         static inline bool cameraEnabled;
 

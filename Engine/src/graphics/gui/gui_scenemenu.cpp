@@ -62,9 +62,11 @@ namespace Graphics::GUI
 		ImGui::Text("Enable VSync");
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		if (ImGui::Checkbox("##vsync", &Render::useMonitorRefreshRate))
+		bool vsyncEnabled = stoi(ConfigFile::GetValue("window_vsync"));
+		if (ImGui::Checkbox("##vsync", &vsyncEnabled))
 		{
-			glfwSwapInterval(Render::useMonitorRefreshRate ? 1 : 0);
+			glfwSwapInterval(vsyncEnabled ? 1 : 0);
+			ConfigFile::SetValue("window_vsync", to_string(vsyncEnabled));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		if (ImGui::IsItemHovered())

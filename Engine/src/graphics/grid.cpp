@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <vector>
+
 //external
 #include "glad.h"
 
@@ -10,11 +12,16 @@
 #include "grid.hpp"
 #include "shader.hpp"
 #include "core.hpp"
+#include "configFile.hpp"
+#include "stringUtils.hpp"
 
 using glm::mat4;
+using std::vector;
 
 using Graphics::Shader;
 using Core::Engine;
+using EngineFile::ConfigFile;
+using Utils::String;
 
 namespace Graphics
 {
@@ -72,7 +79,15 @@ namespace Graphics
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 
+		float transparency = stof(ConfigFile::GetValue("grid_transparency"));
 		shader.SetFloat("transparency", transparency);
+
+		string gridColorString = ConfigFile::GetValue("grid_color");
+		vector<string> gridColorSplit = String::Split(gridColorString, ',');
+		vec3 color = vec3(
+			stof(gridColorSplit[0]), 
+			stof(gridColorSplit[1]),
+			stof(gridColorSplit[2]));
 		shader.SetVec3("color", color);
 
 		glBindVertexArray(VAO);

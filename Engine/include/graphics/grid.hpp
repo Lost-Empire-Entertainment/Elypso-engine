@@ -20,9 +20,6 @@ namespace Graphics
 	class Grid
 	{
 	public:
-		static inline vec3 color = vec3(0.4f, 0.4f, 0.4f);
-		static inline float transparency = 0.25f;
-
 		static void InitializeGrid();
 		static void RenderGrid(const mat4& view, const mat4& projection);
 	private:

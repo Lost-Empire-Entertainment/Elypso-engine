@@ -6,6 +6,10 @@
 #include <fstream>
 #include <filesystem>
 
+//external
+#include "glm.hpp"
+#include "glfw3.h"
+
 //engine
 #include "configFile.hpp"
 #include "core.hpp"
@@ -18,6 +22,7 @@
 using std::ofstream;
 using std::ifstream;
 using std::filesystem::exists;
+using glm::vec3;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -73,6 +78,41 @@ namespace EngineFile
 					}
 
 					configValues[type] = value;
+
+					if (type == "window_vsync")
+					{
+						glfwSwapInterval(stoi(value));
+					}
+					else if (type == "camera_position")
+					{
+						vector<string> posSplit = String::Split(value, ',');
+						vec3 pos = vec3(
+							stof(posSplit[0]), 
+							stof(posSplit[1]),
+							stof(posSplit[2]));
+						Render::camera.SetCameraPosition(pos);
+
+						cout << "set cam pos to " 
+							<< posSplit[0] << ", "  
+							<< posSplit[1] << ", "
+							<< posSplit[2]
+							<< "\n";
+					}
+					else if (type == "camera_rotation")
+					{
+						vector<string> rotSplit = String::Split(value, ',');
+						vec3 rot = vec3(
+							stof(rotSplit[0]), 
+							stof(rotSplit[1]),
+							stof(rotSplit[2]));
+						Render::camera.SetCameraRotation(rot);
+
+						cout << "set cam rot to "
+							<< rotSplit[0] << ", "
+							<< rotSplit[1] << ", "
+							<< rotSplit[2]
+							<< "\n";
+					}
 				}
 			}
 
@@ -108,6 +148,23 @@ namespace EngineFile
 			string key = kvp.first;
 			string value = kvp.second;
 
+			if (key == "camera_position")
+			{
+				vec3 pos = Render::camera.GetCameraPosition();
+				value =
+					to_string(pos[0]) + "," +
+					to_string(pos[1]) + "," +
+					to_string(pos[2]);
+			}
+			else if (key == "camera_rotation")
+			{
+				vec3 rot = Render::camera.GetCameraRotation();
+				value = 
+					to_string(rot[0]) + "," +
+					to_string(rot[1]) + "," + 
+					to_string(rot[2]);
+			}
+
 			configFile << key << "= " << value << "\n";
 		}
 
@@ -118,7 +175,7 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"\nSuccessfully created new config file '" + configFilePath + "'!\n");
+			"\nSuccessfully saved config file '" + configFilePath + "'!\n");
 	}
 
 	string ConfigFile::GetValue(const string& key)
@@ -160,8 +217,16 @@ namespace EngineFile
 		configValues["gui_fontScale"] = "1.5";
 
 		configValues["window_vsync"] = "1";
+
+		configValues["camera_speedMultiplier"] = "1.0";
+		configValues["camera_fov"] = "90.0";
+		configValues["camera_nearClip"] = "0.001";
+		configValues["camera_farClip"] = "100.0";
 		configValues["camera_position"] = "0.0, 1.0, 0.0";
 		configValues["camera_rotation"] = "-90.00, 0.00, 0.00";
+
+		configValues["grid_color"] = "0.4f, 0.4f, 0.4f";
+		configValues["grid_transparency"] = "0.25";
 
 		configValues["gui_inspector"] = "1";
 		configValues["gui_console"] = "1";

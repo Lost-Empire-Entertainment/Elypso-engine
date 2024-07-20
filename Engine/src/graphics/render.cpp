@@ -218,9 +218,9 @@ namespace Graphics
 		Input::ProcessKeyboardInput(window);
 
 		//calculate the new projection matrix
-		float fov = Input::fov;
-		float nearClip = Input::nearClip;
-		float farClip = Input::farClip;
+		float fov = stof(ConfigFile::GetValue("camera_fov"));
+		float nearClip = stof(ConfigFile::GetValue("camera_nearClip"));
+		float farClip = stof(ConfigFile::GetValue("camera_farClip"));
 		projection = perspective(
 			radians(fov),
 			Input::aspectRatio,
