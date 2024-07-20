@@ -82,6 +82,9 @@ namespace Graphics::GUI
 		float fov = stof(ConfigFile::GetValue("camera_fov"));
 		if (ImGui::DragFloat("##fov", &fov, 0.1f, 70.0f, 110.0f))
 		{
+			if (fov > 110.0f) fov = 110.0f;
+			if (fov < 70.0f) fov = 70.0f;
+
 			ConfigFile::SetValue("camera_fov", to_string(fov));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
@@ -103,6 +106,10 @@ namespace Graphics::GUI
 		float farClip = stof(ConfigFile::GetValue("camera_farClip"));
 		if (ImGui::DragFloat("##camNearClip", &nearClip, 0.1f, 0.001f, farClip - 0.001f))
 		{
+			if (nearClip > farClip - 0.001f) nearClip = farClip - 0.001f;
+			if (nearClip > 0.5f) nearClip = 0.5f;
+			if (nearClip < 0.001f) nearClip = 0.001f;
+
 			ConfigFile::SetValue("camera_nearClip", to_string(nearClip));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
@@ -116,6 +123,10 @@ namespace Graphics::GUI
 		ImGui::Text("Camera far clip");
 		if (ImGui::DragFloat("##camFarClip", &farClip, 0.1f, nearClip + 0.001f, 10000))
 		{
+			if (farClip > 10000.0f) farClip = 10000.0f;
+			if (farClip < nearClip + 0.001f) farClip = nearClip + 0.001f;
+			if (farClip < 50.0f) farClip = 50.0f;
+
 			ConfigFile::SetValue("camera_farClip", to_string(farClip));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
@@ -130,6 +141,9 @@ namespace Graphics::GUI
 		float moveSpeed = stof(ConfigFile::GetValue("camera_speedMultiplier"));
 		if (ImGui::DragFloat("##camMoveSpeed", &moveSpeed, 0.1f, 0.1f, 100.0))
 		{
+			if (moveSpeed > 100.0f) moveSpeed = 100.0f;
+			if (moveSpeed < 0.1f) moveSpeed = 0.1f;
+
 			ConfigFile::SetValue("camera_speedMultiplier", to_string(moveSpeed));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
@@ -174,6 +188,9 @@ namespace Graphics::GUI
 		float gridTransparency = stof(ConfigFile::GetValue("grid_transparency"));
 		if (ImGui::DragFloat("##gridTransparency", &gridTransparency, 0.001f, 0.0f, 1.0f))
 		{
+			if (gridTransparency > 1.0f) gridTransparency = 1.0f;
+			if (gridTransparency < 0.0f) gridTransparency = 0.0f;
+
 			ConfigFile::SetValue("grid_transparency", to_string(gridTransparency));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
@@ -181,6 +198,29 @@ namespace Graphics::GUI
 		if (ImGui::Button("Reset##gridTransparency"))
 		{
 			ConfigFile::SetValue("grid_transparency", "0.25");
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Grid max distance");
+		float gridMaxDistance = stof(ConfigFile::GetValue("grid_maxDistance"));
+
+		if (gridMaxDistance > farClip)
+		{
+			gridMaxDistance = farClip;
+			ConfigFile::SetValue("grid_maxDistance", to_string(gridMaxDistance));
+		}
+		if (ImGui::DragFloat("##gridMaxDistance", &gridMaxDistance, 0.1f, 10.0f, 100.0f))
+		{
+			if (gridMaxDistance > 100.0f) gridMaxDistance = 100.0f;
+			if (gridMaxDistance < 10.0f) gridMaxDistance = 10.0f;
+			
+			ConfigFile::SetValue("grid_maxDistance", to_string(gridMaxDistance));
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##gridMaxDistance"))
+		{
+			ConfigFile::SetValue("grid_maxDistance", "100.0");
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 	}

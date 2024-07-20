@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <vector>
+#include <algorithm>
 
 //external
 #include "glad.h"
@@ -14,14 +15,17 @@
 #include "core.hpp"
 #include "configFile.hpp"
 #include "stringUtils.hpp"
+#include "render.hpp"
 
 using glm::mat4;
 using std::vector;
+using std::clamp;
 
 using Graphics::Shader;
 using Core::Engine;
 using EngineFile::ConfigFile;
 using Utils::String;
+using Graphics::Render;
 
 namespace Graphics
 {
@@ -55,8 +59,8 @@ namespace Graphics
 		}
 
 		shader = Shader::LoadShader(
-			Engine::filesPath + "\\shaders\\Basic.vert",
-			Engine::filesPath + "\\shaders\\Basic.frag");
+			Engine::filesPath + "\\shaders\\Grid.vert",
+			Engine::filesPath + "\\shaders\\Grid.frag");
 
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
@@ -82,6 +86,12 @@ namespace Graphics
 		float transparency = stof(ConfigFile::GetValue("grid_transparency"));
 		shader.SetFloat("transparency", transparency);
 
+		float maxDistance = stof(ConfigFile::GetValue("grid_maxDistance"));
+		fadeDistance = static_cast<float>(maxDistance * 0.75);
+		shader.SetFloat("fadeDistance", fadeDistance);
+		shader.SetFloat("maxDistance", maxDistance);
+		shader.SetVec3("center", Render::camera.GetCameraPosition());
+
 		string gridColorString = ConfigFile::GetValue("grid_color");
 		vector<string> gridColorSplit = String::Split(gridColorString, ',');
 		vec3 color = vec3(
@@ -96,4 +106,6 @@ namespace Graphics
 
 		glBindVertexArray(0);
 	}
+
+
 }

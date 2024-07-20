@@ -23,6 +23,7 @@ using std::ofstream;
 using std::ifstream;
 using std::filesystem::exists;
 using glm::vec3;
+using std::ios;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -41,6 +42,22 @@ namespace EngineFile
 		if (!exists(configFilePath)) CreateNewConfigFile();
 		else 
 		{
+			//opens file in binary mode and moves to end
+			//if file is empty then a new one is created
+			ifstream configFileBinary(configFilePath, ios::binary | ios::ate); 
+			if (configFileBinary.tellg() == 0)
+			{
+				configFileBinary.close();
+
+				ConsoleManager::WriteConsoleMessage(
+					Caller::ENGINE,
+					Type::INFO,
+					"Failed to load config file '" + configFilePath + "' because it was empty! Creating a new one.\n\n");
+
+				CreateNewConfigFile();
+				return;
+			}
+
 			ifstream configFile(configFilePath);
 			if (!configFile.is_open())
 			{
@@ -220,6 +237,10 @@ namespace EngineFile
 	{
 		configValues.clear();
 
+		//
+		// CONFIG VALUES EDITABLE THROUGH ENGINE
+		//
+
 		configValues["gui_fontScale"] = "1.5";
 
 		configValues["window_vsync"] = "1";
@@ -233,6 +254,7 @@ namespace EngineFile
 
 		configValues["grid_color"] = "0.4, 0.4, 0.4";
 		configValues["grid_transparency"] = "0.25";
+		configValues["grid_maxDistance"] = "25.0";
 
 		configValues["gui_inspector"] = "1";
 		configValues["gui_console"] = "1";
@@ -240,9 +262,106 @@ namespace EngineFile
 		configValues["gui_projectHierarchy"] = "1";
 		configValues["gui_sceneMenu"] = "0";
 
+		//separator
 		configValues[".", "."];
 		configValues["-", "-"];
 		configValues[".", "."];
+
+		//
+		// GUI STYLE VALUES NOT EDITABLE THROUGH ENGINE
+		//
+
+		configValues["gui_Alpha"] = "1.0";
+		configValues["gui_DisabledAlpha"] = "0.6";
+		configValues["gui_WindowPadding"] = "8.0,8.0";
+		configValues["gui_WindowRounding"] = "4.0";
+		configValues["gui_WindowBorderSize"] = "1.0";
+		configValues["gui_WindowMenuButtonPosition"] = "1";
+		configValues["gui_ChildRounding"] = "0.0";
+		configValues["gui_ChildBorderSize"] = "1.0";
+		configValues["gui_PopupRounding"] = "4.0";
+		configValues["gui_PopupBorderSize"] = "1.0";
+		configValues["gui_FramePadding"] = "4.0,3.0";
+		configValues["gui_FrameRounding"] = "2.5";
+		configValues["gui_FrameBorderSize"] = "0.0";
+		configValues["gui_ItemSpacing"] = "8.0,4.0";
+		configValues["gui_ItemInnerSpacing"] = "4.0,4.0";
+		configValues["gui_CellPadding"] = "4.0,2.0";
+		configValues["gui_IndentSpacing"] = "21.0";
+		configValues["gui_ColumnsMinSpacing"] = "6.0";
+		configValues["gui_ScrollbarSize"] = "11.0";
+		configValues["gui_ScrollbarRounding"] = "2.5";
+		configValues["gui_GrabMinSize"] = "10.0";
+		configValues["gui_GrabRounding"] = "2.0";
+		configValues["gui_TabRounding"] = "3.5";
+		configValues["gui_TabBorderSize"] = "0.0";
+		configValues["gui_TabMinWidthForCloseButton"] = "0.0";
+		configValues["gui_ColorButtonPosition"] = "1";
+		configValues["gui_ButtonTextAlign"] = "0.5,0.5";
+		configValues["gui_SelectableTextAlign"] = "0.0,0.0";
+
+		//separator
+		configValues[".", "."];
+		configValues["-", "-"];
+		configValues[".", "."];
+
+		//
+		// GUI COLOR VALUES NOT EDITABLE THROUGH ENGINE
+		//
+
+		configValues["gui_Color_Text"] = "1.0, 1.0, 1.0, 1.0";
+		configValues["gui_Color_TextDisabled"] = "0.592156, 0.592156, 0.592156, 1.0";
+		configValues["gui_Color_WindowBg"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_ChildBg"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_PopupBg"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_Border"] = "0.305882, 0.305882, 0.305882, 1.0";
+		configValues["gui_Color_BorderShadow"] = "0.305882, 0.305882, 0.305882, 1.0";
+		configValues["gui_Color_FrameBg"] = "0.200000, 0.200000, 0.215686, 1.0";
+		configValues["gui_Color_FrameBgHovered"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_FrameBgActive"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_TitleBg"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_TitleBgActive"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_TitleBgCollapsed"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_MenuBarBg"] = "0.200000, 0.200000, 0.215686, 1.0";
+		configValues["gui_Color_ScrollbarBg"] = "0.200000, 0.200000, 0.215686, 1.0";
+		configValues["gui_Color_ScrollbarGrab"] = "0.321568, 0.321568, 0.333333, 1.0";
+		configValues["gui_Color_ScrollbarGrabHovered"] = "0.352941, 0.352941, 0.372549, 1.0";
+		configValues["gui_Color_ScrollbarGrabActive"] = "0.352941, 0.352941, 0.372549, 1.0";
+		configValues["gui_Color_CheckMark"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_SliderGrab"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_SliderGrabActive"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_Button"] = "0.200000, 0.200000, 0.215686, 1.0";
+		configValues["gui_Color_ButtonHovered"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_ButtonActive"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_Header"] = "0.200000, 0.200000, 0.215686, 1.0";
+		configValues["gui_Color_HeaderHovered"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_HeaderActive"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_Separator"] = "0.305882, 0.305882, 0.305882, 1.0";
+		configValues["gui_Color_SeparatorHovered"] = "0.305882, 0.305882, 0.305882, 1.0";
+		configValues["gui_Color_SeparatorActive"] = "0.305882, 0.305882, 0.305882, 1.0";
+		configValues["gui_Color_ResizeGrip"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_ResizeGripHovered"] = "0.200000, 0.200000, 0.215686, 1.0";
+		configValues["gui_Color_ResizeGripActive"] = "0.321568, 0.321568, 0.333333, 1.0";
+		configValues["gui_Color_Tab"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_TabHovered"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_TabActive"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_TabUnfocused"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_TabUnfocusedActive"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_PlotLines"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_PlotLinesHovered"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_PlotHistogram"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_PlotHistogramHovered"] = "0.113725, 0.592156, 0.925490, 1.0";
+		configValues["gui_Color_TableHeaderBg"] = "0.188235, 0.188235, 0.200000, 1.0";
+		configValues["gui_Color_TableBorderStrong"] = "0.309803, 0.309803, 0.349019, 1.0";
+		configValues["gui_Color_TableBorderLight"] = "0.227450, 0.227450, 0.247058, 1.0";
+		configValues["gui_Color_TableRowBg"] = "0.0, 0.0, 0.0, 0.0";
+		configValues["gui_Color_TableRowBgAlt"] = "1.0, 1.0, 1.0, 0.059999";
+		configValues["gui_Color_TextSelectedBg"] = "0.0, 0.466666, 0.784313, 1.0";
+		configValues["gui_Color_DragDropTarget"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_NavHighlight"] = "0.145098, 0.145098, 0.149019, 1.0";
+		configValues["gui_Color_NavWindowingHighlight"] = "1.0, 1.0, 1.0, 0.699999";
+		configValues["gui_Color_NavWindowingDimBg"] = "0.800000, 0.800000, 0.800000, 0.200000";
+		configValues["gui_Color_ModalWindowDimBg"] = "0.145098, 0.145098, 0.149019, 1.0";
 
 		ofstream configFile(configFilePath);
 
