@@ -139,29 +139,39 @@ namespace EngineFile
 			return;
 		}
 
-		for (const auto& kvp : configValues)
+		for (const auto& key : defaultConfigKeyOrder)
 		{
-			string key = kvp.first;
-			string value = kvp.second;
+			string value = configValues[key];
 
-			if (key == "camera_position")
+			if (key == ".")
 			{
-				vec3 pos = Render::camera.GetCameraPosition();
-				value =
-					to_string(pos[0]) + "," +
-					to_string(pos[1]) + "," +
-					to_string(pos[2]);
+				configFile << "\n";
 			}
-			else if (key == "camera_rotation")
+			else if (key == "-")
 			{
-				vec3 rot = Render::camera.GetCameraRotation();
-				value = 
-					to_string(rot[0]) + "," +
-					to_string(rot[1]) + "," + 
-					to_string(rot[2]);
+				configFile << "-------------------------\n";
 			}
+			else
+			{
+				if (key == "camera_position")
+				{
+					vec3 pos = Render::camera.GetCameraPosition();
+					value =
+						to_string(pos[0]) + "," +
+						to_string(pos[1]) + "," +
+						to_string(pos[2]);
+				}
+				else if (key == "camera_rotation")
+				{
+					vec3 rot = Render::camera.GetCameraRotation();
+					value =
+						to_string(rot[0]) + "," +
+						to_string(rot[1]) + "," +
+						to_string(rot[2]);
+				}
 
-			configFile << key << "= " << value << "\n";
+				configFile << key << "= " << value << "\n";
+			}
 		}
 
 		configFile.close();
@@ -221,7 +231,7 @@ namespace EngineFile
 		configValues["camera_position"] = "0.0, 1.0, 0.0";
 		configValues["camera_rotation"] = "-90.00, 0.00, 0.00";
 
-		configValues["grid_color"] = "0.4f, 0.4f, 0.4f";
+		configValues["grid_color"] = "0.4, 0.4, 0.4";
 		configValues["grid_transparency"] = "0.25";
 
 		configValues["gui_inspector"] = "1";
@@ -229,6 +239,10 @@ namespace EngineFile
 		configValues["gui_sceneHierarchy"] = "1";
 		configValues["gui_projectHierarchy"] = "1";
 		configValues["gui_sceneMenu"] = "0";
+
+		configValues[".", "."];
+		configValues["-", "-"];
+		configValues[".", "."];
 
 		ofstream configFile(configFilePath);
 
@@ -246,10 +260,28 @@ namespace EngineFile
 			string key = kvp.first;
 			string value = kvp.second;
 
-			configFile << key << "= " << value << "\n";
+			if (key == ".")
+			{
+				configFile << "\n";
+			}
+			else if (key == "-")
+			{
+				configFile << "-------------------------\n";
+			}
+			else 
+			{
+				configFile << key << "= " << value << "\n";
+			}
 		}
 
 		configFile.close();
+
+		defaultConfigKeyOrder.clear();
+		for (const auto& kvp : configValues)
+		{
+			defaultConfigKeyOrder.push_back(kvp.first);
+		}
+		reverse(defaultConfigKeyOrder.begin(), defaultConfigKeyOrder.end());
 
 		LoadConfigFile();
 	}

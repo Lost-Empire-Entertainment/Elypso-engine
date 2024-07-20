@@ -7,9 +7,11 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 using std::string;
 using std::map;
+using std::vector;
 
 namespace EngineFile
 {
@@ -45,6 +47,7 @@ namespace EngineFile
 		/// Temporary storage for all config settings until engine is saved.
 		/// </summary>
 		static inline map<string, string> configValues;
+		static inline vector<string> defaultConfigKeyOrder;
 		
 		/// <summary>
 		/// Creates a brand new config file with default values.

@@ -166,7 +166,7 @@ namespace Graphics::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("Reset##gridColor"))
 		{
-			ConfigFile::SetValue("grid_color", "0.4f, 0.4f, 0.4f");
+			ConfigFile::SetValue("grid_color", "0.4, 0.4, 0.4");
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
