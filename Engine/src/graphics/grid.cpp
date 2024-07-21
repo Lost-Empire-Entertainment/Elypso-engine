@@ -87,7 +87,7 @@ namespace Graphics
 		shader.SetFloat("transparency", transparency);
 
 		float maxDistance = stof(ConfigFile::GetValue("grid_maxDistance"));
-		fadeDistance = static_cast<float>(maxDistance * 0.75);
+		fadeDistance = static_cast<float>(maxDistance * 0.9);
 		shader.SetFloat("fadeDistance", fadeDistance);
 		shader.SetFloat("maxDistance", maxDistance);
 		shader.SetVec3("center", Render::camera.GetCameraPosition());

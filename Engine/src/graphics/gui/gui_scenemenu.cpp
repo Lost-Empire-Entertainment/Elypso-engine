@@ -59,22 +59,6 @@ namespace Graphics::GUI
 
 	void GUISceneMenu::SceneMenuContent()
 	{
-		ImGui::Text("Enable VSync");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		bool vsyncEnabled = stoi(ConfigFile::GetValue("window_vsync"));
-		if (ImGui::Checkbox("##vsync", &vsyncEnabled))
-		{
-			glfwSwapInterval(vsyncEnabled ? 1 : 0);
-			ConfigFile::SetValue("window_vsync", to_string(vsyncEnabled));
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-		if (ImGui::IsItemHovered())
-		{
-			string hint = "Toggles between 60 and uncapped framerate without affecting deltatime.";
-			ImGui::SetTooltip(hint.c_str());
-		}
-
 		//
 		// BACKGROUND
 		//

@@ -6,11 +6,9 @@
 #pragma once
 
 #include <string>
-#include <map>
 #include <vector>
 
 using std::string;
-using std::map;
 using std::vector;
 
 namespace EngineFile
@@ -46,9 +44,9 @@ namespace EngineFile
 		/// <summary>
 		/// Temporary storage for all config settings until engine is saved.
 		/// </summary>
-		static inline map<string, string> configValues;
-		static inline vector<string> defaultConfigKeyOrder;
-		
+		static inline vector<string> keys;
+		static inline vector<string> values;
+
 		/// <summary>
 		/// Creates a brand new config file with default values.
 		/// </summary>

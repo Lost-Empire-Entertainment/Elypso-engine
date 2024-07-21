@@ -141,14 +141,6 @@ namespace Graphics::GUI
 
 	void GUISettings::OtherSettings()
 	{
-		ImGui::Text("Print console debug messages");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
-		if (ImGui::Checkbox("##consoledebugmsg", &ConsoleManager::sendDebugMessages))
-		{
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-
 		ImGui::Text("Set game name");
 		ImGui::SameLine();
 		ImGui::PushItemWidth(150);

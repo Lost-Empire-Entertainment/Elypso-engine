@@ -44,6 +44,16 @@ namespace Graphics::GUI
 			{
 				consoleMessages.clear();
 			}
+
+			ImGui::SameLine();
+			string printMessage = ConsoleManager::sendDebugMessages == true
+				? "Disable debug messages"
+				: "Enable debug messages";
+			if (ImGui::Button(printMessage.c_str()))
+			{
+				ConsoleManager::sendDebugMessages = !ConsoleManager::sendDebugMessages;
+			}
+
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))

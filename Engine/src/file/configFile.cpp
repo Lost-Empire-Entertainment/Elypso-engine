@@ -68,7 +68,8 @@ namespace EngineFile
 				return;
 			}
 
-			configValues.clear();
+			keys.clear();
+			values.clear();
 
 			string line;
 			map<string, string> configValue;
@@ -78,7 +79,7 @@ namespace EngineFile
 					&& line.find("=") != string::npos)
 				{
 					vector<string> splitLine = String::Split(line, '=');
-					string type = splitLine[0];
+					string key = splitLine[0];
 					string value = splitLine[1];
 
 					//remove one space in front of value if it exists
@@ -94,9 +95,10 @@ namespace EngineFile
 						}
 					}
 
-					configValues[type] = value;
+					keys.push_back(key);
+					values.push_back(value);
 
-					if (type == "camera_position")
+					if (key == "camera_position")
 					{
 						vector<string> posSplit = String::Split(value, ',');
 						vec3 pos = vec3(
@@ -111,7 +113,7 @@ namespace EngineFile
 							<< posSplit[2]
 							<< "\n";
 					}
-					else if (type == "camera_rotation")
+					else if (key == "camera_rotation")
 					{
 						vector<string> rotSplit = String::Split(value, ',');
 						vec3 rot = vec3(
@@ -156,9 +158,10 @@ namespace EngineFile
 			return;
 		}
 
-		for (const auto& key : defaultConfigKeyOrder)
+		for (int i = 0; i < keys.size(); i++)
 		{
-			string value = configValues[key];
+			string key = keys[i];
+			string value = values[i];
 
 			if (key == ".")
 			{
@@ -203,9 +206,19 @@ namespace EngineFile
 
 	string ConfigFile::GetValue(const string& key)
 	{
-		if (configValues.find(key) != configValues.end())
+		int keyIndex = -1;
+		for (int i = 0; i < keys.size(); i++)
 		{
-			return configValues[key];
+			if (keys[i] == key)
+			{
+				keyIndex = i;
+				break;
+			}
+		}
+
+		if (keyIndex != -1)
+		{
+			return values[keyIndex];
 		}
 		else 
 		{
@@ -220,9 +233,19 @@ namespace EngineFile
 
 	void ConfigFile::SetValue(const string& key, const string& value)
 	{
-		if (configValues.find(key) != configValues.end())
+		int keyIndex = -1;
+		for (int i = 0; i < keys.size(); i++)
 		{
-			configValues[key] = value;
+			if (keys[i] == key)
+			{
+				keyIndex = i;
+				break;
+			}
+		}
+
+		if (keyIndex != -1)
+		{
+			values[keyIndex] = value;
 		}
 		else
 		{
@@ -235,33 +258,51 @@ namespace EngineFile
 
 	void ConfigFile::CreateNewConfigFile()
 	{
-		configValues.clear();
+		keys.clear();
+		values.clear();
 
 		//
 		// CONFIG VALUES EDITABLE THROUGH ENGINE
 		//
 
-		configValues["gui_fontScale"] = "1.5";
+		keys.push_back("gui_fontScale");
+			values.push_back("1.5");
 
-		configValues["window_vsync"] = "1";
+		keys.push_back("window_vsync");
+			values.push_back("1");
 
-		configValues["camera_speedMultiplier"] = "1.0";
-		configValues["camera_fov"] = "90.0";
-		configValues["camera_nearClip"] = "0.001";
-		configValues["camera_farClip"] = "100.0";
-		configValues["camera_position"] = "0.0, 1.0, 0.0";
-		configValues["camera_rotation"] = "-90.00, 0.00, 0.00";
+		keys.push_back("camera_speedMultiplier");
+			values.push_back("1.0");
+		keys.push_back("camera_fov");
+			values.push_back("90.0");
+		keys.push_back("camera_nearClip");
+			values.push_back("0.001");
+		keys.push_back("camera_farClip");
+			values.push_back("200.0");
+		keys.push_back("camera_position");
+			values.push_back("0.0, 1.0, 0.0");
+		keys.push_back("camera_rotation");
+			values.push_back("-90.00, 0.00, 0.00");
 
-		configValues["grid_color"] = "0.4, 0.4, 0.4";
-		configValues["grid_transparency"] = "0.25";
-		configValues["grid_maxDistance"] = "25.0";
+		keys.push_back("grid_color");
+			values.push_back("0.4, 0.4, 0.4");
+		keys.push_back("grid_transparency");
+			values.push_back("0.25");
+		keys.push_back("grid_maxDistance");
+			values.push_back("50.0");
 
-		configValues["gui_inspector"] = "1";
-		configValues["gui_console"] = "1";
-		configValues["gui_sceneHierarchy"] = "1";
-		configValues["gui_projectHierarchy"] = "1";
-		configValues["gui_sceneMenu"] = "0";
+		keys.push_back("gui_inspector");
+			values.push_back("1");
+		keys.push_back("gui_console");
+			values.push_back("1");
+		keys.push_back("gui_sceneHierarchy");
+			values.push_back("1");
+		keys.push_back("gui_projectHierarchy");
+			values.push_back("1");
+		keys.push_back("gui_sceneMenu");
+			values.push_back("0");
 
+		/*
 		//separator
 		configValues[".", "."];
 		configValues["-", "-"];
@@ -362,6 +403,7 @@ namespace EngineFile
 		configValues["gui_Color_NavWindowingHighlight"] = "1.0, 1.0, 1.0, 0.699999";
 		configValues["gui_Color_NavWindowingDimBg"] = "0.800000, 0.800000, 0.800000, 0.200000";
 		configValues["gui_Color_ModalWindowDimBg"] = "0.145098, 0.145098, 0.149019, 1.0";
+		*/
 
 		ofstream configFile(configFilePath);
 
@@ -374,10 +416,10 @@ namespace EngineFile
 			return;
 		}
 
-		for (const auto& kvp : configValues)
+		for (int i = 0; i < keys.size(); i++)
 		{
-			string key = kvp.first;
-			string value = kvp.second;
+			string key = keys[i];
+			string value = values[i];
 
 			if (key == ".")
 			{
@@ -394,13 +436,6 @@ namespace EngineFile
 		}
 
 		configFile.close();
-
-		defaultConfigKeyOrder.clear();
-		for (const auto& kvp : configValues)
-		{
-			defaultConfigKeyOrder.push_back(kvp.first);
-		}
-		reverse(defaultConfigKeyOrder.begin(), defaultConfigKeyOrder.end());
 
 		LoadConfigFile();
 	}

@@ -72,11 +72,22 @@ namespace Graphics::GUI
 		ImGui::Text("Current axis: %s", Input::axis.c_str());
 		ImGui::Text("Current tool: %s", string(magic_enum::enum_name(Input::objectAction)).c_str());
 
+		ImGui::Separator();
+
 		//
-		// FOV
+		// CAMERA SETTINGS
 		//
 
-		ImGui::Separator();
+		ImGui::Text("Toggle VSync");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		bool vsyncEnabled = stoi(ConfigFile::GetValue("window_vsync"));
+		if (ImGui::Checkbox("##vsync", &vsyncEnabled))
+		{
+			glfwSwapInterval(vsyncEnabled ? 1 : 0);
+			ConfigFile::SetValue("window_vsync", to_string(vsyncEnabled));
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		ImGui::Text("FOV");
 		float fov = stof(ConfigFile::GetValue("camera_fov"));
@@ -88,16 +99,6 @@ namespace Graphics::GUI
 			ConfigFile::SetValue("camera_fov", to_string(fov));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##fov"))
-		{
-			ConfigFile::SetValue("camera_fov", "90.0");
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-
-		//
-		// CAMERA
-		//
 
 		ImGui::Separator();
 
@@ -113,12 +114,6 @@ namespace Graphics::GUI
 			ConfigFile::SetValue("camera_nearClip", to_string(nearClip));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##camNearClip"))
-		{
-			ConfigFile::SetValue("camera_nearClip", "0.001");
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
 
 		ImGui::Text("Camera far clip");
 		if (ImGui::DragFloat("##camFarClip", &farClip, 0.1f, nearClip + 0.001f, 10000))
@@ -128,12 +123,6 @@ namespace Graphics::GUI
 			if (farClip < 50.0f) farClip = 50.0f;
 
 			ConfigFile::SetValue("camera_farClip", to_string(farClip));
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##camFarClip"))
-		{
-			ConfigFile::SetValue("camera_farClip", "100.0");
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
@@ -155,7 +144,7 @@ namespace Graphics::GUI
 		}
 
 		//
-		// GRID
+		// GRID SETTINGS
 		//
 
 		ImGui::Separator();
@@ -194,12 +183,6 @@ namespace Graphics::GUI
 			ConfigFile::SetValue("grid_transparency", to_string(gridTransparency));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##gridTransparency"))
-		{
-			ConfigFile::SetValue("grid_transparency", "0.25");
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
 
 		ImGui::Text("Grid max distance");
 		float gridMaxDistance = stof(ConfigFile::GetValue("grid_maxDistance"));
@@ -209,18 +192,12 @@ namespace Graphics::GUI
 			gridMaxDistance = farClip;
 			ConfigFile::SetValue("grid_maxDistance", to_string(gridMaxDistance));
 		}
-		if (ImGui::DragFloat("##gridMaxDistance", &gridMaxDistance, 0.1f, 10.0f, 100.0f))
+		if (ImGui::DragFloat("##gridMaxDistance", &gridMaxDistance, 0.1f, 10.0f, 200.0f))
 		{
-			if (gridMaxDistance > 100.0f) gridMaxDistance = 100.0f;
+			if (gridMaxDistance > 200.0f) gridMaxDistance = 200.0f;
 			if (gridMaxDistance < 10.0f) gridMaxDistance = 10.0f;
 			
 			ConfigFile::SetValue("grid_maxDistance", to_string(gridMaxDistance));
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##gridMaxDistance"))
-		{
-			ConfigFile::SetValue("grid_maxDistance", "100.0");
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 	}
