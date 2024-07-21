@@ -16,9 +16,13 @@ If this is your first time running the program then Windows may throw false posi
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
 
+[Official discord server](https://discord.gg/FqJgy2SvDs)
+
+[Official youtube channel](https://youtube.com/greenlaser)
+
 [Official website (documentation coming soon)](https://elypsoengine.com)
 
-[Check out the trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
+[Track development on the Trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
 
 ---
 
