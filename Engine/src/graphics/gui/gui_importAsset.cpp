@@ -173,7 +173,7 @@ namespace Graphics::GUI
 				string newFilePath = Engine::sceneParentPath + "\\" + path(assetPath).filename().string();
 				File::CopyFileOrFolder(assetPath, newFilePath);
 
-				string renamedFilePath = Engine::sceneParentPath + "\\" + newName + extension;
+				string renamedFilePath = Engine::sceneParentPath + "\\textures\\" + newName + extension;
 
 				File::MoveOrRenameFileOrFolder(newFilePath, renamedFilePath, true);
 			}

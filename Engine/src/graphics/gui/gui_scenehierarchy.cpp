@@ -73,7 +73,10 @@ namespace Graphics::GUI
 
 		for (const shared_ptr<GameObject>& obj : objects)
 		{
+			//ignores empty gameobjects
 			if (obj == nullptr) continue;
+			//ignores billboards for lightsources
+			if (obj->GetParentBillboardHolder() != nullptr) continue;
 
 			string name = obj->GetName();
 
