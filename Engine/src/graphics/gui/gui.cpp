@@ -490,7 +490,7 @@ namespace Graphics::GUI
 						targetName,
 						Model::tempID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
@@ -521,7 +521,7 @@ namespace Graphics::GUI
 						targetName,
 						Model::tempID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
@@ -552,7 +552,7 @@ namespace Graphics::GUI
 						targetName,
 						Model::tempID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
@@ -583,7 +583,7 @@ namespace Graphics::GUI
 						targetName,
 						Model::tempID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
@@ -614,7 +614,7 @@ namespace Graphics::GUI
 						targetName,
 						Model::tempID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene();
 				}
 
 				ImGui::EndMenu();
@@ -629,7 +629,7 @@ namespace Graphics::GUI
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene();
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
@@ -638,7 +638,7 @@ namespace Graphics::GUI
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene();
 				}
 
 				ImGui::EndMenu();

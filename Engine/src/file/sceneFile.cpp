@@ -206,7 +206,7 @@ namespace EngineFile
 		sceneFile.close();
 
 		string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
-		GameObjectFile::LoadGameObjects(gameobjectsFolder);
+		if (exists(gameobjectsFolder)) GameObjectFile::LoadGameObjects(gameobjectsFolder);
 
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
@@ -222,7 +222,10 @@ namespace EngineFile
 
 		for (const auto& obj : objects)
 		{
-			GameObjectFile::SaveGameObject(obj);
+			if (obj->GetParentBillboardHolder() == nullptr)
+			{
+				GameObjectFile::SaveGameObject(obj);
+			}
 		}
 
 		ofstream sceneFile(Engine::scenePath);

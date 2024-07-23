@@ -159,7 +159,7 @@ namespace Graphics::GUI
 					newName,
 					Model::tempID);
 
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				SceneFile::SaveScene();
 			}
 
 			//

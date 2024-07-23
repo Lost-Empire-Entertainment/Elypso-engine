@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <filesystem>
+
 //external
 #include "glad.h"
 #include "quaternion.hpp"
@@ -16,6 +18,7 @@
 #include "selectobject.hpp"
 #include "billboard.hpp"
 #include "console.hpp"
+#include "fileUtils.hpp"
 
 using std::to_string;
 using glm::translate;
@@ -23,6 +26,7 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using std::filesystem::path;
 
 using Graphics::Shader;
 using Graphics::Shape::Mesh;
@@ -35,6 +39,7 @@ using Physics::Select;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Utils::File;
 
 namespace Graphics::Shape
 {
@@ -129,7 +134,13 @@ namespace Graphics::Shape
 			billboardName,
 			billboardID);
 
-		if (name == tempName) name = "Spotlight";
+		if (name == tempName)
+		{
+			string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+			string targetPath = File::AddIndex(gameobjectsFolder, "Spotlight", "");
+			name = path(targetPath).stem().string();
+		}
+
 		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,

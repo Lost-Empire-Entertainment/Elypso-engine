@@ -39,7 +39,6 @@ namespace EngineFile
 		/// Loads each individual gameobject.
 		/// </summary>
 		/// <param name="data">Data map for this gameobject</param>
-		/// <param name="meshType">The mesh type of this model</param>
-		static void LoadGameObject(const map<string, string>& data, Mesh::MeshType meshType);
+		static void LoadGameObject(const map<string, string>& data);
 	};
 }
