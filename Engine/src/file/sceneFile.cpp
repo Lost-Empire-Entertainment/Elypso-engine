@@ -24,6 +24,7 @@
 #include "spotlight.hpp"
 #include "fileutils.hpp"
 #include "console.hpp"
+#include "gameObjectFile.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -49,6 +50,7 @@ using Graphics::Shape::Material;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using EngineFile::GameObjectFile;
 
 namespace EngineFile
 {
@@ -198,21 +200,13 @@ namespace EngineFile
 					vector<string> values = String::Split(value, ',');
 					Render::backgroundColor = String::StringToVec3(values);
 				}
-
-				else if (type == "id")
-				{
-					if (!obj.empty()) LoadGameObject(obj);
-
-					obj.clear();
-					obj[type] = value;
-				}
-				else obj[type] = value;
 			}
 		}
 
 		sceneFile.close();
 
-		if (!obj.empty()) LoadGameObject(obj);
+		string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+		GameObjectFile::LoadGameObjects(gameobjectsFolder);
 
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
@@ -222,223 +216,14 @@ namespace EngineFile
 			"Successfully loaded scenePath '" + Engine::scenePath + "'!\n");
 	}
 
-	void SceneFile::LoadGameObject(const map<string, string> obj)
-	{
-		//
-		// VALUES USED FOR ALL GAMEOBJECTS
-		//
-
-		unsigned int id;
-		string name;
-		Mesh::MeshType meshType = {};
-		vec3 pos{};
-		vec3 rot{};
-		vec3 scale{};
-		vector<string> shaders;
-
-		//
-		// EXTRA VALUES
-		//
-
-		vector<string> textures;
-		float shininess = 32;
-		vec3 diffuse{};
-		float intensity;
-		float distance;
-		float innerAngle;
-		float outerAngle;
-		string modelPath;
-
-		//
-		// ATTACHED BILLBOARD VALUES
-		//
-
-		string billboardName;
-		unsigned int billboardID;
-		vector<string> billboardShaders{};
-		string billboardDiffTexture;
-		float billboardShininess;
-
-		for (const auto& entry : obj)
-		{
-			//
-			// VALUES USED FOR ALL GAMEOBJECTS
-			//
-
-			string type = entry.first;
-			string value = entry.second;
-
-			if (type == "id") id = stoul(value);
-			if (type == "name") name = value;
-			if (type == "type") meshType = magic_enum::enum_cast<Mesh::MeshType>(value).value_or(Mesh::MeshType::model);
-			if (type == "position")
-			{
-				vector<string> values = String::Split(value, ',');
-				pos = String::StringToVec3(values);
-			}
-			if (type == "rotation")
-			{
-				vector<string> values = String::Split(value, ',');
-				rot = String::StringToVec3(values);
-			}
-			if (type == "scale")
-			{
-				vector<string> values = String::Split(value, ',');
-				scale = String::StringToVec3(values);
-			}
-			if (type == "shaders")
-			{
-				shaders = String::Split(value, ',');
-			}
-
-			//
-			// EXTRA VALUES
-			//
-
-			
-			if (type == "textures") textures = String::Split(value, ',');
-			if (type == "shininess") shininess = stof(value);
-			if (type == "diffuse")
-			{
-				vector<string> values = String::Split(value, ',');
-				diffuse = String::StringToVec3(values);
-			}
-			if (type == "intensity") intensity = stof(value);
-			if (type == "distance") distance = stof(value);
-			if (type == "inner angle") innerAngle = stof(value);
-			if (type == "outer angle") outerAngle = stof(value);
-			if (type == "model path") modelPath = value;
-
-			//
-			// ATTACHED BILLBOARD VALUES
-			//
-
-			if (type == "billboard name") billboardName = value;
-			if (type == "billboard id") billboardID = stoul(value);
-			if (type == "billboard shaders") billboardShaders = String::Split(value, ',');
-			if (type == "billboard texture") billboardDiffTexture = value;
-			if (type == "billboard shininess") billboardShininess = stof(value);
-		}
-
-		//
-		// CREATE GAMEOBJECTS
-		//
-		
-		if (meshType == Mesh::MeshType::model)
-		{
-			string diff_missing = Engine::filesPath + "\\textures\\diff_missing.png";
-			string diffuseTexture = textures[0];
-			if (diffuseTexture != "EMPTY"
-				&& !exists(diffuseTexture))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
-				diffuseTexture = diff_missing;
-			}
-
-			string specularTexture = textures[1];
-			if (specularTexture != "EMPTY"
-				&& !exists(specularTexture))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Specular texture " + specularTexture + " for " + name + " not found!\n");
-				specularTexture = diff_missing;
-			}
-
-			string normalTexture = textures[2];
-			if (normalTexture != "EMPTY"
-				&& !exists(normalTexture))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Normal texture " + normalTexture + " for " + name + " not found!\n");
-				normalTexture = diff_missing;
-			}
-
-			string heightTexture = textures[3];
-			if (heightTexture != "EMPTY"
-				&& !exists(heightTexture))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
-					Type::EXCEPTION,
-					"Height texture " + heightTexture + " for " + name + " not found!\n");
-				heightTexture = diff_missing;
-			}
-
-			Model::Initialize(
-				pos,
-				rot,
-				scale,
-				modelPath,
-				shaders[0],
-				shaders[1],
-				diffuseTexture,
-				specularTexture,
-				normalTexture,
-				heightTexture,
-				shininess,
-				name,
-				id);
-
-			GameObject::nextID = id + 1;
-		}
-		else if (meshType == Mesh::MeshType::point_light)
-		{
-			PointLight::InitializePointLight(
-				pos,
-				rot,
-				scale,
-				shaders[0],
-				shaders[1],
-				diffuse,
-				intensity,
-				distance,
-				name,
-				id,
-				billboardShaders[0],
-				billboardShaders[1],
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				billboardID);
-
-			GameObject::nextID = id + 1;
-		}
-		else if (meshType == Mesh::MeshType::spot_light)
-		{
-			SpotLight::InitializeSpotLight(
-				pos,
-				rot,
-				scale,
-				shaders[0],
-				shaders[1],
-				diffuse,
-				intensity,
-				distance,
-				innerAngle,
-				outerAngle,
-				name,
-				id,
-				billboardShaders[0],
-				billboardShaders[1],
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				billboardID);
-
-			GameObject::nextID = id + 1;
-		}
-	}
-
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
 	{
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
+
+		for (const auto& obj : objects)
+		{
+			GameObjectFile::SaveGameObject(obj);
+		}
 
 		ofstream sceneFile(Engine::scenePath);
 
@@ -470,134 +255,6 @@ namespace EngineFile
 		float bgrG = Render::backgroundColor.g;
 		float bgrB = Render::backgroundColor.b;
 		sceneFile << "backgroundColor= " << bgrR << ", " << bgrG << ", " << bgrB << "\n";
-
-		sceneFile << "\n==================================================\n\n";
-
-		for (const auto& obj : objects)
-		{
-			Mesh::MeshType type = obj->GetMesh()->GetMeshType();
-
-			if (obj->GetID() != 10000000
-				&& obj->GetID() != 10000001
-				&& type != Mesh::MeshType::billboard)
-			{
-				sceneFile << "id= " << to_string(obj->GetID()) << "\n";
-
-				sceneFile << "\n";
-
-				sceneFile << "name= " << obj->GetName() << "\n";
-
-				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
-				sceneFile << "type= " << type << "\n";
-
-				//position
-				float posX = obj->GetTransform()->GetPosition().x;
-				float posY = obj->GetTransform()->GetPosition().y;
-				float posZ = obj->GetTransform()->GetPosition().z;
-				sceneFile << "position= " << posX << ", " << posY << ", " << posZ << "\n";
-
-				//rotation
-				float rotX = obj->GetTransform()->GetRotation().x;
-				float rotY = obj->GetTransform()->GetRotation().y;
-				float rotZ = obj->GetTransform()->GetRotation().z;
-				sceneFile << "rotation= " << rotX << ", " << rotY << ", " << rotZ << "\n";
-
-				//scale
-				float scaleX = obj->GetTransform()->GetScale().x;
-				float scaleY = obj->GetTransform()->GetScale().y;
-				float scaleZ = obj->GetTransform()->GetScale().z;
-				sceneFile << "scale= " << scaleX << ", " << scaleY << ", " << scaleZ << "\n";
-
-				sceneFile << "\n";
-
-				//object textures
-				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
-				if (meshType == Mesh::MeshType::model)
-				{
-					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
-					diffuseTexture = String::CharReplace(diffuseTexture, '/', '\\');
-					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
-					specularTexture = String::CharReplace(specularTexture, '/', '\\');
-					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
-					normalTexture = String::CharReplace(normalTexture, '/', '\\');
-					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
-					heightTexture = String::CharReplace(heightTexture, '/', '\\');
-					sceneFile
-						<< "textures= "
-						<< diffuseTexture << ", "
-						<< specularTexture << ", "
-						<< normalTexture << ", "
-						<< heightTexture << "\n";
-				}
-
-				//shaders
-				string vertexShader = obj->GetMaterial()->GetShaderName(0);
-				vertexShader = String::CharReplace(vertexShader, '/', '\\');
-				string fragmentShader = obj->GetMaterial()->GetShaderName(1);
-				fragmentShader = String::CharReplace(fragmentShader, '/', '\\');
-				sceneFile << "shaders= " << vertexShader << ", " << fragmentShader << "\n";
-
-				//material variables
-				if (meshType == Mesh::MeshType::model)
-				{
-					sceneFile << "shininess= " << obj->GetBasicShape()->GetShininess() << "\n";
-
-					string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
-					sceneFile << "model path= " << modelPath << "\n";
-				}
-				else if (meshType == Mesh::MeshType::point_light)
-				{
-					float pointDiffuseX = obj->GetPointLight()->GetDiffuse().x;
-					float pointDiffuseY = obj->GetPointLight()->GetDiffuse().y;
-					float pointDiffuseZ = obj->GetPointLight()->GetDiffuse().z;
-					sceneFile << "diffuse= " << pointDiffuseX << ", " << pointDiffuseY << ", " << pointDiffuseZ << "\n";
-
-					sceneFile << "intensity= " << obj->GetPointLight()->GetIntensity() << "\n";
-
-					sceneFile << "distance= " << obj->GetPointLight()->GetDistance() << "\n";
-				}
-				else if (meshType == Mesh::MeshType::spot_light)
-				{
-					float spotDiffuseX = obj->GetSpotLight()->GetDiffuse().x;
-					float spotDiffuseY = obj->GetSpotLight()->GetDiffuse().y;
-					float spotDiffuseZ = obj->GetSpotLight()->GetDiffuse().z;
-					sceneFile << "diffuse= " << spotDiffuseX << ", " << spotDiffuseY << ", " << spotDiffuseZ << "\n";
-
-					sceneFile << "intensity= " << obj->GetSpotLight()->GetIntensity() << "\n";
-
-					sceneFile << "distance= " << obj->GetSpotLight()->GetDistance() << "\n";
-
-					sceneFile << "inner angle= " << obj->GetSpotLight()->GetInnerAngle() << "\n";
-
-					sceneFile << "outer angle= " << obj->GetSpotLight()->GetOuterAngle() << "\n";
-				}
-
-				//also save billboard data of each light source
-				if (meshType == Mesh::MeshType::point_light
-					|| meshType == Mesh::MeshType::spot_light)
-				{
-					sceneFile << "\n";
-					sceneFile << "---attatched billboard data---" << "\n";
-					sceneFile << "\n";
-
-					sceneFile << "billboard name= " << obj->GetChildBillboard()->GetName() << "\n";
-
-					sceneFile << "billboard id= " << obj->GetChildBillboard()->GetID() << "\n";
-
-					string billboardVertShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(0);
-					string billboardFragShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(1);
-					sceneFile << "billboard shaders= " << billboardVertShader << ", " << billboardFragShader << "\n";
-
-					sceneFile << "billboard texture= " << obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse) << "\n";
-
-					sceneFile << "billboard shininess= " << obj->GetChildBillboard()->GetBasicShape()->GetShininess() << "\n";
-				}
-
-				sceneFile << "\n";
-				sceneFile << "==================================================\n";
-				sceneFile << "\n";
-			}
-		}
 
 		sceneFile.close();
 

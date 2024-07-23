@@ -29,7 +29,6 @@ namespace EngineFile
 
 		static void CheckForProjectFile();
 		static void LoadScene(const string& scenePath);
-		static void LoadGameObject(const map<string, string> obj);
 		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
 	private:
 		static inline map<string, bool> models;
