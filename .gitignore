@@ -3,10 +3,12 @@ Engine/build/
 Engine/.vs/
 Engine/out/
 
+# Game ignored files and folders
+Game/build/
+Game/.vs/
+Game/out/
+
 # Elypso hub ignored files and folders
 Hub/build/
 Hub/.vs/
 Hub/out/
-
-# Ignore entire Game folder
-Game/
