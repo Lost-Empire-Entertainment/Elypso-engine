@@ -75,7 +75,7 @@ namespace Graphics
 	void Render::GLFWSetup()
 	{
 		ConsoleManager::WriteConsoleMessage(
-			Caller::GLFW,
+			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Initializing GLFW...\n");
 
@@ -85,14 +85,14 @@ namespace Graphics
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::GLFW,
+			Caller::INITIALIZE,
 			Type::DEBUG,
 			"GLFW initialized successfully!\n\n");
 	}
 	void Render::WindowSetup()
 	{
 		ConsoleManager::WriteConsoleMessage(
-			Caller::WINDOW_SETUP,
+			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Creating window...\n");
 
@@ -107,7 +107,7 @@ namespace Graphics
 		if (window == NULL)
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::GLFW,
+				Caller::INITIALIZE,
 				Type::EXCEPTION,
 				"Failed to create GLFW window!\n\n");
 			return;
@@ -138,14 +138,14 @@ namespace Graphics
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { Engine::Shutdown(); });
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::WINDOW_SETUP,
+			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Window initialized successfully!\n\n");
 	}
 	void Render::GladSetup()
 	{
 		ConsoleManager::WriteConsoleMessage(
-			Caller::GLAD,
+			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Initializing GLAD...\n");
 
@@ -153,14 +153,14 @@ namespace Graphics
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::GLAD,
+				Caller::INITIALIZE,
 				Type::EXCEPTION,
 				"Failed to initialize GLAD!\n\n");
 			return;
 		}
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::GLAD,
+			Caller::INITIALIZE,
 			Type::DEBUG,
 			"GLAD initialized successfully!\n\n");
 	}

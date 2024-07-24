@@ -142,7 +142,7 @@ namespace Graphics::Shape
 		Select::isObjectSelected = true;
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			Type::INFO,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 

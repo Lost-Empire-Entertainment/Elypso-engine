@@ -125,180 +125,6 @@ namespace Graphics::GUI
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		io.FontGlobalScale = stof(ConfigFile::GetValue("gui_fontScale"));
-
-		//CustomizeImGuiStyle();
-	}
-	void EngineGUI::AssignGuiColorValue(const string& name, ImGuiCol col)
-	{
-		ImGuiStyle& style = ImGui::GetStyle();
-
-		string value = ConfigFile::GetValue(name);
-		vector<string> valueSplit = String::Split(value, ',');
-		ImVec4 finalValue = ImVec4(
-			stof(valueSplit[0]),
-			stof(valueSplit[1]),
-			stof(valueSplit[2]),
-			stof(valueSplit[3]));
-
-		style.Colors[col] = finalValue;
-	}
-	void EngineGUI::CustomizeImGuiStyle()
-	{
-		ImGuiStyle& style = ImGui::GetStyle();
-
-		//
-		// GUI STYLE START
-		//
-
-		style.Alpha = stof(ConfigFile::GetValue("gui_Alpha"));
-		style.DisabledAlpha = stof(ConfigFile::GetValue("gui_DisabledAlpha"));
-
-		string gui_WindowPadding_string = ConfigFile::GetValue("gui_WindowPadding");
-		vector<string> gui_WindowPadding_split = String::Split(gui_WindowPadding_string, ',');
-		ImVec2 gui_WindowPadding_value = ImVec2(
-			stof(gui_WindowPadding_split[0]),
-			stof(gui_WindowPadding_split[1]));
-		style.WindowPadding = gui_WindowPadding_value;
-
-		style.WindowRounding = stof(ConfigFile::GetValue("gui_WindowRounding"));
-		style.WindowBorderSize = stof(ConfigFile::GetValue("gui_WindowBorderSize"));
-
-		string gui_WindowMenuButtonPosition_string = ConfigFile::GetValue("gui_WindowMenuButtonPosition");
-		auto gui_WindowMenuButtonPosition_dir = magic_enum::enum_cast<ImGuiDir_>(gui_WindowMenuButtonPosition_string);
-		if (gui_WindowMenuButtonPosition_dir.has_value())
-		{
-			style.WindowMenuButtonPosition = gui_WindowMenuButtonPosition_dir.value();
-		}
-		else cout << "'gui_WindowMenuButtonPosition_dir' has no value!\n"; 
-
-		style.ChildRounding = stof(ConfigFile::GetValue("gui_ChildRounding"));
-		style.ChildBorderSize = stof(ConfigFile::GetValue("gui_ChildBorderSize"));
-		style.PopupRounding = stof(ConfigFile::GetValue("gui_PopupRounding"));
-		style.PopupBorderSize = stof(ConfigFile::GetValue("gui_PopupBorderSize"));
-
-		string gui_FramePadding_string = ConfigFile::GetValue("gui_FramePadding");
-		vector<string> gui_FramePadding_split = String::Split(gui_FramePadding_string, ',');
-		ImVec2 gui_FramePadding_value = ImVec2(
-			stof(gui_FramePadding_split[0]),
-			stof(gui_FramePadding_split[1]));
-		style.FramePadding = gui_FramePadding_value;
-
-		style.FrameRounding = stof(ConfigFile::GetValue("gui_FrameRounding"));
-		style.FrameBorderSize = stof(ConfigFile::GetValue("gui_FrameBorderSize"));
-
-		string gui_ItemSpacing_string = ConfigFile::GetValue("gui_ItemSpacing");
-		vector<string> gui_ItemSpacing_split = String::Split(gui_ItemSpacing_string, ',');
-		ImVec2 gui_ItemSpacing_value = ImVec2(
-			stof(gui_ItemSpacing_split[0]),
-			stof(gui_ItemSpacing_split[1]));
-		style.ItemSpacing = gui_ItemSpacing_value;
-
-		string gui_ItemInnerSpacing_string = ConfigFile::GetValue("gui_ItemInnerSpacing");
-		vector<string> gui_ItemInnerSpacing_split = String::Split(gui_ItemInnerSpacing_string, ',');
-		ImVec2 gui_ItemInnerSpacing_value = ImVec2(
-			stof(gui_ItemInnerSpacing_split[0]),
-			stof(gui_ItemInnerSpacing_split[1]));
-		style.ItemInnerSpacing = gui_ItemInnerSpacing_value;
-
-		string gui_CellPadding_string = ConfigFile::GetValue("gui_CellPadding");
-		vector<string> gui_CellPadding_split = String::Split(gui_CellPadding_string, ',');
-		ImVec2 gui_CellPadding_value = ImVec2(
-			stof(gui_CellPadding_split[0]),
-			stof(gui_CellPadding_split[1]));
-		style.CellPadding = gui_CellPadding_value;
-
-		style.IndentSpacing = stof(ConfigFile::GetValue("gui_IndentSpacing"));
-		style.ColumnsMinSpacing = stof(ConfigFile::GetValue("gui_ColumnsMinSpacing"));
-		style.ScrollbarSize = stof(ConfigFile::GetValue("gui_ScrollbarSize"));
-		style.ScrollbarRounding = stof(ConfigFile::GetValue("gui_ScrollbarRounding"));
-		style.GrabMinSize = stof(ConfigFile::GetValue("gui_GrabMinSize"));
-		style.GrabRounding = stof(ConfigFile::GetValue("gui_GrabRounding"));
-		style.TabRounding = stof(ConfigFile::GetValue("gui_TabRounding"));
-		style.TabBorderSize = stof(ConfigFile::GetValue("gui_TabBorderSize"));
-		style.TabMinWidthForCloseButton = stof(ConfigFile::GetValue("gui_TabMinWidthForCloseButton"));
-
-		string gui_ColorButtonPosition_string = ConfigFile::GetValue("gui_ColorButtonPosition");
-		auto gui_ColorButtonPosition_dir = magic_enum::enum_cast<ImGuiDir_>(gui_ColorButtonPosition_string);
-		if (gui_ColorButtonPosition_dir.has_value())
-		{
-			style.ColorButtonPosition = gui_ColorButtonPosition_dir.value();
-		}
-		else cout << "'gui_ColorButtonPosition_dir' has no value!\n";
-
-		string gui_ButtonTextAlign_string = ConfigFile::GetValue("gui_ButtonTextAlign");
-		vector<string> gui_ButtonTextAlign_split = String::Split(gui_ButtonTextAlign_string, ',');
-		ImVec2 gui_ButtonTextAlign_value = ImVec2(
-			stof(gui_ButtonTextAlign_split[0]),
-			stof(gui_ButtonTextAlign_split[1]));
-		style.ButtonTextAlign = gui_ButtonTextAlign_value;
-
-		string gui_SelectableTextAlign_string = ConfigFile::GetValue("gui_SelectableTextAlign");
-		vector<string> gui_SelectableTextAlign_split = String::Split(gui_SelectableTextAlign_string, ',');
-		ImVec2 gui_SelectableTextAlign_value = ImVec2(
-			stof(gui_SelectableTextAlign_split[0]),
-			stof(gui_SelectableTextAlign_split[1]));
-		style.SelectableTextAlign = gui_SelectableTextAlign_value;
-
-		//
-		// GUI COLOR START
-		//
-
-		AssignGuiColorValue("gui_Color_Text", ImGuiCol_Text);
-		AssignGuiColorValue("gui_Color_TextDisabled", ImGuiCol_TextDisabled);
-		AssignGuiColorValue("gui_Color_WindowBg", ImGuiCol_WindowBg);
-		AssignGuiColorValue("gui_Color_ChildBg", ImGuiCol_ChildBg);
-		AssignGuiColorValue("gui_Color_PopupBg", ImGuiCol_PopupBg);
-		AssignGuiColorValue("gui_Color_Border", ImGuiCol_Border);
-		AssignGuiColorValue("gui_Color_BorderShadow", ImGuiCol_BorderShadow);
-		AssignGuiColorValue("gui_Color_FrameBg", ImGuiCol_FrameBg);
-		AssignGuiColorValue("gui_Color_FrameBgHovered", ImGuiCol_FrameBgHovered);
-		AssignGuiColorValue("gui_Color_FrameBgActive", ImGuiCol_FrameBgActive);
-		AssignGuiColorValue("gui_Color_TitleBg", ImGuiCol_TitleBg);
-
-		AssignGuiColorValue("gui_Color_TitleBgActive", ImGuiCol_TitleBgActive);
-		AssignGuiColorValue("gui_Color_TitleBgCollapsed", ImGuiCol_TitleBgCollapsed);
-		AssignGuiColorValue("gui_Color_MenuBarBg", ImGuiCol_MenuBarBg);
-		AssignGuiColorValue("gui_Color_ScrollbarBg", ImGuiCol_ScrollbarBg);
-		AssignGuiColorValue("gui_Color_ScrollbarGrab", ImGuiCol_ScrollbarGrab);
-		AssignGuiColorValue("gui_Color_ScrollbarGrabHovered", ImGuiCol_ScrollbarGrabHovered);
-		AssignGuiColorValue("gui_Color_ScrollbarGrabActive", ImGuiCol_ScrollbarGrabActive);
-		AssignGuiColorValue("gui_Color_CheckMark", ImGuiCol_CheckMark);
-		AssignGuiColorValue("gui_Color_SliderGrab", ImGuiCol_SliderGrab);
-		AssignGuiColorValue("gui_Color_SliderGrabActive", ImGuiCol_SliderGrabActive);
-		AssignGuiColorValue("gui_Color_Button", ImGuiCol_Button);
-		AssignGuiColorValue("gui_Color_ButtonHovered", ImGuiCol_ButtonHovered);
-		AssignGuiColorValue("gui_Color_ButtonActive", ImGuiCol_ButtonActive);
-		AssignGuiColorValue("gui_Color_Header", ImGuiCol_Header);
-		AssignGuiColorValue("gui_Color_HeaderHovered", ImGuiCol_HeaderHovered);
-
-		AssignGuiColorValue("gui_Color_HeaderActive", ImGuiCol_HeaderActive);
-		AssignGuiColorValue("gui_Color_Separator", ImGuiCol_Separator);
-		AssignGuiColorValue("gui_Color_SeparatorHovered", ImGuiCol_SeparatorHovered);
-		AssignGuiColorValue("gui_Color_SeparatorActive", ImGuiCol_SeparatorActive);
-		AssignGuiColorValue("gui_Color_ResizeGrip", ImGuiCol_ResizeGrip);
-		AssignGuiColorValue("gui_Color_ResizeGripHovered", ImGuiCol_ResizeGripHovered);
-		AssignGuiColorValue("gui_Color_ResizeGripActive", ImGuiCol_ResizeGripActive);
-		AssignGuiColorValue("gui_Color_Tab", ImGuiCol_Tab);
-		AssignGuiColorValue("gui_Color_TabHovered", ImGuiCol_TabHovered);
-		AssignGuiColorValue("gui_Color_TabActive", ImGuiCol_TabActive);
-		AssignGuiColorValue("gui_Color_TabUnfocused", ImGuiCol_TabUnfocused);
-		AssignGuiColorValue("gui_Color_TitleBg", ImGuiCol_TitleBg);
-		AssignGuiColorValue("gui_Color_TabUnfocusedActive", ImGuiCol_TabUnfocusedActive);
-		AssignGuiColorValue("gui_Color_PlotLines", ImGuiCol_PlotLines);
-		AssignGuiColorValue("gui_Color_PlotLinesHovered", ImGuiCol_PlotLinesHovered);
-		AssignGuiColorValue("gui_Color_PlotHistogram", ImGuiCol_PlotHistogram);
-		AssignGuiColorValue("gui_Color_PlotHistogramHovered", ImGuiCol_PlotHistogramHovered);
-		AssignGuiColorValue("gui_Color_TableHeaderBg", ImGuiCol_TableHeaderBg);
-		AssignGuiColorValue("gui_Color_TableBorderStrong", ImGuiCol_TableBorderStrong);
-		AssignGuiColorValue("gui_Color_TableBorderLight", ImGuiCol_TableBorderLight);
-		AssignGuiColorValue("gui_Color_TableRowBg", ImGuiCol_TableRowBg);
-		AssignGuiColorValue("gui_Color_TableRowBgAlt", ImGuiCol_TableRowBgAlt);
-		AssignGuiColorValue("gui_Color_TextSelectedBg", ImGuiCol_TextSelectedBg);
-		AssignGuiColorValue("gui_Color_DragDropTarget", ImGuiCol_DragDropTarget);
-		AssignGuiColorValue("gui_Color_NavHighlight", ImGuiCol_NavHighlight);
-		AssignGuiColorValue("gui_Color_NavWindowingHighlight", ImGuiCol_NavWindowingHighlight);
-		AssignGuiColorValue("gui_Color_NavWindowingDimBg", ImGuiCol_NavWindowingDimBg);
-		AssignGuiColorValue("gui_Color_ModalWindowDimBg", ImGuiCol_ModalWindowDimBg);
 	}
 
 	int EngineGUI::GetScreenWidth()
@@ -403,7 +229,7 @@ namespace Graphics::GUI
 				if (assetPath == "")
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Did not get path!\n");
 				}
@@ -419,7 +245,7 @@ namespace Graphics::GUI
 					&& extension != ".jpeg")
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"File '" + name + "' with extension '" + extension + "' is not yet supported!");
 				}
@@ -436,9 +262,6 @@ namespace Graphics::GUI
 
 						if (importedFileName == existingFileName)
 						{
-							cout << "comparing " + importedFileName + "\n" << assetPath
-								<< "\nto " + existingFileName + "\n" << existingFilePath << "\n\n";
-
 							foundExisting = true;
 							break;
 						}
@@ -447,7 +270,7 @@ namespace Graphics::GUI
 					if (foundExisting)
 					{
 						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
+							Caller::FILE,
 							Type::EXCEPTION,
 							"File '" + importedFileName + "' already exists in the engine!\n");
 					}
@@ -699,7 +522,7 @@ namespace Graphics::GUI
 				if (!exists(Engine::gameExePath))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Game exe does not exist!\n");
 				}
@@ -880,7 +703,7 @@ namespace Graphics::GUI
 		if (ImGui::Button("Don't save", buttonSize))
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::INPUT,
 				Type::INFO,
 				"Closed engine without saving.\n");
 			SceneFile::unsavedChanges = false;
@@ -891,7 +714,7 @@ namespace Graphics::GUI
 		if (ImGui::Button("Cancel", buttonSize))
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::INPUT,
 				Type::INFO,
 				"Cancelled shutdown...\n");
 			renderUnsavedShutdownWindow = false;
@@ -942,7 +765,7 @@ namespace Graphics::GUI
 		if (ImGui::Button("Don't save", buttonSize))
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::INPUT,
 				Type::INFO,
 				"Switched scene without saving.\n");
 			SceneFile::LoadScene(targetScene);
@@ -953,7 +776,7 @@ namespace Graphics::GUI
 		if (ImGui::Button("Cancel", buttonSize))
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::INPUT,
 				Type::INFO,
 				"Cancelled scene switch...\n");
 			renderUnsavedSceneSwitchWindow = false;

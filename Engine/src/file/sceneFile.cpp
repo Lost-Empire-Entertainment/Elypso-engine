@@ -113,7 +113,7 @@ namespace EngineFile
 		if (!exists(scenePath))
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Tried to load scene file '" + scenePath + "' but it doesn't exist!\n");
 			return;
@@ -148,7 +148,7 @@ namespace EngineFile
 		if (!sceneFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 			return;
@@ -211,7 +211,7 @@ namespace EngineFile
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			Type::INFO,
 			"Successfully loaded scene file '" + path(Engine::scenePath).stem().string() + "'!\n");
 	}
@@ -233,7 +233,7 @@ namespace EngineFile
 		if (!sceneFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into scene file '" + Engine::scenePath + "'!\n");
 			return;
@@ -264,7 +264,7 @@ namespace EngineFile
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			Type::INFO,
 			"\nSuccessfully saved scene file '" + path(Engine::scenePath).stem().string() + "'!\n");
 

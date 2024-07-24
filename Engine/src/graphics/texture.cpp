@@ -106,9 +106,9 @@ namespace Graphics
 		else
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::TEXTURE,
 				Type::EXCEPTION,
-				"Failed to load " + finalTexturePath + " texture!\n\n");
+				"Failed to load texture '" + finalTexturePath + "'!\n\n");
 		}
 		stbi_image_free(data);
 	}

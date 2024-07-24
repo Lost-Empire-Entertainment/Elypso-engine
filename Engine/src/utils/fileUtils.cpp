@@ -138,7 +138,7 @@ namespace Utils
         if (!exists(sourcePath))
         {
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 "Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
@@ -148,7 +148,7 @@ namespace Utils
             string outputType = isRenaming ? "Cannot rename source " : "Cannot move source ";
             output = outputType + sourcePath.string() + " to destination " + destinationPath.string() + " because destination already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 output);
             return;
@@ -161,7 +161,7 @@ namespace Utils
             string outputType = isRenaming ? "Renamed " : "Moved ";
             output = outputType + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::DEBUG,
                 output);
         }
@@ -169,7 +169,7 @@ namespace Utils
         {
             output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 output);
         }
@@ -182,7 +182,7 @@ namespace Utils
         if (!exists(sourcePath))
         {
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 "Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
@@ -196,7 +196,7 @@ namespace Utils
 
                 output = "Copied folder " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
-                    Caller::ENGINE,
+                    Caller::FILE,
                     Type::DEBUG,
                     output);
             }
@@ -206,7 +206,7 @@ namespace Utils
 
                 output = "Copied file " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
                 ConsoleManager::WriteConsoleMessage(
-                    Caller::ENGINE,
+                    Caller::FILE,
                     Type::DEBUG,
                     output);
             }
@@ -215,7 +215,7 @@ namespace Utils
         {
             output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 output);
         }
@@ -227,7 +227,7 @@ namespace Utils
         if (!exists(sourcePath))
         {
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 sourcePath.string() + " does not exist!\n\n");
             return;
@@ -264,7 +264,7 @@ namespace Utils
 
             output = "Deleted " + sourcePath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::DEBUG,
                 output);
         }
@@ -272,7 +272,7 @@ namespace Utils
         {
             output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 output);
         }
@@ -283,9 +283,9 @@ namespace Utils
         string output;
         if (exists(folderPath))
         {
-            output = "Error " + folderPath.string() + " already exists!\n\n";
+            output = folderPath.string() + " already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 output);
 
@@ -294,9 +294,9 @@ namespace Utils
 
         if (is_regular_file(folderPath))
         {
-            output = "Error " + folderPath.string() + " must be a folder!\n\n";
+            output = folderPath.string() + " must be a folder!\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 output);
 
@@ -309,7 +309,7 @@ namespace Utils
 
             output = "Created new folder at " + folderPath.string() + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::DEBUG,
                 output);
         }
@@ -317,7 +317,7 @@ namespace Utils
         {
             output = string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 output);
         }

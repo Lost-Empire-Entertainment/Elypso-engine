@@ -84,7 +84,7 @@ namespace Core
             error_code ec = make_error_code(static_cast<errc>(errno));
 
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
                 "Failed to open log file! Reason: " +
                 ec.message() + "\n\n");

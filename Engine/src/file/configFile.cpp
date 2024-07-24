@@ -50,7 +50,7 @@ namespace EngineFile
 				configFileBinary.close();
 
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::INFO,
 					"Failed to load config file '" + configFilePath + "' because it was empty! Creating a new one.\n\n");
 
@@ -62,7 +62,7 @@ namespace EngineFile
 			if (!configFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Failed to open config file '" + configFilePath + "'!\n\n");
 				return;
@@ -106,12 +106,6 @@ namespace EngineFile
 							stof(posSplit[1]),
 							stof(posSplit[2]));
 						Render::camera.SetCameraPosition(pos);
-
-						cout << "set cam pos to " 
-							<< posSplit[0] << ", "  
-							<< posSplit[1] << ", "
-							<< posSplit[2]
-							<< "\n";
 					}
 					else if (key == "camera_rotation")
 					{
@@ -121,12 +115,6 @@ namespace EngineFile
 							stof(rotSplit[1]),
 							stof(rotSplit[2]));
 						Render::camera.SetCameraRotation(rot);
-
-						cout << "set cam rot to "
-							<< rotSplit[0] << ", "
-							<< rotSplit[1] << ", "
-							<< rotSplit[2]
-							<< "\n";
 					}
 				}
 			}
@@ -134,7 +122,7 @@ namespace EngineFile
 			configFile.close();
 
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::INFO,
 				"Successfully loaded config file!\n");
 		}
@@ -152,7 +140,7 @@ namespace EngineFile
 		if (!configFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into config file '" + configFilePath + "'!\n");
 			return;
@@ -199,7 +187,7 @@ namespace EngineFile
 		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			Type::INFO,
 			"\nSuccessfully saved config file!\n");
 	}
@@ -223,7 +211,7 @@ namespace EngineFile
 		else 
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Cannot get config key " + key + " value because it does not exist! This will cause a crash if the config file was not filled correctly.\n");
 
@@ -250,7 +238,7 @@ namespace EngineFile
 		else
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Cannot set value to config key " + key + " because it does not exist!\n");
 		}
@@ -307,7 +295,7 @@ namespace EngineFile
 		if (!configFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into config file '" + configFilePath + "'!\n");
 			return;

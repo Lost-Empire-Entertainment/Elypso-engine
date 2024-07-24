@@ -112,7 +112,7 @@ namespace Graphics::GUI
 			if (foundIllegalChar)
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::INPUT,
 					Type::EXCEPTION,
 					"Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 

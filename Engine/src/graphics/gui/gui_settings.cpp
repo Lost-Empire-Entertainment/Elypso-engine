@@ -168,7 +168,7 @@ namespace Graphics::GUI
 				if (!String::IsValidSymbolInPath(c))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::INPUT,
 						Type::EXCEPTION,
 						"Invalid character detected in game name! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
@@ -186,7 +186,7 @@ namespace Graphics::GUI
 				Engine::gameExePath = finalPath;
 
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::INPUT,
 					Type::INFO,
 					"Successfully set game name to '" + gameName + "' and game path as '" + Engine::gameExePath + "'!\n");
 

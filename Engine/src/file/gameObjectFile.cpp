@@ -59,7 +59,7 @@ namespace EngineFile
 		if (!objectFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
-				Caller::ENGINE,
+				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into object file '" + objectFilePath + "'!\n");
 			return;
@@ -194,7 +194,7 @@ namespace EngineFile
 			if (!settingsFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Failed to open settings file '" + settingsFilePath + "'!\n\n");
 				return;
@@ -326,7 +326,7 @@ namespace EngineFile
 				if (!exists(fullModelPath))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Failed to find model for " + name + " at " + fullModelPath + "! Skipped loading gameobject.\n");
 					return;
@@ -350,7 +350,7 @@ namespace EngineFile
 						 && !exists(fullTex0Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 0 for " + name + " at " + fullTex0Path + " does not exist!\n");
 					textures.push_back(Engine::filesPath + "\\textures\\diff_missing.png");
@@ -364,7 +364,7 @@ namespace EngineFile
 					&& !exists(fullTex1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 1 for " + name + " at " + fullTex1Path + " does not exist!\n");
 					textures.push_back("EMPTY");
@@ -378,7 +378,7 @@ namespace EngineFile
 					&& !exists(fullTex2Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 2 for " + name + " at " + fullTex2Path + " does not exist!\n");
 					textures.push_back("EMPTY");
@@ -392,7 +392,7 @@ namespace EngineFile
 					&& !exists(fullTex3Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 3 for " + name + " at " + fullTex3Path + " does not exist!\n");
 					textures.push_back("EMPTY");
@@ -410,7 +410,7 @@ namespace EngineFile
 					|| !exists(fullShader1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
 					return;
@@ -431,7 +431,7 @@ namespace EngineFile
 				if (!exists(fullTexPath))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
 					return;
@@ -449,7 +449,7 @@ namespace EngineFile
 					|| !exists(fullShader1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
 					return;
@@ -487,7 +487,7 @@ namespace EngineFile
 				&& !exists(diffuseTexture))
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
 				diffuseTexture = diff_missing;
@@ -498,10 +498,10 @@ namespace EngineFile
 				&& !exists(specularTexture))
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Specular texture " + specularTexture + " for " + name + " not found!\n");
-				specularTexture = diff_missing;
+				specularTexture = "EMPTY";
 			}
 
 			string normalTexture = textures[2];
@@ -509,10 +509,10 @@ namespace EngineFile
 				&& !exists(normalTexture))
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Normal texture " + normalTexture + " for " + name + " not found!\n");
-				normalTexture = diff_missing;
+				normalTexture = "EMPTY";
 			}
 
 			string heightTexture = textures[3];
@@ -520,10 +520,10 @@ namespace EngineFile
 				&& !exists(heightTexture))
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Height texture " + heightTexture + " for " + name + " not found!\n");
-				heightTexture = diff_missing;
+				heightTexture = "EMPTY";
 			}
 
 			Model::Initialize(

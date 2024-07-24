@@ -21,16 +21,14 @@ namespace Core
 	public:
 		enum class Caller : char
 		{
-			ENGINE,
-			INPUT,
+			//FILE
+			FILE,
 			SHADER,
-			WINDOW_SETUP,
-			WINDOW_LOOP,
-			OPENGL,
-			GLFW,
-			GLAD,
 			TEXTURE,
-			IMGUI,
+
+			//ENGINE
+			INPUT,
+			INITIALIZE,
 			SHUTDOWN
 		};
 		enum class Type : char

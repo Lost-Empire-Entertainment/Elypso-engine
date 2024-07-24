@@ -142,7 +142,7 @@ namespace Graphics::GUI
 							string cleanedEntryPath = String::CharReplace(entry.path, '/', '\\');
 
 							ConsoleManager::WriteConsoleMessage(
-								Caller::ENGINE,
+								Caller::FILE,
 								Type::EXCEPTION,
 								"Cannot delete folder '" + cleanedEntryPath + "' because it is open! Close it before deleting it.\n");
 						}
@@ -160,12 +160,6 @@ namespace Graphics::GUI
 			}
 			else if (is_regular_file(entry.path))
 			{
-				//if user clicked on file
-				if (ImGui::Selectable(entry.name.c_str()))
-				{
-					cout << "clicked on " << entry.path << "\n";
-				}
-
 				//hover over file to show its path in tooltip
 				if (ImGui::IsItemHovered()
 					&& showPathTooltip)
@@ -210,7 +204,7 @@ namespace Graphics::GUI
 				|| cleanedEntryPath == cleanedTexturesFolder)
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Cannot delete folder '" + cleanedEntryPath + "' because it is used by this project!\n");
 			}
@@ -247,7 +241,7 @@ namespace Graphics::GUI
 				|| cleanedEntryPath == cleanedProjectPath)
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Cannot delete file '" + cleanedEntryPath + "' because it is used by this scene!\n");
 			}
@@ -278,7 +272,7 @@ namespace Graphics::GUI
 					else
 					{
 						ConsoleManager::WriteConsoleMessage(
-							Caller::ENGINE,
+							Caller::FILE,
 							Type::EXCEPTION,
 							"Tried to delete gameobject with name '" + name + "' but it doesn't exist!\n");
 					}

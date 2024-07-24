@@ -63,8 +63,6 @@ namespace Graphics
             vector<string> vertSplit = String::Split(vertexPath, '/');
             vector<string> fragSplit = String::Split(fragmentPath, '/');
 
-            //cout << "Initializing " << vertSplit.back() << " and " << fragSplit.back() << ".\n";
-
             string vertexCode;
             string fragmentCode;
             ifstream vShaderFile;
@@ -84,7 +82,7 @@ namespace Graphics
                     ConsoleManager::WriteConsoleMessage(
                         Caller::SHADER,
                         Type::EXCEPTION,
-                        "ERROR::SHADER::FILE_NOT_OPEN: \nVertex: " + absolute(vertexPath).string() +
+                        "Shader error: \nVertex: " + absolute(vertexPath).string() +
                         "\nFragment: " + absolute(fragmentPath).string() + "\n\n");
                     return shader;
                 }
@@ -103,9 +101,9 @@ namespace Graphics
             catch (const ios_base::failure& e)
             {
                 ConsoleManager::WriteConsoleMessage(
-                    Caller::SHADER,
+                    Caller::FILE,
                     Type::EXCEPTION,
-                    "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " +
+                    "File not successfully read: " +
                     to_string(e.code().value()) +
                     "\nVertex: " + absolute(vertexPath).string() +
                     "\nFragment: " + absolute(fragmentPath).string() + "\n\n");
@@ -135,8 +133,6 @@ namespace Graphics
             glDeleteShader(fragment);
 
             shader.shaders.emplace(shaderKey, shader.ID);
-
-            //cout << "Successfully initialized " << vertSplit.back() << " and " << fragSplit.back() << " with ID " << to_string(ID) << "!\n\n";
 
             return shader;
         }
@@ -215,7 +211,7 @@ namespace Graphics
                 ConsoleManager::WriteConsoleMessage(
                     Caller::SHADER,
                     Type::EXCEPTION,
-                    "ERROR::SHADER_COMPILATION_ERROR of type: " +
+                    "Shader compilation error: " +
                     string(type) + " " +
                     string(infoLog) + "\n\n");
             }
@@ -229,7 +225,7 @@ namespace Graphics
                 ConsoleManager::WriteConsoleMessage(
                     Caller::SHADER,
                     Type::EXCEPTION,
-                    "ERROR::PROGRAM_LINKING_ERROR of type: " +
+                    "Shader linking error: " +
                     string(type) + " " +
                     string(infoLog) + "\n\n");
             }

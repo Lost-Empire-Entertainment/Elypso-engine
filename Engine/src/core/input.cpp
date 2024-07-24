@@ -257,7 +257,7 @@ namespace Core
                 if (!exists(Engine::gameExePath))
                 {
                     ConsoleManager::WriteConsoleMessage(
-                        Caller::ENGINE,
+                        Caller::FILE,
                         Type::EXCEPTION,
                         "Game exe does not exist!\n");
                 }
@@ -271,8 +271,12 @@ namespace Core
                 && Select::selectedObj != nullptr)
             {
                 copiedObject = Select::selectedObj;
-                cout << "copied " << copiedObject->GetName()
-                    << "_" << to_string(copiedObject->GetID()) << "\n";
+
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::DEBUG,
+                    "Copied file '" + copiedObject->GetName()
+                    + "_" + to_string(copiedObject->GetID()) + "'\n");
             }
 
             //paste selected object
@@ -337,8 +341,11 @@ namespace Core
                         nextID);
                 }
 
-                cout << "pasted " << copiedObject->GetName()
-                    << "_" << to_string(copiedObject->GetID()) << "\n";
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::DEBUG,
+                    "Pasted file " + copiedObject->GetName()
+                    + "_" + to_string(copiedObject->GetID()) + "\n");
             }
 
             //delete selected gameobject

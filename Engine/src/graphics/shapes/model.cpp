@@ -79,9 +79,9 @@ namespace Graphics::Shape
         {
             string errorString = importer.GetErrorString();
             ConsoleManager::WriteConsoleMessage(
-                Caller::ENGINE,
+                Caller::FILE,
                 Type::EXCEPTION,
-                "ERROR::ASSIMP:: " + errorString + "\n");
+                "Assimp error: " + errorString + "\n");
             return;
         }
 

@@ -105,7 +105,7 @@ namespace Graphics::GUI
 			if (foundIllegalChar)
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::INPUT,
 					Type::EXCEPTION,
 					"Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
@@ -142,7 +142,7 @@ namespace Graphics::GUI
 				newName = newName;
 
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"File/folder name '" + newName + "' already exists in this folder! Please pick a new file/folder name.");
 
@@ -168,7 +168,7 @@ namespace Graphics::GUI
 			if (!readSceneFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 
@@ -186,7 +186,10 @@ namespace Graphics::GUI
 			{
 				if (readFileLine.find(originalPath) != string::npos)
 				{
-					cout << "found and replaced old model path '" << originalPath << "' with new path '" << newPath << "'\n";
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::DEBUG,
+						"Found and replaced old model path '" + originalPath + "' with new path '" + newPath + "'.\n");
 					buffer << "model path= " << newPath << "\n";
 				}
 				else buffer << readFileLine << "\n";
@@ -202,7 +205,7 @@ namespace Graphics::GUI
 			if (!writeSceneFile.is_open())
 			{
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::EXCEPTION,
 					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 

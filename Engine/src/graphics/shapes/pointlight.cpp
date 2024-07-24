@@ -167,7 +167,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddPointLight(obj);
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			Type::INFO,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 

@@ -9,9 +9,13 @@
 
 //engine
 #include "fileexplorer.hpp"
+#include "console.hpp"
 
 using std::cout;
 using std::wstring;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace EngineFile
 {
@@ -21,7 +25,10 @@ namespace EngineFile
 		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 		if (FAILED(hr))
 		{
-			cout << "Error: Failed to initialize COM!\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"File Explorer error: Failed to initialize COM!\n");
 			return "";
 		}
 
@@ -35,7 +42,10 @@ namespace EngineFile
 			reinterpret_cast<void**>(&pFileOpen));
 		if (FAILED(hr))
 		{
-			cout << "Error: Failed to create File Open dialog!\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"File Explorer error: Failed to create File Open dialog!\n");
 			CoUninitialize();
 			return "";
 		}
@@ -47,7 +57,10 @@ namespace EngineFile
 			hr = pFileOpen->SetFileTypes(1, filterSpec);
 			if (FAILED(hr))
 			{
-				cout << "Error: Failed to set file filter!\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"File Explorer error: Failed to set file filter!\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -62,7 +75,10 @@ namespace EngineFile
 			hr = pFileOpen->SetFileTypes(1, filterSpec);
 			if (FAILED(hr))
 			{
-				cout << "Error: Failed to set file filter!\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"File Explorer error: Failed to set file filter!\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -79,7 +95,10 @@ namespace EngineFile
 			hr = pFileOpen->SetFileTypes(3, filterSpec);
 			if (FAILED(hr))
 			{
-				cout << "Error: Failed to set file filter!\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"File Explorer error: Failed to set file filter!\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -94,7 +113,10 @@ namespace EngineFile
 			hr = pFileOpen->SetFileTypes(1, filterSpec);
 			if (FAILED(hr))
 			{
-				cout << "Error: Failed to set file filter!\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"File Explorer error: Failed to set file filter!\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -109,7 +131,10 @@ namespace EngineFile
 			hr = pFileOpen->SetFileTypes(1, filterSpec);
 			if (FAILED(hr))
 			{
-				cout << "Error: Failed to set file filter!\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"File Explorer error: Failed to set file filter!\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -126,7 +151,10 @@ namespace EngineFile
 				hr = pFileOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
 				if (FAILED(hr))
 				{
-					cout << "Error: Failed to set options!\n\n";
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"File Explorer error: Failed to set options!\n");
 					pFileOpen->Release();
 					CoUninitialize();
 					return "";
@@ -134,7 +162,10 @@ namespace EngineFile
 			}
 			else
 			{
-				cout << "Error: Failed to get options!\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"File Explorer error: Failed to get options!\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -145,7 +176,10 @@ namespace EngineFile
 		hr = pFileOpen->Show(NULL);
 		if (FAILED(hr))
 		{
-			cout << "Error: Failed to show dialog!\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"File Explorer error: Failed to show dialog!\n");
 			pFileOpen->Release();
 			CoUninitialize();
 			return "";
@@ -156,7 +190,10 @@ namespace EngineFile
 		hr = pFileOpen->GetResult(&pItem);
 		if (FAILED(hr))
 		{
-			cout << "Error: Failed to retrieve result!\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"File Explorer error: Failed to retrieve result!\n");
 			pFileOpen->Release();
 			CoUninitialize();
 			return "";
@@ -167,7 +204,10 @@ namespace EngineFile
 		hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath);
 		if (FAILED(hr))
 		{
-			cout << "Error: Failed to retrieve path!\n\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"File Explorer error: Failed to retrieve path!\n");
 			pItem->Release();
 			pFileOpen->Release();
 			CoUninitialize();

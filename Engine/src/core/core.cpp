@@ -172,7 +172,7 @@ namespace Core
 		ConsoleManager::InitializeLogger();
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::INPUT,
 			Type::INFO,
 			Engine::name + " " + Engine::version + "\n" +
 			"Copyright (C) Lost Empire Entertainment 2024\n\n",
@@ -184,13 +184,13 @@ namespace Core
 
 		string output = "Engine documents path: " + Engine::docsPath + "\n";
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			Type::DEBUG,
 			output);
 
 		output = "User engine files path: " + Engine::filesPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			Type::DEBUG,
 			output);
 
@@ -203,12 +203,12 @@ namespace Core
 	void Engine::RunEngine()
 	{
 		ConsoleManager::WriteConsoleMessage(
-			Caller::WINDOW_LOOP,
+			Caller::INPUT,
 			Type::DEBUG,
 			"Reached window loop successfully!\n\n");
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::INPUT,
 			Type::INFO,
 			"==================================================\n\n",
 			true,
@@ -306,7 +306,7 @@ namespace Core
 				ConfigFile::SaveConfigFile();
 
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::INPUT,
 					Type::INFO,
 					"==================================================\n\n",
 					true);

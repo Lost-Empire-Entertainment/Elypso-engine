@@ -28,9 +28,6 @@ namespace Graphics::GUI
 
 		static void Initialize();
 
-		static void AssignGuiColorValue(const string& name, ImGuiCol col);
-		static void CustomizeImGuiStyle();
-
 		static void Render();
 		static void Shutdown();
 	private:

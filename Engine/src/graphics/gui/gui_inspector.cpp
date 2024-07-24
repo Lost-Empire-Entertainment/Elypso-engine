@@ -238,8 +238,6 @@ namespace Graphics::GUI
 				{
 					Texture::LoadTexture(obj, diff_defaultTexturePath.string(), Material::TextureType::diffuse, true);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-					cout << "removed diffuse from " << obj->GetName() << "\n";
 				}
 				ImGui::PopItemWidth();
 				ImGui::PopID();
@@ -287,8 +285,6 @@ namespace Graphics::GUI
 				{
 					Texture::LoadTexture(obj, "EMPTY", Material::TextureType::specular, false);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-					cout << "removed specular from " << obj->GetName() << "\n";
 				}
 				ImGui::PopItemWidth();
 				ImGui::PopID();

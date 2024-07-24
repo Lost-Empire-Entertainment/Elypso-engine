@@ -181,7 +181,7 @@ namespace Graphics::Shape
 		SceneFile::SaveScene();
 
 		ConsoleManager::WriteConsoleMessage(
-			Caller::ENGINE,
+			Caller::FILE,
 			ConsoleType::INFO,
 			"Deleted gameobject " + thisName + ".\n");
 	}

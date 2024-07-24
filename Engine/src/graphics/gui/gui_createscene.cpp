@@ -105,7 +105,7 @@ namespace Graphics::GUI
 				string str(1, illegalChar);
 
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::INPUT,
 					Type::EXCEPTION,
 					"Error: Invalid character '" + str + "' detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!");
 
@@ -138,7 +138,7 @@ namespace Graphics::GUI
 				assignedSceneName = "Scene";
 
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::INPUT,
 					Type::EXCEPTION,
 					"Scene name '" + assignedSceneName + "' already exists in this project! Please pick a new scene name.");
 

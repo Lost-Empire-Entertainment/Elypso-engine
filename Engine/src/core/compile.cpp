@@ -69,7 +69,7 @@ namespace Core
 				if (result != 0)
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Compilation failed at bat file stage! Please contact developers for more info.\n");
 
@@ -142,7 +142,7 @@ namespace Core
 				if (!scenesFile.is_open())
 				{
 					ConsoleManager::WriteConsoleMessage(
-						Caller::ENGINE,
+						Caller::FILE,
 						Type::EXCEPTION,
 						"Compilation failed because scenes file couldnt be created! Please contact developers for more info.\n");
 
@@ -171,7 +171,7 @@ namespace Core
 				renderBuildingWindow = false;
 
 				ConsoleManager::WriteConsoleMessage(
-					Caller::ENGINE,
+					Caller::FILE,
 					Type::INFO,
 					"Compilation succeeded! Running game.\n");
 
