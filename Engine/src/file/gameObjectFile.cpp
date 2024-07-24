@@ -48,7 +48,8 @@ namespace EngineFile
 		string objectPath = gameobjectsFolder + "\\" + obj->GetName();
 		string objectName = path(objectPath).stem().string();
 
-		if (exists(objectPath))
+		if (exists(objectPath)
+			&& exists(objectPath + "\\settings.txt"))
 		{
 			File::DeleteFileOrfolder(objectPath + "\\settings.txt");
 		}

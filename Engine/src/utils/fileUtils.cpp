@@ -229,7 +229,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                sourcePath.string() + " does not exist!\n\n");
+                "Cannot delete file or folder " + sourcePath.string() + " because it does not exist!\n\n");
             return;
         }
 

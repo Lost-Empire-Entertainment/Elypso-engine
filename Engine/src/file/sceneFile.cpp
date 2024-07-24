@@ -205,8 +205,7 @@ namespace EngineFile
 
 		sceneFile.close();
 
-		string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
-		if (exists(gameobjectsFolder)) GameObjectFile::LoadGameObjects(gameobjectsFolder);
+		if (exists(Engine::gameobjectsPath)) GameObjectFile::LoadGameObjects(Engine::gameobjectsPath);
 
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
