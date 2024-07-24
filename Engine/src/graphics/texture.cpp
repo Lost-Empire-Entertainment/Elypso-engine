@@ -14,6 +14,7 @@
 //engine
 #include "texture.hpp"
 #include "console.hpp"
+#include "core.hpp"
 
 using std::cout;
 using std::endl;
@@ -21,6 +22,7 @@ using std::endl;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Core::Engine;
 
 namespace Graphics
 {
@@ -32,9 +34,22 @@ namespace Graphics
 	{
 		//the texture already exists and has already been assigned to this model once
 		if (obj->GetMaterial()->TextureExists(texturePath)
+			&& texturePath != "DEFAULT"
 			&& texturePath != "EMPTY")
 		{
 			return;
+		}
+
+		//the texture is DEFAULT and uses the placeholder diffuse texture
+		if (texturePath == "DEFAULT")
+		{
+			string defaultTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			auto it = textures.find(defaultTexturePath);
+			if (it != textures.end())
+			{
+				obj->GetMaterial()->AddTexture(defaultTexturePath, it->second, type);
+				return;
+			}
 		}
 
 		//the texture is EMPTY and is just a placeholder
@@ -52,7 +67,12 @@ namespace Graphics
 			return;
 		}
 
-		//cout << "Initializing texture " << texturePath << "...\n";
+		string finalTexturePath;
+		if (texturePath == "DEFAULT")
+		{
+			finalTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+		}
+		else finalTexturePath = texturePath;
 
 		//the texture does not yet exist
 
@@ -68,7 +88,7 @@ namespace Graphics
 		//load image, create texture and generate mipmaps
 		int width, height, nrComponents{};
 		stbi_set_flip_vertically_on_load(flipTexture);
-		unsigned char* data = stbi_load((texturePath).c_str(), &width, &height, &nrComponents, 0);
+		unsigned char* data = stbi_load((finalTexturePath).c_str(), &width, &height, &nrComponents, 0);
 		if (data)
 		{
 			GLenum format{};
@@ -79,18 +99,16 @@ namespace Graphics
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			obj->GetMaterial()->AddTexture(texturePath, texture, type);
+			obj->GetMaterial()->AddTexture(finalTexturePath, texture, type);
 
-			textures[texturePath] = texture;
-
-			//cout << "Added new texture " << texturePath << " to " << obj->GetName() << "! New texture count is " << obj->GetMaterial()->GetTextureCount() << ".\n\n";
+			textures[finalTexturePath] = texture;
 		}
 		else
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Failed to load " + texturePath + " texture!\n\n");
+				"Failed to load " + finalTexturePath + " texture!\n\n");
 		}
 		stbi_image_free(data);
 	}

@@ -132,31 +132,27 @@ namespace Graphics::GUI
 				|| extension == ".gltw"
 				|| extension == ".obj")
 			{
-				string targetExtension = path(assetPath).extension().string();
-				string fullTargetName = newName + extension;
-				string targetPath = File::AddIndex(Engine::modelsPath, newName, "");
+				string assetName = path(assetPath).stem().string();
+				string targetPath = File::AddIndex(Engine::gameobjectsPath, assetName, "");
+				string targetName = path(targetPath).stem().string();
+
 				File::CreateNewFolder(targetPath);
+				string destinationPath = targetPath + "\\" + assetName + extension;
+				File::CopyFileOrFolder(assetPath, destinationPath);
 
-				newName = path(targetPath).stem().string();
-				fullTargetName = path(targetPath).stem().string() + targetExtension;
-
-				string fullTargetPath = targetPath + "\\" + fullTargetName;
-				File::CopyFileOrFolder(assetPath, fullTargetPath);
-
-				Model::targetModel = fullTargetPath;
 				Model::Initialize(
 					vec3(0),
 					vec3(0),
 					vec3(1),
-					fullTargetPath,
+					destinationPath,
 					Engine::filesPath + "\\shaders\\GameObject.vert",
 					Engine::filesPath + "\\shaders\\GameObject.frag",
-					Engine::filesPath + "\\textures\\diff_default.png",
+					"DEFAULT",
 					"EMPTY",
 					"EMPTY",
 					"EMPTY",
 					32,
-					newName,
+					targetName,
 					Model::tempID);
 
 				SceneFile::SaveScene();

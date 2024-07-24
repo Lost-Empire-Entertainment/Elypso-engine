@@ -201,12 +201,12 @@ namespace Graphics::GUI
 		{
 			string cleanedEntryPath = String::CharReplace(
 				targetPath, '/', '\\');
-			string cleanedModelsFolder = String::CharReplace(
-				Engine::sceneParentPath + "\\models", '/', '\\');
+			string cleanedGameobjectsFolder = String::CharReplace(
+				Engine::sceneParentPath + "\\gameobjects", '/', '\\');
 			string cleanedTexturesFolder = String::CharReplace(
 				Engine::sceneParentPath + "\\textures", '/', '\\');
 
-			if (cleanedEntryPath == cleanedModelsFolder
+			if (cleanedEntryPath == cleanedGameobjectsFolder
 				|| cleanedEntryPath == cleanedTexturesFolder)
 			{
 				ConsoleManager::WriteConsoleMessage(

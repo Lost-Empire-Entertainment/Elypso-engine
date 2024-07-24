@@ -39,6 +39,7 @@ namespace EngineFile
 		/// Loads each individual gameobject.
 		/// </summary>
 		/// <param name="data">Data map for this gameobject</param>
-		static void LoadGameObject(const map<string, string>& data);
+		/// <param name="folderPath">The name of the folder of this gameobject</param>
+		static void LoadGameObject(const map<string, string>& data, const string& folderPath);
 	};
 }

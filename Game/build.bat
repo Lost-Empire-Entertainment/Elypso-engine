@@ -26,8 +26,6 @@ set "vsPath=%~dp0.vs"
 set "gamePath=%~dp0build\Release"
 set "buildPath=%~dp0build"
 
-set needToClear=1
-
 :: If no parameter was inserted
 if "%~1"=="" (
 	goto menu
@@ -119,14 +117,10 @@ cd /d "%~dp0"
 if not exist "%buildPath%" (
 	echo %gexc% Did not find build folder. Running 'Reconfigure CMake'.
 	
-	set needToClear=0
-	
 	goto cmake
 ) else (
-	if %needToClear%==1 (
-		if not "%~1"=="build" (
-			cls
-		)
+	if not "%~1"=="build" (
+		cls
 	)
 
 	cd "%buildPath%"

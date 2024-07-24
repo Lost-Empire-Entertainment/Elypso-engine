@@ -25,8 +25,6 @@ set "vsPath=%~dp0.vs"
 
 set "buildPath=%~dp0build"
 
-set needToClear=1
-
 :menu
 cls
 
@@ -101,14 +99,10 @@ cd /d "%~dp0"
 	
 if not exist "%buildPath%" (
 	echo %enexc% Did not find build folder. Running 'Reconfigure CMake'.
-	
-	set needToClear=0
-	
+		
 	goto cmake
 ) else (
-	if %needToClear%==1 (
-	    cls
-	)
+	cls
 	
 	cd "%buildPath%"
 		

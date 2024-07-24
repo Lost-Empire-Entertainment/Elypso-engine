@@ -119,22 +119,6 @@ namespace Graphics::Shape
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
 	{
 		string thisName = obj->GetName();
-		string thisFolder = String::CharReplace(Engine::modelsPath + "\\" + thisName, '/', '\\');
-
-		for (const auto& entry : directory_iterator(Engine::modelsPath))
-		{
-			string entryPathParentFolder = entry.path().parent_path().string();
-			string entryFolderName = entry.path().filename().string();
-			string entryPath = String::CharReplace(
-				entryPathParentFolder + "\\"
-				+ entryFolderName, '/', '\\');
-
-			if (entryPath == thisFolder)
-			{
-				File::DeleteFileOrfolder(thisFolder);
-				break;
-			}
-		}
 
 		Type type = obj->GetMesh()->GetMeshType();
 
@@ -181,6 +165,16 @@ namespace Graphics::Shape
 			transparentObjects.erase(remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
 			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
+		}
+
+		string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+		for (const auto& entry : directory_iterator(gameobjectsFolder))
+		{
+			if (path(entry).stem().string() == thisName)
+			{
+				File::DeleteFileOrfolder(path(entry).string());
+				break;
+			}
 		}
 
 		//force-saves the game to ensure everything is up to date

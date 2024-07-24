@@ -144,8 +144,8 @@ namespace Graphics::Shape
 
 		if (name == tempName)
 		{
-			string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
-			string targetPath = File::AddIndex(gameobjectsFolder, "Point light", "");
+			string targetPath = File::AddIndex(Engine::gameobjectsPath, "Point light", "");
+			File::CreateNewFolder(targetPath);
 			name = path(targetPath).stem().string();
 		}
 

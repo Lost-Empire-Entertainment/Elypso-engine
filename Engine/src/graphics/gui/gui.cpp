@@ -428,11 +428,11 @@ namespace Graphics::GUI
 					bool foundExisting = false;
 					string existingFilePath;
 					string existingFileName;
-					string importedFileName = path(assetPath).filename().string();
-					for (const auto& file : directory_iterator(Engine::modelsPath))
+					string importedFileName = path(assetPath).stem().string();
+					for (const auto& file : directory_iterator(Engine::gameobjectsPath))
 					{
 						existingFilePath = file.path().string();
-						existingFileName = path(existingFilePath).filename().string();
+						existingFileName = path(existingFilePath).stem().string();
 
 						if (importedFileName == existingFileName)
 						{
@@ -464,25 +464,21 @@ namespace Graphics::GUI
 				if (ImGui::MenuItem("Cube"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cube.fbx";
-					string targetName = "Cube";
-					string fullTargetName = "Cube.fbx";
-					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
+					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Cube", "");
+					string targetName = path(targetPath).stem().string();
+
 					File::CreateNewFolder(targetPath);
-
-					targetName = path(targetPath).stem().string();
-					fullTargetName = path(targetPath).stem().string() + ".fbx";
-
-					string fullTargetPath = targetPath + "\\" + fullTargetName;
-					File::CopyFileOrFolder(originPath, fullTargetPath);
+					string destinationPath = targetPath + "\\Cube.fbx";
+					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
 						vec3(0),
 						vec3(0),
 						vec3(1),
-						fullTargetPath,
+						destinationPath,
 						Engine::filesPath + "\\shaders\\GameObject.vert",
 						Engine::filesPath + "\\shaders\\GameObject.frag",
-						Engine::filesPath + "\\textures\\diff_default.png",
+						"DEFAULT",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -495,25 +491,21 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Sphere"))
 				{
 					string originPath = Engine::filesPath + "\\models\\sphere.fbx";
-					string targetName = "Sphere";
-					string fullTargetName = "Sphere.fbx";
-					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
+					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Sphere", "");
+					string targetName = path(targetPath).stem().string();
+					 
 					File::CreateNewFolder(targetPath);
-
-					targetName = path(targetPath).stem().string();
-					fullTargetName = path(targetPath).stem().string() + ".fbx";
-
-					string fullTargetPath = targetPath + "\\" + fullTargetName;
-					File::CopyFileOrFolder(originPath, fullTargetPath);
+					string destinationPath = targetPath + "\\Sphere.fbx";
+					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
 						vec3(0),
 						vec3(0),
 						vec3(1),
-						fullTargetPath,
+						destinationPath,
 						Engine::filesPath + "\\shaders\\GameObject.vert",
 						Engine::filesPath + "\\shaders\\GameObject.frag",
-						Engine::filesPath + "\\textures\\diff_default.png",
+						"DEFAULT",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -526,25 +518,21 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Cylinder"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cylinder.fbx";
-					string targetName = "Cylinder";
-					string fullTargetName = "Cylinder.fbx";
-					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
+					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Cylinder", "");
+					string targetName = path(targetPath).stem().string();
+
 					File::CreateNewFolder(targetPath);
-
-					targetName = path(targetPath).stem().string();
-					fullTargetName = path(targetPath).stem().string() + ".fbx";
-
-					string fullTargetPath = targetPath + "\\" + fullTargetName;
-					File::CopyFileOrFolder(originPath, fullTargetPath);
+					string destinationPath = targetPath + "\\Cylinder.fbx";
+					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
 						vec3(0),
 						vec3(0),
 						vec3(1),
-						fullTargetPath,
+						destinationPath,
 						Engine::filesPath + "\\shaders\\GameObject.vert",
 						Engine::filesPath + "\\shaders\\GameObject.frag",
-						Engine::filesPath + "\\textures\\diff_default.png",
+						"DEFAULT",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -557,25 +545,21 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Cone"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cone.fbx";
-					string targetName = "Cone";
-					string fullTargetName = "Cone.fbx";
-					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
+					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Cone", "");
+					string targetName = path(targetPath).stem().string();
+
 					File::CreateNewFolder(targetPath);
-
-					targetName = path(targetPath).stem().string();
-					fullTargetName = path(targetPath).stem().string() + ".fbx";
-
-					string fullTargetPath = targetPath + "\\" + fullTargetName;
-					File::CopyFileOrFolder(originPath, fullTargetPath);
+					string destinationPath = targetPath + "\\Cone.fbx";
+					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
 						vec3(0),
 						vec3(0),
 						vec3(1),
-						fullTargetPath,
+						destinationPath,
 						Engine::filesPath + "\\shaders\\GameObject.vert",
 						Engine::filesPath + "\\shaders\\GameObject.frag",
-						Engine::filesPath + "\\textures\\diff_default.png",
+						"DEFAULT",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",
@@ -588,25 +572,21 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Pyramid"))
 				{
 					string originPath = Engine::filesPath + "\\models\\pyramid.fbx";
-					string targetName = "Pyramid";
-					string fullTargetName = "Pyramid.fbx";
-					string targetPath = File::AddIndex(Engine::modelsPath, targetName, "");
+					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Pyramid", "");
+					string targetName = path(targetPath).stem().string();
+
 					File::CreateNewFolder(targetPath);
-
-					targetName = path(targetPath).stem().string();
-					fullTargetName = path(targetPath).stem().string() + ".fbx";
-
-					string fullTargetPath = targetPath + "\\" + fullTargetName;
-					File::CopyFileOrFolder(originPath, fullTargetPath);
+					string destinationPath = targetPath + "\\Pyramid.fbx";
+					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
 						vec3(0),
 						vec3(0),
 						vec3(1),
-						fullTargetPath,
+						destinationPath,
 						Engine::filesPath + "\\shaders\\GameObject.vert",
 						Engine::filesPath + "\\shaders\\GameObject.frag",
-						Engine::filesPath + "\\textures\\diff_default.png",
+						"DEFAULT",
 						"EMPTY",
 						"EMPTY",
 						"EMPTY",

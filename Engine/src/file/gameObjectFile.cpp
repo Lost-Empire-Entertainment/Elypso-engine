@@ -44,7 +44,6 @@ namespace EngineFile
 	void GameObjectFile::SaveGameObject(const shared_ptr<GameObject>& obj)
 	{
 		string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
-		if (!exists(gameobjectsFolder)) File::CreateNewFolder(gameobjectsFolder);
 
 		string objectPath = gameobjectsFolder + "\\" + obj->GetName();
 		string objectName = path(objectPath).stem().string();
@@ -53,7 +52,6 @@ namespace EngineFile
 		{
 			File::DeleteFileOrfolder(objectPath + "\\settings.txt");
 		}
-		else File::CreateNewFolder(objectPath);
 
 		string objectFilePath = objectPath + "\\settings.txt";
 		ofstream objectFile(objectFilePath);
@@ -99,13 +97,14 @@ namespace EngineFile
 		if (meshType == Mesh::MeshType::model)
 		{
 			string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
-			diffuseTexture = String::CharReplace(diffuseTexture, '/', '\\');
+			diffuseTexture = path(diffuseTexture).filename().string();
+			if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULT";
 			string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
-			specularTexture = String::CharReplace(specularTexture, '/', '\\');
+			specularTexture = path(specularTexture).filename().string();
 			string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
-			normalTexture = String::CharReplace(normalTexture, '/', '\\');
+			normalTexture = path(normalTexture).filename().string();
 			string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
-			heightTexture = String::CharReplace(heightTexture, '/', '\\');
+			heightTexture = path(heightTexture).filename().string();
 			objectFile
 				<< "textures= "
 				<< diffuseTexture << ", "
@@ -116,9 +115,9 @@ namespace EngineFile
 
 		//shaders
 		string vertexShader = obj->GetMaterial()->GetShaderName(0);
-		vertexShader = String::CharReplace(vertexShader, '/', '\\');
+		vertexShader = path(vertexShader).filename().string();
 		string fragmentShader = obj->GetMaterial()->GetShaderName(1);
-		fragmentShader = String::CharReplace(fragmentShader, '/', '\\');
+		fragmentShader = path(fragmentShader).filename().string();
 		objectFile << "shaders= " << vertexShader << ", " << fragmentShader << "\n";
 
 		//material variables
@@ -127,7 +126,8 @@ namespace EngineFile
 			objectFile << "shininess= " << obj->GetBasicShape()->GetShininess() << "\n";
 
 			string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
-			objectFile << "model path= " << modelPath << "\n";
+			modelPath = path(modelPath).filename().string();
+			objectFile << "model= " << modelPath << "\n";
 		}
 		else if (meshType == Mesh::MeshType::point_light)
 		{
@@ -169,10 +169,14 @@ namespace EngineFile
 			objectFile << "billboard id= " << obj->GetChildBillboard()->GetID() << "\n";
 
 			string billboardVertShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(0);
+			billboardVertShader = path(billboardVertShader).filename().string();
 			string billboardFragShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(1);
+			billboardFragShader = path(billboardFragShader).filename().string();
 			objectFile << "billboard shaders= " << billboardVertShader << ", " << billboardFragShader << "\n";
 
-			objectFile << "billboard texture= " << obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse) << "\n";
+			string billboardTexture = obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+			billboardTexture = path(billboardTexture).filename().string();
+			objectFile << "billboard texture= " << billboardTexture << "\n";
 
 			objectFile << "billboard shininess= " << obj->GetChildBillboard()->GetBasicShape()->GetShininess() << "\n";
 		}
@@ -226,7 +230,7 @@ namespace EngineFile
 						|| key == "position"
 						|| key == "rotation"
 						|| key == "scale"
-						|| key == "model path"
+						|| key == "model"
 						|| key == "textures"
 						|| key == "shaders"
 						
@@ -250,11 +254,11 @@ namespace EngineFile
 
 			settingsFile.close();
 
-			LoadGameObject(data);
+			LoadGameObject(data, path(folder).stem().string());
 		}
 	}
 
-	void GameObjectFile::LoadGameObject(const map<string, string>& data)
+	void GameObjectFile::LoadGameObject(const map<string, string>& data, const string& folderPath)
 	{
 		string name = "MISSING NAME";
 		unsigned int id = 0;
@@ -287,7 +291,6 @@ namespace EngineFile
 			if (key == "name")
 			{
 				name = value;
-				cout << "loading " << name << "\n";
 			}
 			else if (key == "id") id = stoul(value);
 			else if (key == "type")
@@ -316,70 +319,95 @@ namespace EngineFile
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
-			else if (key == "model path")
+			else if (key == "model")
 			{
-				if (!exists(value))
+				string fullModelPath = Engine::gameobjectsPath + "\\" + folderPath + "\\" + value;
+
+				if (!exists(fullModelPath))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Failed to find model for " + name + " at " + value + "! Skipped loading gameobject.\n");
+						"Failed to find model for " + name + " at " + fullModelPath + "! Skipped loading gameobject.\n");
 					return;
 				}
-				else modelPath = value;
+				else modelPath = fullModelPath;
 			}
 			else if (key == "textures")
 			{
 				vector<string> split = String::Split(value, ',');
-				if (!exists(split[0]))
+
+				string fullTex0Path = split[0] == "DEFAULT"
+					? "DEFAULT"
+					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[0];
+
+				if (fullTex0Path == "DEFAULT")
+				{
+					fullTex0Path = Engine::filesPath + "\\textures\\diff_default.png";
+					textures.push_back(fullTex0Path);
+				}
+				else if (fullTex0Path != "DEFAULT"
+						 && !exists(fullTex0Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Texture at slot 0 for " + name + " at " + split[0] + " does not exist!\n");
+						"Texture at slot 0 for " + name + " at " + fullTex0Path + " does not exist!\n");
 					textures.push_back(Engine::filesPath + "\\textures\\diff_missing.png");
 				}
-				else textures.push_back(split[0]);
+				else textures.push_back(fullTex0Path);
 
-				if (split[1] != "EMPTY"
-					&& !exists(split[1]))
+				string fullTex1Path = split[1] == "EMPTY"
+					? "EMPTY"
+					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[1];
+				if (fullTex1Path != "EMPTY"
+					&& !exists(fullTex1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Texture at slot 1 for " + name + " at " + split[1] + " does not exist!\n");
+						"Texture at slot 1 for " + name + " at " + fullTex1Path + " does not exist!\n");
 					textures.push_back("EMPTY");
 				}
-				else textures.push_back(split[1]);
+				else textures.push_back(fullTex1Path);
 
-				if (split[2] != "EMPTY"
-					&& !exists(split[2]))
+				string fullTex2Path = split[2] == "EMPTY"
+					? "EMPTY"
+					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[2];
+				if (fullTex2Path != "EMPTY"
+					&& !exists(fullTex2Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Texture at slot 2 for " + name + " at " + split[2] + " does not exist!\n");
+						"Texture at slot 2 for " + name + " at " + fullTex2Path + " does not exist!\n");
 					textures.push_back("EMPTY");
 				}
-				else textures.push_back(split[2]);
+				else textures.push_back(fullTex2Path);
 
-				if (split[3] != "EMPTY"
-					&& !exists(split[3]))
+				string fullTex3Path = split[3] == "EMPTY"
+					? "EMPTY"
+					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[3];
+				if (fullTex3Path != "EMPTY"
+					&& !exists(fullTex3Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"Texture at slot 3 for " + name + " at " + split[3] + " does not exist!\n");
+						"Texture at slot 3 for " + name + " at " + fullTex3Path + " does not exist!\n");
 					textures.push_back("EMPTY");
 				}
-				else textures.push_back(split[3]);
+				else textures.push_back(fullTex3Path);
 			}
 			else if (key == "shaders")
 			{
 				vector<string> split = String::Split(value, ',');
 
-				if (!exists(split[0])
-					|| !exists(split[1]))
+				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
+				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+
+				if (!exists(fullShader0Path)
+					|| !exists(fullShader1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -389,8 +417,8 @@ namespace EngineFile
 				}
 				else
 				{
-					shaders.push_back(split[0]);
-					shaders.push_back(split[1]);
+					shaders.push_back(fullShader0Path);
+					shaders.push_back(fullShader1Path);
 				}
 			}
 
@@ -398,22 +426,27 @@ namespace EngineFile
 			else if (key == "billboard id") billboardID = stoul(value);
 			else if (key == "billboard texture")
 			{
-				if (!exists(value))
+				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
+
+				if (!exists(fullTexPath))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
+						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
 					return;
 				}
-				else billboardDiffTexture = value;
+				else billboardDiffTexture = fullTexPath;
 			}
 			else if (key == "billboard shaders")
 			{
 				vector<string> split = String::Split(value, ',');
 
-				if (!exists(split[0])
-					|| !exists(split[1]))
+				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
+				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+
+				if (!exists(fullShader0Path)
+					|| !exists(fullShader1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::ENGINE,
@@ -423,8 +456,8 @@ namespace EngineFile
 				}
 				else
 				{
-					billboardShaders.push_back(split[0]);
-					billboardShaders.push_back(split[1]);
+					billboardShaders.push_back(fullShader0Path);
+					billboardShaders.push_back(fullShader1Path);
 				}
 			}
 			else if (key == "billboard shininess") billboardShininess = stof(value);
@@ -441,8 +474,6 @@ namespace EngineFile
 			else if (key == "innerAngle") innerAngle = stof(value);
 			else if (key == "outerAngle") outerAngle = stof(value);
 		}
-
-		cout << "finished getting data for " << name << "\n";
 
 		//
 		// LOAD REGULAR GAMEOBJECT
@@ -568,7 +599,5 @@ namespace EngineFile
 
 			GameObject::nextID = id + 1;
 		}
-
-		cout << "finished loading " << name << "\n";
 	}
 }

@@ -23,7 +23,7 @@ namespace Core
 
 		static inline string sceneParentPath;
 		static inline string scenePath;
-		static inline string modelsPath;
+		static inline string gameobjectsPath;
 		static inline string texturesPath;
 
 		static inline string gamePath;

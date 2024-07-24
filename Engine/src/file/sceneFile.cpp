@@ -96,13 +96,13 @@ namespace EngineFile
 		if (currentProjectPath.empty()
 			|| !exists(currentProjectPath))
 		{
-			Engine::CreateErrorPopup("Project load error", "Failed to load valid project from project file! Shutting down engine");
+			Engine::CreateErrorPopup("Project load error", "Failed to load valid project file from project file! Shutting down engine");
 		}
 
 		if (targetScene.empty()
 			|| !exists(targetScene))
 		{
-			Engine::CreateErrorPopup("Scene load error", "Failed to load valid scene from project file! Shutting down engine");
+			Engine::CreateErrorPopup("Scene load error", "Failed to load valid scene file from project file! Shutting down engine");
 		}
 
 		Engine::scenePath = targetScene;
@@ -115,19 +115,19 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Tried to load scene '" + scenePath + "' but it doesn't exist!\n");
+				"Tried to load scene file '" + scenePath + "' but it doesn't exist!\n");
 			return;
 		}
 		else
 		{
 			Engine::scenePath = scenePath;
 			Engine::sceneParentPath = path(Engine::scenePath).parent_path().string();
-			Engine::modelsPath = Engine::sceneParentPath + "\\models";
+			Engine::gameobjectsPath = Engine::sceneParentPath + "\\gameobjects";
 			Engine::texturesPath = Engine::sceneParentPath + "\\textures";
 		}
 
-		//create models folder if it doesnt exist
-		if (!exists(Engine::modelsPath)) File::CreateNewFolder(Engine::modelsPath);
+		//create gameobjects folder if it doesnt exist
+		if (!exists(Engine::gameobjectsPath)) File::CreateNewFolder(Engine::gameobjectsPath);
 
 		//create textures folder if it doesnt exist
 		if (!exists(Engine::texturesPath)) File::CreateNewFolder(Engine::texturesPath);
@@ -213,7 +213,7 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"Successfully loaded scenePath '" + Engine::scenePath + "'!\n");
+			"Successfully loaded scene file '" + path(Engine::scenePath).stem().string() + "'!\n");
 	}
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
@@ -235,7 +235,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::ENGINE,
 				Type::EXCEPTION,
-				"Couldn't write into level file '" + Engine::scenePath + "'!\n");
+				"Couldn't write into scene file '" + Engine::scenePath + "'!\n");
 			return;
 		}
 
@@ -266,7 +266,7 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::ENGINE,
 			Type::INFO,
-			"\nSuccessfully saved scene '" + Engine::scenePath + "'!\n");
+			"\nSuccessfully saved scene file '" + path(Engine::scenePath).stem().string() + "'!\n");
 
 		switch (saveType)
 		{
