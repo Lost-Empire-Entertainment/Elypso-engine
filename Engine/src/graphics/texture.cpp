@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <filesystem>
 
 //external
 #include "glfw3.h"
@@ -15,14 +16,20 @@
 #include "texture.hpp"
 #include "console.hpp"
 #include "core.hpp"
+#include "fileUtils.hpp"
 
 using std::cout;
 using std::endl;
+using std::filesystem::directory_iterator;
+using std::filesystem::path;
+using std::filesystem::exists;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Engine;
+using Utils::File;
+using Graphics::Shape::Mesh;
 
 namespace Graphics
 {
@@ -72,7 +79,37 @@ namespace Graphics
 		{
 			finalTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
 		}
-		else finalTexturePath = texturePath;
+		else if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model
+				 || texturePath.find("diff_default.png") != string::npos
+				 || texturePath.find("diff_missing.png") != string::npos)
+		{
+			finalTexturePath = texturePath;
+		}
+		else
+		{
+			string copiedTexturePath;
+			for (const auto& folder : directory_iterator(Engine::gameobjectsPath))
+			{
+				string objName = obj->GetName();
+				string folderName = path(folder).stem().string();
+
+				if (folderName == objName)
+				{
+					string textureFolder = path(folder).string();
+					string textureName = "\\" + path(texturePath).filename().string();
+					copiedTexturePath = textureFolder + textureName;
+
+					if (!exists(copiedTexturePath))
+					{
+						File::CopyFileOrFolder(texturePath, copiedTexturePath);
+					}
+
+					break;
+				}
+			}
+
+			finalTexturePath = copiedTexturePath;
+		}
 
 		//the texture does not yet exist
 
