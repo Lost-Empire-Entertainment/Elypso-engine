@@ -41,16 +41,29 @@ namespace Graphics
 	{
 		//the texture already exists and has already been assigned to this model once
 		if (obj->GetMaterial()->TextureExists(texturePath)
-			&& texturePath != "DEFAULT"
+			&& texturePath != "DEFAULTDIFF"
+			&& texturePath != "DEFAULTSPEC"
 			&& texturePath != "EMPTY")
 		{
 			return;
 		}
 
-		//the texture is DEFAULT and uses the placeholder diffuse texture
-		if (texturePath == "DEFAULT")
+		//the texture is a default diffuse texture and uses the placeholder diffuse texture
+		if (texturePath == "DEFAULTDIFF")
 		{
 			string defaultTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			auto it = textures.find(defaultTexturePath);
+			if (it != textures.end())
+			{
+				obj->GetMaterial()->AddTexture(defaultTexturePath, it->second, type);
+				return;
+			}
+		}
+
+		//the texture is a default specular texture and uses the placeholder specular texture
+		if (texturePath == "DEFAULTSPEC")
+		{
+			string defaultTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
@@ -75,12 +88,17 @@ namespace Graphics
 		}
 
 		string finalTexturePath;
-		if (texturePath == "DEFAULT")
+		if (texturePath == "DEFAULTDIFF")
 		{
 			finalTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
 		}
+		else if (texturePath == "DEFAULTSPEC")
+		{
+			finalTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
+		}
 		else if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model
 				 || texturePath.find("diff_default.png") != string::npos
+				 || texturePath.find("spec_default.png") != string::npos
 				 || texturePath.find("diff_missing.png") != string::npos)
 		{
 			finalTexturePath = texturePath;

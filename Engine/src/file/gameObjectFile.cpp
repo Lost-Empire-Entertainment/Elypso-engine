@@ -99,9 +99,10 @@ namespace EngineFile
 		{
 			string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
 			diffuseTexture = path(diffuseTexture).filename().string();
-			if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULT";
+			if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
 			string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
 			specularTexture = path(specularTexture).filename().string();
+			if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
 			string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
 			normalTexture = path(normalTexture).filename().string();
 			string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
@@ -338,16 +339,16 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullTex0Path = split[0] == "DEFAULT"
-					? "DEFAULT"
+				string fullTex0Path = split[0] == "DEFAULTDIFF"
+					? "DEFAULTDIFF"
 					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[0];
 
-				if (fullTex0Path == "DEFAULT")
+				if (fullTex0Path == "DEFAULTDIFF")
 				{
 					fullTex0Path = Engine::filesPath + "\\textures\\diff_default.png";
 					textures.push_back(fullTex0Path);
 				}
-				else if (fullTex0Path != "DEFAULT"
+				else if (fullTex0Path != "DEFAULTDIFF"
 						 && !exists(fullTex0Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
@@ -358,11 +359,16 @@ namespace EngineFile
 				}
 				else textures.push_back(fullTex0Path);
 
-				string fullTex1Path = split[1] == "EMPTY"
-					? "EMPTY"
+				string fullTex1Path = split[1] == "DEFAULTSPEC"
+					? "DEFAULTSPEC"
 					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[1];
-				if (fullTex1Path != "EMPTY"
-					&& !exists(fullTex1Path))
+				if (fullTex1Path == "DEFAULTSPEC")
+				{
+					fullTex1Path = Engine::filesPath + "\\textures\\spec_default.png";
+					textures.push_back(fullTex1Path);
+				}
+				else if (fullTex1Path != "DEFAULTSPEC"
+						 && !exists(fullTex1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,

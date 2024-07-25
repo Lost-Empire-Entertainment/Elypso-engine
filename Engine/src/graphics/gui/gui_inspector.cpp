@@ -28,6 +28,8 @@
 #include "stringUtils.hpp"
 #include "configFile.hpp"
 #include "gui_projectitemslist.hpp"
+#include "fileUtils.hpp"
+#include "console.hpp"
 
 using std::cout;
 using std::endl;
@@ -47,6 +49,10 @@ using Core::Engine;
 using EngineFile::FileExplorer;
 using Utils::String;
 using EngineFile::ConfigFile;
+using Utils::File;
+using Core::ConsoleManager;
+using ConsoleCaller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
@@ -221,13 +227,6 @@ namespace Graphics::GUI
 				}
 				ImGui::PopItemWidth();
 
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(diff_texturePath.string().c_str());
-					ImGui::EndTooltip();
-				}
-
 				//reset diffuse texture
 				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
 				path diff_defaultTexturePath = path(Engine::filesPath + "\\textures\\diff_default.png");
@@ -236,19 +235,25 @@ namespace Graphics::GUI
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(diff_reset.c_str()))
 				{
-					Texture::LoadTexture(obj, diff_defaultTexturePath.string(), Material::TextureType::diffuse, true);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					string removedTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					if (removedTexture.find("diff_default.png") == string::npos
+						&& removedTexture.find("diff_missing.png") == string::npos)
+					{
+						Texture::LoadTexture(obj, diff_defaultTexturePath.string(), Material::TextureType::diffuse, true);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+						File::DeleteFileOrfolder(removedTexture);
+					}
+					else 
+					{
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::FILE,
+							ConsoleType::INFO,
+							"Cannot reset texture on diffuse slot for " + obj->GetName() + " because the texture already is default.\n");
+					}
 				}
 				ImGui::PopItemWidth();
 				ImGui::PopID();
-
-				if (ImGui::IsItemHovered())
-				{
-					string resetsToDefault = "Resets to " + diff_defaultTexturePath.string();
-					ImGui::BeginTooltip();
-					ImGui::Text(resetsToDefault.c_str());
-					ImGui::EndTooltip();
-				}
 
 				ImGui::Spacing();
 
@@ -268,34 +273,32 @@ namespace Graphics::GUI
 				}
 				ImGui::PopItemWidth();
 
-				if (ImGui::IsItemHovered())
-				{
-					string textureToolTip = spec_texturePath.stem().string() == "filesEMPTY" ? "None" : spec_texturePath.string().c_str();
-					ImGui::BeginTooltip();
-					ImGui::Text(textureToolTip.c_str());
-					ImGui::EndTooltip();
-				}
-
-				//remove specular texture
+				//reset specular texture
 				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+				path spec_defaultTexturePath = path(Engine::filesPath + "\\textures\\spec_default.png");
 				string spec_reset = "Reset";
 				ImGui::PushID("specreset");
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(spec_reset.c_str()))
 				{
-					Texture::LoadTexture(obj, "EMPTY", Material::TextureType::specular, false);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					string removedTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
+					if (removedTexture.find("spec_default.png") == string::npos)
+					{
+						Texture::LoadTexture(obj, spec_defaultTexturePath.string(), Material::TextureType::specular, true);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+						File::DeleteFileOrfolder(removedTexture);
+					}
+					else
+					{
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::FILE,
+							ConsoleType::INFO,
+							"Cannot reset texture on specular slot for " + obj->GetName() + " because the texture already is default.\n");
+					}
 				}
 				ImGui::PopItemWidth();
 				ImGui::PopID();
-
-				if (ImGui::IsItemHovered())
-				{
-					string resetsToDefault = "Removes existing specular texture";
-					ImGui::BeginTooltip();
-					ImGui::Text(resetsToDefault.c_str());
-					ImGui::EndTooltip();
-				}
 			}
 			else if (objType == Type::point_light)
 			{
