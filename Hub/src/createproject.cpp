@@ -150,8 +150,12 @@ void CreateProject::RenderCreateProjectContent()
 
 		string scenesFolder = newProjectFile + "\\scenes";
 		create_directory(scenesFolder);
+		string scene1Folder = scenesFolder + "\\Scene1";
+		create_directory(scene1Folder);
+		string gameobjectsFolder = scene1Folder + "\\gameobjects";
+		create_directory(gameobjectsFolder);
 
-		string sceneFilePath = scenesFolder + "\\Scene1.txt";
+		string sceneFilePath = scene1Folder + "\\scene.txt";
 		ofstream sceneFile(sceneFilePath);
 		if (!sceneFile.is_open())
 		{

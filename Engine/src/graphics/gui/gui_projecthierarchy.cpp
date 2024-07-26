@@ -125,6 +125,7 @@ namespace Graphics::GUI
 				if (ImGui::BeginPopupContextItem())
 				{
 					//create folder inside selected folder
+					/*
 					if (ImGui::MenuItem("Create folder"))
 					{
 						string cleanedEntryPath = String::CharReplace(entry.path, '/', '\\');
@@ -134,6 +135,7 @@ namespace Graphics::GUI
 
 						File::CreateNewFolder(newFolderPath);
 					}
+					*/
 					//delete selected folder
 					if (ImGui::MenuItem("Delete"))
 					{
@@ -177,7 +179,7 @@ namespace Graphics::GUI
 				if (ImGui::BeginPopupContextItem())
 				{
 					//open selected scene file
-					if (path(entry.path).parent_path().stem().string() == "scenes"
+					if (path(entry.path).filename().string() == "scene.txt"
 						&& ImGui::MenuItem("Open scene"))
 					{
 						if (Engine::scenePath != entry.path)
@@ -189,7 +191,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								Caller::FILE,
 								Type::EXCEPTION,
-								"Cannot switch to '" + path(Engine::scenePath).stem().string() + "' because it is already open!");
+								"Cannot switch to scene '" + path(Engine::scenePath).parent_path().stem().string() + "' because it is already open!");
 						}
 					}
 					//delete selected file

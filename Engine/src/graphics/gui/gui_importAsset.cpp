@@ -133,7 +133,7 @@ namespace Graphics::GUI
 				|| extension == ".obj")
 			{
 				string assetName = path(assetPath).stem().string();
-				string targetPath = File::AddIndex(Engine::gameobjectsPath, assetName, "");
+				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, assetName, "");
 				string targetName = path(targetPath).stem().string();
 
 				File::CreateNewFolder(targetPath);

@@ -151,11 +151,16 @@ namespace Graphics::GUI
 			// CREATE NEW SCENE
 			//
 
-			string newSceneFile = Engine::scenesPath + "\\" + assignedSceneName + ".txt";
+			string newSceneFolder = Engine::scenesPath + "\\" + assignedSceneName;
+			File::CreateNewFolder(newSceneFolder);
+			File::CreateNewFolder(newSceneFolder + "\\gameobjects");
+
+			string newSceneFile = newSceneFolder + "\\" + assignedSceneName + ".txt";
 
 			ofstream sceneFile(newSceneFile);
 			sceneFile.close();
 
+			cout << "attempting to load scene from " << newSceneFile << "\n";
 			SceneFile::LoadScene(newSceneFile);
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

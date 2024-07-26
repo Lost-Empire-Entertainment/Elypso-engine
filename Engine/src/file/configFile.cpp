@@ -123,7 +123,7 @@ namespace EngineFile
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
-				Type::INFO,
+				Type::DEBUG,
 				"Successfully loaded config file!\n");
 		}
 	}
@@ -188,7 +188,7 @@ namespace EngineFile
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
-			Type::INFO,
+			Type::DEBUG,
 			"\nSuccessfully saved config file!\n");
 	}
 

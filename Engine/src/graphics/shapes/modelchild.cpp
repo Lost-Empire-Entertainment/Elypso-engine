@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <map>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -29,6 +30,7 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using std::filesystem::path;
 
 using Graphics::Render;
 using Graphics::Shader;
@@ -122,6 +124,11 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
+		if (obj->GetScene() == "")
+		{
+			obj->SetScene(path(Engine::scenePath).parent_path().stem().string());
+		}
+
 		obj->GetMesh()->SetVertices(vertices);
 		obj->GetMesh()->SetIndices(indices);
 
@@ -143,7 +150,7 @@ namespace Graphics::Shape
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
-			Type::INFO,
+			Type::DEBUG,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;

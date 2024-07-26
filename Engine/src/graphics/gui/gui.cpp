@@ -255,7 +255,7 @@ namespace Graphics::GUI
 					string existingFilePath;
 					string existingFileName;
 					string importedFileName = path(assetPath).stem().string();
-					for (const auto& file : directory_iterator(Engine::gameobjectsPath))
+					for (const auto& file : directory_iterator(Engine::currentGameobjectsPath))
 					{
 						existingFilePath = file.path().string();
 						existingFileName = path(existingFilePath).stem().string();
@@ -272,7 +272,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"File '" + importedFileName + "' already exists in the engine!\n");
+							"Gameobject '" + importedFileName + "' already exists in the current scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 					}
 					else
 					{
@@ -287,7 +287,7 @@ namespace Graphics::GUI
 				if (ImGui::MenuItem("Cube"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cube.fbx";
-					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Cube", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -314,7 +314,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Sphere"))
 				{
 					string originPath = Engine::filesPath + "\\models\\sphere.fbx";
-					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Sphere", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
 					string targetName = path(targetPath).stem().string();
 					 
 					File::CreateNewFolder(targetPath);
@@ -341,7 +341,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Cylinder"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cylinder.fbx";
-					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Cylinder", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -368,7 +368,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Cone"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cone.fbx";
-					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Cone", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -395,7 +395,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Pyramid"))
 				{
 					string originPath = Engine::filesPath + "\\models\\pyramid.fbx";
-					string targetPath = File::AddIndex(Engine::gameobjectsPath, "Pyramid", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);

@@ -106,7 +106,7 @@ namespace Graphics
 		else
 		{
 			string copiedTexturePath;
-			for (const auto& folder : directory_iterator(Engine::gameobjectsPath))
+			for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
 			{
 				string objName = obj->GetName();
 				string folderName = path(folder).stem().string();

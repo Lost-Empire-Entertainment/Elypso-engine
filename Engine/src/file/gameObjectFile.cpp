@@ -26,6 +26,7 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using glm::vec3;
+using std::filesystem::is_empty;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -43,18 +44,20 @@ namespace EngineFile
 {
 	void GameObjectFile::SaveGameObject(const shared_ptr<GameObject>& obj)
 	{
-		string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+		string gameobjectsFolder = 
+			path(Engine::projectPath).parent_path().string() 
+			+ "\\scenes\\" + path(Engine::scenePath).parent_path().stem().string() + "\\gameobjects";
 
 		string objectPath = gameobjectsFolder + "\\" + obj->GetName();
 		string objectName = path(objectPath).stem().string();
+		string objectFilePath = objectPath + "\\settings.txt";
 
 		if (exists(objectPath)
-			&& exists(objectPath + "\\settings.txt"))
+			&& exists(objectFilePath))
 		{
-			File::DeleteFileOrfolder(objectPath + "\\settings.txt");
+			File::DeleteFileOrfolder(objectFilePath);
 		}
 
-		string objectFilePath = objectPath + "\\settings.txt";
 		ofstream objectFile(objectFilePath);
 
 		if (!objectFile.is_open())
@@ -190,9 +193,26 @@ namespace EngineFile
 
 	void GameObjectFile::LoadGameObjects(const string& targetPath)
 	{
-		for (const auto& folder : directory_iterator(targetPath))
+		if (is_empty(targetPath))
 		{
-			string settingsFilePath = targetPath + "\\" + path(folder).stem().string() + "\\settings.txt";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::INFO,
+				"There were no gameobjects to load for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+			return;
+		}
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Started loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+		for (const auto& file : directory_iterator(targetPath))
+		{
+			bool successfulLoad = true;
+
+			string settingsFilePath = targetPath + "\\" + path(file).stem().string() + "\\settings.txt";
 
 			ifstream settingsFile(settingsFilePath);
 			if (!settingsFile.is_open())
@@ -228,39 +248,58 @@ namespace EngineFile
 						}
 					}
 
+					string sceneParentStem = path(Engine::scenePath).parent_path().stem().string();
 					if (key == "scene"
-						|| key == "name"
-						|| key == "id"
-						|| key == "type"
-						|| key == "position"
-						|| key == "rotation"
-						|| key == "scale"
-						|| key == "model"
-						|| key == "textures"
-						|| key == "shaders"
-						
-						|| key == "billboard name"
-						|| key == "billboard id"
-						|| key == "billboard texture"
-						|| key == "billboard shaders"
-						|| key == "billboard shininess"
-						
-						|| key == "diffuse"
-						|| key == "shininess"
-						|| key == "intensity"
-						|| key == "distance"
-						|| key == "innerAngle"
-						|| key == "outerAngle")
+						&& sceneParentStem != value)
 					{
-						data[key] = value;
+						cout << "scene parent stem for " << path(file).stem().string()
+							<< " is " << sceneParentStem 
+							<< " and value is " << value << "\n";
+
+						successfulLoad = false;
+						break;
+					}
+					else
+					{
+						if (key == "scene"
+							|| key == "name"
+							|| key == "id"
+							|| key == "type"
+							|| key == "position"
+							|| key == "rotation"
+							|| key == "scale"
+							|| key == "model"
+							|| key == "textures"
+							|| key == "shaders"
+
+							|| key == "billboard name"
+							|| key == "billboard id"
+							|| key == "billboard texture"
+							|| key == "billboard shaders"
+							|| key == "billboard shininess"
+
+							|| key == "diffuse"
+							|| key == "shininess"
+							|| key == "intensity"
+							|| key == "distance"
+							|| key == "innerAngle"
+							|| key == "outerAngle")
+						{
+							data[key] = value;
+						}
 					}
 				}
 			}
 
 			settingsFile.close();
 
-			LoadGameObject(data, path(folder).stem().string());
+			if (successfulLoad) LoadGameObject(data, path(file).stem().string());
 		}
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Finished loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 	}
 
 	void GameObjectFile::LoadGameObject(const map<string, string>& data, const string& folderPath)
@@ -288,13 +327,6 @@ namespace EngineFile
 		float distance = 2.0f;
 		float innerAngle = 12.0f;
 		float outerAngle = 25.0f;
-
-		auto it = data.find("scene");
-		if (it != data.end() 
-			&& Engine::scenePath != it->second) 
-		{
-			return;
-		}
 
 		for (const auto& kvp : data)
 		{
@@ -338,7 +370,7 @@ namespace EngineFile
 			}
 			else if (key == "model")
 			{
-				string fullModelPath = Engine::gameobjectsPath + "\\" + folderPath + "\\" + value;
+				string fullModelPath = Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + value;
 
 				if (!exists(fullModelPath))
 				{
@@ -356,7 +388,7 @@ namespace EngineFile
 
 				string fullTex0Path = split[0] == "DEFAULTDIFF"
 					? "DEFAULTDIFF"
-					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[0];
+					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[0];
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
@@ -376,7 +408,7 @@ namespace EngineFile
 
 				string fullTex1Path = split[1] == "DEFAULTSPEC"
 					? "DEFAULTSPEC"
-					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[1];
+					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[1];
 				if (fullTex1Path == "DEFAULTSPEC")
 				{
 					fullTex1Path = Engine::filesPath + "\\textures\\spec_default.png";
@@ -395,7 +427,7 @@ namespace EngineFile
 
 				string fullTex2Path = split[2] == "EMPTY"
 					? "EMPTY"
-					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[2];
+					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[2];
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
@@ -409,7 +441,7 @@ namespace EngineFile
 
 				string fullTex3Path = split[3] == "EMPTY"
 					? "EMPTY"
-					: Engine::gameobjectsPath + "\\" + folderPath + "\\" + split[3];
+					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[3];
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{
@@ -548,6 +580,11 @@ namespace EngineFile
 				heightTexture = "EMPTY";
 			}
 
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				"Loading model " + name + " for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
 			Model::Initialize(
 				pos,
 				rot,
@@ -572,6 +609,11 @@ namespace EngineFile
 
 		else if (type == Mesh::MeshType::point_light)
 		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				"Loading point light " + name + " for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
 			PointLight::InitializePointLight(
 				pos,
 				rot,
@@ -599,6 +641,11 @@ namespace EngineFile
 
 		else if (type == Mesh::MeshType::spot_light)
 		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				"Loading spotlight " + name + " for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
 			SpotLight::InitializeSpotLight(
 				pos,
 				rot,

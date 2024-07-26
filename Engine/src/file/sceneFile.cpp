@@ -121,13 +121,10 @@ namespace EngineFile
 		else
 		{
 			Engine::scenePath = scenePath;
-			Engine::gameobjectsPath = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+			Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
 			Engine::texturesPath = path(Engine::projectPath).parent_path().string() + "\\textures";
 			Engine::scenesPath = path(Engine::projectPath).parent_path().string() + "\\scenes";
 		}
-
-		//create gameobjects folder if it doesnt exist
-		if (!exists(Engine::gameobjectsPath)) File::CreateNewFolder(Engine::gameobjectsPath);
 
 		//create textures folder if it doesnt exist
 		if (!exists(Engine::texturesPath)) File::CreateNewFolder(Engine::texturesPath);
@@ -205,14 +202,14 @@ namespace EngineFile
 
 		sceneFile.close();
 
-		if (exists(Engine::gameobjectsPath)) GameObjectFile::LoadGameObjects(Engine::gameobjectsPath);
+		GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
 
 		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::INFO,
-			"Successfully loaded scene file '" + path(Engine::scenePath).stem().string() + "'!\n");
+			"Successfully loaded scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 	}
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
@@ -265,7 +262,7 @@ namespace EngineFile
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::INFO,
-			"\nSuccessfully saved scene file '" + path(Engine::scenePath).stem().string() + "'!\n");
+			"\nSuccessfully saved scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 
 		switch (saveType)
 		{

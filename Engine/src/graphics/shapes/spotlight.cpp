@@ -136,7 +136,7 @@ namespace Graphics::Shape
 
 		if (name == tempName)
 		{
-			string targetPath = File::AddIndex(Engine::gameobjectsPath, "Spotlight", "");
+			string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
 			File::CreateNewFolder(targetPath);
 			name = path(targetPath).stem().string();
 		}
@@ -151,6 +151,11 @@ namespace Graphics::Shape
 			mat,
 			spotLight);
 
+		if (obj->GetScene() == "")
+		{
+			obj->SetScene(path(Engine::scenePath).parent_path().stem().string());
+		}
+
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
 
@@ -160,7 +165,7 @@ namespace Graphics::Shape
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
-			Type::INFO,
+			Type::DEBUG,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
