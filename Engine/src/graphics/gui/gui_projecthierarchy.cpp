@@ -76,7 +76,7 @@ namespace Graphics::GUI
 
 			if (ImGui::BeginChild("##content"))
 			{
-				DisplayDirectoryContents(Engine::sceneParentPath);
+				DisplayDirectoryContents(path(Engine::projectPath).parent_path().string());
 			}
 			ImGui::EndChild();
 
@@ -160,6 +160,11 @@ namespace Graphics::GUI
 			}
 			else if (is_regular_file(entry.path))
 			{
+				if (ImGui::Selectable(entry.name.c_str()))
+				{
+					//cout << "clicked on " << entry.path << "\n";
+				}
+
 				//hover over file to show its path in tooltip
 				if (ImGui::IsItemHovered()
 					&& showPathTooltip)
@@ -172,10 +177,20 @@ namespace Graphics::GUI
 				if (ImGui::BeginPopupContextItem())
 				{
 					//open selected scene file
-					if (entry.name != "project.txt"
+					if (path(entry.path).parent_path().stem().string() == "scenes"
 						&& ImGui::MenuItem("Open scene"))
 					{
-						SceneFile::LoadScene(entry.path);
+						if (Engine::scenePath != entry.path)
+						{
+							SceneFile::LoadScene(entry.path);
+						}
+						else
+						{
+							ConsoleManager::WriteConsoleMessage(
+								Caller::FILE,
+								Type::EXCEPTION,
+								"Cannot switch to '" + path(Engine::scenePath).stem().string() + "' because it is already open!");
+						}
 					}
 					//delete selected file
 					if (ImGui::MenuItem("Delete"))
@@ -195,13 +210,17 @@ namespace Graphics::GUI
 		{
 			string cleanedEntryPath = String::CharReplace(
 				targetPath, '/', '\\');
+
 			string cleanedGameobjectsFolder = String::CharReplace(
-				Engine::sceneParentPath + "\\gameobjects", '/', '\\');
+				path(Engine::projectPath).parent_path().string() + "\\gameobjects", '/', '\\');
 			string cleanedTexturesFolder = String::CharReplace(
-				Engine::sceneParentPath + "\\textures", '/', '\\');
+				path(Engine::projectPath).parent_path().string() + "\\textures", '/', '\\');
+			string cleanedScenesFolder = String::CharReplace(
+				path(Engine::scenesPath).parent_path().string(), '/', '\\');
 
 			if (cleanedEntryPath == cleanedGameobjectsFolder
-				|| cleanedEntryPath == cleanedTexturesFolder)
+				|| cleanedEntryPath == cleanedTexturesFolder
+				|| cleanedEntryPath == cleanedScenesFolder)
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
@@ -234,6 +253,7 @@ namespace Graphics::GUI
 		else if (is_regular_file(targetPath))
 		{
 			string cleanedEntryPath = String::CharReplace(targetPath, '/', '\\');
+
 			string cleanedProjectPath = String::CharReplace(Engine::projectPath, '/', '\\');
 			string cleanedScenePath = String::CharReplace(Engine::scenePath, '/', '\\');
 

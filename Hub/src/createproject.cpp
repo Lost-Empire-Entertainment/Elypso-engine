@@ -23,6 +23,7 @@ using std::filesystem::directory_iterator;
 using std::filesystem::create_directory;
 using std::ofstream;
 using std::filesystem::remove_all;
+using std::filesystem::exists;
 
 void CreateProject::RenderCreateProjectWindow()
 {
@@ -147,7 +148,10 @@ void CreateProject::RenderCreateProjectContent()
 
 		create_directory(newProjectFile);
 
-		string sceneFilePath = newProjectFile + "\\Scene1.txt";
+		string scenesFolder = newProjectFile + "\\scenes";
+		create_directory(scenesFolder);
+
+		string sceneFilePath = scenesFolder + "\\Scene1.txt";
 		ofstream sceneFile(sceneFilePath);
 		if (!sceneFile.is_open())
 		{

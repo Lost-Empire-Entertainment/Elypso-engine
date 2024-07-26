@@ -121,9 +121,9 @@ namespace EngineFile
 		else
 		{
 			Engine::scenePath = scenePath;
-			Engine::sceneParentPath = path(Engine::scenePath).parent_path().string();
-			Engine::gameobjectsPath = Engine::sceneParentPath + "\\gameobjects";
-			Engine::texturesPath = Engine::sceneParentPath + "\\textures";
+			Engine::gameobjectsPath = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+			Engine::texturesPath = path(Engine::projectPath).parent_path().string() + "\\textures";
+			Engine::scenesPath = path(Engine::projectPath).parent_path().string() + "\\scenes";
 		}
 
 		//create gameobjects folder if it doesnt exist
@@ -140,7 +140,7 @@ namespace EngineFile
 		{
 			for (const auto& obj : objects)
 			{
-				GameObjectManager::DestroyGameObject(obj);
+				GameObjectManager::DestroyGameObject(obj, true);
 			}
 		}
 

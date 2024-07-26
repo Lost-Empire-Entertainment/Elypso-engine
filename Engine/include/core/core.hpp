@@ -21,8 +21,8 @@ namespace Core
 		static inline string filesPath;
 		static inline string projectPath;
 
-		static inline string sceneParentPath;
 		static inline string scenePath;
+		static inline string scenesPath;
 		static inline string gameobjectsPath;
 		static inline string texturesPath;
 

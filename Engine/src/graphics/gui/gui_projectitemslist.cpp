@@ -83,7 +83,7 @@ namespace Graphics::GUI
 			}
 			case Type::Scenes:
 			{
-				for (const auto& entry : directory_iterator(Engine::sceneParentPath))
+				for (const auto& entry : directory_iterator(path(Engine::scenePath).parent_path().string()))
 				{
 					if (is_directory(entry))
 					{

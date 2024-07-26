@@ -66,6 +66,8 @@ namespace EngineFile
 			return;
 		}
 
+		objectFile << "scene= " << obj->GetScene() << "\n";
+
 		objectFile << "name= " << obj->GetName() << "\n";
 
 		objectFile << "id= " << obj->GetID() << "\n";
@@ -226,7 +228,8 @@ namespace EngineFile
 						}
 					}
 
-					if (key == "name"
+					if (key == "scene"
+						|| key == "name"
 						|| key == "id"
 						|| key == "type"
 						|| key == "position"
@@ -265,6 +268,7 @@ namespace EngineFile
 		string name = "MISSING NAME";
 		unsigned int id = 0;
 		Mesh::MeshType type = Mesh::MeshType::model;
+		string scene = "";
 		vec3 pos = vec3();
 		vec3 rot = vec3();
 		vec3 scale = vec3();
@@ -285,12 +289,23 @@ namespace EngineFile
 		float innerAngle = 12.0f;
 		float outerAngle = 25.0f;
 
+		auto it = data.find("scene");
+		if (it != data.end() 
+			&& Engine::scenePath != it->second) 
+		{
+			return;
+		}
+
 		for (const auto& kvp : data)
 		{
 			string key = kvp.first;
 			string value = kvp.second;
 
-			if (key == "name")
+			if (key == "scene")
+			{
+				scene = value;
+			}
+			else if (key == "name")
 			{
 				name = value;
 			}

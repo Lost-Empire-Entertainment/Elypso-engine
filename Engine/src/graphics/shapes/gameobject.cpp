@@ -116,7 +116,7 @@ namespace Graphics::Shape
 		}
 	}
 
-	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj)
+	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly)
 	{
 		string thisName = obj->GetName();
 
@@ -130,7 +130,7 @@ namespace Graphics::Shape
 		{
 			for (const auto& child : obj->GetChildren())
 			{
-				GameObjectManager::DestroyGameObject(child);
+				GameObjectManager::DestroyGameObject(child, localOnly);
 			}
 		}
 		//remove object from parent children vector
@@ -167,13 +167,16 @@ namespace Graphics::Shape
 			break;
 		}
 
-		string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
-		for (const auto& entry : directory_iterator(gameobjectsFolder))
+		if (!localOnly)
 		{
-			if (path(entry).stem().string() == thisName)
+			string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+			for (const auto& entry : directory_iterator(gameobjectsFolder))
 			{
-				File::DeleteFileOrfolder(path(entry).string());
-				break;
+				if (path(entry).stem().string() == thisName)
+				{
+					File::DeleteFileOrfolder(path(entry).string());
+					break;
+				}
 			}
 		}
 

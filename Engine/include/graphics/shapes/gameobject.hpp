@@ -509,6 +509,7 @@ namespace Graphics::Shape
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
+		void SetScene(const string& newScene) { scene = newScene; }
 
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
@@ -553,6 +554,7 @@ namespace Graphics::Shape
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const {  return ID; }
+		const string& GetScene() const { return scene; }
 
 		const shared_ptr<Transform>& GetTransform() const { return transform; }
 		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
@@ -570,6 +572,7 @@ namespace Graphics::Shape
 		bool isInitialized;
 		string name;
 		unsigned int ID;
+		string scene;
 
 		shared_ptr<Transform> transform;
 		shared_ptr<Mesh> mesh;
@@ -629,7 +632,7 @@ namespace Graphics::Shape
 			billboards.push_back(obj);
 		}
 
-		static void DestroyGameObject(const shared_ptr<GameObject>& obj);
+		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly = false);
 
 		static vector<shared_ptr<GameObject>>& GetObjects()
 		{
