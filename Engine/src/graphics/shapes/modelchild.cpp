@@ -124,11 +124,6 @@ namespace Graphics::Shape
 			mat,
 			basicShape);
 
-		if (obj->GetScene() == "")
-		{
-			obj->SetScene(path(Engine::scenePath).parent_path().stem().string());
-		}
-
 		obj->GetMesh()->SetVertices(vertices);
 		obj->GetMesh()->SetIndices(indices);
 

@@ -155,7 +155,7 @@ namespace Graphics::GUI
 			File::CreateNewFolder(newSceneFolder);
 			File::CreateNewFolder(newSceneFolder + "\\gameobjects");
 
-			string newSceneFile = newSceneFolder + "\\" + assignedSceneName + ".txt";
+			string newSceneFile = newSceneFolder + "\\scene.txt";
 
 			ofstream sceneFile(newSceneFile);
 			sceneFile.close();

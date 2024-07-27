@@ -159,11 +159,6 @@ namespace Graphics::Shape
 			mat,
 			pointLight);
 
-		if (obj->GetScene() == "")
-		{
-			obj->SetScene(path(Engine::scenePath).parent_path().stem().string());
-		}
-
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
 

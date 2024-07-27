@@ -136,6 +136,20 @@ namespace Graphics::GUI
 						File::CreateNewFolder(newFolderPath);
 					}
 					*/
+					//open selected scene file
+					if (path(entry.path).parent_path().stem().string() == "scenes"
+						&& ImGui::MenuItem("Open scene"))
+					{
+						if (path(entry.path).stem().string() ==
+							path(Engine::scenePath).parent_path().stem().string())
+						{
+							ConsoleManager::WriteConsoleMessage(
+								Caller::FILE,
+								Type::EXCEPTION,
+								"Cannot switch to scene " + path(entry.path).stem().string() + " because it is already open!\n");
+						}
+						else SceneFile::LoadScene(entry.path + "\\scene.txt");
+					}
 					//delete selected folder
 					if (ImGui::MenuItem("Delete"))
 					{
@@ -178,22 +192,6 @@ namespace Graphics::GUI
 
 				if (ImGui::BeginPopupContextItem())
 				{
-					//open selected scene file
-					if (path(entry.path).filename().string() == "scene.txt"
-						&& ImGui::MenuItem("Open scene"))
-					{
-						if (Engine::scenePath != entry.path)
-						{
-							SceneFile::LoadScene(entry.path);
-						}
-						else
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::FILE,
-								Type::EXCEPTION,
-								"Cannot switch to scene '" + path(Engine::scenePath).parent_path().stem().string() + "' because it is already open!");
-						}
-					}
 					//delete selected file
 					if (ImGui::MenuItem("Delete"))
 					{
@@ -210,24 +208,18 @@ namespace Graphics::GUI
 	{
 		if (is_directory(targetPath))
 		{
-			string cleanedEntryPath = String::CharReplace(
-				targetPath, '/', '\\');
+			string folderName = path(targetPath).stem().string();
+			string cleanedFolderPath = String::CharReplace(
+				path(targetPath).string(), '/', '\\');
 
-			string cleanedGameobjectsFolder = String::CharReplace(
-				path(Engine::projectPath).parent_path().string() + "\\gameobjects", '/', '\\');
-			string cleanedTexturesFolder = String::CharReplace(
-				path(Engine::projectPath).parent_path().string() + "\\textures", '/', '\\');
-			string cleanedScenesFolder = String::CharReplace(
-				path(Engine::scenesPath).parent_path().string(), '/', '\\');
-
-			if (cleanedEntryPath == cleanedGameobjectsFolder
-				|| cleanedEntryPath == cleanedTexturesFolder
-				|| cleanedEntryPath == cleanedScenesFolder)
+			if (folderName == "gameobjects"
+				|| folderName == "textures"
+				|| folderName == "scenes")
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Cannot delete folder '" + cleanedEntryPath + "' because it is used by this project!\n");
+					"Cannot delete folder '" + folderName + "' because it is used by this project!\n");
 			}
 			else
 			{
@@ -235,12 +227,11 @@ namespace Graphics::GUI
 
 				vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 				shared_ptr<GameObject> targetObject;
-				string name = path(cleanedEntryPath).stem().string();
 
 				//check if an object with the name of the deleted folder exists in the gameobjects list
 				for (const shared_ptr<GameObject>& obj : objects)
 				{
-					if (obj->GetName() == name)
+					if (obj->GetName() == folderName)
 					{
 						isGameObjectFolder = true;
 						targetObject = obj;
@@ -249,7 +240,7 @@ namespace Graphics::GUI
 				}
 
 				if (isGameObjectFolder) GameObjectManager::DestroyGameObject(targetObject);
-				else File::DeleteFileOrfolder(cleanedEntryPath);
+				else File::DeleteFileOrfolder(cleanedFolderPath);
 			}
 		}
 		else if (is_regular_file(targetPath))

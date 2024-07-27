@@ -69,8 +69,6 @@ namespace EngineFile
 			return;
 		}
 
-		objectFile << "scene= " << obj->GetScene() << "\n";
-
 		objectFile << "name= " << obj->GetName() << "\n";
 
 		objectFile << "id= " << obj->GetID() << "\n";
@@ -248,45 +246,30 @@ namespace EngineFile
 						}
 					}
 
-					string sceneParentStem = path(Engine::scenePath).parent_path().stem().string();
-					if (key == "scene"
-						&& sceneParentStem != value)
+					if (key == "name"
+						|| key == "id"
+						|| key == "type"
+						|| key == "position"
+						|| key == "rotation"
+						|| key == "scale"
+						|| key == "model"
+						|| key == "textures"
+						|| key == "shaders"
+
+						|| key == "billboard name"
+						|| key == "billboard id"
+						|| key == "billboard texture"
+						|| key == "billboard shaders"
+						|| key == "billboard shininess"
+
+						|| key == "diffuse"
+						|| key == "shininess"
+						|| key == "intensity"
+						|| key == "distance"
+						|| key == "innerAngle"
+						|| key == "outerAngle")
 					{
-						cout << "scene parent stem for " << path(file).stem().string()
-							<< " is " << sceneParentStem 
-							<< " and value is " << value << "\n";
-
-						successfulLoad = false;
-						break;
-					}
-					else
-					{
-						if (key == "scene"
-							|| key == "name"
-							|| key == "id"
-							|| key == "type"
-							|| key == "position"
-							|| key == "rotation"
-							|| key == "scale"
-							|| key == "model"
-							|| key == "textures"
-							|| key == "shaders"
-
-							|| key == "billboard name"
-							|| key == "billboard id"
-							|| key == "billboard texture"
-							|| key == "billboard shaders"
-							|| key == "billboard shininess"
-
-							|| key == "diffuse"
-							|| key == "shininess"
-							|| key == "intensity"
-							|| key == "distance"
-							|| key == "innerAngle"
-							|| key == "outerAngle")
-						{
-							data[key] = value;
-						}
+						data[key] = value;
 					}
 				}
 			}
