@@ -70,6 +70,26 @@ namespace Graphics::GUI
 
 			ImGui::Text("");
 			ImGui::Separator();
+			ImGui::Text("Join the official Discord server");
+			ImGui::Separator();
+
+			if (ImGui::Button("Discord"))
+			{
+				Browser::OpenLink("https://discord.gg/FqJgy2SvDs");
+			}
+
+			ImGui::Text("");
+			ImGui::Separator();
+			ImGui::Text("Subscribe to the Lost Empire Entertainment youtube channel");
+			ImGui::Separator();
+
+			if (ImGui::Button("Youtube"))
+			{
+				Browser::OpenLink("https://youtube.com/greeenlaser");
+			}
+
+			ImGui::Text("");
+			ImGui::Separator();
 			ImGui::Text("Check out the repository where all the engine code is stored");
 			ImGui::Separator();
 

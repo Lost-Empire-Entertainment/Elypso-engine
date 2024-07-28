@@ -35,6 +35,9 @@ using std::cout;
 using std::endl;
 using std::to_string;
 using std::filesystem::path;
+using std::filesystem::directory_iterator;
+using std::filesystem::is_regular_file;
+using std::filesystem::exists;
 
 using Graphics::Render;
 using Physics::Select;
@@ -53,6 +56,7 @@ using Utils::File;
 using Core::ConsoleManager;
 using ConsoleCaller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
+using Graphics::Shape::Mesh;
 
 namespace Graphics::GUI
 {
@@ -116,8 +120,82 @@ namespace Graphics::GUI
 			strcpy_s(inputTextBuffer_objName, bufferSize, objName.c_str());
 			if (ImGui::InputText("##objName", inputTextBuffer_objName, bufferSize))
 			{
-				obj->SetName(inputTextBuffer_objName);
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				if (glfwGetKey(Render::window, GLFW_KEY_ENTER) == GLFW_PRESS)
+				{
+					string oldName = obj->GetName();
+					for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
+					{
+						string oldFolderName = path(folder).stem().string();
+						string oldFolderPath = path(folder).string();
+
+						string newFolderName = inputTextBuffer_objName;
+						string newFolderPath = Engine::currentGameobjectsPath + "\\" + newFolderName;
+
+						//cannot rename because gameobject with same name already exists
+						if (exists(newFolderPath))
+						{
+							//resets inputTextBuffer_objName to oldName
+							copy(oldName.begin(), oldName.end(), inputTextBuffer_objName);
+							inputTextBuffer_objName[oldName.size()] = '\0';
+
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Cannot change the name to '" + newFolderName + "' because a gameobject with the same name already exists in this scene " + path(Engine::scenePath).stem().string() + "!");
+
+							break;
+						}
+						//did not find gameobject with same name
+						else
+						{
+							File::MoveOrRenameFileOrFolder(oldFolderPath, newFolderPath, true);
+
+							//rename model file if gameobject mesh type is model
+							if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+							{
+								for (const auto& file : directory_iterator(newFolderPath))
+								{
+									string oldFileName = path(file).stem().string();
+									string oldFilePath = path(file).string();
+									string oldFileExtension = path(file).extension().string();
+									string extension;
+
+									if (is_regular_file(oldFilePath)
+										&& oldFileName == oldName
+										&& (path(oldFilePath).extension().string() == ".fbx"
+											|| path(oldFilePath).extension().string() == ".obj"
+											|| path(oldFilePath).extension().string() == ".glfw"))
+									{
+										if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
+										else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
+										else if (path(oldFilePath).extension().string() == ".glfw") extension = ".glfw";
+
+										string newFilePath = Engine::currentGameobjectsPath + "\\" + newFolderName + "\\" + newFolderName + extension;
+
+										File::MoveOrRenameFileOrFolder(oldFilePath, newFilePath, true);
+										obj->SetDirectory(newFilePath);
+
+										break;
+									}
+								}
+							}
+							
+							copy(newFolderName.begin(), newFolderName.end(), inputTextBuffer_objName);
+							inputTextBuffer_objName[newFolderName.size()] = '\0';
+
+							obj->SetName(newFolderName);
+
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::INFO,
+								"Successfully set gameobject new name to '" + newFolderName + "'!");
+
+							SceneFile::SaveScene();
+
+							break;
+						}
+					}
+				}
 			}
 
 			ImGui::EndChild();

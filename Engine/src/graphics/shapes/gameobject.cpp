@@ -169,7 +169,7 @@ namespace Graphics::Shape
 
 		if (!localOnly)
 		{
-			string gameobjectsFolder = path(Engine::projectPath).parent_path().string() + "\\gameobjects";
+			string gameobjectsFolder = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
 			for (const auto& entry : directory_iterator(gameobjectsFolder))
 			{
 				if (path(entry).stem().string() == thisName)

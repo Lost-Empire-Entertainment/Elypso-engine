@@ -118,19 +118,30 @@ namespace EngineFile
 				"Tried to load scene file '" + scenePath + "' but it doesn't exist!\n");
 			return;
 		}
-		else
-		{
-			Engine::scenePath = scenePath;
-			Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
-			Engine::texturesPath = path(Engine::projectPath).parent_path().string() + "\\textures";
-			Engine::scenesPath = path(Engine::projectPath).parent_path().string() + "\\scenes";
-		}
+
+		Engine::scenePath = scenePath;
+		Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
+		Engine::texturesPath = path(Engine::projectPath).parent_path().string() + "\\textures";
+		Engine::scenesPath = path(Engine::projectPath).parent_path().string() + "\\scenes";
 
 		//create textures folder if it doesnt exist
 		if (!exists(Engine::texturesPath)) File::CreateNewFolder(Engine::texturesPath);
 
+		//update project file originating from hub 
+		//to ensure currently opened scene is always opened when hub opens engine
+		string projectFilePath = Engine::filesPath + "\\project.txt";
+		File::DeleteFileOrfolder(projectFilePath);
+		ofstream projFile(projectFilePath);
+
+		projFile << "scene: " << Engine::scenePath << "\n";
+		projFile << "project: " << Engine::projectPath;
+
+		projFile.close();
+
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
+
+		cout << "before deleting objects...\n";
 
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 		if (objects.size() != 0)
@@ -141,6 +152,8 @@ namespace EngineFile
 			}
 		}
 
+		cout << "before opening scene file...\n";
+
 		ifstream sceneFile(Engine::scenePath);
 		if (!sceneFile.is_open())
 		{
@@ -150,6 +163,8 @@ namespace EngineFile
 				"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 			return;
 		}
+
+		cout << "before reading scene file...\n";
 
 		string line;
 		map<string, string> obj;
@@ -201,6 +216,8 @@ namespace EngineFile
 		}
 
 		sceneFile.close();
+
+		cout << "before loading new scene objects...\n";
 
 		GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
 

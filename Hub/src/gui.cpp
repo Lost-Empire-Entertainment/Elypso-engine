@@ -319,15 +319,14 @@ void GUI::RunProject(const string& targetProject)
 		return;
 	}
 
-	//copy project.txt to files folder
+	//copy project.txt to files folder if it doesnt exist
 	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
 	string originalProjectFile = targetProject + "/project.txt";
-
-	cout << "trying to copy: " << originalProjectFile << "\n";
-
 	string targetProjectFile = engineFilesFolderPath + "/project.txt";
-	if (exists(targetProjectFile)) remove(targetProjectFile);
-	copy(originalProjectFile, targetProjectFile);
+	if (!exists(targetProjectFile))
+	{
+		copy(originalProjectFile, targetProjectFile);
+	}
 
 	GUI::RunApplication(
 		Core::enginePath.parent_path().string(),

@@ -39,6 +39,7 @@ using std::filesystem::current_path;
 using std::cout;
 using std::endl;
 using std::to_string;
+using std::filesystem::path;
 
 using Core::Input;
 using Core::TimeManager;
@@ -198,10 +199,22 @@ namespace Graphics
 	void Render::SetWindowNameAsUnsaved(bool state)
 	{
 		SceneFile::unsavedChanges = state;
+		
+		string sceneName = path(Engine::scenePath).stem().string();
+		string windowTitle = 
+			Engine::name + " " 
+			+ Engine::version 
+			+ " [" + sceneName + "]";
 
 		string newName = state == true
-			? Engine::name + " " + Engine::version + "*"
-			: Engine::name + " " + Engine::version;
+			? windowTitle + " *"
+			: windowTitle;
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::INFO,
+			"Changed window title to " + newName + "\n");
+
 		glfwSetWindowTitle(window, newName.c_str());
 	}
 

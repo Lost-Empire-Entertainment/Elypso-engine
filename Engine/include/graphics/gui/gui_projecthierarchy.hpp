@@ -29,7 +29,5 @@ namespace Graphics::GUI
 		static vector<DirectoryEntry> GetDirectoryContents(const string& directoryPath);
 
 		static void DisplayDirectoryContents(const string& directoryPath);
-
-		static void Delete(const string& path);
 	};
 }

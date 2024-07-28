@@ -130,7 +130,7 @@ namespace Core
 		ifstream projectFile(filesPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
-			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
+			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down.");
 		}
 
 		//
@@ -315,8 +315,6 @@ namespace Core
 					Caller::SHUTDOWN,
 					Type::INFO,
 					"Cleaning up resources...\n");
-
-				File::DeleteFileOrfolder(Engine::filesPath + "/project.txt");
 
 				EngineGUI::Shutdown();
 
