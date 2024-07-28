@@ -200,7 +200,7 @@ namespace Graphics
 	{
 		SceneFile::unsavedChanges = state;
 		
-		string sceneName = path(Engine::scenePath).stem().string();
+		string sceneName = path(Engine::scenePath).parent_path().stem().string();
 		string windowTitle = 
 			Engine::name + " " 
 			+ Engine::version 
@@ -209,11 +209,6 @@ namespace Graphics
 		string newName = state == true
 			? windowTitle + " *"
 			: windowTitle;
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::INFO,
-			"Changed window title to " + newName + "\n");
 
 		glfwSetWindowTitle(window, newName.c_str());
 	}

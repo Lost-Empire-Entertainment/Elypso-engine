@@ -213,7 +213,7 @@ namespace EngineFile
 
 		GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
 
-		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
+		Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
@@ -266,7 +266,7 @@ namespace EngineFile
 
 		sceneFile.close();
 
-		if (unsavedChanges) Render::SetWindowNameAsUnsaved(false);
+		Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

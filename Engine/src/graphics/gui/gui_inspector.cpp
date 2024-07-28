@@ -122,78 +122,73 @@ namespace Graphics::GUI
 			{
 				if (glfwGetKey(Render::window, GLFW_KEY_ENTER) == GLFW_PRESS)
 				{
+					bool foundExisting = false;
+
 					string oldName = obj->GetName();
+
+					string newFolderName = inputTextBuffer_objName;
+					string newFolderPath = Engine::currentGameobjectsPath + "\\" + newFolderName;
+
 					for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
 					{
-						string oldFolderName = path(folder).stem().string();
-						string oldFolderPath = path(folder).string();
+						foundExisting = (exists(newFolderPath));
+						if (foundExisting) break;
+					}
 
-						string newFolderName = inputTextBuffer_objName;
-						string newFolderPath = Engine::currentGameobjectsPath + "\\" + newFolderName;
+					if (foundExisting)
+					{
+						//resets inputTextBuffer_objName to oldName
+						copy(oldName.begin(), oldName.end(), inputTextBuffer_objName);
+						inputTextBuffer_objName[oldName.size()] = '\0';
 
-						//cannot rename because gameobject with same name already exists
-						if (exists(newFolderPath))
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::INPUT,
+							ConsoleType::EXCEPTION,
+							"Cannot change the name to '" + newFolderName + "' because a gameobject with the same name already exists in this scene " + path(Engine::scenePath).stem().string() + "!");
+					}
+					else
+					{
+						string oldFolderPath = Engine::currentGameobjectsPath + "\\" + oldName;
+						File::MoveOrRenameFileOrFolder(oldFolderPath, newFolderPath, true);
+
+						//rename model file if gameobject mesh type is model
+						if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
 						{
-							//resets inputTextBuffer_objName to oldName
-							copy(oldName.begin(), oldName.end(), inputTextBuffer_objName);
-							inputTextBuffer_objName[oldName.size()] = '\0';
-
-							ConsoleManager::WriteConsoleMessage(
-								ConsoleCaller::INPUT,
-								ConsoleType::EXCEPTION,
-								"Cannot change the name to '" + newFolderName + "' because a gameobject with the same name already exists in this scene " + path(Engine::scenePath).stem().string() + "!");
-
-							break;
-						}
-						//did not find gameobject with same name
-						else
-						{
-							File::MoveOrRenameFileOrFolder(oldFolderPath, newFolderPath, true);
-
-							//rename model file if gameobject mesh type is model
-							if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+							for (const auto& file : directory_iterator(newFolderPath))
 							{
-								for (const auto& file : directory_iterator(newFolderPath))
+								string oldFileName = path(file).stem().string();
+								string oldFilePath = path(file).string();
+								string oldFileExtension = path(file).extension().string();
+								string extension;
+
+								if (is_regular_file(oldFilePath)
+									&& oldFileName == oldName
+									&& (path(oldFilePath).extension().string() == ".fbx"
+										|| path(oldFilePath).extension().string() == ".obj"
+										|| path(oldFilePath).extension().string() == ".glfw"))
 								{
-									string oldFileName = path(file).stem().string();
-									string oldFilePath = path(file).string();
-									string oldFileExtension = path(file).extension().string();
-									string extension;
+									if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
+									else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
+									else if (path(oldFilePath).extension().string() == ".glfw") extension = ".glfw";
 
-									if (is_regular_file(oldFilePath)
-										&& oldFileName == oldName
-										&& (path(oldFilePath).extension().string() == ".fbx"
-											|| path(oldFilePath).extension().string() == ".obj"
-											|| path(oldFilePath).extension().string() == ".glfw"))
-									{
-										if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
-										else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
-										else if (path(oldFilePath).extension().string() == ".glfw") extension = ".glfw";
+									string newFilePath = Engine::currentGameobjectsPath + "\\" + newFolderName + "\\" + newFolderName + extension;
 
-										string newFilePath = Engine::currentGameobjectsPath + "\\" + newFolderName + "\\" + newFolderName + extension;
+									File::MoveOrRenameFileOrFolder(oldFilePath, newFilePath, true);
+									obj->SetDirectory(newFilePath);
 
-										File::MoveOrRenameFileOrFolder(oldFilePath, newFilePath, true);
-										obj->SetDirectory(newFilePath);
-
-										break;
-									}
+									break;
 								}
 							}
-							
-							copy(newFolderName.begin(), newFolderName.end(), inputTextBuffer_objName);
-							inputTextBuffer_objName[newFolderName.size()] = '\0';
-
-							obj->SetName(newFolderName);
-
-							ConsoleManager::WriteConsoleMessage(
-								ConsoleCaller::INPUT,
-								ConsoleType::INFO,
-								"Successfully set gameobject new name to '" + newFolderName + "'!");
-
-							SceneFile::SaveScene();
-
-							break;
 						}
+
+						obj->SetName(newFolderName);
+
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::INPUT,
+							ConsoleType::INFO,
+							"Successfully set gameobject new name to '" + newFolderName + "'!");
+
+						SceneFile::SaveScene();
 					}
 				}
 			}

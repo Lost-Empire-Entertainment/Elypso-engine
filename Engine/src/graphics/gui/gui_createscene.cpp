@@ -160,10 +160,9 @@ namespace Graphics::GUI
 			ofstream sceneFile(newSceneFile);
 			sceneFile.close();
 
-			cout << "attempting to load scene from " << newSceneFile << "\n";
 			SceneFile::LoadScene(newSceneFile);
 
-			if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
+			Render::SetWindowNameAsUnsaved(false);
 
 			renderCreateSceneWindow = false;
 		}

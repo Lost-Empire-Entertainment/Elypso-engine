@@ -184,7 +184,7 @@ namespace EngineFile
 
 		configFile.close();
 
-		if (SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(false);
+		Render::SetWindowNameAsUnsaved(false);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

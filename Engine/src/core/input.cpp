@@ -214,6 +214,7 @@ namespace Core
                 else if (axis == "Z") pos = vec3(pos.x, pos.y, pos.z + combinedOffset);
 
                 Select::selectedObj->GetTransform()->SetPosition(pos);
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             else if (objectAction == ObjectAction::rotate)
             {
@@ -222,6 +223,7 @@ namespace Core
                 else if (axis == "Y") rot = vec3(rot.x, rot.y + combinedOffset * 10, rot.z);
                 else if (axis == "Z") rot = vec3(rot.x, rot.y, rot.z + combinedOffset * 10);
                 Select::selectedObj->GetTransform()->SetRotation(rot);
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             else if (objectAction == ObjectAction::scale)
             {
@@ -231,6 +233,7 @@ namespace Core
                 else if (axis == "Z") scale = vec3(scale.x, scale.y, scale.z + combinedOffset);
 
                 Select::selectedObj->GetTransform()->SetScale(scale);
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
         }
     }
@@ -340,6 +343,8 @@ namespace Core
                         name,
                         nextID);
                 }
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
