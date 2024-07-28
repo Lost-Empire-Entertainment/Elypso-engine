@@ -18,6 +18,7 @@
 #include "core.hpp"
 #include "sceneFile.hpp"
 #include "texture.hpp"
+#include "console.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -30,6 +31,9 @@ using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using EngineFile::SceneFile;
 using Graphics::Texture;
+using Core::ConsoleManager;
+using ConsoleCaller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
@@ -83,7 +87,7 @@ namespace Graphics::GUI
 			}
 			case Type::Scenes:
 			{
-				for (const auto& entry : directory_iterator(path(Engine::scenePath).parent_path().string()))
+				for (const auto& entry : directory_iterator(path(Engine::scenePath).parent_path().parent_path().string()))
 				{
 					if (is_directory(entry))
 					{
@@ -160,7 +164,14 @@ namespace Graphics::GUI
 			}
 			case Type::Scenes:
 			{
-				SceneFile::LoadScene(selectedPath);
+				if (Engine::scenePath == selectedPath)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::FILE,
+						ConsoleType::EXCEPTION,
+						"Cannot switch to scene '" + path(selectedPath).parent_path().stem().string() + "' because it is already open!\n");
+				}
+				else SceneFile::LoadScene(selectedPath);
 				break;
 			}
 			}

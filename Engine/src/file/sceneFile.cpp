@@ -141,8 +141,6 @@ namespace EngineFile
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
 
-		cout << "before deleting objects...\n";
-
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 		if (objects.size() != 0)
 		{
@@ -151,8 +149,6 @@ namespace EngineFile
 				GameObjectManager::DestroyGameObject(obj, true);
 			}
 		}
-
-		cout << "before opening scene file...\n";
 
 		ifstream sceneFile(Engine::scenePath);
 		if (!sceneFile.is_open())
@@ -163,8 +159,6 @@ namespace EngineFile
 				"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 			return;
 		}
-
-		cout << "before reading scene file...\n";
 
 		string line;
 		map<string, string> obj;
@@ -216,8 +210,6 @@ namespace EngineFile
 		}
 
 		sceneFile.close();
-
-		cout << "before loading new scene objects...\n";
 
 		GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
 
