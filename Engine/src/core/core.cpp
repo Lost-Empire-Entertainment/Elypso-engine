@@ -124,7 +124,7 @@ namespace Core
 		filesPath = String::CharReplace(fsFilesPath.string(), '/', '\\');
 
 		//
-		// SET PROJECT PATH
+		// CHECK IF HUB PROJECT EXISTS OR NOT
 		//
 
 		ifstream projectFile(filesPath + "\\project.txt");
@@ -134,8 +134,9 @@ namespace Core
 		}
 
 		//
-		// SET GAME PATH
+		// SET SCENE AND PROJECT PATHS
 		//
+
 		gamePath = current_path().parent_path().parent_path().parent_path().generic_string() + "\\Game";
 		gamePath = String::CharReplace(gamePath, '/', '\\');
 		gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
@@ -164,6 +165,13 @@ namespace Core
 			}
 		}
 		projectFile.close();
+
+		//
+		// SET SCENES AND TEXTURES PATHS
+		//
+
+		scenesPath = path(projectPath).parent_path().string() + "\\scenes";
+		texturesPath = path(projectPath).parent_path().string() + "\\textures";
 
 		//
 		// REST OF THE INITIALIZATION

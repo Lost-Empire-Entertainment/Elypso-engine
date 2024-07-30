@@ -178,10 +178,10 @@ namespace Graphics::Shape
 					break;
 				}
 			}
-		}
 
-		//force-saves the game to ensure everything is up to date
-		SceneFile::SaveScene();
+			//force-saves the game to ensure everything is up to date
+			SceneFile::SaveScene();
+		}
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

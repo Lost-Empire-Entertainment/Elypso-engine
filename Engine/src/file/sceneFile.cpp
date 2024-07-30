@@ -121,22 +121,6 @@ namespace EngineFile
 
 		Engine::scenePath = scenePath;
 		Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
-		Engine::texturesPath = path(Engine::projectPath).parent_path().string() + "\\textures";
-		Engine::scenesPath = path(Engine::projectPath).parent_path().string() + "\\scenes";
-
-		//create textures folder if it doesnt exist
-		if (!exists(Engine::texturesPath)) File::CreateNewFolder(Engine::texturesPath);
-
-		//update project file originating from hub 
-		//to ensure currently opened scene is always opened when hub opens engine
-		string projectFilePath = Engine::filesPath + "\\project.txt";
-		File::DeleteFileOrfolder(projectFilePath);
-		ofstream projFile(projectFilePath);
-
-		projFile << "scene: " << Engine::scenePath << "\n";
-		projFile << "project: " << Engine::projectPath;
-
-		projFile.close();
 
 		Select::isObjectSelected = false;
 		Select::selectedObj = nullptr;
@@ -214,6 +198,17 @@ namespace EngineFile
 		GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
 
 		Render::SetWindowNameAsUnsaved(false);
+
+		//update project file originating from hub 
+		//to ensure currently opened scene is always opened when hub opens engine
+		string projectFilePath = Engine::filesPath + "\\project.txt";
+		File::DeleteFileOrfolder(projectFilePath);
+		ofstream projFile(projectFilePath);
+
+		projFile << "scene: " << Engine::scenePath << "\n";
+		projFile << "project: " << Engine::projectPath;
+
+		projFile.close();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

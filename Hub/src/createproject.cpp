@@ -144,16 +144,25 @@ void CreateProject::RenderCreateProjectContent()
 		// CREATE NEW PROJECT
 		//
 
+		//create parent project folder
 		string newProjectFile = Core::projectsFolderPath.string() + "\\" + assignedProjectName;
-
 		create_directory(newProjectFile);
 
+		//create scenes folder
 		string scenesFolder = newProjectFile + "\\scenes";
 		create_directory(scenesFolder);
+
+		//create folder for this scene
 		string scene1Folder = scenesFolder + "\\Scene1";
 		create_directory(scene1Folder);
+
+		//create gameobjects folder
 		string gameobjectsFolder = scene1Folder + "\\gameobjects";
 		create_directory(gameobjectsFolder);
+
+		//create textures folder inside parent project folder
+		string texturesFolder = newProjectFile + "\\textures";
+		create_directory(texturesFolder);
 
 		string sceneFilePath = scene1Folder + "\\scene.txt";
 		ofstream sceneFile(sceneFilePath);
