@@ -9,6 +9,7 @@
 //external
 #include "glm.hpp"
 #include "glfw3.h"
+#include "imgui_impl_glfw.h"
 
 //engine
 #include "configFile.hpp"
@@ -234,6 +235,11 @@ namespace EngineFile
 		if (keyIndex != -1)
 		{
 			values[keyIndex] = value;
+
+			if (key == "gui_fontScale")
+			{
+				ImGui::GetIO().FontGlobalScale = stof(value);
+			}
 		}
 		else
 		{

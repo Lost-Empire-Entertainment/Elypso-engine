@@ -128,6 +128,9 @@ namespace Graphics::GUI
 
 		if (ImGui::DragFloat("##fontScale", &fontScale, 0.01f, 0.1f, 2.0f))
 		{
+			if (fontScale < 1.0f) fontScale = 1.0f;
+			if (fontScale > 2.0f) fontScale = 2.0f;
+
 			ConfigFile::SetValue("gui_fontScale", to_string(fontScale));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
