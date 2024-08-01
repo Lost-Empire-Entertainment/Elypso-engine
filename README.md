@@ -1,16 +1,20 @@
 # Elypso engine
 
-Elypso engine is a game development engine made with OpenGL and C++ 20. It is currently in the prototype phase and is not yet functional enough to make games with.
+Elypso Engine is a game development engine that is made with OpenGL, C++ 20 and [several libraries](https://github.com/Lost-Empire-Entertainment/Elypso-engine/blob/main/LIBRARIES.md) and it is primarily aimed for Windows 10 and 11. Support for Linux is planned to be added in Alpha.
 
-The main branch holds a stable version of the engine that is up to date with the latest Release version, the indev branch is an unstable version of the next engine version and is unsafe to use in production.
+- Elypso Engine alpha release date is aimed for the end of summer 2024.
+- Elypso Engine beta release date is aimed for spring 2025.
+- Elypso Engine full release date is aimed for spring 2026.
 
-Everything is still in early development and is highly likely to be modified a lot before alpha is released so there is no documentation provided at the current stage. Alpha is aimed for june 2024 and will include a bare-bones structure for making very basic games and the engine will significantly improve during alpha. Beta will release at the beginning of 2025 and is aimed to be worked on for the entirety of 2025 so the full release of this engine is aimed for the start of 2026.
+These dates are not final and may change so check back here regularly to see updates.
 
 ---
 
 ### False positives from Windows Security
 
 If this is your first time running the program then Windows may throw false positives like trojan or other "security threats". Follow [this Microsoft tutorial](https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26) to exclude the Hub, Engine and Game folders from Windows Security scans.
+
+---
 
 ### Links
 
