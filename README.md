@@ -8,6 +8,10 @@ Elypso Engine is a game development engine that is made with OpenGL, C++ 20 and 
 
 These dates are not final and may change so check back here regularly to see updates.
 
+There is no documentation planned to be added until Alpha is released because the engine is currently in the Prototype phase and will change a lot during development. 
+
+You can check out the Setup section at the bottom of this Readme file if you want to know how to try out the engine at the current stage. There is also the [Trello board](https://trello.com/b/hbt6ebCZ/elypso-engine) that shows all changes added in each build.
+
 ---
 
 ### False positives from Windows Security
