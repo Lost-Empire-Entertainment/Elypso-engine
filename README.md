@@ -14,6 +14,12 @@ You can check out the Setup section at the bottom of this Readme file if you wan
 
 ---
 
+### Reporting a security vulnerability
+
+If you believe you have found a security vulnerability that may affect the OS or any programs or files through the Hub, Engine or Game template on then fill in the [Form](https://github.com/Lost-Empire-Entertainment/Elypso-engine/security/policy).
+
+---
+
 ### False positives from Windows Security
 
 If this is your first time running the program then Windows may throw false positives like trojan or other "security threats". Follow [this Microsoft tutorial](https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26) to exclude the Hub, Engine and Game folders from Windows Security scans.
