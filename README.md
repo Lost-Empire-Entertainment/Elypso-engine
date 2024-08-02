@@ -16,7 +16,7 @@ You can check out the Setup section at the bottom of this Readme file if you wan
 
 ### Reporting a security vulnerability
 
-If you believe you have found a security vulnerability that may affect the OS or any programs or files through the Hub, Engine or Game template on then fill in the [Form](https://github.com/Lost-Empire-Entertainment/Elypso-engine/security/policy).
+If you believe you have found a security vulnerability that may affect your computer negatively in any way then fill in the [Form](https://github.com/Lost-Empire-Entertainment/Elypso-engine/security/policy).
 
 ---
 
