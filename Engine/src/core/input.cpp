@@ -93,9 +93,9 @@ namespace Core
         }
         if (!cameraEnabled
             && (startedHolding
-                || (!startedHolding
-                    && lastKnownRotation == vec3(0)
-                    && Render::camera.GetCameraRotation() != vec3(0))))
+            || (!startedHolding
+            && lastKnownRotation == vec3(0)
+            && Render::camera.GetCameraRotation() != vec3(0))))
         {
             lastKnownRotation = Render::camera.GetCameraRotation();
             startedHolding = false;
@@ -201,39 +201,53 @@ namespace Core
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
         if (!Compilation::renderBuildingWindow
-            && !cameraEnabled
             && !ImGui::GetIO().WantCaptureMouse)
         {
             float combinedOffset = increment * static_cast<float>(yoffset);
 
-            if (objectAction == ObjectAction::move)
+            if (!cameraEnabled)
             {
-                vec3 pos = Select::selectedObj->GetTransform()->GetPosition();
-                if (axis == "X") pos = vec3(pos.x + combinedOffset, pos.y, pos.z);
-                else if (axis == "Y") pos = vec3(pos.x, pos.y + combinedOffset, pos.z);
-                else if (axis == "Z") pos = vec3(pos.x, pos.y, pos.z + combinedOffset);
+                if (objectAction == ObjectAction::move)
+                {
+                    vec3 pos = Select::selectedObj->GetTransform()->GetPosition();
+                    if (axis == "X") pos = vec3(pos.x + combinedOffset, pos.y, pos.z);
+                    else if (axis == "Y") pos = vec3(pos.x, pos.y + combinedOffset, pos.z);
+                    else if (axis == "Z") pos = vec3(pos.x, pos.y, pos.z + combinedOffset);
 
-                Select::selectedObj->GetTransform()->SetPosition(pos);
-                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-            }
-            else if (objectAction == ObjectAction::rotate)
-            {
-                vec3 rot = Select::selectedObj->GetTransform()->GetRotation();
-                if (axis == "X") rot = vec3(rot.x + combinedOffset * 10, rot.y, rot.z);
-                else if (axis == "Y") rot = vec3(rot.x, rot.y + combinedOffset * 10, rot.z);
-                else if (axis == "Z") rot = vec3(rot.x, rot.y, rot.z + combinedOffset * 10);
-                Select::selectedObj->GetTransform()->SetRotation(rot);
-                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-            }
-            else if (objectAction == ObjectAction::scale)
-            {
-                vec3 scale = Select::selectedObj->GetTransform()->GetScale();
-                if (axis == "X") scale = vec3(scale.x + combinedOffset, scale.y, scale.z);
-                else if (axis == "Y") scale = vec3(scale.x, scale.y + combinedOffset, scale.z);
-                else if (axis == "Z") scale = vec3(scale.x, scale.y, scale.z + combinedOffset);
+                    Select::selectedObj->GetTransform()->SetPosition(pos);
+                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                }
+                else if (objectAction == ObjectAction::rotate)
+                {
+                    vec3 rot = Select::selectedObj->GetTransform()->GetRotation();
+                    if (axis == "X") rot = vec3(rot.x + combinedOffset * 10, rot.y, rot.z);
+                    else if (axis == "Y") rot = vec3(rot.x, rot.y + combinedOffset * 10, rot.z);
+                    else if (axis == "Z") rot = vec3(rot.x, rot.y, rot.z + combinedOffset * 10);
+                    Select::selectedObj->GetTransform()->SetRotation(rot);
+                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                }
+                else if (objectAction == ObjectAction::scale)
+                {
+                    vec3 scale = Select::selectedObj->GetTransform()->GetScale();
+                    if (axis == "X") scale = vec3(scale.x + combinedOffset, scale.y, scale.z);
+                    else if (axis == "Y") scale = vec3(scale.x, scale.y + combinedOffset, scale.z);
+                    else if (axis == "Z") scale = vec3(scale.x, scale.y, scale.z + combinedOffset);
 
-                Select::selectedObj->GetTransform()->SetScale(scale);
-                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                    Select::selectedObj->GetTransform()->SetScale(scale);
+                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                }
+            }
+            else if (cameraEnabled)
+            {
+                float currentSpeed = stof(ConfigFile::GetValue("camera_speedMultiplier"));
+                float newSpeed = newSpeed = currentSpeed + currentSpeed * combinedOffset;
+
+                if (newSpeed > 100.0f) newSpeed = 100.0f;
+                if (newSpeed < 0.1f) newSpeed = 0.1f;
+
+                cout << "new speed: " << newSpeed << "\n";
+
+                ConfigFile::SetValue("camera_speedMultiplier", to_string(newSpeed));
             }
         }
     }
