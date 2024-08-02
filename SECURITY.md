@@ -1,30 +1,34 @@
 # Security Policy
 
+## Introduction
+
+This document outlines the security policies and procedures for reporting vulnerabilities in Elypso Engine and Elypso Hub. Please note that the game template is not covered under this policy and will not be supported in any shape or form.
+
+## Reporting a Vulnerability
+
+If you discover a security vulnerability, please follow the steps below:
+
+1. **Do not disclose it publicly**: To prevent any potential abuse of the vulnerability, do not discuss it in public forums, on social media, or in any other public space.
+2. **Contact us directly**: Send an email to [sanderveski@gmail.com](mailto:sanderveski@gmail.com) with the details of the vulnerability. Please include:
+    - A detailed description of the vulnerability.
+    - Steps to reproduce the issue.
+    - Any potential impacts.
+    - Suggested fixes, if possible.
+
+We aim to acknowledge your report within 48 hours and will work with you to understand and resolve the issue as quickly as possible.
+
 ## Supported Versions
 
-The following table shows which versions are supported with security updates.
-
+### Elypso Engine
 | Version | Supported          |
 | ------- | ------------------ |
 | 0.0.14 indev   | :white_check_mark: |
 | 0.0.13   | :white_check_mark: |
 | 0.0.12 and before  | :x:                |
 
-## Reporting a Vulnerability
+### Elypso Hub
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.0.0   | :white_check_mark: |
 
-Please fill in this form and send it to sanderveski@gmail.com with the title "Reporting a security issue for the Elypso Engine repository"
-
-Version:
-> insert your version
-
-Description:
-> Give atleast a two-sentence example of what happened
-
-Steps to reproduce:
-> Describe what you did to cause this security issue
-
-Mechanics:
-> Describe which mechanic(s) cause the issue
-
-Files:
-> insert screenshots or videos of what happened
+Thank you for helping to keep Elypso Engine and Elypso Hub secure!
