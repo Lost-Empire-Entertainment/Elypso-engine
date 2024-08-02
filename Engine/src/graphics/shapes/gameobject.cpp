@@ -167,7 +167,8 @@ namespace Graphics::Shape
 			break;
 		}
 
-		if (!localOnly)
+		if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::billboard
+			&& !localOnly)
 		{
 			string gameobjectsFolder = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
 			for (const auto& entry : directory_iterator(gameobjectsFolder))

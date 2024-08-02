@@ -427,7 +427,30 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					shared_ptr<GameObject> obj = PointLight::InitializePointLight();
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
+					string targetName = path(targetPath).stem().string();
+					File::CreateNewFolder(targetPath);
+
+					shared_ptr<GameObject> obj = 
+						PointLight::InitializePointLight(
+							vec3(0),
+							vec3(0),
+							vec3(1),
+							Engine::filesPath + "\\shaders\\Basic_model.vert",
+							Engine::filesPath + "\\shaders\\Basic.frag",
+							vec3(1),
+							1.0f,
+							1.0f,
+							targetName,
+							PointLight::tempID,
+
+							//billboard values
+							Engine::filesPath + "\\shaders\\Basic_texture.vert",
+							Engine::filesPath + "\\shaders\\Basic_texture.frag",
+							Engine::filesPath + "\\icons\\pointLight.png",
+							32,
+							PointLight::tempName,
+							PointLight::tempID);
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
@@ -436,7 +459,32 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					shared_ptr<GameObject> obj = SpotLight::InitializeSpotLight();
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
+					string targetName = path(targetPath).stem().string();
+					File::CreateNewFolder(targetPath);
+
+					shared_ptr<GameObject> obj = 
+						SpotLight::InitializeSpotLight(
+							vec3(0),
+							vec3(0),
+							vec3(1),
+							Engine::filesPath + "\\shaders\\Basic_model.vert",
+							Engine::filesPath + "\\shaders\\Basic.frag",
+							vec3(1),
+							1.0f,
+							1.0f,
+							12.5f,
+							17.5f,
+							targetName,
+							SpotLight::tempID,
+
+							//billboard values
+							Engine::filesPath + "\\shaders\\Basic_texture.vert",
+							Engine::filesPath + "\\shaders\\Basic_texture.frag",
+							Engine::filesPath + "\\icons\\spotLight.png",
+							32,
+							SpotLight::tempName,
+							SpotLight::tempID);
 
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;

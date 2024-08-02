@@ -28,7 +28,7 @@ namespace Graphics
 
 		static inline float fadeDistance;
 		static constexpr int lineCount = 10000; //BREAKS IF YOU PUT IT ABOVE 100000
-		static inline float lineDistance = 1.0f; //BREAKS IF YOU PUT IT BELOW 1.0f
+		static inline float lineDistance = 1.0f;
 		static inline float vertices[lineCount * 4 * 3];
 	};
 }

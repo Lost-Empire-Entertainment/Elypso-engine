@@ -142,13 +142,7 @@ namespace Graphics::Shape
 			billboardName,
 			billboardID);
 
-		if (name == tempName)
-		{
-			string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
-			File::CreateNewFolder(targetPath);
-			name = path(targetPath).stem().string();
-		}
-
+		if (name == tempName) name = "Point light";
 		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,

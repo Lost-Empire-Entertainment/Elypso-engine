@@ -595,7 +595,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
-				"Loading point light " + name + " for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+				"Loading light source '" + name + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
 			PointLight::InitializePointLight(
 				pos,
@@ -627,7 +627,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
-				"Loading spotlight " + name + " for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+				"Loading light source '" + name + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
 			SpotLight::InitializeSpotLight(
 				pos,
