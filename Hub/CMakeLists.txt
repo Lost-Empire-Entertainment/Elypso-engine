@@ -142,5 +142,23 @@ add_custom_command(TARGET Elypso_hub POST_BUILD
     $<TARGET_FILE_DIR:Elypso_hub>/README.md
 )
 
+# Copy "SECURITY.md" to install directory after build
+add_custom_command(TARGET Elypso_hub POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Elypso_hub>/SECURITY.md
+	COMMAND ${CMAKE_COMMAND} -E copy
+    ${PARENT_DIR_PATH}/SECURITY.md
+    $<TARGET_FILE_DIR:Elypso_hub>/SECURITY.md
+)
+
+# Copy "LIBRARIES.md" to install directory after build
+add_custom_command(TARGET Elypso_hub POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Elypso_hub>/LIBRARIES.md
+	COMMAND ${CMAKE_COMMAND} -E copy
+    ${PARENT_DIR_PATH}/LIBRARIES.md
+    $<TARGET_FILE_DIR:Elypso_hub>/LIBRARIES.md
+)
+
 # Include CPack to enable packaging
 include(CPack)
