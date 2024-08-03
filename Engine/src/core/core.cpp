@@ -51,7 +51,7 @@ namespace Core
 	{
 		if (IsThisProcessAlreadyRunning(name + ".exe"))
 		{
-			string title = "Engine already running";
+			string title = "Already running";
 			string message = "Error: '" + name + "' is already running!";
 
 			CreateErrorPopup(title.c_str(), message.c_str());
@@ -104,11 +104,11 @@ namespace Core
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
 				"\\Elypso engine";
 
-			if (!exists(docsPath)) create_directory(docsPath);
+			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 		}
 		else
 		{
-			Engine::CreateErrorPopup("Path load error", "Couldn't find engine documents folder! Shutting down.");
+			CreateErrorPopup("Path load error", "Couldn't find engine documents folder! Shutting down.");
 		}
 
 		//
@@ -118,7 +118,7 @@ namespace Core
 		path fsFilesPath = current_path().generic_string() + "\\files";
 		if (!exists(fsFilesPath))
 		{
-			Engine::CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
+			CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
 			return;
 		}
 		filesPath = String::CharReplace(fsFilesPath.string(), '/', '\\');
@@ -130,7 +130,7 @@ namespace Core
 		ifstream projectFile(filesPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
-			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down.");
+			CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down.");
 		}
 
 		//
@@ -182,7 +182,7 @@ namespace Core
 		ConsoleManager::WriteConsoleMessage(
 			Caller::INPUT,
 			Type::INFO,
-			Engine::name + " " + Engine::version + "\n" +
+			name + " " + version + "\n" +
 			"Copyright (C) Lost Empire Entertainment 2024\n\n",
 			true);
 
@@ -190,13 +190,13 @@ namespace Core
 
 		SceneFile::CheckForProjectFile();
 
-		string output = "Engine documents path: " + Engine::docsPath + "\n";
+		string output = "Engine documents path: " + docsPath + "\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			output);
 
-		output = "User engine files path: " + Engine::filesPath + "\n\n";
+		output = "User engine files path: " + filesPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,

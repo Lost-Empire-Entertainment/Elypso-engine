@@ -64,24 +64,26 @@ target_link_libraries(external_libs INTERFACE glad magic_enum)
 # Add your source files
 set(SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/main.cpp
+	${SRC_CORE_DIR}/console.cpp
 	${SRC_CORE_DIR}/core.cpp
-	${SRC_CORE_DIR}/input.cpp
-	${SRC_CORE_DIR}/timeManager.cpp
-	${SRC_FILE_DIR}/configFile.cpp
-	${SRC_FILE_DIR}/fileexplorer.cpp
-	${SRC_FILE_DIR}/sceneFile.cpp
+	#${SRC_CORE_DIR}/input.cpp
+	#${SRC_CORE_DIR}/timemanager.cpp
+	${SRC_FILE_DIR}/configfile.cpp
+	#${SRC_FILE_DIR}/fileexplorer.cpp
+	${SRC_FILE_DIR}/scenefile.cpp
 	${SRC_GRAPHICS_GUI_DIR}/gui.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/model.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/modelchild.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/spotlight.cpp
+	${SRC_GRAPHICS_GUI_DIR}/gui_console.cpp
+	#${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
+	#${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
+	#${SRC_GRAPHICS_SHAPE_DIR}/model.cpp
+	#${SRC_GRAPHICS_SHAPE_DIR}/modelchild.cpp
+	#${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp
+	#${SRC_GRAPHICS_SHAPE_DIR}/spotlight.cpp
 	${SRC_GRAPHICS_DIR}/render.cpp
-	${SRC_GRAPHICS_DIR}/shader.cpp
-	${SRC_GRAPHICS_DIR}/texture.cpp
-	${SRC_UTILS_DIR}/fileUtils.cpp
-	${SRC_UTILS_DIR}/stringUtils.cpp
+	#${SRC_GRAPHICS_DIR}/shader.cpp
+	#${SRC_GRAPHICS_DIR}/texture.cpp
+	${SRC_UTILS_DIR}/fileutils.cpp
+	${SRC_UTILS_DIR}/stringutils.cpp
 )
 
 # Add external source files

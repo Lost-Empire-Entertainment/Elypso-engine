@@ -36,7 +36,7 @@ int main()
 {
 	if (Core::IsThisProcessAlreadyRunning("Elypso hub.exe"))
 	{
-		string title = "Engine already running";
+		string title = "Already running";
 		string message = "Error: 'Elypso hub' is already running!";
 
 		Core::CreateErrorPopup(title.c_str(), message.c_str());
