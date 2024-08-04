@@ -1,6 +1,7 @@
-//This script is a part of the Game Template that is distributed by Elypso Engine.
-//If you have access to this script then you have full freedom to do anything with it.
-//A copy of the MIT license has been included in LICENSE.md
+//Copyright(C) 2024 Lost Empire Entertainment
+//This program comes with ABSOLUTELY NO WARRANTY.
+//This is free software, and you are welcome to redistribute it under certain conditions.
+//Read LICENSE.md for more information.
 
 //game
 #include "scenefile.hpp"
