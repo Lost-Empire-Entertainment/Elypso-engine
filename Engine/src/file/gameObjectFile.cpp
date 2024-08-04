@@ -19,6 +19,7 @@
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
+#include "gui_floatingdebugmenu.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -39,6 +40,7 @@ using Graphics::Shape::Material;
 using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
+using Graphics::GUI::GUIFloatingDebugMenu;
 
 namespace EngineFile
 {
@@ -206,6 +208,8 @@ namespace EngineFile
 			Type::DEBUG,
 			"Started loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
+		GUIFloatingDebugMenu::waitBeforeUpdate = true;
+
 		for (const auto& file : directory_iterator(targetPath))
 		{
 			bool successfulLoad = true;
@@ -278,6 +282,9 @@ namespace EngineFile
 
 			if (successfulLoad) LoadGameObject(data, path(file).stem().string());
 		}
+
+		GUIFloatingDebugMenu::waitBeforeUpdate = false;
+		GUIFloatingDebugMenu::UpdateCounts();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

@@ -10,8 +10,18 @@ namespace Graphics::GUI
 	class GUIFloatingDebugMenu
 	{
 	public:
+		static inline bool waitBeforeUpdate;
+
 		static void RenderFloatingDebugMenu();
+
+		/// <summary>
+		/// Updates floating debug menu vertice and object counts
+		/// </summary>
+		static void UpdateCounts();
 	private:
+		static inline int objectsCount = 0;
+		static inline int verticesCount = 0;
+
 		static void FloatingDebugMenuContent();
 	};
 }

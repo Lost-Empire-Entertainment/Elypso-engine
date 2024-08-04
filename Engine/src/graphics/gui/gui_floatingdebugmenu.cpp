@@ -29,6 +29,7 @@ using EngineFile::SceneFile;
 using Graphics::Grid;
 using EngineFile::ConfigFile;
 using Utils::String;
+using Graphics::Shape::GameObjectManager;
 
 namespace Graphics::GUI
 {
@@ -57,6 +58,11 @@ namespace Graphics::GUI
 		//
 
 		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
+
+		string strObjectsCount = "Objects: " + to_string(objectsCount);
+		ImGui::Text(strObjectsCount.c_str());
+		string strVerticesCount = "Vertices: " + to_string(verticesCount);
+		ImGui::Text(strVerticesCount.c_str());
 
 		ImGui::Text(
 			"Position: %.2f, %.2f, %.2f",
@@ -199,6 +205,20 @@ namespace Graphics::GUI
 			
 			ConfigFile::SetValue("grid_maxDistance", to_string(gridMaxDistance));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+	}
+
+	void GUIFloatingDebugMenu::UpdateCounts()
+	{
+		if (!waitBeforeUpdate)
+		{
+			objectsCount = static_cast<int>(GameObjectManager::GetObjects().size());
+
+			verticesCount = 0;
+			for (const shared_ptr<GameObject>& obj : GameObjectManager::GetObjects())
+			{
+				verticesCount += static_cast<int>(obj->GetMesh()->GetVertices().size());
+			}
 		}
 	}
 }

@@ -19,6 +19,7 @@
 #include "billboard.hpp"
 #include "console.hpp"
 #include "fileUtils.hpp"
+#include "gui_floatingdebugmenu.hpp"
 
 using std::to_string;
 using glm::translate;
@@ -40,6 +41,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::File;
+using Graphics::GUI::GUIFloatingDebugMenu;
 
 namespace Graphics::Shape
 {
@@ -159,6 +161,8 @@ namespace Graphics::Shape
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddPointLight(obj);
+
+		GUIFloatingDebugMenu::UpdateCounts();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

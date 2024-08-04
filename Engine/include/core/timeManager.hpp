@@ -31,6 +31,6 @@ namespace Core
 		static inline double smoothing_interval;
 		static inline high_resolution_clock::time_point last_smoothed_update;
 		static inline high_resolution_clock::time_point current_time;
-		static inline 	duration<double> elapsed_seconds;
+		static inline duration<double> elapsed_seconds;
 	};
 }
