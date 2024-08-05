@@ -135,7 +135,8 @@ void GUI::RenderPanels()
 
 			ImGui::SetWindowSize(ImVec2(static_cast<float>(framebufferWidth) - 335, 200));
 
-			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)
+				&& !CreateProject::renderCreateProjectWindow)
 			{
 				ImGui::SetWindowFocus();
 			}
@@ -277,6 +278,9 @@ void GUI::RemoveProject(const string& projectPath)
 		return;
 	}
 
+	string projectsFile = Core::enginePath.parent_path().string() + "\\files\\project.txt";
+	if (exists(projectsFile)) remove(projectsFile);
+
 	remove_all(projectPath);
 	UpdateFileList();
 
@@ -320,13 +324,11 @@ void GUI::RunProject(const string& targetProject)
 	}
 
 	//copy project.txt to files folder if it doesnt exist
-	string engineFilesFolderPath = Core::enginePath.parent_path().string() + "/files";
 	string originalProjectFile = targetProject + "/project.txt";
-	string targetProjectFile = engineFilesFolderPath + "/project.txt";
-	if (!exists(targetProjectFile))
-	{
-		copy(originalProjectFile, targetProjectFile);
-	}
+	string targetProjectFile = Core::enginePath.parent_path().string() + "\\files\\project.txt";
+	if (exists(targetProjectFile)) remove(targetProjectFile);
+
+	copy(originalProjectFile, targetProjectFile);
 
 	GUI::RunApplication(
 		Core::enginePath.parent_path().string(),
