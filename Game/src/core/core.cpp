@@ -7,8 +7,8 @@
 #include <Windows.h>
 #include <ShlObj.h>
 #include <fstream>
-
 #include <filesystem>
+#include <TlHelp32.h>
 
 //game
 #include "core.hpp"
@@ -18,6 +18,7 @@
 #include "scenefile.hpp"
 #include "configfile.hpp"
 #include "render.hpp"
+#include "gui.hpp"
 
 using std::cout;
 using std::string;
@@ -34,6 +35,7 @@ using GameFile::ConfigFile;
 using Graphics::Render;
 using Caller = Core::Console::Caller;
 using Type = Core::Console::Type;
+using Graphics::GUI::GameGUI;
 
 namespace Core
 {
@@ -94,71 +96,106 @@ namespace Core
 
 			docsPath = String::CharReplace(
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\Elypso engine";
+				"\\" + gameName;
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 		}
 		else
 		{
-			CreateErrorPopup("Path load error", "Couldn't find engine documents folder! Shutting down.");
+			CreateErrorPopup(
+				"Path load error", 
+				"Couldn't find engine documents folder! Shutting down.");
 		}
 
 		//
-		// SET FILES PATH
+		// SET INTERNAL AND EXTERNAL FILE PATHS
 		//
 
-		path fsFilesPath = current_path().generic_string() + "\\files";
+		path fsFilesPath = current_path().generic_string() + "\\files\\game";
 		if (!exists(fsFilesPath))
 		{
-			CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
+			CreateErrorPopup(
+				"Path load error", 
+				"Couldn't find game files folder! Shutting down.");
 			return;
 		}
 		filesPath = String::CharReplace(fsFilesPath.string(), '/', '\\');
 
+		path fsExtFilesPath = current_path().generic_string() + "\\files\\project";
+		if (!exists(fsExtFilesPath))
+		{
+			CreateErrorPopup(
+				"Path load error",
+				"Couldn't find project files folder! Shutting down.");
+			return;
+		}
+		externalFilesPath = String::CharReplace(fsExtFilesPath.string(), '/', '\\');
+
 		//
-		// CHECK IF HUB PROJECT EXISTS OR NOT
+		// FIND FIRST SCENE FILE
 		//
 
-		ifstream projectFile(filesPath + "\\project.txt");
-		if (!projectFile.is_open())
+		string firstSceneFile = externalFilesPath + "\\firstscene.txt";
+		if (!exists(firstSceneFile))
 		{
-			CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down.");
+			CreateErrorPopup(
+				"Path load error",
+				"Couldn't find first scene file! Shutting down.");
+			return;
 		}
 
-		//
-		// SET SCENE AND PROJECT PATHS
-		//
+		ifstream fscnFile(firstSceneFile);
+		if (!fscnFile.is_open())
+		{
+			CreateErrorPopup(
+				"File read error",
+				"Couldn't read first scene file! Shutting down.");
+			return;
+		}
 
 		string line;
-		while (getline(projectFile, line))
+		while (getline(fscnFile, line))
 		{
 			if (!line.empty())
 			{
-				size_t pos_scene = line.find("scene:");
-				if (pos_scene != string::npos)
-				{
-					string removable = "scene: ";
-					size_t pos = line.find(removable);
-					scenePath = line.erase(pos, removable.length());
-				}
-
-				size_t pos_project = line.find("project:");
-				if (pos_project != string::npos)
-				{
-					string removable = "project: ";
-					size_t pos = line.find(removable);
-					projectPath = line.erase(pos, removable.length());
-				}
+				scenePath = line;
+				break;
 			}
 		}
-		projectFile.close();
+		if (scenePath == ""
+			|| !exists(scenePath))
+		{
+			CreateErrorPopup(
+				"Path load error",
+				"Couldn't find or open scene file! Shutting down.");
+			return;
+		}
 
 		//
 		// SET SCENES AND TEXTURES PATHS
 		//
 
-		scenesPath = path(projectPath).parent_path().string() + "\\scenes";
-		texturesPath = path(projectPath).parent_path().string() + "\\textures";
+		scenesPath = path(externalFilesPath).string() + "\\scenes";
+		if (!exists(scenesPath))
+		{
+			CreateErrorPopup(
+				"Path load error",
+				"Couldn't find scenes folder! Shutting down.");
+			return;
+		}
+		string output = "Game scenes path: " + scenesPath + "\n";
+		cout << output << "\n";
+
+		texturesPath = path(externalFilesPath).string() + "\\textures";
+		if (!exists(scenesPath))
+		{
+			CreateErrorPopup(
+				"Path load error",
+				"Couldn't find textures folder! Shutting down.");
+			return;
+		}
+		output = "Game textures path: " + texturesPath + "\n";
+		cout << output << "\n";
 
 		//
 		// REST OF THE INITIALIZATION
@@ -177,13 +214,15 @@ namespace Core
 
 		SceneFile::CheckForProjectFile();
 
-		string output = "Game documents path: " + docsPath + "\n";
+		output = "Game documents path: " + docsPath + "\n";
+		cout << output << "\n";
 		Console::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			output);
 
-		output = "User engine files path: " + filesPath + "\n\n";
+		output = "Game files path: " + filesPath + "\n\n";
+		cout << output << "\n";
 		Console::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
@@ -200,18 +239,116 @@ namespace Core
 		cout << "run\n";
 	}
 
-	void Game::Shutdown()
+	void Game::Shutdown(bool immediate)
 	{
-		cout << "end\n";
+		if (immediate)
+		{
+			Console::CloseLogger();
+			GameGUI::Shutdown();
+			//glfwTerminate();
+			ExitProcess(1);
+		}
+		else
+		{
+			if (SceneFile::unsavedChanges == true)
+			{
+				//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
+				/*
+				if (glfwGetWindowAttrib(Render::window, GLFW_ICONIFIED))
+				{
+					glfwRestoreWindow(Render::window);
+				}
+				glfwFocusWindow(Render::window);
+
+				glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+				GameGUI::renderUnsavedShutdownWindow = true;
+				*/
+			}
+			else
+			{
+				ConfigFile::SaveConfigFile();
+
+				Console::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"==================================================\n\n",
+					true);
+
+				Console::WriteConsoleMessage(
+					Caller::SHUTDOWN,
+					Type::INFO,
+					"Cleaning up resources...\n");
+
+				GameGUI::Shutdown();
+
+				//clean all glfw resources after program is closed
+				//glfwTerminate();
+
+				Console::WriteConsoleMessage(
+					Caller::SHUTDOWN,
+					Type::INFO,
+					"Shutdown complete!\n");
+
+				cout << "\n==================================================\n"
+					<< "\n"
+					<< "EXITED GAME\n"
+					<< "\n"
+					<< "==================================================\n"
+					<< ".\n"
+					<< ".\n"
+					<< ".\n\n";
+
+				Console::CloseLogger();
+			}
+		}
 	}
 
 	bool Game::IsThisProcessAlreadyRunning(const string& processName)
 	{
-		return false;
+		HANDLE hProcessSnap;
+		PROCESSENTRY32 pe32{};
+		bool processFound = false;
+		DWORD currentProcessId = GetCurrentProcessId();
+
+		//take a snapshot of all processes
+		hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (hProcessSnap == INVALID_HANDLE_VALUE)
+		{
+			cout << "Error: CreateToolhelp32Snapshot failed!\n";
+			return false;
+		}
+
+		pe32.dwSize = sizeof(PROCESSENTRY32);
+
+		if (!Process32First(hProcessSnap, &pe32))
+		{
+			cout << "Error: Process32First failed!\n";
+			CloseHandle(hProcessSnap);
+			return false;
+		}
+
+		do
+		{
+			//compare the current process name with the one to check
+			if (_stricmp(pe32.szExeFile, processName.c_str()) == 0)
+			{
+				//check if this is not the current process
+				if (pe32.th32ProcessID != currentProcessId)
+				{
+					processFound = true;
+					break;
+				}
+			}
+		} while (Process32Next(hProcessSnap, &pe32));
+
+		CloseHandle(hProcessSnap);
+		return processFound;
 	}
 
-	void Game::CreateErrorPopup(const string& title, const string& description)
+	void Game::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
 	{
+		int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
 
+		if (result == IDOK) Shutdown(true);
 	}
 }

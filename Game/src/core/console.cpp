@@ -13,6 +13,11 @@ namespace Core
 
 	}
 
+	void Console::CloseLogger()
+	{
+
+	}
+
 	void Console::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool internalMessage)
 	{
 

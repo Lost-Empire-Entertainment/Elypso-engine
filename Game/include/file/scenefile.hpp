@@ -14,6 +14,8 @@ namespace GameFile
 	class SceneFile
 	{
 	public:
+		static inline bool unsavedChanges;
+
 		static void CheckForProjectFile();
 
 		static void SaveScene();

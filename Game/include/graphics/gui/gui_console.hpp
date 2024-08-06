@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace Graphics::GameGUI
+namespace Graphics::GUI
 {
 	class GUI_Console 
 	{

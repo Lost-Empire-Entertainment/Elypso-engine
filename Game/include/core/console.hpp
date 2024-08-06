@@ -17,7 +17,8 @@ namespace Core
 		enum Caller
 		{
 			FILE,
-			INPUT
+			INPUT,
+			SHUTDOWN
 		};
 
 		enum Type
@@ -28,6 +29,7 @@ namespace Core
 		};
 
 		static void InitializeLogger();
+		static void CloseLogger();
 
 		/// <summary>
 		/// Print selected message to in-game console.

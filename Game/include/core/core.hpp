@@ -17,18 +17,24 @@ namespace Core
 		static inline string gameName;
 		static inline string gameVersion;
 
+		//internal paths
 		static inline string docsPath;
+		static inline string projectPath;
 		static inline string filesPath;
+		static inline string texturesPath;
+
+		//external paths
+		static inline string externalFilesPath;
 		static inline string scenePath;
 		static inline string scenesPath;
-		static inline string texturesPath;
-		static inline string projectPath;
 
 		static void Initialize();
 		static void Run();
-		static void Shutdown();
+		static void Shutdown(bool immediate = false);
 
 		static bool IsThisProcessAlreadyRunning(const string& processName);
-		static void CreateErrorPopup(const string& title, const string& message);
+		static void CreateErrorPopup(
+			const char* errorTitle = "INSERT ERROR TITLE", 
+			const char* errorMessage = "INSERT ERROR MESSAGE");
 	};
 }

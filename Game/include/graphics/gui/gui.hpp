@@ -5,11 +5,12 @@
 
 #pragma once
 
-namespace Graphics
+namespace Graphics::GUI
 {
 	class GameGUI
 	{
 	public:
-
+		static void Initialize();
+		static void Shutdown();
 	};
 }
