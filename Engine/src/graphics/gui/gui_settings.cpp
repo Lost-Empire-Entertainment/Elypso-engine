@@ -27,6 +27,7 @@
 #include "fileexplorer.hpp"
 #include "configFile.hpp"
 #include "stringUtils.hpp"
+#include "gui_projectitemslist.hpp"
 
 using std::to_string;
 using std::stof;
@@ -195,6 +196,16 @@ namespace Graphics::GUI
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Set first scene");
+		if (ImGui::Button("Select start scene"))
+		{
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::Scenes;
+			GUIProjectItemsList::selectStartScene = true;
+			GUIProjectItemsList::renderProjectItemsList = true;
 		}
 	}
 }

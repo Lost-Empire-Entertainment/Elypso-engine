@@ -171,7 +171,14 @@ namespace Graphics::GUI
 						ConsoleType::EXCEPTION,
 						"Cannot switch to scene '" + path(selectedPath).parent_path().stem().string() + "' because it is already open!\n");
 				}
-				else SceneFile::LoadScene(selectedPath);
+				else
+				{
+					if (!selectStartScene) SceneFile::LoadScene(selectedPath);
+					else
+					{
+						Engine::gameFirstScene = path(selectedPath).stem().string();
+					}
+				}
 				break;
 			}
 			}

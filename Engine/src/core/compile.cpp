@@ -71,7 +71,7 @@ namespace Core
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Compilation failed at bat file stage! Please contact developers for more info.\n");
+						"Compilation failed because the bat file failed to finish!\n");
 
 					renderBuildingWindow = false;
 
@@ -132,37 +132,28 @@ namespace Core
 				}
 
 				//
-				// CREATE SCENES FILE FOR GAME THAT LISTS ALL SCENES CREATED IN THIS PROJECT
+				// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
 				//
 
-				string sceneFilesPath = gameDocsFolder + "\\scenes.txt";
-				if (exists(sceneFilesPath)) File::DeleteFileOrfolder(sceneFilesPath);
+				string firstSceneFilePath = gameDocsFolder + "\\firstScene.txt";
+				if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
 
-				ofstream scenesFile(sceneFilesPath);
-				if (!scenesFile.is_open())
+				ofstream firstSceneFile(firstSceneFilePath);
+				if (!firstSceneFile.is_open())
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Compilation failed because scenes file couldnt be created! Please contact developers for more info.\n");
+						"Compilation failed because first scene file couldnt be created!\n");
 
 					renderBuildingWindow = false;
 
 					return;
 				}
 
-				for (const auto& entry : directory_iterator(path(gameDocsFolder)))
-				{
-					string stem = path(entry).stem().string();
+				firstSceneFile << "...\n";
 
-					if (stem != "scenes"
-						&& stem != "config")
-					{
-						scenesFile << entry << "\n";
-					}
-				}
-
-				scenesFile.close();
+				firstSceneFile.close();
 
 				//
 				// FINISHED COMPILATION

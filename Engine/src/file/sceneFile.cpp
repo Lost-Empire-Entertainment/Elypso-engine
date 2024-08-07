@@ -210,6 +210,11 @@ namespace EngineFile
 
 		projFile.close();
 
+		if (Engine::gameFirstScene == "")
+		{
+			Engine::gameFirstScene = path(scenePath).stem().string();
+		}
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::INFO,

@@ -31,6 +31,7 @@ namespace Graphics::GUI
 		};
 
 		static inline bool renderProjectItemsList;
+		static inline bool selectStartScene;
 		static inline string selectedPath;
 		static inline Type type;
 		static inline Material::TextureType textureType;
