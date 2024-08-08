@@ -211,6 +211,7 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Open scene"))
 			{
 				GUIProjectItemsList::type = GUIProjectItemsList::Type::Scenes;
+				GUIProjectItemsList::selectStartScene = false;
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}
 

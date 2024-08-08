@@ -19,6 +19,7 @@
 #include "configfile.hpp"
 #include "render.hpp"
 #include "gui.hpp"
+#include "timemanager.hpp"
 
 using std::cout;
 using std::string;
@@ -27,6 +28,7 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::current_path;
 using std::ifstream;
+using std::filesystem::directory_iterator;
 
 using Utils::String;
 using Utils::File;
@@ -36,12 +38,23 @@ using Graphics::Render;
 using Caller = Core::Console::Caller;
 using Type = Core::Console::Type;
 using Graphics::GUI::GameGUI;
+using Core::TimeManager;
 
 namespace Core
 {
 	void Game::Initialize()
 	{
 		cout << "start\n";
+
+		for (const auto& entry : directory_iterator(current_path()))
+		{
+			string extension = path(entry).extension().string();
+			if (extension == ".exe")
+			{
+				gameName = path(entry).stem().string();
+				break;
+			}
+		}
 
 		if (IsThisProcessAlreadyRunning(gameName + ".exe"))
 		{
@@ -96,7 +109,7 @@ namespace Core
 
 			docsPath = String::CharReplace(
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\" + gameName;
+				"\\My Games\\" + gameName;
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 		}
@@ -104,7 +117,7 @@ namespace Core
 		{
 			CreateErrorPopup(
 				"Path load error", 
-				"Couldn't find engine documents folder! Shutting down.");
+				"Couldn't find game documents folder! Shutting down.");
 		}
 
 		//
@@ -135,9 +148,11 @@ namespace Core
 		// FIND FIRST SCENE FILE
 		//
 
-		string firstSceneFile = externalFilesPath + "\\firstscene.txt";
+		string firstSceneFile = docsPath + "\\firstScene.txt";
 		if (!exists(firstSceneFile))
 		{
+			cout << "failed to find first scene file from " << firstSceneFile << "\n";
+
 			CreateErrorPopup(
 				"Path load error",
 				"Couldn't find first scene file! Shutting down.");
@@ -158,18 +173,24 @@ namespace Core
 		{
 			if (!line.empty())
 			{
-				scenePath = line;
+				string parentPath = path(firstSceneFile).parent_path().string() + "\\scenes";
+				scenePath = parentPath + "\\" + line + "\\scene.txt";
 				break;
 			}
 		}
+
 		if (scenePath == ""
 			|| !exists(scenePath))
 		{
+			cout << "failed to load scene file from path " << scenePath << "\n";
+
 			CreateErrorPopup(
 				"Path load error",
 				"Couldn't find or open scene file! Shutting down.");
 			return;
 		}
+
+		cout << "loaded scene " << path(scenePath).parent_path().stem().string() << "\n";
 
 		//
 		// SET SCENES AND TEXTURES PATHS
@@ -178,6 +199,8 @@ namespace Core
 		scenesPath = path(externalFilesPath).string() + "\\scenes";
 		if (!exists(scenesPath))
 		{
+			cout << "failed to load scenes folder from path " << scenesPath << "\n";
+
 			CreateErrorPopup(
 				"Path load error",
 				"Couldn't find scenes folder! Shutting down.");
@@ -206,7 +229,7 @@ namespace Core
 		Console::WriteConsoleMessage(
 			Caller::INPUT,
 			Type::INFO,
-			gameName + " " + gameVersion + "\n" +
+			gameName + "\n" +
 			"Initializing game...\n\n",
 			true);
 
@@ -230,13 +253,36 @@ namespace Core
 
 		Render::Initialize();
 
-		//first scene is actually loaded when engine is ready for use
+		//first scene is actually loaded when game is ready for use
 		SceneFile::LoadScene(scenePath);
 	}
 
 	void Game::Run()
 	{
-		cout << "run\n";
+		Console::WriteConsoleMessage(
+			Caller::INPUT,
+			Type::DEBUG,
+			"Reached window loop successfully!\n\n");
+
+		Console::WriteConsoleMessage(
+			Caller::INPUT,
+			Type::INFO,
+			"==================================================\n\n",
+			true,
+			false);
+
+		startedWindowLoop = true;
+		if (!Console::storedLogs.empty())
+		{
+			Console::PrintLogsToBuffer();
+		}
+
+		while (!glfwWindowShouldClose(Render::window))
+		{
+			TimeManager::UpdateDeltaTime();
+
+			Render::WindowLoop();
+		}
 	}
 
 	void Game::Shutdown(bool immediate)
@@ -245,15 +291,15 @@ namespace Core
 		{
 			Console::CloseLogger();
 			GameGUI::Shutdown();
-			//glfwTerminate();
+			glfwTerminate();
 			ExitProcess(1);
 		}
 		else
 		{
 			if (SceneFile::unsavedChanges == true)
 			{
-				//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
 				/*
+				//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
 				if (glfwGetWindowAttrib(Render::window, GLFW_ICONIFIED))
 				{
 					glfwRestoreWindow(Render::window);
@@ -282,7 +328,7 @@ namespace Core
 				GameGUI::Shutdown();
 
 				//clean all glfw resources after program is closed
-				//glfwTerminate();
+				glfwTerminate();
 
 				Console::WriteConsoleMessage(
 					Caller::SHUTDOWN,

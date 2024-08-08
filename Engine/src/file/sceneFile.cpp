@@ -212,7 +212,12 @@ namespace EngineFile
 
 		if (Engine::gameFirstScene == "")
 		{
-			Engine::gameFirstScene = path(scenePath).stem().string();
+			Engine::gameFirstScene = path(scenePath).parent_path().stem().string();
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::INFO,
+				"Set game first scene to " + Engine::gameFirstScene + "\n");
 		}
 
 		ConsoleManager::WriteConsoleMessage(

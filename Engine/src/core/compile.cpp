@@ -61,10 +61,15 @@ namespace Core
 				gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
 				if (!exists(gameBatPath)) return;
 				int result = File::RunBatFile(gameBatPath, false, File::BatType::compile);
-				File::MoveOrRenameFileOrFolder(
-					Engine::gameParentPath + "\\Game.exe",
-					Engine::gameExePath,
-					true);
+
+				string gameStem = path(Engine::gameExePath).stem().string();
+				if (gameStem != "Game")
+				{
+					File::MoveOrRenameFileOrFolder(
+						Engine::gameParentPath + "\\Game.exe",
+						Engine::gameExePath,
+						true);
+				}
 
 				if (result != 0)
 				{
@@ -109,8 +114,10 @@ namespace Core
 				//
 
 				string gameName = path(Engine::gameExePath).stem().string();
-				string gameDocsFolder = path(Engine::docsPath).parent_path().string() + "\\" + gameName;
+				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
 
+				string gameDocsFolder = myGamesFolder + "\\" + gameName;
 				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
 
 				File::CreateNewFolder(gameDocsFolder);
@@ -151,7 +158,7 @@ namespace Core
 					return;
 				}
 
-				firstSceneFile << "...\n";
+				firstSceneFile << Engine::gameFirstScene;
 
 				firstSceneFile.close();
 

@@ -29,6 +29,7 @@
 #include "selectedobjectborder.hpp"
 #include "sceneFile.hpp"
 #include "configFile.hpp"
+#include "input.hpp"
 
 using glm::perspective;
 using glm::radians;
@@ -58,7 +59,7 @@ using EngineFile::ConfigFile;
 
 namespace Graphics
 {
-	Input Render::camera(Render::window);
+	Camera Render::camera(Render::window, 0.05f);
 
 	void Render::RenderSetup()
 	{
@@ -190,7 +191,7 @@ namespace Graphics
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
 		//Calculate the new aspect ratio
-		Input::aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+		Camera::aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
 		//Set the viewport based on the aspect ratio
 		glViewport(0, 0, width, height);
@@ -231,7 +232,7 @@ namespace Graphics
 		float farClip = stof(ConfigFile::GetValue("camera_farClip"));
 		projection = perspective(
 			radians(fov),
-			Input::aspectRatio,
+			Camera::aspectRatio,
 			nearClip,
 			farClip);
 

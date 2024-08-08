@@ -11,6 +11,11 @@ namespace Graphics::GUI
 	{
 	public:
 		static void Initialize();
+		static void Render();
 		static void Shutdown();
+
+		static int GetScreenWidth();
+		static int GetScreenHeight();
+		static float GetScreenRefreshRate();
 	};
 }

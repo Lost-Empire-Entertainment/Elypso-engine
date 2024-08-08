@@ -13,6 +13,11 @@ namespace Core
 
 	}
 
+	void Console::PrintLogsToBuffer()
+	{
+
+	}
+
 	void Console::CloseLogger()
 	{
 

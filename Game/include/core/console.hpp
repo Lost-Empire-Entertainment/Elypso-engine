@@ -6,8 +6,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 using std::string;
+using std::vector;
 
 namespace Core
 {
@@ -18,6 +20,7 @@ namespace Core
 		{
 			FILE,
 			INPUT,
+			INITIALIZE,
 			SHUTDOWN
 		};
 
@@ -28,7 +31,10 @@ namespace Core
 			EXCEPTION
 		};
 
+		static inline vector<string> storedLogs;
+
 		static void InitializeLogger();
+		static void PrintLogsToBuffer();
 		static void CloseLogger();
 
 		/// <summary>

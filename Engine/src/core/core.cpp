@@ -223,9 +223,9 @@ namespace Core
 			false);
 
 		startedWindowLoop = true;
-		if (!Core::ConsoleManager::storedLogs.empty()) 
+		if (!ConsoleManager::storedLogs.empty())
 		{
-			Core::ConsoleManager::PrintLogsToBuffer();
+			ConsoleManager::PrintLogsToBuffer();
 		}
 
 		while (!glfwWindowShouldClose(Render::window))

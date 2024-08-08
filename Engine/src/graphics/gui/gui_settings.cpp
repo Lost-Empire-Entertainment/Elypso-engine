@@ -146,16 +146,12 @@ namespace Graphics::GUI
 	void GUISettings::OtherSettings()
 	{
 		ImGui::Text("Set game name");
-		ImGui::SameLine();
-		ImGui::PushItemWidth(150);
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 250);
 		if (gameName == "") gameName = "Game";
 		strcpy_s(gameNameChar, bufferSize, gameName.c_str());
 		if (ImGui::InputText("##objName", gameNameChar, bufferSize))
 		{
 			gameName = gameNameChar;
 		}
-		ImGui::PopItemWidth();
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetTooltip(Engine::gameExePath.c_str());

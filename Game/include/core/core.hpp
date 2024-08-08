@@ -15,7 +15,6 @@ namespace Core
 	{
 	public:
 		static inline string gameName;
-		static inline string gameVersion;
 
 		//internal paths
 		static inline string docsPath;
@@ -28,13 +27,15 @@ namespace Core
 		static inline string scenePath;
 		static inline string scenesPath;
 
+		static inline bool startedWindowLoop;
+
 		static void Initialize();
 		static void Run();
 		static void Shutdown(bool immediate = false);
 
 		static bool IsThisProcessAlreadyRunning(const string& processName);
 		static void CreateErrorPopup(
-			const char* errorTitle = "INSERT ERROR TITLE", 
-			const char* errorMessage = "INSERT ERROR MESSAGE");
+			const char* errorTitle = "MISSING ERROR TITLE", 
+			const char* errorMessage = "MISSING ERROR MESSAGE");
 	};
 }

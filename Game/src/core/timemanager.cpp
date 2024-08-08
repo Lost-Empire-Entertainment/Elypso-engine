@@ -11,7 +11,7 @@
 
 //engine
 #include "input.hpp"
-#include "timeManager.hpp"
+#include "timemanager.hpp"
 
 using std::cout;
 using std::to_string;
@@ -29,15 +29,15 @@ namespace Core
         last_smoothed_update = last_frame_time;
 
         //how often should displayed framerate update
-        smoothing_interval = 0.1; 
+        smoothing_interval = 0.1;
     }
 
-	void TimeManager::UpdateDeltaTime()
-	{
-        high_resolution_clock::time_point current_time = 
+    void TimeManager::UpdateDeltaTime()
+    {
+        high_resolution_clock::time_point current_time =
             high_resolution_clock::now();
-        frame_duration = 
-            current_time 
+        frame_duration =
+            current_time
             - last_frame_time;
         deltaTime = frame_duration.count();
 
@@ -51,17 +51,17 @@ namespace Core
         smoothed_frame_count++;
 
         current_time = high_resolution_clock::now();
-        elapsed_seconds = 
-            current_time - 
+        elapsed_seconds =
+            current_time -
             last_smoothed_update;
-        if (elapsed_seconds.count() 
+        if (elapsed_seconds.count()
             >= smoothing_interval)
         {
-            displayedFPS = 
-                static_cast<double>(smoothed_frame_count) 
+            displayedFPS =
+                static_cast<double>(smoothed_frame_count)
                 / elapsed_seconds.count();
             smoothed_frame_count = 0;
             last_smoothed_update = current_time;
         }
-	}
+    }
 }

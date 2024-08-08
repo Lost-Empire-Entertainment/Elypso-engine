@@ -19,7 +19,7 @@ set "cpinf=[CPACK_INFO]"
 set "cpexc=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
-set "documentsPath=%USERPROFILE%\Documents\Game"
+set "documentsPath=%USERPROFILE%\Documents\My Games\Game"
 set "outPath=%~dp0out"
 set "vsPath=%~dp0.vs"
 
@@ -63,7 +63,7 @@ echo 1. Build Game
 echo 2. Exit
 echo.
 echo 9. Clean Visual Studio (DELETES OUT AND .VS FOLDERS)
-echo 0. Clean game (DELETES BUILD AND ENGINE DOCUMENTS FOLDERS)
+echo 0. Clean game (DELETES BUILD AND GAME DOCUMENTS FOLDERS)
 echo.
 set /p choice="Choice: "
 
@@ -196,7 +196,7 @@ if exist "%buildPath%" (
 	rd /s /q "%buildPath%"
 )
 if exist "%documentsPath%" (
-	echo %gcln% Deleted folder: Documents/Game
+	echo %gcln% Deleted folder: Documents/My Games/Game
 	rd /s /q "%documentsPath%"
 )
 	

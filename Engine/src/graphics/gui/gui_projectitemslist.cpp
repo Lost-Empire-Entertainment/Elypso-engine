@@ -164,21 +164,27 @@ namespace Graphics::GUI
 			}
 			case Type::Scenes:
 			{
-				if (Engine::scenePath == selectedPath)
+				if (!selectStartScene)
 				{
-					ConsoleManager::WriteConsoleMessage(
-						ConsoleCaller::FILE,
-						ConsoleType::EXCEPTION,
-						"Cannot switch to scene '" + path(selectedPath).parent_path().stem().string() + "' because it is already open!\n");
+					if (Engine::scenePath == selectedPath)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::FILE,
+							ConsoleType::EXCEPTION,
+							"Cannot switch to scene '" + path(selectedPath).parent_path().stem().string() + "' because it is already open!\n");
+					}
+					else SceneFile::LoadScene(selectedPath);
 				}
 				else
 				{
-					if (!selectStartScene) SceneFile::LoadScene(selectedPath);
-					else
-					{
-						Engine::gameFirstScene = path(selectedPath).stem().string();
-					}
+					Engine::gameFirstScene = path(selectedPath).parent_path().stem().string();
+
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::INPUT,
+						ConsoleType::INFO,
+						"Set game first scene to " + Engine::gameFirstScene + "\n");
 				}
+
 				break;
 			}
 			}

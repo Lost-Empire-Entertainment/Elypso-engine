@@ -9,7 +9,7 @@
 
 //engine
 #include "gameobject.hpp"
-#include "input.hpp"
+#include "camera.hpp"
 #include "shader.hpp"
 
 using std::vector;
@@ -17,7 +17,7 @@ using glm::vec3;
 using glm::mat4;
 
 using Graphics::Shape::GameObject;
-using Core::Input;
+using Graphics::Camera;
 
 namespace Graphics
 {
@@ -35,7 +35,7 @@ namespace Graphics
 		static inline mat4 projection;
 		static inline mat4 view;
 
-		static Input camera;
+		static Camera camera;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
