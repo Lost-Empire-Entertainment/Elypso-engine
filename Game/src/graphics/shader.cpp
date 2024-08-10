@@ -12,10 +12,10 @@
 //external
 #include "glad.h"
 
-//engine
+//game
 #include "console.hpp"
 #include "shader.hpp"
-#include "stringUtils.hpp"
+#include "stringutils.hpp"
 
 using std::cout;
 using std::endl;
@@ -28,9 +28,9 @@ using std::filesystem::absolute;
 using std::filesystem::path;
 
 using Utils::String;
-using Core::ConsoleManager;
-using Caller = Core::ConsoleManager::Caller;
-using Type = Core::ConsoleManager::Type;
+using Core::Console;
+using Caller = Core::Console::Caller;
+using Type = Core::Console::Type;
 
 namespace Graphics
 {
@@ -79,7 +79,7 @@ namespace Graphics
                 if (!vShaderFile.is_open()
                     || !fShaderFile.is_open())
                 {
-                    ConsoleManager::WriteConsoleMessage(
+                    Console::WriteConsoleMessage(
                         Caller::FILE,
                         Type::EXCEPTION,
                         "Shader error: \nVertex: " + absolute(vertexPath).string() +
@@ -100,7 +100,7 @@ namespace Graphics
             }
             catch (const ios_base::failure& e)
             {
-                ConsoleManager::WriteConsoleMessage(
+                Console::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
                     "File not successfully read: " +
@@ -208,7 +208,7 @@ namespace Graphics
             if (!success)
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                ConsoleManager::WriteConsoleMessage(
+                Console::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
                     "Shader compilation error: " +
@@ -222,7 +222,7 @@ namespace Graphics
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                ConsoleManager::WriteConsoleMessage(
+                Console::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
                     "Shader linking error: " +

@@ -18,6 +18,7 @@
 #include "core.hpp"
 #include "configfile.hpp"
 #include "input.hpp"
+#include "gameobject.hpp"
 
 using glm::perspective;
 using std::cout;
@@ -30,6 +31,7 @@ using Type = Core::Console::Type;
 using Core::Game;
 using GameFile::ConfigFile;
 using Core::Input;
+using Graphics::Shape::GameObjectManager;
 
 namespace Graphics
 {
@@ -189,19 +191,12 @@ namespace Graphics
 		//update the camera
 		view = camera.GetViewMatrix();
 
-		cout << "1\n";
-
-		//GameObjectManager::RenderAll(view, projection);
+		GameObjectManager::RenderAll(view, projection);
 
 		GameGUI::Render();
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
-
-		cout << "2\n";
-
 		glfwPollEvents();
-
-		cout << "3\n";
 	}
 }

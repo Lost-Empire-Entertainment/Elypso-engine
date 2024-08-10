@@ -21,12 +21,7 @@ namespace Core
 	public:
 		enum class Caller : char
 		{
-			//FILE
 			FILE,
-			SHADER,
-			TEXTURE,
-
-			//ENGINE
 			INPUT,
 			INITIALIZE,
 			SHUTDOWN

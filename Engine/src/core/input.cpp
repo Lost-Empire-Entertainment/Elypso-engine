@@ -146,60 +146,7 @@ namespace Core
                     - Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
             }
         }
-        else
-        {
-            increment = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 1.0f : 0.1f;
-
-            string originPath = Engine::filesPath + "\\models\\Cube.fbx";
-            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
-            string targetName = path(targetPath).stem().string();
-
-            static int valZ = 0;
-            static int valY = 0;
-            static vec3 pos = vec3(0);
-
-            if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-            {
-                File::CreateNewFolder(targetPath);
-                string destinationPath = targetPath + "\\Cube.fbx";
-                File::CopyFileOrFolder(originPath, destinationPath);
-
-                pos.x++;
-                valZ++;
-
-                if (valZ >= 100)
-                {
-                    pos.x = 0;
-                    pos.z++;
-
-                    valY++;
-                    valZ = 0;
-                }
-
-                if (valY >= 5)
-                {
-                    pos.y++;
-                    pos.z = 0;
-
-                    valY = 0;
-                }
-
-                Model::Initialize(
-                    pos,
-                    vec3(0),
-                    vec3(1),
-                    destinationPath,
-                    Engine::filesPath + "\\shaders\\GameObject.vert",
-                    Engine::filesPath + "\\shaders\\GameObject.frag",
-                    "DEFAULTDIFF",
-                    "DEFAULTSPEC",
-                    "EMPTY",
-                    "EMPTY",
-                    32,
-                    targetName,
-                    Model::tempID);
-            }
-        }
+        else increment = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 1.0f : 0.1f;
     }
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)

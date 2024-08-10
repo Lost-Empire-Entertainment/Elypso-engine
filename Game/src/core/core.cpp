@@ -235,8 +235,6 @@ namespace Core
 
 		ConfigFile::LoadConfigFile();
 
-		SceneFile::CheckForProjectFile();
-
 		output = "Game documents path: " + docsPath + "\n";
 		cout << output << "\n";
 		Console::WriteConsoleMessage(

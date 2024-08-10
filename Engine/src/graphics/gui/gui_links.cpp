@@ -85,7 +85,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Youtube"))
 			{
-				Browser::OpenLink("https://youtube.com/greeenlaser");
+				Browser::OpenLink("https://youtube.com/greenlaser");
 			}
 
 			ImGui::Text("");

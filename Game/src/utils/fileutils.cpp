@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-//engine
+//game
 #include "fileutils.hpp"
 #include "console.hpp"
 #include "core.hpp"

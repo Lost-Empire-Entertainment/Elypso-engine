@@ -7,7 +7,7 @@
 #include <fstream>
 #include <algorithm>
 
-//engine
+//game
 #include "stringutils.hpp"
 #include "console.hpp"
 

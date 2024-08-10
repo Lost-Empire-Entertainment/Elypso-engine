@@ -23,6 +23,10 @@ namespace Graphics
 		static inline mat4 projection;
 		static inline mat4 view;
 
+		static inline vec3 directionalDirection = vec3(-0.2f, -1.0f, -0.3f);
+		static inline vec3 directionalDiffuse = vec3(0.4f, 0.4f, 0.4f);
+		static inline float directionalIntensity = 1.0f;
+
 		static inline GLFWwindow* window;
 		static Camera camera;
 

@@ -26,6 +26,8 @@ namespace Core
 		static inline string externalFilesPath;
 		static inline string scenePath;
 		static inline string scenesPath;
+		static inline string gameFirstScene;
+		static inline string currentGameobjectsPath;
 
 		static inline bool startedWindowLoop;
 

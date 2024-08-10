@@ -14,11 +14,17 @@ namespace GameFile
 	class SceneFile
 	{
 	public:
+		enum class SaveType
+		{
+			defaultSave,
+			sceneSwitch,
+			shutDown
+		};
+
 		static inline bool unsavedChanges;
+		static inline string targetLevel;
 
-		static void CheckForProjectFile();
-
-		static void SaveScene();
+		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
 		static void LoadScene(const string& scene);
 	};
 }

@@ -12,7 +12,7 @@
 #include "glfw3.h"
 #include "stb_image.h"
 
-//engine
+//game
 #include "texture.hpp"
 #include "console.hpp"
 #include "core.hpp"
@@ -24,10 +24,10 @@ using std::filesystem::directory_iterator;
 using std::filesystem::path;
 using std::filesystem::exists;
 
-using Core::ConsoleManager;
-using Caller = Core::ConsoleManager::Caller;
-using Type = Core::ConsoleManager::Type;
-using Core::Engine;
+using Core::Console;
+using Caller = Core::Console::Caller;
+using Type = Core::Console::Type;
+using Core::Game;
 using Utils::File;
 using Graphics::Shape::Mesh;
 
@@ -51,7 +51,7 @@ namespace Graphics
 		//the texture is a default diffuse texture and uses the placeholder diffuse texture
 		if (texturePath == "DEFAULTDIFF")
 		{
-			string defaultTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			string defaultTexturePath = Game::filesPath + "\\textures\\diff_default.png";
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
@@ -63,7 +63,7 @@ namespace Graphics
 		//the texture is a default specular texture and uses the placeholder specular texture
 		if (texturePath == "DEFAULTSPEC")
 		{
-			string defaultTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
+			string defaultTexturePath = Game::filesPath + "\\textures\\spec_default.png";
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
@@ -90,23 +90,23 @@ namespace Graphics
 		string finalTexturePath;
 		if (texturePath == "DEFAULTDIFF")
 		{
-			finalTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			finalTexturePath = Game::filesPath + "\\textures\\diff_default.png";
 		}
 		else if (texturePath == "DEFAULTSPEC")
 		{
-			finalTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
+			finalTexturePath = Game::filesPath + "\\textures\\spec_default.png";
 		}
 		else if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model
-				 || texturePath.find("diff_default.png") != string::npos
-				 || texturePath.find("spec_default.png") != string::npos
-				 || texturePath.find("diff_missing.png") != string::npos)
+			|| texturePath.find("diff_default.png") != string::npos
+			|| texturePath.find("spec_default.png") != string::npos
+			|| texturePath.find("diff_missing.png") != string::npos)
 		{
 			finalTexturePath = texturePath;
 		}
 		else
 		{
 			string copiedTexturePath;
-			for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
+			for (const auto& folder : directory_iterator(Game::currentGameobjectsPath))
 			{
 				string objName = obj->GetName();
 				string folderName = path(folder).stem().string();
@@ -160,7 +160,7 @@ namespace Graphics
 		}
 		else
 		{
-			ConsoleManager::WriteConsoleMessage(
+			Console::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Failed to load texture '" + finalTexturePath + "'!\n\n");

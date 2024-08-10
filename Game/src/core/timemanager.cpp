@@ -9,7 +9,7 @@
 //external
 #include "glfw3.h"
 
-//engine
+//game
 #include "input.hpp"
 #include "timemanager.hpp"
 
