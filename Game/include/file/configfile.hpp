@@ -17,7 +17,7 @@ namespace GameFile
 	{
 	public:
 		/// <summary>
-		/// Loads all config values into engine from confit txt file.
+		/// Loads all config values into game from confit txt file.
 		/// </summary>
 		static void LoadConfigFile();
 
@@ -42,7 +42,7 @@ namespace GameFile
 		static inline string configFilePath;
 
 		/// <summary>
-		/// Temporary storage for all config settings until engine is saved.
+		/// Temporary storage for all config settings until game is saved.
 		/// </summary>
 		static inline vector<string> keys;
 		static inline vector<string> values;

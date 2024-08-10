@@ -3,55 +3,43 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <ctime>
 #include <chrono>
-#include <filesystem>
-#include <iomanip>
-#include <system_error>
+#include <fstream>
+#include <iostream>
 
 //external
 #include "magic_enum.hpp"
-#include "glad.h"
 #include "glfw3.h"
 #include "glm.hpp"
+#include "glad.h"
 
 //engine
 #include "console.hpp"
-#include "stringUtils.hpp"
 #include "gui_console.hpp"
 #include "core.hpp"
 #include "render.hpp"
+#include "stringutils.hpp"
 
-using std::endl;
-using std::cout;
-using std::error_code;
-using std::errc;
+using std::chrono::time_point_cast;
+using std::chrono::system_clock;
+using std::chrono::milliseconds;
+using std::chrono::microseconds;
 using std::stringstream;
 using std::setw;
 using std::setfill;
-using std::ios;
-using std::to_string;
 using std::ofstream;
-using std::filesystem::remove;
-using std::filesystem::exists;
-using std::chrono::milliseconds;
-using std::chrono::microseconds;
-using std::chrono::duration_cast;
-using std::chrono::time_point_cast;
-using std::chrono::system_clock;
+using std::error_code;
+using std::errc;
+using std::cout;
 using glm::vec3;
 
 using Graphics::GUI::GUIConsole;
 using Core::Engine;
-using Utils::String;
 using Graphics::Render;
-using Caller = Core::ConsoleManager::Caller;
-using Type = Core::ConsoleManager::Type;
+using Utils::String;
 
 namespace Core
 {
-    std::vector<std::string> ConsoleManager::storedLogs;
-
     ofstream logFile;
 
     string ConsoleManager::GetCurrentTimestamp()
@@ -66,49 +54,29 @@ namespace Core
         localtime_s(&tm, &now_c);
 
         stringstream ss{};
-        ss 
-            << "[" 
+        ss
+            << "["
             << setw(2) << setfill('0') << tm.tm_hour << ":"
             << setw(2) << setfill('0') << tm.tm_min << ":"
             << setw(2) << setfill('0') << tm.tm_sec << ":"
-            << setw(3) << ms.count() 
+            << setw(3) << ms.count()
             << "] ";
         return ss.str();
     }
 
     void ConsoleManager::InitializeLogger()
     {
-        logFile.open(Engine::docsPath + "/engine_log.txt");
+        logFile.open(Engine::docsPath + "/game_log.txt");
         if (!logFile.is_open())
         {
             error_code ec = make_error_code(static_cast<errc>(errno));
 
-            ConsoleManager::WriteConsoleMessage(
+            WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 "Failed to open log file! Reason: " +
                 ec.message() + "\n\n");
         }
-    }
-    void ConsoleManager::CloseLogger()
-    {
-        if (logFile.is_open())
-        {
-            logFile.close();
-        }
-    }
-
-    void ConsoleManager::AddLoggerLog(const string& message)
-    {
-        if (logFile.is_open())
-        {
-            logFile << message << endl;
-        }
-    }
-
-    void ConsoleManager::AddConsoleLog(const std::string& message)
-    {
-        storedLogs.push_back(message);
     }
 
     void ConsoleManager::PrintLogsToBuffer()
@@ -120,6 +88,27 @@ namespace Core
         storedLogs.clear();
     }
 
+    void ConsoleManager::AddLoggerLog(const string& message)
+    {
+        if (logFile.is_open())
+        {
+            logFile << message << "\n";
+        }
+    }
+
+    void ConsoleManager::AddConsoleLog(const std::string& message)
+    {
+        storedLogs.push_back(message);
+    }
+
+    void ConsoleManager::CloseLogger()
+    {
+        if (logFile.is_open())
+        {
+            logFile.close();
+        }
+    }
+
     void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool internalMessage)
     {
         string timeStamp = GetCurrentTimestamp();
@@ -128,10 +117,10 @@ namespace Core
 
         string invalidMsg = timeStamp + " " + theType + " is not a valid error type!";
 
-        string validMsg = 
-            timeStamp + 
-            "[" + theCaller + 
-            "_" + theType + 
+        string validMsg =
+            timeStamp +
+            "[" + theCaller +
+            "_" + theType +
             "] " + message;
 
         string externalMsg;
@@ -159,8 +148,8 @@ namespace Core
 
         if (internalMessage
             && (sendDebugMessages
-            || (!sendDebugMessages
-            && type != Type::DEBUG)))
+                || (!sendDebugMessages
+                    && type != Type::DEBUG)))
         {
             if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
             else AddConsoleLog(internalMsg);
@@ -201,54 +190,54 @@ namespace Core
                 "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n" <<
                 "rc - resets the camera back to its original position and rotation\n";
 
-            ConsoleManager::WriteConsoleMessage(
+            WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
                 ss.str(),
                 true);
         }
         else if (cleanedCommands[0] == "qqq"
-                 && cleanedCommands.size() == 1)
+            && cleanedCommands.size() == 1)
         {
-            ConsoleManager::WriteConsoleMessage(
+            WriteConsoleMessage(
                 Caller::INPUT,
                 Type::DEBUG,
-                "User closed engine with 'qqq' console command.\n");
+                "User closed game with 'qqq' console command.\n");
             Engine::Shutdown();
         }
         else if (cleanedCommands[0] == "srm"
-                 && (cleanedCommands[1] == "1"
-                 || cleanedCommands[1] == "2")
-                 && cleanedCommands.size() == 2)
+            && (cleanedCommands[1] == "1"
+                || cleanedCommands[1] == "2")
+            && cleanedCommands.size() == 2)
         {
             wireframeMode = cleanedCommands[1] != "1";
             glPolygonMode(
-                GL_FRONT_AND_BACK, 
+                GL_FRONT_AND_BACK,
                 wireframeMode ? GL_LINE : GL_FILL);
 
             string wireframeModeValue = cleanedCommands[1] == "1" ?
                 "shaded" :
                 "wireframe";
-            ConsoleManager::WriteConsoleMessage(
+            WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
                 "Set wireframe mode to " + wireframeModeValue + ".\n");
         }
         else if (cleanedCommands[0] == "rc"
-                 && cleanedCommands.size() == 1)
+            && cleanedCommands.size() == 1)
         {
             vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
             Render::camera.SetCameraPosition(newPosition);
             Render::camera.SetCameraRotation(vec3(-90, 0, 0));
 
-            ConsoleManager::WriteConsoleMessage(
+            WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
                 "Reset camera position and rotation.\n");
         }
         else
         {
-            ConsoleManager::WriteConsoleMessage(
+            WriteConsoleMessage(
                 Caller::INPUT,
                 Type::EXCEPTION,
                 "'" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");

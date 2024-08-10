@@ -42,9 +42,9 @@ using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Material;
 using Core::Game;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
@@ -76,7 +76,7 @@ namespace Graphics::Shape
             || !scene->mRootNode)
         {
             string errorString = importer.GetErrorString();
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 "Assimp error: " + errorString + "\n");

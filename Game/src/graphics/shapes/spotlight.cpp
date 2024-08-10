@@ -34,9 +34,9 @@ using Graphics::Shape::Material;
 using Graphics::Shape::GameObjectManager;
 using Core::Game;
 using Graphics::Render;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Utils::File;
 
 namespace Graphics::Shape
@@ -150,7 +150,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddSpotLight(obj);
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");

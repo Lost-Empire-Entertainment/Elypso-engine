@@ -27,9 +27,9 @@ using std::filesystem::exists;
 using std::ios;
 
 using Core::Game;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Utils::String;
 using Graphics::Render;
 using Utils::File;
@@ -50,7 +50,7 @@ namespace GameFile
 			{
 				configFileBinary.close();
 
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::INFO,
 					"Failed to load config file '" + configFilePath + "' because it was empty! Creating a new one.\n\n");
@@ -62,7 +62,7 @@ namespace GameFile
 			ifstream configFile(configFilePath);
 			if (!configFile.is_open())
 			{
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Failed to open config file '" + configFilePath + "'!\n\n");
@@ -122,7 +122,7 @@ namespace GameFile
 
 			configFile.close();
 
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
 				"Successfully loaded config file!\n");
@@ -140,7 +140,7 @@ namespace GameFile
 
 		if (!configFile.is_open())
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into config file '" + configFilePath + "'!\n");
@@ -185,7 +185,7 @@ namespace GameFile
 
 		configFile.close();
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			"\nSuccessfully saved config file!\n");
@@ -209,7 +209,7 @@ namespace GameFile
 		}
 		else
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Cannot get config key " + key + " value because it does not exist! This will cause a crash if the config file was not filled correctly.\n");
@@ -241,7 +241,7 @@ namespace GameFile
 		}
 		else
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Cannot set value to config key " + key + " because it does not exist!\n");
@@ -254,7 +254,7 @@ namespace GameFile
 		values.clear();
 
 		//
-		// CONFIG VALUES EDITABLE THROUGH ENGINE
+		// CONFIG VALUES EDITABLE THROUGH GAME
 		//
 
 		keys.push_back("gui_fontScale");
@@ -298,7 +298,7 @@ namespace GameFile
 
 		if (!configFile.is_open())
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into config file '" + configFilePath + "'!\n");

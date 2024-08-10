@@ -18,9 +18,9 @@ using std::endl;
 using std::cerr;
 using std::exception;
 using std::istringstream;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Utils
 {

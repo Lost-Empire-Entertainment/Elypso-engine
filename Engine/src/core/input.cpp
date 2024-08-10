@@ -46,6 +46,7 @@ using std::setprecision;
 using std::to_string;
 using std::numeric_limits;
 using std::filesystem::exists;
+using std::filesystem::directory_iterator;
 
 using Physics::Select;
 using Graphics::Render;
@@ -196,8 +197,6 @@ namespace Core
                 if (newSpeed > 100.0f) newSpeed = 100.0f;
                 if (newSpeed < 0.1f) newSpeed = 0.1f;
 
-                cout << "new speed: " << newSpeed << "\n";
-
                 ConfigFile::SetValue("camera_speedMultiplier", to_string(newSpeed));
             }
         }
@@ -259,6 +258,29 @@ namespace Core
                 //if a regular model was pasted
                 if (copiedObject->GetBasicShape() != nullptr)
                 {
+                    string extension;
+                    string originPath = Engine::currentGameobjectsPath + "\\" + name;
+
+                    for (const auto& entry : directory_iterator(originPath))
+                    {
+                        extension = path(entry).extension().string();
+                        if (extension == ".fbx"
+                            || extension == ".obj"
+                            || extension == ".glfw")
+                        {
+                            originPath += "\\" + name + extension;
+                            break;
+                        }
+                    }
+                    string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
+                    string targetName = path(targetPath).stem().string();
+
+                    File::CreateNewFolder(targetPath);
+                    string destinationPath = targetPath + "\\" + targetName + extension;
+                    File::CopyFileOrFolder(originPath, destinationPath);
+
+                    cout << "copying from originpath " << originPath << " to target path " << targetPath << "\n";
+
                     Model::Initialize(
                         copiedObject->GetTransform()->GetPosition(),
                         copiedObject->GetTransform()->GetRotation(),
@@ -271,13 +293,19 @@ namespace Core
                         copiedObject->GetMaterial()->GetTextureName(Material::TextureType::normal),
                         copiedObject->GetMaterial()->GetTextureName(Material::TextureType::height),
                         copiedObject->GetBasicShape()->GetShininess(),
-                        name,
+                        targetName,
                         nextID);
+
+                    cout << "set new name to " << targetName << "\n";
                 }
 
                 //if a point light was copied
                 else if (copiedObject->GetPointLight() != nullptr)
                 {
+                    string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
+                    string targetName = path(targetPath).stem().string();
+                    File::CreateNewFolder(targetPath);
+
                     shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
                         copiedObject->GetTransform()->GetPosition(),
                         copiedObject->GetTransform()->GetRotation(),
@@ -287,13 +315,17 @@ namespace Core
                         copiedObject->GetPointLight()->GetDiffuse(),
                         copiedObject->GetPointLight()->GetIntensity(),
                         copiedObject->GetPointLight()->GetDistance(),
-                        name,
+                        targetName,
                         nextID);
                 }
 
-                //if a spot light was copied
+                //if a spotlight was copied
                 else if (copiedObject->GetSpotLight() != nullptr)
                 {
+                    string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
+                    string targetName = path(targetPath).stem().string();
+                    File::CreateNewFolder(targetPath);
+
                     shared_ptr<GameObject> newPointLight = SpotLight::InitializeSpotLight(
                         copiedObject->GetTransform()->GetPosition(),
                         copiedObject->GetTransform()->GetRotation(),
@@ -305,7 +337,7 @@ namespace Core
                         copiedObject->GetSpotLight()->GetDistance(),
                         copiedObject->GetSpotLight()->GetInnerAngle(),
                         copiedObject->GetSpotLight()->GetOuterAngle(),
-                        name,
+                        targetName,
                         nextID);
                 }
 

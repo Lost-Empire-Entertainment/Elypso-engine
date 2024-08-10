@@ -24,9 +24,9 @@ using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using std::filesystem::is_empty;
 
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Core::Game;
 using Utils::File;
 using Utils::String;
@@ -58,7 +58,7 @@ namespace GameFile
 
 		if (!objectFile.is_open())
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into object file '" + objectFilePath + "'!\n");
@@ -189,7 +189,7 @@ namespace GameFile
 	{
 		if (is_empty(targetPath))
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::INFO,
 				"There were no gameobjects to load for scene '" + path(Game::scenePath).parent_path().stem().string() + "'.\n");
@@ -197,7 +197,7 @@ namespace GameFile
 			return;
 		}
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			"Started loading gameobjects for scene '" + path(Game::scenePath).parent_path().stem().string() + "'.\n");
@@ -211,7 +211,7 @@ namespace GameFile
 			ifstream settingsFile(settingsFilePath);
 			if (!settingsFile.is_open())
 			{
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Failed to open settings file '" + settingsFilePath + "'!\n\n");
@@ -275,7 +275,7 @@ namespace GameFile
 			if (successfulLoad) LoadGameObject(data, path(file).stem().string());
 		}
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			"Finished loading gameobjects for scene '" + path(Game::scenePath).parent_path().stem().string() + "'.\n");
@@ -353,7 +353,7 @@ namespace GameFile
 
 				if (!exists(fullModelPath))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Failed to find model for " + name + " at " + fullModelPath + "! Skipped loading gameobject.\n");
@@ -377,7 +377,7 @@ namespace GameFile
 				else if (fullTex0Path != "DEFAULTDIFF"
 					&& !exists(fullTex0Path))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 0 for " + name + " at " + fullTex0Path + " does not exist!\n");
@@ -396,7 +396,7 @@ namespace GameFile
 				else if (fullTex1Path != "DEFAULTSPEC"
 					&& !exists(fullTex1Path))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 1 for " + name + " at " + fullTex1Path + " does not exist!\n");
@@ -410,7 +410,7 @@ namespace GameFile
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 2 for " + name + " at " + fullTex2Path + " does not exist!\n");
@@ -424,7 +424,7 @@ namespace GameFile
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture at slot 3 for " + name + " at " + fullTex3Path + " does not exist!\n");
@@ -442,7 +442,7 @@ namespace GameFile
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
@@ -463,7 +463,7 @@ namespace GameFile
 
 				if (!exists(fullTexPath))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
@@ -481,7 +481,7 @@ namespace GameFile
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
 				{
-					Console::WriteConsoleMessage(
+					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
@@ -519,7 +519,7 @@ namespace GameFile
 			if (diffuseTexture != "EMPTY"
 				&& !exists(diffuseTexture))
 			{
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
@@ -530,7 +530,7 @@ namespace GameFile
 			if (specularTexture != "EMPTY"
 				&& !exists(specularTexture))
 			{
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Specular texture " + specularTexture + " for " + name + " not found!\n");
@@ -541,7 +541,7 @@ namespace GameFile
 			if (normalTexture != "EMPTY"
 				&& !exists(normalTexture))
 			{
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Normal texture " + normalTexture + " for " + name + " not found!\n");
@@ -552,14 +552,14 @@ namespace GameFile
 			if (heightTexture != "EMPTY"
 				&& !exists(heightTexture))
 			{
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Height texture " + heightTexture + " for " + name + " not found!\n");
 				heightTexture = "EMPTY";
 			}
 
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
 				"Loading model " + name + " for scene '" + path(Game::scenePath).parent_path().stem().string() + "'.\n");
@@ -588,7 +588,7 @@ namespace GameFile
 
 		else if (type == Mesh::MeshType::point_light)
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
 				"Loading light source '" + name + "' for scene '" + path(Game::scenePath).parent_path().stem().string() + "'.\n");
@@ -620,7 +620,7 @@ namespace GameFile
 
 		else if (type == Mesh::MeshType::spot_light)
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
 				"Loading light source '" + name + "' for scene '" + path(Game::scenePath).parent_path().stem().string() + "'.\n");

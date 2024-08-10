@@ -32,9 +32,9 @@ using std::filesystem::recursive_directory_iterator;
 using std::filesystem::directory_iterator;
 using std::to_string;
 
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Core::Game;
 using Utils::String;
 
@@ -137,7 +137,7 @@ namespace Utils
 
         if (!exists(sourcePath))
         {
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 "Source path " + sourcePath.string() + " does not exist!\n\n");
@@ -147,7 +147,7 @@ namespace Utils
         {
             string outputType = isRenaming ? "Cannot rename source " : "Cannot move source ";
             output = outputType + sourcePath.string() + " to destination " + destinationPath.string() + " because destination already exists!\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 output);
@@ -160,7 +160,7 @@ namespace Utils
 
             string outputType = isRenaming ? "Renamed " : "Moved ";
             output = outputType + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
                 output);
@@ -168,7 +168,7 @@ namespace Utils
         catch (const exception& e)
         {
             output = string(e.what()) + ".\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 output);
@@ -181,7 +181,7 @@ namespace Utils
 
         if (!exists(sourcePath))
         {
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 "Source path " + sourcePath.string() + " does not exist!\n\n");
@@ -195,7 +195,7 @@ namespace Utils
                 copy(sourcePath, destinationPath, copy_options::recursive | copy_options::overwrite_existing);
 
                 output = "Copied folder " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
-                Console::WriteConsoleMessage(
+                ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::DEBUG,
                     output);
@@ -205,7 +205,7 @@ namespace Utils
                 copy_file(sourcePath, destinationPath, copy_options::overwrite_existing);
 
                 output = "Copied file " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
-                Console::WriteConsoleMessage(
+                ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::DEBUG,
                     output);
@@ -214,7 +214,7 @@ namespace Utils
         catch (const exception& e)
         {
             output = string(e.what()) + ".\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 output);
@@ -226,7 +226,7 @@ namespace Utils
         string output;
         if (!exists(sourcePath))
         {
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 "Cannot delete file or folder " + sourcePath.string() + " because it does not exist!\n\n");
@@ -263,7 +263,7 @@ namespace Utils
             }
 
             output = "Deleted " + sourcePath.string() + ".\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
                 output);
@@ -271,7 +271,7 @@ namespace Utils
         catch (const exception& e)
         {
             output = string(e.what()) + ".\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 output);
@@ -284,7 +284,7 @@ namespace Utils
         if (exists(folderPath))
         {
             output = folderPath.string() + " already exists!\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 output);
@@ -295,7 +295,7 @@ namespace Utils
         if (is_regular_file(folderPath))
         {
             output = folderPath.string() + " must be a folder!\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 output);
@@ -308,7 +308,7 @@ namespace Utils
             create_directory(folderPath);
 
             output = "Created new folder at " + folderPath.string() + ".\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
                 output);
@@ -316,7 +316,7 @@ namespace Utils
         catch (const exception& e)
         {
             output = string(e.what()) + ".\n\n";
-            Console::WriteConsoleMessage(
+            ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
                 output);

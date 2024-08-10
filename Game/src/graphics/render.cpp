@@ -25,9 +25,9 @@ using std::cout;
 
 using Core::TimeManager;
 using Graphics::GUI::GameGUI;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Core::Game;
 using GameFile::ConfigFile;
 using Core::Input;
@@ -52,7 +52,7 @@ namespace Graphics
 
 	void Render::GLFWSetup()
 	{
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Initializing GLFW...\n");
@@ -62,7 +62,7 @@ namespace Graphics
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INITIALIZE,
 			Type::DEBUG,
 			"GLFW initialized successfully!\n\n");
@@ -70,7 +70,7 @@ namespace Graphics
 
 	void Render::WindowSetup()
 	{
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Creating window...\n");
@@ -85,7 +85,7 @@ namespace Graphics
 
 		if (window == NULL)
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::INITIALIZE,
 				Type::EXCEPTION,
 				"Failed to create GLFW window!\n\n");
@@ -116,7 +116,7 @@ namespace Graphics
 
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { Game::Shutdown(); });
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Window initialized successfully!\n\n");
@@ -124,7 +124,7 @@ namespace Graphics
 
 	void Render::GladSetup()
 	{
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INITIALIZE,
 			Type::DEBUG,
 			"Initializing GLAD...\n");
@@ -132,14 +132,14 @@ namespace Graphics
 		//check if glad is initialized before continuing
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::INITIALIZE,
 				Type::EXCEPTION,
 				"Failed to initialize GLAD!\n\n");
 			return;
 		}
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INITIALIZE,
 			Type::DEBUG,
 			"GLAD initialized successfully!\n\n");

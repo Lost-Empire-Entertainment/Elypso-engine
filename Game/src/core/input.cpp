@@ -24,12 +24,16 @@
 #include "sceneFile.hpp"
 #include "configFile.hpp"
 #include "core.hpp"
+#include "gui_console.hpp"
+
+using std::cout;
 
 using Graphics::Render;
 using GameFile::SceneFile;
 using GameFile::ConfigFile;
 using Core::Input;
 using Core::Game;
+using Graphics::GUI::GUIConsole;
 
 namespace Core
 {
@@ -135,6 +139,12 @@ namespace Core
             {
                 SceneFile::SaveScene();
                 ConfigFile::SaveConfigFile();
+            }
+
+            if (key == GLFW_KEY_PAGE_UP
+                && action == GLFW_PRESS)
+            {
+                GUIConsole::renderConsole = !GUIConsole::renderConsole;
             }
         }
     }

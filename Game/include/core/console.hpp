@@ -13,7 +13,7 @@ using std::vector;
 
 namespace Core
 {
-	class Console
+	class ConsoleManager
 	{
 	public:
 		enum Caller
@@ -31,11 +31,19 @@ namespace Core
 			EXCEPTION
 		};
 
+		static inline bool sendDebugMessages;
+
 		static inline vector<string> storedLogs;
+
+		static string GetCurrentTimestamp();
+		static void AddConsoleLog(const string& message);
+		static void AddLoggerLog(const string& message);
 
 		static void InitializeLogger();
 		static void PrintLogsToBuffer();
 		static void CloseLogger();
+
+		static void ParseConsoleCommand(const string& message);
 
 		/// <summary>
 		/// Print selected message to in-game console.
@@ -46,5 +54,8 @@ namespace Core
 		/// <param name="onlyMessage">Do we only send the message without message caller, type and timestamp?</param>
 		/// <param name="internalMessage">Do we also print this message to the in-game console?</param>
 		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false, bool internalMessage = true);
+
+	private:
+		static inline bool wireframeMode;
 	};
 }

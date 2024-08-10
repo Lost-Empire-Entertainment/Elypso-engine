@@ -16,6 +16,7 @@
 #include "fileutils.hpp"
 #include "render.hpp"
 #include "configfile.hpp"
+#include "gui_console.hpp"
 
 using std::filesystem::exists;
 
@@ -30,20 +31,6 @@ namespace Graphics::GUI
 
 	void GameGUI::Initialize()
 	{
-		//copies template file to documents folder if imgui file does not exist
-		string imguiConfigFile = Game::docsPath + "\\imgui.ini";
-		string imguiTemplateFile = Game::filesPath + "\\imgui.ini";
-		if (!exists(imguiConfigFile))
-		{
-			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
-
-			ConfigFile::SetValue("gui_sceneHierarchy", "1");
-			ConfigFile::SetValue("gui_projectHierarchy", "1");
-			ConfigFile::SetValue("gui_console", "1");
-			ConfigFile::SetValue("gui_inspector", "1");
-			ConfigFile::SaveConfigFile();
-		}
-
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGui::SetCurrentContext(ImGui::GetCurrentContext());
@@ -105,6 +92,8 @@ namespace Graphics::GUI
 			ImGuiDockNodeFlags_PassthruCentralNode;
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+
+		GUIConsole::RenderConsole();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

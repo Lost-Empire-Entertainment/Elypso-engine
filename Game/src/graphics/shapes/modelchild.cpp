@@ -38,9 +38,9 @@ using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Material;
 using Core::Game;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
@@ -138,7 +138,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");

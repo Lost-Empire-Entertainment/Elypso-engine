@@ -25,9 +25,9 @@ using std::filesystem::path;
 
 using Core::Game;
 using Graphics::Shape::GameObjectManager;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Utils::String;
 using Graphics::Render;
 using Utils::File;
@@ -38,7 +38,7 @@ namespace GameFile
 	{
 		if (!exists(scenePath))
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Tried to load scene file '" + scenePath + "' but it doesn't exist!\n");
@@ -60,7 +60,7 @@ namespace GameFile
 		ifstream sceneFile(Game::scenePath);
 		if (!sceneFile.is_open())
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Failed to open scene file '" + Game::scenePath + "'!\n\n");
@@ -120,28 +120,7 @@ namespace GameFile
 
 		GameObjectFile::LoadGameObjects(Game::currentGameobjectsPath);
 
-		//update project file originating from hub 
-		//to ensure currently opened scene is always opened when hub opens engine
-		string projectFilePath = Game::filesPath + "\\project.txt";
-		File::DeleteFileOrfolder(projectFilePath);
-		ofstream projFile(projectFilePath);
-
-		projFile << "scene: " << Game::scenePath << "\n";
-		projFile << "project: " << Game::projectPath;
-
-		projFile.close();
-
-		if (Game::gameFirstScene == "")
-		{
-			Game::gameFirstScene = path(scenePath).parent_path().stem().string();
-
-			Console::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::INFO,
-				"Set game first scene to " + Game::gameFirstScene + "\n");
-		}
-
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::INFO,
 			"Successfully loaded scene file '" + path(Game::scenePath).parent_path().stem().string() + "'!\n");
@@ -163,7 +142,7 @@ namespace GameFile
 
 		if (!sceneFile.is_open())
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Couldn't write into scene file '" + Game::scenePath + "'!\n");
@@ -192,7 +171,7 @@ namespace GameFile
 
 		sceneFile.close();
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::INFO,
 			"\nSuccessfully saved scene file '" + path(Game::scenePath).parent_path().stem().string() + "'!\n");

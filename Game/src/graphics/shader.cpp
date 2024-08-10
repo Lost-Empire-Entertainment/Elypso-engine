@@ -5,7 +5,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <filesystem>
 #include <vector>
 
@@ -28,9 +27,9 @@ using std::filesystem::absolute;
 using std::filesystem::path;
 
 using Utils::String;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
@@ -79,7 +78,7 @@ namespace Graphics
                 if (!vShaderFile.is_open()
                     || !fShaderFile.is_open())
                 {
-                    Console::WriteConsoleMessage(
+                    ConsoleManager::WriteConsoleMessage(
                         Caller::FILE,
                         Type::EXCEPTION,
                         "Shader error: \nVertex: " + absolute(vertexPath).string() +
@@ -100,7 +99,7 @@ namespace Graphics
             }
             catch (const ios_base::failure& e)
             {
-                Console::WriteConsoleMessage(
+                ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
                     "File not successfully read: " +
@@ -208,7 +207,7 @@ namespace Graphics
             if (!success)
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                Console::WriteConsoleMessage(
+                ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
                     "Shader compilation error: " +
@@ -222,7 +221,7 @@ namespace Graphics
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                Console::WriteConsoleMessage(
+                ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
                     "Shader linking error: " +

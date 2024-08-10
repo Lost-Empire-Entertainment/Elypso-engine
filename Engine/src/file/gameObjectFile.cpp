@@ -238,7 +238,11 @@ namespace EngineFile
 					string value = splitLine[1];
 
 					//remove one space in front of value if it exists
-					if (value[0] == ' ') value.erase(0, 1);
+					if (key != "name"
+						&& value[0] == ' ')
+					{
+						value.erase(0, 1);
+					}
 					//remove one space in front of each value comma if it exists
 					for (size_t i = 0; i < value.length(); i++)
 					{
@@ -360,14 +364,28 @@ namespace EngineFile
 			}
 			else if (key == "model")
 			{
-				string fullModelPath = Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + value;
+				string fullModelPath;
+
+				for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath + "\\" + folderPath))
+				{
+					string entryName = path(entry).stem().string();
+					string entryExtension = path(entry).extension().string();
+
+					if (entryName == folderPath
+						&& (entryExtension == ".fbx"
+						|| entryExtension == ".obj"
+						|| entryExtension == ".glfw"))
+					{
+						fullModelPath = Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + folderPath + entryExtension;
+					}
+				}
 
 				if (!exists(fullModelPath))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Failed to find model for " + name + " at " + fullModelPath + "! Skipped loading gameobject.\n");
+						"Failed to find model for " + folderPath + " at " + fullModelPath + "! Skipped loading gameobject.\n");
 					return;
 				}
 				else modelPath = fullModelPath;

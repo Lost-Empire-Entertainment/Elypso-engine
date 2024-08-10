@@ -24,9 +24,9 @@ using std::filesystem::directory_iterator;
 using std::filesystem::path;
 using std::filesystem::exists;
 
-using Core::Console;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Core::Game;
 using Utils::File;
 using Graphics::Shape::Mesh;
@@ -160,7 +160,7 @@ namespace Graphics
 		}
 		else
 		{
-			Console::WriteConsoleMessage(
+			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Failed to load texture '" + finalTexturePath + "'!\n\n");

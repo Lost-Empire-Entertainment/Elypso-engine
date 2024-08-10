@@ -34,9 +34,9 @@ using std::filesystem::directory_iterator;
 
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Render;
-using Core::Console;
-using Caller = Core::Console::Caller;
-using ConsoleType = Core::Console::Type;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
 using GameFile::SceneFile;
 using Utils::String;
 using Utils::File;
@@ -171,7 +171,7 @@ namespace Graphics::Shape
 			SceneFile::SaveScene();
 		}
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			ConsoleType::INFO,
 			"Deleted gameobject " + thisName + ".\n");

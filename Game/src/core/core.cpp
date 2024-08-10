@@ -35,8 +35,8 @@ using Utils::File;
 using GameFile::SceneFile;
 using GameFile::ConfigFile;
 using Graphics::Render;
-using Caller = Core::Console::Caller;
-using Type = Core::Console::Type;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 using Graphics::GUI::GameGUI;
 using Core::TimeManager;
 
@@ -44,8 +44,6 @@ namespace Core
 {
 	void Game::Initialize()
 	{
-		cout << "start\n";
-
 		for (const auto& entry : directory_iterator(current_path()))
 		{
 			string extension = path(entry).extension().string();
@@ -151,8 +149,6 @@ namespace Core
 		string firstSceneFile = docsPath + "\\firstScene.txt";
 		if (!exists(firstSceneFile))
 		{
-			cout << "failed to find first scene file from " << firstSceneFile << "\n";
-
 			CreateErrorPopup(
 				"Path load error",
 				"Couldn't find first scene file! Shutting down.");
@@ -182,15 +178,11 @@ namespace Core
 		if (scenePath == ""
 			|| !exists(scenePath))
 		{
-			cout << "failed to load scene file from path " << scenePath << "\n";
-
 			CreateErrorPopup(
 				"Path load error",
 				"Couldn't find or open scene file! Shutting down.");
 			return;
 		}
-
-		cout << "loaded scene " << path(scenePath).parent_path().stem().string() << "\n";
 
 		//
 		// SET SCENES AND TEXTURES PATHS
@@ -199,15 +191,11 @@ namespace Core
 		scenesPath = path(externalFilesPath).string() + "\\scenes";
 		if (!exists(scenesPath))
 		{
-			cout << "failed to load scenes folder from path " << scenesPath << "\n";
-
 			CreateErrorPopup(
 				"Path load error",
 				"Couldn't find scenes folder! Shutting down.");
 			return;
 		}
-		string output = "Game scenes path: " + scenesPath + "\n";
-		cout << output << "\n";
 
 		texturesPath = path(externalFilesPath).string() + "\\textures";
 		if (!exists(scenesPath))
@@ -217,34 +205,29 @@ namespace Core
 				"Couldn't find textures folder! Shutting down.");
 			return;
 		}
-		output = "Game textures path: " + texturesPath + "\n";
-		cout << output << "\n";
 
 		//
 		// REST OF THE INITIALIZATION
 		//
 
-		Console::InitializeLogger();
+		ConsoleManager::InitializeLogger();
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INPUT,
 			Type::INFO,
-			gameName + "\n" +
 			"Initializing game...\n\n",
 			true);
 
 		ConfigFile::LoadConfigFile();
 
-		output = "Game documents path: " + docsPath + "\n";
-		cout << output << "\n";
-		Console::WriteConsoleMessage(
+		string output = "Game documents path: " + docsPath + "\n";
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			output);
 
 		output = "Game files path: " + filesPath + "\n\n";
-		cout << output << "\n";
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			output);
@@ -257,12 +240,12 @@ namespace Core
 
 	void Game::Run()
 	{
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INPUT,
 			Type::DEBUG,
 			"Reached window loop successfully!\n\n");
 
-		Console::WriteConsoleMessage(
+		ConsoleManager::WriteConsoleMessage(
 			Caller::INPUT,
 			Type::INFO,
 			"==================================================\n\n",
@@ -270,9 +253,9 @@ namespace Core
 			false);
 
 		startedWindowLoop = true;
-		if (!Console::storedLogs.empty())
+		if (!ConsoleManager::storedLogs.empty())
 		{
-			Console::PrintLogsToBuffer();
+			ConsoleManager::PrintLogsToBuffer();
 		}
 
 		while (!glfwWindowShouldClose(Render::window))
@@ -287,7 +270,7 @@ namespace Core
 	{
 		if (immediate)
 		{
-			Console::CloseLogger();
+			ConsoleManager::CloseLogger();
 			GameGUI::Shutdown();
 			glfwTerminate();
 			ExitProcess(1);
@@ -312,13 +295,13 @@ namespace Core
 			{
 				ConfigFile::SaveConfigFile();
 
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::INFO,
 					"==================================================\n\n",
 					true);
 
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::SHUTDOWN,
 					Type::INFO,
 					"Cleaning up resources...\n");
@@ -328,7 +311,7 @@ namespace Core
 				//clean all glfw resources after program is closed
 				glfwTerminate();
 
-				Console::WriteConsoleMessage(
+				ConsoleManager::WriteConsoleMessage(
 					Caller::SHUTDOWN,
 					Type::INFO,
 					"Shutdown complete!\n");
@@ -342,7 +325,7 @@ namespace Core
 					<< ".\n"
 					<< ".\n\n";
 
-				Console::CloseLogger();
+				ConsoleManager::CloseLogger();
 			}
 		}
 	}
