@@ -1,25 +1,29 @@
 Elypso Engine Proprietary License
 
-Version 1.1
+Version 1.2
 
 1. Definitions
 
    - "Engine" refers to Elypso Engine, the main program used for creating Games.
-   - "Hub" refers to the program used to launch the Engine.
-   - "Game" refers to the program that was created with the Engine.
+   - "Hub" refers to the program that is used to launch the Engine.
+   - "Game" refers to the Game template that is compiled by the Engine and is provided by Lost Empire Entertainment in its original form.
    - "Content" refers to any content created with the Engine, excluding the Game. This includes but is not limited to game assets, levels, and scripts.
-   - "External Content" refers to any content not created and owned by Lost Empire Entertainment and the End User.
-   - "You" or "End User" refers to the individual or entity using the Engine, Hub, Game, Content and External Content to create the Game.
+   - "External Content" refers to any content not created and owned by Lost Empire Entertainment or the End User.
+   - "End User" refers to the individual or entity using the Engine, Hub, Game, Content and External Content.
    - "Lost Empire Entertainment" refers to the entity distributing the Engine, Hub, Game, Content and External Content under this license.
    - "Jurisdiction" refers to the legal jurisdiction in which Lost Empire Entertainment operates.
 
 2. Grant of License
 
-   Subject to the terms and conditions of this license, Lost Empire Entertainment hereby grants you a worldwide, royalty-free, non-exclusive, non-transferable license to use, reproduce, modify, and distribute the Engine, Hub, Game and Content for any lawful purpose, provided that such uses, modifications, and distributions do not violate any applicable laws or regulations.
+   Subject to the terms and conditions of this license, Lost Empire Entertainment hereby grants you a worldwide, royalty-free, non-exclusive, non-transferable license to use, reproduce, modify, and distribute the Engine, Hub, Game, Content and External Content for any lawful purpose, provided that such uses, modifications, and distributions follow their respective licenses and do not violate any applicable laws or regulations.
 
-3. Game and Content
+3. Scope of License
 
-   You are allowed to use, modify, and distribute the Game and any Content created with the Engine for any purpose, including commercial purposes, as long as such use, modification, and distribution comply with the licenses of the External Content used in conjunction with the Engine, Hub and Game.
+   This License applies to all content found in this repository, with the following exceptions
+
+   - The Game is excluded from this License and follows its own separate license found within the "Game" folder.
+
+   - Externally imported libraries located in the "_external_shared" folder are subject to their own respective licenses. Links to each library's source can be found in the "LIBRARIES.md" file.
 
 4. Restrictions
 
@@ -44,7 +48,7 @@ Version 1.1
 
 7. Disclaimer of Warranty
 
-   THE ENGINE, HUB AND GAME ARE PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, LOST EMPIRE ENTERTAINMENT DISCLAIMS ALL WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. LOST EMPIRE ENTERTAINMENT DOES NOT WARRANT THAT THE ENGINE, HUB OR GAME WILL BE ERROR-FREE OR UNINTERRUPTED.
+   THE ENGINE AND HUB ARE PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, LOST EMPIRE ENTERTAINMENT DISCLAIMS ALL WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. LOST EMPIRE ENTERTAINMENT DOES NOT WARRANT THAT THE ENGINE, OR HUB WILL BE ERROR-FREE OR UNINTERRUPTED.
 
 8. Termination
 
