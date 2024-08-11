@@ -292,7 +292,7 @@ namespace Graphics::GUI
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\Cube.fbx";
+					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
@@ -317,9 +317,9 @@ namespace Graphics::GUI
 					string originPath = Engine::filesPath + "\\models\\sphere.fbx";
 					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
 					string targetName = path(targetPath).stem().string();
-					 
+
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\Sphere.fbx";
+					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
@@ -346,7 +346,7 @@ namespace Graphics::GUI
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\Cylinder.fbx";
+					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
@@ -373,7 +373,7 @@ namespace Graphics::GUI
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\Cone.fbx";
+					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
@@ -400,7 +400,7 @@ namespace Graphics::GUI
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\Pyramid.fbx";
+					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
