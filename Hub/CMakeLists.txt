@@ -33,9 +33,6 @@ set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
 
-# Manually added source file paths
-set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/core")
-
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
@@ -52,11 +49,9 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
-set(SOURCE_FILES
-	${CMAKE_SOURCE_DIR}/src/main.cpp
-	${CMAKE_SOURCE_DIR}/src/gui.cpp
-	${CMAKE_SOURCE_DIR}/src/createproject.cpp
-	${CMAKE_SOURCE_DIR}/src/removeproject.cpp
+file(GLOB_RECURSE SOURCE_FILES
+	${CMAKE_SOURCE_DIR}/src/*.cpp
+	${CMAKE_SOURCE_DIR}/src/*/*.cpp
 )
 
 # Add external source files

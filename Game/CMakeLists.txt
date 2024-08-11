@@ -20,7 +20,7 @@ project("Game" VERSION ${PROJECT_VERSION})
 # Paths to frequently used directories
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
-set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/game/icon.rc")
+set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
 
 # Game files
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
@@ -33,15 +33,6 @@ set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
-
-# Manually added source file paths
-set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/core")
-set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/file")
-set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/graphics")
-set(SRC_GRAPHICS_GUI_DIR "${CMAKE_SOURCE_DIR}/src/graphics/gui")
-set(SRC_GRAPHICS_SHAPE_DIR "${CMAKE_SOURCE_DIR}/src/graphics/shapes")
-set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/physics")
-set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/utils")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -62,28 +53,9 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
-set(SOURCE_FILES
-	${CMAKE_SOURCE_DIR}/src/main.cpp
-	${SRC_CORE_DIR}/console.cpp
-	${SRC_CORE_DIR}/core.cpp
-	${SRC_CORE_DIR}/input.cpp
-	${SRC_CORE_DIR}/timemanager.cpp
-	${SRC_FILE_DIR}/configfile.cpp
-	${SRC_FILE_DIR}/gameobjectfile.cpp
-	${SRC_FILE_DIR}/scenefile.cpp
-	${SRC_GRAPHICS_GUI_DIR}/gui.cpp
-	${SRC_GRAPHICS_GUI_DIR}/gui_console.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/model.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/modelchild.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/spotlight.cpp
-	${SRC_GRAPHICS_DIR}/render.cpp
-	${SRC_GRAPHICS_DIR}/shader.cpp
-	${SRC_GRAPHICS_DIR}/texture.cpp
-	${SRC_UTILS_DIR}/fileutils.cpp
-	${SRC_UTILS_DIR}/stringutils.cpp
+file(GLOB_RECURSE SOURCE_FILES
+	${CMAKE_SOURCE_DIR}/src/*.cpp
+	${CMAKE_SOURCE_DIR}/src/*/*.cpp
 )
 
 # Add external source files
@@ -165,7 +137,7 @@ add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/files/game/external\ dlls/assimp-vc143-mt.dll
+    ${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
     $<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
 )
 

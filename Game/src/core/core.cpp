@@ -119,10 +119,10 @@ namespace Core
 		}
 
 		//
-		// SET INTERNAL AND EXTERNAL FILE PATHS
+		// SET FILES PATH
 		//
 
-		path fsFilesPath = current_path().generic_string() + "\\files\\game";
+		string fsFilesPath = current_path().generic_string() + "\\files";
 		if (!exists(fsFilesPath))
 		{
 			CreateErrorPopup(
@@ -130,17 +130,7 @@ namespace Core
 				"Couldn't find game files folder! Shutting down.");
 			return;
 		}
-		filesPath = String::CharReplace(fsFilesPath.string(), '/', '\\');
-
-		path fsExtFilesPath = current_path().generic_string() + "\\files\\project";
-		if (!exists(fsExtFilesPath))
-		{
-			CreateErrorPopup(
-				"Path load error",
-				"Couldn't find project files folder! Shutting down.");
-			return;
-		}
-		externalFilesPath = String::CharReplace(fsExtFilesPath.string(), '/', '\\');
+		filesPath = String::CharReplace(fsFilesPath, '/', '\\');
 
 		//
 		// FIND FIRST SCENE FILE
@@ -188,7 +178,7 @@ namespace Core
 		// SET SCENES AND TEXTURES PATHS
 		//
 
-		scenesPath = path(externalFilesPath).string() + "\\scenes";
+		scenesPath = path(docsPath).string() + "\\scenes";
 		if (!exists(scenesPath))
 		{
 			CreateErrorPopup(
@@ -197,7 +187,7 @@ namespace Core
 			return;
 		}
 
-		texturesPath = path(externalFilesPath).string() + "\\textures";
+		texturesPath = path(docsPath).string() + "\\textures";
 		if (!exists(scenesPath))
 		{
 			CreateErrorPopup(

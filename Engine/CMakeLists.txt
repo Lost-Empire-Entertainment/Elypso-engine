@@ -34,14 +34,6 @@ set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
 
-# Manually added source file paths
-set(SRC_CORE_DIR "${CMAKE_SOURCE_DIR}/src/core")
-set(SRC_FILE_DIR "${CMAKE_SOURCE_DIR}/src/file")
-set(SRC_GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/src/graphics")
-set(SRC_GRAPHICS_SHAPE_DIR "${CMAKE_SOURCE_DIR}/src/graphics/shapes")
-set(SRC_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/src/physics")
-set(SRC_UTILS_DIR "${CMAKE_SOURCE_DIR}/src/utils")
-
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
@@ -61,48 +53,9 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
-set(SOURCE_FILES
-	${CMAKE_SOURCE_DIR}/src/main.cpp
-	${SRC_CORE_DIR}/compile.cpp
-	${SRC_CORE_DIR}/console.cpp
-	${SRC_CORE_DIR}/core.cpp
-	${SRC_CORE_DIR}/input.cpp
-	${SRC_CORE_DIR}/timeManager.cpp
-	${SRC_FILE_DIR}/configFile.cpp
-	${SRC_FILE_DIR}/fileexplorer.cpp
-	${SRC_FILE_DIR}/gameObjectFile.cpp
-	${SRC_FILE_DIR}/sceneFile.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_console.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_createscene.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_credits.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_floatingdebugmenu.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_importAsset.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_inspector.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_links.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_projecthierarchy.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_projectitemslist.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_rename.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_scenehierarchy.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_scenemenu.cpp
-	${SRC_GRAPHICS_DIR}/gui/gui_settings.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/billboard.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/gameobject.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/model.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/modelchild.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/pointlight.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/selectedobjectaction.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/selectedobjectborder.cpp
-	${SRC_GRAPHICS_SHAPE_DIR}/spotlight.cpp
-	${SRC_GRAPHICS_DIR}/grid.cpp
-	${SRC_GRAPHICS_DIR}/render.cpp
-	${SRC_GRAPHICS_DIR}/shader.cpp
-	${SRC_GRAPHICS_DIR}/texture.cpp
-	${SRC_PHYSICS_DIR}/collision.cpp
-	${SRC_PHYSICS_DIR}/selectobject.cpp
-	${SRC_UTILS_DIR}/browserUtils.cpp
-	${SRC_UTILS_DIR}/fileUtils.cpp
-	${SRC_UTILS_DIR}/stringUtils.cpp
+file(GLOB_RECURSE SOURCE_FILES
+	${CMAKE_SOURCE_DIR}/src/*.cpp
+	${CMAKE_SOURCE_DIR}/src/*/*.cpp
 )
 
 # Add external source files

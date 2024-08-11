@@ -85,32 +85,6 @@ namespace Core
 				}
 
 				//
-				// COPY FILES TO GAME FOLDER
-				//
-
-				string gameProjectFolder = Engine::gameParentPath + "\\files\\project";
-				if (exists(gameProjectFolder)) File::DeleteFileOrfolder(gameProjectFolder);
-
-				File::CreateNewFolder(gameProjectFolder);
-
-				string scenePath = path(Engine::projectPath).parent_path().string();
-				for (const auto& entry : directory_iterator(path(scenePath)))
-				{
-					string stem = path(entry).stem().string();
-
-					if (stem == "models"
-						|| stem == "textures"
-						|| stem == "scenes")
-					{
-						string origin = path(entry).string();
-						string originFileName = path(entry).filename().string();
-						string target = gameProjectFolder + "\\" + originFileName;
-
-						File::CopyFileOrFolder(origin, target);
-					}
-				}
-
-				//
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
 				//
 
@@ -123,6 +97,7 @@ namespace Core
 
 				File::CreateNewFolder(gameDocsFolder);
 
+				string scenePath = path(Engine::projectPath).parent_path().string();
 				for (const auto& entry : directory_iterator(path(scenePath)))
 				{
 					string stem = path(entry).stem().string();
