@@ -22,9 +22,9 @@ We aim to acknowledge your report within 48 hours and will work with you to unde
 ### Elypso Engine
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.0.14 indev   | :white_check_mark: |
-| 0.0.13   | :white_check_mark: |
-| 0.0.12 and before  | :x:                |
+| 0.1.1 indev  | :white_check_mark: |
+| 0.0.14  | :white_check_mark: |
+| 0.0.13 and before  | :x: |
 
 ### Elypso Hub
 | Version | Supported          |
