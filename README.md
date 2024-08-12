@@ -57,6 +57,7 @@ If you still wish to set up the hub, engine and game for testing or to see how i
 Notes:
 - You can not run Elypso Engine directly - you must create a project with Elypso Hub and run that project through the hub to use the engine.
 - The game exe itself along with its required files and folders are found in 'Elypso-engine\Game\build\Release'.
+- Please recompile the game from scratch through the provided bat file if you decide to move the Game folder otherwise the engine fails to compile your game.
 
 0) (IF YOU ARE COMPILING FROM SOURCE)
 	- 0.1) Run 'build.bat' in Hub folder

@@ -149,7 +149,20 @@ namespace Core
 					Type::INFO,
 					"Compilation succeeded! Running game.\n");
 
-				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+				cout << "\ngame parent path\n" 
+					<< Engine::gameParentPath
+					<< "\ngame exe path\n" 
+					<< Engine::gameExePath << "\n";
+
+				if (!exists(Engine::gameExePath)
+					|| !exists(Engine::gameParentPath))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Failed to find game template folder or game exe!\n");
+				}
+				else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			});
 
 		CompileThread.detach();

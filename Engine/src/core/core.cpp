@@ -137,10 +137,34 @@ namespace Core
 		// SET SCENE AND PROJECT PATHS
 		//
 
-		gamePath = current_path().parent_path().parent_path().parent_path().generic_string() + "\\Game";
-		gamePath = String::CharReplace(gamePath, '/', '\\');
-		gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
-		gameParentPath = gamePath + "\\build\\Release";
+		//if engine is ran from repository structure
+		string parentFolder = current_path().stem().string();
+		if (parentFolder == "Release"
+			|| parentFolder == "Debug")
+		{
+			gamePath = current_path()
+				.parent_path()
+				.parent_path()
+				.parent_path()
+				.generic_string() + "\\Game";
+			gamePath = String::CharReplace(gamePath, '/', '\\');
+			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
+			gameParentPath = gamePath + "\\build\\Release";
+		}
+		//if engine is not ran from repository structure
+		else 
+		{
+			gamePath = current_path().parent_path().generic_string() + "\\Game";
+			gamePath = String::CharReplace(gamePath, '/', '\\');
+			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
+			gameParentPath = gamePath + "\\build\\Release";
+		}
+
+		//if neither one works then engine cannot proceed
+		if (!exists(gamePath))
+		{
+			CreateErrorPopup("Game path load error", "Failed to find game template folder! Shutting down.");
+		}
 
 		string line;
 		while (getline(projectFile, line))

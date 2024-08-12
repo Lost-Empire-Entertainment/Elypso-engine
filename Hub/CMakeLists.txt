@@ -49,9 +49,8 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
-file(GLOB_RECURSE SOURCE_FILES
+file(GLOB SOURCE_FILES
 	${CMAKE_SOURCE_DIR}/src/*.cpp
-	${CMAKE_SOURCE_DIR}/src/*/*.cpp
 )
 
 # Add external source files
