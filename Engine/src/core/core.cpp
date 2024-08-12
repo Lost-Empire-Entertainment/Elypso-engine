@@ -134,7 +134,7 @@ namespace Core
 		}
 
 		//
-		// SET SCENE AND PROJECT PATHS
+		// SET GAME PATHS
 		//
 
 		//if engine is ran from repository structure
@@ -166,6 +166,10 @@ namespace Core
 			CreateErrorPopup("Game path load error", "Failed to find game template folder! Shutting down.");
 		}
 
+		//
+		// SET SCENE AND PROJECT PATHS
+		//
+
 		string line;
 		while (getline(projectFile, line))
 		{
@@ -196,6 +200,50 @@ namespace Core
 
 		scenesPath = path(projectPath).parent_path().string() + "\\scenes";
 		texturesPath = path(projectPath).parent_path().string() + "\\textures";
+
+		//
+		// SET FIRST SCENE PATH
+		//
+
+		string firstSceneFile = docsPath + "\\" + path(gameExePath).stem().string() + "\\firstScene.txt";
+		cout << "attempting to load first scene file from\n" << firstSceneFile << "\n";
+		if (exists(firstSceneFile))
+		{
+			ifstream fsFile(firstSceneFile);
+			if (!fsFile.is_open())
+			{
+				CreateErrorPopup("First scene file load error", "Failed to open first scene file! Shutting down.");
+			}
+
+			string line;
+			while (getline(fsFile, line))
+			{
+				gameFirstScene = line;
+				break;
+			}
+
+			fsFile.close();
+
+			bool foundExisting = false;
+			for (const auto& entry : directory_iterator(scenesPath))
+			{
+				string entryStem = path(entry).stem().string();
+				if (gameFirstScene == entryStem)
+				{
+					foundExisting = true;
+					break;
+				}
+			}
+
+			if (!foundExisting)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Failed to assign valid first scene file because the provided one does not exist! Clearing assigned value.");
+				gameFirstScene = "";
+			}
+		}
 
 		//
 		// REST OF THE INITIALIZATION
