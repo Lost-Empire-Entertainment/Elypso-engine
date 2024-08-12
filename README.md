@@ -42,7 +42,7 @@ If you believe you have found a security vulnerability that may affect your comp
 
 * [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
 
-* tkpmonke - *Tester*
+* [tkpmonke](https://github.com/tkpmonke) - *Tester*
 
 ---
 
