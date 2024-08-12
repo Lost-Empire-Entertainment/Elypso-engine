@@ -1,6 +1,6 @@
 # Elypso engine
 
-Elypso Engine is a game development engine that is made with OpenGL, C++ 20 and [several libraries](https://github.com/Lost-Empire-Entertainment/Elypso-engine/blob/main/LIBRARIES.md) and it is primarily aimed for Windows 10 and 11.
+Elypso Engine is a game development engine that is made with OpenGL, C++ 20 and [several libraries](https://github.com/Lost-Empire-Entertainment/Elypso-engine/blob/main/LIBRARIES.md) and it is primarily aimed for Windows 10 and 11. Linux support is coming very soon and this README file will be updated accordingly once Linux support is confirmed to be working.
 
 The engine is currently in the Alpha stage and has finished all of its Prototype versions.
 - Elypso Engine beta release date is aimed for spring 2025.
@@ -8,19 +8,19 @@ The engine is currently in the Alpha stage and has finished all of its Prototype
 
 These dates are not final and may change so check back here regularly to see updates.
 
-There documentation for the Engine will be found at the [website](https://elypsoengine.com) so please look there for information. this README file will only cover the very basics.
-
----
-
-### Reporting a security vulnerability
-
-If you believe you have found a security vulnerability that may affect your computer negatively in any way then please follow the [Security Policy file](https://github.com/Lost-Empire-Entertainment/Elypso-engine/security/policy).
+The documentation for the Engine will be found at the [website](https://elypsoengine.com) so please look there for information, this README file will not cover how to install or use the engine.
 
 ---
 
 ### False positives from Windows Security
 
 If this is your first time running the program then Windows may throw false positives like trojan or other "security threats". Follow [this Microsoft tutorial](https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26) to exclude the Hub, Engine and Game folders from Windows Security scans.
+
+---
+
+### Reporting a security vulnerability
+
+If you believe you have found a security vulnerability that may affect your computer negatively in any way then please follow the [Security Policy file](https://github.com/Lost-Empire-Entertainment/Elypso-engine/security/policy).
 
 ---
 
