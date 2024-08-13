@@ -1,6 +1,6 @@
 Elypso Engine Proprietary License
 
-Version 1.2
+Version 1.3
 
 1. Definitions
 
