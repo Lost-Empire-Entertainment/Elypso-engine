@@ -25,6 +25,7 @@
 #include "gameobject.hpp"
 #include "render.hpp"
 #include "gui_settings.hpp"
+#include "sceneFile.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -45,12 +46,15 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::Mesh;
 using Graphics::Render;
 using Graphics::GUI::GUISettings;
+using EngineFile::SceneFile;
 
 namespace Core
 {
 	void Compilation::Compile()
 	{
 		renderBuildingWindow = true;
+
+		SceneFile::SaveScene();
 
 		thread CompileThread([]()
 			{

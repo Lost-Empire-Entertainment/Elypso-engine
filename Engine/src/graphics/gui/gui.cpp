@@ -575,7 +575,40 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Game exe does not exist!\n");
 				}
-				else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+				else
+				{
+					SceneFile::SaveScene();
+
+					//
+					// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
+					//
+
+					string gameName = path(Engine::gameExePath).stem().string();
+					string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+					if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
+
+					string gameDocsFolder = myGamesFolder + "\\" + gameName;
+					if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder + "\\scenes");
+
+					string scenePath = path(Engine::projectPath).parent_path().string();
+					for (const auto& entry : directory_iterator(path(scenePath)))
+					{
+						string stem = path(entry).stem().string();
+
+						if (stem != "models"
+							&& stem != "textures"
+							&& stem != "project")
+						{
+							string origin = path(entry).string();
+							string originFileName = path(entry).filename().string();
+							string target = gameDocsFolder + "\\" + originFileName;
+
+							File::CopyFileOrFolder(origin, target);
+						}
+					}
+
+					File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+				}
 
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();

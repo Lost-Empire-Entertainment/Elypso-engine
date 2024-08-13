@@ -205,9 +205,188 @@ namespace Core
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
         if (!Compilation::renderBuildingWindow
-            && !Render::camera.cameraEnabled
-            && !ImGui::GetIO().WantCaptureMouse)
+            && !Render::camera.cameraEnabled)
         {
+            if (!ImGui::GetIO().WantCaptureMouse)
+            {
+                //copy selected object
+                if (key == GLFW_KEY_C
+                    && mods == GLFW_MOD_CONTROL
+                    && action == GLFW_PRESS
+                    && Select::selectedObj != nullptr)
+                {
+                    copiedObject = Select::selectedObj;
+
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::DEBUG,
+                        "Copied file '" + copiedObject->GetName()
+                        + "_" + to_string(copiedObject->GetID()) + "'\n");
+                }
+
+                //paste selected object
+                if (key == GLFW_KEY_V
+                    && mods == GLFW_MOD_CONTROL
+                    && action == GLFW_PRESS
+                    && copiedObject != nullptr)
+                {
+                    string name = copiedObject->GetName();
+                    unsigned int nextID = GameObject::nextID++;
+
+                    //if a regular model was pasted
+                    if (copiedObject->GetBasicShape() != nullptr)
+                    {
+                        string extension;
+                        string originPath = Engine::currentGameobjectsPath + "\\" + name;
+
+                        for (const auto& entry : directory_iterator(originPath))
+                        {
+                            extension = path(entry).extension().string();
+                            if (extension == ".fbx"
+                                || extension == ".obj"
+                                || extension == ".glfw")
+                            {
+                                originPath += "\\" + name + extension;
+                                break;
+                            }
+                        }
+                        string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
+                        string targetName = path(targetPath).stem().string();
+
+                        File::CreateNewFolder(targetPath);
+                        string destinationPath = targetPath + "\\" + targetName + extension;
+                        File::CopyFileOrFolder(originPath, destinationPath);
+
+                        cout << "copying from originpath " << originPath << " to target path " << targetPath << "\n";
+
+                        Model::Initialize(
+                            copiedObject->GetTransform()->GetPosition(),
+                            copiedObject->GetTransform()->GetRotation(),
+                            copiedObject->GetTransform()->GetScale(),
+                            copiedObject->GetDirectory(),
+                            copiedObject->GetMaterial()->GetShaderName(0),
+                            copiedObject->GetMaterial()->GetShaderName(1),
+                            copiedObject->GetMaterial()->GetTextureName(Material::TextureType::diffuse),
+                            copiedObject->GetMaterial()->GetTextureName(Material::TextureType::specular),
+                            copiedObject->GetMaterial()->GetTextureName(Material::TextureType::normal),
+                            copiedObject->GetMaterial()->GetTextureName(Material::TextureType::height),
+                            copiedObject->GetBasicShape()->GetShininess(),
+                            targetName,
+                            nextID);
+
+                        cout << "set new name to " << targetName << "\n";
+                    }
+
+                    //if a point light was copied
+                    else if (copiedObject->GetPointLight() != nullptr)
+                    {
+                        string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
+                        string targetName = path(targetPath).stem().string();
+                        File::CreateNewFolder(targetPath);
+
+                        shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
+                            copiedObject->GetTransform()->GetPosition(),
+                            copiedObject->GetTransform()->GetRotation(),
+                            copiedObject->GetTransform()->GetScale(),
+                            copiedObject->GetMaterial()->GetShaderName(0),
+                            copiedObject->GetMaterial()->GetShaderName(1),
+                            copiedObject->GetPointLight()->GetDiffuse(),
+                            copiedObject->GetPointLight()->GetIntensity(),
+                            copiedObject->GetPointLight()->GetDistance(),
+                            targetName,
+                            nextID);
+                    }
+
+                    //if a spotlight was copied
+                    else if (copiedObject->GetSpotLight() != nullptr)
+                    {
+                        string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
+                        string targetName = path(targetPath).stem().string();
+                        File::CreateNewFolder(targetPath);
+
+                        shared_ptr<GameObject> newPointLight = SpotLight::InitializeSpotLight(
+                            copiedObject->GetTransform()->GetPosition(),
+                            copiedObject->GetTransform()->GetRotation(),
+                            copiedObject->GetTransform()->GetScale(),
+                            copiedObject->GetMaterial()->GetShaderName(0),
+                            copiedObject->GetMaterial()->GetShaderName(1),
+                            copiedObject->GetSpotLight()->GetDiffuse(),
+                            copiedObject->GetSpotLight()->GetIntensity(),
+                            copiedObject->GetSpotLight()->GetDistance(),
+                            copiedObject->GetSpotLight()->GetInnerAngle(),
+                            copiedObject->GetSpotLight()->GetOuterAngle(),
+                            targetName,
+                            nextID);
+                    }
+
+                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::DEBUG,
+                        "Pasted file " + copiedObject->GetName()
+                        + "_" + to_string(copiedObject->GetID()) + "\n");
+                }
+
+                //delete selected gameobject
+                if (key == GLFW_KEY_DELETE
+                    && action == GLFW_PRESS
+                    && Select::selectedObj != nullptr)
+                {
+                    Select::isObjectSelected = false;
+                    shared_ptr<GameObject> selectedObj = Select::selectedObj;
+                    Select::selectedObj = nullptr;
+                    GameObjectManager::DestroyGameObject(selectedObj);
+                }
+
+                if (Select::selectedObj != nullptr)
+                {
+                    //switch to X axis
+                    if (key == GLFW_KEY_X
+                        && action == GLFW_PRESS
+                        && axis != "X")
+                    {
+                        axis = "X";
+                    }
+                    //switch to Y axis
+                    if (key == GLFW_KEY_Y
+                        && action == GLFW_PRESS
+                        && axis != "Y")
+                    {
+                        axis = "Y";
+                    }
+                    //switch to Z axis
+                    if (key == GLFW_KEY_Z
+                        && action == GLFW_PRESS
+                        && axis != "Z")
+                    {
+                        axis = "Z";
+                    }
+
+                    //switch to move action
+                    if (key == GLFW_KEY_W
+                        && action == GLFW_PRESS
+                        && objectAction != ObjectAction::move)
+                    {
+                        objectAction = ObjectAction::move;
+                    }
+                    //switch to rotate action
+                    if (key == GLFW_KEY_E
+                        && action == GLFW_PRESS
+                        && objectAction != ObjectAction::rotate)
+                    {
+                        objectAction = ObjectAction::rotate;
+                    }
+                    //switch to scale action
+                    if (key == GLFW_KEY_R
+                        && action == GLFW_PRESS
+                        && objectAction != ObjectAction::scale)
+                    {
+                        objectAction = ObjectAction::scale;
+                    }
+                }
+            }
+
             //compile game
             if (key == GLFW_KEY_B
                 && mods == GLFW_MOD_CONTROL
@@ -228,137 +407,40 @@ namespace Core
                         Type::EXCEPTION,
                         "Game exe does not exist!\n");
                 }
-                else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
-            }
-
-            //copy selected object
-            if (key == GLFW_KEY_C
-                && mods == GLFW_MOD_CONTROL
-                && action == GLFW_PRESS
-                && Select::selectedObj != nullptr)
-            {
-                copiedObject = Select::selectedObj;
-
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::FILE,
-                    Type::DEBUG,
-                    "Copied file '" + copiedObject->GetName()
-                    + "_" + to_string(copiedObject->GetID()) + "'\n");
-            }
-
-            //paste selected object
-            if (key == GLFW_KEY_V
-                && mods == GLFW_MOD_CONTROL
-                && action == GLFW_PRESS
-                && copiedObject != nullptr)
-            {
-                string name = copiedObject->GetName();
-                unsigned int nextID = GameObject::nextID++;
-
-                //if a regular model was pasted
-                if (copiedObject->GetBasicShape() != nullptr)
+                else
                 {
-                    string extension;
-                    string originPath = Engine::currentGameobjectsPath + "\\" + name;
+                    SceneFile::SaveScene();
 
-                    for (const auto& entry : directory_iterator(originPath))
+                    //
+                    // CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
+                    //
+
+                    string gameName = path(Engine::gameExePath).stem().string();
+                    string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+                    if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
+
+                    string gameDocsFolder = myGamesFolder + "\\" + gameName;
+                    if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder + "\\scenes");
+
+                    string scenePath = path(Engine::projectPath).parent_path().string();
+                    for (const auto& entry : directory_iterator(path(scenePath)))
                     {
-                        extension = path(entry).extension().string();
-                        if (extension == ".fbx"
-                            || extension == ".obj"
-                            || extension == ".glfw")
+                        string stem = path(entry).stem().string();
+
+                        if (stem != "models"
+                            && stem != "textures"
+                            && stem != "project")
                         {
-                            originPath += "\\" + name + extension;
-                            break;
+                            string origin = path(entry).string();
+                            string originFileName = path(entry).filename().string();
+                            string target = gameDocsFolder + "\\" + originFileName;
+
+                            File::CopyFileOrFolder(origin, target);
                         }
                     }
-                    string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
-                    string targetName = path(targetPath).stem().string();
 
-                    File::CreateNewFolder(targetPath);
-                    string destinationPath = targetPath + "\\" + targetName + extension;
-                    File::CopyFileOrFolder(originPath, destinationPath);
-
-                    cout << "copying from originpath " << originPath << " to target path " << targetPath << "\n";
-
-                    Model::Initialize(
-                        copiedObject->GetTransform()->GetPosition(),
-                        copiedObject->GetTransform()->GetRotation(),
-                        copiedObject->GetTransform()->GetScale(),
-                        copiedObject->GetDirectory(),
-                        copiedObject->GetMaterial()->GetShaderName(0),
-                        copiedObject->GetMaterial()->GetShaderName(1),
-                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::diffuse),
-                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::specular),
-                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::normal),
-                        copiedObject->GetMaterial()->GetTextureName(Material::TextureType::height),
-                        copiedObject->GetBasicShape()->GetShininess(),
-                        targetName,
-                        nextID);
-
-                    cout << "set new name to " << targetName << "\n";
+                    File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
                 }
-
-                //if a point light was copied
-                else if (copiedObject->GetPointLight() != nullptr)
-                {
-                    string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
-                    string targetName = path(targetPath).stem().string();
-                    File::CreateNewFolder(targetPath);
-
-                    shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
-                        copiedObject->GetTransform()->GetPosition(),
-                        copiedObject->GetTransform()->GetRotation(),
-                        copiedObject->GetTransform()->GetScale(),
-                        copiedObject->GetMaterial()->GetShaderName(0),
-                        copiedObject->GetMaterial()->GetShaderName(1),
-                        copiedObject->GetPointLight()->GetDiffuse(),
-                        copiedObject->GetPointLight()->GetIntensity(),
-                        copiedObject->GetPointLight()->GetDistance(),
-                        targetName,
-                        nextID);
-                }
-
-                //if a spotlight was copied
-                else if (copiedObject->GetSpotLight() != nullptr)
-                {
-                    string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
-                    string targetName = path(targetPath).stem().string();
-                    File::CreateNewFolder(targetPath);
-
-                    shared_ptr<GameObject> newPointLight = SpotLight::InitializeSpotLight(
-                        copiedObject->GetTransform()->GetPosition(),
-                        copiedObject->GetTransform()->GetRotation(),
-                        copiedObject->GetTransform()->GetScale(),
-                        copiedObject->GetMaterial()->GetShaderName(0),
-                        copiedObject->GetMaterial()->GetShaderName(1),
-                        copiedObject->GetSpotLight()->GetDiffuse(),
-                        copiedObject->GetSpotLight()->GetIntensity(),
-                        copiedObject->GetSpotLight()->GetDistance(),
-                        copiedObject->GetSpotLight()->GetInnerAngle(),
-                        copiedObject->GetSpotLight()->GetOuterAngle(),
-                        targetName,
-                        nextID);
-                }
-
-                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::FILE,
-                    Type::DEBUG,
-                    "Pasted file " + copiedObject->GetName()
-                    + "_" + to_string(copiedObject->GetID()) + "\n");
-            }
-
-            //delete selected gameobject
-            if (key == GLFW_KEY_DELETE
-                && action == GLFW_PRESS
-                && Select::selectedObj != nullptr)
-            {
-                Select::isObjectSelected = false;
-                shared_ptr<GameObject> selectedObj = Select::selectedObj;
-                Select::selectedObj = nullptr;
-                GameObjectManager::DestroyGameObject(selectedObj);
             }
 
             //save current scene
@@ -368,53 +450,6 @@ namespace Core
             {
                 SceneFile::SaveScene();
                 ConfigFile::SaveConfigFile();
-            }
-
-            if (Select::selectedObj != nullptr)
-            {
-                //switch to X axis
-                if (key == GLFW_KEY_X
-                    && action == GLFW_PRESS
-                    && axis != "X")
-                {
-                    axis = "X";
-                }
-                //switch to Y axis
-                if (key == GLFW_KEY_Y
-                    && action == GLFW_PRESS
-                    && axis != "Y")
-                {
-                    axis = "Y";
-                }
-                //switch to Z axis
-                if (key == GLFW_KEY_Z
-                    && action == GLFW_PRESS
-                    && axis != "Z")
-                {
-                    axis = "Z";
-                }
-
-                //switch to move action
-                if (key == GLFW_KEY_W
-                    && action == GLFW_PRESS
-                    && objectAction != ObjectAction::move)
-                {
-                    objectAction = ObjectAction::move;
-                }
-                //switch to rotate action
-                if (key == GLFW_KEY_E
-                    && action == GLFW_PRESS
-                    && objectAction != ObjectAction::rotate)
-                {
-                    objectAction = ObjectAction::rotate;
-                }
-                //switch to scale action
-                if (key == GLFW_KEY_R
-                    && action == GLFW_PRESS
-                    && objectAction != ObjectAction::scale)
-                {
-                    objectAction = ObjectAction::scale;
-                }
             }
         }
     }
