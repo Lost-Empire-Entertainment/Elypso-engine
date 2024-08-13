@@ -1,6 +1,6 @@
 Elypso Engine Proprietary License
 
-Version 1.2
+Version 1.3
 
 1. Definitions
 
@@ -27,15 +27,16 @@ Version 1.2
 
 4. Restrictions
 
-   You may not sublicense, sell, rent, lease, or otherwise transfer the Engine, Hub, or any modified versions thereof to any third party without the prior written consent of Lost Empire Entertainment.
-   You may not remove or alter any copyright notices, trademarks, or other proprietary rights notices contained in the Engine or Hub.
+   You may not sublicense, sell, rent or lease the Engine or Hub to any third party without the prior written consent of Lost Empire Entertainment.
+   You may not remove or alter any licenses, copyright notices, trademarks, or other proprietary rights notices contained in the Engine or Hub.
    You may not use the name, logo, or trademarks of Lost Empire Entertainment to endorse or promote products derived from the Engine or Hub without prior written permission.
+   The use of the Engine and Hub in violation of applicable laws or regulations, including but not limited to unauthorized copying, distribution, modification if it goes against its license, or any other illegal activities, is strictly prohibited.
 
-5. Proprietary Rights
+6. Proprietary Rights
 
    The Engine, Hub, and all worldwide copyrights, trade secrets, and other intellectual property rights therein are the exclusive property of Lost Empire Entertainment. All rights not expressly granted herein are reserved by Lost Empire Entertainment.
 
-6. External Content Rights
+7. External Content Rights
 
    The use of the following files and folders in violation of applicable laws or regulations, including but not limited to unauthorized copying, distribution, modification if it goes against its license, or any other illegal activities, is strictly prohibited.
 
@@ -46,19 +47,19 @@ Version 1.2
    - all fonts at 'Elypso-engine\Engine\files\fonts', 'Elypso-engine\Hub\files\fonts' and 'Elypso-engine\Game\files\fonts'
    - all DLL files at 'Elypso-engine\Engine\files\external dlls' and 'Elypso-engine\Game\files\external dlls'
 
-7. Disclaimer of Warranty
+8. Disclaimer of Warranty
 
    THE ENGINE AND HUB ARE PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, LOST EMPIRE ENTERTAINMENT DISCLAIMS ALL WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. LOST EMPIRE ENTERTAINMENT DOES NOT WARRANT THAT THE ENGINE, OR HUB WILL BE ERROR-FREE OR UNINTERRUPTED.
 
-8. Termination
+9. Termination
 
    This license is effective until terminated. Your rights under this license will terminate automatically without notice by Lost Empire Entertainment if you fail to comply with any term(s) of this license. Upon termination of this license, you shall cease all use of the Engine and Hub, and destroy all copies, full or partial, in your possession or control.
 
-9. Governing Law
+10. Governing Law
 
    This license shall be governed by and construed in accordance with the laws of the jurisdiction in which Lost Empire Entertainment operates, without regard to its conflict of law provisions.
 
-10. Entire Agreement
+11. Entire Agreement
 
    This license constitutes the entire agreement between you and Lost Empire Entertainment concerning the Engine, Hub, Game, and Content and supersedes all prior or contemporaneous agreements, representations, and understandings, whether oral or written.
 
