@@ -56,7 +56,6 @@ namespace Graphics::GUI
 		//
 		// GENERAL
 		//
-
 		ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 
 		string strObjectsCount = "Objects: " + to_string(objectsCount);
@@ -206,7 +205,37 @@ namespace Graphics::GUI
 			ConfigFile::SetValue("grid_maxDistance", to_string(gridMaxDistance));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
-	}
+	   ImGui::SeparatorText("GPU Info");
+      ImGui::Text("GPU Vendor : %s", glGetString(GL_VENDOR));
+      ImGui::Text("GPU : %s", glGetString(GL_RENDERER))ImGui::SeparatorText("Librarys");
+            
+      ImGui::Text("OpenGL Version : %s", glGetString(GL_VERSION));
+      ImGui::Text("GLFW Version : %s", glfwGetVersionString());
+      ImGui::Text("Operating System : %s", os);
+      ImGui::Text("Compiled With GCC Version : C = %d, C++ = %d", __GNUC__, __GNUG__);
+            
+      ImGui::SeparatorText("Window");
+      int w,h;
+      glfwGetWindowSize(window, &w, &h);
+      ImGui::Text("Window Width : %i", w);
+      ImGui::Text("Window Height : %i", h);
+      
+      ImGui::SeparatorText("Framebuffer");
+      int ret;
+      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_FRONT, GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE, &ret);
+      ImGui::Text("Red Bit Size : %d", ret);
+      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_FRONT, GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE, &ret);
+      ImGui::Text("Green Bit Size : %d", ret);
+      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_FRONT, GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE, &ret);
+      ImGui::Text("Blue Bit Size : %d", ret);
+      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_FRONT, GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE, &ret);
+      ImGui::Text("Alpha Bit Size : %d", ret);
+      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_DEPTH, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &ret);
+      ImGui::Text("Depth Bit Size : %d", ret);
+      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_STENCIL, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &ret);
+      ImGui::Text("Stencil Bit Size : %d", ret);;
+
+   }
 
 	void GUIFloatingDebugMenu::UpdateCounts()
 	{
