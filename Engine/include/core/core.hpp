@@ -36,9 +36,7 @@ namespace Core
 		static void InitializeEngine();
 		static void RunEngine();
 
-		static void CreateErrorPopup(
-			const char* errorTitle = "MISSING ERROR TITLE", 
-			const char* errorMessage = "MISSING ERROR MESSAGE");
+		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
 
 		static bool IsThisProcessAlreadyRunning(const string& processName);
 

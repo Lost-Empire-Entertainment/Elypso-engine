@@ -51,10 +51,7 @@ namespace Core
 	{
 		if (IsThisProcessAlreadyRunning(name + ".exe"))
 		{
-			string title = "Already running";
-			string message = "Error: '" + name + "' is already running!";
-
-			CreateErrorPopup(title.c_str(), message.c_str());
+			CreateErrorPopup("Elypso Engine is already running! Error code: F0001");
 		}
 
 		cout << "\n==================================================\n"
@@ -65,6 +62,13 @@ namespace Core
 			<< ".\n"
 			<< ".\n"
 			<< ".\n\n";
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::INPUT,
+			Type::INFO,
+			name + " " + version + "\n" +
+			"Copyright (C) Lost Empire Entertainment 2024\n\n",
+			true);
 
 		//
 		// SET DOCUMENTS PATH
@@ -105,32 +109,17 @@ namespace Core
 				"\\Elypso engine";
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
+
+			string output = "Engine documents path: " + docsPath + "\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				output);
 		}
 		else
 		{
-			CreateErrorPopup("Path load error", "Couldn't find engine documents folder! Shutting down.");
-		}
-
-		//
-		// SET FILES PATH
-		//
-
-		path fsFilesPath = current_path().generic_string() + "\\files";
-		if (!exists(fsFilesPath))
-		{
-			CreateErrorPopup("Path load error", "Couldn't find files folder! Shutting down.");
-			return;
-		}
-		filesPath = String::CharReplace(fsFilesPath.string(), '/', '\\');
-
-		//
-		// CHECK IF HUB PROJECT EXISTS OR NOT
-		//
-
-		ifstream projectFile(filesPath + "\\project.txt");
-		if (!projectFile.is_open())
-		{
-			CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down.");
+			CreateErrorPopup(
+				"Couldn't find engine documents folder! Error code: F0002");
 		}
 
 		//
@@ -160,29 +149,71 @@ namespace Core
 			gameParentPath = gamePath + "\\build\\Release";
 		}
 
+		string output = "Game path: " + gamePath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		output = "Game exe path: " + gameExePath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		output = "Game parent path: " + gameParentPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
 		//if neither one works then engine cannot proceed
 		if (!exists(gamePath))
 		{
-			CreateErrorPopup("Game path load error", "Failed to find game template folder! Shutting down.");
+			CreateErrorPopup(
+				"Failed to find game template folder! Error code: F0005");
 		}
 
 		//
-		// SET SCENE AND PROJECT PATHS
+		// SET FILES PATH
 		//
+
+		filesPath = current_path().generic_string() + "\\files";
+		if (!exists(filesPath))
+		{
+			CreateErrorPopup(
+				"Couldn't find files folder! Error code: F0003");
+			return;
+		}
+
+		output = "User engine files path: " + filesPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		//
+		// SET PROJECT FOLDER PATH
+		//
+
+		ifstream projectFile(filesPath + "\\project.txt");
+		if (!projectFile.is_open())
+		{
+			CreateErrorPopup(
+				"Failed to open project file! Error code: F0004");
+		}
+
+		output = "Project file path: " + filesPath + "\\project.txt" + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
 
 		string line;
 		while (getline(projectFile, line))
 		{
 			if (!line.empty())
 			{
-				size_t pos_scene = line.find("scene:");
-				if (pos_scene != string::npos)
-				{
-					string removable = "scene: ";
-					size_t pos = line.find(removable);
-					scenePath = line.erase(pos, removable.length());
-				}
-
 				size_t pos_project = line.find("project:");
 				if (pos_project != string::npos)
 				{
@@ -194,25 +225,44 @@ namespace Core
 		}
 		projectFile.close();
 
+		output = "Project path: " + projectPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
 		//
 		// SET SCENES AND TEXTURES PATHS
 		//
 
-		scenesPath = path(projectPath).parent_path().string() + "\\scenes";
-		texturesPath = path(projectPath).parent_path().string() + "\\textures";
+		scenesPath = path(projectPath).string() + "\\scenes";
+
+		output = "Scenes path: " + scenesPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		texturesPath = path(projectPath).string() + "\\textures";
+
+		output = "Textures path: " + texturesPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
 
 		//
 		// SET FIRST SCENE PATH
 		//
 
 		string firstSceneFile = docsPath + "\\" + path(gameExePath).stem().string() + "\\firstScene.txt";
-		cout << "attempting to load first scene file from\n" << firstSceneFile << "\n";
 		if (exists(firstSceneFile))
 		{
 			ifstream fsFile(firstSceneFile);
 			if (!fsFile.is_open())
 			{
-				CreateErrorPopup("First scene file load error", "Failed to open first scene file! Shutting down.");
+				CreateErrorPopup(
+					"Failed to open first scene file! Error code: F0006");
 			}
 
 			string line;
@@ -243,6 +293,14 @@ namespace Core
 					"Failed to assign valid first scene file because the provided one does not exist! Clearing assigned value.");
 				gameFirstScene = "";
 			}
+			else
+			{
+				output = "Game first scene path: " + gameFirstScene + "\n\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::DEBUG,
+					output);
+			}
 		}
 
 		//
@@ -251,33 +309,49 @@ namespace Core
 
 		ConsoleManager::InitializeLogger();
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::INPUT,
-			Type::INFO,
-			name + " " + version + "\n" +
-			"Copyright (C) Lost Empire Entertainment 2024\n\n",
-			true);
-
 		ConfigFile::LoadConfigFile();
-
-		SceneFile::CheckForProjectFile();
-
-		string output = "Engine documents path: " + docsPath + "\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::DEBUG,
-			output);
-
-		output = "User engine files path: " + filesPath + "\n\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::DEBUG,
-			output);
 
 		Render::RenderSetup();
 
-		//first scene is actually loaded when engine is ready for use
-		SceneFile::LoadScene(scenePath);
+		string lastSavedScenePath = Engine::docsPath + "\\lastSavedScene.txt";
+		if (exists(lastSavedScenePath))
+		{
+			ifstream lastSavedSceneFile(lastSavedScenePath);
+			if (!lastSavedSceneFile.is_open())
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Couldn't open scene file '" + lastSavedScenePath + "'! Opening default scene.\n");
+				SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+			}
+			else 
+			{
+				string line;
+				string foundScenePath;
+				while (getline(lastSavedSceneFile, line))
+				{
+					foundScenePath = line;
+					break;
+				}
+				lastSavedSceneFile.close();
+
+				if (exists(foundScenePath))
+				{
+					SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+				}
+				else 
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Couldn't load scene file '" + foundScenePath + "' because it doesn't exist! Opening default scene.\n");
+					SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+				}
+			}
+		}
+		//otherwise load first scene
+		else SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
 	}
 
 	void Engine::RunEngine()
@@ -308,9 +382,21 @@ namespace Core
 		}
 	}
 
-	void Engine::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
+	void Engine::CreateErrorPopup(const char* errorMessage)
 	{
-		int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
+		string title = "Elypso Engine has shut down";
+
+		cout << "\n"
+			<< "===================="
+			<< "\n"
+			<< "ENGINE SHUTDOWN"
+			<< "\n\n"
+			<< errorMessage 
+			<< "\n"
+			<< "===================="
+			<< "\n";
+
+		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
 
 		if (result == IDOK) Shutdown(true);
 	}

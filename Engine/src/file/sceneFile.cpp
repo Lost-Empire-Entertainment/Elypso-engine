@@ -54,176 +54,159 @@ using EngineFile::GameObjectFile;
 
 namespace EngineFile
 {
-	void SceneFile::CheckForProjectFile()
-	{
-		string projectPath = Engine::filesPath + "\\project.txt";
-		if (!exists(projectPath))
-		{
-			Engine::CreateErrorPopup("Project file load error", "No project file was found! Shutting down engine");
-		}
-
-		string targetScene;
-		ifstream projectFile(projectPath);
-		if (!projectFile.is_open())
-		{
-			Engine::CreateErrorPopup("Project file load error", "Failed to open project file! Shutting down engine");
-		}
-
-		string line;
-		while (getline(projectFile, line))
-		{
-			if (!line.empty())
-			{
-				size_t pos_scene = line.find("scene:");
-				if (pos_scene != string::npos)
-				{
-					string removable = "scene: ";
-					size_t pos = line.find(removable);
-					targetScene = line.erase(pos, removable.length());
-				}
-
-				size_t pos_project = line.find("project:");
-				if (pos_project != string::npos)
-				{
-					string removable = "project: ";
-					size_t pos = line.find(removable);
-					currentProjectPath = line.erase(pos, removable.length());
-				}
-			}
-		}
-		projectFile.close();
-
-		if (currentProjectPath.empty()
-			|| !exists(currentProjectPath))
-		{
-			Engine::CreateErrorPopup("Project load error", "Failed to load valid project file from project file! Shutting down engine");
-		}
-
-		if (targetScene.empty()
-			|| !exists(targetScene))
-		{
-			Engine::CreateErrorPopup("Scene load error", "Failed to load valid scene file from project file! Shutting down engine");
-		}
-
-		Engine::scenePath = targetScene;
-	}
-
 	void SceneFile::LoadScene(const string& scenePath)
 	{
 		if (!exists(scenePath))
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Tried to load scene file '" + scenePath + "' but it doesn't exist!\n");
-			return;
-		}
-
-		Engine::scenePath = scenePath;
-		Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
-
-		Select::isObjectSelected = false;
-		Select::selectedObj = nullptr;
-
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-		if (objects.size() != 0)
-		{
-			for (const auto& obj : objects)
+			if (scenePath != Engine::scenesPath + "\\Scene1\\scene.txt")
 			{
-				GameObjectManager::DestroyGameObject(obj, true);
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Tried to load scene file '" + scenePath + "' but it doesn't exist! Loading default scene.\n");
 			}
-		}
 
-		ifstream sceneFile(Engine::scenePath);
-		if (!sceneFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
-			return;
-		}
-
-		string line;
-		map<string, string> obj;
-		while (getline(sceneFile, line))
-		{
-			if (!line.empty()
-				&& line.find("=") != string::npos)
+			//create new default scene folder if it doesnt exist
+			string defaultSceneFolder = Engine::scenesPath + "\\Scene1";
+			if (!exists(defaultSceneFolder))
 			{
-				vector<string> splitLine = String::Split(line, '=');
-				string type = splitLine[0];
-				string value = splitLine[1];
+				File::CreateNewFolder(defaultSceneFolder);
+				File::CreateNewFolder(defaultSceneFolder + "\\gameobjects");
 
-				//remove one space in front of value if it exists
-				if (value[0] == ' ') value.erase(0, 1);
-				//remove one space in front of each value comma if it exists
-				for (size_t i = 0; i < value.length(); i++)
+				//create new default scene file
+				string defaultScenePath = defaultSceneFolder + "\\scene.txt";
+				ofstream defaultSceneFile(defaultScenePath);
+				if (!defaultSceneFile.is_open())
 				{
-					if (value[i] == ','
-						&& i + 1 < value.length()
-						&& value[i + 1] == ' ')
+					Engine::CreateErrorPopup(
+						"Failed to create default scene file! Error code: F007");
+				}
+				defaultSceneFile.close();
+			}
+
+			//create new default scene file if it doesnt exist
+			string defaultScenePath = defaultSceneFolder + "\\scene.txt";
+			if (!exists(defaultScenePath))
+			{
+				ofstream defaultSceneFile(defaultScenePath);
+				if (!defaultSceneFile.is_open())
+				{
+					Engine::CreateErrorPopup(
+						"Failed to create default scene file! Error code: F008");
+				}
+				defaultSceneFile.close();
+			}
+
+			LoadScene(defaultScenePath);
+		}
+		else 
+		{
+			Engine::scenePath = scenePath;
+			Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
+
+			Select::isObjectSelected = false;
+			Select::selectedObj = nullptr;
+
+			vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
+			if (objects.size() != 0)
+			{
+				for (const auto& obj : objects)
+				{
+					GameObjectManager::DestroyGameObject(obj, true);
+				}
+			}
+
+			ifstream sceneFile(Engine::scenePath);
+			if (!sceneFile.is_open())
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
+				return;
+			}
+
+			string line;
+			map<string, string> obj;
+			while (getline(sceneFile, line))
+			{
+				if (!line.empty()
+					&& line.find("=") != string::npos)
+				{
+					vector<string> splitLine = String::Split(line, '=');
+					string type = splitLine[0];
+					string value = splitLine[1];
+
+					//remove one space in front of value if it exists
+					if (value[0] == ' ') value.erase(0, 1);
+					//remove one space in front of each value comma if it exists
+					for (size_t i = 0; i < value.length(); i++)
 					{
-						value.erase(i + 1, 1);
+						if (value[i] == ','
+							&& i + 1 < value.length()
+							&& value[i + 1] == ' ')
+						{
+							value.erase(i + 1, 1);
+						}
+					}
+
+					if (type == "dirRotation")
+					{
+						vector<string> values = String::Split(value, ',');
+						Render::directionalDirection = String::StringToVec3(values);
+					}
+
+					else if (type == "dirDiffuse")
+					{
+						vector<string> values = String::Split(value, ',');
+						Render::directionalDiffuse = String::StringToVec3(values);
+					}
+
+					else if (type == "dirRotation")
+					{
+						Render::directionalIntensity = stof(value);
+					}
+
+					else if (type == "backgroundColor")
+					{
+						vector<string> values = String::Split(value, ',');
+						Render::backgroundColor = String::StringToVec3(values);
 					}
 				}
-
-				if (type == "dirRotation")
-				{
-					vector<string> values = String::Split(value, ',');
-					Render::directionalDirection = String::StringToVec3(values);
-				}
-				
-				else if (type == "dirDiffuse")
-				{
-					vector<string> values = String::Split(value, ',');
-					Render::directionalDiffuse = String::StringToVec3(values);
-				}
-
-				else if (type == "dirRotation")
-				{
-					Render::directionalIntensity = stof(value);
-				}
-
-				else if (type == "backgroundColor")
-				{
-					vector<string> values = String::Split(value, ',');
-					Render::backgroundColor = String::StringToVec3(values);
-				}
 			}
-		}
 
-		sceneFile.close();
+			sceneFile.close();
 
-		GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
+			GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
 
-		Render::SetWindowNameAsUnsaved(false);
+			Render::SetWindowNameAsUnsaved(false);
 
-		//update project file originating from hub 
-		//to ensure currently opened scene is always opened when hub opens engine
-		string projectFilePath = Engine::filesPath + "\\project.txt";
-		File::DeleteFileOrfolder(projectFilePath);
-		ofstream projFile(projectFilePath);
+			//update project file originating from hub 
+			//to ensure currently opened scene is always opened when hub opens engine
+			string projectFilePath = Engine::filesPath + "\\project.txt";
+			File::DeleteFileOrfolder(projectFilePath);
+			ofstream projFile(projectFilePath);
 
-		projFile << "scene: " << Engine::scenePath << "\n";
-		projFile << "project: " << Engine::projectPath;
+			projFile << "scene: " << Engine::scenePath << "\n";
+			projFile << "project: " << Engine::projectPath;
 
-		projFile.close();
+			projFile.close();
 
-		if (Engine::gameFirstScene == "")
-		{
-			Engine::gameFirstScene = path(scenePath).parent_path().stem().string();
+			if (Engine::gameFirstScene == "")
+			{
+				Engine::gameFirstScene = path(scenePath).parent_path().stem().string();
+
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"Set game first scene to " + Engine::gameFirstScene + "\n");
+			}
 
 			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
+				Caller::FILE,
 				Type::INFO,
-				"Set game first scene to " + Engine::gameFirstScene + "\n");
+				"Successfully loaded scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 		}
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::INFO,
-			"Successfully loaded scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 	}
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
@@ -239,7 +222,6 @@ namespace EngineFile
 		}
 
 		ofstream sceneFile(Engine::scenePath);
-
 		if (!sceneFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -277,6 +259,22 @@ namespace EngineFile
 			Caller::FILE,
 			Type::INFO,
 			"\nSuccessfully saved scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+
+		string lastSavedScenePath = Engine::docsPath + "\\lastSavedScene.txt";
+		if (exists(lastSavedScenePath)) File::DeleteFileOrfolder(lastSavedScenePath);
+		ofstream lastSavedSceneFile(lastSavedScenePath);
+		if (!lastSavedSceneFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Couldn't write into last saved scene file '" + Engine::scenePath + "'!\n");
+		}
+		else 
+		{
+			lastSavedSceneFile << targetLevel;
+			lastSavedSceneFile.close();
+		}
 
 		switch (saveType)
 		{

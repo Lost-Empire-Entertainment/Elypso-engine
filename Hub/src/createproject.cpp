@@ -152,27 +152,9 @@ void CreateProject::RenderCreateProjectContent()
 		string scenesFolder = newProjectFile + "\\scenes";
 		create_directory(scenesFolder);
 
-		//create folder for this scene
-		string scene1Folder = scenesFolder + "\\Scene1";
-		create_directory(scene1Folder);
-
-		//create gameobjects folder
-		string gameobjectsFolder = scene1Folder + "\\gameobjects";
-		create_directory(gameobjectsFolder);
-
 		//create textures folder inside parent project folder
 		string texturesFolder = newProjectFile + "\\textures";
 		create_directory(texturesFolder);
-
-		string sceneFilePath = scene1Folder + "\\scene.txt";
-		ofstream sceneFile(sceneFilePath);
-		if (!sceneFile.is_open())
-		{
-			cout << "Error: Failed to open scene file at '" << sceneFilePath << "'!\n\n";
-			remove_all(newProjectFile);
-			renderCreateProjectWindow = false;
-		}
-		sceneFile.close();
 
 		string projectFilePath = newProjectFile + "\\project.txt";
 		ofstream projectFile(projectFilePath);
@@ -184,8 +166,7 @@ void CreateProject::RenderCreateProjectContent()
 		}
 
 		string engineParentPath = Core::enginePath.parent_path().string();
-		projectFile << "scene: " << sceneFilePath + "\n";
-		projectFile << "project: " << projectFilePath + "\n";
+		projectFile << "project: " << path(projectFilePath).parent_path().string() + "\n";
 		projectFile.close();
 
 		GUI::UpdateFileList();

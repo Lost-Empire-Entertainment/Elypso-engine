@@ -257,8 +257,6 @@ namespace Core
                         string destinationPath = targetPath + "\\" + targetName + extension;
                         File::CopyFileOrFolder(originPath, destinationPath);
 
-                        cout << "copying from originpath " << originPath << " to target path " << targetPath << "\n";
-
                         Model::Initialize(
                             copiedObject->GetTransform()->GetPosition(),
                             copiedObject->GetTransform()->GetRotation(),
@@ -273,8 +271,6 @@ namespace Core
                             copiedObject->GetBasicShape()->GetShininess(),
                             targetName,
                             nextID);
-
-                        cout << "set new name to " << targetName << "\n";
                     }
 
                     //if a point light was copied

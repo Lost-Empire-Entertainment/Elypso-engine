@@ -153,11 +153,6 @@ namespace Core
 					Type::INFO,
 					"Compilation succeeded! Running game.\n");
 
-				cout << "\ngame parent path\n" 
-					<< Engine::gameParentPath
-					<< "\ngame exe path\n" 
-					<< Engine::gameExePath << "\n";
-
 				if (!exists(Engine::gameExePath)
 					|| !exists(Engine::gameParentPath))
 				{

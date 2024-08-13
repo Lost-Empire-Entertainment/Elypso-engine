@@ -78,7 +78,10 @@ namespace Graphics::GUI
 					if (ImGui::IsItemClicked()
 						&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 					{
-						cout << "Added '" << message << "' to clipboard.\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::DEBUG,
+							"Added '" + message + "' to clipboard.\n");
 						ImGui::SetClipboardText(message.c_str());
 					}
 				}
