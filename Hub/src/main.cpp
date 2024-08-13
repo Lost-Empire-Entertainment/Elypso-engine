@@ -36,10 +36,7 @@ int main()
 {
 	if (Core::IsThisProcessAlreadyRunning("Elypso hub.exe"))
 	{
-		string title = "Already running";
-		string message = "Error: 'Elypso hub' is already running!";
-
-		Core::CreateErrorPopup(title.c_str(), message.c_str());
+		Core::CreateErrorPopup("Elypso Hub is already running. Error code: F0008");
 	}
 
 	cout << "\n==================================================\n"
@@ -126,9 +123,7 @@ void Core::Initialize()
 		ofstream configFile(Core::configFilePath);
 		if (!configFile.is_open())
 		{
-			CreateErrorPopup(
-				"Initialization failed", 
-				"Fauled to create config file!");
+			CreateErrorPopup("Failed to create config file. Error code: F0009");
 		}
 		configFile.close();
 	}
@@ -300,9 +295,21 @@ void Core::Render()
 	glfwPollEvents();
 }
 
-void Core::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
+void Core::CreateErrorPopup(const char* errorMessage)
 {
-	int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
+	string title = "Elypso Hub has shut down";
+
+	cout << "\n"
+		<< "===================="
+		<< "\n"
+		<< "HUB SHUTDOWN"
+		<< "\n\n"
+		<< errorMessage
+		<< "\n"
+		<< "===================="
+		<< "\n";
+
+	int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
 
 	if (result == IDOK) Shutdown(true);
 }

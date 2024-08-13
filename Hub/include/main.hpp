@@ -51,7 +51,7 @@ public:
 	static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 	static void Render();
 
-	static void CreateErrorPopup(const char* errorTitle = "INSERT ERROR TITLE", const char* errorMessage = "INSERT ERROR MESSAGE");
+	static void CreateErrorPopup(const char* errorMessage = "INSERT ERROR MESSAGE");
 
 	static bool IsThisProcessAlreadyRunning(const string& processName);
 

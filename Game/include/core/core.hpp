@@ -35,8 +35,6 @@ namespace Core
 		static void Shutdown(bool immediate = false);
 
 		static bool IsThisProcessAlreadyRunning(const string& processName);
-		static void CreateErrorPopup(
-			const char* errorTitle = "MISSING ERROR TITLE", 
-			const char* errorMessage = "MISSING ERROR MESSAGE");
+		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
 	};
 }

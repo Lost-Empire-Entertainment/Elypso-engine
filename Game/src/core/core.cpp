@@ -56,10 +56,7 @@ namespace Core
 
 		if (IsThisProcessAlreadyRunning(gameName + ".exe"))
 		{
-			string title = "Already running";
-			string message = "Error: '" + gameName + "' is already running!";
-
-			CreateErrorPopup(title.c_str(), message.c_str());
+			CreateErrorPopup("Game is already running! Error code: F0010");
 		}
 
 		cout << "\n==================================================\n"
@@ -113,9 +110,7 @@ namespace Core
 		}
 		else
 		{
-			CreateErrorPopup(
-				"Path load error", 
-				"Couldn't find game documents folder! Shutting down.");
+			CreateErrorPopup("Couldn't find Game documents folder! Error code: F0011");
 		}
 
 		//
@@ -125,9 +120,7 @@ namespace Core
 		string fsFilesPath = current_path().generic_string() + "\\files";
 		if (!exists(fsFilesPath))
 		{
-			CreateErrorPopup(
-				"Path load error", 
-				"Couldn't find game files folder! Shutting down.");
+			CreateErrorPopup("Couldn't find Game files folder! Error code: F0012");
 			return;
 		}
 		filesPath = String::CharReplace(fsFilesPath, '/', '\\');
@@ -139,18 +132,14 @@ namespace Core
 		string firstSceneFile = docsPath + "\\firstScene.txt";
 		if (!exists(firstSceneFile))
 		{
-			CreateErrorPopup(
-				"Path load error",
-				"Couldn't find first scene file! Shutting down.");
+			CreateErrorPopup("Couldn't find first scene file! Error code: F0013");
 			return;
 		}
 
 		ifstream fscnFile(firstSceneFile);
 		if (!fscnFile.is_open())
 		{
-			CreateErrorPopup(
-				"File read error",
-				"Couldn't read first scene file! Shutting down.");
+			CreateErrorPopup("Couldn't read first scene file! Error code: F0014");
 			return;
 		}
 
@@ -168,9 +157,7 @@ namespace Core
 		if (scenePath == ""
 			|| !exists(scenePath))
 		{
-			CreateErrorPopup(
-				"Path load error",
-				"Couldn't find or open scene file! Shutting down.");
+			CreateErrorPopup("Couldn't find or open scene file! Error code: F0015");
 			return;
 		}
 
@@ -181,18 +168,14 @@ namespace Core
 		scenesPath = path(docsPath).string() + "\\scenes";
 		if (!exists(scenesPath))
 		{
-			CreateErrorPopup(
-				"Path load error",
-				"Couldn't find scenes folder! Shutting down.");
+			CreateErrorPopup("Couldn't find scenes folder! Error code: F0016");
 			return;
 		}
 
 		texturesPath = path(docsPath).string() + "\\textures";
 		if (!exists(scenesPath))
 		{
-			CreateErrorPopup(
-				"Path load error",
-				"Couldn't find textures folder! Shutting down.");
+			CreateErrorPopup("Couldn't find textures folder! Error code: F0017");
 			return;
 		}
 
@@ -362,9 +345,21 @@ namespace Core
 		return processFound;
 	}
 
-	void Game::CreateErrorPopup(const char* errorTitle, const char* errorMessage)
+	void Game::CreateErrorPopup(const char* errorMessage)
 	{
-		int result = MessageBoxA(nullptr, errorMessage, errorTitle, MB_ICONERROR | MB_OK);
+		string title = "Game has shut down";
+
+		cout << "\n"
+			<< "===================="
+			<< "\n"
+			<< "GAME SHUTDOWN"
+			<< "\n\n"
+			<< errorMessage
+			<< "\n"
+			<< "===================="
+			<< "\n";
+
+		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
 
 		if (result == IDOK) Shutdown(true);
 	}
