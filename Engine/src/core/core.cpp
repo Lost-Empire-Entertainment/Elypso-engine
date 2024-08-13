@@ -171,7 +171,7 @@ namespace Core
 		if (!exists(gamePath))
 		{
 			CreateErrorPopup(
-				"Failed to find game template folder! Error code: F0005");
+				"Failed to find game template folder! Error code: F0003");
 		}
 
 		//
@@ -182,7 +182,7 @@ namespace Core
 		if (!exists(filesPath))
 		{
 			CreateErrorPopup(
-				"Couldn't find files folder! Error code: F0003");
+				"Couldn't find files folder! Error code: F0004");
 			return;
 		}
 
@@ -200,7 +200,7 @@ namespace Core
 		if (!projectFile.is_open())
 		{
 			CreateErrorPopup(
-				"Failed to open project file! Error code: F0004");
+				"Failed to open project file! Error code: F0005");
 		}
 
 		output = "Project file path: " + filesPath + "\\project.txt" + "\n\n";
