@@ -61,6 +61,19 @@ namespace Graphics
 {
 	Camera Render::camera(Render::window, 0.05f);
 
+   void GLAPIENTRY GLErrorCallback( GLenum source,
+                                    GLenum type,
+                                    GLuint id,
+                                    GLenum severity,
+                                    GLsizei length,
+                                    const GLchar* message,
+                                    const void* userParam)
+   {
+#if 1 // replace this with however you check that your compiling with DEBUG, or make it an int that you can change in the editor or something like that 
+      std::cout << "GL ERROR : TYPE " << type <<" : SEVERITY " << severity << " : MESSAGE " << message << "\n"; 
+#endif 
+   }
+
 	void Render::RenderSetup()
 	{
 		GLFWSetup();
@@ -174,6 +187,17 @@ namespace Graphics
 		glEnable(GL_BLEND);
 		//set blending function
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+      //get gl version for debug callback
+      int minor, major;
+      glGetIntegerv(GL_MINOR_VERSION, &minor);
+      glGetIntegerv(GL_MAJOR_VERSION, &major);
+      //enable debug callback if opengl version is high enough
+      if (major >= 4 && minor >= 3) {
+         glEnable(GL_DEBUG_OUTPUT);
+         glDebugMessageCallbak(MessageCallback, 0);
+      }
+
 
 		Grid::InitializeGrid();
 

@@ -352,6 +352,7 @@ namespace Core
 		}
 		//otherwise load first scene
 		else SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+
 	}
 
 	void Engine::RunEngine()
