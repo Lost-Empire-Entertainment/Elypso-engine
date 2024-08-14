@@ -27,10 +27,10 @@ Version 1.3
 
 4. Restrictions
 
-   You may not sublicense, sell, rent or lease the Engine or Hub to any third party without the prior written consent of Lost Empire Entertainment.
-   You may not remove or alter any licenses, copyright notices, trademarks, or other proprietary rights notices contained in the Engine or Hub.
-   You may not use the name, logo, or trademarks of Lost Empire Entertainment to endorse or promote products derived from the Engine or Hub without prior written permission.
-   The use of the Engine and Hub in violation of applicable laws or regulations, including but not limited to unauthorized copying, distribution, modification if it goes against its license, or any other illegal activities, is strictly prohibited.
+   - You may not sublicense, sell, rent or lease the Engine or Hub to any third party without the prior written consent of Lost Empire Entertainment.
+   - You may not remove or alter any licenses, copyright notices, trademarks, or other proprietary rights notices contained in the Engine or Hub.
+   - You may not use the name, logo, or trademarks of Lost Empire Entertainment to endorse or promote products derived from the Engine or Hub without prior written permission.
+   - The use of the Engine and Hub in violation of applicable laws or regulations, including but not limited to unauthorized copying, distribution, modification if it goes against its license, or any other illegal activities, is strictly prohibited.
 
 6. Proprietary Rights
 
