@@ -75,14 +75,21 @@ namespace Graphics::GUI
 
 		ImGui::SetCursorPos(textfieldPos);
 
+		if (strlen(name) == 0)
+		{
+			string assetName = path(assetPath).stem().string();
+			int assetNameLength = static_cast<int>(assetName.size());
+			if (assetNameLength > 16) assetName = assetName.substr(0, 15);
+			newName = assetName;
+
+			strcpy_s(name, bufferSize, newName.c_str());
+		}
+
 		strcpy_s(name, bufferSize, newName.c_str());
 		if (ImGui::InputText("##setSceneName", name, bufferSize))
 		{
 			newName = name;
 		}
-
-		if (strlen(name) == 0) strcpy_s(name, bufferSize, path(assetPath).filename().string().c_str());
-		if (newName == "") newName = path(assetPath).filename().string();
 
 		ImVec2 buttonSize = ImVec2(100, 30);
 

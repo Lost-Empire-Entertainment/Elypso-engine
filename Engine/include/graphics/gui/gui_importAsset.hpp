@@ -21,7 +21,7 @@ namespace Graphics::GUI
 
 		static void RenderImportAsset();
 	private:
-		static inline string newName = "Name";
+		static inline string newName = "";
 		static constexpr int bufferSize = 16;
 
 		static inline char name[bufferSize];

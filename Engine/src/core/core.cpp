@@ -125,6 +125,8 @@ namespace Core
 		//
 		// SET GAME PATHS
 		//
+		 
+		cout << "engine is ran from path " << current_path().string() << "\n";
 
 		//if engine is ran from repository structure
 		string parentFolder = current_path().stem().string();
@@ -139,6 +141,24 @@ namespace Core
 			gamePath = String::CharReplace(gamePath, '/', '\\');
 			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
+
+			cout << "choice 1\n";
+		}
+		//if engine is ran from visual studio folder
+		else if (parentFolder == "x64-release"
+				 || parentFolder == "x64-debug")
+		{
+			gamePath = current_path()
+				.parent_path()
+				.parent_path()
+				.parent_path()
+				.parent_path()
+				.generic_string() + "\\Game";
+			gamePath = String::CharReplace(gamePath, '/', '\\');
+			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
+			gameParentPath = gamePath + "\\build\\Release";
+
+			cout << "choice 2\n";
 		}
 		//if engine is not ran from repository structure
 		else 
@@ -147,6 +167,8 @@ namespace Core
 			gamePath = String::CharReplace(gamePath, '/', '\\');
 			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
+
+			cout << "choice 3\n";
 		}
 
 		string output = "Game path: " + gamePath + "\n\n";
