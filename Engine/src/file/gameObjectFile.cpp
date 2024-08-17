@@ -47,7 +47,7 @@ namespace EngineFile
 	void GameObjectFile::SaveGameObject(const shared_ptr<GameObject>& obj)
 	{
 		string gameobjectsFolder = 
-			path(Engine::projectPath).parent_path().string() 
+			path(Engine::projectPath).string() 
 			+ "\\scenes\\" + path(Engine::scenePath).parent_path().stem().string() + "\\gameobjects";
 
 		string objectPath = gameobjectsFolder + "\\" + obj->GetName();
@@ -197,7 +197,7 @@ namespace EngineFile
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
-				Type::INFO,
+				Type::DEBUG,
 				"There were no gameobjects to load for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
 			return;

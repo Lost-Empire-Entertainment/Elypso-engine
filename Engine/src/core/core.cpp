@@ -364,10 +364,13 @@ namespace Core
 				}
 				else 
 				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Couldn't load scene file '" + foundScenePath + "' because it doesn't exist! Opening default scene.\n");
+					if (foundScenePath != "")
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							"Couldn't load scene file '" + foundScenePath + "' because it doesn't exist! Opening default scene.\n");
+					}
 					SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
 				}
 			}
