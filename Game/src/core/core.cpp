@@ -143,16 +143,43 @@ namespace Core
 			return;
 		}
 
+		string project;
 		string line;
+		cout << "reading file " << firstSceneFile << "\n";
 		while (getline(fscnFile, line))
 		{
-			if (!line.empty())
+			if (!line.empty()
+				&& line.find("=") != string::npos)
 			{
-				string parentPath = path(firstSceneFile).parent_path().string() + "\\scenes";
-				scenePath = parentPath + "\\" + line + "\\scene.txt";
-				break;
+				vector<string> splitLine = String::Split(line, '=');
+				string type = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (type == "project")
+				{
+					project = value;
+				}
+				else if (type == "scene")
+				{
+					string parentPath = path(firstSceneFile).parent_path().string() + "\\" + project + "\\scenes";
+					scenePath = parentPath + "\\" + value + "\\scene.txt";
+				}
 			}
 		}
+		fscnFile.close();
 
 		if (scenePath == ""
 			|| !exists(scenePath))
@@ -165,7 +192,7 @@ namespace Core
 		// SET SCENES AND TEXTURES PATHS
 		//
 
-		scenesPath = path(docsPath).string() + "\\scenes";
+		scenesPath = path(scenePath).parent_path().parent_path().string();
 		if (!exists(scenesPath))
 		{
 			CreateErrorPopup("Couldn't find scenes folder! Error code: F0016");

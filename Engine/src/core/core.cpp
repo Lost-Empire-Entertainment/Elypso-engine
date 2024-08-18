@@ -290,10 +290,36 @@ namespace Core
 			string line;
 			while (getline(fsFile, line))
 			{
-				gameFirstScene = line;
-				break;
-			}
+				if (!line.empty()
+					&& line.find("=") != string::npos)
+				{
+					vector<string> splitLine = String::Split(line, '=');
+					string type = splitLine[0];
+					string value = splitLine[1];
 
+					//remove one space in front of value if it exists
+					if (value[0] == ' ') value.erase(0, 1);
+					//remove one space in front of each value comma if it exists
+					for (size_t i = 0; i < value.length(); i++)
+					{
+						if (value[i] == ','
+							&& i + 1 < value.length()
+							&& value[i + 1] == ' ')
+						{
+							value.erase(i + 1, 1);
+						}
+					}
+
+					if (type == "scene")
+					{
+						string parentPath = 
+							path(firstSceneFile).parent_path().string() + "\\" 
+							+ path(projectPath).stem().string() + "\\scenes";
+
+						gameFirstScene = parentPath + "\\" + value + "\\scene.txt";
+					}
+				}
+			}
 			fsFile.close();
 
 			bool foundExisting = false;

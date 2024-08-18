@@ -138,7 +138,8 @@ namespace Core
 					return;
 				}
 
-				firstSceneFile << Engine::gameFirstScene;
+				firstSceneFile << "project= " << path(Engine::projectPath).stem().string() << "\n";
+				firstSceneFile << "scene= " << Engine::gameFirstScene;
 
 				firstSceneFile.close();
 
