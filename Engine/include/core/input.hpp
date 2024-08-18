@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <memory>
 
@@ -21,7 +21,7 @@
 using glm::vec3;
 using glm::mat4;
 using glm::radians;
-using std::unordered_map;
+using std::map;
 using std::string;
 using std::shared_ptr;
 
@@ -44,7 +44,7 @@ namespace Core
         };
         static inline ObjectAction objectAction = ObjectAction::none;
 
-        static inline shared_ptr<GameObject> copiedObject;
+        static inline map<string, string> copiedObject;
 
         static void ProcessKeyboardInput(GLFWwindow* window);
 
