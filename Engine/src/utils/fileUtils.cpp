@@ -3,6 +3,7 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#define NOMINMAX
 #include <Windows.h>
 #include <iostream>
 #include <memory>

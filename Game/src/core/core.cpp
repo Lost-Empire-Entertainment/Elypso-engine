@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <iostream>
+#define NOMINMAX
 #include <Windows.h>
 #include <ShlObj.h>
 #include <fstream>
@@ -145,7 +146,6 @@ namespace Core
 
 		string project;
 		string line;
-		cout << "reading file " << firstSceneFile << "\n";
 		while (getline(fscnFile, line))
 		{
 			if (!line.empty()

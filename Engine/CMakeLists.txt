@@ -33,6 +33,7 @@ set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
+set(EXT_MATH_UTILS_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Math-utils")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -48,9 +49,13 @@ set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
 add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${EXT_MAGIC_ENUM_DIR})
 
+# Add Math-utils
+add_library(math_utils INTERFACE)
+target_include_directories(math_utils INTERFACE ${EXT_MATH_UTILS_DIR})
+
 # Group external libraries
 add_library(external_libs INTERFACE)
-target_link_libraries(external_libs INTERFACE glad magic_enum)
+target_link_libraries(external_libs INTERFACE glad magic_enum math_utils)
 
 # Add your source files
 file(GLOB_RECURSE SOURCE_FILES
@@ -98,6 +103,7 @@ target_include_directories(Elypso_engine PRIVATE
 	${EXT_MAGIC_ENUM_DIR}
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
+	${EXT_MATH_UTILS_DIR}
 )
 
 target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
