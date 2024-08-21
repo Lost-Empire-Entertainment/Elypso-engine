@@ -14,7 +14,7 @@ This file contains the full list of all libraries used for Elypso Hub, Elypso En
 
 [GLFW - Creates the engine window and handles User input](https://github.com/glfw/glfw)
 
-[ImGui - Handles all the engine GUI]()
+[ImGui - Handles all the engine GUI](https://github.com/ocornut/imgui)
 
 [stb_image - Imports images](https://github.com/nothings/stb/blob/master/stb_image.h)
 
