@@ -173,15 +173,19 @@ namespace Graphics::GUI
 				|| extension == ".jpg"
 				|| extension == ".jpeg")
 			{
+				string textureFilename = newName + extension;
+				string texturesFolder = Engine::texturesPath;
+
 				string newFilePath = 
-					path(Engine::projectPath).parent_path().string() 
-					+ "\\" + path(assetPath).filename().string();
+					texturesFolder + "\\" + textureFilename;
 				File::CopyFileOrFolder(assetPath, newFilePath);
 
+				/*
 				string renamedFilePath = 
 					path(Engine::projectPath).parent_path().string() 
 					+ "\\textures\\" + newName + extension;
 				File::MoveOrRenameFileOrFolder(newFilePath, renamedFilePath, true);
+				*/
 			}
 
 			renderImportAsset = false;

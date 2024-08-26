@@ -224,10 +224,8 @@ namespace Graphics::GUI
 					//delete selected file
 					if (ImGui::MenuItem("Delete"))
 					{
-						string parentFolder = path(entry.path).parent_path().string();
-
-						//if trying to delete files from textures folder
-						if (parentFolder == "textures")
+						//if trying to delete texture from textures folder
+						if (path(entry.path).parent_path().stem().string() == "textures")
 						{
 							File::DeleteFileOrfolder(entry.path);
 						}
