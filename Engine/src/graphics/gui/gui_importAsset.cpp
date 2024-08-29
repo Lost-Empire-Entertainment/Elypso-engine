@@ -136,7 +136,7 @@ namespace Graphics::GUI
 			//
 
 			if (extension == ".fbx"
-				|| extension == ".gltw"
+				|| extension == ".gltf"
 				|| extension == ".obj")
 			{
 				string assetName = path(assetPath).stem().string();

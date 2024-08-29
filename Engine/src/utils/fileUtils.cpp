@@ -14,6 +14,7 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "stringUtils.hpp"
+#include "gameobject.hpp"
 
 using std::exception;
 using std::runtime_error;
@@ -38,6 +39,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Engine;
 using Utils::String;
+using Graphics::Shape::GameObjectManager;
 
 namespace Utils
 {
@@ -168,7 +170,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = string(e.what()) + ".\n\n";
+            output = "Exception in File::MoveOrRenameFileOrFolder: " + string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
@@ -214,7 +216,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = string(e.what()) + ".\n\n";
+            output = "Exception in File::CopyFileOrFolder: " + string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
@@ -239,28 +241,32 @@ namespace Utils
             if (is_regular_file(sourcePath)) remove(sourcePath);
             else if (is_directory(sourcePath))
             {
-                bool hasChildDirectories = false;
-                for (const auto& entry : directory_iterator(sourcePath))
-                {
-                    if (is_directory(entry))
-                    {
-                        hasChildDirectories = true;
-                    }
-                    else if (is_regular_file(entry))
-                    {
-                        remove(entry);
-                    }
-                }
-
-                if (hasChildDirectories)
+                //delete gameobject in scene if folder parent is gameobjects folder
+                if (path(sourcePath).parent_path().stem().string() == "gameobjects")
                 {
                     for (const auto& entry : directory_iterator(sourcePath))
                     {
-                        DeleteFileOrfolder(entry.path());
+                        string entryPath = path(entry).string();
+                        string entryName = path(entry).stem().string();
+                        string entryExtension = path(entry).extension().string();
+
+                        if (entryExtension == ".fbx"
+                            || entryExtension == ".obj"
+                            || entryExtension == ".gltf")
+                        {
+                            for (const auto& obj : GameObjectManager::GetObjects())
+                            {
+                                if (obj->GetName() == entryName)
+                                {
+                                    GameObjectManager::DestroyGameObject(obj);
+                                    break;
+                                }
+                            }
+                        }
                     }
-                    remove_all(sourcePath);
                 }
-                else remove_all(sourcePath);
+
+                remove_all(sourcePath);
             }
 
             output = "Deleted " + sourcePath.string() + ".\n\n";
@@ -271,7 +277,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = string(e.what()) + ".\n\n";
+            output = "Exception in File::DeleteFileOrFolder: " + string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
@@ -316,7 +322,7 @@ namespace Utils
         }
         catch (const exception& e)
         {
-            output = string(e.what()) + ".\n\n";
+            output = "Exception in File::CreateNewFolder: " + string(e.what()) + ".\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
