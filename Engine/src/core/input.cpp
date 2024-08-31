@@ -15,6 +15,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "magic_enum.hpp"
+#include "math.hpp"
 
 //engine
 #include "console.hpp"
@@ -66,6 +67,7 @@ using Utils::File;
 using Core::Compilation;
 using Core::Input;
 using Utils::String;
+using Utils::Math;
 
 namespace Core
 {
@@ -301,6 +303,13 @@ namespace Core
 
                     vector<string> posSplit = String::Split(copiedObject["pos"].c_str(), ',');
                     vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
+                    long double convertedX = Math::Round(newPos.x);
+                    long double convertedY = Math::Round(newPos.y);
+                    long double convertedZ = Math::Round(newPos.z);
+                    int resultX = static_cast<int>(convertedX);
+                    int resultY = static_cast<int>(convertedY);
+                    int resultZ = static_cast<int>(convertedZ);
+                    newPos = vec3(resultX, resultY, resultZ);
 
                     vector<string> rotSplit = String::Split(copiedObject["rot"].c_str(), ',');
                     vec3 rot = vec3(stof(rotSplit[0]), stof(rotSplit[1]), stof(rotSplit[2]));
