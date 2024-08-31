@@ -20,6 +20,7 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "gui_floatingdebugmenu.hpp"
+#include "collision.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -41,6 +42,7 @@ using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::GUI::GUIFloatingDebugMenu;
+using Physics::Select;
 
 namespace EngineFile
 {
@@ -282,6 +284,9 @@ namespace EngineFile
 
 			if (successfulLoad) LoadGameObject(data, path(file).stem().string());
 		}
+
+		Select::selectedObj = nullptr;
+		Select::isObjectSelected = false;
 
 		GUIFloatingDebugMenu::waitBeforeUpdate = false;
 		GUIFloatingDebugMenu::UpdateCounts();
