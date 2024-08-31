@@ -330,23 +330,38 @@ namespace Utils
         }
     }
 
-    string File::AddIndex(const path& parentFolderPath, const string& fileName, const string& extension)
+    string File::AddIndex(
+        const path& parentFolderPath, 
+        const string& fileName, 
+        const string& extension,
+        const bool& bypassParenthesesCheck)
     {
         string newFilePath = parentFolderPath.string() + "/" + fileName + extension;
 
         if (exists(newFilePath))
         {
             //simply add (1) after file/folder if it doesnt already have parentheses
-            if (!fileName.find('(')
-                && !fileName.find(')'))
+            if (!bypassParenthesesCheck
+                && fileName.find('(') == string::npos 
+                && fileName.find(')') == string::npos)
             {
                 newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
+
+                return newFilePath;
             }
             //try to create new file/folder with first highest available number
             else
             {
-                string value = GetValueBetweenParentheses(fileName);
-                cout << "found value '" << value << "' between parentheses...\n";
+                string value = bypassParenthesesCheck ? "1" : GetValueBetweenParentheses(fileName);
+                if (value == "")
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::EXCEPTION,
+                        "Value between parentheses for '" + fileName + "' was empty so an index couldn't be added!\n");
+
+                    return newFilePath;
+                }
 
                 int convertedValue = -1;
                 try
@@ -394,6 +409,7 @@ namespace Utils
                                 Caller::FILE,
                                 Type::DEBUG,
                                 "Value between parentheses '" + entryValue + "' for '" + entryName + "' was not an integer so it was ignored.\n");
+                            continue;
                         }
 
                         if (entryConvertedValue != -1

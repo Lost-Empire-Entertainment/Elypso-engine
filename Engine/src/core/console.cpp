@@ -66,7 +66,7 @@ namespace Core
 
     void ConsoleManager::InitializeLogger()
     {
-        logFile.open(Engine::docsPath + "/game_log.txt");
+        logFile.open(Engine::docsPath + "/engine_log.txt");
         if (!logFile.is_open())
         {
             error_code ec = make_error_code(static_cast<errc>(errno));

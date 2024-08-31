@@ -300,7 +300,7 @@ namespace Core
                     unsigned int nextID = GameObject::nextID++;
 
                     vector<string> posSplit = String::Split(copiedObject["pos"].c_str(), ',');
-                    vec3 pos = vec3(stof(posSplit[0]), stof(posSplit[1]), stof(posSplit[2]));
+                    vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
 
                     vector<string> rotSplit = String::Split(copiedObject["rot"].c_str(), ',');
                     vec3 rot = vec3(stof(rotSplit[0]), stof(rotSplit[1]), stof(rotSplit[2]));
@@ -333,7 +333,7 @@ namespace Core
                         File::CopyFileOrFolder(originPath, destinationPath);
 
                         Model::Initialize(
-                            pos,
+                            newPos,
                             rot,
                             scale,
                             copiedObject["directory"],
@@ -359,7 +359,7 @@ namespace Core
                         vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
 
                         shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
-                            pos,
+                            newPos,
                             rot,
                             scale,
                             copiedObject["vertexShader"],
@@ -382,7 +382,7 @@ namespace Core
                         vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
 
                         shared_ptr<GameObject> newPointLight = SpotLight::InitializeSpotLight(
-                            pos,
+                            newPos,
                             rot,
                             scale,
                             copiedObject["vertexShader"],

@@ -283,12 +283,14 @@ namespace Graphics::GUI
 				}
 			}
 
+			vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
+
 			if (ImGui::BeginMenu("Shape"))
 			{
 				if (ImGui::MenuItem("Cube"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cube.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "", true);
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -296,7 +298,7 @@ namespace Graphics::GUI
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
-						vec3(0),
+						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
@@ -315,7 +317,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Sphere"))
 				{
 					string originPath = Engine::filesPath + "\\models\\sphere.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "", true);
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -323,7 +325,7 @@ namespace Graphics::GUI
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
-						vec3(0),
+						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
@@ -342,7 +344,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Cylinder"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cylinder.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "", true);
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -350,7 +352,7 @@ namespace Graphics::GUI
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
-						vec3(0),
+						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
@@ -369,7 +371,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Cone"))
 				{
 					string originPath = Engine::filesPath + "\\models\\cone.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "", true);
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -377,7 +379,7 @@ namespace Graphics::GUI
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
-						vec3(0),
+						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
@@ -396,7 +398,7 @@ namespace Graphics::GUI
 				else if (ImGui::MenuItem("Pyramid"))
 				{
 					string originPath = Engine::filesPath + "\\models\\pyramid.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "", true);
 					string targetName = path(targetPath).stem().string();
 
 					File::CreateNewFolder(targetPath);
@@ -404,7 +406,7 @@ namespace Graphics::GUI
 					File::CopyFileOrFolder(originPath, destinationPath);
 
 					Model::Initialize(
-						vec3(0),
+						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
@@ -428,13 +430,13 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "", true);
 					string targetName = path(targetPath).stem().string();
 					File::CreateNewFolder(targetPath);
 
 					shared_ptr<GameObject> obj = 
 						PointLight::InitializePointLight(
-							vec3(0),
+							newPos,
 							vec3(0),
 							vec3(1),
 							Engine::filesPath + "\\shaders\\Basic_model.vert",
@@ -460,13 +462,13 @@ namespace Graphics::GUI
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "", true);
 					string targetName = path(targetPath).stem().string();
 					File::CreateNewFolder(targetPath);
 
 					shared_ptr<GameObject> obj = 
 						SpotLight::InitializeSpotLight(
-							vec3(0),
+							newPos,
 							vec3(0),
 							vec3(1),
 							Engine::filesPath + "\\shaders\\Basic_model.vert",

@@ -73,11 +73,16 @@ namespace Utils
 		static void CreateNewFolder(const path& folderPath);
 
 		/// <summary>
-		/// Add an index (1), etc after this file name.
+		/// Add an index (1), etc after this file or folder name.
 		/// </summary>
 		/// <param name="folderPath">Parent folder of this file</param>
 		/// <param name="fileName">Name of the file the index will be added after</param>
-		static string AddIndex(const path& folderPath, const string& fileName, const string& extension = "");
+		/// <param name="bypassParenthesesCheck">We need this bool to skip adding the default (1) to all template gameobjects because 'Import Asset' always uses default placeholder name with no index</param>
+		static string AddIndex(
+			const path& folderPath, 
+			const string& fileName, 
+			const string& extension = "",
+			const bool& bypassParenthesesCheck = false);
 	private:
 		static string GetValueBetweenParentheses(const string& input);
 	};
