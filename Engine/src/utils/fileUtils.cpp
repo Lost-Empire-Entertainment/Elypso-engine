@@ -43,8 +43,8 @@ using Graphics::Shape::GameObjectManager;
 
 namespace Utils
 {
-	string File::GetOutputFromBatFile(const char* file)
-	{
+    string File::GetOutputFromBatFile(const char* file)
+    {
         char buffer[128];
         string result = "";
         string command = "\"" + string(file) + "\"";
@@ -68,7 +68,7 @@ namespace Utils
         _pclose(pipe);
 
         return result;
-	}
+    }
 
     int File::RunBatFile(const string& file, bool runSeparate, BatType type)
     {
@@ -336,32 +336,100 @@ namespace Utils
 
         if (exists(newFilePath))
         {
-            newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
-        }
-
-        //try to create new file/folder with first highest available number
-        if (exists(newFilePath))
-        {
-            int highestNumber = 1;
-            for (const auto& entry : directory_iterator(parentFolderPath))
+            //simply add (1) after file/folder if it doesnt already have parentheses
+            if (!fileName.find('(')
+                && !fileName.find(')'))
             {
-                path entryPath = entry.path();
-                string entryString = entry.path().string();
-
-                if (is_directory(entryPath)
-                    && entryString.find(fileName + " (") != string::npos)
-                {
-                    vector<string> split = String::Split(entryString, '(');
-                    string cleanedNumberString = String::CharReplace(split[1], ')', '\0');
-                    int number = stoi(cleanedNumberString);
-
-                    if (number >= highestNumber) highestNumber = number + 1;
-                }
+                newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
             }
+            //try to create new file/folder with first highest available number
+            else
+            {
+                string value = GetValueBetweenParentheses(fileName);
+                cout << "found value '" << value << "' between parentheses...\n";
 
-            newFilePath = parentFolderPath.string() + "\\" + fileName + " (" + to_string(highestNumber) + ")" + extension;
+                int convertedValue = -1;
+                try
+                {
+                    convertedValue = stoi(value);
+                }
+                catch (const exception& e) 
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::EXCEPTION,
+                        "Exception occurred while processing value '" + value + "' for '" + fileName + "': " + e.what() + "\n");
+                    
+                    return newFilePath;
+                }
+                catch (...) 
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::EXCEPTION,
+                        "An unknown exception occurred while processing value '" + value + "' for '" + fileName + "'\n");
+                    
+                    return newFilePath;
+                }
+
+                //return highest number compared to all existing gameobject folders
+                int highestNumber = 1;
+                for (const auto& entry : directory_iterator(parentFolderPath))
+                {
+                    string entryName = path(entry).stem().string();
+
+                    if (is_directory(entry)
+                        && GetValueBetweenParentheses(entryName) != "")
+                    {
+                        string entryValue = GetValueBetweenParentheses(entryName);
+                        int entryConvertedValue = -1;
+
+                        try
+                        {
+                            entryConvertedValue = stoi(entryValue);
+                        }
+                        catch (...)
+                        {
+                            ConsoleManager::WriteConsoleMessage(
+                                Caller::FILE,
+                                Type::DEBUG,
+                                "Value between parentheses '" + entryValue + "' for '" + entryName + "' was not an integer so it was ignored.\n");
+                        }
+
+                        if (entryConvertedValue != -1
+                            && entryConvertedValue >= highestNumber)
+                        {
+                            highestNumber = entryConvertedValue + 1;
+                        }
+                    }
+                }
+
+                string cleanedFileName = fileName;
+                size_t pos = fileName.find('(');
+                if (pos != string::npos
+                    && pos > 0)
+                {
+                    cleanedFileName = fileName.substr(0, pos - 1);
+                }
+
+                newFilePath = parentFolderPath.string() + "\\" + cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;
+            }
         }
 
         return newFilePath;
+    }
+    string File::GetValueBetweenParentheses(const string& input)
+    {
+        size_t start = input.find('(');
+        size_t end = input.find(')', start);
+
+        if (start != string::npos
+            && end != string::npos
+            && end > start)
+        {
+            return input.substr(start + 1, end - start - 1);
+        }
+
+        return "";
     }
 }

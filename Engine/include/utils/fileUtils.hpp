@@ -78,5 +78,7 @@ namespace Utils
 		/// <param name="folderPath">Parent folder of this file</param>
 		/// <param name="fileName">Name of the file the index will be added after</param>
 		static string AddIndex(const path& folderPath, const string& fileName, const string& extension = "");
+	private:
+		static string GetValueBetweenParentheses(const string& input);
 	};
 }

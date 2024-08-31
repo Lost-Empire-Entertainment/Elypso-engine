@@ -396,13 +396,12 @@ namespace Core
                             nextID);
                     }
 
-                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                    SceneFile::SaveScene();
 
                     ConsoleManager::WriteConsoleMessage(
                         Caller::FILE,
-                        Type::DEBUG,
-                        "Pasted file " + copiedObject["name"]
-                        + "_" + copiedObject["id"] + "\n");
+                        Type::INFO,
+                        "Pasted file " + copiedObject["name"] + "\n");
                 }
 
                 //delete selected gameobject
