@@ -129,27 +129,18 @@ namespace Graphics::GUI
 		io.FontGlobalScale = stof(ConfigFile::GetValue("gui_fontScale"));
 	}
 
-	int EngineGUI::GetScreenWidth()
+	ImVec2 EngineGUI::CenterWindow(const ImVec2& size)
 	{
-		int width, height;
-		glfwGetFramebufferSize(Render::window, &width, &height);
-		return width;
-	}
+		int intWidth, intHeight;
+		glfwGetFramebufferSize(Render::window, &intWidth, &intHeight);
 
-	int EngineGUI::GetScreenHeight()
-	{
-		int width, height;
-		glfwGetFramebufferSize(Render::window, &width, &height);
-		return height;
-	}
+		float glfwWindowWidth = static_cast<float>(intWidth);
+		float glfwWindowHeight = static_cast<float>(intHeight);
 
-	float EngineGUI::GetScreenRefreshRate()
-	{
-		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+		float posX = (glfwWindowWidth - size.x) / 2.0f;
+		float posY = (glfwWindowHeight - size.y) / 2.0f;
 
-		const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
-
-		return static_cast<float>(videoMode->refreshRate);
+		return ImVec2(posX, posY);
 	}
 
 	void EngineGUI::Render()
@@ -819,8 +810,11 @@ namespace Graphics::GUI
 
 	void EngineGUI::ConfirmUnsavedSceneSwitch()
 	{
-		ImGui::SetNextWindowPos(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(500, 300));
+		ImVec2 windowSize = ImVec2(500.0f, 300.0f);
+		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
+
+		ImVec2 windowPos = EngineGUI::CenterWindow(windowSize);
+		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Appearing);
 
 		ImGuiWindowFlags flags =
 			ImGuiWindowFlags_NoResize
@@ -831,10 +825,6 @@ namespace Graphics::GUI
 		string title = "You have unsaved changes. Save before switching scenes?";
 		ImGui::Begin(title.c_str(), nullptr, flags);
 
-		ImVec2 windowPos = ImGui::GetWindowPos();
-		ImVec2 windowSize = ImGui::GetWindowSize();
-
-		ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
 		ImVec2 buttonSize(120, 50);
 		float buttonSpacing = 20.0f;
 

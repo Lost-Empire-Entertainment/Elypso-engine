@@ -28,6 +28,11 @@ namespace Graphics::GUI
 
 		static void Initialize();
 
+		/// <summary>
+		/// Takes in ImGui window height and width and returns position of window so it will be centered according to current GLFW window size.
+		/// </summary>
+		static ImVec2 CenterWindow(const ImVec2& size);
+
 		static void Render();
 		static void Shutdown();
 	private:
@@ -37,10 +42,6 @@ namespace Graphics::GUI
 		static inline bool filterTextProcessed;
 
 		static void RenderTopBar();
-
-		static inline int GetScreenWidth();
-		static inline int GetScreenHeight();
-		static inline float GetScreenRefreshRate();
 
 		//top bar rendered windows
 		static inline string versionCompare;

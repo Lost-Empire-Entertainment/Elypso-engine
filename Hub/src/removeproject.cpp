@@ -19,8 +19,11 @@ using std::cout;
 
 void RemoveProject::RenderRemoveProjectWindow()
 {
-	ImGui::SetNextWindowSize(ImVec2(300, 200));
-	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+	ImVec2 size = ImVec2(300.0f, 200.0f);
+	ImVec2 windowPos = GUI::CenterWindow(size);
+
+	ImGui::SetNextWindowSize(size, ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Appearing);
 
 	ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_NoCollapse

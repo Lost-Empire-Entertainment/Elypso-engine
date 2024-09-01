@@ -31,6 +31,8 @@ public:
 
 	static void Initialize();
 
+	static ImVec2 CenterWindow(const ImVec2& size);
+
 	static void Render();
 	static void RenderPanels();
 	static void RenderButtons();

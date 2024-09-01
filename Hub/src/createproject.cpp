@@ -27,8 +27,11 @@ using std::filesystem::exists;
 
 void CreateProject::RenderCreateProjectWindow()
 {
-	ImGui::SetNextWindowSize(ImVec2(400, 300));
-	ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+	ImVec2 size = ImVec2(400.0f, 300.0f);
+	ImVec2 windowPos = GUI::CenterWindow(size);
+
+	ImGui::SetNextWindowSize(size, ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Appearing);
 
 	ImGuiWindowFlags windowFlags =
 		ImGuiWindowFlags_NoCollapse

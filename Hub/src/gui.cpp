@@ -72,6 +72,20 @@ void GUI::Initialize()
 	io.FontGlobalScale = 1.5f;
 }
 
+ImVec2 GUI::CenterWindow(const ImVec2& size)
+{
+	int intWidth, intHeight;
+	glfwGetFramebufferSize(Core::window, &intWidth, &intHeight);
+
+	float glfwWindowWidth = static_cast<float>(intWidth);
+	float glfwWindowHeight = static_cast<float>(intHeight);
+
+	float posX = (glfwWindowWidth - size.x) / 2.0f;
+	float posY = (glfwWindowHeight - size.y) / 2.0f;
+
+	return ImVec2(posX, posY);
+}
+
 void GUI::Render()
 {
 	ImGui_ImplOpenGL3_NewFrame();

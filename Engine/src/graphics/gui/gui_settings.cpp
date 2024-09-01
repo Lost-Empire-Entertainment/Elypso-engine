@@ -52,9 +52,11 @@ namespace Graphics::GUI
 {
 	void GUISettings::RenderSettings()
 	{
-		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(2000, 2000));
-		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
+		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
+
+		ImVec2 windowPos = EngineGUI::CenterWindow(windowSize);
+		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Appearing);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse

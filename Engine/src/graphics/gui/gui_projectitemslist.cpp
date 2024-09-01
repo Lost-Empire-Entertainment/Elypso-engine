@@ -19,6 +19,7 @@
 #include "sceneFile.hpp"
 #include "texture.hpp"
 #include "console.hpp"
+#include "gui.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -39,8 +40,11 @@ namespace Graphics::GUI
 {
 	void GUIProjectItemsList::RenderProjectItemsList()
 	{
-		ImGui::SetNextWindowSize(ImVec2(400, 400));
-		ImGui::SetNextWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+		ImVec2 windowSize = ImVec2(400.0f, 400.0f);
+		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
+
+		ImVec2 windowPos = EngineGUI::CenterWindow(windowSize);
+		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Appearing);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse
