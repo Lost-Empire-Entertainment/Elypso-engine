@@ -17,6 +17,7 @@ namespace Core
 	{
 	public:
 		static inline bool renderBuildingWindow;
+		static inline string compilationParameter;
 
 		static inline vector<string> output;
 
@@ -24,8 +25,10 @@ namespace Core
 
 		static void RenderBuildingWindow();
 
-		static void RunInstaller(const string& installer);
+		static void RunInstaller(const string& installer, const string& parameter);
 	private:
+		static inline bool finishedBuild;
+		static inline bool failedBuild;
 		static inline bool firstScrollToBottom;
 	};
 }

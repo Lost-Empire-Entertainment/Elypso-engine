@@ -24,6 +24,7 @@
 #include "fileUtils.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+#include "sceneFile.hpp"
 
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
@@ -44,6 +45,7 @@ using Utils::String;
 using Utils::File;
 using Graphics::Render;
 using Graphics::Shape::GameObjectManager;
+using EngineFile::SceneFile;
 
 namespace Graphics::GUI
 {
@@ -136,7 +138,15 @@ namespace Graphics::GUI
 								Type::EXCEPTION,
 								"Cannot switch to scene " + path(entry.path).stem().string() + " because it is already open!\n");
 						}
-						else SceneFile::LoadScene(entry.path + "\\scene.txt");
+						else
+						{
+							if (SceneFile::unsavedChanges)
+							{
+								EngineGUI::targetScene = entry.path + "\\scene.txt";
+								EngineGUI::renderUnsavedSceneSwitchWindow = true;
+							}
+							else SceneFile::LoadScene(entry.path + "\\scene.txt");
+						}
 					}
 					//delete selected folder
 					if (ImGui::MenuItem("Delete"))

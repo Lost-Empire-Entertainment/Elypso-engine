@@ -175,8 +175,8 @@ namespace Graphics::GUI
 		Compilation::RenderBuildingWindow();
 
 		RenderVersionCheckWindow();
-		if (renderUnsavedShutdownWindow) ConfirmUnsavedShutdown();
-		if (renderUnsavedSceneSwitchWindow) ConfirmUnsavedSceneSwitch();
+		if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
+		if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -558,6 +558,7 @@ namespace Graphics::GUI
 		{
 			if (ImGui::IsItemClicked())
 			{
+				Compilation::compilationParameter = "bypassInput";
 				Compilation::Compile();
 
 				ImGui::CloseCurrentPopup();
@@ -746,69 +747,7 @@ namespace Graphics::GUI
 		}
 	}
 
-	void EngineGUI::ConfirmUnsavedShutdown()
-	{
-		ImGui::SetNextWindowPos(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(500, 300));
-
-		ImGuiWindowFlags flags =
-			ImGuiWindowFlags_NoResize
-			| ImGuiWindowFlags_NoDocking
-			| ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoSavedSettings;
-
-		string title = "You have unsaved changes. Save before closing?";
-		ImGui::Begin(title.c_str(), nullptr, flags);
-
-		ImVec2 windowPos = ImGui::GetWindowPos();
-		ImVec2 windowSize = ImGui::GetWindowSize();
-
-		ImVec2 windowCenter(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
-		ImVec2 buttonSize(120, 50);
-		float buttonSpacing = 20.0f;
-
-		ImVec2 button1Pos(
-			windowSize.x * 0.3f - buttonSize.x,
-			windowSize.y * 0.5f - buttonSize.y * 0.5f);
-		ImVec2 button2Pos(
-			windowSize.x * 0.625f - buttonSize.x,
-			windowSize.y * 0.5f - buttonSize.y * 0.5f);
-		ImVec2 button3Pos(
-			windowSize.x * 0.7f,
-			windowSize.y * 0.5f - buttonSize.y * 0.5f);
-
-		ImGui::SetCursorPos(button1Pos);
-		if (ImGui::Button("Save", buttonSize))
-		{
-			SceneFile::SaveScene(SceneFile::SaveType::shutDown);
-			renderUnsavedShutdownWindow = false;
-		}
-
-		ImGui::SetCursorPos(button2Pos);
-		if (ImGui::Button("Don't save", buttonSize))
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::INFO,
-				"Closed engine without saving.\n");
-			SceneFile::unsavedChanges = false;
-			Engine::Shutdown();
-		}
-
-		ImGui::SetCursorPos(button3Pos);
-		if (ImGui::Button("Cancel", buttonSize))
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::INFO,
-				"Cancelled shutdown...\n");
-			renderUnsavedShutdownWindow = false;
-		}
-
-		ImGui::End();
-	}
-
-	void EngineGUI::ConfirmUnsavedSceneSwitch()
+	void EngineGUI::SaveBefore(SaveBeforeState saveBeforeState)
 	{
 		ImVec2 windowSize = ImVec2(500.0f, 300.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
@@ -822,48 +761,86 @@ namespace Graphics::GUI
 			| ImGuiWindowFlags_NoCollapse
 			| ImGuiWindowFlags_NoSavedSettings;
 
-		string title = "You have unsaved changes. Save before switching scenes?";
+		string title = "You have unsaved changes. Save before closing?";
 		ImGui::Begin(title.c_str(), nullptr, flags);
 
+		ImVec2 currentWindowPos = ImGui::GetWindowPos();
+
+		ImVec2 windowCenter(
+			currentWindowPos.x + windowSize.x * 0.5f, 
+			currentWindowPos.y + windowSize.y * 0.5f);
+
 		ImVec2 buttonSize(120, 50);
-		float buttonSpacing = 20.0f;
 
 		ImVec2 button1Pos(
 			windowSize.x * 0.3f - buttonSize.x,
-			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+			(ImGui::GetWindowHeight() / 2) - (buttonSize.y / 2));
 		ImVec2 button2Pos(
 			windowSize.x * 0.625f - buttonSize.x,
-			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+			(ImGui::GetWindowHeight() / 2) - (buttonSize.y / 2));
 		ImVec2 button3Pos(
 			windowSize.x * 0.7f,
-			windowSize.y * 0.5f - buttonSize.y * 0.5f);
+			(ImGui::GetWindowHeight() / 2) - (buttonSize.y / 2));
 
-		ImGui::SetCursorPos(button1Pos);
-		if (ImGui::Button("Save", buttonSize))
+		if (saveBeforeState == SaveBeforeState::shutdown)
 		{
-			SceneFile::SaveScene(SceneFile::SaveType::sceneSwitch, targetScene);
-			renderUnsavedSceneSwitchWindow = false;
+			ImGui::SetCursorPos(button1Pos);
+			if (ImGui::Button("Save", buttonSize))
+			{
+				SceneFile::SaveScene(SceneFile::SaveType::shutDown);
+				renderUnsavedShutdownWindow = false;
+			}
+
+			ImGui::SetCursorPos(button2Pos);
+			if (ImGui::Button("Don't save", buttonSize))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"Closed engine without saving.\n");
+				SceneFile::unsavedChanges = false;
+				Engine::Shutdown();
+			}
+
+			ImGui::SetCursorPos(button3Pos);
+			if (ImGui::Button("Cancel", buttonSize))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"Cancelled shutdown...\n");
+				renderUnsavedShutdownWindow = false;
+			}
 		}
-
-		ImGui::SetCursorPos(button2Pos);
-		if (ImGui::Button("Don't save", buttonSize))
+		else if (saveBeforeState == SaveBeforeState::sceneSwitch)
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::INFO,
-				"Switched scene without saving.\n");
-			SceneFile::LoadScene(targetScene);
-			renderUnsavedSceneSwitchWindow = false;
-		}
+			ImGui::SetCursorPos(button1Pos);
+			if (ImGui::Button("Save", buttonSize))
+			{
+				SceneFile::SaveScene(SceneFile::SaveType::sceneSwitch, targetScene);
+				renderUnsavedSceneSwitchWindow = false;
+			}
 
-		ImGui::SetCursorPos(button3Pos);
-		if (ImGui::Button("Cancel", buttonSize))
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::INFO,
-				"Cancelled scene switch...\n");
-			renderUnsavedSceneSwitchWindow = false;
+			ImGui::SetCursorPos(button2Pos);
+			if (ImGui::Button("Don't save", buttonSize))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"Switched scene without saving.\n");
+				SceneFile::LoadScene(targetScene);
+				renderUnsavedSceneSwitchWindow = false;
+			}
+
+			ImGui::SetCursorPos(button3Pos);
+			if (ImGui::Button("Cancel", buttonSize))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"Cancelled scene switch...\n");
+				renderUnsavedSceneSwitchWindow = false;
+			}
 		}
 
 		ImGui::End();

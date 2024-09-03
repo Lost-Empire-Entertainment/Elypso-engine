@@ -21,6 +21,10 @@ set "cpsuc=[CPACK_SUCCESS]"
 
 set "buildPath=%~dp0build"
 
+if "%~1"=="cleanRebuild" (
+	goto cmake
+)
+
 :build
 
 :: Change to the script directory
@@ -45,14 +49,21 @@ if not exist "%buildPath%" (
 	
 	if %errorlevel% neq 0 (
 		echo %cmexc% Build failed because Game.exe did not get generated properly.
+		if not "%~1"=="bypassInput" (
+			if not "%~1"=="cleanRebuild" (
+				pause
+			)
+		)
+		exit
 	) else (
 		echo %cmsuc% Build succeeded!
-		pause
+		if not "%~1"=="bypassInput" (
+			if not "%~1"=="cleanRebuild" (
+				pause
+			)
+		)
 		exit
 	)
-)
-
-exit
 )
 
 :cmake
@@ -74,9 +85,13 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 
 if %errorlevel% neq 0 (
 	echo %cmexc% CMake configuration failed.
-	pause
+	if not "%~1"=="bypassInput" (
+		if not "%~1"=="cleanRebuild" (
+			pause
+		)
+	)
 	exit
 ) else (
-	echo %cmsuc% Cmake configuration succeeded!
 	goto build
+	echo %cmsuc% Cmake configuration succeeded!
 )

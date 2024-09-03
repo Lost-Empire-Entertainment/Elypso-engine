@@ -36,6 +36,12 @@ namespace Graphics::GUI
 		static void Render();
 		static void Shutdown();
 	private:
+		enum class SaveBeforeState
+		{
+			sceneSwitch,
+			shutdown
+		};
+
 		//text filter for searching
 		static ImGuiTextFilter textFilter;
 
@@ -48,8 +54,6 @@ namespace Graphics::GUI
 		static inline string versionConfirm;
 		static void RenderVersionCheckWindow();
 
-		static void ConfirmUnsavedShutdown();
-
-		static void ConfirmUnsavedSceneSwitch();
+		static void SaveBefore(SaveBeforeState saveBeforeState);
 	};
 }
