@@ -8,6 +8,9 @@
 #include <thread>
 #include <iostream>
 #include <fstream>
+#include <cstdio>
+#include <memory>
+#include <array>
 
 //external
 #include "imgui.h"
@@ -26,6 +29,7 @@
 #include "render.hpp"
 #include "gui_settings.hpp"
 #include "sceneFile.hpp"
+#include "gui.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -34,6 +38,9 @@ using std::exception;
 using std::filesystem::exists;
 using std::thread;
 using std::ofstream;
+using std::runtime_error;
+using std::array;
+using std::unique_ptr;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -47,6 +54,7 @@ using Graphics::Shape::Mesh;
 using Graphics::Render;
 using Graphics::GUI::GUISettings;
 using EngineFile::SceneFile;
+using Graphics::GUI::EngineGUI;
 
 namespace Core
 {
@@ -62,10 +70,11 @@ namespace Core
 				// START BUILDING GAME FROM SOURCE CODE
 				//
 
-				string gameBatPath = Engine::gamePath + "\\build.bat";
+				string gameBatPath = Engine::gamePath + "\\quickBuild.bat";
 				gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
 				if (!exists(gameBatPath)) return;
-				int result = File::RunBatFile(gameBatPath, false, File::BatType::compile);
+
+				RunInstaller(gameBatPath);
 
 				string gameStem = path(Engine::gameExePath).stem().string();
 				if (gameStem != "Game")
@@ -74,18 +83,6 @@ namespace Core
 						Engine::gameParentPath + "\\Game.exe",
 						Engine::gameExePath,
 						true);
-				}
-
-				if (result != 0)
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Compilation failed because the bat file failed to finish!\n");
-
-					renderBuildingWindow = false;
-
-					return;
 				}
 
 				//
@@ -167,11 +164,37 @@ namespace Core
 
 		CompileThread.detach();
 	}
+	
+	void Compilation::RunInstaller(const string& installer)
+	{
+		string command = "\"" + installer + "\"";
+
+		//command to run the batch file and capture errors
+		string fullCommand = command + " 2>&1"; //redirect stderr to stdout
+
+		array<char, 128> buffer{};
+		unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(fullCommand.c_str(), "r"), _pclose);
+
+		if (!pipe)
+		{
+			throw runtime_error("_popen() failed!");
+		}
+
+		//read the output line by line and add to the provided vector
+		while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+		{
+			output.emplace_back(buffer.data());
+			cout << buffer.data() << "\n";
+		}
+	}
 
 	void Compilation::RenderBuildingWindow()
 	{
-		ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Always);
-		ImGui::SetNextWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+		ImVec2 windowSize = ImVec2(300.0f, 300.0f);
+		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
+
+		ImVec2 windowPos = EngineGUI::CenterWindow(windowSize);
+		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Appearing);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse
@@ -182,17 +205,47 @@ namespace Core
 			&& ImGui::Begin("##Building", NULL, windowFlags))
 		{
 			string text = "Building " + GUISettings::gameName + "...";
-			ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
-
-			float windowWidth = ImGui::GetWindowWidth();
-			float windowHeight = ImGui::GetWindowHeight() / 2 - 25;
-
-			windowWidth = (windowWidth - textSize.x) / 2.0f;
-
-			ImVec2 textPos = ImVec2(windowWidth, windowHeight);
-			ImGui::SetCursorPos(textPos);
-
 			ImGui::Text(text.c_str());
+
+			ImVec2 scrollingRegionSize(
+				ImGui::GetContentRegionAvail().x,
+				ImGui::GetContentRegionAvail().y - 40);
+			if (ImGui::BeginChild("ScrollingRegion", scrollingRegionSize, true))
+			{
+				float wrapWidth = ImGui::GetContentRegionAvail().x - 10;
+				ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrapWidth);
+
+				//display the content of the text buffer
+				for (const auto& message : output)
+				{
+					ImGui::TextWrapped("%s", message.c_str());
+
+					if (ImGui::IsItemClicked()
+						&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::DEBUG,
+							"Added '" + message + "' to clipboard.\n");
+						ImGui::SetClipboardText(message.c_str());
+					}
+				}
+
+				ImGui::PopTextWrapPos();
+
+				//scrolls to the bottom if scrolling is allowed
+				//and if user is close to the newest compilation message
+				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
+				if (isNearBottom
+					|| (!firstScrollToBottom
+						&& Engine::startedWindowLoop))
+				{
+					ImGui::SetScrollHereY(1.0f);
+					firstScrollToBottom = true;
+				}
+			}
+
+			ImGui::EndChild();
 
 			ImGui::End();
 		}

@@ -5,6 +5,12 @@
 
 #pragma once
 
+#include <vector>
+#include <string>
+
+using std::vector;
+using std::string;
+
 namespace Core
 {
 	class Compilation
@@ -12,8 +18,14 @@ namespace Core
 	public:
 		static inline bool renderBuildingWindow;
 
+		static inline vector<string> output;
+
 		static void Compile();
 
 		static void RenderBuildingWindow();
+
+		static void RunInstaller(const string& installer);
+	private:
+		static inline bool firstScrollToBottom;
 	};
 }
