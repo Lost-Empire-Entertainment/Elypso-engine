@@ -34,7 +34,7 @@ if not exist "%buildPath%" (
 		
 	:: Build the project
 	echo %cminf% Started build generation.
-	cmake --build . --config Release
+	cmake --build . --config Release -- /m
 	
 	if %errorlevel% neq 0 (
 		echo %cmexc% Build failed because Elypso engine.exe did not get generated properly.
@@ -60,7 +60,7 @@ cd "%buildPath%"
 echo %cminf% Started CMake configuration.
 
 :: Configure the project (Release build)
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -A x64 ..
 
 if %errorlevel% neq 0 (
 	echo %cmexc% CMake configuration failed.
