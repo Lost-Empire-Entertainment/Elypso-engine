@@ -16,8 +16,14 @@ namespace Core
 	class Compilation
 	{
 	public:
+		enum class InstallerType
+		{
+			compile,
+			reset
+		};
+		static inline InstallerType installerType;
+
 		static inline bool renderBuildingWindow;
-		static inline string compilationParameter;
 
 		static inline vector<string> output;
 
@@ -25,10 +31,9 @@ namespace Core
 
 		static void RenderBuildingWindow();
 
-		static void RunInstaller(const string& installer, const string& parameter);
+		static void RunInstaller(const string& installer);
 	private:
 		static inline bool finishedBuild;
-		static inline bool failedBuild;
 		static inline bool firstScrollToBottom;
 	};
 }

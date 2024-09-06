@@ -63,7 +63,6 @@ namespace Core
 		output.clear();
 
 		renderBuildingWindow = true;
-		failedBuild = false;
 		finishedBuild = false;
 
 		if (SceneFile::unsavedChanges) SceneFile::SaveScene();
@@ -74,87 +73,86 @@ namespace Core
 				// START BUILDING GAME FROM SOURCE CODE
 				//
 
-				string gameBatPath = Engine::gamePath + "\\quickBuild.bat";
+				string gameBatPath = Engine::gamePath + "\\build.bat";
 				gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
-				if (!exists(gameBatPath))
+				if (!exists(gameBatPath)
+					|| path(gameBatPath).extension() == ""
+					|| path(gameBatPath).extension() != ".bat")
 				{
 					output.emplace_back("Build failed because game bat file does not exist!");
 					return;
 				}
 
-				RunInstaller(gameBatPath, compilationParameter);
+				RunInstaller(gameBatPath);
 
-				if (!failedBuild)
+				string gameStem = path(Engine::gameExePath).stem().string();
+				if (gameStem != "Game")
 				{
-					string gameStem = path(Engine::gameExePath).stem().string();
-					if (gameStem != "Game")
+					File::MoveOrRenameFileOrFolder(
+						Engine::gameParentPath + "\\Game.exe",
+						Engine::gameExePath,
+						true);
+				}
+
+				//
+				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
+				//
+
+				string gameName = path(Engine::gameExePath).stem().string();
+				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
+
+				string gameDocsFolder = myGamesFolder + "\\" + gameName;
+				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
+
+				File::CreateNewFolder(gameDocsFolder);
+
+				string scenePath = path(Engine::projectPath).parent_path().string();
+				for (const auto& entry : directory_iterator(path(scenePath)))
+				{
+					string stem = path(entry).stem().string();
+
+					if (stem != "models"
+						&& stem != "textures"
+						&& stem != "project")
 					{
-						File::MoveOrRenameFileOrFolder(
-							Engine::gameParentPath + "\\Game.exe",
-							Engine::gameExePath,
-							true);
+						string origin = path(entry).string();
+						string originFileName = path(entry).filename().string();
+						string target = gameDocsFolder + "\\" + originFileName;
+
+						File::CopyFileOrFolder(origin, target);
 					}
+				}
 
-					//
-					// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
-					//
+				//
+				// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
+				//
 
-					string gameName = path(Engine::gameExePath).stem().string();
-					string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
-					if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
+				string firstSceneFilePath = gameDocsFolder + "\\firstScene.txt";
+				if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
 
-					string gameDocsFolder = myGamesFolder + "\\" + gameName;
-					if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
-
-					File::CreateNewFolder(gameDocsFolder);
-
-					string scenePath = path(Engine::projectPath).parent_path().string();
-					for (const auto& entry : directory_iterator(path(scenePath)))
-					{
-						string stem = path(entry).stem().string();
-
-						if (stem != "models"
-							&& stem != "textures"
-							&& stem != "project")
-						{
-							string origin = path(entry).string();
-							string originFileName = path(entry).filename().string();
-							string target = gameDocsFolder + "\\" + originFileName;
-
-							File::CopyFileOrFolder(origin, target);
-						}
-					}
-
-					//
-					// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
-					//
-
-					string firstSceneFilePath = gameDocsFolder + "\\firstScene.txt";
-					if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
-
-					ofstream firstSceneFile(firstSceneFilePath);
-					if (!firstSceneFile.is_open())
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							"Compilation failed because first scene file couldnt be created!\n");
-
-						renderBuildingWindow = false;
-
-						return;
-					}
-
-					firstSceneFile << "project= " << path(Engine::projectPath).stem().string() << "\n";
-					firstSceneFile << "scene= " << Engine::gameFirstScene;
-
-					firstSceneFile.close();
-
+				ofstream firstSceneFile(firstSceneFilePath);
+				if (!firstSceneFile.is_open())
+				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
-						Type::INFO,
-						"Compilation succeeded!\n");
+						Type::EXCEPTION,
+						"Compilation failed because first scene file couldnt be created!\n");
+
+					renderBuildingWindow = false;
+
+					return;
 				}
+
+				firstSceneFile << "project= " << path(Engine::projectPath).stem().string() << "\n";
+				firstSceneFile << "scene= " << Engine::gameFirstScene;
+
+				firstSceneFile.close();
+
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::INFO,
+					"Compilation succeeded!\n");
 
 				finishedBuild = true;
 			});
@@ -162,38 +160,18 @@ namespace Core
 		CompileThread.detach();
 	}
 	
-	void Compilation::RunInstaller(const string& installer, const string& parameter)
+	void Compilation::RunInstaller(const string& installer)
 	{
-		if (parameter == "")
+		string command = "";
+		switch (installerType)
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::EXCEPTION,
-				"Parameter for game installer cannot be empty!\n");
-
-			output.emplace_back("Build failed! Parameter for game installer cannot be empty!");
-
-			failedBuild = true;
-
-			return;
+		case InstallerType::compile:
+			command = "\"" + installer + "\" n r " + "\"" + GUISettings::gameName + "\"";
+			break;
+		case InstallerType::reset:
+			command = "\"" + installer + "\" reset";
+			break;
 		}
-
-		if (parameter != "bypassInput"
-			&& parameter != "cleanRebuild")
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::EXCEPTION,
-				"Parameter '" + parameter + "' is not valid for game installer!\n");
-
-			output.emplace_back("Build failed! Parameter '" + parameter + "' is not valid for game installer!");
-
-			failedBuild = true;
-
-			return;
-		}
-
-		string command = "\"" + installer + "\" " + parameter;
 
 		//command to run the batch file and capture errors
 		string fullCommand = command + " 2>&1"; //redirect stderr to stdout
@@ -324,7 +302,7 @@ namespace Core
 					string gameBatPath = Engine::gamePath + "\\quickBuild.bat";
 					gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
 
-					compilationParameter = "cleanRebuild";
+					installerType = InstallerType::reset;
 					Compile();
 				}
 			}

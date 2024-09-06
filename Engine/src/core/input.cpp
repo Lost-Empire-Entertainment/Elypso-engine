@@ -477,7 +477,7 @@ namespace Core
                 && mods == GLFW_MOD_CONTROL
                 && action == GLFW_PRESS)
             {
-                Compilation::compilationParameter = "bypassInput";
+                Compilation::installerType = Compilation::InstallerType::compile;
                 Compilation::Compile();
             }
 

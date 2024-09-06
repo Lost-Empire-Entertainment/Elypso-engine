@@ -558,7 +558,7 @@ namespace Graphics::GUI
 		{
 			if (ImGui::IsItemClicked())
 			{
-				Compilation::compilationParameter = "bypassInput";
+				Compilation::installerType = Compilation::InstallerType::compile;
 				Compilation::Compile();
 
 				ImGui::CloseCurrentPopup();

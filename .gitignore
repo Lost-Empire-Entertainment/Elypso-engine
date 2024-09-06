@@ -2,13 +2,16 @@
 Engine/build/
 Engine/.vs/
 Engine/out/
+Engine/_*.bat
 
 # Game ignored files and folders
 Game/build/
 Game/.vs/
 Game/out/
+Game/_*.bat
 
 # Elypso hub ignored files and folders
 Hub/build/
 Hub/.vs/
 Hub/out/
+Hub/_*.bat
