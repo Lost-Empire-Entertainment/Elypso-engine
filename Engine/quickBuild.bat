@@ -20,6 +20,54 @@ set "cpsuc=[CPACK_SUCCESS]"
 
 set "buildPath=%~dp0build"
 
+set waitAtEnd=%1
+::waitAtEnd parameter was empty
+if "%waitAtEnd%"=="" (
+	echo Wait at end parameter was not provided so it was set to 'n'.
+	set waitAtEnd=n
+)
+::waitAtEnd parameter was invalid
+if not "%waitAtEnd%"=="y" (
+	if not "%waitAtEnd%"=="n" (
+		echo Provided waitAtEnd parameter '"%waitAtEnd%"' is invalid! Please use 'y' or 'n'!
+		exit /b 1
+	)
+)
+
+set fullRebuild=%2
+::fullRebuild parameter was empty
+if "%fullRebuild%"=="" (
+	echo Full rebuild parameter was not provided so it was set to 'n'.
+	set fullRebuild=n
+)
+::fullRebuild parameter was invalid
+if not "%fullRebuild%"=="y" (
+	if not "%fullRebuild%"=="n" (
+		echo Provided full rebuild parameter '"%fullRebuild%"' is invalid! Please use 'y' or 'n'!
+		exit /b 1
+	)
+)
+
+set buildType=%3
+::buildType parameter was empty
+if "%buildType%"=="" (
+	echo Build type parameter was not provided so it was set to 'Release'.
+	set buildType=Release
+)
+::buildType parameter was invalid
+if not "%buildType%"=="Release" (
+	if not "%buildType%"=="Debug" (
+		echo Provided buildType parameter '"%buildType%"' is invalid! Please use 'Release' or 'Debug'!
+		exit /b 1
+	)
+)
+
+::switches to :cmake if full rebuild was set to 'y'
+if "%fullRebuild%"=="" (
+	echo Full rebuild was set to 'y' manually so Elypso engine will be rebuilt from scratch.
+	goto cmake
+)
+
 :build
 
 :: Change to the script directory
@@ -38,9 +86,15 @@ if not exist "%buildPath%" (
 	
 	if %errorlevel% neq 0 (
 		echo %cmexc% Build failed because Elypso engine.exe did not get generated properly.
+		if "%waitAtEnd%"=="y" (
+			pause
+		)
+		exit
 	) else (
 		echo %cmsuc% Build succeeded!
-		pause
+		if "%waitAtEnd%"=="y" (
+			pause
+		)
 		exit
 	)
 )
@@ -60,11 +114,14 @@ cd "%buildPath%"
 echo %cminf% Started CMake configuration.
 
 :: Configure the project (Release build)
-cmake -A x64 ..
+cmake -A x64 -DCMAKE_BUILD_TYPE=%buildType% ..
 
 if %errorlevel% neq 0 (
 	echo %cmexc% CMake configuration failed.
-	pause
+	if "%waitAtEnd%"=="y" (
+		pause
+	)
+	exit
 ) else (
 	echo %cmsuc% Cmake configuration succeeded!
 	goto build
