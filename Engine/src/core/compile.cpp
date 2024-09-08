@@ -151,42 +151,51 @@ namespace Core
 	
 	void Compilation::RunInstaller()
 	{
-		string gameFolder = path(Engine::gameParentPath).parent_path().string();
+		string buildFolder = path(Engine::gameParentPath).parent_path().parent_path().string() + "\\build";
 		string command = "";
 
 		switch (installerType)
 		{
 		case InstallerType::compile:
 		{
-			if (exists(gameFolder + "\\build"))
+			if (exists(buildFolder))
 			{
 				command = 
-					"cd " + gameFolder +
-					+ " && cmake -A x64 -DCMAKE_BUILD_TYPE=Release .." +
+					"cd " + buildFolder +
 					+ " && cmake --build . --config Release -- /m";
 			}
 			else 
 			{
+				File::DeleteFileOrfolder(buildFolder);
+				File::CreateNewFolder(buildFolder);
+
 				command = 
-					"cd " + gameFolder +
-					+ " && mkdir build" +
-					+ " && cmake -A x64 -DCMAKE_BUILD_TYPE=Release .." +
+					"cd " + buildFolder +
+					+ " && cmake -A x64 .." +
 					+ " && cmake --build . --config Release -- /m";
 			}
 
 			command = "cmd /c \"" + command + "\"";
 
-			cout << "command for building game is\n" << command << "\n";
+			cout << "---- compile command:\n" << command << "\n";
 			break;
 		}
 		case InstallerType::reset:
 		{
+			if (exists(buildFolder))
+			{
+				File::DeleteFileOrfolder(buildFolder);
+				File::CreateNewFolder(buildFolder);
+			}
+
 			command =
-				"cd " + gameFolder +
-				+" && mkdir build" +
-				+" && cmake -A x64 -DCMAKE_BUILD_TYPE=Release .." +
-				+" && cmake --build . --config Release -- /m";
+				"cd " + buildFolder +
+				+ " && cmake -A x64 .." +
+				+ " && cmake --build . --config Release -- /m";
+
 			command = "cmd /c \"" + command + "\"";
+
+			cout << "---- reset command:\n" << command << "\n";
 			break;
 		}
 		}
