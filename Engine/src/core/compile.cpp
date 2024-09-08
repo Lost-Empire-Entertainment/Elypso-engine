@@ -72,18 +72,7 @@ namespace Core
 				//
 				// START BUILDING GAME FROM SOURCE CODE
 				//
-
-				string gameBatPath = Engine::gamePath + "\\build.bat";
-				gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
-				if (!exists(gameBatPath)
-					|| path(gameBatPath).extension() == ""
-					|| path(gameBatPath).extension() != ".bat")
-				{
-					output.emplace_back("Build failed because game bat file does not exist!");
-					return;
-				}
-
-				RunInstaller(gameBatPath);
+				RunInstaller();
 
 				string gameStem = path(Engine::gameExePath).stem().string();
 				if (gameStem != "Game")
@@ -160,17 +149,46 @@ namespace Core
 		CompileThread.detach();
 	}
 	
-	void Compilation::RunInstaller(const string& installer)
+	void Compilation::RunInstaller()
 	{
+		string gameFolder = path(Engine::gameParentPath).parent_path().string();
 		string command = "";
+
 		switch (installerType)
 		{
 		case InstallerType::compile:
-			command = "\"" + installer + "\" n r " + "\"" + GUISettings::gameName + "\"";
+		{
+			if (exists(gameFolder + "\\build"))
+			{
+				command = 
+					"cd " + gameFolder +
+					+ " && cmake -A x64 -DCMAKE_BUILD_TYPE=Release .." +
+					+ " && cmake --build . --config Release -- /m";
+			}
+			else 
+			{
+				command = 
+					"cd " + gameFolder +
+					+ " && mkdir build" +
+					+ " && cmake -A x64 -DCMAKE_BUILD_TYPE=Release .." +
+					+ " && cmake --build . --config Release -- /m";
+			}
+
+			command = "cmd /c \"" + command + "\"";
+
+			cout << "command for building game is\n" << command << "\n";
 			break;
+		}
 		case InstallerType::reset:
-			command = "\"" + installer + "\" reset";
+		{
+			command =
+				"cd " + gameFolder +
+				+" && mkdir build" +
+				+" && cmake -A x64 -DCMAKE_BUILD_TYPE=Release .." +
+				+" && cmake --build . --config Release -- /m";
+			command = "cmd /c \"" + command + "\"";
 			break;
+		}
 		}
 
 		//command to run the batch file and capture errors

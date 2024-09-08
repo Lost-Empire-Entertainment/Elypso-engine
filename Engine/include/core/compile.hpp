@@ -31,7 +31,7 @@ namespace Core
 
 		static void RenderBuildingWindow();
 
-		static void RunInstaller(const string& installer);
+		static void RunInstaller();
 	private:
 		static inline bool finishedBuild;
 		static inline bool firstScrollToBottom;
