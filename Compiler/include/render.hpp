@@ -23,6 +23,8 @@ namespace Graphics
 		static void WindowSetup();
 		static void GladSetup();
 
+		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
+
 		static void RenderLoop();
 	};
 }
