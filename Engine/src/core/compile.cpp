@@ -176,8 +176,6 @@ namespace Core
 			}
 
 			command = "cmd /c \"" + command + "\"";
-
-			cout << "---- compile command:\n" << command << "\n";
 			break;
 		}
 		case InstallerType::reset:
@@ -194,8 +192,6 @@ namespace Core
 				+ " && cmake --build . --config Release -- /m";
 
 			command = "cmd /c \"" + command + "\"";
-
-			cout << "---- reset command:\n" << command << "\n";
 			break;
 		}
 		}
