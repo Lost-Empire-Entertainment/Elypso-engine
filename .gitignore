@@ -1,3 +1,9 @@
+# Elypso hub ignored files and folders
+Hub/build/
+Hub/.vs/
+Hub/out/
+Hub/*.bat
+
 # Elypso engine ignored files and folders
 Engine/build/
 Engine/.vs/
@@ -10,8 +16,16 @@ Game/.vs/
 Game/out/
 Game/*.bat
 
-# Elypso hub ignored files and folders
-Hub/build/
-Hub/.vs/
-Hub/out/
-Hub/*.bat
+# ------------------
+
+# Elypso hub compiler ignored files and folders
+Compilers/HubCompiler/build/
+Compilers/HubCompiler/.vs/
+Compilers/HubCompiler/out/
+Compilers/HubCompiler/*.bat
+
+# Elypso engine compiler ignored files and folders
+Compilers/EngineCompiler/build/
+Compilers/EngineCompiler/.vs/
+Compilers/EngineCompiler/out/
+Compilers/EngineCompiler/*.bat
