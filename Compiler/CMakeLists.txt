@@ -71,6 +71,12 @@ target_include_directories(Compiler PRIVATE
 	${INCLUDE_DIR}
 	${EXT_GLAD_DIR}
 	${EXT_GLFW_DIR}
+	${EXT_GLM_DIR}
+	${EXT_GLM_DIR}/detail
+	${EXT_GLM_DIR}/ext
+	${EXT_GLM_DIR}/gtc
+	${EXT_GLM_DIR}/gtx
+	${EXT_GLM_DIR}/simd
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
 )

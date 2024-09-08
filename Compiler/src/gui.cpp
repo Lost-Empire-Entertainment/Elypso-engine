@@ -5,19 +5,20 @@
 
 #include "gui.hpp"
 
-using Graphics::GUI;
-
-void GUI::GUIInitialize()
+namespace Graphics
 {
+	void GUI::GUIInitialize()
+	{
 
-}
+	}
 
-void GUI::GUILoop()
-{
+	void GUI::GUILoop()
+	{
 
-}
+	}
 
-void GUI::GUIShutdown()
-{
+	void GUI::GUIShutdown()
+	{
 
+	}
 }

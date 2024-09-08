@@ -6,39 +6,34 @@
 #include "render.hpp"
 #include "gui.hpp"
 
-using Graphics::Render;
-using Graphics::GUI;
-
-void Render::RenderInitialize()
+namespace Graphics
 {
-	GLFWSetup();
-	WindowSetup();
-	GladSetup();
+	void Render::RenderInitialize()
+	{
+		GLFWSetup();
+		WindowSetup();
+		GladSetup();
 
-	GUI::GUIInitialize();
-}
+		GUI::GUIInitialize();
+	}
 
-void Render::GLFWSetup()
-{
+	void Render::GLFWSetup()
+	{
 
-}
+	}
 
-void Render::WindowSetup()
-{
+	void Render::WindowSetup()
+	{
 
-}
+	}
 
-void Render::GladSetup()
-{
+	void Render::GladSetup()
+	{
 
-}
+	}
 
-void Render::RenderLoop()
-{
-	GUI::GUILoop();
-}
-
-void Render::RenderShutdown()
-{
-	GUI::GUIShutdown();
+	void Render::RenderLoop()
+	{
+		GUI::GUILoop();
+	}
 }
