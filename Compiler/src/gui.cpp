@@ -116,21 +116,7 @@ namespace Graphics
 
 	void GUI::RenderWindowContent()
 	{
-		string text = "";
-		if (!isBuilding
-			&& !hasBuiltOnce)
-		{
-			text = "Waiting for input...";
-		}
-		else if (isBuilding)
-		{
-			text = "Building " + compilableProgramName + "...";
-		}
-		else if (!isBuilding
-				 && hasBuiltOnce)
-		{
-			text = "Finished building " + compilableProgramName + "...\n";
-		}
+		static string progressText = "Waiting for input...";
 
 		if (!isBuilding)
 		{
@@ -148,28 +134,36 @@ namespace Graphics
 			ImGui::SetCursorPos(topButton1Pos);
 			if (ImGui::Button("Hub", topButtonSize))
 			{
-				if (compilableProgramName != "Elypso hub")
+				if (target != Target::Hub)
 				{
-					compilableProgramName = "Elypso hub";
-					string windowTitle = "Compiler | " + compilableProgramName;
+					string windowTitle = "Compiler | Elypso hub";
 					glfwSetWindowTitle(Render::window, windowTitle.c_str());
 
-					cout << "compile " + compilableProgramName + "...\n";
-					output.emplace_back("compile " + compilableProgramName + "...");
+					output.clear();
+
+					cout << "Ready to compile Elypso hub.\n";
+					output.emplace_back("Ready to compile Elypso hub.");
+					progressText = "Waiting for input...";
+
+					target = Target::Hub;
 				}
 			}
 
 			ImGui::SetCursorPos(topButton2Pos);
 			if (ImGui::Button("Engine", topButtonSize))
 			{
-				if (compilableProgramName != "Elypso engine")
+				if (target != Target::Engine)
 				{
-					compilableProgramName = "Elypso engine";
-					string windowTitle = "Compiler | " + compilableProgramName;
+					string windowTitle = "Compiler | Elypso engine";
 					glfwSetWindowTitle(Render::window, windowTitle.c_str());
 
-					cout << "compile " + compilableProgramName + "...\n";
-					output.emplace_back("compile " + compilableProgramName + "...");
+					output.clear();
+
+					cout << "Ready to compile Elypso engine.\n";
+					output.emplace_back("Ready to compile Elypso engine.");
+					progressText = "Waiting for input...";
+
+					target = Target::Engine;
 				}
 			}
 
@@ -183,7 +177,37 @@ namespace Graphics
 
 		ImGui::SetCursorPosY(75.0f);
 
-		ImGui::Text(text.c_str());
+		if (!sentMsg)
+		{
+			if (!isBuilding
+				&& !hasBuiltOnce)
+			{
+				output.emplace_back("Ready to compile Elypso hub.");
+			}
+			else if (isBuilding)
+			{
+				string targetName = target == Target::Hub
+					? "Elypso hub"
+					: "Elypso engine";
+				string actionName = action == Action::compile
+					? "compiling"
+					: "clean rebuilding";
+				progressText = "Started " + actionName + " " + targetName;
+			}
+			else if (!isBuilding
+					 && hasBuiltOnce)
+			{
+				string targetName = target == Target::Hub
+					? "Elypso hub"
+					: "Elypso engine";
+				string actionName = action == Action::compile
+					? "compiling"
+					: "clean rebuilding";
+				progressText = "Finished " + actionName + " " + targetName;
+			}
+			sentMsg = true;
+		}
+		ImGui::Text(progressText.c_str());
 
 		ImVec2 scrollingRegionSize(
 			ImGui::GetContentRegionAvail().x,
@@ -240,19 +264,49 @@ namespace Graphics
 			ImGui::SetCursorPos(button1Pos);
 			if (ImGui::Button("Clean rebuild", buttonSize))
 			{
-				cout << "Started clean rebuilding " + compilableProgramName + "\n";
-				output.emplace_back("Started clean rebuilding " + compilableProgramName);
+				action = Action::clean_rebuild;
 
+				string targetName = target == Target::Hub
+					? "Elypso hub"
+					: "Elypso engine";
+				string actionName = action == Action::compile
+					? "compiling"
+					: "clean rebuilding";
+				string msg = "Started " + actionName + " " + targetName;
+
+				cout << msg << "\n";
+				output.emplace_back(msg);
+
+				if (!hasBuiltOnce) hasBuiltOnce = true;
+				isBuilding = true;
+				if (sentMsg) sentMsg = false;
 				TheCompiler::CleanRebuild();
+				isBuilding = false;
+				if (sentMsg) sentMsg = false;
 			}
 
 			ImGui::SetCursorPos(button2Pos);
 			if (ImGui::Button("Compile", buttonSize))
 			{
-				cout << "Started compiling " + compilableProgramName + "\n";
-				output.emplace_back("Started compiling " + compilableProgramName);
+				action = Action::compile;
 
+				string targetName = target == Target::Hub
+					? "Elypso hub"
+					: "Elypso engine";
+				string actionName = action == Action::compile
+					? "compiling"
+					: "clean rebuilding";
+				string msg = "Started " + actionName + " " + targetName;
+
+				cout << msg << "\n";
+				output.emplace_back(msg);
+
+				if (!hasBuiltOnce) hasBuiltOnce = true;
+				isBuilding = true;
+				if (sentMsg) sentMsg = false;
 				TheCompiler::Compile();
+				isBuilding = false;
+				if (sentMsg) sentMsg = false;
 			}
 
 			ImGui::SetCursorPos(button3Pos);
@@ -260,7 +314,7 @@ namespace Graphics
 			{
 				output.clear();
 
-				TheCompiler::CleanRebuild();
+				progressText = "Waiting for input...";
 			}
 		}
 

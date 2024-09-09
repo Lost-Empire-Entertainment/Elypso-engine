@@ -16,9 +16,7 @@ namespace Graphics
 	class GUI
 	{
 	public:
-		static inline bool isBuilding;
 		static inline string targetFolder;
-		static inline string compilableProgramName;
 		static inline vector<string> output;
 
 		static void GUIInitialize();
@@ -32,7 +30,22 @@ namespace Graphics
 
 		static void GUIShutdown();
 	private:
+		enum class Target
+		{
+			Hub,
+			Engine
+		};
+		static inline Target target;
+		enum class Action
+		{
+			compile,
+			clean_rebuild
+		};
+		static inline Action action;
+
+		static inline bool isBuilding;
 		static inline bool hasBuiltOnce;
 		static inline bool firstScrollToBottom;
+		static inline bool sentMsg;
 	};
 }

@@ -45,10 +45,8 @@ namespace Graphics
 	{
 		cout << "Creating window...\n";
 
-		if (GUI::compilableProgramName == "") GUI::compilableProgramName = "Elypso hub";
-
 		//create a window object holding all the windowing data
-		string name = "Compiler | " + GUI::compilableProgramName;
+		string name = "Compiler | Elypso hub";
 		window = glfwCreateWindow(
 			1000,
 			1000,
