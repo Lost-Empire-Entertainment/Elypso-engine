@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <iostream>
+#include <filesystem>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -19,6 +20,8 @@
 #include "fileUtils.hpp"
 
 using std::cout;
+using std::filesystem::directory_iterator;
+using std::filesystem::path;
 
 using Core::ConfigFile;
 using Core::Compiler;
@@ -131,6 +134,7 @@ namespace Graphics
 			ImVec2 topButton3Pos(
 				(windowSize.x * 0.95f) - (topButtonSize.x * 0.5f), 25.0f);
 
+			//press hub button to switch to the hub choices
 			ImGui::SetCursorPos(topButton1Pos);
 			if (ImGui::Button("Hub", topButtonSize))
 			{
@@ -141,14 +145,16 @@ namespace Graphics
 
 					output.clear();
 
-					cout << "Ready to compile Elypso hub.\n";
-					output.emplace_back("Ready to compile Elypso hub.");
+					string msg = "---- Switched to Elypso hub compilation.";
+					cout << msg << "\n";
+					output.emplace_back(msg);
 					progressText = "Waiting for input...";
 
 					target = Target::Hub;
 				}
 			}
 
+			//press engine button to switch to the engine choices
 			ImGui::SetCursorPos(topButton2Pos);
 			if (ImGui::Button("Engine", topButtonSize))
 			{
@@ -159,19 +165,79 @@ namespace Graphics
 
 					output.clear();
 
-					cout << "Ready to compile Elypso engine.\n";
-					output.emplace_back("Ready to compile Elypso engine.");
+					string msg = "---- Switched to Elypso engine compilation.";
+					cout << msg << "\n";
+					output.emplace_back(msg);
 					progressText = "Waiting for input...";
 
 					target = Target::Engine;
 				}
 			}
 
+			//press set path button to assign the folder path of hub/engine
 			ImGui::SetCursorPos(topButton3Pos);
 			ImVec2 smallButtonSize = ImVec2(topButtonSize.x * 0.7f, topButtonSize.y * 0.7f);
 			if (ImGui::Button("Set path", smallButtonSize))
 			{
-				targetFolder = File::SetPath();
+				string setPath = File::SetPath();
+
+				bool isValidFolder = false;
+				if ((target == Target::Hub
+					&& path(setPath).stem().string() != "Hub")
+					|| (target == Target::Engine
+					&& path(setPath).stem().string() != "Engine"))
+				{
+					string targetName = target == Target::Hub
+						? "Elypso hub"
+						: "Elypso engine";
+					string msg = "---- Cannot set path to '" + setPath + "' for "
+						+ targetName + " because the chosen folder is not valid!";
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+				}
+				else
+				{
+					for (const auto& entry : directory_iterator(setPath))
+					{
+						if (path(entry).filename().string() == "CMakeLists.txt")
+						{
+							isValidFolder = true;
+							break;
+						}
+					}
+
+					if (!isValidFolder)
+					{
+						string targetName = target == Target::Hub
+							? "Elypso hub"
+							: "Elypso engine";
+						string msg = "---- Cannot set path to '" + setPath + "' for " 
+							+ targetName + " because the chosen folder is not valid!";
+
+						cout << msg << "\n";
+						output.emplace_back(msg);
+					}
+					else
+					{
+						if (target == Target::Hub)
+						{
+							ConfigFile::SetValue("hubFolderPath", setPath);
+
+							string msg = "---- Set Elypso hub folder path to '" + setPath + "'.";
+							cout << msg << "\n";
+							output.emplace_back(msg);
+						}
+						else if (target == Target::Engine)
+						{
+							ConfigFile::SetValue("engineFolderPath", setPath);
+
+							string msg = "---- Set Elypso engine folder path to '" + setPath + "'.";
+							cout << msg << "\n";
+							output.emplace_back(msg);
+						}
+					}
+				}
 			}
 		}
 
@@ -182,7 +248,7 @@ namespace Graphics
 			if (!isBuilding
 				&& !hasBuiltOnce)
 			{
-				output.emplace_back("Ready to compile Elypso hub.");
+				output.emplace_back("---- Switched to Elypso hub compilation.");
 			}
 			else if (isBuilding)
 			{
@@ -203,7 +269,7 @@ namespace Graphics
 				string actionName = action == Action::compile
 					? "compiling"
 					: "clean rebuilding";
-				progressText = "Finished " + actionName + " " + targetName;
+				progressText = "Waiting for input...";
 			}
 			sentMsg = true;
 		}
@@ -225,7 +291,7 @@ namespace Graphics
 				if (ImGui::IsItemClicked()
 					&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
-					cout << "Added '" << message << "' to clipboard.\n";
+					cout << "---- Added '" << message << "' to clipboard.\n";
 					ImGui::SetClipboardText(message.c_str());
 				}
 			}
@@ -261,6 +327,7 @@ namespace Graphics
 				(windowSize.x * 0.7f) - (buttonSize.x * 0.5f),
 				windowSize.y - buttonSize.y - 15.0f);
 
+			//press clean rebuild to fully rebuild hub/engine from scratch
 			ImGui::SetCursorPos(button1Pos);
 			if (ImGui::Button("Clean rebuild", buttonSize))
 			{
@@ -269,22 +336,39 @@ namespace Graphics
 				string targetName = target == Target::Hub
 					? "Elypso hub"
 					: "Elypso engine";
-				string actionName = action == Action::compile
-					? "compiling"
-					: "clean rebuilding";
-				string msg = "Started " + actionName + " " + targetName;
 
-				cout << msg << "\n";
-				output.emplace_back(msg);
+				if ((target == Target::Hub
+					&& Compiler::hubFolderPath == "")
+					|| (target == Target::Engine
+					&& Compiler::engineFolderPath == ""))
+				{
+					string msg = "---- Cannot clean rebuild " + targetName + " because its folder has not been assigned yet!";
 
-				if (!hasBuiltOnce) hasBuiltOnce = true;
-				isBuilding = true;
-				if (sentMsg) sentMsg = false;
-				TheCompiler::CleanRebuild();
-				isBuilding = false;
-				if (sentMsg) sentMsg = false;
+					cout << msg << "\n";
+					output.emplace_back(msg);
+				}
+				else
+				{
+					string msg = "---- Started clean rebuilding " + targetName;
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+
+					if (!hasBuiltOnce) hasBuiltOnce = true;
+					isBuilding = true;
+					if (sentMsg) sentMsg = false;
+					TheCompiler::CleanRebuild();
+					isBuilding = false;
+					if (sentMsg) sentMsg = false;
+
+					msg = "---- Finished clean rebuilding " + targetName;
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+				}
 			}
 
+			//press compile button to start compiling hub/engine
 			ImGui::SetCursorPos(button2Pos);
 			if (ImGui::Button("Compile", buttonSize))
 			{
@@ -293,22 +377,39 @@ namespace Graphics
 				string targetName = target == Target::Hub
 					? "Elypso hub"
 					: "Elypso engine";
-				string actionName = action == Action::compile
-					? "compiling"
-					: "clean rebuilding";
-				string msg = "Started " + actionName + " " + targetName;
 
-				cout << msg << "\n";
-				output.emplace_back(msg);
+				if ((target == Target::Hub
+					&& Compiler::hubFolderPath == "")
+					|| (target == Target::Engine
+					&& Compiler::engineFolderPath == ""))
+				{
+					string msg = "---- Cannot compile " + targetName + " because its folder has not been assigned yet!";
 
-				if (!hasBuiltOnce) hasBuiltOnce = true;
-				isBuilding = true;
-				if (sentMsg) sentMsg = false;
-				TheCompiler::Compile();
-				isBuilding = false;
-				if (sentMsg) sentMsg = false;
+					cout << msg << "\n";
+					output.emplace_back(msg);
+				}
+				else
+				{
+					string msg = "---- Started compiling " + targetName;
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+
+					if (!hasBuiltOnce) hasBuiltOnce = true;
+					isBuilding = true;
+					if (sentMsg) sentMsg = false;
+					TheCompiler::Compile();
+					isBuilding = false;
+					if (sentMsg) sentMsg = false;
+
+					msg = "---- Finished compiling " + targetName;
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+				}
 			}
 
+			//press clear output to clean all messages from output window
 			ImGui::SetCursorPos(button3Pos);
 			if (ImGui::Button("Clear output", buttonSize))
 			{

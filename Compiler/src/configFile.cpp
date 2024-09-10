@@ -113,9 +113,13 @@ namespace Core
 						}
 					}
 
-					if (key == "recordedFilesPath")
+					if (key == "hubFolderPath")
 					{
-						//Compiler::recordedFilesPath = value;
+						Compiler::hubFolderPath = value;
+					}
+					if (key == "engineFolderPath")
+					{
+						Compiler::engineFolderPath = value;
 					}
 
 					keys.push_back(key);
@@ -137,7 +141,10 @@ namespace Core
 		keys.push_back("fontScale");
 		values.push_back("1.5");
 
-		keys.push_back("recordedFilesPath");
+		keys.push_back("hubFolderPath");
+		values.push_back("");
+
+		keys.push_back("engineFolderPath");
 		values.push_back("");
 
 		string configFilePath = Compiler::docsPath + "\\config.txt";
@@ -206,9 +213,13 @@ namespace Core
 			{
 				ImGui::GetIO().FontGlobalScale = stof(value);
 			}
-			else if (key == "recordedFilesPath")
+			else if (key == "hubFolderPath")
 			{
-				//Compiler::recordedFilesPath = value;
+				Compiler::hubFolderPath = value;
+			}
+			else if (key == "engineFolderPath")
+			{
+				Compiler::engineFolderPath = value;
 			}
 		}
 		else
