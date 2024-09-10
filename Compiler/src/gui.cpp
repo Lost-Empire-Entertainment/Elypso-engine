@@ -263,12 +263,6 @@ namespace Graphics
 			else if (!isBuilding
 					 && hasBuiltOnce)
 			{
-				string targetName = target == Target::Hub
-					? "Elypso hub"
-					: "Elypso engine";
-				string actionName = action == Action::compile
-					? "compiling"
-					: "clean rebuilding";
 				progressText = "Waiting for input...";
 			}
 			sentMsg = true;
@@ -357,14 +351,9 @@ namespace Graphics
 					if (!hasBuiltOnce) hasBuiltOnce = true;
 					isBuilding = true;
 					if (sentMsg) sentMsg = false;
-					TheCompiler::CleanRebuild();
-					isBuilding = false;
-					if (sentMsg) sentMsg = false;
 
-					msg = "---- Finished clean rebuilding " + targetName;
-
-					cout << msg << "\n";
-					output.emplace_back(msg);
+					TheCompiler::compileType = TheCompiler::CompileType::clean_rebuild;
+					TheCompiler::Compile();
 				}
 			}
 
@@ -398,14 +387,9 @@ namespace Graphics
 					if (!hasBuiltOnce) hasBuiltOnce = true;
 					isBuilding = true;
 					if (sentMsg) sentMsg = false;
+
+					TheCompiler::compileType = TheCompiler::CompileType::compile;
 					TheCompiler::Compile();
-					isBuilding = false;
-					if (sentMsg) sentMsg = false;
-
-					msg = "---- Finished compiling " + targetName;
-
-					cout << msg << "\n";
-					output.emplace_back(msg);
 				}
 			}
 
@@ -420,6 +404,39 @@ namespace Graphics
 		}
 
 		ImGui::End();
+	}
+
+	void GUI::FinishCompile()
+	{
+		string targetName = target == Target::Hub
+			? "Elypso hub"
+			: "Elypso engine";
+
+		switch (action)
+		{
+		case Action::compile:
+		{
+			isBuilding = false;
+			if (sentMsg) sentMsg = false;
+
+			string msg = "---- Finished compiling " + targetName;
+
+			cout << msg << "\n";
+			output.emplace_back(msg);
+			break;
+		}
+		case Action::clean_rebuild:
+		{
+			isBuilding = false;
+			if (sentMsg) sentMsg = false;
+
+			string msg = "---- Finished clean rebuilding " + targetName;
+
+			cout << msg << "\n";
+			output.emplace_back(msg);
+			break;
+		}
+		}
 	}
 
 	void GUI::GUIShutdown()

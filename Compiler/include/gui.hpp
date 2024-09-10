@@ -16,7 +16,13 @@ namespace Graphics
 	class GUI
 	{
 	public:
-		static inline string targetFolder;
+		enum class Target
+		{
+			Hub,
+			Engine
+		};
+		static inline Target target;
+
 		static inline vector<string> output;
 
 		static void GUIInitialize();
@@ -27,15 +33,10 @@ namespace Graphics
 
 		static void RenderParentWindow();
 		static void RenderWindowContent();
+		static void FinishCompile();
 
 		static void GUIShutdown();
 	private:
-		enum class Target
-		{
-			Hub,
-			Engine
-		};
-		static inline Target target;
 		enum class Action
 		{
 			compile,

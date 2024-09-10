@@ -10,7 +10,13 @@ namespace Core
 	class TheCompiler
 	{
 	public:
+		enum class CompileType
+		{
+			compile,
+			clean_rebuild
+		};
+		static inline CompileType compileType;
+
 		static void Compile();
-		static void CleanRebuild();
 	};
 }
