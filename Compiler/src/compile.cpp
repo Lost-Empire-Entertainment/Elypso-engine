@@ -105,7 +105,6 @@ namespace Core
 					pipe.get()) != nullptr)
 				{
 					GUI::output.emplace_back(buffer.data());
-					cout << buffer.data() << "\n";
 				}
 
 				GUI::FinishCompile();

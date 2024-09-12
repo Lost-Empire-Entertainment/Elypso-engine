@@ -15,11 +15,13 @@
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
 #include "gui.hpp"
+#include "configFile.hpp"
 
 using Graphics::Render;
 using Utils::File;
 using Utils::String;
 using Graphics::GUI;
+using Core::ConfigFile;
 
 using std::cout;
 using std::wstring;
@@ -167,6 +169,8 @@ namespace Core
 	void Compiler::MainShutdown()
 	{
 		cout << "Shutting down Compiler...\n";
+		
+		ConfigFile::SaveData();
 
 		GUI::GUIShutdown();
 		glfwTerminate();
