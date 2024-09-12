@@ -182,13 +182,6 @@ namespace Graphics::GUI
 				string newFilePath = 
 					texturesFolder + "\\" + textureFilename;
 				File::CopyFileOrFolder(assetPath, newFilePath);
-
-				/*
-				string renamedFilePath = 
-					path(Engine::projectPath).parent_path().string() 
-					+ "\\textures\\" + newName + extension;
-				File::MoveOrRenameFileOrFolder(newFilePath, renamedFilePath, true);
-				*/
 			}
 
 			renderImportAsset = false;

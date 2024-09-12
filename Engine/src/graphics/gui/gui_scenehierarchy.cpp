@@ -80,10 +80,21 @@ namespace Graphics::GUI
 
 			string name = obj->GetName();
 
+			if (obj == Select::selectedObj)
+			{
+				ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
+				ImGui::PushStyleColor(ImGuiCol_Text, color);
+			}
+
 			if (ImGui::Selectable(name.c_str()))
 			{
 				Select::selectedObj = obj;
 				Select::isObjectSelected = true;
+			}
+
+			if (obj == Select::selectedObj)
+			{
+				ImGui::PopStyleColor();
 			}
 
 			if (ImGui::BeginPopupContextItem())

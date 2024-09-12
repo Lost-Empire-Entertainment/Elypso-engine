@@ -105,9 +105,22 @@ namespace Graphics::GUI
 	void GUIProjectHierarchy::DisplayDirectoryContents(const string& directoryPath)
 	{
 		auto contents = GetDirectoryContents(directoryPath);
+		static string chosenEntry = "";
 
 		for (const auto& entry : contents)
 		{
+			if (chosenEntry == entry.path)
+			{
+				ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
+				ImGui::PushStyleColor(ImGuiCol_Text, color);
+			}
+
+			if (ImGui::Selectable(entry.name.c_str()))
+			{
+				chosenEntry = entry.path;
+				//cout << "clicked on " << entry.path << "\n";
+			}
+
 			if (is_directory(entry.path))
 			{
 				ImGuiTreeNodeFlags nodeFlags =
@@ -215,11 +228,6 @@ namespace Graphics::GUI
 			}
 			else if (is_regular_file(entry.path))
 			{
-				if (ImGui::Selectable(entry.name.c_str()))
-				{
-					//cout << "clicked on " << entry.path << "\n";
-				}
-
 				//hover over file to show its path in tooltip
 				if (ImGui::IsItemHovered()
 					&& showPathTooltip)
@@ -251,6 +259,11 @@ namespace Graphics::GUI
 
 					ImGui::EndPopup();
 				}
+			}
+
+			if (chosenEntry == entry.path)
+			{
+				ImGui::PopStyleColor();
 			}
 		}
 	}

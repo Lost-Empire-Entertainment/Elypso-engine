@@ -118,12 +118,22 @@ namespace Graphics::GUI
 			ImGui::GetWindowHeight() - 100);
 		if (ImGui::BeginChild("##content", childSize))
 		{
+			static string chosenEntry = "";
+
 			for (const auto& entry : content)
 			{
 				string name = path(entry).stem().string();
 
+				if (chosenEntry == name)
+				{
+					ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
+					ImGui::PushStyleColor(ImGuiCol_Text, color);
+				}
+
 				if (ImGui::Selectable(name.c_str()))
 				{
+					chosenEntry = name;
+
 					switch (type)
 					{
 					case Type::Textures:
@@ -145,6 +155,11 @@ namespace Graphics::GUI
 						break;
 					}
 					}
+				}
+
+				if (chosenEntry == name)
+				{
+					ImGui::PopStyleColor();
 				}
 			}
 		}
