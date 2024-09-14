@@ -259,6 +259,9 @@ namespace EngineFile
 		// CONFIG VALUES EDITABLE THROUGH ENGINE
 		//
 
+		keys.push_back("firstUse");
+			values.push_back("1");
+
 		keys.push_back("gui_fontScale");
 			values.push_back("1.5");
 
@@ -299,6 +302,8 @@ namespace EngineFile
 		keys.push_back("gui_projectHierarchy");
 			values.push_back("1");
 		keys.push_back("gui_sceneMenu");
+			values.push_back("0");
+		keys.push_back("gui_firstTime");
 			values.push_back("0");
 
 		ofstream configFile(configFilePath);
