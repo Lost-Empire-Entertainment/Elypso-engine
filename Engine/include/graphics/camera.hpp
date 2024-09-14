@@ -5,11 +5,15 @@
 
 #pragma once
 
+#include <string>
+
 #include "glm.hpp"
 #include "glfw3.h"
 
+using glm::mat4;
 using glm::vec3;
 using glm::radians;
+using std::to_string;
 
 namespace Graphics
 {

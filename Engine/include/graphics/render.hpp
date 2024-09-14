@@ -5,18 +5,17 @@
 
 #pragma once
 
-#include <vector>
+#include <map>
+#include <string>
 
 //engine
-#include "gameobject.hpp"
 #include "camera.hpp"
-#include "shader.hpp"
 
-using std::vector;
 using glm::vec3;
 using glm::mat4;
+using std::map;
+using std::string;
 
-using Graphics::Shape::GameObject;
 using Graphics::Camera;
 
 namespace Graphics
@@ -24,6 +23,17 @@ namespace Graphics
 	class Render
 	{
 	public:
+		static inline map<int, string> aspectRatio
+		{
+			{0, "Unlocked"},
+			{1, "16:9"},
+			{2, "16:10"},
+			{3, "21:9"},
+			{4, "32:9"},
+			{5, "4:3"},
+		};
+		static inline int currentIndex = 0;
+
 		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
 
 		static inline vec3 directionalDirection = vec3(-0.2f, -1.0f, -0.3f);
@@ -41,10 +51,12 @@ namespace Graphics
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);
 		static void SetWindowNameAsUnsaved(bool state);
 		static void WindowLoop();
+		static void RenderToImguiWindow();
 	private:
 		static void GLFWSetup();
 		static void WindowSetup();
 		static void GladSetup();
+		static void FramebufferSetup();
 		static void ContentSetup();
 	};
 }

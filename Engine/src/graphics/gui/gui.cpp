@@ -172,6 +172,7 @@ namespace Graphics::GUI
 			GUILinks::RenderLinksWindow();
 			GUIProjectItemsList::RenderProjectItemsList();
 		}
+		Render::RenderToImguiWindow();
 		Compilation::RenderBuildingWindow();
 
 		RenderVersionCheckWindow();

@@ -106,6 +106,19 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
+		ImGui::Text("Toggle aspect ratio");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
+		string currentAspectRatio = Render::aspectRatio[Render::currentIndex];
+		if (ImGui::Button(currentAspectRatio.c_str()))
+		{
+			Render::currentIndex++;
+			if (Render::currentIndex >= Render::aspectRatio.size())
+			{
+				Render::currentIndex = 0;
+			}
+		}
+
 		ImGui::Separator();
 
 		ImGui::Text("Camera near clip");

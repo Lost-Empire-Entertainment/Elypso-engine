@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <type_ptr.hpp>
+#include <iostream>
 
 //external
 #include "imgui.h"
