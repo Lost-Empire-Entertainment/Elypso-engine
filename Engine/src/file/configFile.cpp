@@ -265,6 +265,9 @@ namespace EngineFile
 		keys.push_back("window_vsync");
 			values.push_back("1");
 
+		keys.push_back("aspect_ratio");
+			values.push_back("1");
+
 		keys.push_back("camera_speedMultiplier");
 			values.push_back("1.0");
 		keys.push_back("camera_fov");

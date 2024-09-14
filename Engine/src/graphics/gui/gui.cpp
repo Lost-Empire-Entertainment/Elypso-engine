@@ -171,11 +171,19 @@ namespace Graphics::GUI
 			GUICredits::RenderCreditsWindow();
 			GUILinks::RenderLinksWindow();
 			GUIProjectItemsList::RenderProjectItemsList();
+
+			if (renderAboutWindow) ImGui::ShowAboutWindow();
+			if (renderDebugLogWindow) ImGui::ShowDebugLogWindow();
+			if (renderDemoWindow) ImGui::ShowDemoWindow();
+			if (renderIDStackWindow) ImGui::ShowIDStackToolWindow();
+			if (renderMetricsWindow) ImGui::ShowMetricsWindow();
+			if (renderStackToolWindow) ImGui::ShowStackToolWindow();
+			if (renderStyleEditorWindow) ImGui::ShowStyleEditor();
+			if (renderUserGuideWindow) ImGui::ShowUserGuide();
 		}
 		Render::RenderToImguiWindow();
 		Compilation::RenderBuildingWindow();
 
-		RenderVersionCheckWindow();
 		if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
 		if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
 
@@ -677,75 +685,6 @@ namespace Graphics::GUI
 		}
 
 		ImGui::EndMainMenuBar();
-	}
-
-	void EngineGUI::RenderVersionCheckWindow()
-	{
-		ImVec2 initialPos(400, 200);
-		ImVec2 initialSize(400, 400);
-		ImVec2 maxWindowSize(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y);
-		ImGui::SetNextWindowSizeConstraints(initialSize, maxWindowSize);
-		ImGui::SetNextWindowPos(initialPos, ImGuiCond_FirstUseEver);
-
-		ImGuiWindowFlags windowFlags =
-			ImGuiWindowFlags_NoCollapse |
-			ImGuiWindowFlags_NoDocking |
-			ImGuiWindowFlags_NoResize |
-			ImGuiWindowFlags_NoSavedSettings;
-
-		if (showVersionWindow
-			&& ImGui::Begin("Version", NULL, windowFlags))
-		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-			if (ImGui::Button("X"))
-			{
-				showVersionWindow = false;
-			}
-
-			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(versionCompare.c_str()).x) * 0.48f);
-			ImGui::SetCursorPosY((ImGui::GetWindowHeight() - ImGui::CalcTextSize(versionCompare.c_str()).y) * 0.35f);
-			ImGui::Text(versionCompare.c_str());
-
-			ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(versionConfirm.c_str()).x) * 0.48f);
-			ImGui::SetCursorPosY((ImGui::GetWindowHeight() - ImGui::CalcTextSize(versionConfirm.c_str()).y) * 0.45f);
-			ImGui::Text(versionConfirm.c_str());
-
-			if (outdatedVersion)
-			{
-				ImVec2 buttonSize(200, 50);
-
-				//move button to center and slightly down
-				ImVec2 buttonPos
-				(
-					(ImGui::GetWindowWidth() - buttonSize.x) * 0.5f,
-					(ImGui::GetWindowHeight() - buttonSize.y) * 0.7f
-				);
-
-				ImGui::SetCursorPos(buttonPos);
-
-				if (ImGui::Button("Get the latest version", buttonSize))
-				{
-					try
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::INPUT,
-							Type::DEBUG,
-							"User opened link to Github repository releases page.\n");
-						Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine/releases");
-					}
-					catch (const exception& e)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::INPUT,
-							Type::EXCEPTION,
-							"Failed to open link to Github repository releases page! " + string(e.what()) + "\n");
-					}
-				}
-			}
-
-			ImGui::End();
-		}
 	}
 
 	void EngineGUI::SaveBefore(SaveBeforeState saveBeforeState)

@@ -407,9 +407,7 @@ namespace Graphics
 			}
 
 			isSceneSelected = ImGui::IsWindowFocused();
-			isSceneHovered = ImGui::IsWindowHovered();
-			if (isSceneSelected
-				|| isSceneHovered)
+			if (isSceneSelected)
 			{
 				ImGui::CaptureMouseFromApp(false);
 				Input::SceneWindowInput();

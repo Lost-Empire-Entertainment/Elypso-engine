@@ -78,11 +78,11 @@ namespace Graphics::GUI
 		ImGui::Text("Current axis: %s", Input::axis.c_str());
 		ImGui::Text("Current tool: %s", string(magic_enum::enum_name(Input::objectAction)).c_str());
 
-		ImGui::Separator();
+		//
+		// RENDER SETTINGS
+		//
 
-		//
-		// CAMERA SETTINGS
-		//
+		ImGui::Separator();
 
 		ImGui::Text("Toggle VSync");
 		ImGui::SameLine();
@@ -95,6 +95,28 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
+		ImGui::Text("Toggle aspect ratio");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
+		Render::currentIndex = stoi(ConfigFile::GetValue("aspect_ratio"));
+		string aspectRatioValue = Render::aspectRatio[Render::currentIndex];
+		if (ImGui::Button(aspectRatioValue.c_str()))
+		{
+			Render::currentIndex++;
+			if (Render::currentIndex >= Render::aspectRatio.size())
+			{
+				Render::currentIndex = 0;
+			}
+			ConfigFile::SetValue("aspect_ratio", to_string(Render::currentIndex));
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		//
+		// CAMERA SETTINGS
+		//
+
+		ImGui::Separator();
+
 		ImGui::Text("FOV");
 		float fov = stof(ConfigFile::GetValue("camera_fov"));
 		if (ImGui::DragFloat("##fov", &fov, 0.1f, 70.0f, 110.0f))
@@ -105,21 +127,6 @@ namespace Graphics::GUI
 			ConfigFile::SetValue("camera_fov", to_string(fov));
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
-
-		ImGui::Text("Toggle aspect ratio");
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 100);
-		string currentAspectRatio = Render::aspectRatio[Render::currentIndex];
-		if (ImGui::Button(currentAspectRatio.c_str()))
-		{
-			Render::currentIndex++;
-			if (Render::currentIndex >= Render::aspectRatio.size())
-			{
-				Render::currentIndex = 0;
-			}
-		}
-
-		ImGui::Separator();
 
 		ImGui::Text("Camera near clip");
 		float nearClip = stof(ConfigFile::GetValue("camera_nearClip"));

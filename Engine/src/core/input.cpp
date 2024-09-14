@@ -120,16 +120,6 @@ namespace Core
                     }
                 }
             }
-            else if (Render::camera.cameraEnabled)
-            {
-                float currentSpeed = stof(ConfigFile::GetValue("camera_speedMultiplier"));
-                float newSpeed = newSpeed = currentSpeed + currentSpeed * combinedOffset;
-
-                if (newSpeed > 100.0f) newSpeed = 100.0f;
-                if (newSpeed < 0.1f) newSpeed = 0.1f;
-
-                ConfigFile::SetValue("camera_speedMultiplier", to_string(newSpeed));
-            }
         }
     }
 
@@ -514,12 +504,20 @@ namespace Core
 
     void Input::SceneWindowInput()
     {
+        DragCamera();
+        MoveCamera();
+        SetCameraSpeed();
+    }
+
+    void Input::DragCamera()
+    {
         Render::camera.cameraEnabled = ImGui::IsMouseDown(ImGuiMouseButton_Right);
 
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
             ImVec2 mouseDelta = ImGui::GetIO().MouseDelta;
 
+            //camera rotation with mouse drag
             if (mouseDelta.x != 0.0f
                 || mouseDelta.y != 0.0f)
             {
@@ -532,79 +530,98 @@ namespace Core
                     mouseDelta.x * sensitivity,
                     mouseDelta.y * sensitivity);
             }
+        }
+    }
 
-            if (Render::camera.cameraEnabled
-                && !startedHolding)
+    void Input::MoveCamera()
+    {
+        if (Render::camera.cameraEnabled
+            && !startedHolding)
+        {
+            startedHolding = true;
+            appliedUpdate = false;
+        }
+        if (!Render::camera.cameraEnabled
+            && (startedHolding
+            || (!startedHolding
+            && Camera::lastKnownRotation == vec3(0)
+            && Render::camera.GetCameraRotation() != vec3(0))))
+        {
+            Camera::lastKnownRotation = Render::camera.GetCameraRotation();
+            startedHolding = false;
+        }
+
+        if (Render::camera.cameraEnabled)
+        {
+            float moveSpeedMultiplier = stof(ConfigFile::GetValue("camera_speedMultiplier"));
+
+            bool isLeftShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift);
+            float currentSpeed = isLeftShiftPressed
+                ? static_cast<float>(2.0f * moveSpeedMultiplier * TimeManager::deltaTime)
+                : static_cast<float>(1.0f * moveSpeedMultiplier * TimeManager::deltaTime);
+
+            vec3 front = Render::camera.GetFront();
+            vec3 right = Render::camera.GetRight();
+
+            //camera forwards
+            if (ImGui::IsKeyDown(ImGuiKey_W))
             {
-                startedHolding = true;
-                appliedUpdate = false;
+                Render::camera.SetCameraPosition(
+                    Render::camera.GetCameraPosition()
+                    + Render::camera.cameraSpeed * currentSpeed * front);
             }
-            if (!Render::camera.cameraEnabled
-                && (startedHolding
-                || (!startedHolding
-                && Camera::lastKnownRotation == vec3(0)
-                && Render::camera.GetCameraRotation() != vec3(0))))
+            //camera backwards
+            if (ImGui::IsKeyDown(ImGuiKey_S))
             {
-                Camera::lastKnownRotation = Render::camera.GetCameraRotation();
-                startedHolding = false;
+                Render::camera.SetCameraPosition(
+                    Render::camera.GetCameraPosition()
+                    - Render::camera.cameraSpeed * currentSpeed * front);
             }
-
-            if (Render::camera.cameraEnabled)
+            //camera left
+            if (ImGui::IsKeyDown(ImGuiKey_A))
             {
-                float moveSpeedMultiplier = stof(ConfigFile::GetValue("camera_speedMultiplier"));
-
-                bool isLeftShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift);
-                float currentSpeed = Render::camera.cameraSpeed;
-                if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;
-                else                    currentSpeed = 1.0f * moveSpeedMultiplier;
-
-                vec3 front = Render::camera.GetFront();
-                vec3 right = Render::camera.GetRight();
-
-                //camera forwards
-                if (ImGui::IsKeyDown(ImGuiKey_W))
-                {
-                    Render::camera.SetCameraPosition(
-                        Render::camera.GetCameraPosition()
-                        + Render::camera.cameraSpeed * currentSpeed * front);
-                }
-                //camera backwards
-                if (ImGui::IsKeyDown(ImGuiKey_S))
-                {
-                    Render::camera.SetCameraPosition(
-                        Render::camera.GetCameraPosition()
-                        - Render::camera.cameraSpeed * currentSpeed * front);
-                }
-                //camera left
-                if (ImGui::IsKeyDown(ImGuiKey_A))
-                {
-                    Render::camera.SetCameraPosition(
-                        Render::camera.GetCameraPosition()
-                        - Render::camera.cameraSpeed * currentSpeed * right);
-                }
-                //camera right
-                if (ImGui::IsKeyDown(ImGuiKey_D))
-                {
-                    Render::camera.SetCameraPosition(
-                        Render::camera.GetCameraPosition()
-                        + Render::camera.cameraSpeed * currentSpeed * right);
-                }
-                //camera up
-                if (ImGui::IsKeyDown(ImGuiKey_E))
-                {
-                    Render::camera.SetCameraPosition(
-                        Render::camera.GetCameraPosition()
-                        + Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
-                }
-                //camera down
-                if (ImGui::IsKeyDown(ImGuiKey_Q))
-                {
-                    Render::camera.SetCameraPosition(
-                        Render::camera.GetCameraPosition()
-                        - Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
-                }
+                Render::camera.SetCameraPosition(
+                    Render::camera.GetCameraPosition()
+                    - Render::camera.cameraSpeed * currentSpeed * right);
             }
-            else increment = ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 1.0f : 0.1f;
+            //camera right
+            if (ImGui::IsKeyDown(ImGuiKey_D))
+            {
+                Render::camera.SetCameraPosition(
+                    Render::camera.GetCameraPosition()
+                    + Render::camera.cameraSpeed * currentSpeed * right);
+            }
+            //camera up
+            if (ImGui::IsKeyDown(ImGuiKey_E))
+            {
+                Render::camera.SetCameraPosition(
+                    Render::camera.GetCameraPosition()
+                    + Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
+            }
+            //camera down
+            if (ImGui::IsKeyDown(ImGuiKey_Q))
+            {
+                Render::camera.SetCameraPosition(
+                    Render::camera.GetCameraPosition()
+                    - Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
+            }
+        }
+        else increment = ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 1.0f : 0.1f;
+    }
+
+    void Input::SetCameraSpeed()
+    {
+        if (Render::camera.cameraEnabled)
+        {
+            float yoffset = ImGui::GetIO().MouseWheel;
+            float combinedOffset = increment * static_cast<float>(yoffset);
+            float currentSpeed = stof(ConfigFile::GetValue("camera_speedMultiplier"));
+            float newSpeed = newSpeed = currentSpeed + currentSpeed * combinedOffset;
+
+            if (newSpeed > 100.0f) newSpeed = 100.0f;
+            if (newSpeed < 0.1f) newSpeed = 0.1f;
+
+            ConfigFile::SetValue("camera_speedMultiplier", to_string(newSpeed));
         }
     }
 }

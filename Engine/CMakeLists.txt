@@ -72,6 +72,7 @@ list(APPEND SOURCE_FILES
 	${EXT_IMGUI_DIR}/imgui_impl_opengl3.cpp
 	${EXT_IMGUI_DIR}/imgui_tables.cpp
 	${EXT_IMGUI_DIR}/imgui_widgets.cpp
+	${EXT_IMGUI_DIR}/imgui_demo.cpp
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
 )
 

@@ -24,7 +24,6 @@ namespace Graphics
 	{
 	public:
 		static inline bool isSceneSelected;
-		static inline bool isSceneHovered;
 		static inline map<int, string> aspectRatio
 		{
 			{0, "Unlocked"},

@@ -54,5 +54,8 @@ namespace Core
         static void MouseMovementCallback(GLFWwindow* window, double xpos, double ypos);
 
         static void SceneWindowInput();
+        static void DragCamera();
+        static void MoveCamera();
+        static void SetCameraSpeed();
     };
 }

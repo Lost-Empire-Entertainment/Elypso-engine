@@ -19,6 +19,7 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "stringutils.hpp"
+#include "gui.hpp"
 
 using std::chrono::time_point_cast;
 using std::chrono::system_clock;
@@ -37,6 +38,7 @@ using Graphics::GUI::GUIConsole;
 using Core::Engine;
 using Graphics::Render;
 using Utils::String;
+using Graphics::GUI::EngineGUI;
 
 namespace Core
 {
@@ -185,10 +187,18 @@ namespace Core
         {
             stringstream ss;
             ss <<
-                "help - lists all console commands\n" <<
-                "qqq - quits the engine\n" <<
-                "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n" <<
-                "rc - resets the camera back to its original position and rotation\n";
+                "help - lists all console commands\n"
+                << "qqq - quits the engine\n"
+                << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
+                << "rc - resets the camera back to its original position and rotation\n"
+                << "saw - toggles between showing and not showing imgui about window\n"
+                << "sdlw - toggles between showing and not showing imgui debug log window\n"
+                << "sdw - toggles between showing and not showing imgui demo window\n"
+                << "sisw - toggles between showing and not showing imgui id stack window\n"
+                << "smw - toggles between showing and not showing imgui metrics window\n"
+                << "sstw - toggles between showing and not showing imgui stack tool window\n"
+                << "ssew - toggles between showing and not showing imgui style editor window\n"
+                << "sugw - toggles between showing and not showing imgui user guide window\n";
 
             WriteConsoleMessage(
                 Caller::INPUT,
@@ -197,7 +207,7 @@ namespace Core
                 true);
         }
         else if (cleanedCommands[0] == "qqq"
-            && cleanedCommands.size() == 1)
+                 && cleanedCommands.size() == 1)
         {
             WriteConsoleMessage(
                 Caller::INPUT,
@@ -206,9 +216,9 @@ namespace Core
             Engine::Shutdown();
         }
         else if (cleanedCommands[0] == "srm"
-            && (cleanedCommands[1] == "1"
-                || cleanedCommands[1] == "2")
-            && cleanedCommands.size() == 2)
+                 && (cleanedCommands[1] == "1"
+                 || cleanedCommands[1] == "2")
+                 && cleanedCommands.size() == 2)
         {
             wireframeMode = cleanedCommands[1] != "1";
             glPolygonMode(
@@ -224,7 +234,7 @@ namespace Core
                 "Set wireframe mode to " + wireframeModeValue + ".\n");
         }
         else if (cleanedCommands[0] == "rc"
-            && cleanedCommands.size() == 1)
+                 && cleanedCommands.size() == 1)
         {
             vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
             Render::camera.SetCameraPosition(newPosition);
@@ -235,6 +245,88 @@ namespace Core
                 Type::INFO,
                 "Reset camera position and rotation.\n");
         }
+
+        else if (cleanedCommands[0] == "saw"
+                 && cleanedCommands.size() == 1)
+        {
+            EngineGUI::renderAboutWindow = !EngineGUI::renderAboutWindow;
+
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set show about window to " + to_string(EngineGUI::renderAboutWindow) + "\n");
+        }
+        else if (cleanedCommands[0] == "sdlw"
+                 && cleanedCommands.size() == 1)
+        {
+            EngineGUI::renderDebugLogWindow = !EngineGUI::renderDebugLogWindow;
+
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set show debug log window to " + to_string(EngineGUI::renderDebugLogWindow) + "\n");
+        }
+        else if (cleanedCommands[0] == "sdw"
+                 && cleanedCommands.size() == 1)
+        {
+            EngineGUI::renderDemoWindow = !EngineGUI::renderDemoWindow;
+
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set show demo window to " + to_string(EngineGUI::renderDemoWindow) + "\n");
+        }
+        else if (cleanedCommands[0] == "sisw"
+                 && cleanedCommands.size() == 1)
+        {
+            EngineGUI::renderIDStackWindow = !EngineGUI::renderIDStackWindow;
+
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set show id stack window to " + to_string(EngineGUI::renderIDStackWindow) + "\n");
+        }
+        else if (cleanedCommands[0] == "smw"
+                 && cleanedCommands.size() == 1)
+        {
+            EngineGUI::renderMetricsWindow = !EngineGUI::renderMetricsWindow;
+
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set show metrics window to " + to_string(EngineGUI::renderMetricsWindow) + "\n");
+        }
+        else if (cleanedCommands[0] == "sstw"
+                 && cleanedCommands.size() == 1)
+        {
+                EngineGUI::renderStackToolWindow = !EngineGUI::renderStackToolWindow;
+
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::INFO,
+                    "Set show stack tools window to " + to_string(EngineGUI::renderStackToolWindow) + "\n");
+        }
+        else if (cleanedCommands[0] == "ssew"
+                 && cleanedCommands.size() == 1)
+        {
+                EngineGUI::renderStyleEditorWindow = !EngineGUI::renderStyleEditorWindow;
+
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::INFO,
+                    "Set show style editor window to " + to_string(EngineGUI::renderStyleEditorWindow) + "\n");
+        }
+        else if (cleanedCommands[0] == "sugw"
+                 && cleanedCommands.size() == 1)
+        {
+                EngineGUI::renderUserGuideWindow = !EngineGUI::renderUserGuideWindow;
+
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::INFO,
+                    "Set show user guide window to " + to_string(EngineGUI::renderUserGuideWindow) + "\n");
+        }
+
         else
         {
             WriteConsoleMessage(
