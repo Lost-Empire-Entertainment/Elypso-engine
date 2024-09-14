@@ -288,6 +288,8 @@ namespace EngineFile
 		keys.push_back("grid_maxDistance");
 			values.push_back("50.0");
 
+		keys.push_back("gui_sceneWindow");
+			values.push_back("1");
 		keys.push_back("gui_inspector");
 			values.push_back("1");
 		keys.push_back("gui_console");

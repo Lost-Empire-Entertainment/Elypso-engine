@@ -416,12 +416,20 @@ namespace Graphics
 				ImVec2(0, 1), 
 				ImVec2(1, 0));
 
-			if (showSceneWindowDebugMenu) SceneWindowDebugMenu();
+			ImVec2 windowStateBtnSize = ImVec2(25.0f, 25.0f);
+			float windowStateBtnRightPadding = 10.0f;
+			ImVec2 windowStateBtnPos(
+				ImGui::GetWindowSize().x - windowStateBtnSize.x - windowStateBtnRightPadding, 40.0f);
+			ImGui::SetCursorPos(windowStateBtnPos);
+			if (ImGui::Button("X", windowStateBtnSize))
+			{
+				ConfigFile::SetValue("gui_sceneWindow", "0");
+			}
 
 			ImVec2 toggleBtnSize = ImVec2(25.0f, 25.0f);
-			float rightPadding = 10.0f;
+			float toggleBtnRightPadding = 45.0f;
 			ImVec2 toggleBtnPos(
-				ImGui::GetWindowSize().x - toggleBtnSize.x - rightPadding, 40.0f);
+				ImGui::GetWindowSize().x - toggleBtnSize.x - toggleBtnRightPadding, 40.0f);
 			string toggleBtnText = showSceneWindowDebugMenu
 				? "v" : "<";
 			ImGui::SetCursorPos(toggleBtnPos);
@@ -430,6 +438,8 @@ namespace Graphics
 				showSceneWindowDebugMenu = !showSceneWindowDebugMenu;
 			}
 
+			if (showSceneWindowDebugMenu) SceneWindowDebugMenu();
+
 			ImGui::End();
 		}
 	}
@@ -437,7 +447,7 @@ namespace Graphics
 	void Render::SceneWindowDebugMenu()
 	{
 		ImVec2 childSize = ImVec2(300.0f, 500.0f);
-		float rightPadding = 40.0f;
+		float rightPadding = 80.0f;
 		ImVec2 childPos(
 			ImGui::GetWindowSize().x - childSize.x - rightPadding, 40.0f);
 		ImGui::SetCursorPos(childPos);

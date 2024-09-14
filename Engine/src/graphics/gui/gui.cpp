@@ -179,7 +179,11 @@ namespace Graphics::GUI
 			if (renderStyleEditorWindow) ImGui::ShowStyleEditor();
 			if (renderUserGuideWindow) ImGui::ShowUserGuide();
 		}
-		Render::RenderToImguiWindow();
+
+
+		bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
+		if (renderSceneWindow) Render::RenderToImguiWindow();
+
 		Compilation::RenderBuildingWindow();
 
 		if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
@@ -513,6 +517,12 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Window"))
 		{
+			if (ImGui::MenuItem("Scene window"))
+			{
+				ConfigFile::SetValue("gui_sceneWindow", "1");
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			if (ImGui::MenuItem("Scene hierarchy"))
 			{
 				ConfigFile::SetValue("gui_sceneHierarchy", "1");
