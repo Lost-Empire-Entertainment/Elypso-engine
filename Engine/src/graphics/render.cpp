@@ -406,6 +406,16 @@ namespace Graphics
 				glViewport(0, 0, framebufferWidth, framebufferHeight);
 			}
 
+			isSceneSelected = ImGui::IsWindowFocused();
+			isSceneHovered = ImGui::IsWindowHovered();
+			if (isSceneSelected
+				|| isSceneHovered)
+			{
+				ImGui::CaptureMouseFromApp(false);
+				Input::SceneWindowInput();
+			}
+			else ImGui::ResetMouseDragDelta();
+
 			//render to imgui image and flip the Y-axis
 			ImGui::Image(
 				(void*)(intptr_t)textureColorbuffer, 

@@ -76,82 +76,6 @@ namespace Core
 
     void Input::ProcessKeyboardInput(GLFWwindow* window)
     {
-        Render::camera.cameraEnabled =
-            glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS
-            && !ImGui::GetIO().WantCaptureMouse;
-
-        if (Render::camera.cameraEnabled
-            && !startedHolding)
-        {
-            startedHolding = true;
-            appliedUpdate = false;
-        }
-        if (!Render::camera.cameraEnabled
-            && (startedHolding
-            || (!startedHolding
-            && Camera::lastKnownRotation == vec3(0)
-            && Render::camera.GetCameraRotation() != vec3(0))))
-        {
-            Camera::lastKnownRotation = Render::camera.GetCameraRotation();
-            startedHolding = false;
-        }
-
-        if (Render::camera.cameraEnabled)
-        {
-            float moveSpeedMultiplier = stof(ConfigFile::GetValue("camera_speedMultiplier"));
-
-            bool isLeftShiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-            float currentSpeed = Render::camera.cameraSpeed;
-            if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;
-            else                    currentSpeed = 1.0f * moveSpeedMultiplier;
-
-            vec3 front = Render::camera.GetFront();
-            vec3 right = Render::camera.GetRight();
-
-            //camera forwards
-            if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            {
-                Render::camera.SetCameraPosition(
-                    Render::camera.GetCameraPosition()
-                    + Render::camera.cameraSpeed * currentSpeed * front);
-            }
-            //camera backwards
-            if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            {
-                Render::camera.SetCameraPosition(
-                    Render::camera.GetCameraPosition()
-                    - Render::camera.cameraSpeed * currentSpeed * front);
-            }
-            //camera left
-            if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            {
-                Render::camera.SetCameraPosition(
-                    Render::camera.GetCameraPosition()
-                    - Render::camera.cameraSpeed * currentSpeed * right);
-            }
-            //camera right
-            if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            {
-                Render::camera.SetCameraPosition(
-                    Render::camera.GetCameraPosition()
-                    + Render::camera.cameraSpeed * currentSpeed * right);
-            }
-            //camera up
-            if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-            {
-                Render::camera.SetCameraPosition(
-                    Render::camera.GetCameraPosition()
-                    + Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
-            }
-            //camera down
-            if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-            {
-                Render::camera.SetCameraPosition(
-                    Render::camera.GetCameraPosition()
-                    - Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
-            }
-        }
-        else increment = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 1.0f : 0.1f;
     }
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
@@ -586,62 +510,119 @@ namespace Core
 
     void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
     {
-        static bool cursorNormal;
+    }
 
-        if (Render::camera.cameraEnabled)
+    void Input::SceneWindowInput()
+    {
+        Render::camera.cameraEnabled = ImGui::IsMouseDown(ImGuiMouseButton_Right);
+
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
-            if (cursorNormal)
+            ImVec2 mouseDelta = ImGui::GetIO().MouseDelta;
+
+            if (mouseDelta.x != 0.0f
+                || mouseDelta.y != 0.0f)
             {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-                cursorNormal = false;
+                float sensitivity = 1.0f;
+
+                //invert Y-axis of mouse delta to work with inverted imgui scene window
+                mouseDelta.y = -mouseDelta.y;
+
+                Render::camera.RotateCamera(
+                    mouseDelta.x * sensitivity,
+                    mouseDelta.y * sensitivity);
             }
 
-            Render::camera.RotateCamera(xpos, ypos);
-
-            Render::camera.cameraSpeed = static_cast<float>(2.5f * TimeManager::deltaTime);
-        }
-        else
-        {
-            if (!cursorNormal)
+            if (Render::camera.cameraEnabled
+                && !startedHolding)
             {
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                cursorNormal = true;
+                startedHolding = true;
+                appliedUpdate = false;
+            }
+            if (!Render::camera.cameraEnabled
+                && (startedHolding
+                || (!startedHolding
+                && Camera::lastKnownRotation == vec3(0)
+                && Render::camera.GetCameraRotation() != vec3(0))))
+            {
+                Camera::lastKnownRotation = Render::camera.GetCameraRotation();
+                startedHolding = false;
             }
 
-            ImGui::GetIO().MousePos = ImVec2(static_cast<float>(xpos), static_cast<float>(ypos));
+            if (Render::camera.cameraEnabled)
+            {
+                float moveSpeedMultiplier = stof(ConfigFile::GetValue("camera_speedMultiplier"));
+
+                bool isLeftShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift);
+                float currentSpeed = Render::camera.cameraSpeed;
+                if (isLeftShiftPressed) currentSpeed = 2.0f * moveSpeedMultiplier;
+                else                    currentSpeed = 1.0f * moveSpeedMultiplier;
+
+                vec3 front = Render::camera.GetFront();
+                vec3 right = Render::camera.GetRight();
+
+                //camera forwards
+                if (ImGui::IsKeyDown(ImGuiKey_W))
+                {
+                    Render::camera.SetCameraPosition(
+                        Render::camera.GetCameraPosition()
+                        + Render::camera.cameraSpeed * currentSpeed * front);
+                }
+                //camera backwards
+                if (ImGui::IsKeyDown(ImGuiKey_S))
+                {
+                    Render::camera.SetCameraPosition(
+                        Render::camera.GetCameraPosition()
+                        - Render::camera.cameraSpeed * currentSpeed * front);
+                }
+                //camera left
+                if (ImGui::IsKeyDown(ImGuiKey_A))
+                {
+                    Render::camera.SetCameraPosition(
+                        Render::camera.GetCameraPosition()
+                        - Render::camera.cameraSpeed * currentSpeed * right);
+                }
+                //camera right
+                if (ImGui::IsKeyDown(ImGuiKey_D))
+                {
+                    Render::camera.SetCameraPosition(
+                        Render::camera.GetCameraPosition()
+                        + Render::camera.cameraSpeed * currentSpeed * right);
+                }
+                //camera up
+                if (ImGui::IsKeyDown(ImGuiKey_E))
+                {
+                    Render::camera.SetCameraPosition(
+                        Render::camera.GetCameraPosition()
+                        + Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
+                }
+                //camera down
+                if (ImGui::IsKeyDown(ImGuiKey_Q))
+                {
+                    Render::camera.SetCameraPosition(
+                        Render::camera.GetCameraPosition()
+                        - Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
+                }
+            }
+            else increment = ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 1.0f : 0.1f;
         }
     }
 }
 
 namespace Graphics
 {
-    void Camera::RotateCamera(double xpos, double ypos)
+    void Camera::RotateCamera(double deltaX, double deltaY)
     {
         if (Render::camera.cameraEnabled)
         {
-            if (!Input::appliedUpdate)
-            {
-                Render::camera.SetCameraRotation(lastKnownRotation);
+            deltaX *= Render::camera.sensitivity;
+            deltaY *= Render::camera.sensitivity;
 
-                Render::camera.lastX = xpos;
-                Render::camera.lastY = ypos;
+            Render::camera.yaw += static_cast<float>(deltaX);
+            Render::camera.pitch += static_cast<float>(deltaY);
 
-                Input::appliedUpdate = true;
-            }
-
-            double xOffset = xpos - Render::camera.lastX;
-            double yOffset = Render::camera.lastY - ypos;
-
-            Render::camera.lastX = xpos;
-            Render::camera.lastY = ypos;
-
-            xOffset *= Render::camera.sensitivity;
-            yOffset *= Render::camera.sensitivity;
-
-            Render::camera.yaw += static_cast<float>(xOffset);
-            Render::camera.pitch += static_cast<float>(yOffset);
-
-            if (Render::camera.yaw > 359.99f
+            //clamp yaw and pitch to prevent unnatural rotation
+            if (Render::camera.yaw > 359.99f 
                 || Render::camera.yaw < -359.99f)
             {
                 Render::camera.yaw = 0.0f;
@@ -649,6 +630,7 @@ namespace Graphics
             if (Render::camera.pitch > 89.99f) Render::camera.pitch = 89.99f;
             if (Render::camera.pitch < -89.99f) Render::camera.pitch = -89.99f;
 
+            //update camera front vector based on new yaw and pitch
             vec3 front{};
             front.x = cos(radians(Render::camera.yaw)) * cos(radians(Render::camera.pitch));
             front.y = sin(radians(Render::camera.pitch));
