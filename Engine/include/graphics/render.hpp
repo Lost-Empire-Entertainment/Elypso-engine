@@ -23,6 +23,8 @@ namespace Graphics
 	class Render
 	{
 	public:
+		static inline bool waitBeforeCountsUpdate;
+
 		static inline bool isSceneSelected;
 		static inline map<int, string> aspectRatio
 		{
@@ -53,11 +55,20 @@ namespace Graphics
 		static void SetWindowNameAsUnsaved(bool state);
 		static void WindowLoop();
 		static void RenderToImguiWindow();
+
+		static void UpdateCounts();
 	private:
+		static inline bool showSceneWindowDebugMenu = true;
+		static inline int objectsCount = 0;
+		static inline int verticesCount = 0;
+
 		static void GLFWSetup();
 		static void WindowSetup();
 		static void GladSetup();
 		static void FramebufferSetup();
 		static void ContentSetup();
+
+		static void SceneWindowDebugMenu();
+
 	};
 }

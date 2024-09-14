@@ -16,7 +16,6 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "gui.hpp"
-#include "gui_floatingdebugmenu.hpp"
 #include "gui_console.hpp"
 #include "gui_settings.hpp"
 #include "gui_inspector.hpp"
@@ -158,7 +157,6 @@ namespace Graphics::GUI
 
 		if (!Compilation::renderBuildingWindow)
 		{
-			GUIFloatingDebugMenu::RenderFloatingDebugMenu();
 			GUIConsole::RenderConsole();
 			GUISettings::RenderSettings();
 			GUIInspector::RenderInspector();

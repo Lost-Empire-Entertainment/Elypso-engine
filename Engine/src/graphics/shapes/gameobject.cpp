@@ -25,7 +25,6 @@
 #include "sceneFile.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
-#include "gui_floatingdebugmenu.hpp"
 
 using std::cout;
 using std::endl;
@@ -47,7 +46,6 @@ using ConsoleType = Core::ConsoleManager::Type;
 using EngineFile::SceneFile;
 using Utils::String;
 using Utils::File;
-using Graphics::GUI::GUIFloatingDebugMenu;
 
 namespace Graphics::Shape
 {
@@ -186,7 +184,7 @@ namespace Graphics::Shape
 			SceneFile::SaveScene();
 		}
 
-		GUIFloatingDebugMenu::UpdateCounts();
+		Render::UpdateCounts();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

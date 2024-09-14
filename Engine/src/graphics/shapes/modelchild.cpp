@@ -20,7 +20,6 @@
 #include "core.hpp"
 #include "console.hpp"
 #include "selectobject.hpp"
-#include "gui_floatingdebugmenu.hpp"
 
 using std::cout;
 using std::endl;
@@ -44,7 +43,6 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Physics::Select;
-using Graphics::GUI::GUIFloatingDebugMenu;
 
 namespace Graphics::Shape
 {
@@ -145,7 +143,7 @@ namespace Graphics::Shape
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;
 
-		GUIFloatingDebugMenu::UpdateCounts();
+		Render::UpdateCounts();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

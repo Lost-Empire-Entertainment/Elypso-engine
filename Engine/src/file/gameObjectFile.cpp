@@ -19,8 +19,8 @@
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
-#include "gui_floatingdebugmenu.hpp"
 #include "collision.hpp"
+#include "render.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -41,8 +41,8 @@ using Graphics::Shape::Material;
 using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
-using Graphics::GUI::GUIFloatingDebugMenu;
 using Physics::Select;
+using Graphics::Render;
 
 namespace EngineFile
 {
@@ -210,7 +210,7 @@ namespace EngineFile
 			Type::DEBUG,
 			"Started loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		GUIFloatingDebugMenu::waitBeforeUpdate = true;
+		 Render::waitBeforeCountsUpdate = true;
 
 		for (const auto& file : directory_iterator(targetPath))
 		{
@@ -288,8 +288,8 @@ namespace EngineFile
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
 
-		GUIFloatingDebugMenu::waitBeforeUpdate = false;
-		GUIFloatingDebugMenu::UpdateCounts();
+		Render::waitBeforeCountsUpdate = false;
+		Render::UpdateCounts();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
