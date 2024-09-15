@@ -493,7 +493,6 @@ namespace Graphics
 				? 0
 				: 400;
 			int windowSizeXLimit = 1200 - debugWindowAddition - leftCornerContentAddition - actionButtonsAddition;
-			cout << "window size limit is " << windowSizeXLimit << "\n";
 
 			if (windowSize.x >= windowSizeXLimit
 				&& windowSize.y > 400)
