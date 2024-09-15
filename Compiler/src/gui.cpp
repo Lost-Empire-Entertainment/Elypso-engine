@@ -343,6 +343,8 @@ namespace Graphics
 				}
 				else
 				{
+					output.clear();
+
 					string msg = "---- Started clean rebuilding " + targetName;
 
 					cout << msg << "\n";
@@ -379,6 +381,8 @@ namespace Graphics
 				}
 				else
 				{
+					output.clear();
+
 					string msg = "---- Started compiling " + targetName;
 
 					cout << msg << "\n";

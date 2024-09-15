@@ -59,6 +59,7 @@ namespace Graphics
 		static void UpdateCounts();
 	private:
 		static inline bool showSceneWindowDebugMenu = true;
+		static inline bool showLeftCornerContent = true;
 		static inline int objectsCount = 0;
 		static inline int verticesCount = 0;
 
@@ -69,6 +70,7 @@ namespace Graphics
 		static void ContentSetup();
 
 		static void SceneWindowDebugMenu();
-
+		static void SceneWindowLeftCornerContent();
+		static void SceneWindowActionButtons();
 	};
 }

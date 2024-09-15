@@ -32,6 +32,7 @@
 #include "input.hpp"
 #include "stringUtils.hpp"
 #include "shader.hpp"
+#include "selectobject.hpp"
 
 using glm::perspective;
 using glm::radians;
@@ -59,6 +60,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::ConfigFile;
 using Utils::String;
+using Physics::Select;
 
 namespace Graphics
 {
@@ -323,7 +325,7 @@ namespace Graphics
 	void Render::RenderToImguiWindow()
 	{
 		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(5000, 5000));
-		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
@@ -431,10 +433,6 @@ namespace Graphics
 						&& y >= 0
 						&& y <= renderSize.y)
 					{
-						cout << "clicked at x("
-							<< to_string(x) << "), y("
-							<< to_string(y) << ")...\n";
-
 						Input::ObjectInteraction(renderSize.x, renderSize.y, x, y);
 					}
 				}
@@ -458,19 +456,71 @@ namespace Graphics
 				ConfigFile::SetValue("gui_sceneWindow", "0");
 			}
 
-			ImVec2 toggleBtnSize = ImVec2(25.0f, 25.0f);
-			float toggleBtnRightPadding = 45.0f;
-			ImVec2 toggleBtnPos(
-				ImGui::GetWindowSize().x - toggleBtnSize.x - toggleBtnRightPadding, 40.0f);
-			string toggleBtnText = showSceneWindowDebugMenu
-				? "v" : "<";
-			ImGui::SetCursorPos(toggleBtnPos);
-			if (ImGui::Button(toggleBtnText.c_str(), toggleBtnSize))
+			ImVec2 rightToggleBtnSize = ImVec2(25.0f, 25.0f);
+			float rightToggleBtnRightPadding = 45.0f;
+			ImVec2 rightToggleBtnPos(
+				ImGui::GetWindowSize().x - rightToggleBtnSize.x - rightToggleBtnRightPadding, 40.0f);
+			string rightToggleBtnText = showSceneWindowDebugMenu
+				? "v##right" : "<##right";
+			ImGui::SetCursorPos(rightToggleBtnPos);
+			if (ImGui::Button(rightToggleBtnText.c_str(), rightToggleBtnSize))
 			{
 				showSceneWindowDebugMenu = !showSceneWindowDebugMenu;
 			}
 
-			if (showSceneWindowDebugMenu) SceneWindowDebugMenu();
+			ImVec2 leftToggleBtnSize = ImVec2(25.0f, 25.0f);
+			float leftToggleBtnRightPadding = 10.0f;
+			ImVec2 leftToggleBtnPos(leftToggleBtnRightPadding, 40.0f);
+			string leftToggleBtnText = showLeftCornerContent
+				? "v##left" : ">##left";
+			ImGui::SetCursorPos(leftToggleBtnPos);
+			if (ImGui::Button(leftToggleBtnText.c_str(), leftToggleBtnSize))
+			{
+				showLeftCornerContent = !showLeftCornerContent;
+			}
+
+			//scene window buttons and interactables are not rendered 
+			//if window size is smaller than minimum required
+			ImVec2 windowSize = ImGui::GetWindowSize();
+			int debugWindowAddition = showSceneWindowDebugMenu
+				? 0
+				: 400;
+			int leftCornerContentAddition = showLeftCornerContent
+				? 0
+				: 400;
+			bool actionButtonsTrue = Select::selectedObj != nullptr;
+			int actionButtonsAddition = actionButtonsTrue
+				? 0
+				: 400;
+			int windowSizeXLimit = 1200 - debugWindowAddition - leftCornerContentAddition - actionButtonsAddition;
+			cout << "window size limit is " << windowSizeXLimit << "\n";
+
+			if (windowSize.x >= windowSizeXLimit
+				&& windowSize.y > 400)
+			{
+				if (showSceneWindowDebugMenu) SceneWindowDebugMenu();
+
+				if (showLeftCornerContent)
+				{
+					SceneWindowLeftCornerContent();
+
+					if (Select::selectedObj != nullptr
+						&& Select::isObjectSelected)
+					{
+						ImGui::SetCursorPos(ImVec2(350, 40));
+						SceneWindowActionButtons();
+					}
+				}
+				else
+				{
+					if (Select::selectedObj != nullptr
+						&& Select::isObjectSelected)
+					{
+						ImGui::SetCursorPos(ImVec2(45, 40));
+						SceneWindowActionButtons();
+					}
+				}
+			}
 
 			ImGui::End();
 		}
@@ -478,46 +528,19 @@ namespace Graphics
 
 	void Render::SceneWindowDebugMenu()
 	{
-		ImVec2 childSize = ImVec2(300.0f, 500.0f);
+		ImVec2 childSize = ImVec2(300.0f, 300.0f);
 		float rightPadding = 80.0f;
 		ImVec2 childPos(
 			ImGui::GetWindowSize().x - childSize.x - rightPadding, 40.0f);
 		ImGui::SetCursorPos(childPos);
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 0.4f));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 0.8f));
 
 		if (ImGui::BeginChild("##sceneWindowDebugMenu", childSize))
 		{
 			//
-			// GENERAL
-			//
-
-			ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
-
-			string strObjectsCount = "Objects: " + to_string(objectsCount);
-			ImGui::Text(strObjectsCount.c_str());
-			string strVerticesCount = "Vertices: " + to_string(verticesCount);
-			ImGui::Text(strVerticesCount.c_str());
-
-			ImGui::Text(
-				"Position: %.2f, %.2f, %.2f",
-				Render::camera.GetCameraPosition().x,
-				Render::camera.GetCameraPosition().y,
-				Render::camera.GetCameraPosition().z);
-			ImGui::Text(
-				"Angle: %.2f, %.2f, %.2f",
-				Render::camera.GetCameraRotation().x,
-				Render::camera.GetCameraRotation().y,
-				Render::camera.GetCameraRotation().z);
-
-			ImGui::Text("Current axis: %s", Input::axis.c_str());
-			ImGui::Text("Current tool: %s", string(magic_enum::enum_name(Input::objectAction)).c_str());
-
-			//
 			// RENDER SETTINGS
 			//
-
-			ImGui::Separator();
 
 			ImGui::Text("Toggle VSync");
 			ImGui::SameLine();
@@ -666,6 +689,133 @@ namespace Graphics
 		}
 
 		ImGui::PopStyleColor();
+	}
+
+	void Render::SceneWindowLeftCornerContent()
+	{
+		ImVec2 childSize = ImVec2(300.0f, 150.0f);
+		float leftPadding = 45.0f;
+		ImVec2 childPos(leftPadding, 40.0f);
+		ImGui::SetCursorPos(childPos);
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 0.8f));
+
+		if (ImGui::BeginChild("##sceneWindowLeftCornerContent", childSize))
+		{
+			ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
+
+			string strObjectsCount = "Objects: " + to_string(objectsCount);
+			ImGui::Text(strObjectsCount.c_str());
+			string strVerticesCount = "Vertices: " + to_string(verticesCount);
+			ImGui::Text(strVerticesCount.c_str());
+
+			ImGui::Text(
+				"Position: %.2f, %.2f, %.2f",
+				Render::camera.GetCameraPosition().x,
+				Render::camera.GetCameraPosition().y,
+				Render::camera.GetCameraPosition().z);
+			ImGui::Text(
+				"Angle: %.2f, %.2f, %.2f",
+				Render::camera.GetCameraRotation().x,
+				Render::camera.GetCameraRotation().y,
+				Render::camera.GetCameraRotation().z);
+
+			ImGui::EndChild();
+		}
+
+		ImGui::PopStyleColor();
+	}
+
+	void Render::SceneWindowActionButtons()
+	{
+		ImVec2 actionButtonSize = ImVec2(80, 30);
+		ImVec2 axisButtonSize = ImVec2(30, 30);
+
+		if (Input::objectAction == Input::ObjectAction::move)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+		}
+		if (ImGui::Button("Move", actionButtonSize))
+		{
+			Input::objectAction = Input::ObjectAction::move;
+		}
+		if (Input::objectAction == Input::ObjectAction::move)
+		{
+			ImGui::PopStyleColor();
+		}
+
+		ImGui::SameLine();
+		if (Input::objectAction == Input::ObjectAction::rotate)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+		}
+		if (ImGui::Button("Rotate", actionButtonSize))
+		{
+			Input::objectAction = Input::ObjectAction::rotate;
+		}
+		if (Input::objectAction == Input::ObjectAction::rotate)
+		{
+			ImGui::PopStyleColor();
+		}
+
+		ImGui::SameLine();
+		if (Input::objectAction == Input::ObjectAction::scale)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+		}
+		if (ImGui::Button("Scale", actionButtonSize))
+		{
+			Input::objectAction = Input::ObjectAction::scale;
+		}
+		if (Input::objectAction == Input::ObjectAction::scale)
+		{
+			ImGui::PopStyleColor();
+		}
+
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(20.0f, 0.0f));
+
+		ImGui::SameLine();
+		if (Input::axis == "X")
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+		}
+		if (ImGui::Button("X", axisButtonSize))
+		{
+			Input::axis = "X";
+		}
+		if (Input::axis == "X")
+		{
+			ImGui::PopStyleColor();
+		}
+
+		ImGui::SameLine();
+		if (Input::axis == "Y")
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+		}
+		if (ImGui::Button("Y", axisButtonSize))
+		{
+			Input::axis = "Y";
+		}
+		if (Input::axis == "Y")
+		{
+			ImGui::PopStyleColor();
+		}
+
+		ImGui::SameLine();
+		if (Input::axis == "Z")
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+		}
+		if (ImGui::Button("Z", axisButtonSize))
+		{
+			Input::axis = "Z";
+		}
+		if (Input::axis == "Z")
+		{
+			ImGui::PopStyleColor();
+		}
 	}
 
 	void Render::UpdateCounts()

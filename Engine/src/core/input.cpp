@@ -474,30 +474,36 @@ namespace Core
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
         {
-            Select::Ray ray = Select::RayFromMouse(width, height, posX, posY, Render::view, Render::projection);
+            Select::Ray ray = Select::RayFromMouse(
+                width, 
+                height, 
+                posX, 
+                posY, 
+                Render::view, 
+                Render::projection);
 
             vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
             int index = Select::CheckRayObjectIntersections(ray, objects);
-
-            cout << "index is " << index << "\n";
 
             //if user did not press any valid gameobject
             if (index == -1)
             {
                 Select::isObjectSelected = false;
                 Select::selectedObj = nullptr;
+
+                objectAction = ObjectAction::none;
+                axis = "";
             }
             else
             {
-                if (objects[index] != Select::selectedObj
-                    || Select::selectedObj == nullptr)
-                {
-                    objectAction = ObjectAction::none;
-                }
-
                 Select::selectedObj = objects[index];
                 Select::isObjectSelected = true;
-                Input::objectAction = Input::ObjectAction::move;
+
+                if (objectAction == ObjectAction::none)
+                {
+                    objectAction = ObjectAction::move;
+                }
+                if (axis == "") axis = "X";
             }
         }
     }

@@ -34,7 +34,7 @@ namespace Core
     public:
         static inline bool appliedUpdate;
 
-        static inline string axis = "X";
+        static inline string axis = "";
         enum class ObjectAction
         {
             none,
