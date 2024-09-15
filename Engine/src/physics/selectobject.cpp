@@ -22,10 +22,8 @@ using Type = Graphics::Shape::Mesh::MeshType;
 
 namespace Physics
 {
-	Select::Ray Select::RayFromMouse(double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix)
+	Select::Ray Select::RayFromMouse(float width, float height, double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix)
 	{
-		int width, height;
-		glfwGetWindowSize(Render::window, &width, &height);
 		float x = (2.0f * static_cast<float>(mouseX)) / width - 1.0f;
 		float y = 1.0f - (2.0f * static_cast<float>(mouseY)) / height;
 
@@ -41,27 +39,19 @@ namespace Physics
 
 	int Select::CheckRayObjectIntersections(const Ray& ray, const vector<shared_ptr<GameObject>>& objects)
 	{
-		//if user pressed left mouse button over any imgui window
-		if (ImGui::GetIO().WantCaptureMouse)
+		for (int i = 0; i < objects.size(); i++)
 		{
-			return -2;
-		}
-		else
-		{
-			for (int i = 0; i < objects.size(); i++)
+			Type objType = objects[i]->GetMesh()->GetMeshType();
+			if ((objType == Type::model
+				|| objType == Type::point_light
+				|| objType == Type::spot_light)
+				&& Collision::IsRayIntersectingCube(ray, objects[i]))
 			{
-				Type objType = objects[i]->GetMesh()->GetMeshType();
-				if ((objType == Type::model
-					|| objType == Type::point_light
-					|| objType == Type::spot_light)
-					&& Collision::IsRayIntersectingCube(ray, objects[i]))
-				{
-					return i;
-				}
+				return i;
 			}
-
-			//if user did not press any valid gameobject
-			return -1;
 		}
+
+		//if user did not press any valid gameobject
+		return -1;
 	}
 }

@@ -34,7 +34,14 @@ namespace Physics
 		/// <summary>
 		/// Calculate a ray from mouse coordinates.
 		/// </summary>
-		static Ray RayFromMouse(double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix);
+		/// <param name="width">Target imgui window width</param>
+		/// <param name="height">Target imgui window height</param>
+		/// <param name="mouseX">Mouse X position</param>
+		/// <param name="mouseY">Mouse Y position</param>
+		/// <param name="viewMatrix">Target camera view matrix</param>
+		/// <param name="projectionMatrix">Target camera projection matrix</param>
+		/// <returns></returns>
+		static Ray RayFromMouse(float width, float height, double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix);
 
 		/// <summary>
 		/// Check ray-object intersections.

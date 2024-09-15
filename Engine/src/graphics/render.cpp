@@ -406,6 +406,38 @@ namespace Graphics
 			{
 				ImGui::CaptureMouseFromApp(false);
 				Input::SceneWindowInput();
+
+				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+				{
+					double x, y;
+
+					glfwGetCursorPos(window, &x, &y);
+					ImVec2 scenePos = ImGui::GetWindowPos();
+					ImVec2 sceneSize = ImGui::GetWindowSize();
+
+					x -= scenePos.x;
+					y -= scenePos.y;
+
+					ImVec2 imagePos = ImVec2(
+						contentRegionMin.x + padding.x,
+						contentRegionMin.y + padding.y);
+
+					x -= imagePos.x;
+					y -= imagePos.y;
+
+					//check if the click is within the bounds of the final rendered image
+					if (x >= 0
+						&& x <= renderSize.x
+						&& y >= 0
+						&& y <= renderSize.y)
+					{
+						cout << "clicked at x("
+							<< to_string(x) << "), y("
+							<< to_string(y) << ")...\n";
+
+						Input::ObjectInteraction(renderSize.x, renderSize.y, x, y);
+					}
+				}
 			}
 			else ImGui::ResetMouseDragDelta();
 
@@ -452,7 +484,7 @@ namespace Graphics
 			ImGui::GetWindowSize().x - childSize.x - rightPadding, 40.0f);
 		ImGui::SetCursorPos(childPos);
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 0.4f));
 
 		if (ImGui::BeginChild("##sceneWindowDebugMenu", childSize))
 		{

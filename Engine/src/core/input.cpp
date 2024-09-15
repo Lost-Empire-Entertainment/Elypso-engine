@@ -456,29 +456,33 @@ namespace Core
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
-        if (!Compilation::renderBuildingWindow
-            && !Render::camera.cameraEnabled
-            && button == GLFW_MOUSE_BUTTON_LEFT 
-            && action == GLFW_PRESS)
-        {
-            double mouseX, mouseY;
-            glfwGetCursorPos(Render::window, &mouseX, &mouseY);
+    }
 
-            Select::Ray ray = Select::RayFromMouse(mouseX, mouseY, Render::view, Render::projection);
+    void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
+    {
+    }
+
+    void Input::SceneWindowInput()
+    {
+        DragCamera();
+        MoveCamera();
+        SetCameraSpeed();
+    }
+
+    void Input::ObjectInteraction(float width, float height, double posX, double posY)
+    {
+        if (!Compilation::renderBuildingWindow
+            && !Render::camera.cameraEnabled)
+        {
+            Select::Ray ray = Select::RayFromMouse(width, height, posX, posY, Render::view, Render::projection);
 
             vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
             int index = Select::CheckRayObjectIntersections(ray, objects);
 
-            //if user pressed left mouse button over any imgui window
-            if (index == -2)
-            {
-                if (!Select::isObjectSelected)
-                {
-                    Select::isObjectSelected;
-                }
-            }
+            cout << "index is " << index << "\n";
+
             //if user did not press any valid gameobject
-            else if (index == -1)
+            if (index == -1)
             {
                 Select::isObjectSelected = false;
                 Select::selectedObj = nullptr;
@@ -496,17 +500,6 @@ namespace Core
                 Input::objectAction = Input::ObjectAction::move;
             }
         }
-    }
-
-    void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
-    {
-    }
-
-    void Input::SceneWindowInput()
-    {
-        DragCamera();
-        MoveCamera();
-        SetCameraSpeed();
     }
 
     void Input::DragCamera()
