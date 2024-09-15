@@ -255,6 +255,26 @@ namespace Core
                         string destinationPath = targetPath + "\\" + targetName + extension;
                         File::CopyFileOrFolder(originPath, destinationPath);
 
+                        string diffTexturePath = copiedObject["diffuseTexture"];
+                        if (diffTexturePath != "DEFAULTDIFF")
+                        {
+                            string diffTextureFile = path(diffTexturePath).filename().string();
+                            string diffDestinationPath = targetPath + "\\" + diffTextureFile;
+
+                            File::CopyFileOrFolder(diffTexturePath, diffDestinationPath);
+                        }
+
+                        string specTexturePath = copiedObject["specularTexture"];
+                        if (specTexturePath != "DEFAULTSPEC")
+                        {
+                            string specTextureFile = path(specTexturePath).filename().string();
+                            string specDestinationPath = targetPath + "\\" + specTextureFile;
+
+                            File::CopyFileOrFolder(specTexturePath, specDestinationPath);
+                        }
+
+                        cout << "---- copied\n" << originPath << "\nto\n" << targetPath << "\n";
+
                         Model::Initialize(
                             newPos,
                             rot,
@@ -262,8 +282,8 @@ namespace Core
                             copiedObject["directory"],
                             copiedObject["vertexShader"],
                             copiedObject["fragmentShader"],
-                            copiedObject["diffuseTexture"],
-                            copiedObject["specularTexture"],
+                            diffTexturePath,
+                            specTexturePath,
                             copiedObject["normalTexture"],
                             copiedObject["heightTexture"],
                             stof(copiedObject["shininess"]),
