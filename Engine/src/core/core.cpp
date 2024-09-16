@@ -219,14 +219,14 @@ namespace Core
 		// SET PROJECT FOLDER PATH
 		//
 
-		ifstream projectFile(filesPath + "\\project.txt");
+		ifstream projectFile(docsPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
 			CreateErrorPopup(
 				"Failed to open project file! Error code: F0005");
 		}
 
-		output = "Project file path: " + filesPath + "\\project.txt" + "\n\n";
+		output = "Project file path: " + docsPath + "\\project.txt" + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
@@ -426,11 +426,18 @@ namespace Core
 			ConsoleManager::PrintLogsToBuffer();
 		}
 
-		while (!glfwWindowShouldClose(Render::window))
+		isEngineRunning = true;
+
+		while (isEngineRunning)
 		{
 			TimeManager::UpdateDeltaTime();
-
 			Render::WindowLoop();
+
+			// Check if the window should close (e.g., user closed the window)
+			if (glfwWindowShouldClose(Render::window))
+			{
+				isEngineRunning = false;
+			}
 		}
 	}
 
@@ -498,12 +505,13 @@ namespace Core
 
 	void Engine::Shutdown(bool immediate)
 	{
+		isEngineRunning = false;
+
 		if (immediate)
 		{
 			ConsoleManager::CloseLogger();
 			EngineGUI::Shutdown();
 			glfwTerminate();
-			ExitProcess(1);
 		}
 		else
 		{

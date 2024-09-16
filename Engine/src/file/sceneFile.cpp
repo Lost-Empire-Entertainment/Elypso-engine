@@ -183,7 +183,7 @@ namespace EngineFile
 
 			//update project file originating from hub 
 			//to ensure currently opened scene is always opened when hub opens engine
-			string projectFilePath = Engine::filesPath + "\\project.txt";
+			string projectFilePath = Engine::docsPath + "\\project.txt";
 			File::DeleteFileOrfolder(projectFilePath);
 			ofstream projFile(projectFilePath);
 

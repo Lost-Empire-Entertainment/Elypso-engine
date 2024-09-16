@@ -44,6 +44,8 @@ namespace Graphics::GUI
 		static void Render();
 		static void Shutdown();
 	private:
+		static inline bool isImguiInitialized;
+
 		enum class SaveBeforeState
 		{
 			sceneSwitch,

@@ -127,6 +127,8 @@ namespace Graphics::GUI
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		io.FontGlobalScale = stof(ConfigFile::GetValue("gui_fontScale"));
+
+		isImguiInitialized = true;
 	}
 
 	ImVec2 EngineGUI::CenterWindow(const ImVec2& size)
@@ -145,60 +147,63 @@ namespace Graphics::GUI
 
 	void EngineGUI::Render()
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		if (!Compilation::renderBuildingWindow) RenderTopBar();
-
-		ImGuiDockNodeFlags dockFlags =
-			ImGuiDockNodeFlags_PassthruCentralNode;
-
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
-
-		if (!Compilation::renderBuildingWindow)
+		if (isImguiInitialized)
 		{
-			GUIConsole::RenderConsole();
-			GUISettings::RenderSettings();
-			GUIInspector::RenderInspector();
-			GUIImportAsset::RenderImportAsset();
-			GUISceneMenu::RenderSceneMenu();
-			GUISceneHierarchy::RenderSceneHierarchy();
-			GUIProjectHierarchy::RenderProjectHierarchy();
-			GUICreateScene::RenderCreateSceneWindow();
-			GUIRename::RenderRenameWindow();
-			GUICredits::RenderCreditsWindow();
-			GUILinks::RenderLinksWindow();
-			GUIProjectItemsList::RenderProjectItemsList();
-			GUIFirstTime::RenderFirstTime();
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
 
-			if (renderAboutWindow) ImGui::ShowAboutWindow();
-			if (renderDebugLogWindow) ImGui::ShowDebugLogWindow();
-			if (renderDemoWindow) ImGui::ShowDemoWindow();
-			if (renderIDStackWindow) ImGui::ShowIDStackToolWindow();
-			if (renderMetricsWindow) ImGui::ShowMetricsWindow();
-			if (renderStackToolWindow) ImGui::ShowStackToolWindow();
-			if (renderStyleEditorWindow) ImGui::ShowStyleEditor();
-			if (renderUserGuideWindow) ImGui::ShowUserGuide();
+			if (!Compilation::renderBuildingWindow) RenderTopBar();
+
+			ImGuiDockNodeFlags dockFlags =
+				ImGuiDockNodeFlags_PassthruCentralNode;
+
+			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+
+			if (!Compilation::renderBuildingWindow)
+			{
+				GUIConsole::RenderConsole();
+				GUISettings::RenderSettings();
+				GUIInspector::RenderInspector();
+				GUIImportAsset::RenderImportAsset();
+				GUISceneMenu::RenderSceneMenu();
+				GUISceneHierarchy::RenderSceneHierarchy();
+				GUIProjectHierarchy::RenderProjectHierarchy();
+				GUICreateScene::RenderCreateSceneWindow();
+				GUIRename::RenderRenameWindow();
+				GUICredits::RenderCreditsWindow();
+				GUILinks::RenderLinksWindow();
+				GUIProjectItemsList::RenderProjectItemsList();
+				GUIFirstTime::RenderFirstTime();
+
+				if (renderAboutWindow) ImGui::ShowAboutWindow();
+				if (renderDebugLogWindow) ImGui::ShowDebugLogWindow();
+				if (renderDemoWindow) ImGui::ShowDemoWindow();
+				if (renderIDStackWindow) ImGui::ShowIDStackToolWindow();
+				if (renderMetricsWindow) ImGui::ShowMetricsWindow();
+				if (renderStackToolWindow) ImGui::ShowStackToolWindow();
+				if (renderStyleEditorWindow) ImGui::ShowStyleEditor();
+				if (renderUserGuideWindow) ImGui::ShowUserGuide();
+			}
+
+			bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
+			if (renderSceneWindow) Render::RenderToImguiWindow();
+
+			Compilation::RenderBuildingWindow();
+
+			if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
+			if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
+
+			bool firstUse = stoi(ConfigFile::GetValue("firstUse"));
+			if (firstUse)
+			{
+				ConfigFile::SetValue("gui_firstTime", "1");
+				ConfigFile::SetValue("firstUse", "0");
+			}
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
-
-		bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
-		if (renderSceneWindow) Render::RenderToImguiWindow();
-
-		Compilation::RenderBuildingWindow();
-
-		if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
-		if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
-
-		bool firstUse = stoi(ConfigFile::GetValue("firstUse"));
-		if (firstUse)
-		{
-			ConfigFile::SetValue("gui_firstTime", "1");
-			ConfigFile::SetValue("firstUse", "0");
-		}
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void EngineGUI::RenderTopBar()
@@ -810,17 +815,7 @@ namespace Graphics::GUI
 
 	void EngineGUI::Shutdown()
 	{
-		//close any remaining open ImGui windows
-		for (ImGuiWindow* window : ImGui::GetCurrentContext()->Windows)
-		{
-			if (window->WasActive)
-			{
-				ImGui::CloseCurrentPopup();
-			}
-		}
-
-		ImGui::StyleColorsDark();
-		ImGui::GetIO().IniFilename = nullptr;
+		isImguiInitialized = false;
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();

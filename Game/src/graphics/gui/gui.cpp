@@ -101,18 +101,6 @@ namespace Graphics::GUI
 
 	void GameGUI::Shutdown()
 	{
-		//close any remaining open ImGui windows
-		for (ImGuiWindow* window : ImGui::GetCurrentContext()->Windows)
-		{
-			if (window->WasActive)
-			{
-				ImGui::CloseCurrentPopup();
-			}
-		}
-
-		ImGui::StyleColorsDark();
-		ImGui::GetIO().IniFilename = nullptr;
-
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();

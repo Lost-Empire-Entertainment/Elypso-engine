@@ -31,6 +31,7 @@ namespace Core
 		static inline string gameExePath;
 		static inline string gameParentPath;
 
+		static inline bool isEngineRunning;
 		static inline bool startedWindowLoop;
 
 		static void InitializeEngine();

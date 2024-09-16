@@ -159,7 +159,7 @@ void CreateProject::RenderCreateProjectContent()
 		string texturesFolder = newProjectFile + "\\textures";
 		create_directory(texturesFolder);
 
-		string projectFilePath = newProjectFile + "\\project.txt";
+		string projectFilePath = path(Core::docsPath).parent_path().string() + "\\Elypso engine\\project.txt";
 		ofstream projectFile(projectFilePath);
 		if (!projectFile.is_open())
 		{
@@ -169,7 +169,7 @@ void CreateProject::RenderCreateProjectContent()
 		}
 
 		string engineParentPath = Core::enginePath.parent_path().string();
-		projectFile << "project: " << path(projectFilePath).parent_path().string() + "\n";
+		projectFile << "project: " << newProjectFile + "\n";
 		projectFile.close();
 
 		GUI::UpdateFileList();

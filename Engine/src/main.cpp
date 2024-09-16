@@ -11,9 +11,6 @@ using Core::Engine;
 int main()
 {
 	Engine::InitializeEngine();
-
 	Engine::RunEngine();
-
-	Engine::Shutdown();
 	return 0;
 }

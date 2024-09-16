@@ -292,7 +292,7 @@ void GUI::RemoveProject(const string& projectPath)
 		return;
 	}
 
-	string projectsFile = Core::enginePath.parent_path().string() + "\\files\\project.txt";
+	string projectsFile = path(Core::docsPath).parent_path().string() + "\\Elypso engine\\project.txt";
 	if (exists(projectsFile)) remove(projectsFile);
 
 	remove_all(projectPath);
@@ -336,13 +336,6 @@ void GUI::RunProject(const string& targetProject)
 		UpdateFileList();
 		return;
 	}
-
-	//copy project.txt to files folder if it doesnt exist
-	string originalProjectFile = targetProject + "/project.txt";
-	string targetProjectFile = Core::enginePath.parent_path().string() + "\\files\\project.txt";
-	if (exists(targetProjectFile)) remove(targetProjectFile);
-
-	copy(originalProjectFile, targetProjectFile);
 
 	GUI::RunApplication(
 		Core::enginePath.parent_path().string(),
@@ -566,18 +559,6 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 void GUI::Shutdown()
 {
-	//close any remaining open ImGui windows
-	for (ImGuiWindow* window : ImGui::GetCurrentContext()->Windows)
-	{
-		if (window->WasActive)
-		{
-			ImGui::CloseCurrentPopup();
-		}
-	}
-
-	ImGui::StyleColorsDark();
-	ImGui::GetIO().IniFilename = nullptr;
-
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
