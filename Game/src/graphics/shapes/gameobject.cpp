@@ -88,6 +88,7 @@ namespace Graphics::Shape
 				});
 
 			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
 
 			for (const auto& obj : transparentObjects)
 			{
@@ -103,6 +104,7 @@ namespace Graphics::Shape
 			}
 
 			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
 		}
 	}
 
