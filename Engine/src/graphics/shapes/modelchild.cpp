@@ -169,30 +169,33 @@ namespace Graphics::Shape
 			shader.SetFloat("material.shininess", obj->GetBasicShape()->GetShininess());
 
 			//directional light
-			int count = GameObjectManager::GetDirectionalLight() != nullptr
-				&& GameObjectManager::GetDirectionalLight()->IsEnabled() ? 1 : 0;
-			shader.SetInt("dirLightCount", count);
+			if (GameObjectManager::GetDirectionalLight() != nullptr)
+			{
+				shared_ptr<GameObject> dirLight = GameObjectManager::GetDirectionalLight();
 
-			shared_ptr<GameObject> dirLight = GameObjectManager::GetDirectionalLight();
-			shared_ptr<Transform> transform = dirLight->GetTransform();
-			shared_ptr<Directional_light_Variables> dirVar = dirLight->GetDirectionalLight();
+				int count = dirLight->IsEnabled() ? 1 : 0;
+				shader.SetInt("dirLightCount", count);
+				
+				shared_ptr<Transform> transform = dirLight->GetTransform();
+				shared_ptr<Directional_light_Variables> dirVar = dirLight->GetDirectionalLight();
 
-			vec3 dirRot = transform->GetRotation();
-			quat dirQuat = quat(radians(dirRot));
-			//assuming the initial direction is along the negative Y-axis
-			vec3 initialDir = vec3(0.0f, -1.0f, 0.0f);
-			//rotate the initial direction using the quaternion
-			vec3 rotatedDir = dirQuat * initialDir;
-			rotatedDir = normalize(rotatedDir);
+				vec3 dirRot = transform->GetRotation();
+				quat dirQuat = quat(radians(dirRot));
+				//assuming the initial direction is along the negative Y-axis
+				vec3 initialDir = vec3(0.0f, -1.0f, 0.0f);
+				//rotate the initial direction using the quaternion
+				vec3 rotatedDir = dirQuat * initialDir;
+				rotatedDir = normalize(rotatedDir);
 
-			shader.SetBool("dirLight.enabled", GameObjectManager::GetDirectionalLight()->IsEnabled());
+				shader.SetBool("dirLight.enabled", dirLight->IsEnabled());
 
-			shader.SetVec3("dirLight.direction", rotatedDir);
+				shader.SetVec3("dirLight.direction", rotatedDir);
 
-			shader.SetFloat("dirLight.intensity", dirVar->GetIntensity());
-			shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-			shader.SetVec3("dirLight.diffuse", dirVar->GetDiffuse());
-			shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+				shader.SetFloat("dirLight.intensity", dirVar->GetIntensity());
+				shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+				shader.SetVec3("dirLight.diffuse", dirVar->GetDiffuse());
+				shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+			}
 
 			//point lights
 			const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointLights();

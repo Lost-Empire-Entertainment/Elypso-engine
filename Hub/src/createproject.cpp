@@ -159,7 +159,10 @@ void CreateProject::RenderCreateProjectContent()
 		string texturesFolder = newProjectFile + "\\textures";
 		create_directory(texturesFolder);
 
-		string projectFilePath = path(Core::docsPath).parent_path().string() + "\\Elypso engine\\project.txt";
+		//put project.txt inside engine documents folder
+		string engineDocsFolder = path(Core::docsPath).parent_path().string() + "\\Elypso engine";
+		if (!exists(engineDocsFolder)) create_directory(engineDocsFolder);
+		string projectFilePath = engineDocsFolder + "\\project.txt";
 		ofstream projectFile(projectFilePath);
 		if (!projectFile.is_open())
 		{
