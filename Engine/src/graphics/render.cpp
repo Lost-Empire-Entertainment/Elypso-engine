@@ -568,6 +568,12 @@ namespace Graphics
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
+			ImGui::Text("Background color");
+			if (ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor)))
+			{
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			//
 			// CAMERA SETTINGS
 			//
@@ -730,90 +736,109 @@ namespace Graphics
 		ImVec2 actionButtonSize = ImVec2(80, 30);
 		ImVec2 axisButtonSize = ImVec2(30, 30);
 
-		if (Input::objectAction == Input::ObjectAction::move)
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-		}
-		if (ImGui::Button("Move", actionButtonSize))
-		{
-			Input::objectAction = Input::ObjectAction::move;
-		}
-		if (Input::objectAction == Input::ObjectAction::move)
-		{
-			ImGui::PopStyleColor();
-		}
-
-		ImGui::SameLine();
-		if (Input::objectAction == Input::ObjectAction::rotate)
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-		}
-		if (ImGui::Button("Rotate", actionButtonSize))
-		{
-			Input::objectAction = Input::ObjectAction::rotate;
-		}
-		if (Input::objectAction == Input::ObjectAction::rotate)
-		{
-			ImGui::PopStyleColor();
+			bool isSelected = (Input::objectAction == Input::ObjectAction::move);
+			if (isSelected)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+			}
+			if (ImGui::Button("Move", actionButtonSize))
+			{
+				Input::objectAction = Input::ObjectAction::move;
+			}
+			if (isSelected)
+			{
+				ImGui::PopStyleColor();
+			}
 		}
 
 		ImGui::SameLine();
-		if (Input::objectAction == Input::ObjectAction::scale)
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+			bool isSelected = (Input::objectAction == Input::ObjectAction::rotate);
+			if (isSelected)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+			}
+			if (ImGui::Button("Rotate", actionButtonSize))
+			{
+				Input::objectAction = Input::ObjectAction::rotate;
+			}
+			if (isSelected)
+			{
+				ImGui::PopStyleColor();
+			}
 		}
-		if (ImGui::Button("Scale", actionButtonSize))
+
+		ImGui::SameLine();
 		{
-			Input::objectAction = Input::ObjectAction::scale;
-		}
-		if (Input::objectAction == Input::ObjectAction::scale)
-		{
-			ImGui::PopStyleColor();
+			bool isSelected = (Input::objectAction == Input::ObjectAction::scale);
+			if (isSelected)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+			}
+			if (ImGui::Button("Scale", actionButtonSize))
+			{
+				Input::objectAction = Input::ObjectAction::scale;
+			}
+			if (isSelected)
+			{
+				ImGui::PopStyleColor();
+			}
 		}
 
 		ImGui::SameLine();
 		ImGui::Dummy(ImVec2(20.0f, 0.0f));
 
 		ImGui::SameLine();
-		if (Input::axis == "X")
+
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-		}
-		if (ImGui::Button("X", axisButtonSize))
-		{
-			Input::axis = "X";
-		}
-		if (Input::axis == "X")
-		{
-			ImGui::PopStyleColor();
+			bool isSelected = (Input::axis == "X");
+			if (isSelected)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+			}
+			if (ImGui::Button("X##axis", axisButtonSize))
+			{
+				Input::axis = "X";
+			}
+			if (isSelected)
+			{
+				ImGui::PopStyleColor();
+			}
 		}
 
 		ImGui::SameLine();
-		if (Input::axis == "Y")
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-		}
-		if (ImGui::Button("Y", axisButtonSize))
-		{
-			Input::axis = "Y";
-		}
-		if (Input::axis == "Y")
-		{
-			ImGui::PopStyleColor();
+			bool isSelected = (Input::axis == "Y");
+			if (isSelected)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+			}
+			if (ImGui::Button("Y##axis", axisButtonSize))
+			{
+				Input::axis = "Y";
+			}
+			if (isSelected)
+			{
+				ImGui::PopStyleColor();
+			}
 		}
 
 		ImGui::SameLine();
-		if (Input::axis == "Z")
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-		}
-		if (ImGui::Button("Z", axisButtonSize))
-		{
-			Input::axis = "Z";
-		}
-		if (Input::axis == "Z")
-		{
-			ImGui::PopStyleColor();
+			bool isSelected = (Input::axis == "Z");
+			if (isSelected)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+			}
+			if (ImGui::Button("Z##axis", axisButtonSize))
+			{
+				Input::axis = "Z";
+			}
+			if (isSelected)
+			{
+				ImGui::PopStyleColor();
+			}
 		}
 	}
 

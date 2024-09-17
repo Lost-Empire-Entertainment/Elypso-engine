@@ -3,43 +3,28 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <filesystem>
-
 //external
-#include "glad.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
 
 //engine
 #include "spotlight.hpp"
-#include "shader.hpp"
-#include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "billboard.hpp"
 #include "console.hpp"
-#include "fileUtils.hpp"
 
-using std::to_string;
 using glm::translate;
-using glm::rotate;
-using glm::radians;
 using glm::quat;
-using glm::scale;
-using std::filesystem::path;
 
-using Graphics::Shader;
 using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Material;
-using Graphics::Shape::GameObjectManager;
-using Core::Engine;
 using Graphics::Render;
 using Physics::Select;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Utils::File;
 
 namespace Graphics::Shape
 {
@@ -56,6 +41,7 @@ namespace Graphics::Shape
 		const float& outerAngle,
 		string& name,
 		unsigned int& id,
+		const bool& isEnabled,
 
 		const string& billboardVertShader,
 		const string& billboardFragShader,
@@ -140,6 +126,7 @@ namespace Graphics::Shape
 			true,
 			name,
 			id,
+			isEnabled,
 			transform,
 			mesh,
 			mat,
@@ -164,27 +151,30 @@ namespace Graphics::Shape
 
 	void SpotLight::RenderSpotLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
-		Shader shader = obj->GetMaterial()->GetShader();
+		if (obj->IsEnabled())
+		{
+			Shader shader = obj->GetMaterial()->GetShader();
 
-		shader.Use();
-		shader.SetMat4("projection", projection);
-		shader.SetMat4("view", view);
+			shader.Use();
+			shader.SetMat4("projection", projection);
+			shader.SetMat4("view", view);
 
-		float transparency = Select::selectedObj ==
-			obj
-			&& Select::isObjectSelected ? 1.0f : 0.5f;
-		shader.SetFloat("transparency", transparency);
-		shader.SetVec3("color", obj->GetSpotLight()->GetDiffuse());
+			float transparency = Select::selectedObj ==
+				obj
+				&& Select::isObjectSelected ? 1.0f : 0.5f;
+			shader.SetFloat("transparency", transparency);
+			shader.SetVec3("color", obj->GetSpotLight()->GetDiffuse());
 
-		mat4 model = mat4(1.0f);
-		model = translate(model, obj->GetTransform()->GetPosition());
-		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
-		model *= mat4_cast(newRot);
-		model = scale(model, obj->GetTransform()->GetScale());
+			mat4 model = mat4(1.0f);
+			model = translate(model, obj->GetTransform()->GetPosition());
+			quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+			model *= mat4_cast(newRot);
+			model = scale(model, obj->GetTransform()->GetScale());
 
-		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMesh()->GetVAO();
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_LINES, 0, 32);
+			shader.SetMat4("model", model);
+			GLuint VAO = obj->GetMesh()->GetVAO();
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_LINES, 0, 32);
+		}
 	}
 }

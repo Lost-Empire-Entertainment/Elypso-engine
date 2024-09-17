@@ -47,11 +47,13 @@ namespace Graphics::Shape
 			const string& heightTexture = "EMPTY",
 			const float& shininess = 32,
 			string& name = tempName,
-			unsigned int& id = tempID);
+			unsigned int& id = tempID,
+			const bool& isEnabled = true);
 
 		static void ProcessNode(
 			string& name,
 			unsigned int& id,
+			const bool& isEnabled,
 			const vec3& pos,
 			const vec3& rot,
 			const vec3& scale,

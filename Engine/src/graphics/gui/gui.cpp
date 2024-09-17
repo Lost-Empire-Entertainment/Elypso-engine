@@ -20,7 +20,6 @@
 #include "gui_settings.hpp"
 #include "gui_inspector.hpp"
 #include "gui_importAsset.hpp"
-#include "gui_scenemenu.hpp"
 #include "gui_scenehierarchy.hpp"
 #include "gui_projecthierarchy.hpp"
 #include "gui_createscene.hpp"
@@ -39,6 +38,7 @@
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
+#include "directionallight.hpp"
 #include "selectobject.hpp"
 #include "sceneFile.hpp"
 #include "configFile.hpp"
@@ -69,6 +69,7 @@ using Utils::String;
 using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
+using Graphics::Shape::DirectionalLight;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using EngineFile::SceneFile;
@@ -166,7 +167,6 @@ namespace Graphics::GUI
 				GUISettings::RenderSettings();
 				GUIInspector::RenderInspector();
 				GUIImportAsset::RenderImportAsset();
-				GUISceneMenu::RenderSceneMenu();
 				GUISceneHierarchy::RenderSceneHierarchy();
 				GUIProjectHierarchy::RenderProjectHierarchy();
 				GUICreateScene::RenderCreateSceneWindow();
@@ -471,6 +471,7 @@ namespace Graphics::GUI
 							1.0f,
 							targetName,
 							PointLight::tempID,
+							true,
 
 							//billboard values
 							Engine::filesPath + "\\shaders\\Basic_texture.vert",
@@ -505,6 +506,7 @@ namespace Graphics::GUI
 							17.5f,
 							targetName,
 							SpotLight::tempID,
+							true,
 
 							//billboard values
 							Engine::filesPath + "\\shaders\\Basic_texture.vert",
@@ -518,6 +520,48 @@ namespace Graphics::GUI
 					Select::isObjectSelected = true;
 
 					SceneFile::SaveScene();
+				}
+				if (ImGui::MenuItem("Directional light"))
+				{
+					if (GameObjectManager::GetDirectionalLight() != nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Cannot have more than one directional light in scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!");
+					}
+					else
+					{
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Directional light", "", true);
+						string targetName = path(targetPath).stem().string();
+						File::CreateNewFolder(targetPath);
+
+						shared_ptr<GameObject> obj =
+							DirectionalLight::InitializeDirectionalLight(
+								newPos,
+								vec3(0),
+								vec3(1),
+								Engine::filesPath + "\\shaders\\Basic_model.vert",
+								Engine::filesPath + "\\shaders\\Basic.frag",
+								vec3(1),
+								1.0f,
+								targetName,
+								SpotLight::tempID,
+								true,
+
+								//billboard values
+								Engine::filesPath + "\\shaders\\Basic_texture.vert",
+								Engine::filesPath + "\\shaders\\Basic_texture.frag",
+								Engine::filesPath + "\\icons\\directionalLight.png",
+								32,
+								SpotLight::tempName,
+								SpotLight::tempID);
+
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
+
+						SceneFile::SaveScene();
+					}
 				}
 
 				ImGui::EndMenu();

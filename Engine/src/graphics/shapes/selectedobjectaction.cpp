@@ -87,6 +87,7 @@ namespace Graphics::Shape
 			false,
 			"ActionTex",
 			10000001,
+			true,
 			transform,
 			mesh,
 			mat,

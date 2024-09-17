@@ -106,6 +106,7 @@ namespace Graphics::Shape
 			false,
 			"Border",
 			10000000,
+			true,
 			transform,
 			mesh,
 			mat,

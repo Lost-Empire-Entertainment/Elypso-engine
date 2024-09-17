@@ -63,7 +63,8 @@ namespace Graphics::Shape
         const string& heightTexture,
         const float& shininess,
         string& name,
-        unsigned int& id)
+        unsigned int& id,
+        const bool& isEnabled)
     {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
@@ -89,6 +90,7 @@ namespace Graphics::Shape
         ProcessNode(
             name, 
             id,
+            isEnabled,
             pos, 
             rot, 
             scale,
@@ -107,6 +109,7 @@ namespace Graphics::Shape
     void Model::ProcessNode(
         string& name,
         unsigned int& id,
+        const bool& isEnabled,
         const vec3& pos,
         const vec3& rot,
         const vec3& scale,
@@ -149,7 +152,8 @@ namespace Graphics::Shape
                 newMesh.indices,
                 shininess,
                 name,
-                id);
+                id,
+                isEnabled);
 
             newChild->SetDirectory(modelPathNonRef);
 
@@ -163,6 +167,7 @@ namespace Graphics::Shape
             ProcessNode(
                 name, 
                 id, 
+                isEnabled,
                 pos,
                 rot,
                 scale,

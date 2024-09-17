@@ -8,27 +8,27 @@
 #include "matrix_transform.hpp"
 
 //engine
-#include "pointlight.hpp"
-#include "render.hpp"
-#include "selectobject.hpp"
+#include "directionallight.hpp"
 #include "billboard.hpp"
+#include "render.hpp"
 #include "console.hpp"
+#include "selectobject.hpp"
 
 using glm::translate;
 using glm::quat;
 
-using Graphics::Shader;
 using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
+using Graphics::Shape::Billboard;
 using Graphics::Render;
-using Physics::Select;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Physics::Select;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> PointLight::InitializePointLight(
+	shared_ptr<GameObject> DirectionalLight::InitializeDirectionalLight(
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale,
@@ -36,11 +36,10 @@ namespace Graphics::Shape
 		const string& fragShader,
 		const vec3& diffuse,
 		const float& intensity,
-		const float& distance,
 		string& name,
 		unsigned int& id,
 		const bool& isEnabled,
-
+		
 		const string& billboardVertShader,
 		const string& billboardFragShader,
 		const string& billboardDiffTexture,
@@ -52,43 +51,31 @@ namespace Graphics::Shape
 
 		float vertices[] =
 		{
-			//edges of the cube
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
+			//four corner edges
+			0.0f,  0.5f,  0.0f,
+		   -0.5f, -0.5f, -0.5f,
 
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+			0.5f, -0.5f, -0.5f,
 
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+		   -0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+			0.5f, -0.5f,  0.5f,
 
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
+			//four bottom edges
+			0.5f, -0.5f,  0.5f,
+		   -0.5f, -0.5f,  0.5f,
 
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+			0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f, -0.5f,
 
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+		   -0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-
-			//connecting edges
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-
-			-0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f,  0.5f,
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f,  0.5f
 		};
 
 		GLuint vao, vbo, ebo;
@@ -104,18 +91,17 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::point_light, vao, vbo, ebo);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::directional_light, vao, vbo, ebo);
 
-		Shader pointLightShader = Shader::LoadShader(vertShader, fragShader);
+		Shader directionalLightShader = Shader::LoadShader(vertShader, fragShader);
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(vertShader, fragShader, pointLightShader);
+		mat->AddShader(vertShader, fragShader, directionalLightShader);
 
-		shared_ptr<PointLight_Variables> pointLight =
-			make_shared<PointLight_Variables>(
+		shared_ptr<Directional_light_Variables> directionalLight =
+			make_shared<Directional_light_Variables>(
 				diffuse,
-				intensity,
-				distance);
+				intensity);
 
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
 			pos,
@@ -128,7 +114,7 @@ namespace Graphics::Shape
 			billboardName,
 			billboardID);
 
-		if (name == tempName) name = "Point light";
+		if (name == tempName) name = "Directional light";
 		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,
@@ -138,14 +124,14 @@ namespace Graphics::Shape
 			transform,
 			mesh,
 			mat,
-			pointLight);
+			directionalLight);
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
-		GameObjectManager::AddPointLight(obj);
+		GameObjectManager::SetDirectionalLight(obj);
 
 		Render::UpdateCounts();
 
@@ -157,7 +143,10 @@ namespace Graphics::Shape
 		return obj;
 	}
 
-	void PointLight::RenderPointLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void DirectionalLight::RenderDirectionalLight(
+		const shared_ptr<GameObject>& obj, 
+		const mat4& view, 
+		const mat4& projection)
 	{
 		if (obj->IsEnabled())
 		{
@@ -171,7 +160,7 @@ namespace Graphics::Shape
 				Select::selectedObj == obj
 				&& Select::isObjectSelected ? 1.0f : 0.5f;
 			shader.SetFloat("transparency", transparency);
-			shader.SetVec3("color", obj->GetPointLight()->GetDiffuse());
+			shader.SetVec3("color", obj->GetDirectionalLight()->GetDiffuse());
 
 			mat4 model = mat4(1.0f);
 			model = translate(model, obj->GetTransform()->GetPosition());
@@ -182,7 +171,7 @@ namespace Graphics::Shape
 			shader.SetMat4("model", model);
 			GLuint VAO = obj->GetMesh()->GetVAO();
 			glBindVertexArray(VAO);
-			glDrawArrays(GL_LINES, 0, 24);
+			glDrawArrays(GL_LINES, 0, 32);
 		}
 	}
 }

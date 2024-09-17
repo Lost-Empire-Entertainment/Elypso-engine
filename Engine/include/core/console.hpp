@@ -45,6 +45,8 @@ namespace Core
 
 		static void ParseConsoleCommand(const string& message);
 
+		static void PrintSelectObjectData();
+
 		/// <summary>
 		/// Print selected message to in-game console.
 		/// </summary>

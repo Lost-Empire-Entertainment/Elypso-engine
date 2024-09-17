@@ -110,6 +110,7 @@ namespace Graphics::Shape
 			model,
 			point_light,
 			spot_light,
+			directional_light,
 			billboard
 		};
 
@@ -315,6 +316,50 @@ namespace Graphics::Shape
 		float shininess;
 	};
 
+	class PointLight_Variables
+	{
+	public:
+		PointLight_Variables(
+			const vec3& diffuse,
+			const float& intensity,
+			const float& distance) :
+			diffuse(diffuse),
+			intensity(intensity),
+			distance(distance)
+		{
+		}
+
+		void SetDiffuse(const vec3& newDiffuse)
+		{
+			diffuse = newDiffuse;
+		}
+		void SetIntensity(const float& newIntensity)
+		{
+			intensity = newIntensity;
+		}
+		void SetDistance(const float& newDistance)
+		{
+			distance = newDistance;
+		}
+
+		const vec3& GetDiffuse() const
+		{
+			return diffuse;
+		}
+		const float& GetIntensity() const
+		{
+			return intensity;
+		}
+		const float& GetDistance() const
+		{
+			return distance;
+		}
+	private:
+		vec3 diffuse;
+		float intensity;
+		float distance;
+	};
+
 	class SpotLight_Variables
 	{
 	public:
@@ -381,16 +426,14 @@ namespace Graphics::Shape
 		float outerAngle;
 	};
 
-	class PointLight_Variables
+	class Directional_light_Variables
 	{
 	public:
-		PointLight_Variables(
+		Directional_light_Variables(
 			const vec3& diffuse,
-			const float& intensity,
-			const float& distance) :
+			const float& intensity) :
 			diffuse(diffuse),
-			intensity(intensity),
-			distance(distance)
+			intensity(intensity)
 		{
 		}
 
@@ -402,10 +445,6 @@ namespace Graphics::Shape
 		{
 			intensity = newIntensity;
 		}
-		void SetDistance(const float& newDistance)
-		{
-			distance = newDistance;
-		}
 
 		const vec3& GetDiffuse() const
 		{
@@ -415,14 +454,9 @@ namespace Graphics::Shape
 		{
 			return intensity;
 		}
-		const float& GetDistance() const
-		{
-			return distance;
-		}
 	private:
 		vec3 diffuse;
 		float intensity;
-		float distance;
 	};
 
 	class GameObject
@@ -435,6 +469,7 @@ namespace Graphics::Shape
 			const bool& isInitialized,
 			const string& name,
 			const unsigned int& ID,
+			const bool& isEnabled,
 			const shared_ptr<Transform>& transform,
 			const shared_ptr<Mesh>& mesh,
 			const shared_ptr<Material>& material,
@@ -442,6 +477,7 @@ namespace Graphics::Shape
 			isInitialized(isInitialized),
 			name(name),
 			ID(ID),
+			isEnabled(isEnabled),
 			transform(transform),
 			mesh(mesh),
 			material(material),
@@ -454,6 +490,7 @@ namespace Graphics::Shape
 			const bool& isInitialized,
 			const string& name,
 			const unsigned int& ID,
+			const bool& isEnabled,
 			const shared_ptr<Transform>& transform,
 			const shared_ptr<Mesh>& mesh,
 			const shared_ptr<Material>& material,
@@ -461,6 +498,7 @@ namespace Graphics::Shape
 			isInitialized(isInitialized),
 			name(name),
 			ID(ID),
+			isEnabled(isEnabled),
 			transform(transform),
 			mesh(mesh),
 			material(material),
@@ -473,6 +511,7 @@ namespace Graphics::Shape
 			const bool& isInitialized,
 			const string& name,
 			const unsigned int& ID,
+			const bool& isEnabled,
 			const shared_ptr<Transform>& transform,
 			const shared_ptr<Mesh>& mesh,
 			const shared_ptr<Material>& material,
@@ -480,10 +519,32 @@ namespace Graphics::Shape
 			isInitialized(isInitialized),
 			name(name),
 			ID(ID),
+			isEnabled(isEnabled),
 			transform(transform),
 			mesh(mesh),
 			material(material),
 			spotLight(spotLight)
+		{
+		}
+
+		//directional light
+		GameObject(
+			const bool& isInitialized,
+			const string& name,
+			const unsigned int& ID,
+			const bool& isEnabled,
+			const shared_ptr<Transform>& transform,
+			const shared_ptr<Mesh>& mesh,
+			const shared_ptr<Material>& material,
+			const shared_ptr<Directional_light_Variables>& directionalLight) :
+			isInitialized(isInitialized),
+			name(name),
+			ID(ID),
+			isEnabled(isEnabled),
+			transform(transform),
+			mesh(mesh),
+			material(material),
+			directionalLight(directionalLight)
 		{
 		}
 
@@ -492,6 +553,7 @@ namespace Graphics::Shape
 			const bool& isInitialized,
 			const string& name,
 			const unsigned int& ID,
+			const bool& isEnabled,
 			const shared_ptr<Transform>& transform,
 			const shared_ptr<Mesh>& mesh,
 			const vector<AssimpMesh>& assimpMeshes,
@@ -499,6 +561,7 @@ namespace Graphics::Shape
 			isInitialized(isInitialized),
 			name(name),
 			ID(ID),
+			isEnabled(isEnabled),
 			transform(transform),
 			mesh(mesh),
 			assimpMeshes(assimpMeshes),
@@ -509,6 +572,8 @@ namespace Graphics::Shape
 		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
+
+		void SetEnableState(const bool& newEnableState) { isEnabled = newEnableState; }
 
 		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
@@ -525,6 +590,10 @@ namespace Graphics::Shape
 		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight)
 		{
 			spotLight = newSpotLight;
+		}
+		void SetDirectionalLight(const shared_ptr<Directional_light_Variables>& newDirectionalLight)
+		{
+			directionalLight = newDirectionalLight;
 		}
 
 		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
@@ -554,6 +623,8 @@ namespace Graphics::Shape
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const {  return ID; }
 
+		const bool& IsEnabled() const { return isEnabled; }
+
 		const shared_ptr<Transform>& GetTransform() const { return transform; }
 		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
 		const vector<AssimpMesh>& GetAssimpMeshes() const { return assimpMeshes; }
@@ -561,6 +632,7 @@ namespace Graphics::Shape
 		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
 		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
 		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
+		const shared_ptr<Directional_light_Variables>& GetDirectionalLight() const { return directionalLight; }
 		const shared_ptr<GameObject>& GetParent() const { return parent; }
 		const vector<shared_ptr<GameObject>>& GetChildren() const { return children; }
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
@@ -571,6 +643,8 @@ namespace Graphics::Shape
 		string name;
 		unsigned int ID;
 
+		bool isEnabled;
+
 		shared_ptr<Transform> transform;
 		shared_ptr<Mesh> mesh;
 		vector<AssimpMesh> assimpMeshes;
@@ -578,6 +652,7 @@ namespace Graphics::Shape
 		shared_ptr<BasicShape_Variables> basicShape;
 		shared_ptr<PointLight_Variables> pointLight;
 		shared_ptr<SpotLight_Variables> spotLight;
+		shared_ptr<Directional_light_Variables> directionalLight;
 		shared_ptr<GameObject> parent;
 		vector<shared_ptr<GameObject>> children;
 		shared_ptr<GameObject> parentBillboardHolder;
@@ -616,6 +691,10 @@ namespace Graphics::Shape
 		{
 			spotLights.push_back(obj);
 		}
+		static void SetDirectionalLight(const shared_ptr<GameObject>& newDirectionalLight)
+		{
+			directionalLight = newDirectionalLight;
+		}
 		static void SetActionTex(const shared_ptr<GameObject>& newActionTex)
 		{
 			actionTex = newActionTex;
@@ -643,6 +722,10 @@ namespace Graphics::Shape
 		{
 			return spotLights;
 		}
+		static shared_ptr<GameObject> GetDirectionalLight()
+		{
+			return directionalLight;
+		}
 		static shared_ptr<GameObject> GetActionTex()
 		{
 			return actionTex;
@@ -662,6 +745,7 @@ namespace Graphics::Shape
 		static inline vector<shared_ptr<GameObject>> transparentObjects;
 		static inline vector<shared_ptr<GameObject>> pointLights;
 		static inline vector<shared_ptr<GameObject>> spotLights;
+		static inline shared_ptr<GameObject> directionalLight;
 		static inline shared_ptr<GameObject> actionTex;
 		static inline shared_ptr<GameObject> border;
 		static inline vector<shared_ptr<GameObject>> billboards;

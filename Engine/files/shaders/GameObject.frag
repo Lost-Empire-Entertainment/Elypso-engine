@@ -18,6 +18,8 @@ struct DirLight
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    bool enabled;
 };
 struct PointLight
 {
@@ -32,6 +34,8 @@ struct PointLight
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    bool enabled;
 };
 struct SpotLight
 {
@@ -49,6 +53,8 @@ struct SpotLight
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    bool enabled;
 };
 
 #define MAX_POINT_LIGHTS 16
@@ -58,6 +64,10 @@ uniform PointLight pointLights[MAX_POINT_LIGHTS];
 #define MAX_SPOT_LIGHTS 16
 uniform int spotLightCount;
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
+
+#define MAX_DIR_LIGHTS 1
+uniform int dirLightCount;
+uniform DirLight dirLights[MAX_DIR_LIGHTS];
 
 in vec3 FragPos;  
 in vec3 Normal;  
@@ -79,19 +89,33 @@ void main()
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    vec3 result = vec3(0.0);
+    if (dirLightCount > 0)
+    {   
+        if (dirLight.enabled)
+        {
+            result += CalcDirLight(dirLight, norm, viewDir);
+        }
+    }
+
     if (pointLightCount > 0)
     {
         for (int i = 0; i < pointLightCount; i++)
         {
-            result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+            if (pointLights[i].enabled)
+            {
+                result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+            }
         }
     }
     if (spotLightCount > 0)
     {
         for (int i = 0; i < spotLightCount; i++)
         {
-            result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);
+            if (spotLights[i].enabled)
+            {
+                result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);
+            }
         }
     }
 

@@ -74,6 +74,20 @@ namespace Graphics::GUI
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
+			if (Select::isObjectSelected
+				&& Select::selectedObj->IsInitialized())
+			{
+				shared_ptr<GameObject> obj = Select::selectedObj;
+
+				bool state = obj->IsEnabled();
+				if (ImGui::Checkbox("Is enabled", &state))
+				{
+					obj->SetEnableState(state);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+			}
+
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -475,6 +489,30 @@ namespace Graphics::GUI
 				if (ImGui::Button("Reset##spotouterangle"))
 				{
 					obj->GetSpotLight()->SetOuterAngle(30.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+			}
+			else if (objType == Type::directional_light)
+			{
+				vec3 dirDiffuse = obj->GetDirectionalLight()->GetDiffuse();
+				ImGui::Text("Directional light diffuse");
+				if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
+				{
+					obj->GetDirectionalLight()->SetDiffuse(dirDiffuse);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				float dirIntensity = obj->GetDirectionalLight()->GetIntensity();
+				ImGui::Text("Directional light intensity");
+				if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
+				{
+					obj->GetDirectionalLight()->SetIntensity(dirIntensity);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##dirint"))
+				{
+					obj->GetDirectionalLight()->SetIntensity(1.0f);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 			}

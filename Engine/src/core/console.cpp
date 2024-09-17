@@ -6,6 +6,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 //external
 #include "magic_enum.hpp"
@@ -20,6 +21,8 @@
 #include "render.hpp"
 #include "stringutils.hpp"
 #include "gui.hpp"
+#include "selectobject.hpp"
+#include "gameobject.hpp"
 
 using std::chrono::time_point_cast;
 using std::chrono::system_clock;
@@ -39,6 +42,10 @@ using Core::Engine;
 using Graphics::Render;
 using Utils::String;
 using Graphics::GUI::EngineGUI;
+using Physics::Select;
+using Graphics::Shape::GameObject;
+using Graphics::Shape::Mesh;
+using Graphics::Shape::Material;
 
 namespace Core
 {
@@ -189,6 +196,7 @@ namespace Core
             ss <<
                 "help - lists all console commands\n"
                 << "qqq - quits the engine\n"
+                << "dbg - prints debug info about selected gameobject (click on object before using this command)"
                 << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
                 << "rc - resets the camera back to its original position and rotation\n"
                 << "saw - toggles between showing and not showing imgui about window\n"
@@ -214,6 +222,21 @@ namespace Core
                 Type::DEBUG,
                 "User closed game with 'qqq' console command.\n");
             Engine::Shutdown();
+        }
+        else if (cleanedCommands[0] == "dbg"
+                 && cleanedCommands.size() == 1)
+        {
+            if (Select::selectedObj == nullptr)
+            {
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::EXCEPTION,
+                    "Please select a gameobject first before using the 'dbg' command.\n");
+            }
+            else
+            {
+                PrintSelectObjectData();
+            }
         }
         else if (cleanedCommands[0] == "srm"
                  && (cleanedCommands[1] == "1"
@@ -334,5 +357,79 @@ namespace Core
                 Type::EXCEPTION,
                 "'" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
         }
+    }
+
+    void ConsoleManager::PrintSelectObjectData()
+    {
+        shared_ptr<GameObject> obj = Select::selectedObj;
+
+        stringstream ss;
+
+        ss << "\n--------------------\n"
+            << "name: " << obj->GetName() << "\n"
+            << "id: " << obj->GetID() << "\n"
+            << "is enabled: " << obj->IsEnabled() << "\n"
+
+            << "position: " << obj->GetTransform()->GetPosition().x << ", "
+            << obj->GetTransform()->GetPosition().y << ", "
+            << obj->GetTransform()->GetPosition().z << "\n"
+
+            << "rotation: " << obj->GetTransform()->GetRotation().x << ", "
+            << obj->GetTransform()->GetRotation().y << ", "
+            << obj->GetTransform()->GetRotation().z << "\n"
+
+            << "scale: " << obj->GetTransform()->GetScale().x << ", "
+            << obj->GetTransform()->GetScale().y << ", "
+            << obj->GetTransform()->GetScale().z << "\n"
+
+            << "mesh type: " << magic_enum::enum_name(obj->GetMesh()->GetMeshType()) << "\n"
+            << "--------------------\n";
+
+        if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model) 
+        {
+            ss << "model shininess: " << obj->GetBasicShape()->GetShininess() << "\n";
+        }
+        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light)
+        {
+            ss << "point light diffuse: "
+                << obj->GetPointLight()->GetDiffuse().x << ", "
+                << obj->GetPointLight()->GetDiffuse().y << ", "
+                << obj->GetPointLight()->GetDiffuse().z << "\n"
+
+                << "point light intensity: " << obj->GetPointLight()->GetIntensity() << "\n"
+
+                << "point light distance: " << obj->GetPointLight()->GetDistance() << "\n";
+        }
+        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light)
+        {
+            ss << "spotlight diffuse: "
+                << obj->GetSpotLight()->GetDiffuse().x << ", "
+                << obj->GetSpotLight()->GetDiffuse().y << ", "
+                << obj->GetSpotLight()->GetDiffuse().z << "\n"
+
+                << "spotlight intensity: " << obj->GetSpotLight()->GetIntensity() << "\n"
+
+                << "spotlight distance: " << obj->GetSpotLight()->GetDistance() << "\n"
+
+                << "spotlight outer angle: " << obj->GetSpotLight()->GetOuterAngle() << "\n"
+
+                << "spotlight inner angle: " << obj->GetSpotLight()->GetInnerAngle() << "\n";
+        }
+        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light) 
+        {
+            ss << "directional light diffuse: "
+                << obj->GetDirectionalLight()->GetDiffuse().x << ", "
+                << obj->GetDirectionalLight()->GetDiffuse().y << ", "
+                << obj->GetDirectionalLight()->GetDiffuse().z << "\n"
+
+                << "directional light intensity: " << obj->GetDirectionalLight()->GetIntensity() << "\n";
+        }
+
+        ss << "--------------------\n";
+
+        WriteConsoleMessage(
+            Caller::INPUT,
+            Type::INFO,
+            ss.str());
     }
 }

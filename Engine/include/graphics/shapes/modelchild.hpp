@@ -45,7 +45,8 @@ namespace Graphics::Shape
 			const vector<unsigned int> indices = {},
 			const float& shininess = 32,
 			string& name = tempName,
-			unsigned int& id = tempID);
+			unsigned int& id = tempID,
+			const bool& isEnabled = true);
 
 		static void Render(
 			const shared_ptr<GameObject>& obj,

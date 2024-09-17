@@ -46,7 +46,8 @@ namespace Graphics::Shape
 		const string& diffTexture,
 		const float& shininess,
 		string& name,
-		unsigned int& id)
+		unsigned int& id,
+		const bool& isEnabled)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -96,6 +97,7 @@ namespace Graphics::Shape
 			true,
 			name,
 			id,
+			isEnabled,
 			transform,
 			mesh,
 			mat,
@@ -116,37 +118,40 @@ namespace Graphics::Shape
 
 	void Billboard::RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
-		Shader shader = obj->GetMaterial()->GetShader();
+		if (obj->IsEnabled())
+		{
+			Shader shader = obj->GetMaterial()->GetShader();
 
-		shader.Use();
-		shader.SetMat4("projection", projection);
-		shader.SetMat4("view", view);
+			shader.Use();
+			shader.SetMat4("projection", projection);
+			shader.SetMat4("view", view);
 
-		shader.SetFloat("transparency", 1.0f);
-		shader.SetVec3("color", vec3(1));
+			shader.SetFloat("transparency", 1.0f);
+			shader.SetVec3("color", vec3(1));
 
-		mat4 model = mat4(1.0f);
+			mat4 model = mat4(1.0f);
 
-		vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
-		obj->GetTransform()->SetPosition(pos);
+			vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
+			obj->GetTransform()->SetPosition(pos);
 
-		vec3 objectPos = obj->GetTransform()->GetPosition();
-		vec3 cameraPos = Render::camera.GetCameraPosition();
-		model = translate(model, objectPos);
+			vec3 objectPos = obj->GetTransform()->GetPosition();
+			vec3 cameraPos = Render::camera.GetCameraPosition();
+			model = translate(model, objectPos);
 
-		mat4 rotationMatrix = lookAt(objectPos, cameraPos, vec3(0.0f, 1.0f, 0.0f));
-		rotationMatrix = inverse(rotationMatrix);
-		model = rotationMatrix;
+			mat4 rotationMatrix = lookAt(objectPos, cameraPos, vec3(0.0f, 1.0f, 0.0f));
+			rotationMatrix = inverse(rotationMatrix);
+			model = rotationMatrix;
 
-		model = scale(model, obj->GetTransform()->GetScale());
+			model = scale(model, obj->GetTransform()->GetScale());
 
-		//bind diffuse map
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse));
+			//bind diffuse map
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse));
 
-		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMesh()->GetVAO();
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+			shader.SetMat4("model", model);
+			GLuint VAO = obj->GetMesh()->GetVAO();
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
 	}
 }
