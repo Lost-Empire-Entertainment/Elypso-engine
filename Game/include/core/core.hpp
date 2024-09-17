@@ -32,9 +32,11 @@ namespace Core
 
 		static void Initialize();
 		static void Run();
-		static void Shutdown(bool immediate = false);
+		static void Shutdown();
 
 		static bool IsThisProcessAlreadyRunning(const string& processName);
 		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
+	private:
+		static inline bool isGameRunning;
 	};
 }

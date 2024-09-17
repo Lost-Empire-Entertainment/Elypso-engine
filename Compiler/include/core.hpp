@@ -27,5 +27,7 @@ namespace Core
 
 		static void MainLoop();
 		static void MainShutdown();
+	private:
+		static inline bool isCompilerRunning;
 	};
 }

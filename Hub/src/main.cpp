@@ -56,12 +56,18 @@ int main()
 	cout << "Successfully reached render loop!\n\n";
 	cout << "==================================================\n\n";
 
-	while (!glfwWindowShouldClose(Core::window))
+	Core::isHubRunning = true;
+
+	while (Core::isHubRunning)
 	{
 		Core::Render();
-	}
 
-	Core::Shutdown();
+		// Check if the window should close (e.g., user closed the window)
+		if (glfwWindowShouldClose(Core::window))
+		{
+			Core::isHubRunning = false;
+		}
+	}
 
 	return 0;
 }
@@ -311,7 +317,7 @@ void Core::CreateErrorPopup(const char* errorMessage)
 
 	int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
 
-	if (result == IDOK) Shutdown(true);
+	if (result == IDOK) Shutdown();
 }
 
 bool Core::IsThisProcessAlreadyRunning(const string& processName)
@@ -356,11 +362,11 @@ bool Core::IsThisProcessAlreadyRunning(const string& processName)
 	return processFound;
 }
 
-void Core::Shutdown(bool immediate)
+void Core::Shutdown()
 {
+	Core::isHubRunning = false;
+
 	SaveConfigFile();
-
 	GUI::Shutdown();
-
 	glfwTerminate();
 }

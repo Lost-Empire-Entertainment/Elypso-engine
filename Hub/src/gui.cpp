@@ -70,6 +70,8 @@ void GUI::Initialize()
 	style.FramePadding = ImVec2(6, 2);
 	style.ItemSpacing = ImVec2(0, 5);
 	io.FontGlobalScale = 1.5f;
+
+	isImguiInitialized = true;
 }
 
 ImVec2 GUI::CenterWindow(const ImVec2& size)
@@ -88,24 +90,27 @@ ImVec2 GUI::CenterWindow(const ImVec2& size)
 
 void GUI::Render()
 {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+	if (isImguiInitialized)
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
-	ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::GetIO();
 
-	ImGuiDockNodeFlags dockFlags =
-		ImGuiDockNodeFlags_PassthruCentralNode;
+		ImGuiDockNodeFlags dockFlags =
+			ImGuiDockNodeFlags_PassthruCentralNode;
 
-	GUI::RenderPanels();
-	GUI::RenderButtons();
-	CreateProject::RenderCreateProjectWindow();
-	RemoveProject::RenderRemoveProjectWindow();
+		GUI::RenderPanels();
+		GUI::RenderButtons();
+		CreateProject::RenderCreateProjectWindow();
+		RemoveProject::RenderRemoveProjectWindow();
 
-	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
 }
 
 void GUI::RenderPanels()
@@ -559,6 +564,8 @@ string GUI::SelectWithExplorer(SelectType selectType)
 
 void GUI::Shutdown()
 {
+	isImguiInitialized = false;
+
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();

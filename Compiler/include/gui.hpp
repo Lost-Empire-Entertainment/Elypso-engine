@@ -37,6 +37,8 @@ namespace Graphics
 
 		static void GUIShutdown();
 	private:
+		static inline bool isImguiInitialized;
+
 		enum class Action
 		{
 			compile,

@@ -258,74 +258,17 @@ namespace Core
 			ConsoleManager::PrintLogsToBuffer();
 		}
 
-		while (!glfwWindowShouldClose(Render::window))
+		isGameRunning = true;
+
+		while (isGameRunning)
 		{
 			TimeManager::UpdateDeltaTime();
-
 			Render::WindowLoop();
-		}
-	}
 
-	void Game::Shutdown(bool immediate)
-	{
-		if (immediate)
-		{
-			ConsoleManager::CloseLogger();
-			GameGUI::Shutdown();
-			glfwTerminate();
-			ExitProcess(1);
-		}
-		else
-		{
-			if (SceneFile::unsavedChanges == true)
+			// Check if the window should close (e.g., user closed the window)
+			if (glfwWindowShouldClose(Render::window))
 			{
-				/*
-				//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
-				if (glfwGetWindowAttrib(Render::window, GLFW_ICONIFIED))
-				{
-					glfwRestoreWindow(Render::window);
-				}
-				glfwFocusWindow(Render::window);
-
-				glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
-				GameGUI::renderUnsavedShutdownWindow = true;
-				*/
-			}
-			else
-			{
-				ConfigFile::SaveConfigFile();
-
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::INFO,
-					"==================================================\n\n",
-					true);
-
-				ConsoleManager::WriteConsoleMessage(
-					Caller::SHUTDOWN,
-					Type::INFO,
-					"Cleaning up resources...\n");
-
-				GameGUI::Shutdown();
-
-				//clean all glfw resources after program is closed
-				glfwTerminate();
-
-				ConsoleManager::WriteConsoleMessage(
-					Caller::SHUTDOWN,
-					Type::INFO,
-					"Shutdown complete!\n");
-
-				cout << "\n==================================================\n"
-					<< "\n"
-					<< "EXITED GAME\n"
-					<< "\n"
-					<< "==================================================\n"
-					<< ".\n"
-					<< ".\n"
-					<< ".\n\n";
-
-				ConsoleManager::CloseLogger();
+				isGameRunning = false;
 			}
 		}
 	}
@@ -388,6 +331,62 @@ namespace Core
 
 		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
 
-		if (result == IDOK) Shutdown(true);
+		if (result == IDOK) Shutdown();
+	}
+
+	void Game::Shutdown()
+	{
+		isGameRunning = false;
+
+		if (SceneFile::unsavedChanges == true)
+		{
+			/*
+			//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup
+			if (glfwGetWindowAttrib(Render::window, GLFW_ICONIFIED))
+			{
+				glfwRestoreWindow(Render::window);
+			}
+			glfwFocusWindow(Render::window);
+
+			glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+			GameGUI::renderUnsavedShutdownWindow = true;
+			*/
+		}
+		else
+		{
+			ConfigFile::SaveConfigFile();
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::INFO,
+				"==================================================\n\n",
+				true);
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::INFO,
+				"Cleaning up resources...\n");
+
+			GameGUI::Shutdown();
+
+			//clean all glfw resources after program is closed
+			glfwTerminate();
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::SHUTDOWN,
+				Type::INFO,
+				"Shutdown complete!\n");
+
+			cout << "\n==================================================\n"
+				<< "\n"
+				<< "EXITED GAME\n"
+				<< "\n"
+				<< "==================================================\n"
+				<< ".\n"
+				<< ".\n"
+				<< ".\n\n";
+
+			ConsoleManager::CloseLogger();
+		}
 	}
 }

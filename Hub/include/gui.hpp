@@ -54,4 +54,6 @@ public:
 	static void UpdateFileList();
 
 	static void Shutdown();
+private:
+	static inline bool isImguiInitialized;
 };

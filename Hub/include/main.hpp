@@ -22,6 +22,8 @@ using std::vector;
 class Core
 {
 public:
+	static inline bool isHubRunning;
+
 	static inline GLFWwindow* window;
 
 	static inline unsigned int currentWidth;
@@ -55,5 +57,5 @@ public:
 
 	static bool IsThisProcessAlreadyRunning(const string& processName);
 
-	static void Shutdown(bool immediate = false);
+	static void Shutdown();
 };

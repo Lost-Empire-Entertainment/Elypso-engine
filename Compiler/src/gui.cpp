@@ -60,6 +60,8 @@ namespace Graphics
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		io.FontGlobalScale = stof(ConfigFile::GetValue("fontScale"));
+
+		isImguiInitialized = true;
 	}
 
 	int GUI::GetScreenWidth()
@@ -78,19 +80,22 @@ namespace Graphics
 
 	void GUI::GUILoop()
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		if (isImguiInitialized)
+		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
 
-		ImGuiDockNodeFlags dockFlags =
-			ImGuiDockNodeFlags_PassthruCentralNode;
+			ImGuiDockNodeFlags dockFlags =
+				ImGuiDockNodeFlags_PassthruCentralNode;
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
-		RenderParentWindow();
+			RenderParentWindow();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
 	}
 
 	void GUI::RenderParentWindow()
@@ -445,17 +450,7 @@ namespace Graphics
 
 	void GUI::GUIShutdown()
 	{
-		//close any remaining open ImGui windows
-		for (ImGuiWindow* window : ImGui::GetCurrentContext()->Windows)
-		{
-			if (window->WasActive)
-			{
-				ImGui::CloseCurrentPopup();
-			}
-		}
-
-		ImGui::StyleColorsDark();
-		ImGui::GetIO().IniFilename = nullptr;
+		isImguiInitialized = false;
 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();

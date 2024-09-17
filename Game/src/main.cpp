@@ -11,9 +11,7 @@ using Core::Game;
 int main()
 {
 	Game::Initialize();
-
 	Game::Run();
 
-	Game::Shutdown();
 	return 0;
 }

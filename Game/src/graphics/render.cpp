@@ -147,6 +147,10 @@ namespace Graphics
 
 	void Render::ContentSetup()
 	{
+		//enable face culling
+		glEnable(GL_CULL_FACE);
+		//cull back faces
+		glCullFace(GL_BACK);
 		//enable depth testing
 		glEnable(GL_DEPTH_TEST);
 		//enable blending

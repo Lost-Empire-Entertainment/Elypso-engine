@@ -57,6 +57,8 @@ namespace Graphics::GUI
 
 		ImGuiStyle& style = ImGui::GetStyle();
 		io.FontGlobalScale = stof(ConfigFile::GetValue("gui_fontScale"));
+
+		isImguiInitialized = true;
 	}
 
 	int GameGUI::GetScreenWidth()
@@ -84,23 +86,28 @@ namespace Graphics::GUI
 
 	void GameGUI::Render()
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		if (isImguiInitialized)
+		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
 
-		ImGuiDockNodeFlags dockFlags =
-			ImGuiDockNodeFlags_PassthruCentralNode;
+			ImGuiDockNodeFlags dockFlags =
+				ImGuiDockNodeFlags_PassthruCentralNode;
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
-		GUIConsole::RenderConsole();
+			GUIConsole::RenderConsole();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
 	}
 
 	void GameGUI::Shutdown()
 	{
+		isImguiInitialized = false;
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();

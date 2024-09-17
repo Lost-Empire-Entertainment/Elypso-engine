@@ -160,20 +160,28 @@ namespace Core
 	{
 		cout << "Running Compiler...\n";
 
-		while (!glfwWindowShouldClose(Render::window))
+		isCompilerRunning = true;
+
+		while (isCompilerRunning)
 		{
 			Render::RenderLoop();
+
+			// Check if the window should close (e.g., user closed the window)
+			if (glfwWindowShouldClose(Render::window))
+			{
+				isCompilerRunning = false;
+			}
 		}
 	}
 
 	void Compiler::MainShutdown()
 	{
 		cout << "Shutting down Compiler...\n";
+
+		isCompilerRunning = false;
 		
 		ConfigFile::SaveData();
-
 		GUI::GUIShutdown();
 		glfwTerminate();
-		ExitProcess(1);
 	}
 }

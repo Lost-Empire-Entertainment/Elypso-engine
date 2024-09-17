@@ -11,7 +11,6 @@ int main()
 {
 	Compiler::MainInitialize();
 	Compiler::MainLoop();
-	Compiler::MainShutdown();
 
 	return 0;
 }

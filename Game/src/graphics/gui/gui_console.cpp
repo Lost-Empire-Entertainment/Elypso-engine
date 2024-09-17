@@ -44,9 +44,9 @@ namespace Graphics::GUI
 			&& ImGui::Begin("Console", NULL, windowFlags))
 		{
 			RenderConsoleContent();
-		}
 
-		ImGui::End();
+			ImGui::End();
+		}
 	}
 
 	void GUIConsole::RenderConsoleContent()

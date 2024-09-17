@@ -17,5 +17,7 @@ namespace Graphics::GUI
 		static int GetScreenWidth();
 		static int GetScreenHeight();
 		static float GetScreenRefreshRate();
+	private:
+		static inline bool isImguiInitialized;
 	};
 }
