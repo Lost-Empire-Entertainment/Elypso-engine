@@ -19,5 +19,3 @@ This file contains the full list of all libraries used for Elypso Hub, Elypso En
 [stb_image - Imports images](https://github.com/nothings/stb/blob/master/stb_image.h)
 
 [magic_enum - Simplifies enum-string operations](https://github.com/Neargye/magic_enum)
-
-[Math-utils - Many easily usable math functions to simplify calculations](https://github.com/lost-empire-entertainment/Math-utils)
