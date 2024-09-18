@@ -16,6 +16,7 @@
 #include "modelchild.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
+#include "directionallight.hpp"
 #include "billboard.hpp"
 #include "render.hpp"
 #include "console.hpp"
@@ -63,6 +64,9 @@ namespace Graphics::Shape
 					break;
 				case Type::spot_light:
 					SpotLight::RenderSpotLight(obj, view, projection);
+					break;
+				case Type::directional_light:
+					DirectionalLight::RenderDirectionalLight(obj, view, projection);
 					break;
 				}
 			}
@@ -147,6 +151,13 @@ namespace Graphics::Shape
 			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			spotLights.erase(remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
+			break;
+		case Type::directional_light:
+			DestroyGameObject(obj->GetChildBillboard());
+			obj->SetChildBillboard(nullptr);
+			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			directionalLight = nullptr;
 			break;
 		case Type::billboard:
 			obj->SetParentBillboardHolder(nullptr);

@@ -3,12 +3,7 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <iostream>
-#include <map>
-#include <filesystem>
-
 //external
-#include "glad.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
 
@@ -17,27 +12,15 @@
 #include "modelchild.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
-#include "core.hpp"
 #include "console.hpp"
 
-using std::cout;
-using std::endl;
-using std::to_string;
-using std::map;
 using glm::translate;
-using glm::rotate;
-using glm::radians;
 using glm::quat;
-using glm::scale;
-using std::filesystem::path;
 
 using Graphics::Render;
 using Graphics::Shader;
-using Graphics::Texture;
 using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
-using Core::Game;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -58,7 +41,8 @@ namespace Graphics::Shape
 		const vector<unsigned int> indices,
 		const float& shininess,
 		string& name,
-		unsigned int& id)
+		unsigned int& id,
+		const bool& isEnabled)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -117,6 +101,7 @@ namespace Graphics::Shape
 			true,
 			name,
 			id,
+			isEnabled,
 			transform,
 			mesh,
 			mat,
@@ -151,117 +136,147 @@ namespace Graphics::Shape
 		const mat4& view,
 		const mat4& projection)
 	{
-		Shader shader = obj->GetMaterial()->GetShader();
-
-		shader.Use();
-		shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
-		shader.SetFloat("material.shininess", obj->GetBasicShape()->GetShininess());
-
-		//directional light
-		shader.SetVec3("dirLight.direction", Render::directionalDirection);
-		shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		shader.SetVec3("dirLight.diffuse", Render::directionalDiffuse);
-		shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-		shader.SetFloat("dirLight.intensity", Render::directionalIntensity);
-
-		//point lights
-		const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointLights();
-		int pointLightCount = static_cast<int>(pointLights.size());
-		shader.SetInt("pointLightCount", pointLightCount);
-		if (pointLightCount > 0)
+		if (obj->IsEnabled())
 		{
-			for (int i = 0; i < pointLightCount; i++)
-			{
-				shared_ptr<Transform> transform = pointLights[i]->GetTransform();
-				shared_ptr<PointLight_Variables> pointLight = pointLights[i]->GetPointLight();
-				string lightPrefix = "pointLights[" + to_string(i) + "].";
-				shader.SetVec3(lightPrefix + "position", transform->GetPosition());
-				shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
-				shader.SetVec3(lightPrefix + "diffuse", pointLight->GetDiffuse());
-				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
-				shader.SetFloat(lightPrefix + "constant", 1.0f);
-				shader.SetFloat(lightPrefix + "linear", 0.09f);
-				shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-				shader.SetFloat(lightPrefix + "intensity", pointLight->GetIntensity());
-				shader.SetFloat(lightPrefix + "distance", pointLight->GetDistance());
-			}
-		}
+			Shader shader = obj->GetMaterial()->GetShader();
 
-		//spotLight
-		const vector<shared_ptr<GameObject>>& spotLights = GameObjectManager::GetSpotLights();
-		int spotLightCount = static_cast<int>(spotLights.size());
-		shader.SetInt("spotLightCount", spotLightCount);
-		if (spotLightCount > 0)
-		{
-			for (int i = 0; i < spotLightCount; i++)
-			{
-				shared_ptr<Transform> transform = spotLights[i]->GetTransform();
-				shared_ptr<SpotLight_Variables> spotLight = spotLights[i]->GetSpotLight();
-				string lightPrefix = "spotLights[" + to_string(i) + "].";
-				shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+			shader.Use();
+			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
+			shader.SetFloat("material.shininess", obj->GetBasicShape()->GetShininess());
 
-				vec3 rotationAngles = transform->GetRotation();
-				quat rotationQuat = quat(radians(rotationAngles));
+			//directional light
+			if (GameObjectManager::GetDirectionalLight() != nullptr)
+			{
+				shared_ptr<GameObject> dirLight = GameObjectManager::GetDirectionalLight();
+
+				int count = dirLight->IsEnabled() ? 1 : 0;
+				shader.SetInt("dirLightCount", count);
+
+				shared_ptr<Transform> transform = dirLight->GetTransform();
+				shared_ptr<Directional_light_Variables> dirVar = dirLight->GetDirectionalLight();
+
+				vec3 dirRot = transform->GetRotation();
+				quat dirQuat = quat(radians(dirRot));
 				//assuming the initial direction is along the negative Y-axis
-				vec3 initialDirection = vec3(0.0f, -1.0f, 0.0f);
+				vec3 initialDir = vec3(0.0f, -1.0f, 0.0f);
 				//rotate the initial direction using the quaternion
-				vec3 rotatedDirection = rotationQuat * initialDirection;
-				//set the rotated direction in the shader
-				shader.SetVec3(lightPrefix + "direction", rotatedDirection);
+				vec3 rotatedDir = dirQuat * initialDir;
+				rotatedDir = normalize(rotatedDir);
 
-				shader.SetFloat(lightPrefix + "intensity", spotLight->GetIntensity());
-				shader.SetFloat(lightPrefix + "distance", spotLight->GetDistance());
-				shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
-				shader.SetVec3(lightPrefix + "diffuse", spotLight->GetDiffuse());
-				shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
-				shader.SetFloat(lightPrefix + "constant", 1.0f);
-				shader.SetFloat(lightPrefix + "linear", 0.09f);
-				shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-				shader.SetFloat(lightPrefix + "cutOff", cos(radians(spotLight->GetInnerAngle())));
-				shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(spotLight->GetOuterAngle())));
+				shader.SetBool("dirLight.enabled", dirLight->IsEnabled());
+
+				shader.SetVec3("dirLight.direction", rotatedDir);
+
+				shader.SetFloat("dirLight.intensity", dirVar->GetIntensity());
+				shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+				shader.SetVec3("dirLight.diffuse", dirVar->GetDiffuse());
+				shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 			}
-		}
 
-		shader.SetMat4("projection", projection);
-		shader.SetMat4("view", view);
+			//point lights
+			const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointLights();
+			int pointLightCount = static_cast<int>(pointLights.size());
+			shader.SetInt("pointLightCount", pointLightCount);
+			if (pointLightCount > 0)
+			{
+				for (int i = 0; i < pointLightCount; i++)
+				{
+					shared_ptr<Transform> transform = pointLights[i]->GetTransform();
+					shared_ptr<PointLight_Variables> pointLight = pointLights[i]->GetPointLight();
+					string lightPrefix = "pointLights[" + to_string(i) + "].";
 
-		mat4 model = mat4(1.0f);
+					shader.SetBool(lightPrefix + "enabled", pointLights[i]->IsEnabled());
 
-		model = translate(model, obj->GetTransform()->GetPosition());
+					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+					shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
+					shader.SetVec3(lightPrefix + "diffuse", pointLight->GetDiffuse());
+					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+					shader.SetFloat(lightPrefix + "constant", 1.0f);
+					shader.SetFloat(lightPrefix + "linear", 0.09f);
+					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+					shader.SetFloat(lightPrefix + "intensity", pointLight->GetIntensity());
+					shader.SetFloat(lightPrefix + "distance", pointLight->GetDistance());
+				}
+			}
 
-		quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
-		model *= mat4_cast(newRot);
+			//spotlights
+			const vector<shared_ptr<GameObject>>& spotLights = GameObjectManager::GetSpotLights();
+			int spotLightCount = static_cast<int>(spotLights.size());
+			shader.SetInt("spotLightCount", spotLightCount);
+			if (spotLightCount > 0)
+			{
+				for (int i = 0; i < spotLightCount; i++)
+				{
+					shared_ptr<Transform> transform = spotLights[i]->GetTransform();
+					shared_ptr<SpotLight_Variables> spotLight = spotLights[i]->GetSpotLight();
+					string lightPrefix = "spotLights[" + to_string(i) + "].";
+					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
 
-		model = scale(model, obj->GetTransform()->GetScale());
+					shader.SetBool(lightPrefix + "enabled", spotLights[i]->IsEnabled());
 
-		shared_ptr<Material> mat = obj->GetMaterial();
+					vec3 rotationAngles = transform->GetRotation();
+					quat rotationQuat = quat(radians(rotationAngles));
+					//assuming the initial direction is along the negative Y-axis
+					vec3 initialDirection = vec3(0.0f, -1.0f, 0.0f);
+					//rotate the initial direction using the quaternion
+					vec3 rotatedDirection = rotationQuat * initialDirection;
+					//set the rotated direction in the shader
+					shader.SetVec3(lightPrefix + "direction", rotatedDirection);
 
-		//bind diffuse texture
-		unsigned int diffuseTextureID = mat->GetTextureID(Material::TextureType::diffuse);
-		if (diffuseTextureID != 0)
-		{
+					shader.SetFloat(lightPrefix + "intensity", spotLight->GetIntensity());
+					shader.SetFloat(lightPrefix + "distance", spotLight->GetDistance());
+					shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
+					shader.SetVec3(lightPrefix + "diffuse", spotLight->GetDiffuse());
+					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+					shader.SetFloat(lightPrefix + "constant", 1.0f);
+					shader.SetFloat(lightPrefix + "linear", 0.09f);
+					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+					shader.SetFloat(lightPrefix + "cutOff", cos(radians(spotLight->GetInnerAngle())));
+					shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(spotLight->GetOuterAngle())));
+				}
+			}
+
+			shader.SetMat4("projection", projection);
+			shader.SetMat4("view", view);
+
+			mat4 model = mat4(1.0f);
+
+			model = translate(model, obj->GetTransform()->GetPosition());
+
+			quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+			model *= mat4_cast(newRot);
+
+			model = scale(model, obj->GetTransform()->GetScale());
+
+			shared_ptr<Material> mat = obj->GetMaterial();
+
+			//bind diffuse texture
+			unsigned int diffuseTextureID = mat->GetTextureID(Material::TextureType::diffuse);
+			if (diffuseTextureID != 0)
+			{
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
+			}
+
+			//bind specular texture
+			unsigned int specularTextureID = mat->GetTextureID(Material::TextureType::specular);
+			if (specularTextureID != 0)
+			{
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, specularTextureID);
+			}
+
+			shader.SetMat4("model", model);
+
+			GLuint VAO = obj->GetMesh()->GetVAO();
+			glBindVertexArray(VAO);
+			glDrawElements(
+				GL_TRIANGLES,
+				static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
+				GL_UNSIGNED_INT,
+				0);
+
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, diffuseTextureID);
 		}
-
-		//bind specular texture
-		unsigned int specularTextureID = mat->GetTextureID(Material::TextureType::specular);
-		if (specularTextureID != 0)
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, specularTextureID);
-		}
-
-		shader.SetMat4("model", model);
-
-		GLuint VAO = obj->GetMesh()->GetVAO();
-		glBindVertexArray(VAO);
-		glDrawElements(
-			GL_TRIANGLES,
-			static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
-			GL_UNSIGNED_INT,
-			0);
-
-		glActiveTexture(GL_TEXTURE0);
 	}
 }

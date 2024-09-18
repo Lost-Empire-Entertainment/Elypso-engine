@@ -41,6 +41,7 @@ namespace Graphics::Shape
 			const float& outerAngle = 17.5f,
 			string& name = tempName,
 			unsigned int& id = tempID,
+			const bool& isEnabled = true,
 
 			//
 			// BILLBOARD VALUES

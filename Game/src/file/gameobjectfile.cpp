@@ -16,6 +16,7 @@
 #include "model.hpp"
 #include "spotlight.hpp"
 #include "pointlight.hpp"
+#include "directionallight.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -35,6 +36,7 @@ using Graphics::Shape::Material;
 using Graphics::Shape::Model;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::PointLight;
+using Graphics::Shape::DirectionalLight;
 
 namespace GameFile
 {
@@ -68,6 +70,8 @@ namespace GameFile
 		objectFile << "name= " << obj->GetName() << "\n";
 
 		objectFile << "id= " << obj->GetID() << "\n";
+
+		objectFile << "isEnabled= " << obj->IsEnabled() << "\n";
 
 		string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
 		objectFile << "type= " << type << "\n";
@@ -156,10 +160,20 @@ namespace GameFile
 
 			objectFile << "outer angle= " << obj->GetSpotLight()->GetOuterAngle() << "\n";
 		}
+		else if (meshType == Mesh::MeshType::directional_light)
+		{
+			float dirDiffuseX = obj->GetDirectionalLight()->GetDiffuse().x;
+			float dirDiffuseY = obj->GetDirectionalLight()->GetDiffuse().y;
+			float dirDiffuseZ = obj->GetDirectionalLight()->GetDiffuse().z;
+			objectFile << "diffuse= " << dirDiffuseX << ", " << dirDiffuseY << ", " << dirDiffuseZ << "\n";
+
+			objectFile << "intensity= " << obj->GetDirectionalLight()->GetIntensity() << "\n";
+		}
 
 		//also save billboard data of each light source
 		if (meshType == Mesh::MeshType::point_light
-			|| meshType == Mesh::MeshType::spot_light)
+			|| meshType == Mesh::MeshType::spot_light
+			|| meshType == Mesh::MeshType::directional_light)
 		{
 			objectFile << "\n";
 			objectFile << "---attatched billboard data---" << "\n";
@@ -244,6 +258,7 @@ namespace GameFile
 
 					if (key == "name"
 						|| key == "id"
+						|| key == "isEnabled"
 						|| key == "type"
 						|| key == "position"
 						|| key == "rotation"
@@ -285,6 +300,7 @@ namespace GameFile
 	{
 		string name = "MISSING NAME";
 		unsigned int id = 0;
+		bool isEnabled = false;
 		Mesh::MeshType type = Mesh::MeshType::model;
 		string scene = "";
 		vec3 pos = vec3();
@@ -312,15 +328,10 @@ namespace GameFile
 			string key = kvp.first;
 			string value = kvp.second;
 
-			if (key == "scene")
-			{
-				scene = value;
-			}
-			else if (key == "name")
-			{
-				name = value;
-			}
+			if (key == "scene") scene = value;
+			else if (key == "name") name = value;
 			else if (key == "id") id = stoul(value);
+			else if (key == "isEnabled") isEnabled = stoi(value);
 			else if (key == "type")
 			{
 				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
@@ -577,7 +588,8 @@ namespace GameFile
 				heightTexture,
 				shininess,
 				name,
-				id);
+				id,
+				isEnabled);
 
 			GameObject::nextID = id + 1;
 		}
@@ -604,6 +616,7 @@ namespace GameFile
 				distance,
 				name,
 				id,
+				isEnabled,
 				billboardShaders[0],
 				billboardShaders[1],
 				billboardDiffTexture,
@@ -638,6 +651,7 @@ namespace GameFile
 				outerAngle,
 				name,
 				id,
+				isEnabled,
 				billboardShaders[0],
 				billboardShaders[1],
 				billboardDiffTexture,
@@ -647,5 +661,37 @@ namespace GameFile
 
 			GameObject::nextID = id + 1;
 		}
+
+		//
+		// LOAD DIRECTIONAL LIGHT
+		//
+
+		else if (type == Mesh::MeshType::directional_light)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				"Loading light source '" + name + "' for scene '" + path(Game::scenePath).parent_path().stem().string() + "'.\n");
+
+			DirectionalLight::InitializeDirectionalLight(
+				pos,
+				rot,
+				scale,
+				shaders[0],
+				shaders[1],
+				diffuse,
+				intensity,
+				name,
+				id,
+				isEnabled,
+				billboardShaders[0],
+				billboardShaders[1],
+				billboardDiffTexture,
+				billboardShininess,
+				billboardName,
+				billboardID);
+
+			GameObject::nextID = id + 1;
+			}
 	}
 }

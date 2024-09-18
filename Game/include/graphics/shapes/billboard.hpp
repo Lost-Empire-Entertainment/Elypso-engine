@@ -33,7 +33,8 @@ namespace Graphics::Shape
 			const string& diffTexture = "",
 			const float& shininess = 32,
 			string& name = tempName,
-			unsigned int& id = tempID);
+			unsigned int& id = tempID,
+			const bool& isEnabled = true);
 
 		static void RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};

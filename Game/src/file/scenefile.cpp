@@ -91,24 +91,7 @@ namespace GameFile
 					}
 				}
 
-				if (type == "dirRotation")
-				{
-					vector<string> values = String::Split(value, ',');
-					Render::directionalDirection = String::StringToVec3(values);
-				}
-
-				else if (type == "dirDiffuse")
-				{
-					vector<string> values = String::Split(value, ',');
-					Render::directionalDiffuse = String::StringToVec3(values);
-				}
-
-				else if (type == "dirRotation")
-				{
-					Render::directionalIntensity = stof(value);
-				}
-
-				else if (type == "backgroundColor")
+				if (type == "backgroundColor")
 				{
 					vector<string> values = String::Split(value, ',');
 					Render::backgroundColor = String::StringToVec3(values);
@@ -148,21 +131,6 @@ namespace GameFile
 				"Couldn't write into scene file '" + Game::scenePath + "'!\n");
 			return;
 		}
-
-		float dirRotX = Render::directionalDirection.x;
-		float dirRotY = Render::directionalDirection.y;
-		float dirRotZ = Render::directionalDirection.z;
-		sceneFile << "dirDirection= " << dirRotX << ", " << dirRotY << ", " << dirRotZ << "\n";
-
-		float dirDiffX = Render::directionalDiffuse.x;
-		float dirDiffY = Render::directionalDiffuse.y;
-		float dirDiffZ = Render::directionalDiffuse.z;
-		sceneFile << "dirDiffuse= " << dirDiffX << ", " << dirDiffY << ", " << dirDiffZ << "\n";
-
-		float dirIntensity = Render::directionalIntensity;
-		sceneFile << "dirIntensity= " << Render::directionalIntensity << "\n";
-
-		sceneFile << "\n";
 
 		float bgrR = Render::backgroundColor.r;
 		float bgrG = Render::backgroundColor.g;
