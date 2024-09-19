@@ -42,7 +42,7 @@ using Core::Engine;
 using Graphics::Render;
 using Utils::String;
 using Graphics::GUI::EngineGUI;
-using Physics::Select;
+using Core::Select;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Graphics::Shape::Material;

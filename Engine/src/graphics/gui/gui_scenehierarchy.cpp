@@ -36,7 +36,7 @@ using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Utils::File;
 using Utils::String;
-using Physics::Select;
+using Core::Select;
 
 namespace Graphics::GUI
 {

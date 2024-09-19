@@ -40,7 +40,7 @@ using std::filesystem::is_regular_file;
 using std::filesystem::exists;
 
 using Graphics::Render;
-using Physics::Select;
+using Core::Select;
 using Graphics::Shape::GameObject;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Transform;

@@ -31,7 +31,7 @@ using Graphics::Shape::Material;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
-using Physics::Select;
+using Core::Select;
 using Core::Input;
 
 namespace Graphics::Shape

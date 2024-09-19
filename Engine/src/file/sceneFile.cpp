@@ -36,7 +36,7 @@ using std::filesystem::directory_iterator;
 using std::filesystem::create_directory;
 
 using Core::Engine;
-using Physics::Select;
+using Core::Select;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Utils::String;

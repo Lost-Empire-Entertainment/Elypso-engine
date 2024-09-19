@@ -17,7 +17,7 @@ using glm::mat4;
 
 using Graphics::Shape::GameObject;
 
-namespace Physics
+namespace Core
 {
 	class Select
 	{
@@ -41,11 +41,28 @@ namespace Physics
 		/// <param name="viewMatrix">Target camera view matrix</param>
 		/// <param name="projectionMatrix">Target camera projection matrix</param>
 		/// <returns></returns>
-		static Ray RayFromMouse(float width, float height, double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix);
+		static Ray RayFromMouse(
+			float width, 
+			float height, 
+			double mouseX, 
+			double mouseY, 
+			const mat4& viewMatrix, 
+			const mat4& projectionMatrix);
 
 		/// <summary>
 		/// Check ray-object intersections.
 		/// </summary>
-		static int CheckRayObjectIntersections(const Ray& ray, const vector<shared_ptr<GameObject>>& objects);
+		static int CheckRayObjectIntersections(
+			const Ray& ray, 
+			const vector<shared_ptr<GameObject>>& objects);
+
+	private:
+		/// <summary>
+		/// Check if the ray actually is interacting with a shape
+		/// </summary>
+		static bool IsRayIntersectingShape(
+			const Ray& ray, 
+			const shared_ptr<GameObject>& cube,
+			float* distance);
 	};
 }

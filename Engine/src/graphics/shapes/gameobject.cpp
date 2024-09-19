@@ -36,7 +36,7 @@ using std::dynamic_pointer_cast;
 using glm::distance;
 using std::filesystem::directory_iterator;
 
-using Physics::Select;
+using Core::Select;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;

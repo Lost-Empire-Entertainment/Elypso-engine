@@ -20,8 +20,8 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
-#include "collision.hpp"
 #include "render.hpp"
+#include "selectobject.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -43,7 +43,7 @@ using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
-using Physics::Select;
+using Core::Select;
 using Graphics::Render;
 
 namespace EngineFile

@@ -60,7 +60,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::ConfigFile;
 using Utils::String;
-using Physics::Select;
+using Core::Select;
 
 namespace Graphics
 {

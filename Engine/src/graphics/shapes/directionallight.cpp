@@ -24,7 +24,7 @@ using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Physics::Select;
+using Core::Select;
 
 namespace Graphics::Shape
 {

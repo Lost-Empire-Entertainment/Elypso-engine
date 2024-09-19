@@ -10,7 +10,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
-#include "math.hpp"
 
 //engine
 #include "console.hpp"
@@ -62,7 +61,7 @@ using Core::Engine;
 using Core::Input;
 using Core::ConsoleManager;
 using Core::TimeManager;
-using Physics::Select;
+using Core::Select;
 using Utils::File;
 using Utils::Browser;
 using Utils::String;
@@ -78,7 +77,6 @@ using EngineFile::FileExplorer;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Compilation;
-using Utils::Math;
 
 namespace Graphics::GUI
 {
@@ -302,12 +300,9 @@ namespace Graphics::GUI
 
 			vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
 
-			long double convertedX = Math::Round(newPos.x);
-			long double convertedY = Math::Round(newPos.y);
-			long double convertedZ = Math::Round(newPos.z);
-			int resultX = static_cast<int>(convertedX);
-			int resultY = static_cast<int>(convertedY);
-			int resultZ = static_cast<int>(convertedZ);
+			int resultX = static_cast<int>(newPos.x);
+			int resultY = static_cast<int>(newPos.y);
+			int resultZ = static_cast<int>(newPos.z);
 			newPos = vec3(resultX, resultY, resultZ);
 
 			if (ImGui::BeginMenu("Shape"))

@@ -15,7 +15,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "magic_enum.hpp"
-#include "math.hpp"
 
 //engine
 #include "console.hpp"
@@ -50,7 +49,6 @@ using std::numeric_limits;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 
-using Physics::Select;
 using Graphics::Render;
 using Core::ConsoleManager;
 using EngineFile::SceneFile;
@@ -67,7 +65,6 @@ using Utils::File;
 using Core::Compilation;
 using Core::Input;
 using Utils::String;
-using Utils::Math;
 
 namespace Core
 {
@@ -217,12 +214,9 @@ namespace Core
 
                     vector<string> posSplit = String::Split(copiedObject["pos"].c_str(), ',');
                     vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
-                    long double convertedX = Math::Round(newPos.x);
-                    long double convertedY = Math::Round(newPos.y);
-                    long double convertedZ = Math::Round(newPos.z);
-                    int resultX = static_cast<int>(convertedX);
-                    int resultY = static_cast<int>(convertedY);
-                    int resultZ = static_cast<int>(convertedZ);
+                    int resultX = static_cast<int>(newPos.x);
+                    int resultY = static_cast<int>(newPos.y);
+                    int resultZ = static_cast<int>(newPos.z);
                     newPos = vec3(resultX, resultY, resultZ);
 
                     vector<string> rotSplit = String::Split(copiedObject["rot"].c_str(), ',');
