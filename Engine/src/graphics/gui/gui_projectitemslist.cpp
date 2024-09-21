@@ -20,6 +20,7 @@
 #include "texture.hpp"
 #include "console.hpp"
 #include "gui.hpp"
+#include "gui_settings.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -52,7 +53,18 @@ namespace Graphics::GUI
 			| ImGuiWindowFlags_NoDocking
 			| ImGuiWindowFlags_NoResize;
 
-		string listType = string(magic_enum::enum_name(type));
+		string listType;
+		if (type == Type::SkyboxTexture_left
+			|| type == Type::SkyboxTexture_right
+			|| type == Type::SkyboxTexture_top
+			|| type == Type::SkyboxTexture_bottom
+			|| type == Type::SkyboxTexture_front
+			|| type == Type::SkyboxTexture_back)
+		{
+			listType = "Skybox texture";
+		}
+		if (type == Type::GameobjectTexture) listType = "Gameobject texture";
+		if (type == Type::Scene) listType = "Scene";
 
 		if (renderProjectItemsList
 			&& ImGui::Begin(listType.c_str(), NULL, windowFlags))
@@ -72,7 +84,13 @@ namespace Graphics::GUI
 
 			switch (type)
 			{
-			case Type::Textures:
+			case Type::SkyboxTexture_right:
+			case Type::SkyboxTexture_left:
+			case Type::SkyboxTexture_top:
+			case Type::SkyboxTexture_bottom:
+			case Type::SkyboxTexture_front:
+			case Type::SkyboxTexture_back:
+			case Type::GameobjectTexture:
 			{
 				for (const auto& entry : directory_iterator(Engine::texturesPath))
 				{
@@ -89,7 +107,7 @@ namespace Graphics::GUI
 				}
 				break;
 			}
-			case Type::Scenes:
+			case Type::Scene:
 			{
 				for (const auto& entry : directory_iterator(path(Engine::scenePath).parent_path().parent_path().string()))
 				{
@@ -124,7 +142,9 @@ namespace Graphics::GUI
 			{
 				string name = path(entry).stem().string();
 
-				if (chosenEntry == name)
+				bool isChosen = (chosenEntry == name);
+
+				if (isChosen)
 				{
 					ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color);
@@ -136,12 +156,18 @@ namespace Graphics::GUI
 
 					switch (type)
 					{
-					case Type::Textures:
+					case Type::SkyboxTexture_right:
+					case Type::SkyboxTexture_left:
+					case Type::SkyboxTexture_top:
+					case Type::SkyboxTexture_bottom:
+					case Type::SkyboxTexture_front:
+					case Type::SkyboxTexture_back:
+					case Type::GameobjectTexture:
 					{
 						selectedPath = entry;
 						break;
 					}
-					case Type::Scenes:
+					case Type::Scene:
 					{
 						for (const auto& child : directory_iterator(entry))
 						{
@@ -157,7 +183,7 @@ namespace Graphics::GUI
 					}
 				}
 
-				if (chosenEntry == name)
+				if (isChosen)
 				{
 					ImGui::PopStyleColor();
 				}
@@ -176,12 +202,42 @@ namespace Graphics::GUI
 		{
 			switch (type)
 			{
-			case Type::Textures:
+			case Type::SkyboxTexture_right:
+			{
+				GUISettings::skyboxTextures["right"] = selectedPath;
+				break;
+			}
+			case Type::SkyboxTexture_left:
+			{
+				GUISettings::skyboxTextures["left"] = selectedPath;
+				break;
+			}
+			case Type::SkyboxTexture_top:
+			{
+				GUISettings::skyboxTextures["top"] = selectedPath;
+				break;
+			}
+			case Type::SkyboxTexture_bottom:
+			{
+				GUISettings::skyboxTextures["bottom"] = selectedPath;
+				break;
+			}
+			case Type::SkyboxTexture_front:
+			{
+				GUISettings::skyboxTextures["front"] = selectedPath;
+				break;
+			}
+			case Type::SkyboxTexture_back:
+			{
+				GUISettings::skyboxTextures["back"] = selectedPath;
+				break;
+			}
+			case Type::GameobjectTexture:
 			{
 				Texture::LoadTexture(obj, selectedPath, textureType, true);
 				break;
 			}
-			case Type::Scenes:
+			case Type::Scene:
 			{
 				if (!selectStartScene)
 				{

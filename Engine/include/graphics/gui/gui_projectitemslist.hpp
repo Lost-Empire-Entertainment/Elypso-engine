@@ -26,14 +26,30 @@ namespace Graphics::GUI
 	public:
 		enum class Type
 		{
-			Textures,
-			Scenes
+			SkyboxTexture_right,
+			SkyboxTexture_left,
+			SkyboxTexture_top,
+			SkyboxTexture_bottom,
+			SkyboxTexture_front,
+			SkyboxTexture_back,
+			GameobjectTexture,
+			Scene
 		};
 
 		static inline bool renderProjectItemsList;
-		static inline bool selectStartScene;
-		static inline string selectedPath;
 		static inline Type type;
+		static inline string selectedPath;
+
+		//for assigning scene
+
+		static inline bool selectStartScene;
+
+		//for assigning texture to skybox
+
+		static inline bool selectSkyboxTexture;
+		
+		//for assigning texture to gameobjects
+		
 		static inline Material::TextureType textureType;
 		static inline shared_ptr<GameObject> obj;
 

@@ -186,6 +186,9 @@ namespace Graphics::Shape
         const mat4& projection)
 	{
         glDepthFunc(GL_LEQUAL);
+
+        glDepthMask(GL_FALSE);
+
         Shader skyboxShader = obj->GetMaterial()->GetShader();
         skyboxShader.Use();
         view = mat4(mat3(Render::camera.GetViewMatrix()));
@@ -197,6 +200,9 @@ namespace Graphics::Shape
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+
+        glDepthMask(GL_TRUE);
+
         glDepthFunc(GL_LESS);
 	}
 }

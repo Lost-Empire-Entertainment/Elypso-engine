@@ -20,7 +20,6 @@
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "billboard.hpp"
-#include "skybox.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "console.hpp"
@@ -41,7 +40,6 @@ using Core::Select;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
-using Graphics::Shape::Skybox;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -78,9 +76,9 @@ namespace Graphics::Shape
 					break;
 				}
 			}
-
-			Border::RenderBorder(border, view, projection);
 		}
+
+		Border::RenderBorder(border, view, projection);
 
 		//transparent objects are rendered last
 		if (transparentObjects.size() > 0)
@@ -101,7 +99,7 @@ namespace Graphics::Shape
 					return distanceA > distanceB; //render from back to front
 				});
 
-			glDisable(GL_DEPTH_TEST);
+			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
 
 			ActionTex::RenderActionTex(actionTex, view, projection);
@@ -119,14 +117,8 @@ namespace Graphics::Shape
 				}
 			}
 
-			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
 			glEnable(GL_CULL_FACE);
-		}
-
-		if (skybox != nullptr)
-		{
-			mat4 nonConstView = view;
-			Skybox::RenderSkybox(skybox, nonConstView, projection);
 		}
 	}
 

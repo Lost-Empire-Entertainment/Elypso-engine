@@ -5,6 +5,7 @@
 
 #include <type_ptr.hpp>
 #include <cmath>
+#include <filesystem>
 
 //external
 #include "imgui.h"
@@ -28,12 +29,14 @@
 #include "configFile.hpp"
 #include "stringUtils.hpp"
 #include "gui_projectitemslist.hpp"
+#include "skybox.hpp"
 
 using std::to_string;
 using std::stof;
 using std::round;
 using glm::value_ptr;
 using std::exception;
+using std::filesystem::path;
 
 using EngineFile::SceneFile;
 using Graphics::GUI::GUIConsole;
@@ -47,6 +50,7 @@ using Core::Engine;
 using EngineFile::FileExplorer;
 using EngineFile::ConfigFile;
 using Utils::String;
+using Graphics::Shape::Skybox;
 
 namespace Graphics::GUI
 {
@@ -83,6 +87,11 @@ namespace Graphics::GUI
 				if (ImGui::BeginTabItem("GUI style"))
 				{
 					GUIStyleSettings();
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Graphics"))
+				{
+					GraphicsSettings();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Other"))
@@ -122,6 +131,7 @@ namespace Graphics::GUI
 		ImGui::Text("Scale selected object:");
 		ImGui::Text("Hold R and scroll up to increase or down to decrease value");
 	}
+
 	void GUISettings::GUIStyleSettings()
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -142,6 +152,141 @@ namespace Graphics::GUI
 		{
 			ConfigFile::SetValue("gui_fontScale", "1.5");
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+	}
+
+	void GUISettings::GraphicsSettings()
+	{
+		if (skyboxTextures.empty())
+		{
+			string texturesFolder = Engine::filesPath + "\\textures";
+			skyboxTextures["right"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["left"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["top"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["bottom"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["front"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["back"] = texturesFolder + "\\skybox_default.png";
+
+			vector<string> appliedSkyboxTextures
+			{
+				skyboxTextures["right"],
+				skyboxTextures["left"],
+				skyboxTextures["top"],
+				skyboxTextures["bottom"],
+				skyboxTextures["front"],
+				skyboxTextures["back"]
+			};
+		}
+
+		ImGui::Text("Skybox textures");
+
+		ImGui::Spacing();
+
+		if (ImGui::Button("Right"))
+		{
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::SkyboxTexture_right;
+			GUIProjectItemsList::selectSkyboxTexture = true;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		ImGui::SameLine();
+		string rightName = path(skyboxTextures["right"]).filename().string();
+		ImGui::Text(rightName.c_str());
+
+		if (ImGui::Button("Left"))
+		{
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::SkyboxTexture_left;
+			GUIProjectItemsList::selectSkyboxTexture = true;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		ImGui::SameLine();
+		string leftName = path(skyboxTextures["left"]).filename().string();
+		ImGui::Text(leftName.c_str());
+
+		if (ImGui::Button("Top"))
+		{
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::SkyboxTexture_top;
+			GUIProjectItemsList::selectSkyboxTexture = true;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		ImGui::SameLine();
+		string topName = path(skyboxTextures["top"]).filename().string();
+		ImGui::Text(topName.c_str());
+
+		if (ImGui::Button("Bottom"))
+		{
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::SkyboxTexture_bottom;
+			GUIProjectItemsList::selectSkyboxTexture = true;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		ImGui::SameLine();
+		string bottomName = path(skyboxTextures["bottom"]).filename().string();
+		ImGui::Text(bottomName.c_str());
+
+		if (ImGui::Button("Front"))
+		{
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::SkyboxTexture_front;
+			GUIProjectItemsList::selectSkyboxTexture = true;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		ImGui::SameLine();
+		string frontName = path(skyboxTextures["front"]).filename().string();
+		ImGui::Text(frontName.c_str());
+
+		if (ImGui::Button("Back"))
+		{
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::SkyboxTexture_back;
+			GUIProjectItemsList::selectSkyboxTexture = true;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		ImGui::SameLine();
+		string backName = path(skyboxTextures["back"]).filename().string();
+		ImGui::Text(backName.c_str());
+
+		if (ImGui::Button("Apply"))
+		{
+			vector<string> appliedSkyboxTextures
+			{
+				skyboxTextures["right"],
+				skyboxTextures["left"],
+				skyboxTextures["top"],
+				skyboxTextures["bottom"],
+				skyboxTextures["front"],
+				skyboxTextures["back"]
+			};
+			Skybox::AssignSkyboxTextures(appliedSkyboxTextures, false);
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::INFO,
+				"Successfully applied new skybox textures!");
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Reset"))
+		{
+			string texturesFolder = Engine::filesPath + "\\textures";
+			skyboxTextures["right"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["left"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["top"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["bottom"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["front"] = texturesFolder + "\\skybox_default.png";
+			skyboxTextures["back"] = texturesFolder + "\\skybox_default.png";
+
+			vector<string> appliedSkyboxTextures
+			{
+				skyboxTextures["right"],
+				skyboxTextures["left"],
+				skyboxTextures["top"],
+				skyboxTextures["bottom"],
+				skyboxTextures["front"],
+				skyboxTextures["back"]
+			};
+			Skybox::AssignSkyboxTextures(appliedSkyboxTextures, false);
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INPUT,
+				Type::INFO,
+				"Successfully reset skybox textures to default values!");
 		}
 	}
 
@@ -201,7 +346,7 @@ namespace Graphics::GUI
 		ImGui::Text("Set first scene");
 		if (ImGui::Button("Select start scene"))
 		{
-			GUIProjectItemsList::type = GUIProjectItemsList::Type::Scenes;
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::Scene;
 			GUIProjectItemsList::selectStartScene = true;
 			GUIProjectItemsList::renderProjectItemsList = true;
 		}

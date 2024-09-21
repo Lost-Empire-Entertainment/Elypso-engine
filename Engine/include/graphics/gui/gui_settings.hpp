@@ -5,9 +5,15 @@
 
 #pragma once
 
+#include <map>
+#include <string>
+
 #include "configFile.hpp"
 
 using EngineFile::ConfigFile;
+
+using std::map;
+using std::string;
 
 namespace Graphics::GUI
 {
@@ -15,6 +21,8 @@ namespace Graphics::GUI
 	{
 	public:
 		static inline string gameName = "Game";
+
+		static inline map<string, string> skyboxTextures;
 
 		static inline bool renderSettings;
 		static void RenderSettings();
@@ -25,6 +33,7 @@ namespace Graphics::GUI
 
 		static void InputSettings();
 		static void GUIStyleSettings();
+		static void GraphicsSettings();
 		static void OtherSettings();
 	};
 }

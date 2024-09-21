@@ -14,9 +14,9 @@ out vec4 FragColor;
 void main()
 {
     float distance = length(fragPos.xz - center.xz);
-    float height = length(fragPos.y - center.y);
+    float height = abs(fragPos.y - center.y);
 
-    if (distance > maxDistance
+    if (distance > maxDistance 
         || height > 50.0)
     {
         discard;
@@ -25,12 +25,18 @@ void main()
     float fadeFactor = 1.0;
     if (distance > fadeDistance)
     {
-        fadeFactor = 1.0 - (distance - fadeDistance) / (maxDistance - fadeDistance);
+        fadeFactor = 1.0 - (distance - fadeDistance) 
+            / (maxDistance - fadeDistance);
         fadeFactor = clamp(fadeFactor, 0.0, 1.0);
     }
 
-    vec4 outputColor = vec4(color, 1.0);
-    outputColor.a *= transparency * fadeFactor;
+    if (fadeFactor <= 0.0)
+    {
+        discard;
+    }
 
-    FragColor = outputColor;
+    vec3 finalColor = color;
+    float finalAlpha = fadeFactor * transparency;
+
+    FragColor = vec4(finalColor, finalAlpha);
 }

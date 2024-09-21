@@ -277,13 +277,13 @@ namespace Graphics
 			skyboxFrag);
 
 		vector<string> skyboxTextures;
-		string texturesFolder = Engine::filesPath + "\\textures\\skybox";
-		string right = texturesFolder + "\\right.jpg";
-		string left = texturesFolder + "\\left.jpg";
-		string top = texturesFolder + "\\top.jpg";
-		string bottom = texturesFolder + "\\bottom.jpg";
-		string front = texturesFolder + "\\front.jpg";
-		string back = texturesFolder + "\\back.jpg";
+		string texturesFolder = Engine::filesPath + "\\textures";
+		string right = texturesFolder + "\\skybox_default.png";
+		string left = texturesFolder + "\\skybox_default.png";
+		string top = texturesFolder + "\\skybox_default.png";
+		string bottom = texturesFolder + "\\skybox_default.png";
+		string front = texturesFolder + "\\skybox_default.png";
+		string back = texturesFolder + "\\skybox_default.png";
 
 		skyboxTextures.push_back(right);
 		skyboxTextures.push_back(left);
@@ -320,15 +320,6 @@ namespace Graphics
 
 	void Render::WindowLoop()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glEnable(GL_DEPTH_TEST);
-		glClearColor(
-			backgroundColor.x,
-			backgroundColor.y,
-			backgroundColor.z,
-			1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		//camera transformation
 		Input::ProcessKeyboardInput(window);
 
@@ -345,14 +336,33 @@ namespace Graphics
 		//update the camera
 		view = camera.GetViewMatrix();
 
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		if (GameObjectManager::GetSkybox() != nullptr)
+		{
+			mat4 nonConstView = view;
+			Skybox::RenderSkybox(
+				GameObjectManager::GetSkybox(), 
+				nonConstView, 
+				projection);
+		}
+
+		glDepthMask(GL_FALSE);
 		Grid::RenderGrid(view, projection);
+		glDepthMask(GL_TRUE);
 
 		GameObjectManager::RenderAll(view, projection);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glDisable(GL_DEPTH_TEST);
 		glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDisable(GL_DEPTH_TEST);
 
 		//all windows, including RenderToImguiWindow 
 		//with scene content are called in the Render function
@@ -606,12 +616,6 @@ namespace Graphics
 					Render::currentIndex = 0;
 				}
 				ConfigFile::SetValue("aspect_ratio", to_string(Render::currentIndex));
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
-			ImGui::Text("Background color");
-			if (ImGui::ColorEdit3("##bgrdiff", value_ptr(Render::backgroundColor)))
-			{
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 

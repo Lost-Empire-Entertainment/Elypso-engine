@@ -117,11 +117,6 @@ namespace Graphics::GUI
 		io.Fonts->Clear();
 		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "\\fonts\\coda\\Coda-Regular.ttf").c_str(), 16.0f);
 
-		bgrColor.x = Render::backgroundColor.x;
-		bgrColor.y = Render::backgroundColor.y;
-		bgrColor.z = Render::backgroundColor.z;
-		bgrColor.w = 1.0f;
-
 		ImGui::StyleColorsDark();
 
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -225,7 +220,7 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Open scene"))
 			{
-				GUIProjectItemsList::type = GUIProjectItemsList::Type::Scenes;
+				GUIProjectItemsList::type = GUIProjectItemsList::Type::Scene;
 				GUIProjectItemsList::selectStartScene = false;
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}

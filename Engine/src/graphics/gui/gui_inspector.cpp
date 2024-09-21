@@ -309,7 +309,7 @@ namespace Graphics::GUI
 				{
 					GUIProjectItemsList::obj = obj;
 					GUIProjectItemsList::textureType = Material::TextureType::diffuse;
-					GUIProjectItemsList::type = GUIProjectItemsList::Type::Textures;
+					GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
 					GUIProjectItemsList::renderProjectItemsList = true;
 				}
 				ImGui::PopItemWidth();
@@ -355,7 +355,7 @@ namespace Graphics::GUI
 				{
 					GUIProjectItemsList::obj = obj;
 					GUIProjectItemsList::textureType = Material::TextureType::specular;
-					GUIProjectItemsList::type = GUIProjectItemsList::Type::Textures;
+					GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
 					GUIProjectItemsList::renderProjectItemsList = true;
 				}
 				ImGui::PopItemWidth();

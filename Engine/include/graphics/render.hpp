@@ -37,8 +37,6 @@ namespace Graphics
 		};
 		static inline int currentIndex = 0;
 
-		static inline vec3 backgroundColor = vec3(0.1f, 0.1f, 0.1f);
-
 		static inline GLFWwindow* window;
 
 		static inline mat4 projection;

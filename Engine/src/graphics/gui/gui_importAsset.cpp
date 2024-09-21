@@ -173,8 +173,8 @@ namespace Graphics::GUI
 			//
 
 			else if (extension == ".png"
-				|| extension == ".jpg"
-				|| extension == ".jpeg")
+					 || extension == ".jpg"
+					 || extension == ".jpeg")
 			{
 				string textureFilename = newName + extension;
 				string texturesFolder = Engine::texturesPath;

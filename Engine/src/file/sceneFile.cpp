@@ -149,12 +149,6 @@ namespace EngineFile
 							value.erase(i + 1, 1);
 						}
 					}
-
-					if (type == "backgroundColor")
-					{
-						vector<string> values = String::Split(value, ',');
-						Render::backgroundColor = String::StringToVec3(values);
-					}
 				}
 			}
 
@@ -213,13 +207,6 @@ namespace EngineFile
 				"Couldn't write into scene file '" + Engine::scenePath + "'!\n");
 			return;
 		}
-
-		sceneFile << "\n";
-
-		float bgrR = Render::backgroundColor.r;
-		float bgrG = Render::backgroundColor.g;
-		float bgrB = Render::backgroundColor.b;
-		sceneFile << "backgroundColor= " << bgrR << ", " << bgrG << ", " << bgrB << "\n";
 
 		sceneFile.close();
 
