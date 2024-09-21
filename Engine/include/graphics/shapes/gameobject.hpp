@@ -111,7 +111,8 @@ namespace Graphics::Shape
 			point_light,
 			spot_light,
 			directional_light,
-			billboard
+			billboard,
+			skybox
 		};
 
 		Mesh(const MeshType& type,
@@ -707,6 +708,10 @@ namespace Graphics::Shape
 		{
 			billboards.push_back(obj);
 		}
+		static void SetSkybox(const shared_ptr<GameObject>& obj)
+		{
+			skybox = obj;
+		}
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly = false);
 
@@ -738,6 +743,10 @@ namespace Graphics::Shape
 		{
 			return billboards;
 		}
+		static shared_ptr<GameObject> GetSkybox()
+		{
+			return skybox;
+		}
 	private:
 		static inline map<string, vector<string>> categoryNames;
 		static inline vector<shared_ptr<GameObject>> objects;
@@ -749,5 +758,6 @@ namespace Graphics::Shape
 		static inline shared_ptr<GameObject> actionTex;
 		static inline shared_ptr<GameObject> border;
 		static inline vector<shared_ptr<GameObject>> billboards;
+		static inline shared_ptr<GameObject> skybox;
 	};
 }

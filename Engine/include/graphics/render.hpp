@@ -64,6 +64,7 @@ namespace Graphics
 		static void GladSetup();
 		static void FramebufferSetup();
 		static void ContentSetup();
+		static void SkyboxSetup();
 
 		static void SceneWindowDebugMenu();
 		static void SceneWindowLeftCornerContent();

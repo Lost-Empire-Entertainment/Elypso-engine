@@ -49,6 +49,9 @@ namespace Graphics::Shape
 			string& billboardName = tempName,
 			unsigned int& billboardID = tempID);
 
-		static void RenderDirectionalLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
+		static void RenderDirectionalLight(
+			const shared_ptr<GameObject>& obj, 
+			const mat4& view, 
+			const mat4& projection);
 	};
 }

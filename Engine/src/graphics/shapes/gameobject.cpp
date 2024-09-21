@@ -20,6 +20,7 @@
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "billboard.hpp"
+#include "skybox.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "console.hpp"
@@ -40,6 +41,7 @@ using Core::Select;
 using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
+using Graphics::Shape::Skybox;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -119,6 +121,12 @@ namespace Graphics::Shape
 
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
+		}
+
+		if (skybox != nullptr)
+		{
+			mat4 nonConstView = view;
+			Skybox::RenderSkybox(skybox, nonConstView, projection);
 		}
 	}
 

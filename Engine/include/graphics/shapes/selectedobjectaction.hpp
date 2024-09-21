@@ -21,6 +21,8 @@ namespace Graphics::Shape
 	class ActionTex
 	{
 	public:
+		static inline unsigned int id = 10000001;
+
 		static shared_ptr<GameObject> InitializeActionTex(
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),

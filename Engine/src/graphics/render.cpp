@@ -33,6 +33,7 @@
 #include "stringUtils.hpp"
 #include "shader.hpp"
 #include "selectobject.hpp"
+#include "skybox.hpp"
 
 using glm::perspective;
 using glm::radians;
@@ -54,6 +55,7 @@ using Graphics::Shape::PointLight;
 using Graphics::Grid;
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
+using Graphics::Shape::Skybox;
 using EngineFile::SceneFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -253,7 +255,46 @@ namespace Graphics
 		GameObjectManager::SetActionTex(actionTex);
 		GameObjectManager::AddTransparentObject(actionTex);
 
+		SkyboxSetup();
+
 		glfwMaximizeWindow(window);
+	}
+
+	void Render::SkyboxSetup()
+	{
+		vec3 pos = camera.GetCameraPosition();
+		vec3 rot = vec3(0);
+		vec3 scale = vec3(1);
+
+		string skyboxVert = Engine::filesPath + "\\shaders\\Skybox.vert";
+		string skyboxFrag = Engine::filesPath + "\\shaders\\Skybox.frag";
+
+		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox(
+			pos,
+			rot,
+			scale,
+			skyboxVert,
+			skyboxFrag);
+
+		vector<string> skyboxTextures;
+		string texturesFolder = Engine::filesPath + "\\textures\\skybox";
+		string right = texturesFolder + "\\right.jpg";
+		string left = texturesFolder + "\\left.jpg";
+		string top = texturesFolder + "\\top.jpg";
+		string bottom = texturesFolder + "\\bottom.jpg";
+		string front = texturesFolder + "\\front.jpg";
+		string back = texturesFolder + "\\back.jpg";
+
+		skyboxTextures.push_back(right);
+		skyboxTextures.push_back(left);
+		skyboxTextures.push_back(top);
+		skyboxTextures.push_back(bottom);
+		skyboxTextures.push_back(front);
+		skyboxTextures.push_back(back);
+
+		Skybox::AssignSkyboxTextures(skyboxTextures, false);
+
+		GameObjectManager::SetSkybox(skybox);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)

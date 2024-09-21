@@ -15,8 +15,6 @@
 using Graphics::Shape::GameObject;
 using Core::Engine;
 
-using Graphics::Shape::GameObject;
-
 using glm::vec3;
 using glm::mat4;
 

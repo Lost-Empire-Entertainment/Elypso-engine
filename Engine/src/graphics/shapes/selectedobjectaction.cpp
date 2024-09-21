@@ -86,7 +86,7 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false,
 			"ActionTex",
-			10000001,
+			id,
 			true,
 			transform,
 			mesh,

@@ -21,6 +21,8 @@ namespace Graphics::Shape
 	class Border
 	{
 	public:
+		static inline unsigned int id = 10000000;
+
 		static shared_ptr<GameObject> InitializeBorder(
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
