@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 //external
 #include "magic_enum.hpp"
@@ -25,10 +26,13 @@
 #include "fileutils.hpp"
 #include "console.hpp"
 #include "gameObjectFile.hpp"
+#include "gui_settings.hpp"
+#include "skybox.hpp"
 
 using std::ifstream;
 using std::ofstream;
 using std::cout;
+using std::string;
 using std::to_string;
 using std::filesystem::exists;
 using std::filesystem::path;
@@ -51,6 +55,8 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::GameObjectFile;
+using Graphics::GUI::GUISettings;
+using Graphics::Shape::Skybox;
 
 namespace EngineFile
 {
@@ -126,6 +132,10 @@ namespace EngineFile
 				return;
 			}
 
+			string texturesFolder = Engine::filesPath + "\\textures";
+			string skyboxDefault = texturesFolder + "\\skyboxDefault.png";
+			vector<string> skyboxTextures;
+
 			string line;
 			map<string, string> obj;
 			while (getline(sceneFile, line))
@@ -149,10 +159,72 @@ namespace EngineFile
 							value.erase(i + 1, 1);
 						}
 					}
+
+					if (type == "skybox_right")
+					{
+						string finalValue = value != ""
+							? value
+							: skyboxDefault;
+
+						skyboxTextures.push_back(finalValue);
+						GUISettings::skyboxTextures["right"] = finalValue;
+					}
+
+					else if (type == "skybox_left")
+					{
+						string finalValue = value != ""
+							? value
+							: skyboxDefault;
+
+						skyboxTextures.push_back(finalValue);
+						GUISettings::skyboxTextures["left"] = finalValue;
+					}
+
+					else if (type == "skybox_top")
+					{
+						string finalValue = value != ""
+							? value
+							: skyboxDefault;
+
+						skyboxTextures.push_back(finalValue);
+						GUISettings::skyboxTextures["top"] = finalValue;
+					}
+
+					else if (type == "skybox_bottom")
+					{
+						string finalValue = value != ""
+							? value
+							: skyboxDefault;
+
+						skyboxTextures.push_back(finalValue);
+						GUISettings::skyboxTextures["bottom"] = finalValue;
+					}
+
+					else if (type == "skybox_front")
+					{
+						string finalValue = value != ""
+							? value
+							: skyboxDefault;
+
+						skyboxTextures.push_back(finalValue);
+						GUISettings::skyboxTextures["front"] = finalValue;
+					}
+
+					else if (type == "skybox_back")
+					{
+						string finalValue = value != ""
+							? value
+							: skyboxDefault;
+
+						skyboxTextures.push_back(finalValue);
+						GUISettings::skyboxTextures["back"] = finalValue;
+					}
 				}
 			}
 
 			sceneFile.close();
+
+			Skybox::AssignSkyboxTextures(skyboxTextures, false);
 
 			GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
 
@@ -207,6 +279,13 @@ namespace EngineFile
 				"Couldn't write into scene file '" + Engine::scenePath + "'!\n");
 			return;
 		}
+
+		sceneFile << "skybox_right= " << GUISettings::skyboxTextures["right"] << "\n";
+		sceneFile << "skybox_left= " << GUISettings::skyboxTextures["left"] << "\n";
+		sceneFile << "skybox_top= " << GUISettings::skyboxTextures["top"] << "\n";
+		sceneFile << "skybox_bottom= " << GUISettings::skyboxTextures["bottom"] << "\n";
+		sceneFile << "skybox_front= " << GUISettings::skyboxTextures["front"] << "\n";
+		sceneFile << "skybox_back= " << GUISettings::skyboxTextures["back"] << "\n";
 
 		sceneFile.close();
 

@@ -505,10 +505,10 @@ namespace Core
 
 	void Engine::Shutdown(bool immediate)
 	{
-		isEngineRunning = false;
-
 		if (immediate)
 		{
+			isEngineRunning = false;
+
 			ConsoleManager::CloseLogger();
 			EngineGUI::Shutdown();
 			glfwTerminate();
@@ -529,6 +529,8 @@ namespace Core
 			}
 			else
 			{
+				isEngineRunning = false;
+
 				ConfigFile::SaveConfigFile();
 
 				ConsoleManager::WriteConsoleMessage(

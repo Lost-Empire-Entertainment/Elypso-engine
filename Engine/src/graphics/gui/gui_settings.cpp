@@ -259,6 +259,8 @@ namespace Graphics::GUI
 				Caller::INPUT,
 				Type::INFO,
 				"Successfully applied new skybox textures!");
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		ImGui::SameLine();
@@ -287,6 +289,8 @@ namespace Graphics::GUI
 				Caller::INPUT,
 				Type::INFO,
 				"Successfully reset skybox textures to default values!");
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 	}
 
