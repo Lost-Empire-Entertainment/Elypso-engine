@@ -133,7 +133,7 @@ namespace EngineFile
 			}
 
 			string texturesFolder = Engine::filesPath + "\\textures";
-			string skyboxDefault = texturesFolder + "\\skyboxDefault.png";
+			string skyboxDefault = texturesFolder + "\\skybox_default.png";
 			vector<string> skyboxTextures;
 
 			string line;
@@ -224,6 +224,22 @@ namespace EngineFile
 
 			sceneFile.close();
 
+			if (skyboxTextures.empty())
+			{
+				skyboxTextures.push_back(skyboxDefault);
+				skyboxTextures.push_back(skyboxDefault);
+				skyboxTextures.push_back(skyboxDefault);
+				skyboxTextures.push_back(skyboxDefault);
+				skyboxTextures.push_back(skyboxDefault);
+				skyboxTextures.push_back(skyboxDefault);
+
+				GUISettings::skyboxTextures["right"] = skyboxDefault;
+				GUISettings::skyboxTextures["left"] = skyboxDefault;
+				GUISettings::skyboxTextures["top"] = skyboxDefault;
+				GUISettings::skyboxTextures["bottom"] = skyboxDefault;
+				GUISettings::skyboxTextures["front"] = skyboxDefault;
+				GUISettings::skyboxTextures["back"] = skyboxDefault;
+			}
 			Skybox::AssignSkyboxTextures(skyboxTextures, false);
 
 			GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);

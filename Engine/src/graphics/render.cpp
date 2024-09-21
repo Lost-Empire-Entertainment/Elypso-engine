@@ -276,24 +276,6 @@ namespace Graphics
 			skyboxVert,
 			skyboxFrag);
 
-		vector<string> skyboxTextures;
-		string texturesFolder = Engine::filesPath + "\\textures";
-		string right = texturesFolder + "\\skybox_default.png";
-		string left = texturesFolder + "\\skybox_default.png";
-		string top = texturesFolder + "\\skybox_default.png";
-		string bottom = texturesFolder + "\\skybox_default.png";
-		string front = texturesFolder + "\\skybox_default.png";
-		string back = texturesFolder + "\\skybox_default.png";
-
-		skyboxTextures.push_back(right);
-		skyboxTextures.push_back(left);
-		skyboxTextures.push_back(top);
-		skyboxTextures.push_back(bottom);
-		skyboxTextures.push_back(front);
-		skyboxTextures.push_back(back);
-
-		Skybox::AssignSkyboxTextures(skyboxTextures, false);
-
 		GameObjectManager::SetSkybox(skybox);
 	}
 
