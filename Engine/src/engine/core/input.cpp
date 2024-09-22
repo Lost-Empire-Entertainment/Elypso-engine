@@ -126,8 +126,8 @@ namespace Core
         }
     }
 
-    void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
-	{
+    void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
 #if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
@@ -147,7 +147,7 @@ namespace Core
                     copiedObject.clear();
                     copiedObject["name"] = selectedObj->GetName();
                     copiedObject["id"] = to_string(selectedObj->GetID());
-                    copiedObject["pos"] = 
+                    copiedObject["pos"] =
                         to_string(selectedObj->GetTransform()->GetPosition().x) + ","
                         + to_string(selectedObj->GetTransform()->GetPosition().y) + ","
                         + to_string(selectedObj->GetTransform()->GetPosition().z);
@@ -180,7 +180,7 @@ namespace Core
                     {
                         copiedObject["type"] = "point";
 
-                        copiedObject["diffuse"] = 
+                        copiedObject["diffuse"] =
                             to_string(selectedObj->GetPointLight()->GetDiffuse().x) + ","
                             + to_string(selectedObj->GetPointLight()->GetDiffuse().y) + ","
                             + to_string(selectedObj->GetPointLight()->GetDiffuse().z);
@@ -505,11 +505,11 @@ namespace Core
 #endif
         {
             Select::Ray ray = Select::RayFromMouse(
-                width, 
-                height, 
-                posX, 
-                posY, 
-                Render::view, 
+                width,
+                height,
+                posX,
+                posY,
+                Render::view,
                 Render::projection);
 
             vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
@@ -540,26 +540,70 @@ namespace Core
 
     void Input::DragCamera()
     {
+#if ENGINE_MODE
         Render::camera.cameraEnabled = ImGui::IsMouseDown(ImGuiMouseButton_Right);
 
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
             ImVec2 mouseDelta = ImGui::GetIO().MouseDelta;
+            double mouseDeltaX = mouseDelta.x;
+            double mouseDeltaY = mouseDelta.y;
 
             //camera rotation with mouse drag
-            if (mouseDelta.x != 0.0f
-                || mouseDelta.y != 0.0f)
+            if (mouseDeltaX != 0.0f
+                || mouseDeltaY != 0.0f)
             {
                 float sensitivity = 1.0f;
 
                 //invert Y-axis of mouse delta to work with inverted imgui scene window
-                mouseDelta.y = -mouseDelta.y;
+                mouseDeltaY = -mouseDeltaY;
 
                 Render::camera.RotateCamera(
-                    mouseDelta.x * sensitivity,
-                    mouseDelta.y * sensitivity);
+                    mouseDeltaX * sensitivity,
+                    mouseDeltaY * sensitivity);
             }
         }
+#else
+        static double lastX = 0.0, lastY = 0.0;
+        static bool firstMove = true;
+
+        double currentX, currentY;
+        glfwGetCursorPos(Render::window, &currentX, &currentY);
+
+        Render::camera.cameraEnabled = 
+            glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+
+        if (Render::camera.cameraEnabled)
+        {
+            if (firstMove)
+            {
+                lastX = currentX;
+                lastY = currentY;
+                firstMove = false;
+            }
+
+            double mouseDeltaX = currentX - lastX;
+            double mouseDeltaY = currentY - lastY;
+
+            lastX = currentX;
+            lastY = currentY;
+
+            //camera rotation with mouse drag
+            if (mouseDeltaX != 0.0f
+                || mouseDeltaY != 0.0f)
+            {
+                float sensitivity = 1.0f;
+
+                //invert Y-axis of mouse delta to work with inverted imgui scene window
+                mouseDeltaY = -mouseDeltaY;
+
+                Render::camera.RotateCamera(
+                    mouseDeltaX * sensitivity,
+                    mouseDeltaY * sensitivity);
+            }
+        }
+        else firstMove = true;
+#endif
     }
 
     void Input::MoveCamera()

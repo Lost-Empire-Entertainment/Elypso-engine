@@ -24,6 +24,8 @@
 #if ENGINE_MODE
 #include "gui.hpp"
 #include "gui_settings.hpp"
+#else
+#include "gameGui.hpp"
 #endif
 
 using std::cout;
@@ -49,6 +51,8 @@ using Graphics::Shape::GameObjectManager;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
+#else
+using Graphics::GUI::GameGUI;
 #endif
 
 namespace Core
@@ -512,6 +516,8 @@ namespace Core
 			ConsoleManager::CloseLogger();
 #if ENGINE_MODE
 			EngineGUI::Shutdown();
+#else
+			GameGUI::Shutdown();
 #endif
 			glfwTerminate();
 		}
@@ -550,6 +556,8 @@ namespace Core
 
 #if ENGINE_MODE
 				EngineGUI::Shutdown();
+#else
+				GameGUI::Shutdown();
 #endif
 
 				//clean all glfw resources after program is closed

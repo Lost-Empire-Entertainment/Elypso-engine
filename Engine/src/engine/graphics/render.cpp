@@ -35,6 +35,8 @@
 #include "skybox.hpp"
 #if ENGINE_MODE
 #include "gui.hpp"
+#else
+#include "gameGui.hpp"
 #endif
 
 using glm::perspective;
@@ -66,6 +68,8 @@ using Utils::String;
 using Core::Select;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
+#else
+using Graphics::GUI::GameGUI;
 #endif
 
 namespace Graphics
@@ -91,6 +95,8 @@ namespace Graphics
 
 #if ENGINE_MODE
 		EngineGUI::Initialize();
+#else
+		GameGUI::Initialize();
 #endif
 		TimeManager::InitializeDeltaTime();
 	}
@@ -368,6 +374,9 @@ namespace Graphics
 		//all windows, including RenderToImguiWindow 
 		//with scene content are called in the Render function
 		EngineGUI::Render();
+#else
+		GameGUI::Render();
+		Input::SceneWindowInput();
 #endif
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
