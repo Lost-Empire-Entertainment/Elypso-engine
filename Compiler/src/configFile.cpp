@@ -121,6 +121,10 @@ namespace Core
 					{
 						Compiler::engineFolderPath = value;
 					}
+					if (key == "engineLibraryFolderPath")
+					{
+						Compiler::engineLibraryFolderPath = value;
+					}
 
 					keys.push_back(key);
 					values.push_back(value);
@@ -145,6 +149,9 @@ namespace Core
 		values.push_back("");
 
 		keys.push_back("engineFolderPath");
+		values.push_back("");
+
+		keys.push_back("engineLibraryFolderPath");
 		values.push_back("");
 
 		string configFilePath = Compiler::docsPath + "\\config.txt";
@@ -220,6 +227,10 @@ namespace Core
 			else if (key == "engineFolderPath")
 			{
 				Compiler::engineFolderPath = value;
+			}
+			else if (key == "engineLibraryFolderPath")
+			{
+				Compiler::engineLibraryFolderPath = value;
 			}
 		}
 		else

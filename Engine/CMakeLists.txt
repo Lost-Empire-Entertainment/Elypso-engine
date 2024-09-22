@@ -10,6 +10,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Turns on engine mode in engine source code
+add_definitions(-DENGINE_MODE=0)
+
 set(PROJECT_MAJOR_VERSION 1)
 set(PROJECT_MINOR_VERSION 0)
 set(PROJECT_PATCH_VERSION 0)
@@ -23,7 +26,12 @@ set(PARENT_DIR_PATH "${PARENT_DIR}")
 set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
 
 # Engine files
-set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+set(ENGINE_SRC_DIR "${CMAKE_SOURCE_DIR}/src/engine")
+set(ENGINE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/engine")
+
+# Game files
+set(GAME_SRC_DIR "${CMAKE_SOURCE_DIR}/src/game")
+set(GAME_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/game")
 
 # External files
 set(EXT_ASSIMP_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Assimp")
@@ -53,9 +61,17 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
-file(GLOB_RECURSE SOURCE_FILES
-	${CMAKE_SOURCE_DIR}/src/*.cpp
-	${CMAKE_SOURCE_DIR}/src/*/*.cpp
+file(GLOB_RECURSE ENGINE_SOURCE_FILES
+	${ENGINE_SRC_DIR}/*.cpp
+	${ENGINE_SRC_DIR}/*/*.cpp
+)
+file(GLOB_RECURSE GAME_SOURCE_FILES
+	${GAME_SRC_DIR}/*.cpp
+	${GAME_SRC_DIR}/*/*.cpp
+)
+set(SOURCE_FILES
+	${ENGINE_SOURCE_FILES}
+	${GAME_SOURCE_FILES}
 )
 
 # Add external source files
@@ -71,22 +87,21 @@ list(APPEND SOURCE_FILES
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
 )
 
-# Add the executable
+# Build as engine exe
 add_executable(Elypso_engine ${SOURCE_FILES} ${RESOURCE_FILE})
-
-# Forces the name to be Elypso engine
 set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
 target_include_directories(Elypso_engine PRIVATE 
-	${INCLUDE_DIR}/core
-	${INCLUDE_DIR}/file
-	${INCLUDE_DIR}/graphics
-	${INCLUDE_DIR}/graphics/gui
-	${INCLUDE_DIR}/graphics/shapes
-	${INCLUDE_DIR}/physics
-	${INCLUDE_DIR}/utils
+	${GAME_INCLUDE_DIR}/core
+	${ENGINE_INCLUDE_DIR}/core
+	${ENGINE_INCLUDE_DIR}/file
+	${ENGINE_INCLUDE_DIR}/graphics
+	${ENGINE_INCLUDE_DIR}/graphics/gui
+	${ENGINE_INCLUDE_DIR}/graphics/shapes
+	${ENGINE_INCLUDE_DIR}/physics
+	${ENGINE_INCLUDE_DIR}/utils
 	${EXT_ASSIMP_DIR}
 	${EXT_GLAD_DIR}
 	${EXT_GLFW_DIR}
@@ -125,55 +140,55 @@ install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 # Copy "files" directory to the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove_directory
-    $<TARGET_FILE_DIR:Elypso_engine>/files
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/files 
+	$<TARGET_FILE_DIR:Elypso_engine>/files
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	${CMAKE_SOURCE_DIR}/files 
 	$<TARGET_FILE_DIR:Elypso_engine>/files
 )
 
 # Copy assimp dll to the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
-    $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
+	$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
+	COMMAND ${CMAKE_COMMAND} -E copy
+	${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
+	$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
 )
 
 # Copy "LICENSE.md" to install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
+	$<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/LICENSE.md
-    $<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
+	${PARENT_DIR_PATH}/LICENSE.md
+	$<TARGET_FILE_DIR:Elypso_engine>/LICENSE.md
 )
 
 # Copy "README.md" to install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Elypso_engine>/README.md
+	$<TARGET_FILE_DIR:Elypso_engine>/README.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/README.md
-    $<TARGET_FILE_DIR:Elypso_engine>/README.md
+	${PARENT_DIR_PATH}/README.md
+	$<TARGET_FILE_DIR:Elypso_engine>/README.md
 )
 
 # Copy "SECURITY.md" to install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Elypso_engine>/SECURITY.md
+	$<TARGET_FILE_DIR:Elypso_engine>/SECURITY.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/SECURITY.md
-    $<TARGET_FILE_DIR:Elypso_engine>/SECURITY.md
+	${PARENT_DIR_PATH}/SECURITY.md
+	$<TARGET_FILE_DIR:Elypso_engine>/SECURITY.md
 )
 
 # Copy "LIBRARIES.md" to install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Elypso_engine>/LIBRARIES.md
+	$<TARGET_FILE_DIR:Elypso_engine>/LIBRARIES.md
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/LIBRARIES.md
-    $<TARGET_FILE_DIR:Elypso_engine>/LIBRARIES.md
+	${PARENT_DIR_PATH}/LIBRARIES.md
+	$<TARGET_FILE_DIR:Elypso_engine>/LIBRARIES.md
 )
 
 # Include CPack to enable packaging

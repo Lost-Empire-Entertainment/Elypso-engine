@@ -35,9 +35,12 @@ namespace Core
 			{
 				string hubBuildFolder = Compiler::hubFolderPath + "\\build";
 				string engineBuildFolder = Compiler::engineFolderPath + "\\build";
-				string buildFolder = GUI::target == GUI::Target::Hub
-					? hubBuildFolder
-					: engineBuildFolder;
+				string engineLibraryFolder = Compiler::engineLibraryFolderPath + "\\build";
+
+				string buildFolder;
+				if (GUI::target == GUI::Target::Hub) buildFolder = hubBuildFolder;
+				if (GUI::target == GUI::Target::Engine) buildFolder = engineBuildFolder;
+				if (GUI::target == GUI::Target::EngineLib) buildFolder = engineLibraryFolder;
 
 				string command = "";
 

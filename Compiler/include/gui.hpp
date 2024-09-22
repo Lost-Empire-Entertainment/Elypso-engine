@@ -19,7 +19,8 @@ namespace Graphics
 		enum class Target
 		{
 			Hub,
-			Engine
+			Engine,
+			EngineLib
 		};
 		static inline Target target;
 

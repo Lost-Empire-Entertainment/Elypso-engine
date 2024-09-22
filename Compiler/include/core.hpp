@@ -19,6 +19,7 @@ namespace Core
 		static inline string configFilePath;
 		static inline string hubFolderPath;
 		static inline string engineFolderPath;
+		static inline string engineLibraryFolderPath;
 
 		static void MainInitialize();
 

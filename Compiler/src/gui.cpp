@@ -133,10 +133,13 @@ namespace Graphics
 			ImVec2 topButtonSize(120, 50);
 
 			ImVec2 topButton1Pos(
-				(windowSize.x * 0.4f) - (topButtonSize.x * 0.5f), 15.0f);
+				(windowSize.x * 0.3f) - (topButtonSize.x * 0.5f), 15.0f);
 			ImVec2 topButton2Pos(
-				(windowSize.x * 0.6f) - (topButtonSize.x * 0.5f), 15.0f);
+				(windowSize.x * 0.5f) - (topButtonSize.x * 0.5f), 15.0f);
 			ImVec2 topButton3Pos(
+				(windowSize.x * 0.7f) - (topButtonSize.x * 0.5f), 15.0f);
+
+			ImVec2 topSideButton(
 				(windowSize.x * 0.95f) - (topButtonSize.x * 0.5f), 25.0f);
 
 			//press hub button to switch to the hub choices
@@ -179,8 +182,28 @@ namespace Graphics
 				}
 			}
 
-			//press set path button to assign the folder path of hub/engine
+			//press engine library button to switch to the engine library choices
 			ImGui::SetCursorPos(topButton3Pos);
+			if (ImGui::Button("Engine library", topButtonSize))
+			{
+				if (target != Target::EngineLib)
+				{
+					string windowTitle = "Compiler | Elypso engine library";
+					glfwSetWindowTitle(Render::window, windowTitle.c_str());
+
+					output.clear();
+
+					string msg = "---- Switched to Elypso engine library compilation.";
+					cout << msg << "\n";
+					output.emplace_back(msg);
+					progressText = "Waiting for input...";
+
+					target = Target::EngineLib;
+				}
+			}
+
+			//press set path button to assign the folder path of hub/engine
+			ImGui::SetCursorPos(topSideButton);
 			ImVec2 smallButtonSize = ImVec2(topButtonSize.x * 0.7f, topButtonSize.y * 0.7f);
 			if (ImGui::Button("Set path", smallButtonSize))
 			{
@@ -190,11 +213,15 @@ namespace Graphics
 				if ((target == Target::Hub
 					&& path(setPath).stem().string() != "Hub")
 					|| (target == Target::Engine
-					&& path(setPath).stem().string() != "Engine"))
+					&& path(setPath).stem().string() != "Engine")
+					|| (target == Target::EngineLib
+					&& path(setPath).stem().string() != "Engine library"))
 				{
-					string targetName = target == Target::Hub
-						? "Elypso hub"
-						: "Elypso engine";
+					string targetName;
+					if (target == Target::Hub) targetName = "Elypso hub";
+					if (target == Target::Engine) targetName = "Elypso engine";
+					if (target == Target::EngineLib) targetName = "Elypso engine library";
+
 					string msg = "---- Cannot set path to '" + setPath + "' for "
 						+ targetName + " because the chosen folder is not valid!";
 
@@ -214,9 +241,11 @@ namespace Graphics
 
 					if (!isValidFolder)
 					{
-						string targetName = target == Target::Hub
-							? "Elypso hub"
-							: "Elypso engine";
+						string targetName;
+						if (target == Target::Hub) targetName = "Elypso hub";
+						if (target == Target::Engine) targetName = "Elypso engine";
+						if (target == Target::EngineLib) targetName = "Elypso engine library";
+
 						string msg = "---- Cannot set path to '" + setPath + "' for " 
 							+ targetName + " because the chosen folder is not valid!";
 
@@ -241,6 +270,14 @@ namespace Graphics
 							cout << msg << "\n";
 							output.emplace_back(msg);
 						}
+						else if (target == Target::EngineLib)
+						{
+							ConfigFile::SetValue("engineLibraryFolderPath", setPath);
+
+							string msg = "---- Set Elypso engine library folder path to '" + setPath + "'.";
+							cout << msg << "\n";
+							output.emplace_back(msg);
+						}
 					}
 				}
 			}
@@ -257,9 +294,11 @@ namespace Graphics
 			}
 			else if (isBuilding)
 			{
-				string targetName = target == Target::Hub
-					? "Elypso hub"
-					: "Elypso engine";
+				string targetName;
+				if (target == Target::Hub) targetName = "Elypso hub";
+				if (target == Target::Engine) targetName = "Elypso engine";
+				if (target == Target::EngineLib) targetName = "Elypso engine library";
+
 				string actionName = action == Action::compile
 					? "compiling"
 					: "clean rebuilding";
@@ -332,14 +371,17 @@ namespace Graphics
 			{
 				action = Action::clean_rebuild;
 
-				string targetName = target == Target::Hub
-					? "Elypso hub"
-					: "Elypso engine";
+				string targetName;
+				if (target == Target::Hub) targetName = "Elypso hub";
+				if (target == Target::Engine) targetName = "Elypso engine";
+				if (target == Target::EngineLib) targetName = "Elypso engine library";
 
 				if ((target == Target::Hub
 					&& Compiler::hubFolderPath == "")
 					|| (target == Target::Engine
-					&& Compiler::engineFolderPath == ""))
+					&& Compiler::engineFolderPath == "")
+					|| (target == Target::EngineLib
+					&& Compiler::engineLibraryFolderPath == ""))
 				{
 					string msg = "---- Cannot clean rebuild " + targetName + " because its folder has not been assigned yet!";
 
@@ -370,14 +412,17 @@ namespace Graphics
 			{
 				action = Action::compile;
 
-				string targetName = target == Target::Hub
-					? "Elypso hub"
-					: "Elypso engine";
+				string targetName;
+				if (target == Target::Hub) targetName = "Elypso hub";
+				if (target == Target::Engine) targetName = "Elypso engine";
+				if (target == Target::EngineLib) targetName = "Elypso engine library";
 
 				if ((target == Target::Hub
 					&& Compiler::hubFolderPath == "")
 					|| (target == Target::Engine
-					&& Compiler::engineFolderPath == ""))
+					&& Compiler::engineFolderPath == "")
+					|| (target == Target::EngineLib
+					&& Compiler::engineLibraryFolderPath == ""))
 				{
 					string msg = "---- Cannot compile " + targetName + " because its folder has not been assigned yet!";
 
@@ -417,9 +462,10 @@ namespace Graphics
 
 	void GUI::FinishCompile()
 	{
-		string targetName = target == Target::Hub
-			? "Elypso hub"
-			: "Elypso engine";
+		string targetName;
+		if (target == Target::Hub) targetName = "Elypso hub";
+		if (target == Target::Engine) targetName = "Elypso engine";
+		if (target == Target::EngineLib) targetName = "Elypso engine library";
 
 		switch (action)
 		{
