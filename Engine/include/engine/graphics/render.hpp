@@ -23,7 +23,9 @@ namespace Graphics
 	class Render
 	{
 	public:
+#if ENGINE_MODE
 		static inline bool waitBeforeCountsUpdate;
+#endif
 
 		static inline bool isSceneSelected;
 		static inline map<int, string> aspectRatio
@@ -50,7 +52,10 @@ namespace Graphics
 		static void WindowLoop();
 		static void RenderToImguiWindow();
 
+#if ENGINE_MODE
 		static void UpdateCounts();
+#endif
+
 	private:
 		static inline bool showSceneWindowDebugMenu = true;
 		static inline bool showLeftCornerContent = true;
@@ -60,12 +65,14 @@ namespace Graphics
 		static void GLFWSetup();
 		static void WindowSetup();
 		static void GladSetup();
-		static void FramebufferSetup();
 		static void ContentSetup();
 		static void SkyboxSetup();
 
+#if ENGINE_MODE
+		static void FramebufferSetup();
 		static void SceneWindowDebugMenu();
 		static void SceneWindowLeftCornerContent();
 		static void SceneWindowActionButtons();
+#endif
 	};
 }

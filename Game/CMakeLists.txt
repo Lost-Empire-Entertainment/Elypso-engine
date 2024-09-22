@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Turns on engine mode in engine source code
-add_definitions(-DENGINE_MODE=0)
+# Turns engine mode off for game
+remove_definitions(-DENGINE_MODE)
 
 project("Game")
 

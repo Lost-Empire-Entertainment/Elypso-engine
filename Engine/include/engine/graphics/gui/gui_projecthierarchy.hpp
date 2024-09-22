@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 #include <string>
 #include <vector>
 
@@ -31,3 +31,4 @@ namespace Graphics::GUI
 		static void DisplayDirectoryContents(const string& directoryPath);
 	};
 }
+#endif

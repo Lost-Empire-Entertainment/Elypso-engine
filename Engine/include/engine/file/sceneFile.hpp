@@ -27,6 +27,8 @@ namespace EngineFile
 		static inline string currentProjectPath;
 		static inline string targetLevel;
 
+		static inline map<string, string> skyboxTexturesMap;
+
 		static void LoadScene(const string& scenePath);
 		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
 	private:

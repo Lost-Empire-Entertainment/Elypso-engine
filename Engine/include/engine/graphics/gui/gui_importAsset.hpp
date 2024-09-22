@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 #include <iostream>
 #include <map>
 
@@ -29,3 +29,4 @@ namespace Graphics::GUI
 		static void RenderImportAssetContent();
 	};
 }
+#endif

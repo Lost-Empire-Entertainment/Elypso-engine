@@ -36,11 +36,15 @@ namespace Core
 		static inline vector<string> storedLogs;
 
 		static string GetCurrentTimestamp();
+
 		static void AddConsoleLog(const string& message);
+
 		static void AddLoggerLog(const string& message);
 
 		static void InitializeLogger();
+
 		static void PrintLogsToBuffer();
+
 		static void CloseLogger();
 
 		static void ParseConsoleCommand(const string& message);

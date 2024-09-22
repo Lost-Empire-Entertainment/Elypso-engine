@@ -16,13 +16,15 @@
 
 //engine
 #include "console.hpp"
-#include "gui_console.hpp"
 #include "core.hpp"
 #include "render.hpp"
 #include "stringutils.hpp"
-#include "gui.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
+#if ENGINE_MODE
+#include "gui.hpp"
+#include "gui_console.hpp"
+#endif
 
 using std::chrono::time_point_cast;
 using std::chrono::system_clock;
@@ -37,15 +39,17 @@ using std::errc;
 using std::cout;
 using glm::vec3;
 
-using Graphics::GUI::GUIConsole;
 using Core::Engine;
 using Graphics::Render;
 using Utils::String;
-using Graphics::GUI::EngineGUI;
 using Core::Select;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Graphics::Shape::Material;
+#if ENGINE_MODE
+using Graphics::GUI::EngineGUI;
+using Graphics::GUI::GUIConsole;
+#endif
 
 namespace Core
 {
@@ -92,7 +96,9 @@ namespace Core
     {
         for (const auto& log : storedLogs)
         {
+#if ENGINE_MODE
             GUIConsole::AddTextToConsole(log);
+#endif
         }
         storedLogs.clear();
     }
@@ -157,11 +163,13 @@ namespace Core
 
         if (internalMessage
             && (sendDebugMessages
-                || (!sendDebugMessages
-                    && type != Type::DEBUG)))
+            || (!sendDebugMessages
+            && type != Type::DEBUG)))
         {
+#if ENGINE_MODE
             if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
             else AddConsoleLog(internalMsg);
+#endif
         }
 
         cout << externalMsg;
@@ -269,6 +277,7 @@ namespace Core
                 "Reset camera position and rotation.\n");
         }
 
+#if ENGINE_MODE
         else if (cleanedCommands[0] == "saw"
                  && cleanedCommands.size() == 1)
         {
@@ -349,6 +358,7 @@ namespace Core
                     Type::INFO,
                     "Set show user guide window to " + to_string(EngineGUI::renderUserGuideWindow) + "\n");
         }
+#endif
 
         else
         {

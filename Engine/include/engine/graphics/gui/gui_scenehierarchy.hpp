@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 namespace Graphics::GUI
 {
 	class GUISceneHierarchy
@@ -15,3 +15,4 @@ namespace Graphics::GUI
 		static void DisplayGameObjects();
 	};
 }
+#endif

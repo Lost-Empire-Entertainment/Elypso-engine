@@ -2,7 +2,7 @@
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
-
+#if ENGINE_MODE
 //external
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -164,3 +164,4 @@ namespace Graphics::GUI
 		}
 	}
 }
+#endif

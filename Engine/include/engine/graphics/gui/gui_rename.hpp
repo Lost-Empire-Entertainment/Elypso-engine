@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 #include <string>
 
 using std::string;
@@ -30,3 +30,4 @@ namespace Graphics::GUI
 		static void RenderRenameContent();
 	};
 }
+#endif

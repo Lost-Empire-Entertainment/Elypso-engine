@@ -2,7 +2,7 @@
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
-
+#if ENGINE_MODE
 #include <filesystem>
 
 //external
@@ -204,32 +204,32 @@ namespace Graphics::GUI
 			{
 			case Type::SkyboxTexture_right:
 			{
-				GUISettings::skyboxTextures["right"] = selectedPath;
+				SceneFile::skyboxTexturesMap["right"] = selectedPath;
 				break;
 			}
 			case Type::SkyboxTexture_left:
 			{
-				GUISettings::skyboxTextures["left"] = selectedPath;
+				SceneFile::skyboxTexturesMap["left"] = selectedPath;
 				break;
 			}
 			case Type::SkyboxTexture_top:
 			{
-				GUISettings::skyboxTextures["top"] = selectedPath;
+				SceneFile::skyboxTexturesMap["top"] = selectedPath;
 				break;
 			}
 			case Type::SkyboxTexture_bottom:
 			{
-				GUISettings::skyboxTextures["bottom"] = selectedPath;
+				SceneFile::skyboxTexturesMap["bottom"] = selectedPath;
 				break;
 			}
 			case Type::SkyboxTexture_front:
 			{
-				GUISettings::skyboxTextures["front"] = selectedPath;
+				SceneFile::skyboxTexturesMap["front"] = selectedPath;
 				break;
 			}
 			case Type::SkyboxTexture_back:
 			{
-				GUISettings::skyboxTextures["back"] = selectedPath;
+				SceneFile::skyboxTexturesMap["back"] = selectedPath;
 				break;
 			}
 			case Type::GameobjectTexture:
@@ -283,3 +283,4 @@ namespace Graphics::GUI
 		}
 	}
 }
+#endif

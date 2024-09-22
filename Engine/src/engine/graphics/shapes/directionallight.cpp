@@ -133,7 +133,9 @@ namespace Graphics::Shape
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::SetDirectionalLight(obj);
 
+#if ENGINE_MODE
 		Render::UpdateCounts();
+#endif
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

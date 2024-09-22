@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 namespace Graphics::GUI
 {
 	class GUICredits
@@ -17,3 +17,4 @@ namespace Graphics::GUI
 		static void RenderCreditsContent();
 	};
 }
+#endif

@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 namespace Graphics::GUI
 {
 	class GUIInspector
@@ -19,3 +19,4 @@ namespace Graphics::GUI
 		static void PermanentComponents();
 	};
 }
+#endif

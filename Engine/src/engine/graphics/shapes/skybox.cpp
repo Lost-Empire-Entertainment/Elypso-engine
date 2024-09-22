@@ -122,7 +122,9 @@ namespace Graphics::Shape
 
         GameObjectManager::SetSkybox(obj);
 
+#if ENGINE_MODE
         Render::UpdateCounts();
+#endif
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,

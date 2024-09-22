@@ -197,7 +197,9 @@ namespace Graphics::Shape
 			SceneFile::SaveScene();
 		}
 
+#if ENGINE_MODE
 		Render::UpdateCounts();
+#endif
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

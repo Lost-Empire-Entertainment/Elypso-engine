@@ -2,7 +2,7 @@
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
-
+#if ENGINE_MODE
 #include <iostream>
 #include <filesystem>
 #include <thread>
@@ -27,9 +27,9 @@
 #include "fileUtils.hpp"
 #include "gameobject.hpp"
 #include "render.hpp"
-#include "gui_settings.hpp"
 #include "sceneFile.hpp"
 #include "gui.hpp"
+#include "gui_settings.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -52,9 +52,9 @@ using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::Mesh;
 using Graphics::Render;
-using Graphics::GUI::GUISettings;
 using EngineFile::SceneFile;
 using Graphics::GUI::EngineGUI;
+using Graphics::GUI::GUISettings;
 
 namespace Core
 {
@@ -334,3 +334,4 @@ namespace Core
 		}
 	}
 }
+#endif

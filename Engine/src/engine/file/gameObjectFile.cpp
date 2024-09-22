@@ -224,7 +224,9 @@ namespace EngineFile
 			Type::DEBUG,
 			"Started loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
+#if ENGINE_MODE
 		 Render::waitBeforeCountsUpdate = true;
+#endif
 
 		for (const auto& file : directory_iterator(targetPath))
 		{
@@ -303,8 +305,10 @@ namespace EngineFile
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
 
+#if ENGINE_MODE
 		Render::waitBeforeCountsUpdate = false;
 		Render::UpdateCounts();
+#endif
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

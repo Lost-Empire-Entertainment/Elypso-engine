@@ -26,7 +26,6 @@
 #include "fileutils.hpp"
 #include "console.hpp"
 #include "gameObjectFile.hpp"
-#include "gui_settings.hpp"
 #include "skybox.hpp"
 
 using std::ifstream;
@@ -55,7 +54,6 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::GameObjectFile;
-using Graphics::GUI::GUISettings;
 using Graphics::Shape::Skybox;
 
 namespace EngineFile
@@ -167,7 +165,7 @@ namespace EngineFile
 							: skyboxDefault;
 
 						skyboxTextures.push_back(finalValue);
-						GUISettings::skyboxTextures["right"] = finalValue;
+						skyboxTexturesMap["right"] = finalValue;
 					}
 
 					else if (type == "skybox_left")
@@ -177,7 +175,7 @@ namespace EngineFile
 							: skyboxDefault;
 
 						skyboxTextures.push_back(finalValue);
-						GUISettings::skyboxTextures["left"] = finalValue;
+						skyboxTexturesMap["left"] = finalValue;
 					}
 
 					else if (type == "skybox_top")
@@ -187,7 +185,7 @@ namespace EngineFile
 							: skyboxDefault;
 
 						skyboxTextures.push_back(finalValue);
-						GUISettings::skyboxTextures["top"] = finalValue;
+						skyboxTexturesMap["top"] = finalValue;
 					}
 
 					else if (type == "skybox_bottom")
@@ -197,7 +195,7 @@ namespace EngineFile
 							: skyboxDefault;
 
 						skyboxTextures.push_back(finalValue);
-						GUISettings::skyboxTextures["bottom"] = finalValue;
+						skyboxTexturesMap["bottom"] = finalValue;
 					}
 
 					else if (type == "skybox_front")
@@ -207,7 +205,7 @@ namespace EngineFile
 							: skyboxDefault;
 
 						skyboxTextures.push_back(finalValue);
-						GUISettings::skyboxTextures["front"] = finalValue;
+						skyboxTexturesMap["front"] = finalValue;
 					}
 
 					else if (type == "skybox_back")
@@ -217,7 +215,7 @@ namespace EngineFile
 							: skyboxDefault;
 
 						skyboxTextures.push_back(finalValue);
-						GUISettings::skyboxTextures["back"] = finalValue;
+						skyboxTexturesMap["back"] = finalValue;
 					}
 				}
 			}
@@ -233,12 +231,12 @@ namespace EngineFile
 				skyboxTextures.push_back(skyboxDefault);
 				skyboxTextures.push_back(skyboxDefault);
 
-				GUISettings::skyboxTextures["right"] = skyboxDefault;
-				GUISettings::skyboxTextures["left"] = skyboxDefault;
-				GUISettings::skyboxTextures["top"] = skyboxDefault;
-				GUISettings::skyboxTextures["bottom"] = skyboxDefault;
-				GUISettings::skyboxTextures["front"] = skyboxDefault;
-				GUISettings::skyboxTextures["back"] = skyboxDefault;
+				skyboxTexturesMap["right"] = skyboxDefault;
+				skyboxTexturesMap["left"] = skyboxDefault;
+				skyboxTexturesMap["top"] = skyboxDefault;
+				skyboxTexturesMap["bottom"] = skyboxDefault;
+				skyboxTexturesMap["front"] = skyboxDefault;
+				skyboxTexturesMap["back"] = skyboxDefault;
 			}
 			Skybox::AssignSkyboxTextures(skyboxTextures, false);
 
@@ -296,12 +294,12 @@ namespace EngineFile
 			return;
 		}
 
-		sceneFile << "skybox_right= " << GUISettings::skyboxTextures["right"] << "\n";
-		sceneFile << "skybox_left= " << GUISettings::skyboxTextures["left"] << "\n";
-		sceneFile << "skybox_top= " << GUISettings::skyboxTextures["top"] << "\n";
-		sceneFile << "skybox_bottom= " << GUISettings::skyboxTextures["bottom"] << "\n";
-		sceneFile << "skybox_front= " << GUISettings::skyboxTextures["front"] << "\n";
-		sceneFile << "skybox_back= " << GUISettings::skyboxTextures["back"] << "\n";
+		sceneFile << "skybox_right= " << skyboxTexturesMap["right"] << "\n";
+		sceneFile << "skybox_left= " << skyboxTexturesMap["left"] << "\n";
+		sceneFile << "skybox_top= " << skyboxTexturesMap["top"] << "\n";
+		sceneFile << "skybox_bottom= " << skyboxTexturesMap["bottom"] << "\n";
+		sceneFile << "skybox_front= " << skyboxTexturesMap["front"] << "\n";
+		sceneFile << "skybox_back= " << skyboxTexturesMap["back"] << "\n";
 
 		sceneFile.close();
 

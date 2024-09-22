@@ -139,8 +139,9 @@ namespace Graphics::Shape
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddSpotLight(obj);
 
+#if ENGINE_MODE
 		Render::UpdateCounts();
-
+#endif
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,

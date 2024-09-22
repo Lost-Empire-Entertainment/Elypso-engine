@@ -18,7 +18,6 @@
 //engine
 #include "console.hpp"
 #include "core.hpp"
-#include "gui.hpp"
 #include "render.hpp"
 #include "texture.hpp"
 #include "timeManager.hpp"
@@ -34,6 +33,9 @@
 #include "shader.hpp"
 #include "selectobject.hpp"
 #include "skybox.hpp"
+#if ENGINE_MODE
+#include "gui.hpp"
+#endif
 
 using glm::perspective;
 using glm::radians;
@@ -50,7 +52,6 @@ using Core::Input;
 using Core::TimeManager;
 using Core::Engine;
 using Graphics::Shape::GameObjectManager;
-using Graphics::GUI::EngineGUI;
 using Graphics::Shape::PointLight;
 using Graphics::Grid;
 using Graphics::Shape::ActionTex;
@@ -63,29 +64,34 @@ using Type = Core::ConsoleManager::Type;
 using EngineFile::ConfigFile;
 using Utils::String;
 using Core::Select;
+#if ENGINE_MODE
+using Graphics::GUI::EngineGUI;
+#endif
 
 namespace Graphics
 {
 	Camera Render::camera(Render::window, 0.05f);
+#if ENGINE_MODE
 	unsigned int framebuffer;
 	unsigned int textureColorbuffer;
 	unsigned int rbo;
 	int framebufferWidth = 1280;
 	int framebufferHeight = 720;
+#endif
 
 	void Render::RenderSetup()
 	{
 		GLFWSetup();
 		WindowSetup();
 		GladSetup();
+#if ENGINE_MODE
 		FramebufferSetup();
-
+#endif
 		ContentSetup();
 
-//#if ENGINE_MODE
+#if ENGINE_MODE
 		EngineGUI::Initialize();
-//#endif
-
+#endif
 		TimeManager::InitializeDeltaTime();
 	}
 
@@ -181,6 +187,7 @@ namespace Graphics
 			Type::DEBUG,
 			"GLAD initialized successfully!\n\n");
 	}
+#if ENGINE_MODE
 	void Render::FramebufferSetup()
 	{
 		//set up framebuffer
@@ -234,6 +241,7 @@ namespace Graphics
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+#endif
 	void Render::ContentSetup()
 	{
 		//enable face culling
@@ -249,10 +257,7 @@ namespace Graphics
 
 #if ENGINE_MODE
 		Grid::InitializeGrid();
-#else
-		cout << "Grid is disabled because engine mode was set to false...\n";
 #endif
-
 		shared_ptr<GameObject> border = Border::InitializeBorder();
 		GameObjectManager::SetBorder(border);
 		GameObjectManager::AddOpaqueObject(border);
@@ -287,6 +292,10 @@ namespace Graphics
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
+#ifndef ENGINE_MODE
+		glViewport(0, 0, width, height);
+		Camera::aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+#endif
 	}
 
 	void Render::SetWindowNameAsUnsaved(bool state)
@@ -324,7 +333,9 @@ namespace Graphics
 		//update the camera
 		view = camera.GetViewMatrix();
 
+#if ENGINE_MODE
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+#endif
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -346,25 +357,23 @@ namespace Graphics
 		Grid::RenderGrid(view, projection);
 		glDepthMask(GL_TRUE);
 #endif
-
 		GameObjectManager::RenderAll(view, projection);
 
+#if ENGINE_MODE
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDisable(GL_DEPTH_TEST);
 
-//#if ENGINE_MODE
 		//all windows, including RenderToImguiWindow 
 		//with scene content are called in the Render function
 		EngineGUI::Render();
-//#endif
-
+#endif
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
+#if ENGINE_MODE
 	void Render::RenderToImguiWindow()
 	{
 		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(5000, 5000));
@@ -892,4 +901,5 @@ namespace Graphics
 			}
 		}
 	}
+#endif
 }

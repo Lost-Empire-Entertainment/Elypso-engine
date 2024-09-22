@@ -17,12 +17,14 @@
 #include "render.hpp"
 #include "timeManager.hpp"
 #include "configFile.hpp"
-#include "gui.hpp"
 #include "sceneFile.hpp"
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
+#if ENGINE_MODE
+#include "gui.hpp"
 #include "gui_settings.hpp"
+#endif
 
 using std::cout;
 using std::endl;
@@ -36,7 +38,7 @@ using std::filesystem::create_directory;
 
 using Utils::String;
 using Utils::File;
-using Graphics::GUI::EngineGUI;
+
 using Graphics::Render;
 using EngineFile::SceneFile;
 using EngineFile::ConfigFile;
@@ -44,7 +46,10 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
+#if ENGINE_MODE
+using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
+#endif
 
 namespace Core
 {
@@ -52,6 +57,8 @@ namespace Core
 	{
 		name = assignedName;
 		version = assignedVersion;
+
+		string output;
 
 		if (IsThisProcessAlreadyRunning(name + ".exe"))
 		{
@@ -114,7 +121,7 @@ namespace Core
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 
-			string output = "Engine documents path: " + docsPath + "\n";
+			output = "Engine documents path: " + docsPath + "\n";
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
@@ -125,6 +132,7 @@ namespace Core
 			CreateErrorPopup(("Couldn't find " + name + " documents folder! Error code: F0002").c_str());
 		}
 
+#if ENGINE_MODE
 		//
 		// SET GAME PATHS
 		//
@@ -166,7 +174,7 @@ namespace Core
 			gameParentPath = gamePath + "\\build\\Release";
 		}
 
-		string output = "Game path: " + gamePath + "\n\n";
+		output = "Game path: " + gamePath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
@@ -189,7 +197,7 @@ namespace Core
 		{
 			CreateErrorPopup("Failed to find game template folder! Error code: F0003");
 		}
-
+#endif
 		//
 		// SET FILES PATH
 		//
@@ -269,7 +277,7 @@ namespace Core
 		// SET FIRST SCENE PATH
 		//
 
-		string firstSceneFile = docsPath + "\\" + path(gameExePath).stem().string() + "\\firstScene.txt";
+		string firstSceneFile = docsPath + "\\" + path(docsPath).stem().string() + "\\firstScene.txt";
 		if (exists(firstSceneFile))
 		{
 			ifstream fsFile(firstSceneFile);
@@ -411,10 +419,12 @@ namespace Core
 			false);
 
 		startedWindowLoop = true;
+#if ENGINE_MODE
 		if (!ConsoleManager::storedLogs.empty())
 		{
 			ConsoleManager::PrintLogsToBuffer();
 		}
+#endif
 
 		isEngineRunning = true;
 
@@ -500,7 +510,9 @@ namespace Core
 			isEngineRunning = false;
 
 			ConsoleManager::CloseLogger();
+#if ENGINE_MODE
 			EngineGUI::Shutdown();
+#endif
 			glfwTerminate();
 		}
 		else
@@ -515,7 +527,9 @@ namespace Core
 				glfwFocusWindow(Render::window);
 
 				glfwSetWindowShouldClose(Render::window, GLFW_FALSE);
+#if ENGINE_MODE
 				EngineGUI::renderUnsavedShutdownWindow = true;
+#endif
 			}
 			else
 			{
@@ -534,7 +548,9 @@ namespace Core
 					Type::INFO,
 					"Cleaning up resources...\n");
 
+#if ENGINE_MODE
 				EngineGUI::Shutdown();
+#endif
 
 				//clean all glfw resources after program is closed
 				glfwTerminate();

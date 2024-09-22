@@ -30,10 +30,11 @@
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
-#include "compile.hpp"
 #include "fileUtils.hpp"
-#include "compile.hpp"
 #include "StringUtils.h"
+#if ENGINE_MODE
+#include "compile.hpp"
+#endif
 
 using std::cout;
 using std::endl;
@@ -60,11 +61,12 @@ using Graphics::Shape::Model;
 using Graphics::Shape::Material;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
-using Core::Compilation;
 using Utils::File;
-using Core::Compilation;
 using Core::Input;
 using Utils::String;
+#if ENGINE_MODE
+using Core::Compilation;
+#endif
 
 namespace Core
 {
@@ -77,8 +79,12 @@ namespace Core
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
+#if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !ImGui::GetIO().WantCaptureMouse)
+#else
+        if (!ImGui::GetIO().WantCaptureMouse)
+#endif
         {
             float combinedOffset = increment * static_cast<float>(yoffset);
 
@@ -122,8 +128,12 @@ namespace Core
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 	{
+#if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
+#else
+        if (!Render::camera.cameraEnabled)
+#endif
         {
             if (!ImGui::GetIO().WantCaptureMouse)
             {
@@ -400,6 +410,7 @@ namespace Core
                 }
             }
 
+#if ENGINE_MODE
             //compile game
             if (key == GLFW_KEY_B
                 && mods == GLFW_MOD_CONTROL
@@ -456,6 +467,7 @@ namespace Core
                     File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
                 }
             }
+#endif
 
             //save current scene
             if (key == GLFW_KEY_S
@@ -485,8 +497,12 @@ namespace Core
 
     void Input::ObjectInteraction(float width, float height, double posX, double posY)
     {
+#if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
+#else
+        if (!Render::camera.cameraEnabled)
+#endif
         {
             Select::Ray ray = Select::RayFromMouse(
                 width, 

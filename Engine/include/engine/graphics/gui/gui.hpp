@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 #include <vector>
 #include <string>
 
@@ -62,3 +62,4 @@ namespace Graphics::GUI
 		static void SaveBefore(SaveBeforeState saveBeforeState);
 	};
 }
+#endif

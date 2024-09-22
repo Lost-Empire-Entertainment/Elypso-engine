@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 #include <map>
 #include <string>
 
@@ -37,3 +37,4 @@ namespace Graphics::GUI
 		static void OtherSettings();
 	};
 }
+#endif

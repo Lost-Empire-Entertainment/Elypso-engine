@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 #include <string>
 #include <vector>
 #include <memory>
@@ -61,3 +61,4 @@ namespace Graphics::GUI
 		static void RenderProjectItemsListContent();
 	};
 }
+#endif

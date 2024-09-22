@@ -27,9 +27,11 @@ namespace Core
 		static inline string scenesPath;
 		static inline string texturesPath;
 
+#if ENGINE_MODE
 		static inline string gamePath;
 		static inline string gameExePath;
 		static inline string gameParentPath;
+#endif
 
 		static inline bool isEngineRunning;
 		static inline bool startedWindowLoop;

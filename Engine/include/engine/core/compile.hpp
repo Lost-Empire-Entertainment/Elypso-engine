@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 #include <vector>
 #include <string>
 
@@ -37,3 +37,4 @@ namespace Core
 		static inline bool firstScrollToBottom;
 	};
 }
+#endif

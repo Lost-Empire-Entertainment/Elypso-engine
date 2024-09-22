@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Turns on engine mode in engine source code
-add_definitions(-DENGINE_MODE=1)
+# Turns engine mode on for engine
+add_definitions(-DENGINE_MODE)
 
 set(PROJECT_MAJOR_VERSION 1)
 set(PROJECT_MINOR_VERSION 0)
