@@ -14,8 +14,8 @@ namespace Core
 	class Engine
 	{
 	public:
-		static inline string name = "Elypso engine";
-		static inline string version = "0.1.1";
+		static inline string name;
+		static inline string version;
 		static inline string gameFirstScene;
 
 		static inline string docsPath;
@@ -34,7 +34,9 @@ namespace Core
 		static inline bool isEngineRunning;
 		static inline bool startedWindowLoop;
 
-		static void InitializeEngine();
+		static void InitializeEngine(
+			string name = "Elypso engine",
+			string version = "0.1.1");
 		static void RunEngine();
 
 		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");

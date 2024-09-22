@@ -5,12 +5,16 @@
 
 #pragma once
 
+#include <string>
+
+using std::string;
+
 namespace Core
 {
 	class Game
 	{
 	public:
-		static void Initialize();
+		static void Initialize(const string& name, const string& version);
 		static void Run();
 	};
 }

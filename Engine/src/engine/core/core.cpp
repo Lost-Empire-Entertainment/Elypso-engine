@@ -48,8 +48,11 @@ using Graphics::GUI::GUISettings;
 
 namespace Core
 {
-	void Engine::InitializeEngine()
+	void Engine::InitializeEngine(string assignedName, string assignedVersion)
 	{
+		name = assignedName;
+		version = assignedVersion;
+
 		if (IsThisProcessAlreadyRunning(name + ".exe"))
 		{
 			CreateErrorPopup("Elypso Engine is already running! Error code: F0001");
@@ -119,16 +122,13 @@ namespace Core
 		}
 		else
 		{
-			CreateErrorPopup(
-				"Couldn't find engine documents folder! Error code: F0002");
+			CreateErrorPopup(("Couldn't find " + name + " documents folder! Error code: F0002").c_str());
 		}
 
 		//
 		// SET GAME PATHS
 		//
 		 
-		cout << "engine is ran from path " << current_path().string() << "\n";
-
 		//if engine is ran from repository structure
 		string parentFolder = current_path().stem().string();
 		if (parentFolder == "Release"
@@ -142,8 +142,6 @@ namespace Core
 			gamePath = String::CharReplace(gamePath, '/', '\\');
 			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
-
-			cout << "choice 1\n";
 		}
 		//if engine is ran from visual studio folder
 		else if (parentFolder == "x64-release"
@@ -158,8 +156,6 @@ namespace Core
 			gamePath = String::CharReplace(gamePath, '/', '\\');
 			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
-
-			cout << "choice 2\n";
 		}
 		//if engine is not ran from repository structure
 		else 
@@ -168,8 +164,6 @@ namespace Core
 			gamePath = String::CharReplace(gamePath, '/', '\\');
 			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
-
-			cout << "choice 3\n";
 		}
 
 		string output = "Game path: " + gamePath + "\n\n";
@@ -193,8 +187,7 @@ namespace Core
 		//if neither one works then engine cannot proceed
 		if (!exists(gamePath))
 		{
-			CreateErrorPopup(
-				"Failed to find game template folder! Error code: F0003");
+			CreateErrorPopup("Failed to find game template folder! Error code: F0003");
 		}
 
 		//
@@ -204,12 +197,11 @@ namespace Core
 		filesPath = current_path().generic_string() + "\\files";
 		if (!exists(filesPath))
 		{
-			CreateErrorPopup(
-				"Couldn't find files folder! Error code: F0004");
+			CreateErrorPopup("Couldn't find files folder! Error code: F0004");
 			return;
 		}
 
-		output = "User engine files path: " + filesPath + "\n\n";
+		output = "User " + name + " files path: " + filesPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
@@ -222,8 +214,7 @@ namespace Core
 		ifstream projectFile(docsPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
-			CreateErrorPopup(
-				"Failed to open project file! Error code: F0005");
+			CreateErrorPopup("Failed to open project file! Error code: F0005");
 		}
 
 		output = "Project file path: " + docsPath + "\\project.txt" + "\n\n";
@@ -284,8 +275,7 @@ namespace Core
 			ifstream fsFile(firstSceneFile);
 			if (!fsFile.is_open())
 			{
-				CreateErrorPopup(
-					"Failed to open first scene file! Error code: F0006");
+				CreateErrorPopup("Failed to open first scene file! Error code: F0006");
 			}
 
 			string line;
@@ -443,12 +433,12 @@ namespace Core
 
 	void Engine::CreateErrorPopup(const char* errorMessage)
 	{
-		string title = "Elypso Engine has shut down";
+		string title = name + " has shut down";
 
 		cout << "\n"
 			<< "===================="
 			<< "\n"
-			<< "ENGINE SHUTDOWN"
+			<< "PROGRAM SHUTDOWN"
 			<< "\n\n"
 			<< errorMessage 
 			<< "\n"
@@ -556,7 +546,7 @@ namespace Core
 
 				cout << "\n==================================================\n"
 					<< "\n"
-					<< "EXITED ELYPSO ENGINE\n"
+					<< "EXITED PROGRAM\n"
 					<< "\n"
 					<< "==================================================\n"
 					<< ".\n"

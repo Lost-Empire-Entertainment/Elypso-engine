@@ -10,7 +10,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-project("Game test")
+# Turns on engine mode in engine source code
+add_definitions(-DENGINE_MODE=0)
+
+project("Game")
 
 # Set parent path
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
@@ -70,7 +73,7 @@ list(APPEND SOURCE_FILES
 )
 
 add_executable(GameTest ${SOURCE_FILES})
-set_target_properties(GameTest PROPERTIES OUTPUT_NAME "Game test")
+set_target_properties(GameTest PROPERTIES OUTPUT_NAME "Game")
 target_compile_features(GameTest PRIVATE cxx_std_20)
 
 target_include_directories(GameTest PRIVATE
@@ -112,15 +115,6 @@ target_compile_definitions(GameTest PRIVATE GLFW_INCLUDE_NONE)
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS GameTest DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Copy assimp dll to the install directory after build
-add_custom_command(TARGET GameTest POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove -f
-		"$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll"
-	COMMAND ${CMAKE_COMMAND} -E copy
-		"${CMAKE_SOURCE_DIR}/files/external dlls/assimp-vc143-mt.dll"
-		"$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll"
-)
-
 # Copy elypso engine lib to the install directory after build
 add_custom_command(TARGET GameTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove -f 
@@ -128,6 +122,33 @@ add_custom_command(TARGET GameTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy 
 		"${CMAKE_SOURCE_DIR}/Elypso engine.lib" 
 		"$<TARGET_FILE_DIR:GameTest>/Elypso engine.lib"
+)
+
+# Copy "files" directory to the install directory after build
+add_custom_command(TARGET GameTest POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+	$<TARGET_FILE_DIR:GameTest>/files
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	${CMAKE_SOURCE_DIR}/files 
+	$<TARGET_FILE_DIR:GameTest>/files
+)
+
+# Copy assimp dll to the install directory after build
+add_custom_command(TARGET GameTest POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+	$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll
+	COMMAND ${CMAKE_COMMAND} -E copy
+	${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
+	$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll
+)
+
+# Copy "README.md" to install directory after build
+add_custom_command(TARGET GameTest POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+	$<TARGET_FILE_DIR:GameTest>/README.md
+	COMMAND ${CMAKE_COMMAND} -E copy
+	${PARENT_DIR_PATH}/README.md
+	$<TARGET_FILE_DIR:GameTest>/README.md
 )
 
 # Include CPack to enable packaging
