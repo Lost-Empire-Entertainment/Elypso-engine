@@ -23,10 +23,50 @@ set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(ENGINE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../Engine/include/engine")
 set(GAME_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../Engine/include/game")
 
+# External files
+set(EXT_ASSIMP_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Assimp")
+set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Glad")
+set(EXT_GLFW_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/GLFW")
+set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/GLM")
+set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
+set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
+set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
+
+# Add GLAD
+add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
+target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
+
+# Add GLFW
+set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
+
+# Add Assimp
+set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
+
+# Add magic_enum
+add_library(magic_enum INTERFACE)
+target_include_directories(magic_enum INTERFACE ${EXT_MAGIC_ENUM_DIR})
+
+# Group external libraries
+add_library(external_libs INTERFACE)
+target_link_libraries(external_libs INTERFACE glad magic_enum)
+
 # Add your source files
 file(GLOB_RECURSE SOURCE_FILES
 	${SRC_DIR}/*.cpp
 	${SRC_DIR}/*/*.cpp
+)
+
+# Add external source files
+list(APPEND SOURCE_FILES
+	${EXT_GLAD_DIR}/glad.c
+	${EXT_IMGUI_DIR}/imgui.cpp
+	${EXT_IMGUI_DIR}/imgui_draw.cpp
+	${EXT_IMGUI_DIR}/imgui_impl_glfw.cpp
+	${EXT_IMGUI_DIR}/imgui_impl_opengl3.cpp
+	${EXT_IMGUI_DIR}/imgui_tables.cpp
+	${EXT_IMGUI_DIR}/imgui_widgets.cpp
+	${EXT_IMGUI_DIR}/imgui_demo.cpp
+	${EXT_STB_IMAGE_DIR}/stb_image.cpp
 )
 
 add_executable(GameTest ${SOURCE_FILES})
@@ -48,13 +88,40 @@ target_include_directories(GameTest PRIVATE
 	${ENGINE_INCLUDE_DIR}/graphics/shapes
 	${ENGINE_INCLUDE_DIR}/physics
 	${ENGINE_INCLUDE_DIR}/utils
+	
+	# External libraries
+	${EXT_ASSIMP_DIR}
+	${EXT_GLAD_DIR}
+	${EXT_GLFW_DIR}
+	${EXT_GLM_DIR}
+	${EXT_GLM_DIR}/detail
+	${EXT_GLM_DIR}/ext
+	${EXT_GLM_DIR}/gtc
+	${EXT_GLM_DIR}/gtx
+	${EXT_GLM_DIR}/simd
+	${EXT_MAGIC_ENUM_DIR}
+	${EXT_IMGUI_DIR}
+	${EXT_STB_IMAGE_DIR}
 )
 
-target_link_libraries(GameTest PRIVATE "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+target_link_libraries(GameTest PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+
+# Define GLFW_INCLUDE_NONE
+target_compile_definitions(GameTest PRIVATE GLFW_INCLUDE_NONE)
 
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS GameTest DESTINATION ${CMAKE_INSTALL_BINDIR})
 
+# Copy assimp dll to the install directory after build
+add_custom_command(TARGET GameTest POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove -f
+		"$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll"
+	COMMAND ${CMAKE_COMMAND} -E copy
+		"${CMAKE_SOURCE_DIR}/files/external dlls/assimp-vc143-mt.dll"
+		"$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll"
+)
+
+# Copy elypso engine lib to the install directory after build
 add_custom_command(TARGET GameTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove -f 
 		"$<TARGET_FILE_DIR:GameTest>/Elypso engine.lib"

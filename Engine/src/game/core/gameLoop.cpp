@@ -5,16 +5,23 @@
 
 #include <iostream>
 
+//engine
+#include "core.hpp"
+
 //game
 #include "gameLoop.hpp"
 
 using std::cout;
+
+using Core::Engine;
 
 namespace Core
 {
 	void Game::Initialize()
 	{
 		cout << "Game initialization...\n";
+
+		Engine::InitializeEngine();
 	}
 
 	void Game::Run()
