@@ -12,6 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Turns engine mode on for engine
 add_definitions(-DENGINE_MODE)
+# remove_definitions(-DENGINE_MODE)
 
 set(PROJECT_MAJOR_VERSION 1)
 set(PROJECT_MINOR_VERSION 0)

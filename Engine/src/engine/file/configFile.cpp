@@ -162,23 +162,6 @@ namespace EngineFile
 			}
 			else
 			{
-				if (key == "camera_position")
-				{
-					vec3 pos = Render::camera.GetCameraPosition();
-					value =
-						to_string(pos[0]) + "," +
-						to_string(pos[1]) + "," +
-						to_string(pos[2]);
-				}
-				else if (key == "camera_rotation")
-				{
-					vec3 rot = Render::camera.GetCameraRotation();
-					value =
-						to_string(rot[0]) + "," +
-						to_string(rot[1]) + "," +
-						to_string(rot[2]);
-				}
-
 				configFile << key << "= " << value << "\n";
 			}
 		}
@@ -279,10 +262,6 @@ namespace EngineFile
 			values.push_back("0.001");
 		keys.push_back("camera_farClip");
 			values.push_back("200.0");
-		keys.push_back("camera_position");
-			values.push_back("0.0, 1.0, 0.0");
-		keys.push_back("camera_rotation");
-			values.push_back("-90.00, 0.00, 0.00");
 
 		keys.push_back("grid_color");
 			values.push_back("0.4, 0.4, 0.4");

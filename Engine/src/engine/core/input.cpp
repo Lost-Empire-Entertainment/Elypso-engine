@@ -82,9 +82,6 @@ namespace Core
 #if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !ImGui::GetIO().WantCaptureMouse)
-#else
-        if (!ImGui::GetIO().WantCaptureMouse)
-#endif
         {
             float combinedOffset = increment * static_cast<float>(yoffset);
 
@@ -124,6 +121,7 @@ namespace Core
                 }
             }
         }
+#endif
     }
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -131,9 +129,6 @@ namespace Core
 #if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
-#else
-        if (!Render::camera.cameraEnabled)
-#endif
         {
             if (!ImGui::GetIO().WantCaptureMouse)
             {
@@ -410,7 +405,6 @@ namespace Core
                 }
             }
 
-#if ENGINE_MODE
             //compile game
             if (key == GLFW_KEY_B
                 && mods == GLFW_MOD_CONTROL
@@ -468,7 +462,8 @@ namespace Core
                 }
             }
 #endif
-
+        if (!Render::camera.cameraEnabled)
+        {
             //save current scene
             if (key == GLFW_KEY_S
                 && mods == GLFW_MOD_CONTROL
@@ -482,6 +477,29 @@ namespace Core
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
+#if ENGINE_MODE
+#else
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        {
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+
+            int renderSizeX, renderSizeY;
+            glfwGetFramebufferSize(window, &renderSizeX, &renderSizeY);
+
+            if (x >= 0 
+                && x <= renderSizeX 
+                && y >= 0 
+                && y <= renderSizeY)
+            {
+                Input::ObjectInteraction(
+                    static_cast<float>(renderSizeX), 
+                    static_cast<float>(renderSizeY),
+                    x, 
+                    y);
+            }
+        }
+#endif
     }
 
     void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
@@ -501,7 +519,7 @@ namespace Core
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
 #else
-        if (!Render::camera.cameraEnabled)
+        if (Engine::isEngineRunning)
 #endif
         {
             Select::Ray ray = Select::RayFromMouse(

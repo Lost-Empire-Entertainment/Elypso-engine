@@ -86,6 +86,10 @@ namespace EngineFile
 						"Failed to create default scene file! Error code: F0007");
 				}
 				defaultSceneFile.close();
+
+				//sets camera default position and rotation if default scene is created
+				Render::camera.SetCameraPosition(vec3(0.0f, 1.0f, 0.0f));
+				Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f));
 			}
 
 			//create new default scene file if it doesnt exist
@@ -158,7 +162,30 @@ namespace EngineFile
 						}
 					}
 
-					if (type == "skybox_right")
+					vector<string> splitValue;
+					if (value.find(',') != string::npos)
+					{
+						splitValue = String::Split(value, ',');
+					}
+
+					if (type == "camera_position")
+					{
+						vec3 cameraPos = vec3(
+							stof(splitValue[0]),
+							stof(splitValue[1]),
+							stof(splitValue[2]));
+						Render::camera.SetCameraPosition(cameraPos);
+					}
+					else if (type == "camera_rotation")
+					{
+						vec3 cameraRot = vec3(
+							stof(splitValue[0]),
+							stof(splitValue[1]),
+							stof(splitValue[2]));
+						Render::camera.SetCameraRotation(cameraRot);
+					}
+
+					else if (type == "skybox_right")
 					{
 						string finalValue = value != ""
 							? value
@@ -167,7 +194,6 @@ namespace EngineFile
 						skyboxTextures.push_back(finalValue);
 						skyboxTexturesMap["right"] = finalValue;
 					}
-
 					else if (type == "skybox_left")
 					{
 						string finalValue = value != ""
@@ -177,7 +203,6 @@ namespace EngineFile
 						skyboxTextures.push_back(finalValue);
 						skyboxTexturesMap["left"] = finalValue;
 					}
-
 					else if (type == "skybox_top")
 					{
 						string finalValue = value != ""
@@ -187,7 +212,6 @@ namespace EngineFile
 						skyboxTextures.push_back(finalValue);
 						skyboxTexturesMap["top"] = finalValue;
 					}
-
 					else if (type == "skybox_bottom")
 					{
 						string finalValue = value != ""
@@ -197,7 +221,6 @@ namespace EngineFile
 						skyboxTextures.push_back(finalValue);
 						skyboxTexturesMap["bottom"] = finalValue;
 					}
-
 					else if (type == "skybox_front")
 					{
 						string finalValue = value != ""
@@ -207,7 +230,6 @@ namespace EngineFile
 						skyboxTextures.push_back(finalValue);
 						skyboxTexturesMap["front"] = finalValue;
 					}
-
 					else if (type == "skybox_back")
 					{
 						string finalValue = value != ""
@@ -293,6 +315,20 @@ namespace EngineFile
 				"Couldn't write into scene file '" + Engine::scenePath + "'!\n");
 			return;
 		}
+
+		vec3 pos = Render::camera.GetCameraPosition();
+		string cameraPos =
+			to_string(pos[0]) + "," +
+			to_string(pos[1]) + "," +
+			to_string(pos[2]);
+		sceneFile << "camera_position= " << cameraPos << "\n";
+
+		vec3 rot = Render::camera.GetCameraRotation();
+		string cameraRot =
+			to_string(rot[0]) + "," +
+			to_string(rot[1]) + "," +
+			to_string(rot[2]);
+		sceneFile << "camera_rotation= " << cameraRot << "\n";
 
 		sceneFile << "skybox_right= " << skyboxTexturesMap["right"] << "\n";
 		sceneFile << "skybox_left= " << skyboxTexturesMap["left"] << "\n";
