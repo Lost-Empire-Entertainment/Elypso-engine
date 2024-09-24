@@ -25,7 +25,7 @@
 #include "gui.hpp"
 #include "gui_settings.hpp"
 #else
-#include "gameGui.hpp"
+#include "gui_game.hpp"
 #endif
 
 using std::cout;
@@ -66,12 +66,12 @@ namespace Core
 
 		if (IsThisProcessAlreadyRunning(name + ".exe"))
 		{
-			CreateErrorPopup("Elypso Engine is already running! Error code: F0001");
+			CreateErrorPopup((name + " is already running! Error code: F0001").c_str());
 		}
 
 		cout << "\n==================================================\n"
 			<< "\n"
-			<< "ENTERED ELYPSO ENGINE\n"
+			<< "ENTERED PROGRAM\n"
 			<< "\n"
 			<< "==================================================\n"
 			<< ".\n"
@@ -121,11 +121,11 @@ namespace Core
 
 			docsPath = String::CharReplace(
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\Elypso engine";
+				"\\" + name;
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 
-			output = "Engine documents path: " + docsPath + "\n";
+			output = "Documents path: " + docsPath + "\n";
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
@@ -213,7 +213,7 @@ namespace Core
 			return;
 		}
 
-		output = "User " + name + " files path: " + filesPath + "\n\n";
+		output = name + " files path: " + filesPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,

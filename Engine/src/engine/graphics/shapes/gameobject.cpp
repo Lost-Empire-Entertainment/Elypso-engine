@@ -17,8 +17,6 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
-#include "selectedobjectaction.hpp"
-#include "selectedobjectborder.hpp"
 #include "billboard.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
@@ -26,6 +24,10 @@
 #include "sceneFile.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#if ENGINE_MODE
+#include "selectedobjectaction.hpp"
+#include "selectedobjectborder.hpp"
+#endif
 
 using std::cout;
 using std::endl;
@@ -38,8 +40,6 @@ using std::filesystem::directory_iterator;
 
 using Core::Select;
 using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::ActionTex;
-using Graphics::Shape::Border;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -47,6 +47,10 @@ using ConsoleType = Core::ConsoleManager::Type;
 using EngineFile::SceneFile;
 using Utils::String;
 using Utils::File;
+#if ENGINE_MODE
+using Graphics::Shape::ActionTex;
+using Graphics::Shape::Border;
+#endif
 
 namespace Graphics::Shape
 {
@@ -78,8 +82,9 @@ namespace Graphics::Shape
 			}
 		}
 
+#if ENGINE_MODE
 		Border::RenderBorder(border, view, projection);
-
+#endif
 		//transparent objects are rendered last
 		if (transparentObjects.size() > 0)
 		{
@@ -101,9 +106,9 @@ namespace Graphics::Shape
 
 			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
-
+#if ENGINE_MODE
 			ActionTex::RenderActionTex(actionTex, view, projection);
-
+#endif
 			for (const auto& obj : transparentObjects)
 			{
 				if (obj->GetName() == "") obj->SetName(".");

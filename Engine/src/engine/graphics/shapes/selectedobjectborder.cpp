@@ -2,7 +2,7 @@
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
-
+#if ENGINE_MODE
 //external
 #include "glad.h"
 #include "quaternion.hpp"
@@ -151,3 +151,4 @@ namespace Graphics::Shape
 		glDrawArrays(GL_LINES, 0, 24);
 	}
 }
+#endif

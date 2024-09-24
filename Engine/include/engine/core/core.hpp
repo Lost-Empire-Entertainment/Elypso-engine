@@ -26,19 +26,22 @@ namespace Core
 		static inline string currentGameobjectsPath;
 		static inline string scenesPath;
 		static inline string texturesPath;
-
 #if ENGINE_MODE
 		static inline string gamePath;
 		static inline string gameExePath;
 		static inline string gameParentPath;
 #endif
-
 		static inline bool isEngineRunning;
 		static inline bool startedWindowLoop;
-
+#if ENGINE_MODE
 		static void InitializeEngine(
 			string name = "Elypso engine",
 			string version = "0.1.1");
+#else
+		static void InitializeEngine(
+			string name = "Game",
+			string version = "0.1");
+#endif
 		static void RunEngine();
 
 		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");

@@ -10,6 +10,7 @@
 
 //external
 #include "glm.hpp"
+#include "glad.h"
 
 using std::string;
 using std::unordered_map;

@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 //external
 #include "glm.hpp"
 
@@ -32,3 +32,4 @@ namespace Graphics
 		static inline float vertices[lineCount * 4 * 3];
 	};
 }
+#endif

@@ -7,25 +7,15 @@
 
 #include <map>
 #include <string>
-#include <memory>
 
 //external
-#include "glm.hpp"
-#include "glm/gtc/matrix_transform.hpp" //two matrix_transform.hpp files exist in glm
 #include "glfw3.h"
 
 //engine
 #include "input.hpp"
-#include "gameobject.hpp"
 
-using glm::vec3;
-using glm::mat4;
-using glm::radians;
 using std::map;
 using std::string;
-using std::shared_ptr;
-
-using Graphics::Shape::GameObject;
 
 namespace Core
 {

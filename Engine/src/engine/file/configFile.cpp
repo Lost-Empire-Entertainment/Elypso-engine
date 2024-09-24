@@ -98,25 +98,6 @@ namespace EngineFile
 
 					keys.push_back(key);
 					values.push_back(value);
-
-					if (key == "camera_position")
-					{
-						vector<string> posSplit = String::Split(value, ',');
-						vec3 pos = vec3(
-							stof(posSplit[0]), 
-							stof(posSplit[1]),
-							stof(posSplit[2]));
-						Render::camera.SetCameraPosition(pos);
-					}
-					else if (key == "camera_rotation")
-					{
-						vector<string> rotSplit = String::Split(value, ',');
-						vec3 rot = vec3(
-							stof(rotSplit[0]), 
-							stof(rotSplit[1]),
-							stof(rotSplit[2]));
-						Render::camera.SetCameraRotation(rot);
-					}
 				}
 			}
 
@@ -152,18 +133,7 @@ namespace EngineFile
 			string key = keys[i];
 			string value = values[i];
 
-			if (key == ".")
-			{
-				configFile << "\n";
-			}
-			else if (key == "-")
-			{
-				configFile << "-------------------------\n";
-			}
-			else
-			{
-				configFile << key << "= " << value << "\n";
-			}
+			configFile << key << "= " << value << "\n";
 		}
 
 		configFile.close();
@@ -238,13 +208,10 @@ namespace EngineFile
 		keys.clear();
 		values.clear();
 
-		//
-		// CONFIG VALUES EDITABLE THROUGH ENGINE
-		//
-
+#if ENGINE_MODE
 		keys.push_back("firstUse");
 			values.push_back("1");
-
+#endif
 		keys.push_back("gui_fontScale");
 			values.push_back("1.5");
 
@@ -262,7 +229,7 @@ namespace EngineFile
 			values.push_back("0.001");
 		keys.push_back("camera_farClip");
 			values.push_back("200.0");
-
+#if ENGINE_MODE
 		keys.push_back("grid_color");
 			values.push_back("0.4, 0.4, 0.4");
 		keys.push_back("grid_transparency");
@@ -284,7 +251,7 @@ namespace EngineFile
 			values.push_back("0");
 		keys.push_back("gui_firstTime");
 			values.push_back("0");
-
+#endif
 		ofstream configFile(configFilePath);
 
 		if (!configFile.is_open())
@@ -301,18 +268,7 @@ namespace EngineFile
 			string key = keys[i];
 			string value = values[i];
 
-			if (key == ".")
-			{
-				configFile << "\n";
-			}
-			else if (key == "-")
-			{
-				configFile << "-------------------------\n";
-			}
-			else 
-			{
-				configFile << key << "= " << value << "\n";
-			}
+			configFile << key << "= " << value << "\n";
 		}
 
 		configFile.close();

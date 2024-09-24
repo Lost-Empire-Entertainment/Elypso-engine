@@ -14,7 +14,7 @@
 #include "imgui_internal.h"
 
 //engine
-#include "gameGui.hpp"
+#include "gui_game.hpp"
 #include "core.hpp"
 #include "fileUtils.hpp"
 #include "configFile.hpp"

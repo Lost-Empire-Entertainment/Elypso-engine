@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-
+#if ENGINE_MODE
 //external
 #include "glm.hpp"
 
@@ -31,3 +31,4 @@ namespace Graphics::Shape
 		static void RenderBorder(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
 }
+#endif

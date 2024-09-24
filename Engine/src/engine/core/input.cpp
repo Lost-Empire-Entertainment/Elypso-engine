@@ -32,6 +32,7 @@
 #include "spotlight.hpp"
 #include "fileUtils.hpp"
 #include "StringUtils.h"
+#include "camera.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #endif
@@ -42,6 +43,7 @@ using glm::radians;
 using glm::lookAt;
 using glm::quat;
 using glm::rotate;
+using glm::mat4;
 using std::ostringstream;
 using std::fixed;
 using std::setprecision;
@@ -64,6 +66,8 @@ using Graphics::Shape::SpotLight;
 using Utils::File;
 using Core::Input;
 using Utils::String;
+using Core::TimeManager;
+using Graphics::Camera;
 #if ENGINE_MODE
 using Core::Compilation;
 #endif
@@ -461,18 +465,20 @@ namespace Core
                     File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
                 }
             }
-#endif
-        if (!Render::camera.cameraEnabled)
-        {
-            //save current scene
-            if (key == GLFW_KEY_S
-                && mods == GLFW_MOD_CONTROL
-                && action == GLFW_PRESS)
+
+            if (!Render::camera.cameraEnabled)
             {
-                SceneFile::SaveScene();
-                ConfigFile::SaveConfigFile();
+                //save current scene
+                if (key == GLFW_KEY_S
+                    && mods == GLFW_MOD_CONTROL
+                    && action == GLFW_PRESS)
+                {
+                    SceneFile::SaveScene();
+                    ConfigFile::SaveConfigFile();
+                }
             }
         }
+#endif
     }
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -487,15 +493,15 @@ namespace Core
             int renderSizeX, renderSizeY;
             glfwGetFramebufferSize(window, &renderSizeX, &renderSizeY);
 
-            if (x >= 0 
-                && x <= renderSizeX 
-                && y >= 0 
+            if (x >= 0
+                && x <= renderSizeX
+                && y >= 0
                 && y <= renderSizeY)
             {
                 Input::ObjectInteraction(
-                    static_cast<float>(renderSizeX), 
+                    static_cast<float>(renderSizeX),
                     static_cast<float>(renderSizeY),
-                    x, 
+                    x,
                     y);
             }
         }
@@ -518,9 +524,7 @@ namespace Core
 #if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
-#else
-        if (Engine::isEngineRunning)
-#endif
+
         {
             Select::Ray ray = Select::RayFromMouse(
                 width,
@@ -554,6 +558,7 @@ namespace Core
                 if (axis == "") axis = "X";
             }
         }
+#endif
     }
 
     void Input::DragCamera()
@@ -588,7 +593,7 @@ namespace Core
         double currentX, currentY;
         glfwGetCursorPos(Render::window, &currentX, &currentY);
 
-        Render::camera.cameraEnabled = 
+        Render::camera.cameraEnabled =
             glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
 
         if (Render::camera.cameraEnabled)
@@ -707,7 +712,7 @@ namespace Core
             float yoffset = ImGui::GetIO().MouseWheel;
             float combinedOffset = increment * static_cast<float>(yoffset);
             float currentSpeed = stof(ConfigFile::GetValue("camera_speedMultiplier"));
-            float newSpeed = newSpeed = currentSpeed + currentSpeed * combinedOffset;
+            float newSpeed = currentSpeed + currentSpeed * combinedOffset;
 
             if (newSpeed > 100.0f) newSpeed = 100.0f;
             if (newSpeed < 0.1f) newSpeed = 0.1f;

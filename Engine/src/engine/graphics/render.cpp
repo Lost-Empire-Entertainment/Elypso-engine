@@ -23,9 +23,6 @@
 #include "timeManager.hpp"
 #include "pointlight.hpp"
 #include "gameobject.hpp"
-#include "grid.hpp"
-#include "selectedobjectaction.hpp"
-#include "selectedobjectborder.hpp"
 #include "sceneFile.hpp"
 #include "configFile.hpp"
 #include "input.hpp"
@@ -34,9 +31,12 @@
 #include "selectobject.hpp"
 #include "skybox.hpp"
 #if ENGINE_MODE
+#include "grid.hpp"
+#include "selectedobjectaction.hpp"
+#include "selectedobjectborder.hpp"
 #include "gui.hpp"
 #else
-#include "gameGui.hpp"
+#include "gui_game.hpp"
 #endif
 
 using glm::perspective;
@@ -55,9 +55,6 @@ using Core::TimeManager;
 using Core::Engine;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::PointLight;
-using Graphics::Grid;
-using Graphics::Shape::ActionTex;
-using Graphics::Shape::Border;
 using Graphics::Shape::Skybox;
 using EngineFile::SceneFile;
 using Core::ConsoleManager;
@@ -67,6 +64,9 @@ using EngineFile::ConfigFile;
 using Utils::String;
 using Core::Select;
 #if ENGINE_MODE
+using Graphics::Grid;
+using Graphics::Shape::Border;
+using Graphics::Shape::ActionTex;
 using Graphics::GUI::EngineGUI;
 #else
 using Graphics::GUI::GameGUI;
@@ -263,7 +263,7 @@ namespace Graphics
 
 #if ENGINE_MODE
 		Grid::InitializeGrid();
-#endif
+
 		shared_ptr<GameObject> border = Border::InitializeBorder();
 		GameObjectManager::SetBorder(border);
 		GameObjectManager::AddOpaqueObject(border);
@@ -271,7 +271,7 @@ namespace Graphics
 		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
 		GameObjectManager::SetActionTex(actionTex);
 		GameObjectManager::AddTransparentObject(actionTex);
-
+#endif
 		SkyboxSetup();
 
 		glfwMaximizeWindow(window);
