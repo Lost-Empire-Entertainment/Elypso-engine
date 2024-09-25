@@ -23,6 +23,10 @@ project("Elypso engine" VERSION ${PROJECT_VERSION})
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
 
+# Used for copying "Elypso engine.lib" from its folder to Game folder
+set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/build/Release/Elypso engine.lib")
+set(LIB_TARGET "${CMAKE_SOURCE_DIR}/../Game/Elypso engine.lib")
+
 # Engine files
 set(ENGINE_SRC_DIR "${PARENT_DIR}/Engine/src/engine")
 set(ENGINE_INCLUDE_DIR "${PARENT_DIR}/Engine/include/engine")
@@ -124,6 +128,15 @@ target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Copy "Elypso engine.lib" to Game folder
+add_custom_command(TARGET Elypso_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove
+    ${LIB_TARGET}
+    COMMAND ${CMAKE_COMMAND} -E copy
+	${LIB_ORIGIN}
+    ${LIB_TARGET}
+)
 
 # Include CPack to enable packaging
 include(CPack)

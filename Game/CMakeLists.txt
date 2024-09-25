@@ -19,6 +19,10 @@ project("Game")
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
 
+# Used for copying "Elypso engine.lib" to game exe folder
+set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+set(LIB_TARGET "${CMAKE_SOURCE_DIR}/build/Release/Elypso engine.lib")
+
 # Set src and include file paths
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
@@ -72,11 +76,11 @@ list(APPEND SOURCE_FILES
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
 )
 
-add_executable(GameTest ${SOURCE_FILES})
-set_target_properties(GameTest PROPERTIES OUTPUT_NAME "Game")
-target_compile_features(GameTest PRIVATE cxx_std_20)
+add_executable(Game ${SOURCE_FILES})
+set_target_properties(Game PROPERTIES OUTPUT_NAME "Game")
+target_compile_features(Game PRIVATE cxx_std_20)
 
-target_include_directories(GameTest PRIVATE
+target_include_directories(Game PRIVATE
 	# Code added by user
 	${INCLUDE_DIR}
 	
@@ -107,48 +111,48 @@ target_include_directories(GameTest PRIVATE
 	${EXT_STB_IMAGE_DIR}
 )
 
-target_link_libraries(GameTest PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
 
 # Define GLFW_INCLUDE_NONE
-target_compile_definitions(GameTest PRIVATE GLFW_INCLUDE_NONE)
+target_compile_definitions(Game PRIVATE GLFW_INCLUDE_NONE)
 
 set(CMAKE_INSTALL_BINDIR bin)
-install(TARGETS GameTest DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-# Copy elypso engine lib to the install directory after build
-add_custom_command(TARGET GameTest POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove -f 
-		"$<TARGET_FILE_DIR:GameTest>/Elypso engine.lib"
-    COMMAND ${CMAKE_COMMAND} -E copy 
-		"${CMAKE_SOURCE_DIR}/Elypso engine.lib" 
-		"$<TARGET_FILE_DIR:GameTest>/Elypso engine.lib"
-)
+install(TARGETS Game DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Copy "files" directory to the install directory after build
-add_custom_command(TARGET GameTest POST_BUILD
+add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove_directory
-	$<TARGET_FILE_DIR:GameTest>/files
+	$<TARGET_FILE_DIR:Game>/files
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 	${CMAKE_SOURCE_DIR}/files 
-	$<TARGET_FILE_DIR:GameTest>/files
+	$<TARGET_FILE_DIR:Game>/files
 )
 
 # Copy assimp dll to the install directory after build
-add_custom_command(TARGET GameTest POST_BUILD
+add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-	$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll
+	$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
 	COMMAND ${CMAKE_COMMAND} -E copy
 	${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
-	$<TARGET_FILE_DIR:GameTest>/assimp-vc143-mt.dll
+	$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
 )
 
 # Copy "README.md" to install directory after build
-add_custom_command(TARGET GameTest POST_BUILD
+add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-	$<TARGET_FILE_DIR:GameTest>/README.md
+	$<TARGET_FILE_DIR:Game>/README.md
 	COMMAND ${CMAKE_COMMAND} -E copy
 	${PARENT_DIR_PATH}/README.md
-	$<TARGET_FILE_DIR:GameTest>/README.md
+	$<TARGET_FILE_DIR:Game>/README.md
+)
+
+# Copy "Elypso engine.lib" to game exe folder
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove
+    ${LIB_TARGET}
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${LIB_ORIGIN}
+    ${LIB_TARGET}
 )
 
 # Include CPack to enable packaging
