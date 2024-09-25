@@ -15,7 +15,7 @@
 
 //engine
 #include "gui_createscene.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
 #include "fileUtils.hpp"

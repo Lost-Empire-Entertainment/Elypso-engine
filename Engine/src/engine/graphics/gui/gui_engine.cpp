@@ -14,7 +14,7 @@
 //engine
 #include "console.hpp"
 #include "core.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "gui_console.hpp"
 #include "gui_settings.hpp"
 #include "gui_inspector.hpp"

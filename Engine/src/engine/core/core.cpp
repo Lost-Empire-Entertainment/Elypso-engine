@@ -22,7 +22,7 @@
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
 #if ENGINE_MODE
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "gui_settings.hpp"
 #else
 #include "gui_game.hpp"
@@ -71,7 +71,11 @@ namespace Core
 
 		cout << "\n==================================================\n"
 			<< "\n"
-			<< "ENTERED PROGRAM\n"
+#if ENGINE_MODE
+			<< "ENTERED ENGINE\n"
+#else
+			<< "ENTERED GAME\n"
+#endif
 			<< "\n"
 			<< "==================================================\n"
 			<< ".\n"
@@ -119,9 +123,22 @@ namespace Core
 				NULL,
 				NULL);
 
+#if ENGINE_MODE
 			docsPath = String::CharReplace(
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
 				"\\" + name;
+#else
+			string myGamesFolder = String::CharReplace(
+				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
+				"\\My Games";
+
+			if (!exists(myGamesFolder))
+			{
+				File::CreateNewFolder(myGamesFolder);
+			}
+
+			docsPath = myGamesFolder + "\\" + name;
+#endif
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 
@@ -452,7 +469,11 @@ namespace Core
 		cout << "\n"
 			<< "===================="
 			<< "\n"
-			<< "PROGRAM SHUTDOWN"
+#if ENGINE_MODE
+			<< "ENGINE SHUTDOWN\n"
+#else
+			<< "GAME SHUTDOWN\n"
+#endif
 			<< "\n\n"
 			<< errorMessage 
 			<< "\n"
@@ -573,7 +594,11 @@ namespace Core
 
 				cout << "\n==================================================\n"
 					<< "\n"
-					<< "EXITED PROGRAM\n"
+#if ENGINE_MODE
+					<< "EXITED ENGINE\n"
+#else
+					<< "EXITED GAME\n"
+#endif
 					<< "\n"
 					<< "==================================================\n"
 					<< ".\n"

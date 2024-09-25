@@ -28,7 +28,7 @@
 #include "gameobject.hpp"
 #include "render.hpp"
 #include "sceneFile.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "gui_settings.hpp"
 
 using std::cout;

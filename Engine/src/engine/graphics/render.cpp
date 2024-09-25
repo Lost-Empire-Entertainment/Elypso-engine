@@ -34,7 +34,7 @@
 #include "grid.hpp"
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #else
 #include "gui_game.hpp"
 #endif

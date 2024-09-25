@@ -19,7 +19,7 @@
 #include "sceneFile.hpp"
 #include "texture.hpp"
 #include "console.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "gui_settings.hpp"
 
 using std::filesystem::path;

@@ -16,7 +16,7 @@
 
 //engine
 #include "gui_inspector.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"

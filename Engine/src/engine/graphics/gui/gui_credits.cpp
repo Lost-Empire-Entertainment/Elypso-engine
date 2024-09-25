@@ -11,7 +11,7 @@
 
 //engine
 #include "gui_credits.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 
 namespace Graphics::GUI
 {

@@ -18,7 +18,7 @@
 
 //engine
 #include "console.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "render.hpp"
 #include "timeManager.hpp"
 #include "stringUtils.hpp"
@@ -584,6 +584,8 @@ namespace Core
                 Render::camera.RotateCamera(
                     mouseDeltaX * sensitivity,
                     mouseDeltaY * sensitivity);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
         }
 #else
@@ -623,6 +625,8 @@ namespace Core
                 Render::camera.RotateCamera(
                     mouseDeltaX * sensitivity,
                     mouseDeltaY * sensitivity);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
         }
         else firstMove = true;
@@ -665,6 +669,8 @@ namespace Core
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
                     + Render::camera.cameraSpeed * currentSpeed * front);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera backwards
             if (ImGui::IsKeyDown(ImGuiKey_S))
@@ -672,6 +678,8 @@ namespace Core
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
                     - Render::camera.cameraSpeed * currentSpeed * front);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera left
             if (ImGui::IsKeyDown(ImGuiKey_A))
@@ -679,6 +687,8 @@ namespace Core
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
                     - Render::camera.cameraSpeed * currentSpeed * right);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera right
             if (ImGui::IsKeyDown(ImGuiKey_D))
@@ -686,6 +696,8 @@ namespace Core
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
                     + Render::camera.cameraSpeed * currentSpeed * right);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera up
             if (ImGui::IsKeyDown(ImGuiKey_E))
@@ -693,6 +705,8 @@ namespace Core
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
                     + Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera down
             if (ImGui::IsKeyDown(ImGuiKey_Q))
@@ -700,6 +714,8 @@ namespace Core
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
                     - Render::camera.GetUp() * Render::camera.cameraSpeed * currentSpeed);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
         }
         else increment = ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 1.0f : 0.1f;

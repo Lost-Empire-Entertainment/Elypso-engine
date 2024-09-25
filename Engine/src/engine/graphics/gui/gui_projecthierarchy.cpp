@@ -15,7 +15,7 @@
 
 //engine
 #include "gui_projecthierarchy.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "configFile.hpp"
 #include "sceneFile.hpp"
 #include "core.hpp"

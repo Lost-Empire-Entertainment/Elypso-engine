@@ -22,7 +22,7 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #if ENGINE_MODE
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "gui_console.hpp"
 #endif
 

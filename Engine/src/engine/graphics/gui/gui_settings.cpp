@@ -17,7 +17,7 @@
 
 //engine
 #include "gui_settings.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "gui_console.hpp"
 #include "render.hpp"
 #include "input.hpp"

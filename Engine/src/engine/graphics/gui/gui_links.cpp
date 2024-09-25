@@ -11,7 +11,7 @@
 
 //engine
 #include "gui_links.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 #include "browserUtils.hpp"
 
 using Utils::Browser;

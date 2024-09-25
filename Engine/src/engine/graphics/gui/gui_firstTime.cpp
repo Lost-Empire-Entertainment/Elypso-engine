@@ -12,7 +12,7 @@
 //engine
 #include "gui_firstTime.hpp"
 #include "configFile.hpp"
-#include "gui.hpp"
+#include "gui_engine.hpp"
 
 using EngineFile::ConfigFile;
 
