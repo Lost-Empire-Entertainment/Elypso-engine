@@ -137,6 +137,15 @@ add_custom_command(TARGET Game POST_BUILD
 	$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
 )
 
+# Copy "LICENSE.md" to install directory after build
+add_custom_command(TARGET Game POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+	$<TARGET_FILE_DIR:Game>/LICENSE.md
+	COMMAND ${CMAKE_COMMAND} -E copy
+	${CMAKE_SOURCE_DIR}/LICENSE.md
+	$<TARGET_FILE_DIR:Game>/LICENSE.md
+)
+
 # Copy "README.md" to install directory after build
 add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove

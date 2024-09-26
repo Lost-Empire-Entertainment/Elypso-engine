@@ -34,14 +34,15 @@ namespace EngineFile
 		/// <summary>
 		/// Gets a value by key from the config value map.
 		/// </summary>
-		/// <param name="key"></param>
+		/// <param name="key">The name of the key in the map we need a value for</param>
+		/// <param name="silent">Whether a response on fail should be printed or not</param>
 		/// <returns></returns>
-		static string GetValue(const string& key);
+		static string GetValue(const string& key, bool silent = false);
 		/// <summary>
 		/// Assigns a value by key to config value map.
 		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
+		/// <param name="key">The name of the key in the map we need to set a value for</param>
+		/// <param name="value">The value the key will be set to</param>
 		static void SetValue(const string& key, const string& value);
 	private:
 		static inline string configFilePath;

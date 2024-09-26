@@ -655,7 +655,12 @@ namespace Core
         {
             float moveSpeedMultiplier = stof(ConfigFile::GetValue("camera_speedMultiplier"));
 
-            bool isLeftShiftPressed = ImGui::IsKeyDown(ImGuiKey_LeftShift);
+            bool isLeftShiftPressed;
+#if ENGINE_MODE
+            isLeftShiftPressed = (ImGui::IsKeyDown(ImGuiKey_LeftShift));
+#else
+            isLeftShiftPressed = (glfwGetKey(Render::window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
+#endif
             float currentSpeed = isLeftShiftPressed
                 ? static_cast<float>(2.0f * moveSpeedMultiplier * TimeManager::deltaTime)
                 : static_cast<float>(1.0f * moveSpeedMultiplier * TimeManager::deltaTime);
@@ -664,7 +669,11 @@ namespace Core
             vec3 right = Render::camera.GetRight();
 
             //camera forwards
+#if ENGINE_MODE
             if (ImGui::IsKeyDown(ImGuiKey_W))
+#else
+            if (glfwGetKey(Render::window, GLFW_KEY_W) == GLFW_PRESS)
+#endif
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
@@ -673,7 +682,11 @@ namespace Core
                 if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera backwards
+#if ENGINE_MODE
             if (ImGui::IsKeyDown(ImGuiKey_S))
+#else
+            if (glfwGetKey(Render::window, GLFW_KEY_S) == GLFW_PRESS)
+#endif
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
@@ -682,7 +695,11 @@ namespace Core
                 if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera left
+#if ENGINE_MODE
             if (ImGui::IsKeyDown(ImGuiKey_A))
+#else
+            if (glfwGetKey(Render::window, GLFW_KEY_A) == GLFW_PRESS)
+#endif
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
@@ -691,7 +708,11 @@ namespace Core
                 if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera right
+#if ENGINE_MODE
             if (ImGui::IsKeyDown(ImGuiKey_D))
+#else
+            if (glfwGetKey(Render::window, GLFW_KEY_D) == GLFW_PRESS)
+#endif
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
@@ -700,7 +721,11 @@ namespace Core
                 if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera up
+#if ENGINE_MODE
             if (ImGui::IsKeyDown(ImGuiKey_E))
+#else
+            if (glfwGetKey(Render::window, GLFW_KEY_E) == GLFW_PRESS)
+#endif
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()
@@ -709,7 +734,11 @@ namespace Core
                 if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
             }
             //camera down
+#if ENGINE_MODE
             if (ImGui::IsKeyDown(ImGuiKey_Q))
+#else
+            if (glfwGetKey(Render::window, GLFW_KEY_Q) == GLFW_PRESS)
+#endif
             {
                 Render::camera.SetCameraPosition(
                     Render::camera.GetCameraPosition()

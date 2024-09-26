@@ -8,7 +8,6 @@
 #include <filesystem>
 
 //external
-#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
@@ -88,20 +87,31 @@ namespace Graphics::GUI
 
 			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
-			//
-			//RENDER WINDOWS HERE
-			//
-
-			bool firstUse = stoi(ConfigFile::GetValue("firstUse"));
-			if (firstUse)
+			if (imguiWindows.size() > 0)
 			{
-				ConfigFile::SetValue("gui_firstTime", "1");
-				ConfigFile::SetValue("firstUse", "0");
+				for (const auto& window : imguiWindows)
+				{
+					window();
+				}
 			}
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
+	}
+
+	ImVec2 GameGUI::CenterWindow(const ImVec2& size)
+	{
+		int intWidth, intHeight;
+		glfwGetFramebufferSize(Render::window, &intWidth, &intHeight);
+
+		float glfwWindowWidth = static_cast<float>(intWidth);
+		float glfwWindowHeight = static_cast<float>(intHeight);
+
+		float posX = (glfwWindowWidth - size.x) / 2.0f;
+		float posY = (glfwWindowHeight - size.y) / 2.0f;
+
+		return ImVec2(posX, posY);
 	}
 
 	void GameGUI::Shutdown()

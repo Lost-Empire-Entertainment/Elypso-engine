@@ -83,7 +83,7 @@ namespace EngineFile
 				if (!defaultSceneFile.is_open())
 				{
 					Engine::CreateErrorPopup(
-						"Failed to create default scene file! Error code: F0008");
+						"Failed to create default scene file!");
 				}
 				defaultSceneFile.close();
 
@@ -100,7 +100,7 @@ namespace EngineFile
 				if (!defaultSceneFile.is_open())
 				{
 					Engine::CreateErrorPopup(
-						"Failed to create default scene file! Error code: F0009");
+						"Failed to create default scene file!");
 				}
 				defaultSceneFile.close();
 			}

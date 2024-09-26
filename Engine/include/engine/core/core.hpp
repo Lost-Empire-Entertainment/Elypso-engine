@@ -36,7 +36,7 @@ namespace Core
 #if ENGINE_MODE
 		static void InitializeEngine(const string& version = "0.1.1");
 #else
-		static void InitializeEngine(const string& version);
+		static void InitializeEngine(const string& version = "1.0");
 #endif
 		static void RunEngine();
 

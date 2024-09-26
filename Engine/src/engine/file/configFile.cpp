@@ -152,7 +152,7 @@ namespace EngineFile
 			"\nSuccessfully saved config file!\n");
 	}
 
-	string ConfigFile::GetValue(const string& key)
+	string ConfigFile::GetValue(const string& key, bool silent)
 	{
 		int keyIndex = -1;
 		for (int i = 0; i < keys.size(); i++)
@@ -170,11 +170,13 @@ namespace EngineFile
 		}
 		else 
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Cannot get config key " + key + " value because it does not exist! This will cause a crash if the config file was not filled correctly.\n");
-
+			if (!silent)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Cannot get config key " + key + " value because it does not exist! This will cause a crash if the config file was not filled correctly.\n");
+			}
 			return "";
 		}
 	}

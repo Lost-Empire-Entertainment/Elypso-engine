@@ -39,6 +39,7 @@ namespace Graphics::GUI
 			if (ImGui::Button("X"))
 			{
 				ConfigFile::SetValue("gui_firstTime", "0");
+				ConfigFile::SaveConfigFile();
 			}
 
 			RenderFirstTimeContent();

@@ -4,17 +4,34 @@
 //Read LICENSE.md for more information.
 
 #pragma once
-#if GAME_MODE
+#if ENGINE_MODE
 #else
+
+#include <vector>
+#include <functional>
+
+//external
+#include "imgui.h"
+
+using std::vector;
+using std::function;
+
 namespace Graphics::GUI
 {
 	class GameGUI
 	{
 	public:
 		static inline bool isImguiInitialized;
+		static inline vector<function<void()>> imguiWindows;
 
 		static void Initialize();
 		static void Render();
+
+		/// <summary>
+		/// Takes in ImGui window height and width and returns position of window so it will be centered according to current GLFW window size.
+		/// </summary>
+		static ImVec2 CenterWindow(const ImVec2& size);
+
 		static void Shutdown();
 	};
 }

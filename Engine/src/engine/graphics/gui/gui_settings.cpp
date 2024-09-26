@@ -325,6 +325,7 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Invalid character detected in game name! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
+					Engine::gameExePath = Engine::gameParentPath + "\\Game.exe";
 					ConfigFile::SetValue("gameName", "Game");
 
 					canApply = false;
@@ -335,7 +336,7 @@ namespace Graphics::GUI
 
 			if (canApply)
 			{
-				string finalPath = Engine::gamePath + "/build/Release/" + gameName + ".exe";
+				string finalPath = Engine::gameParentPath + "\\" + gameName + ".exe";
 				Engine::gameExePath = finalPath;
 
 				ConsoleManager::WriteConsoleMessage(
@@ -343,7 +344,8 @@ namespace Graphics::GUI
 					Type::INFO,
 					"Successfully set game name to '" + gameName + "' and game path as '" + Engine::gameExePath + "'!\n");
 
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				ConfigFile::SaveConfigFile();
+				SceneFile::SaveScene();
 			}
 		}
 

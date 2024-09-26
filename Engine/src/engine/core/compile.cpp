@@ -86,7 +86,11 @@ namespace Core
 				//
 				// CREATE GAME NAME FILE TO HELP GAME FIND AND USE DOCUMENTS FILES
 				//
-				string gameNameFilePath = Engine::gameParentPath + "\\gameName.txt";
+				
+				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
+
+				string gameNameFilePath = myGamesFolder + "\\gameName.txt";
 				if (exists(gameNameFilePath)) File::DeleteFileOrfolder(gameNameFilePath);
 
 				ofstream gameNameFile(gameNameFilePath);
@@ -105,14 +109,25 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
 				//
 
-				string gameName = path(Engine::gameExePath).stem().string();
-				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
-				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
+				string gameName = ConfigFile::GetValue("gameName");
 
 				string gameDocsFolder = myGamesFolder + "\\" + gameName;
 				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
 
 				File::CreateNewFolder(gameDocsFolder);
+
+				//
+				// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
+				//
+
+				string projectFileOriginPath = Engine::docsPath + "\\project.txt";
+				string projectFileTargetPath = gameDocsFolder + "\\project.txt";
+				if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
+				File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
+
+				//
+				// COPY SCENE FILES TO GAME DOCUMENTS FOLDER
+				//
 
 				string scenePath = path(Engine::projectPath).parent_path().string();
 				for (const auto& entry : directory_iterator(path(scenePath)))
@@ -184,7 +199,6 @@ namespace Core
 			}
 			else 
 			{
-				File::DeleteFileOrfolder(buildFolder);
 				File::CreateNewFolder(buildFolder);
 
 				command = 

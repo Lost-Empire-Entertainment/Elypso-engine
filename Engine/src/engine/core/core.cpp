@@ -59,59 +59,16 @@ namespace Core
 {
 	void Engine::InitializeEngine(const string& assignedVersion)
 	{
-#if ENGINE_MODE
-		name = "Elypso engine";
-		version = assignedVersion;
-#else
-		string gameNameFilePath = current_path().string() + "\\gameName.txt";
-		ifstream gameNameFile(gameNameFilePath);
-		if (!gameNameFile.is_open())
-		{
-			CreateErrorPopup("Failed to open game name file! Error code : F0001");
-		}
-
-		string line;
-		while (getline(gameNameFile, line))
-		{
-			name = line;
-			break;
-		}
-		gameNameFile.close();
-
-		version = assignedVersion;
-#endif
-
-
-		string output;
-
-		if (IsThisProcessAlreadyRunning(name + ".exe"))
-		{
-			CreateErrorPopup((name + " is already running! Error code: F0002").c_str());
-		}
-
-		cout << "\n==================================================\n"
-			<< "\n"
-#if ENGINE_MODE
-			<< "ENTERED ENGINE\n"
-#else
-			<< "ENTERED GAME\n"
-#endif
-			<< "\n"
-			<< "==================================================\n"
-			<< ".\n"
-			<< ".\n"
-			<< ".\n\n";
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::INPUT,
-			Type::INFO,
-			name + " " + version + "\n" +
-			"Copyright (C) Lost Empire Entertainment 2024\n\n",
-			true);
-
 		//
 		// SET DOCUMENTS PATH
 		//
+
+		string output;
+
+#if ENGINE_MODE
+		name = "Elypso engine";
+		version = assignedVersion;
+#endif
 
 		PWSTR docsFolderWidePath;
 		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &docsFolderWidePath);
@@ -149,42 +106,95 @@ namespace Core
 				"\\" + name;
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
+
+			output = "Documents path: " + docsPath + "\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				output);
 #else
-			string myGamesFolder = String::CharReplace(
+			docsPath = String::CharReplace(
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
 				"\\My Games";
 
-			if (!exists(myGamesFolder))
+			if (!exists(docsPath))
 			{
-				File::CreateNewFolder(myGamesFolder);
+				File::CreateNewFolder(docsPath);
+			}
+#endif
+		}
+		else
+		{
+			CreateErrorPopup("Couldn't find documents folder!");
+		}
+
+#if ENGINE_MODE
+#else
+		string gameNameFilePath = docsPath + "\\gameName.txt";
+		if (!exists(gameNameFilePath))
+		{
+			CreateErrorPopup("Couldn't find game name file! Please make sure to compile the game before running the game exe.");
+		}
+		else
+		{
+			ifstream gameNameFile(gameNameFilePath);
+			if (!gameNameFile.is_open())
+			{
+				CreateErrorPopup("Failed to open game name file!");
 			}
 
-			docsPath = myGamesFolder + "\\" + name;
-#endif
+			string line;
+			while (getline(gameNameFile, line))
+			{
+				name = line;
+				break;
+			}
+			gameNameFile.close();
+
+			docsPath = docsPath + "\\" + name;
+			version = assignedVersion;
+
 			output = "Documents path: " + docsPath + "\n";
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
 				output);
 		}
-		else
+#endif
+		if (IsThisProcessAlreadyRunning(name + ".exe"))
 		{
-			CreateErrorPopup(("Couldn't find " + name + " documents folder! Error code: F0003").c_str());
+			CreateErrorPopup((name + " is already running!").c_str());
 		}
 
-		if (!exists(docsPath + "//config.txt"))
-		{
-			ConfigFile::CreateNewConfigFile();
-		}
+		cout << "\n==================================================\n"
+			<< "\n"
+#if ENGINE_MODE
+			<< "ENTERED ENGINE\n"
+#else
+			<< "ENTERED GAME\n"
+#endif
+			<< "\n"
+			<< "==================================================\n"
+			<< ".\n"
+			<< ".\n"
+			<< ".\n\n";
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::INPUT,
+			Type::INFO,
+			name + " " + version + "\n" +
+			"Copyright (C) Lost Empire Entertainment 2024\n\n",
+			true);
 
 #if ENGINE_MODE
 		//
 		// SET GAME PATHS
 		//
 
-		string gameName = ConfigFile::GetValue("gameName") != ""
-			? ConfigFile::GetValue("gameName")
-			: "Game";
+		string gameName = ConfigFile::GetValue("gameName", true);
+		if (gameName == "") ConfigFile::CreateNewConfigFile();
+
+		gameName = ConfigFile::GetValue("gameName");
 		 
 		//if engine is ran from repository structure
 		string parentFolder = current_path().stem().string();
@@ -244,7 +254,7 @@ namespace Core
 		//if neither one works then engine cannot proceed
 		if (!exists(gamePath))
 		{
-			CreateErrorPopup("Failed to find game template folder! Error code: F0004");
+			CreateErrorPopup("Failed to find game template folder!");
 		}
 #endif
 		//
@@ -254,7 +264,7 @@ namespace Core
 		filesPath = current_path().generic_string() + "\\files";
 		if (!exists(filesPath))
 		{
-			CreateErrorPopup("Couldn't find files folder! Error code: F0005");
+			CreateErrorPopup("Couldn't find files folder!");
 			return;
 		}
 
@@ -271,7 +281,7 @@ namespace Core
 		ifstream projectFile(docsPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
-			CreateErrorPopup("Failed to open project file! Error code: F0006");
+			CreateErrorPopup("Failed to open project file!");
 		}
 
 		output = "Project file path: " + docsPath + "\\project.txt" + "\n\n";
@@ -280,17 +290,17 @@ namespace Core
 			Type::DEBUG,
 			output);
 
-		string line;
-		while (getline(projectFile, line))
+		string projectFileLine;
+		while (getline(projectFile, projectFileLine))
 		{
-			if (!line.empty())
+			if (!projectFileLine.empty())
 			{
-				size_t pos_project = line.find("project:");
+				size_t pos_project = projectFileLine.find("project:");
 				if (pos_project != string::npos)
 				{
 					string removable = "project: ";
-					size_t pos = line.find(removable);
-					projectPath = line.erase(pos, removable.length());
+					size_t pos = projectFileLine.find(removable);
+					projectPath = projectFileLine.erase(pos, removable.length());
 				}
 			}
 		}
@@ -332,7 +342,7 @@ namespace Core
 			ifstream fsFile(firstSceneFile);
 			if (!fsFile.is_open())
 			{
-				CreateErrorPopup("Failed to open first scene file! Error code: F0007");
+				CreateErrorPopup("Failed to open first scene file!");
 			}
 
 			string line;

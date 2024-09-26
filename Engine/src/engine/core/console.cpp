@@ -79,7 +79,11 @@ namespace Core
 
     void ConsoleManager::InitializeLogger()
     {
+#if ENGINE_MODE
         logFile.open(Engine::docsPath + "/engine_log.txt");
+#else
+        logFile.open(Engine::docsPath + "/game_log.txt");
+#endif
         if (!logFile.is_open())
         {
             error_code ec = make_error_code(static_cast<errc>(errno));
