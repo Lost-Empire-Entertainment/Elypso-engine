@@ -36,7 +36,7 @@ int main()
 {
 	if (Core::IsThisProcessAlreadyRunning("Elypso hub.exe"))
 	{
-		Core::CreateErrorPopup("Elypso Hub is already running. Error code: F0008");
+		Core::CreateErrorPopup("Elypso Hub is already running.");
 	}
 
 	cout << "\n==================================================\n"
@@ -129,7 +129,7 @@ void Core::Initialize()
 		ofstream configFile(Core::configFilePath);
 		if (!configFile.is_open())
 		{
-			CreateErrorPopup("Failed to create config file. Error code: F0009");
+			CreateErrorPopup("Failed to create config file.");
 		}
 		configFile.close();
 	}
