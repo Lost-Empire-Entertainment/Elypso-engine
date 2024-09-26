@@ -186,77 +186,6 @@ namespace Core
 			"Copyright (C) Lost Empire Entertainment 2024\n\n",
 			true);
 
-#if ENGINE_MODE
-		//
-		// SET GAME PATHS
-		//
-
-		string gameName = ConfigFile::GetValue("gameName", true);
-		if (gameName == "") ConfigFile::CreateNewConfigFile();
-
-		gameName = ConfigFile::GetValue("gameName");
-		 
-		//if engine is ran from repository structure
-		string parentFolder = current_path().stem().string();
-		if (parentFolder == "Release"
-			|| parentFolder == "Debug")
-		{
-			gamePath = current_path()
-				.parent_path()
-				.parent_path()
-				.parent_path()
-				.generic_string() + "\\Game";
-			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
-			gameParentPath = gamePath + "\\build\\Release";
-		}
-		//if engine is ran from visual studio folder
-		else if (parentFolder == "x64-release"
-				 || parentFolder == "x64-debug")
-		{
-			gamePath = current_path()
-				.parent_path()
-				.parent_path()
-				.parent_path()
-				.parent_path()
-				.generic_string() + "\\Game";
-			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
-			gameParentPath = gamePath + "\\build\\Release";
-		}
-		//if engine is not ran from repository structure
-		else 
-		{
-			gamePath = current_path().parent_path().generic_string() + "\\Game";
-			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
-			gameParentPath = gamePath + "\\build\\Release";
-		}
-
-		output = "Game path: " + gamePath + "\n\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::DEBUG,
-			output);
-
-		output = "Game exe path: " + gameExePath + "\n\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::DEBUG,
-			output);
-
-		output = "Game parent path: " + gameParentPath + "\n\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::DEBUG,
-			output);
-
-		//if neither one works then engine cannot proceed
-		if (!exists(gamePath))
-		{
-			CreateErrorPopup("Failed to find game template folder!");
-		}
-#endif
 		//
 		// SET FILES PATH
 		//
@@ -410,12 +339,85 @@ namespace Core
 		}
 
 		//
-		// REST OF THE INITIALIZATION
+		// INITIALIZE LOGGER AND LOAD CONFIG FILE
 		//
 
 		ConsoleManager::InitializeLogger();
 
 		ConfigFile::LoadConfigFile();
+
+		//
+		// SET GAME PATHS
+		//
+
+#if ENGINE_MODE
+		string gameName = ConfigFile::GetValue("gameName");
+
+		//if engine is ran from repository structure
+		string parentFolder = current_path().stem().string();
+		if (parentFolder == "Release"
+			|| parentFolder == "Debug")
+		{
+			gamePath = current_path()
+				.parent_path()
+				.parent_path()
+				.parent_path()
+				.generic_string() + "\\Game";
+			gamePath = String::CharReplace(gamePath, '/', '\\');
+			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
+			gameParentPath = gamePath + "\\build\\Release";
+		}
+		//if engine is ran from visual studio folder
+		else if (parentFolder == "x64-release"
+			|| parentFolder == "x64-debug")
+		{
+			gamePath = current_path()
+				.parent_path()
+				.parent_path()
+				.parent_path()
+				.parent_path()
+				.generic_string() + "\\Game";
+			gamePath = String::CharReplace(gamePath, '/', '\\');
+			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
+			gameParentPath = gamePath + "\\build\\Release";
+		}
+		//if engine is not ran from repository structure
+		else
+		{
+			gamePath = current_path().parent_path().generic_string() + "\\Game";
+			gamePath = String::CharReplace(gamePath, '/', '\\');
+			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
+			gameParentPath = gamePath + "\\build\\Release";
+		}
+
+		output = "Game path: " + gamePath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		output = "Game exe path: " + gameExePath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		output = "Game parent path: " + gameParentPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		//if neither one works then engine cannot proceed
+		if (!exists(gamePath))
+		{
+			CreateErrorPopup("Failed to find game template folder!");
+		}
+#endif
+
+		//
+		// REST OF THE INITIALIZATION
+		//
 
 		Render::RenderSetup();
 

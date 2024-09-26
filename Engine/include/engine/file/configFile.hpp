@@ -27,11 +27,6 @@ namespace EngineFile
 		static void SaveConfigFile();
 
 		/// <summary>
-		/// Creates a brand new config file with default values.
-		/// </summary>
-		static void CreateNewConfigFile();
-
-		/// <summary>
 		/// Gets a value by key from the config value map.
 		/// </summary>
 		/// <param name="key">The name of the key in the map we need a value for</param>
@@ -52,5 +47,10 @@ namespace EngineFile
 		/// </summary>
 		static inline vector<string> keys;
 		static inline vector<string> values;
+
+		/// <summary>
+		/// Creates a brand new config file with default values.
+		/// </summary>
+		static void CreateNewConfigFile();
 	};
 }

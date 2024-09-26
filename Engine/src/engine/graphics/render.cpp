@@ -31,6 +31,7 @@
 #include "selectobject.hpp"
 #include "skybox.hpp"
 #if ENGINE_MODE
+#include "compile.hpp"
 #include "grid.hpp"
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -64,6 +65,7 @@ using EngineFile::ConfigFile;
 using Utils::String;
 using Core::Select;
 #if ENGINE_MODE
+using Core::Compilation;
 using Graphics::Grid;
 using Graphics::Shape::Border;
 using Graphics::Shape::ActionTex;
@@ -507,42 +509,48 @@ namespace Graphics
 				ImVec2(0, 1), 
 				ImVec2(1, 0));
 
-			ImVec2 windowStateBtnSize = ImVec2(25.0f, 25.0f);
-			float windowStateBtnRightPadding = 10.0f;
-			ImVec2 windowStateBtnPos(
-				ImGui::GetWindowSize().x - windowStateBtnSize.x - windowStateBtnRightPadding, 40.0f);
-			ImGui::SetCursorPos(windowStateBtnPos);
-			if (ImGui::Button("X", windowStateBtnSize))
+			//makes sure none of the interactable scene window buttons are displayed
+			//while game is being compiled
+			if (!Compilation::renderBuildingWindow)
 			{
-				ConfigFile::SetValue("gui_sceneWindow", "0");
-			}
+				ImVec2 windowStateBtnSize = ImVec2(25.0f, 25.0f);
+				float windowStateBtnRightPadding = 10.0f;
+				ImVec2 windowStateBtnPos(
+					ImGui::GetWindowSize().x - windowStateBtnSize.x - windowStateBtnRightPadding, 40.0f);
+				ImGui::SetCursorPos(windowStateBtnPos);
+				if (ImGui::Button("X", windowStateBtnSize))
+				{
+					ConfigFile::SetValue("gui_sceneWindow", "0");
+				}
 
-			ImVec2 rightToggleBtnSize = ImVec2(25.0f, 25.0f);
-			float rightToggleBtnRightPadding = 45.0f;
-			ImVec2 rightToggleBtnPos(
-				ImGui::GetWindowSize().x - rightToggleBtnSize.x - rightToggleBtnRightPadding, 40.0f);
-			string rightToggleBtnText = showSceneWindowDebugMenu
-				? "v##right" : "<##right";
-			ImGui::SetCursorPos(rightToggleBtnPos);
-			if (ImGui::Button(rightToggleBtnText.c_str(), rightToggleBtnSize))
-			{
-				showSceneWindowDebugMenu = !showSceneWindowDebugMenu;
-			}
+				ImVec2 rightToggleBtnSize = ImVec2(25.0f, 25.0f);
+				float rightToggleBtnRightPadding = 45.0f;
+				ImVec2 rightToggleBtnPos(
+					ImGui::GetWindowSize().x - rightToggleBtnSize.x - rightToggleBtnRightPadding, 40.0f);
+				string rightToggleBtnText = showSceneWindowDebugMenu
+					? "v##right" : "<##right";
+				ImGui::SetCursorPos(rightToggleBtnPos);
+				if (ImGui::Button(rightToggleBtnText.c_str(), rightToggleBtnSize))
+				{
+					showSceneWindowDebugMenu = !showSceneWindowDebugMenu;
+				}
 
-			ImVec2 leftToggleBtnSize = ImVec2(25.0f, 25.0f);
-			float leftToggleBtnRightPadding = 10.0f;
-			ImVec2 leftToggleBtnPos(leftToggleBtnRightPadding, 40.0f);
-			string leftToggleBtnText = showLeftCornerContent
-				? "v##left" : ">##left";
-			ImGui::SetCursorPos(leftToggleBtnPos);
-			if (ImGui::Button(leftToggleBtnText.c_str(), leftToggleBtnSize))
-			{
-				showLeftCornerContent = !showLeftCornerContent;
+				ImVec2 leftToggleBtnSize = ImVec2(25.0f, 25.0f);
+				float leftToggleBtnRightPadding = 10.0f;
+				ImVec2 leftToggleBtnPos(leftToggleBtnRightPadding, 40.0f);
+				string leftToggleBtnText = showLeftCornerContent
+					? "v##left" : ">##left";
+				ImGui::SetCursorPos(leftToggleBtnPos);
+				if (ImGui::Button(leftToggleBtnText.c_str(), leftToggleBtnSize))
+				{
+					showLeftCornerContent = !showLeftCornerContent;
+				}
 			}
 
 			//scene window buttons and interactables are not rendered 
 			//if window size is smaller than minimum required
 			ImVec2 windowSize = ImGui::GetWindowSize();
+
 			int debugWindowAddition = showSceneWindowDebugMenu
 				? 0
 				: 400;
@@ -556,7 +564,8 @@ namespace Graphics
 			int windowSizeXLimit = 1200 - debugWindowAddition - leftCornerContentAddition - actionButtonsAddition;
 
 			if (windowSize.x >= windowSizeXLimit
-				&& windowSize.y > 400)
+				&& windowSize.y > 400
+				&& !Compilation::renderBuildingWindow)
 			{
 				if (showSceneWindowDebugMenu) SceneWindowDebugMenu();
 
