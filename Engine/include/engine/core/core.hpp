@@ -34,13 +34,9 @@ namespace Core
 		static inline bool isEngineRunning;
 		static inline bool startedWindowLoop;
 #if ENGINE_MODE
-		static void InitializeEngine(
-			string name = "Elypso engine",
-			string version = "0.1.1");
+		static void InitializeEngine(const string& version = "0.1.1");
 #else
-		static void InitializeEngine(
-			string name = "Game",
-			string version = "0.1");
+		static void InitializeEngine(const string& version);
 #endif
 		static void RunEngine();
 

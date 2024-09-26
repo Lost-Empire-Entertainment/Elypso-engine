@@ -20,8 +20,6 @@ namespace Graphics::GUI
 	class GUISettings
 	{
 	public:
-		static inline string gameName = "Game";
-
 		static inline map<string, string> skyboxTextures;
 
 		static inline bool renderSettings;

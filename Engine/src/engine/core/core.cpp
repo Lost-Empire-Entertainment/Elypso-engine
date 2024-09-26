@@ -57,16 +57,36 @@ using Graphics::GUI::GameGUI;
 
 namespace Core
 {
-	void Engine::InitializeEngine(string assignedName, string assignedVersion)
+	void Engine::InitializeEngine(const string& assignedVersion)
 	{
-		name = assignedName;
+#if ENGINE_MODE
+		name = "Elypso engine";
 		version = assignedVersion;
+#else
+		string gameNameFilePath = current_path().string() + "\\gameName.txt";
+		ifstream gameNameFile(gameNameFilePath);
+		if (!gameNameFile.is_open())
+		{
+			CreateErrorPopup("Failed to open game name file! Error code : F0001");
+		}
+
+		string line;
+		while (getline(gameNameFile, line))
+		{
+			name = line;
+			break;
+		}
+		gameNameFile.close();
+
+		version = assignedVersion;
+#endif
+
 
 		string output;
 
 		if (IsThisProcessAlreadyRunning(name + ".exe"))
 		{
-			CreateErrorPopup((name + " is already running! Error code: F0001").c_str());
+			CreateErrorPopup((name + " is already running! Error code: F0002").c_str());
 		}
 
 		cout << "\n==================================================\n"
@@ -127,6 +147,8 @@ namespace Core
 			docsPath = String::CharReplace(
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
 				"\\" + name;
+
+			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 #else
 			string myGamesFolder = String::CharReplace(
 				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
@@ -139,9 +161,6 @@ namespace Core
 
 			docsPath = myGamesFolder + "\\" + name;
 #endif
-
-			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
-
 			output = "Documents path: " + docsPath + "\n";
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
@@ -150,13 +169,22 @@ namespace Core
 		}
 		else
 		{
-			CreateErrorPopup(("Couldn't find " + name + " documents folder! Error code: F0002").c_str());
+			CreateErrorPopup(("Couldn't find " + name + " documents folder! Error code: F0003").c_str());
+		}
+
+		if (!exists(docsPath + "//config.txt"))
+		{
+			ConfigFile::CreateNewConfigFile();
 		}
 
 #if ENGINE_MODE
 		//
 		// SET GAME PATHS
 		//
+
+		string gameName = ConfigFile::GetValue("gameName") != ""
+			? ConfigFile::GetValue("gameName")
+			: "Game";
 		 
 		//if engine is ran from repository structure
 		string parentFolder = current_path().stem().string();
@@ -169,7 +197,7 @@ namespace Core
 				.parent_path()
 				.generic_string() + "\\Game";
 			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
+			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
 		}
 		//if engine is ran from visual studio folder
@@ -183,7 +211,7 @@ namespace Core
 				.parent_path()
 				.generic_string() + "\\Game";
 			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
+			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
 		}
 		//if engine is not ran from repository structure
@@ -191,7 +219,7 @@ namespace Core
 		{
 			gamePath = current_path().parent_path().generic_string() + "\\Game";
 			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + GUISettings::gameName + ".exe";
+			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
 			gameParentPath = gamePath + "\\build\\Release";
 		}
 
@@ -216,7 +244,7 @@ namespace Core
 		//if neither one works then engine cannot proceed
 		if (!exists(gamePath))
 		{
-			CreateErrorPopup("Failed to find game template folder! Error code: F0003");
+			CreateErrorPopup("Failed to find game template folder! Error code: F0004");
 		}
 #endif
 		//
@@ -226,7 +254,7 @@ namespace Core
 		filesPath = current_path().generic_string() + "\\files";
 		if (!exists(filesPath))
 		{
-			CreateErrorPopup("Couldn't find files folder! Error code: F0004");
+			CreateErrorPopup("Couldn't find files folder! Error code: F0005");
 			return;
 		}
 
@@ -243,7 +271,7 @@ namespace Core
 		ifstream projectFile(docsPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
-			CreateErrorPopup("Failed to open project file! Error code: F0005");
+			CreateErrorPopup("Failed to open project file! Error code: F0006");
 		}
 
 		output = "Project file path: " + docsPath + "\\project.txt" + "\n\n";
@@ -304,7 +332,7 @@ namespace Core
 			ifstream fsFile(firstSceneFile);
 			if (!fsFile.is_open())
 			{
-				CreateErrorPopup("Failed to open first scene file! Error code: F0006");
+				CreateErrorPopup("Failed to open first scene file! Error code: F0007");
 			}
 
 			string line;

@@ -17,11 +17,11 @@ using Core::Engine;
 
 namespace Core
 {
-	void Game::Initialize(const string& name, const string& version)
+	void Game::Initialize(const string& version)
 	{
 		cout << "Game is initializing...\n";
 
-		Engine::InitializeEngine(name, version);
+		Engine::InitializeEngine(version);
 	}
 
 	void Game::Run()

@@ -296,12 +296,14 @@ namespace Graphics::GUI
 
 	void GUISettings::OtherSettings()
 	{
+		string gameName = ConfigFile::GetValue("gameName");
+
 		ImGui::Text("Set game name");
-		if (gameName == "") gameName = "Game";
+		if (gameName == "") ConfigFile::SetValue("gameName", "Game");
 		strcpy_s(gameNameChar, bufferSize, gameName.c_str());
 		if (ImGui::InputText("##objName", gameNameChar, bufferSize))
 		{
-			gameName = gameNameChar;
+			ConfigFile::SetValue("gameName", gameNameChar);
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -323,7 +325,7 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Invalid character detected in game name! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
-					gameName = "Game";
+					ConfigFile::SetValue("gameName", "Game");
 
 					canApply = false;
 

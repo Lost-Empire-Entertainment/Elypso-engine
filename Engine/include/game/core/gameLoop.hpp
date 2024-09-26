@@ -14,7 +14,7 @@ namespace Core
 	class Game
 	{
 	public:
-		static void Initialize(const string& name, const string& version);
+		static void Initialize(const string& version);
 		static void Run();
 	};
 }

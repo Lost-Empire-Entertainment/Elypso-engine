@@ -19,6 +19,9 @@
 #include "sceneFile.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
+#if ENGINE_MODE
+#include "gui_settings.hpp"
+#endif
 
 using std::ofstream;
 using std::ifstream;
@@ -33,6 +36,9 @@ using Type = Core::ConsoleManager::Type;
 using Utils::File;
 using Graphics::Render;
 using Utils::String;
+#if ENGINE_MODE
+using Graphics::GUI::GUISettings;
+#endif
 
 namespace EngineFile
 {
@@ -205,12 +211,17 @@ namespace EngineFile
 
 	void ConfigFile::CreateNewConfigFile()
 	{
+		if (configFilePath == "") configFilePath = Engine::docsPath + "\\config.txt";
+
 		keys.clear();
 		values.clear();
 
 #if ENGINE_MODE
 		keys.push_back("firstUse");
 			values.push_back("1");
+
+		keys.push_back("gameName");
+			values.push_back("Game");
 #endif
 		keys.push_back("gui_fontScale");
 			values.push_back("1.5");
