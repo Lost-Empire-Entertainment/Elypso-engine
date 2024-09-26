@@ -2,6 +2,8 @@ Elypso Engine Proprietary License
 
 Version 1.4
 
+Note: The main and indev branch licenses apply only to their respective branches and cannot be mixed. The indev license may change during development, while the main branch updates with major releases.
+
 1. Definitions
 
    - "Engine" refers to Elypso Engine, the main program used for creating Games.
