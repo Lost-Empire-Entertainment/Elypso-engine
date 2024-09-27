@@ -18,6 +18,7 @@
 #include "fileUtils.hpp"
 #include "configFile.hpp"
 #include "render.hpp"
+#include "gui_console.hpp"
 
 using std::string;
 using std::filesystem::exists;
@@ -87,6 +88,7 @@ namespace Graphics::GUI
 
 			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
+			GUIConsole::RenderConsole();
 			if (imguiWindows.size() > 0)
 			{
 				for (const auto& window : imguiWindows)

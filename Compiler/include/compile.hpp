@@ -10,6 +10,9 @@ namespace Core
 	class TheCompiler
 	{
 	public:
+		static inline bool finishedEngineBuild;
+		static inline bool finishedLibraryBuild;
+
 		enum class CompileType
 		{
 			compile,

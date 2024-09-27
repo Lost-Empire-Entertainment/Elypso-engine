@@ -33,19 +33,43 @@ namespace Core
 	{
 		thread CompileThread([]()
 			{
-				string hubBuildFolder = Compiler::hubFolderPath + "\\build";
-				string engineBuildFolder = Compiler::engineFolderPath + "\\build";
-				string engineLibraryFolder = Compiler::engineLibraryFolderPath + "\\build";
+				string hubBuildFolder = Compiler::projectsPath + "\\Hub\\build";
+				string engineBuildFolder = Compiler::projectsPath + "\\Engine\\build";
+				string engineLibraryFolder = Compiler::projectsPath + "\\Engine library\\build";
 
 				string buildFolder;
 				if (GUI::target == GUI::Target::Hub) buildFolder = hubBuildFolder;
-				if (GUI::target == GUI::Target::Engine) buildFolder = engineBuildFolder;
-				if (GUI::target == GUI::Target::EngineLib) buildFolder = engineLibraryFolder;
+				if (GUI::target == GUI::Target::Engine)
+				{
+					buildFolder = !finishedEngineBuild 
+						? engineBuildFolder 
+						: engineLibraryFolder;
+				}
 
 				string command = "";
 
 				switch (compileType)
 				{
+				case CompileType::clean_rebuild:
+				{
+					if (!exists(buildFolder))
+					{
+						File::CreateNewFolder(buildFolder);
+					}
+					if (exists(buildFolder))
+					{
+						File::DeleteFileOrfolder(buildFolder);
+						File::CreateNewFolder(buildFolder);
+					}
+
+					command =
+						"cd " + buildFolder +
+						+" && cmake -A x64 .." +
+						+" && cmake --build . --config Release -- /m";
+
+					command = "cmd /c \"" + command + "\"";
+					break;
+				}
 				case CompileType::compile:
 				{
 					if (exists(buildFolder))
@@ -64,26 +88,6 @@ namespace Core
 							+" && cmake -A x64 .." +
 							+" && cmake --build . --config Release -- /m";
 					}
-
-					command = "cmd /c \"" + command + "\"";
-					break;
-				}
-				case CompileType::clean_rebuild:
-				{
-					if (!exists(buildFolder))
-					{
-						File::CreateNewFolder(buildFolder);
-					}
-					if (exists(buildFolder))
-					{
-						File::DeleteFileOrfolder(buildFolder);
-						File::CreateNewFolder(buildFolder);
-					}
-
-					command =
-						"cd " + buildFolder +
-						+" && cmake -A x64 .." +
-						+" && cmake --build . --config Release -- /m";
 
 					command = "cmd /c \"" + command + "\"";
 					break;
@@ -108,6 +112,17 @@ namespace Core
 					pipe.get()) != nullptr)
 				{
 					GUI::output.emplace_back(buffer.data());
+				}
+
+				if (!finishedEngineBuild
+					&& !finishedLibraryBuild)
+				{
+					finishedEngineBuild = true;
+				}
+				else if (finishedEngineBuild
+						 && !finishedLibraryBuild)
+				{
+					finishedLibraryBuild = true;
 				}
 
 				GUI::FinishCompile();
