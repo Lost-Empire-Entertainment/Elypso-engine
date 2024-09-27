@@ -84,30 +84,11 @@ namespace Core
 				}
 
 				//
-				// CREATE GAME NAME FILE TO HELP GAME FIND AND USE DOCUMENTS FILES
-				//
-				
-				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
-				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
-
-				string gameNameFilePath = myGamesFolder + "\\gameName.txt";
-				if (exists(gameNameFilePath)) File::DeleteFileOrfolder(gameNameFilePath);
-
-				ofstream gameNameFile(gameNameFilePath);
-				if (!gameNameFile.is_open())
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Failed to open game name file!");
-					return;
-				}
-				gameNameFile << gameStem;
-				gameNameFile.close();
-
-				//
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
 				//
+
+				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
 
 				string gameName = ConfigFile::GetValue("gameName");
 

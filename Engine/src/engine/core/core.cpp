@@ -59,16 +59,68 @@ namespace Core
 {
 	void Engine::InitializeEngine(const string& assignedVersion)
 	{
-		//
-		// SET DOCUMENTS PATH
-		//
-
-		string output;
+		version = assignedVersion;
 
 #if ENGINE_MODE
 		name = "Elypso engine";
-		version = assignedVersion;
+#else
+		string gameFolder = path(current_path()).string();
+
+		for (const auto& file : directory_iterator(gameFolder))
+		{
+			string extension = path(file).extension().string();
+			if (extension == ".exe")
+			{
+				name = path(file).stem().string();
+				break;
+			}
+		}
 #endif
+		if (IsThisProcessAlreadyRunning(name + ".exe"))
+		{
+			CreateErrorPopup((name + " is already running!").c_str());
+		}
+
+		cout << "\n==================================================\n"
+			<< "\n"
+#if ENGINE_MODE
+			<< "ENTERED ENGINE\n"
+#else
+			<< "ENTERED GAME\n"
+#endif
+			<< "\n"
+			<< "==================================================\n"
+			<< ".\n"
+			<< ".\n"
+			<< ".\n\n";
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::INPUT,
+			Type::INFO,
+			name + " " + version + "\n" +
+			"Copyright (C) Lost Empire Entertainment 2024\n\n",
+			true);
+
+		//
+		// SET FILES PATH
+		//
+
+		filesPath = current_path().generic_string() + "\\files";
+		if (!exists(filesPath))
+		{
+			CreateErrorPopup("Couldn't find files folder!");
+			return;
+		}
+
+		string output = name + " files path: " + filesPath + "\n\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		//
+		// SET DOCUMENTS PATH
+		//
 
 		PWSTR docsFolderWidePath;
 		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &docsFolderWidePath);
@@ -121,87 +173,14 @@ namespace Core
 			{
 				File::CreateNewFolder(docsPath);
 			}
+
+			docsPath = docsPath + "\\" + name;
 #endif
-		}
+	}
 		else
 		{
 			CreateErrorPopup("Couldn't find documents folder!");
 		}
-
-#if ENGINE_MODE
-#else
-		string gameNameFilePath = docsPath + "\\gameName.txt";
-		if (!exists(gameNameFilePath))
-		{
-			CreateErrorPopup("Couldn't find game name file! Please make sure to compile the game before running the game exe.");
-		}
-		else
-		{
-			ifstream gameNameFile(gameNameFilePath);
-			if (!gameNameFile.is_open())
-			{
-				CreateErrorPopup("Failed to open game name file!");
-			}
-
-			string line;
-			while (getline(gameNameFile, line))
-			{
-				name = line;
-				break;
-			}
-			gameNameFile.close();
-
-			docsPath = docsPath + "\\" + name;
-			version = assignedVersion;
-
-			output = "Documents path: " + docsPath + "\n";
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::DEBUG,
-				output);
-		}
-#endif
-		if (IsThisProcessAlreadyRunning(name + ".exe"))
-		{
-			CreateErrorPopup((name + " is already running!").c_str());
-		}
-
-		cout << "\n==================================================\n"
-			<< "\n"
-#if ENGINE_MODE
-			<< "ENTERED ENGINE\n"
-#else
-			<< "ENTERED GAME\n"
-#endif
-			<< "\n"
-			<< "==================================================\n"
-			<< ".\n"
-			<< ".\n"
-			<< ".\n\n";
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::INPUT,
-			Type::INFO,
-			name + " " + version + "\n" +
-			"Copyright (C) Lost Empire Entertainment 2024\n\n",
-			true);
-
-		//
-		// SET FILES PATH
-		//
-
-		filesPath = current_path().generic_string() + "\\files";
-		if (!exists(filesPath))
-		{
-			CreateErrorPopup("Couldn't find files folder!");
-			return;
-		}
-
-		output = name + " files path: " + filesPath + "\n\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::DEBUG,
-			output);
 
 		//
 		// SET PROJECT FOLDER PATH

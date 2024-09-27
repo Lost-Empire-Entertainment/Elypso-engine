@@ -13,7 +13,7 @@ namespace TheGameGUI
 {
 	void GUICore::AddWindowsToList()
 	{
-		GameGUI::imguiWindows.push_back(TestWindow);
+		//GameGUI::imguiWindows.push_back(TestWindow);
 	}
 
 	void GUICore::TestWindow()

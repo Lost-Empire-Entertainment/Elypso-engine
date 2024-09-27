@@ -33,6 +33,7 @@
 #include "fileUtils.hpp"
 #include "StringUtils.h"
 #include "camera.hpp"
+#include "gui_console.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #endif
@@ -68,6 +69,7 @@ using Core::Input;
 using Utils::String;
 using Core::TimeManager;
 using Graphics::Camera;
+using Graphics::GUI::GUIConsole;
 #if ENGINE_MODE
 using Core::Compilation;
 #endif
@@ -466,16 +468,32 @@ namespace Core
                 }
             }
 
-            if (!Render::camera.cameraEnabled)
+            //save current scene
+            if (key == GLFW_KEY_S
+                && mods == GLFW_MOD_CONTROL
+                && action == GLFW_PRESS)
             {
-                //save current scene
-                if (key == GLFW_KEY_S
-                    && mods == GLFW_MOD_CONTROL
-                    && action == GLFW_PRESS)
-                {
-                    SceneFile::SaveScene();
-                    ConfigFile::SaveConfigFile();
-                }
+                SceneFile::SaveScene();
+                ConfigFile::SaveConfigFile();
+            }
+        }
+#else
+        if (!Render::camera.cameraEnabled)
+        {
+            //save current scene
+            if (key == GLFW_KEY_S
+                && mods == GLFW_MOD_CONTROL
+                && action == GLFW_PRESS)
+            {
+                SceneFile::SaveScene();
+                ConfigFile::SaveConfigFile();
+            }
+
+            //toggle game console on and off
+            if (key == GLFW_KEY_PAGE_UP
+                && action == GLFW_PRESS)
+            {
+                GUIConsole::renderConsole = !GUIConsole::renderConsole;
             }
         }
 #endif

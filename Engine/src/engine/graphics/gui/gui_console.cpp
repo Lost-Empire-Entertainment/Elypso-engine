@@ -35,11 +35,13 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
+
+		bool renderConsole = stoi(ConfigFile::GetValue("gui_console"));
 #else
 		int width, height;
 		glfwGetWindowSize(Render::window, &width, &height);
 
-		ImGui::SetNextWindowSize(ImVec2(static_cast<float>(width), 400), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(static_cast<float>(width), 400), ImGuiCond_Always);
 		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
@@ -48,9 +50,6 @@ namespace Graphics::GUI
 			| ImGuiWindowFlags_NoResize
 			| ImGuiWindowFlags_NoSavedSettings;
 #endif
-
-		bool renderConsole = stoi(ConfigFile::GetValue("gui_console"));
-
 		if (renderConsole
 			&& ImGui::Begin("Console", NULL, windowFlags))
 		{

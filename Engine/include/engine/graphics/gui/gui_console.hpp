@@ -15,6 +15,10 @@ namespace Graphics::GUI
 	class GUIConsole
 	{
 	public:
+#if ENGINE_MODE
+#else
+		static inline bool renderConsole;
+#endif
 		static inline bool firstScrollToBottom;
 
 		static inline vector<string> consoleMessages;
