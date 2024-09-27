@@ -254,8 +254,6 @@ namespace EngineFile
 			values.push_back("1");
 		keys.push_back("gui_inspector");
 			values.push_back("1");
-		keys.push_back("gui_console");
-			values.push_back("1");
 		keys.push_back("gui_sceneHierarchy");
 			values.push_back("1");
 		keys.push_back("gui_projectHierarchy");
@@ -265,6 +263,9 @@ namespace EngineFile
 		keys.push_back("gui_firstTime");
 			values.push_back("0");
 #endif
+		keys.push_back("gui_console");
+			values.push_back("1");
+
 		ofstream configFile(configFilePath);
 
 		if (!configFile.is_open())

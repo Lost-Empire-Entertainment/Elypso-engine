@@ -2,7 +2,7 @@
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
-#if ENGINE_MODE
+
 //external
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -28,12 +28,26 @@ namespace Graphics::GUI
 {
 	void GUIConsole::RenderConsole()
 	{
+#if ENGINE_MODE
 		ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(2000, 2000));
 		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowPos(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse;
+#else
+		int width, height;
+		glfwGetWindowSize(Render::window, &width, &height);
+
+		ImGui::SetNextWindowSize(ImVec2(static_cast<float>(width), 400), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoSavedSettings;
+#endif
 
 		bool renderConsole = stoi(ConfigFile::GetValue("gui_console"));
 
@@ -53,14 +67,14 @@ namespace Graphics::GUI
 			{
 				ConsoleManager::sendDebugMessages = !ConsoleManager::sendDebugMessages;
 			}
-
+#if ENGINE_MODE
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
 				ConfigFile::SetValue("gui_console", "0");
 			}
-
+#endif
 			//text area with scrollable region
 			ImVec2 scrollingRegionSize(
 				ImGui::GetContentRegionAvail().x,
@@ -164,4 +178,3 @@ namespace Graphics::GUI
 		}
 	}
 }
-#endif

@@ -21,9 +21,9 @@
 #include "stringutils.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
+#include "gui_console.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
-#include "gui_console.hpp"
 #endif
 
 using std::chrono::time_point_cast;
@@ -46,9 +46,9 @@ using Core::Select;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Graphics::Shape::Material;
+using Graphics::GUI::GUIConsole;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
-using Graphics::GUI::GUIConsole;
 #endif
 
 namespace Core
@@ -100,9 +100,7 @@ namespace Core
     {
         for (const auto& log : storedLogs)
         {
-#if ENGINE_MODE
             GUIConsole::AddTextToConsole(log);
-#endif
         }
         storedLogs.clear();
     }
@@ -170,10 +168,8 @@ namespace Core
             || (!sendDebugMessages
             && type != Type::DEBUG)))
         {
-#if ENGINE_MODE
             if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
             else AddConsoleLog(internalMsg);
-#endif
         }
 
         cout << externalMsg;
@@ -210,6 +206,7 @@ namespace Core
                 << "qqq - quits the engine\n"
                 << "dbg - prints debug info about selected gameobject (click on object before using this command)"
                 << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
+#if ENGINE_MODE
                 << "rc - resets the camera back to its original position and rotation\n"
                 << "saw - toggles between showing and not showing imgui about window\n"
                 << "sdlw - toggles between showing and not showing imgui debug log window\n"
@@ -219,6 +216,9 @@ namespace Core
                 << "sstw - toggles between showing and not showing imgui stack tool window\n"
                 << "ssew - toggles between showing and not showing imgui style editor window\n"
                 << "sugw - toggles between showing and not showing imgui user guide window\n";
+#else
+                ;
+#endif
 
             WriteConsoleMessage(
                 Caller::INPUT,
