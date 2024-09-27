@@ -70,6 +70,21 @@ namespace Core
 		thread CompileThread([]()
 			{
 				//
+				// REMOVE OLD GAME EXE IF ANY EXISTS
+				//
+
+				for (const auto& file : directory_iterator(Engine::gameParentPath))
+				{
+					string filePath = path(file).string();
+					string fileExtension = path(file).extension().string();
+
+					if (fileExtension == ".exe")
+					{
+						File::DeleteFileOrfolder(filePath);
+					}
+				}
+
+				//
 				// START BUILDING GAME FROM SOURCE CODE
 				//
 				RunInstaller();

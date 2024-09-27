@@ -224,15 +224,21 @@ namespace Core
 		// SET SCENES AND TEXTURES PATHS
 		//
 
+#if ENGINE_MODE
 		scenesPath = path(projectPath).string() + "\\scenes";
+		texturesPath = path(projectPath).string() + "\\textures";
+#else
+		string projectName = path(projectPath).stem().string();
+
+		scenesPath = docsPath + "\\" + projectName + "\\scenes";
+		texturesPath = docsPath + "\\" + projectName + "\\textures";
+#endif
 
 		output = "Scenes path: " + scenesPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			output);
-
-		texturesPath = path(projectPath).string() + "\\textures";
 
 		output = "Textures path: " + texturesPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
