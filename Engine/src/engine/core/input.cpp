@@ -363,9 +363,7 @@ namespace Core
                     && action == GLFW_PRESS
                     && Select::selectedObj != nullptr)
                 {
-                    Select::isObjectSelected = false;
                     shared_ptr<GameObject> selectedObj = Select::selectedObj;
-                    Select::selectedObj = nullptr;
                     GameObjectManager::DestroyGameObject(selectedObj);
                 }
 
@@ -667,9 +665,9 @@ namespace Core
         }
         if (!Render::camera.cameraEnabled
             && (startedHolding
-            || (!startedHolding
-            && Camera::lastKnownRotation == vec3(0)
-            && Render::camera.GetCameraRotation() != vec3(0))))
+                || (!startedHolding
+                    && Camera::lastKnownRotation == vec3(0)
+                    && Render::camera.GetCameraRotation() != vec3(0))))
         {
             Camera::lastKnownRotation = Render::camera.GetCameraRotation();
             startedHolding = false;
@@ -804,7 +802,7 @@ namespace Graphics
             Render::camera.pitch += static_cast<float>(deltaY);
 
             //clamp yaw and pitch to prevent unnatural rotation
-            if (Render::camera.yaw > 359.99f 
+            if (Render::camera.yaw > 359.99f
                 || Render::camera.yaw < -359.99f)
             {
                 Render::camera.yaw = 0.0f;
