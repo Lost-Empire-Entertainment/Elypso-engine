@@ -27,7 +27,7 @@
 #include "gameobject.hpp"
 #include "sceneFile.hpp"
 #include "configFile.hpp"
-#include "model.hpp"
+#include "importer.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "fileUtils.hpp"
@@ -60,7 +60,7 @@ using EngineFile::ConfigFile;
 using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Graphics::Shape::Model;
+using Graphics::Shape::Importer;
 using Graphics::Shape::Material;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
@@ -280,7 +280,7 @@ namespace Core
 
                         cout << "---- copied\n" << originPath << "\nto\n" << targetPath << "\n";
 
-                        Model::Initialize(
+                        Importer::Initialize(
                             newPos,
                             rot,
                             scale,
@@ -303,6 +303,8 @@ namespace Core
                         string targetName = path(targetPath).stem().string();
                         File::CreateNewFolder(targetPath);
 
+                        string filePath = targetPath + "\\" + targetName + ".txt";
+
                         vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
                         vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
 
@@ -310,6 +312,7 @@ namespace Core
                             newPos,
                             rot,
                             scale,
+                            filePath,
                             copiedObject["vertexShader"],
                             copiedObject["fragmentShader"],
                             diff,
@@ -326,6 +329,8 @@ namespace Core
                         string targetName = path(targetPath).stem().string();
                         File::CreateNewFolder(targetPath);
 
+                        string filePath = targetPath + "\\" + targetName + ".txt";
+
                         vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
                         vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
 
@@ -333,6 +338,7 @@ namespace Core
                             newPos,
                             rot,
                             scale,
+                            filePath,
                             copiedObject["vertexShader"],
                             copiedObject["fragmentShader"],
                             diff,

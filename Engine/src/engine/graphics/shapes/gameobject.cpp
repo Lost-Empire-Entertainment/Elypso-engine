@@ -12,8 +12,8 @@
 
 //engine
 #include "gameobject.hpp"
+#include "importer.hpp"
 #include "model.hpp"
-#include "modelchild.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
@@ -67,7 +67,7 @@ namespace Graphics::Shape
 				switch (type)
 				{
 				case Type::model:
-					ModelChild::Render(obj, view, projection);
+					Model::Render(obj, view, projection);
 					break;
 				case Type::directional_light:
 					DirectionalLight::RenderDirectionalLight(obj, view, projection);

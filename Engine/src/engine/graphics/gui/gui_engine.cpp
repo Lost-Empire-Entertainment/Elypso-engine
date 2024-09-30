@@ -34,7 +34,7 @@
 #include "browserUtils.hpp"
 #include "gameobject.hpp"
 #include "timeManager.hpp"
-#include "model.hpp"
+#include "importer.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
@@ -65,7 +65,7 @@ using Core::Select;
 using Utils::File;
 using Utils::Browser;
 using Utils::String;
-using Graphics::Shape::Model;
+using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
@@ -168,15 +168,6 @@ namespace Graphics::GUI
 				GUILinks::RenderLinksWindow();
 				GUIProjectItemsList::RenderProjectItemsList();
 				GUIFirstTime::RenderFirstTime();
-
-				if (renderAboutWindow) ImGui::ShowAboutWindow();
-				if (renderDebugLogWindow) ImGui::ShowDebugLogWindow();
-				if (renderDemoWindow) ImGui::ShowDemoWindow();
-				if (renderIDStackWindow) ImGui::ShowIDStackToolWindow();
-				if (renderMetricsWindow) ImGui::ShowMetricsWindow();
-				if (renderStackToolWindow) ImGui::ShowStackToolWindow();
-				if (renderStyleEditorWindow) ImGui::ShowStyleEditor();
-				if (renderUserGuideWindow) ImGui::ShowUserGuide();
 			}
 
 			bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
@@ -312,7 +303,7 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					Model::Initialize(
+					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
@@ -325,7 +316,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Model::tempID);
+						Importer::tempID);
 
 					SceneFile::SaveScene();
 				}
@@ -339,7 +330,7 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					Model::Initialize(
+					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
@@ -352,7 +343,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Model::tempID);
+						Importer::tempID);
 
 					SceneFile::SaveScene();
 				}
@@ -366,7 +357,7 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					Model::Initialize(
+					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
@@ -379,7 +370,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Model::tempID);
+						Importer::tempID);
 
 					SceneFile::SaveScene();
 				}
@@ -393,7 +384,7 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					Model::Initialize(
+					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
@@ -406,7 +397,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Model::tempID);
+						Importer::tempID);
 
 					SceneFile::SaveScene();
 				}
@@ -420,7 +411,7 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					Model::Initialize(
+					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
@@ -433,7 +424,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Model::tempID);
+						Importer::tempID);
 
 					SceneFile::SaveScene();
 				}
@@ -449,11 +440,14 @@ namespace Graphics::GUI
 					string targetName = path(targetPath).stem().string();
 					File::CreateNewFolder(targetPath);
 
+					string filePath = targetPath + "\\" + targetName + ".txt";
+
 					shared_ptr<GameObject> obj = 
 						PointLight::InitializePointLight(
 							newPos,
 							vec3(0),
 							vec3(1),
+							filePath,
 							Engine::filesPath + "\\shaders\\Basic_model.vert",
 							Engine::filesPath + "\\shaders\\Basic.frag",
 							vec3(1),
@@ -482,11 +476,14 @@ namespace Graphics::GUI
 					string targetName = path(targetPath).stem().string();
 					File::CreateNewFolder(targetPath);
 
+					string filePath = targetPath + "\\" + targetName + ".txt";
+
 					shared_ptr<GameObject> obj = 
 						SpotLight::InitializeSpotLight(
 							newPos,
 							vec3(0),
 							vec3(1),
+							filePath,
 							Engine::filesPath + "\\shaders\\Basic_model.vert",
 							Engine::filesPath + "\\shaders\\Basic.frag",
 							vec3(1),
@@ -526,11 +523,14 @@ namespace Graphics::GUI
 						string targetName = path(targetPath).stem().string();
 						File::CreateNewFolder(targetPath);
 
+						string filePath = targetPath + "\\" + targetName + ".txt";
+
 						shared_ptr<GameObject> obj =
 							DirectionalLight::InitializeDirectionalLight(
 								newPos,
 								vec3(0),
 								vec3(1),
+								filePath,
 								Engine::filesPath + "\\shaders\\Basic_model.vert",
 								Engine::filesPath + "\\shaders\\Basic.frag",
 								vec3(1),

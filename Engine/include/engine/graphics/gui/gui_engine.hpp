@@ -22,16 +22,6 @@ namespace Graphics::GUI
 		static inline bool renderUnsavedShutdownWindow;
 		static inline bool renderUnsavedSceneSwitchWindow;
 
-		//debug windows
-		static inline bool renderAboutWindow;
-		static inline bool renderDebugLogWindow;
-		static inline bool renderDemoWindow;
-		static inline bool renderIDStackWindow;
-		static inline bool renderMetricsWindow;
-		static inline bool renderStackToolWindow;
-		static inline bool renderStyleEditorWindow;
-		static inline bool renderUserGuideWindow;
-
 		static inline string targetScene;
 
 		static void Initialize();

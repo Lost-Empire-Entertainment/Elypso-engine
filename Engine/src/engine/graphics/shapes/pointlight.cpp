@@ -32,6 +32,7 @@ namespace Graphics::Shape
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale,
+		const string& modelPath,
 		const string& vertShader,
 		const string& fragShader,
 		const vec3& diffuse,
@@ -142,6 +143,8 @@ namespace Graphics::Shape
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
+
+		obj->SetDirectory(modelPath);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);

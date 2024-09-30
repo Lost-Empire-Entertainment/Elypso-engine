@@ -14,7 +14,7 @@
 //engine
 #include "gui_importAsset.hpp"
 #include "gui_engine.hpp"
-#include "model.hpp"
+#include "importer.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
 #include "core.hpp"
@@ -30,7 +30,7 @@ using std::filesystem::path;
 using std::exception;
 using std::filesystem::directory_iterator;
 
-using Graphics::Shape::Model;
+using Graphics::Shape::Importer;
 using EngineFile::SceneFile;
 using Graphics::Render;
 using Core::Engine;
@@ -150,7 +150,7 @@ namespace Graphics::GUI
 				string destinationPath = targetPath + "\\" + assetName + extension;
 				File::CopyFileOrFolder(assetPath, destinationPath);
 
-				Model::Initialize(
+				Importer::Initialize(
 					vec3(0),
 					vec3(0),
 					vec3(1),
@@ -163,7 +163,7 @@ namespace Graphics::GUI
 					"EMPTY",
 					32,
 					targetName,
-					Model::tempID);
+					Importer::tempID);
 
 				SceneFile::SaveScene();
 			}

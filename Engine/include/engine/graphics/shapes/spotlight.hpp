@@ -30,6 +30,7 @@ namespace Graphics::Shape
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
+			const string& modelPath = "",
 			const string& vertShader = Engine::filesPath + "\\shaders\\Basic_model.vert",
 			const string& fragShader = Engine::filesPath + "\\shaders\\Basic.frag",
 			const vec3& diffuse = vec3(1),

@@ -10,12 +10,10 @@
 
 //external
 #include "glm.hpp"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "core.hpp"
 
 //engine
 #include "gameobject.hpp"
+#include "core.hpp"
 
 using std::shared_ptr;
 using std::string;
@@ -32,44 +30,28 @@ namespace Graphics::Shape
 	public:
 		static inline string tempName = "123456789";
 		static inline unsigned int tempID = 123456789;
-		static inline string targetModel;
 
-		static void Initialize(
+		static shared_ptr<GameObject> Initialize(
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
-			const string& modelPath = targetModel,
+			const string& modelPath = "",
 			const string& vertShader = Engine::filesPath + "\\shaders\\GameObject.vert",
 			const string& fragShader = Engine::filesPath + "\\shaders\\GameObject.frag",
 			const string& diffTexture = "DEFAULTDIFF",
 			const string& specTexture = "DEFAULTSPEC",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
+			const vector<AssimpVertex> vertices = {},
+			const vector<unsigned int> indices = {},
 			const float& shininess = 32,
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
 
-		static void ProcessNode(
-			string& name,
-			unsigned int& id,
-			const bool& isEnabled,
-			const vec3& pos,
-			const vec3& rot,
-			const vec3& scale,
-			const string& modelPath,
-			const string& vertShader,
-			const string& fragShader,
-			const string& diffTexture,
-			const string& specTexture,
-			const string& normalTexture,
-			const string& heightTexture,
-			const float& shininess,
-			aiNode* node,
-			const aiScene* scene);
-
-		static AssimpMesh ProcessMesh(
-			aiMesh* mesh,
-			const aiScene* scene);
+		static void Render(
+			const shared_ptr<GameObject>& obj,
+			const mat4& view,
+			const mat4& projection);
 	};
 }

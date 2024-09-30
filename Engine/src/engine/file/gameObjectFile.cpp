@@ -16,12 +16,14 @@
 #include "console.hpp"
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
-#include "model.hpp"
+#include "importer.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "gameobject.hpp"
+#include "texture.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -39,27 +41,28 @@ using Utils::File;
 using Graphics::Shape::Mesh;
 using Utils::String;
 using Graphics::Shape::Material;
-using Graphics::Shape::Model;
+using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
 using Core::Select;
 using Graphics::Render;
+using Graphics::Shape::GameObject;
+using Graphics::Shape::GameObjectManager;
+using Graphics::Texture;
 
 namespace EngineFile
 {
 	void GameObjectFile::SaveGameObject(const shared_ptr<GameObject>& obj)
 	{
-		string gameobjectsFolder = 
-			path(Engine::projectPath).string() 
+		string gameobjectsFolder =
+			path(Engine::projectPath).string()
 			+ "\\scenes\\" + path(Engine::scenePath).parent_path().stem().string() + "\\gameobjects";
 
-		string objectPath = gameobjectsFolder + "\\" + obj->GetName();
-		string objectName = path(objectPath).stem().string();
-		string objectFilePath = objectPath + "\\settings.txt";
+		string objectName = obj->GetName();
+		string objectFilePath = obj->GetDirectory();
 
-		if (exists(objectPath)
-			&& exists(objectFilePath))
+		if (exists(objectFilePath))
 		{
 			File::DeleteFileOrfolder(objectFilePath);
 		}
@@ -209,6 +212,13 @@ namespace EngineFile
 
 	void GameObjectFile::LoadGameObjects(const string& targetPath)
 	{
+		if (Select::selectedObj != nullptr
+			|| Select::isObjectSelected)
+		{
+			Select::selectedObj = nullptr;
+			Select::isObjectSelected = false;
+		}
+
 		if (is_empty(targetPath))
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -225,85 +235,114 @@ namespace EngineFile
 			"Started loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
 #if ENGINE_MODE
-		 Render::waitBeforeCountsUpdate = true;
+		Render::waitBeforeCountsUpdate = true;
 #endif
-
-		for (const auto& file : directory_iterator(targetPath))
+		for (const auto& folder : directory_iterator(targetPath))
 		{
-			bool successfulLoad = true;
-
-			string settingsFilePath = targetPath + "\\" + path(file).stem().string() + "\\settings.txt";
-
-			ifstream settingsFile(settingsFilePath);
-			if (!settingsFile.is_open())
+			//first iteration always loads the model if it exists
+			for (const auto& file : directory_iterator(folder))
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::EXCEPTION,
-					"Failed to open settings file '" + settingsFilePath + "'!\n\n");
-				return;
-			}
-
-			map<string, string> data;
-			string line;
-			while (getline(settingsFile, line))
-			{
-				if (!line.empty()
-					&& line.find("=") != string::npos)
+				string extension = path(file).extension().string();
+				if (extension == ".fbx"
+					|| extension == ".obj"
+					|| extension == ".glfw")
 				{
-					vector<string> splitLine = String::Split(line, '=');
-					string key = splitLine[0];
-					string value = splitLine[1];
+					string fileName = path(file).stem().string();
+					string filePath = path(file).string();
 
-					//remove one space in front of value if it exists
-					if (value[0] == ' ') value.erase(0, 1);
-					//remove one space in front of each value comma if it exists
-					for (size_t i = 0; i < value.length(); i++)
+					Importer::Initialize(
+						vec3(0),
+						vec3(0),
+						vec3(1),
+						filePath,
+						Engine::filesPath + "\\shaders\\GameObject.vert",
+						Engine::filesPath + "\\shaders\\GameObject.frag",
+						"DEFAULTDIFF",
+						"DEFAULTSPEC",
+						"EMPTY",
+						"EMPTY",
+						32,
+						fileName,
+						Importer::tempID);
+				}
+			}
+			//second iteration loads all txt files
+			for (const auto& file : directory_iterator(folder))
+			{
+				string extension = path(file).extension().string();
+				if (extension == ".txt")
+				{
+					string filePath = path(file).string();
+
+					ifstream settingsFile(filePath);
+					if (!settingsFile.is_open())
 					{
-						if (value[i] == ','
-							&& i + 1 < value.length()
-							&& value[i + 1] == ' ')
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							"Failed to open settings file '" + filePath + "'!\n\n");
+						return;
+					}
+
+					map<string, string> data;
+					string line;
+					while (getline(settingsFile, line))
+					{
+						if (!line.empty()
+							&& line.find("=") != string::npos)
 						{
-							value.erase(i + 1, 1);
+							vector<string> splitLine = String::Split(line, '=');
+							string key = splitLine[0];
+							string value = splitLine[1];
+
+							//remove one space in front of value if it exists
+							if (value[0] == ' ') value.erase(0, 1);
+							//remove one space in front of each value comma if it exists
+							for (size_t i = 0; i < value.length(); i++)
+							{
+								if (value[i] == ','
+									&& i + 1 < value.length()
+									&& value[i + 1] == ' ')
+								{
+									value.erase(i + 1, 1);
+								}
+							}
+
+							if (key == "name"
+								|| key == "id"
+								|| key == "isEnabled"
+								|| key == "type"
+								|| key == "position"
+								|| key == "rotation"
+								|| key == "scale"
+								|| key == "model"
+								|| key == "textures"
+								|| key == "shaders"
+
+								|| key == "billboard name"
+								|| key == "billboard id"
+								|| key == "billboard texture"
+								|| key == "billboard shaders"
+								|| key == "billboard shininess"
+
+								|| key == "diffuse"
+								|| key == "shininess"
+								|| key == "intensity"
+								|| key == "distance"
+								|| key == "innerAngle"
+								|| key == "outerAngle")
+							{
+								data[key] = value;
+							}
 						}
 					}
 
-					if (key == "name"
-						|| key == "id"
-						|| key == "isEnabled"
-						|| key == "type"
-						|| key == "position"
-						|| key == "rotation"
-						|| key == "scale"
-						|| key == "model"
-						|| key == "textures"
-						|| key == "shaders"
+					settingsFile.close();
 
-						|| key == "billboard name"
-						|| key == "billboard id"
-						|| key == "billboard texture"
-						|| key == "billboard shaders"
-						|| key == "billboard shininess"
-
-						|| key == "diffuse"
-						|| key == "shininess"
-						|| key == "intensity"
-						|| key == "distance"
-						|| key == "innerAngle"
-						|| key == "outerAngle")
-					{
-						data[key] = value;
-					}
+					LoadGameObject(data, path(file).stem().string());
 				}
 			}
-
-			settingsFile.close();
-
-			if (successfulLoad) LoadGameObject(data, path(file).stem().string());
 		}
-
-		Select::selectedObj = nullptr;
-		Select::isObjectSelected = false;
 
 #if ENGINE_MODE
 		Render::waitBeforeCountsUpdate = false;
@@ -380,31 +419,7 @@ namespace EngineFile
 			}
 			else if (key == "model")
 			{
-				string fullModelPath;
-
-				for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath + "\\" + folderPath))
-				{
-					string entryName = path(entry).stem().string();
-					string entryExtension = path(entry).extension().string();
-
-					if (entryName == folderPath
-						&& (entryExtension == ".fbx"
-						|| entryExtension == ".obj"
-						|| entryExtension == ".glfw"))
-					{
-						fullModelPath = Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + folderPath + entryExtension;
-					}
-				}
-
-				if (!exists(fullModelPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Failed to find model for " + folderPath + " at " + fullModelPath + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else modelPath = fullModelPath;
+				modelPath = value;
 			}
 			else if (key == "textures")
 			{
@@ -420,7 +435,7 @@ namespace EngineFile
 					textures.push_back(fullTex0Path);
 				}
 				else if (fullTex0Path != "DEFAULTDIFF"
-						 && !exists(fullTex0Path))
+					&& !exists(fullTex0Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
@@ -439,7 +454,7 @@ namespace EngineFile
 					textures.push_back(fullTex1Path);
 				}
 				else if (fullTex1Path != "DEFAULTSPEC"
-						 && !exists(fullTex1Path))
+					&& !exists(fullTex1Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
@@ -609,23 +624,44 @@ namespace EngineFile
 				Type::DEBUG,
 				"Loading model " + name + " for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-			Model::Initialize(
-				pos,
-				rot,
-				scale,
-				modelPath,
-				shaders[0],
-				shaders[1],
-				diffuseTexture,
-				specularTexture,
-				normalTexture,
-				heightTexture,
-				shininess,
-				name,
-				id,
-				isEnabled);
+			vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
+			shared_ptr<GameObject> foundObj;
+			for (const auto& obj : objects)
+			{
+				if (obj->GetName() == name)
+				{
+					foundObj = obj;
+					break;
+				}
+			}
 
-			GameObject::nextID = id + 1;
+			if (foundObj == nullptr)
+			{
+
+			}
+			else
+			{
+				foundObj->SetName(name);
+				foundObj->SetID(id);
+				foundObj->SetEnableState(isEnabled);
+
+				foundObj->GetTransform()->SetPosition(pos);
+				foundObj->GetTransform()->SetRotation(rot);
+				foundObj->GetTransform()->SetScale(scale);
+
+				foundObj->SetDirectory(modelPath);
+
+				Shader modelShader = Shader::LoadShader(shaders[0], shaders[1]);
+				shared_ptr<Material> mat = make_shared<Material>();
+				mat->AddShader(shaders[0], shaders[1], modelShader);
+
+				Texture::LoadTexture(foundObj, diffuseTexture, Material::TextureType::diffuse, false);
+				Texture::LoadTexture(foundObj, specularTexture, Material::TextureType::specular, false);
+				Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
+				Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
+
+				GameObject::nextID = id + 1;
+			}
 		}
 
 		//
@@ -643,6 +679,7 @@ namespace EngineFile
 				pos,
 				rot,
 				scale,
+				modelPath,
 				shaders[0],
 				shaders[1],
 				diffuse,
@@ -676,6 +713,7 @@ namespace EngineFile
 				pos,
 				rot,
 				scale,
+				modelPath,
 				shaders[0],
 				shaders[1],
 				diffuse,
@@ -711,6 +749,7 @@ namespace EngineFile
 				pos,
 				rot,
 				scale,
+				modelPath,
 				shaders[0],
 				shaders[1],
 				diffuse,
@@ -726,6 +765,6 @@ namespace EngineFile
 				billboardID);
 
 			GameObject::nextID = id + 1;
-			}
+		}
 	}
 }
