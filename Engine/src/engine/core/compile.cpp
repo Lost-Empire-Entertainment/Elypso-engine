@@ -73,14 +73,17 @@ namespace Core
 				// REMOVE OLD GAME EXE IF ANY EXISTS
 				//
 
-				for (const auto& file : directory_iterator(Engine::gameParentPath))
+				if (exists(Engine::gameParentPath))
 				{
-					string filePath = path(file).string();
-					string fileExtension = path(file).extension().string();
-
-					if (fileExtension == ".exe")
+					for (const auto& file : directory_iterator(Engine::gameParentPath))
 					{
-						File::DeleteFileOrfolder(filePath);
+						string filePath = path(file).string();
+						string fileExtension = path(file).extension().string();
+
+						if (fileExtension == ".exe")
+						{
+							File::DeleteFileOrfolder(filePath);
+						}
 					}
 				}
 
