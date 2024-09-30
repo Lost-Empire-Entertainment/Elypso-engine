@@ -216,7 +216,7 @@ namespace Graphics
 						if (target == Target::Hub) targetName = "Elypso hub";
 						if (target == Target::Engine) targetName = "Elypso engine";
 
-						string msg = "---- Cannot set path to '" + setPath + "' for " 
+						string msg = "---- Cannot set path to '" + setPath + "' for "
 							+ targetName + " because the chosen folder is not valid!";
 
 						cout << msg << "\n";
@@ -256,7 +256,7 @@ namespace Graphics
 				progressText = "Started " + actionName + " " + targetName;
 			}
 			else if (!isBuilding
-					 && hasBuiltOnce)
+				&& hasBuiltOnce)
 			{
 				progressText = "Waiting for input...";
 			}
@@ -326,14 +326,40 @@ namespace Graphics
 				if (target == Target::Hub) targetName = "Elypso hub";
 				if (target == Target::Engine) targetName = "Elypso engine";
 
+				bool canCleanRebuild = true;
+
 				if (Compiler::projectsPath == "")
 				{
 					string msg = "---- Cannot clean rebuild " + targetName + " because the projects folder has not been assigned yet!";
 
 					cout << msg << "\n";
 					output.emplace_back(msg);
+
+					canCleanRebuild = false;
 				}
-				else
+
+				if (target == Target::Hub
+					&& Compiler::IsThisProcessAlreadyRunning("Elypso hub.exe"))
+				{
+					string msg = "---- Cannot clean rebuild " + targetName + " because Elypso hub is running!";
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+
+					canCleanRebuild = false;
+				}
+				if (target == Target::Engine
+					&& Compiler::IsThisProcessAlreadyRunning("Elypso engine.exe"))
+				{
+					string msg = "---- Cannot clean rebuild " + targetName + " because Elypso engine is running!";
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+
+					canCleanRebuild = false;
+				}
+
+				if (canCleanRebuild)
 				{
 					output.clear();
 
@@ -350,7 +376,7 @@ namespace Graphics
 
 					if (target == Target::Engine
 						&& (TheCompiler::finishedEngineBuild
-						|| TheCompiler::finishedLibraryBuild))
+							|| TheCompiler::finishedLibraryBuild))
 					{
 						TheCompiler::finishedEngineBuild = false;
 						TheCompiler::finishedLibraryBuild = false;
@@ -370,14 +396,40 @@ namespace Graphics
 				if (target == Target::Hub) targetName = "Elypso hub";
 				if (target == Target::Engine) targetName = "Elypso engine";
 
+				bool canCompile = true;
+
 				if (Compiler::projectsPath == "")
 				{
 					string msg = "---- Cannot compile " + targetName + " because the projects folder has not been assigned yet!";
 
 					cout << msg << "\n";
 					output.emplace_back(msg);
+
+					canCompile = false;
 				}
-				else
+
+				if (target == Target::Hub
+					&& Compiler::IsThisProcessAlreadyRunning("Elypso hub.exe"))
+				{
+					string msg = "---- Cannot compile " + targetName + " because Elypso hub is running!";
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+
+					canCompile = false;
+				}
+				if (target == Target::Engine
+					&& Compiler::IsThisProcessAlreadyRunning("Elypso engine.exe"))
+				{
+					string msg = "---- Cannot compile " + targetName + " because Elypso engine is running!";
+
+					cout << msg << "\n";
+					output.emplace_back(msg);
+
+					canCompile = false;
+				}
+
+				if (canCompile)
 				{
 					output.clear();
 
@@ -394,7 +446,7 @@ namespace Graphics
 
 					if (target == Target::Engine
 						&& (TheCompiler::finishedEngineBuild
-						|| TheCompiler::finishedLibraryBuild))
+							|| TheCompiler::finishedLibraryBuild))
 					{
 						TheCompiler::finishedEngineBuild = false;
 						TheCompiler::finishedLibraryBuild = false;
@@ -443,7 +495,7 @@ namespace Graphics
 				TheCompiler::Compile();
 			}
 		}
-		else 
+		else
 		{
 			string targetName;
 			if (target == Target::Hub) targetName = "Elypso hub";

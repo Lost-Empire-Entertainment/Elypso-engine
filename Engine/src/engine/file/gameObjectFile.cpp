@@ -55,11 +55,6 @@ namespace EngineFile
 {
 	void GameObjectFile::SaveGameObject(const shared_ptr<GameObject>& obj)
 	{
-		string gameobjectsFolder =
-			path(Engine::projectPath).string()
-			+ "\\scenes\\" + path(Engine::scenePath).parent_path().stem().string() + "\\gameobjects";
-
-		string objectName = obj->GetName();
 		string objectFilePath = obj->GetDirectory();
 
 		if (exists(objectFilePath))
@@ -136,14 +131,14 @@ namespace EngineFile
 		fragmentShader = path(fragmentShader).filename().string();
 		objectFile << "shaders= " << vertexShader << ", " << fragmentShader << "\n";
 
+		//path to save file of this gameobject
+		string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
+		objectFile << "model= " << modelPath << "\n";
+
 		//material variables
 		if (meshType == Mesh::MeshType::model)
 		{
 			objectFile << "shininess= " << obj->GetBasicShape()->GetShininess() << "\n";
-
-			string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
-			modelPath = path(modelPath).filename().string();
-			objectFile << "model= " << modelPath << "\n";
 		}
 		else if (meshType == Mesh::MeshType::point_light)
 		{
