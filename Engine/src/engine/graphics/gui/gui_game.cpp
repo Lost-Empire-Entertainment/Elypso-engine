@@ -39,10 +39,7 @@ namespace Graphics::GUI
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
 
-			ConfigFile::SetValue("gui_sceneHierarchy", "1");
-			ConfigFile::SetValue("gui_projectHierarchy", "1");
 			ConfigFile::SetValue("gui_console", "1");
-			ConfigFile::SetValue("gui_inspector", "1");
 			ConfigFile::SaveConfigFile();
 		}
 

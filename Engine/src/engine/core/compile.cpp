@@ -185,39 +185,39 @@ namespace Core
 
 		switch (installerType)
 		{
-		case InstallerType::compile:
-		{
-			if (exists(buildFolder))
-			{
-				command = 
-					"cd " + buildFolder +
-					+ " && cmake --build . --config Release -- /m";
-			}
-			else 
-			{
-				File::CreateNewFolder(buildFolder);
-
-				command = 
-					"cd " + buildFolder +
-					+ " && cmake -A x64 .." +
-					+ " && cmake --build . --config Release -- /m";
-			}
-
-			command = "cmd /c \"" + command + "\"";
-			break;
-		}
 		case InstallerType::reset:
 		{
 			if (exists(buildFolder))
 			{
 				File::DeleteFileOrfolder(buildFolder);
-				File::CreateNewFolder(buildFolder);
 			}
+			File::CreateNewFolder(buildFolder);
 
 			command =
 				"cd " + buildFolder +
-				+ " && cmake -A x64 .." +
-				+ " && cmake --build . --config Release -- /m";
+				+" && cmake -A x64 .." +
+				+" && cmake --build . --config Release -- /m";
+
+			command = "cmd /c \"" + command + "\"";
+			break;
+		}
+		case InstallerType::compile:
+		{
+			if (exists(buildFolder))
+			{
+				command =
+					"cd " + buildFolder +
+					+" && cmake --build . --config Release -- /m";
+			}
+			else
+			{
+				File::CreateNewFolder(buildFolder);
+
+				command =
+					"cd " + buildFolder +
+					+" && cmake -A x64 .." +
+					+" && cmake --build . --config Release -- /m";
+			}
 
 			command = "cmd /c \"" + command + "\"";
 			break;

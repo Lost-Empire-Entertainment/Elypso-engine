@@ -316,25 +316,60 @@ namespace Graphics::GUI
 		{
 			bool canApply = true;
 
-			for (char c : gameName)
+			if (gameName == "Elypso engine"
+				|| gameName == "Elypso hub"
+				|| gameName == "Compiler")
 			{
-				if (!String::IsValidSymbolInPath(c))
+				nameDenyReason = NameDenyReason::invalidName;
+				canApply = false;
+			}
+
+			if (canApply)
+			{
+				for (char c : gameName)
 				{
+					if (!String::IsValidSymbolInPath(c))
+					{
+						nameDenyReason = NameDenyReason::invalidCharacter;
+						canApply = false;
+
+						break;
+					}
+				}
+			}
+
+			if (!canApply)
+			{
+				switch (nameDenyReason)
+				{
+				case NameDenyReason::invalidCharacter:
 					ConsoleManager::WriteConsoleMessage(
 						Caller::INPUT,
 						Type::EXCEPTION,
-						"Invalid character detected in game name! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+						"Invalid character detected in game name! Please pick another game name.");
 
 					Engine::gameExePath = Engine::gameParentPath + "\\Game.exe";
 					ConfigFile::SetValue("gameName", "Game");
+					ConfigFile::SaveConfigFile();
+					SceneFile::SaveScene();
 
-					canApply = false;
+					break;
+
+				case NameDenyReason::invalidName:
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::EXCEPTION,
+						"Name '" + gameName + "' is not allowed to be set as the game name! Please pick another name.\n");
+
+					Engine::gameExePath = Engine::gameParentPath + "\\Game.exe";
+					ConfigFile::SetValue("gameName", "Game");
+					ConfigFile::SaveConfigFile();
+					SceneFile::SaveScene();
 
 					break;
 				}
 			}
-
-			if (canApply)
+			else
 			{
 				string finalPath = Engine::gameParentPath + "\\" + gameName + ".exe";
 				Engine::gameExePath = finalPath;

@@ -35,6 +35,8 @@ namespace Core
 		static inline bool startedWindowLoop;
 #if ENGINE_MODE
 		static void InitializeEngine(const string& version = "0.1.1");
+
+		static void CheckForMissingCompilerFiles();
 #else
 		static void InitializeEngine(const string& version = "1.0");
 #endif

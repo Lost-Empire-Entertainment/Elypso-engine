@@ -132,7 +132,7 @@ namespace Core
 		do
 		{
 			//compare the current process name with the one to check
-			if (_stricmp(pe32.szExeFile, processName.c_str()) == 0)
+			if (strcmp(pe32.szExeFile, processName.c_str()) == 0)
 			{
 				//check if this is not the current process
 				if (pe32.th32ProcessID != currentProcessId)

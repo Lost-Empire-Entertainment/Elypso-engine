@@ -10,6 +10,7 @@
 #include <fstream>
 #include <TlHelp32.h>
 #include <tchar.h>
+#include <cstdlib>
 
 //engine
 #include "core.hpp"
@@ -37,6 +38,7 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::current_path;
 using std::filesystem::create_directory;
+using std::system;
 
 using Utils::String;
 using Utils::File;
@@ -63,6 +65,8 @@ namespace Core
 
 #if ENGINE_MODE
 		name = "Elypso engine";
+
+		CheckForMissingCompilerFiles();
 #else
 		string gameFolder = path(current_path()).string();
 
@@ -80,6 +84,14 @@ namespace Core
 		{
 			CreateErrorPopup((name + " is already running!").c_str());
 		}
+
+#if ENGINE_MODE
+#else
+		if (name == "Elypso engine")
+		{
+			CreateErrorPopup("Engine cannot be ran as game!");
+		}
+#endif
 
 		cout << "\n==================================================\n"
 			<< "\n"
@@ -181,15 +193,15 @@ namespace Core
 		{
 			CreateErrorPopup("Couldn't find documents folder!");
 		}
-
+#if ENGINE_MODE
 		//
-		// SET PROJECT FOLDER PATH
+		// SET PROJECT FILE PATH
 		//
 
 		ifstream projectFile(docsPath + "\\project.txt");
 		if (!projectFile.is_open())
 		{
-			CreateErrorPopup("Failed to open project file!");
+			CreateErrorPopup("Failed to open project file! Did you forget to create a project in Elypso hub?");
 		}
 
 		output = "Project file path: " + docsPath + "\\project.txt" + "\n\n";
@@ -219,7 +231,7 @@ namespace Core
 			Caller::FILE,
 			Type::DEBUG,
 			output);
-
+#endif
 		//
 		// SET SCENES AND TEXTURES PATHS
 		//
@@ -230,8 +242,8 @@ namespace Core
 #else
 		string projectName = path(projectPath).stem().string();
 
-		scenesPath = docsPath + "\\" + projectName + "\\scenes";
-		texturesPath = docsPath + "\\" + projectName + "\\textures";
+		scenesPath = docsPath + "\\Project\\scenes";
+		texturesPath = docsPath + "\\Project\\textures";
 #endif
 
 		output = "Scenes path: " + scenesPath + "\n\n";
@@ -510,6 +522,29 @@ namespace Core
 		if (result == IDOK) Shutdown(true);
 	}
 
+#if ENGINE_MODE
+	void Engine::CheckForMissingCompilerFiles()
+	{
+		string msvcCommand = "call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x64 >nul 2>&1 && cl >nul 2>&1";
+
+		int msvcResult = system(msvcCommand.c_str());
+
+		if (msvcResult != 0)
+		{
+			CreateErrorPopup("Couldn't run engine because of missing MSVC or C++ components! Please set up MSVC and C++ components for desktop and game development.");
+		}
+
+		string cmakeCommand = "cmake --version >nul 2>&1";
+
+		int cmakeResult = system(cmakeCommand.c_str());
+
+		if (cmakeResult != 0)
+		{
+			CreateErrorPopup("Couldn't run engine because of missing CMAKE installer! Please install CMake and add it to environment path.");
+		}
+	}
+#endif
+
 	bool Engine::IsThisProcessAlreadyRunning(const string& processName)
 	{
 		HANDLE hProcessSnap;
@@ -537,7 +572,7 @@ namespace Core
 		do
 		{
 			//compare the current process name with the one to check
-			if (_stricmp(pe32.szExeFile, processName.c_str()) == 0)
+			if (strcmp(pe32.szExeFile, processName.c_str()) == 0)
 			{
 				//check if this is not the current process
 				if (pe32.th32ProcessID != currentProcessId)

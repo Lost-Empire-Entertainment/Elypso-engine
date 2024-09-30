@@ -26,6 +26,13 @@ namespace Graphics::GUI
 		static void RenderSettings();
 
 	private:
+		enum class NameDenyReason
+		{
+			invalidCharacter,
+			invalidName
+		};
+		static inline NameDenyReason nameDenyReason;
+
 		static constexpr int bufferSize = 32;
 		static inline char gameNameChar[bufferSize];
 

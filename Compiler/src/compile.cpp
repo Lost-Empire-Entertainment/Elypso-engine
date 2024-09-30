@@ -52,15 +52,11 @@ namespace Core
 				{
 				case CompileType::clean_rebuild:
 				{
-					if (!exists(buildFolder))
-					{
-						File::CreateNewFolder(buildFolder);
-					}
 					if (exists(buildFolder))
 					{
 						File::DeleteFileOrfolder(buildFolder);
-						File::CreateNewFolder(buildFolder);
 					}
+					File::CreateNewFolder(buildFolder);
 
 					command =
 						"cd " + buildFolder +
@@ -80,7 +76,6 @@ namespace Core
 					}
 					else
 					{
-						File::DeleteFileOrfolder(buildFolder);
 						File::CreateNewFolder(buildFolder);
 
 						command =

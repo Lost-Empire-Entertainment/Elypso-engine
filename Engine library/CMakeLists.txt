@@ -85,7 +85,6 @@ list(APPEND SOURCE_FILES
 	${EXT_IMGUI_DIR}/imgui_impl_opengl3.cpp
 	${EXT_IMGUI_DIR}/imgui_tables.cpp
 	${EXT_IMGUI_DIR}/imgui_widgets.cpp
-	${EXT_IMGUI_DIR}/imgui_demo.cpp
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
 )
 
@@ -95,10 +94,8 @@ set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
-target_include_directories(Elypso_engine
-	PUBLIC
+target_include_directories(Elypso_engine PRIVATE
 		${GAME_INCLUDE_DIR}/core
-	PRIVATE
 		${ENGINE_INCLUDE_DIR}/core
 		${ENGINE_INCLUDE_DIR}/file
 		${ENGINE_INCLUDE_DIR}/graphics
