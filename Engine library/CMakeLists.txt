@@ -43,6 +43,7 @@ set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
+set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Discord")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -57,6 +58,9 @@ set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
 # Add magic_enum
 add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${EXT_MAGIC_ENUM_DIR})
+
+# Add discord
+set(DISCORD_LIBRARY_PATH "${EXT_DISCORD_DIR}/discord_game_sdk.dll.lib")
 
 # Group external libraries
 add_library(external_libs INTERFACE)
@@ -76,6 +80,9 @@ set(SOURCE_FILES
 	${GAME_SOURCE_FILES}
 )
 
+# Add discord source files
+file(GLOB DISCORD_SRC_FILES ${EXT_DISCORD_DIR}/src/*.cpp)
+
 # Add external source files
 list(APPEND SOURCE_FILES
 	${EXT_GLAD_DIR}/glad.c
@@ -86,6 +93,7 @@ list(APPEND SOURCE_FILES
 	${EXT_IMGUI_DIR}/imgui_tables.cpp
 	${EXT_IMGUI_DIR}/imgui_widgets.cpp
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
+	${DISCORD_SRC_FILES}
 )
 
 # Build as static library
@@ -115,9 +123,11 @@ target_include_directories(Elypso_engine PRIVATE
 		${EXT_MAGIC_ENUM_DIR}
 		${EXT_IMGUI_DIR}
 		${EXT_STB_IMAGE_DIR}
+		${EXT_DISCORD_DIR}/include
 )
 
 target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
+target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)

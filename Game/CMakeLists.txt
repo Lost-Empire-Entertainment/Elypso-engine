@@ -38,6 +38,7 @@ set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
+set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Discord")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -53,6 +54,9 @@ set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
 add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${EXT_MAGIC_ENUM_DIR})
 
+# Add discord
+set(DISCORD_LIBRARY_PATH "${EXT_DISCORD_DIR}/discord_game_sdk.dll.lib")
+
 # Group external libraries
 add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
@@ -62,6 +66,9 @@ file(GLOB_RECURSE SOURCE_FILES
 	${SRC_DIR}/*.cpp
 	${SRC_DIR}/*/*.cpp
 )
+
+# Add discord source files
+file(GLOB DISCORD_SRC_FILES ${EXT_DISCORD_DIR}/src/*.cpp)
 
 # Add external source files
 list(APPEND SOURCE_FILES
@@ -73,6 +80,7 @@ list(APPEND SOURCE_FILES
 	${EXT_IMGUI_DIR}/imgui_tables.cpp
 	${EXT_IMGUI_DIR}/imgui_widgets.cpp
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
+	${DISCORD_SRC_FILES}
 )
 
 add_executable(Game ${SOURCE_FILES})
@@ -108,9 +116,11 @@ target_include_directories(Game PRIVATE
 	${EXT_MAGIC_ENUM_DIR}
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
+	${EXT_DISCORD_DIR}/include
 )
 
 target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Game PRIVATE GLFW_INCLUDE_NONE)
@@ -134,6 +144,15 @@ add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy
 	${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
 	$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
+)
+
+# Copy discord dll to the install directory after build
+add_custom_command(TARGET Game POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+	$<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
+	COMMAND ${CMAKE_COMMAND} -E copy
+	${CMAKE_SOURCE_DIR}/files/external\ dlls/discord_game_sdk.dll
+	$<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
 )
 
 # Copy "LICENSE.md" to install directory after build

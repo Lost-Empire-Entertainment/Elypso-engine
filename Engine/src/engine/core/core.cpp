@@ -11,6 +11,10 @@
 #include <TlHelp32.h>
 #include <tchar.h>
 #include <cstdlib>
+#include <memory>
+
+//external
+#include "discord.h"
 
 //engine
 #include "core.hpp"
@@ -39,6 +43,7 @@ using std::filesystem::path;
 using std::filesystem::current_path;
 using std::filesystem::create_directory;
 using std::system;
+using std::unique_ptr;
 
 using Utils::String;
 using Utils::File;
@@ -59,6 +64,8 @@ using Graphics::GUI::GameGUI;
 
 namespace Core
 {
+	unique_ptr<discord::Core> core{};
+
 	void Engine::InitializeEngine(const string& assignedVersion)
 	{
 		version = assignedVersion;
@@ -460,6 +467,33 @@ namespace Core
 		}
 		//otherwise load first scene
 		else SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+
+		InitializeDiscordRichPresence();
+		SetDiscordRichPresence("Elypso engine", "Hanging out in Elypso engine", -1, 0, "icon");
+	}
+
+	void Engine::InitializeDiscordRichPresence()
+	{
+		discord::Core* rawCore{};
+		discord::Result result = discord::Core::Create(
+			1290753615849324585,
+			DiscordCreateFlags_Default, 
+			&rawCore);
+		if (result != discord::Result::Ok)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INITIALIZE,
+				Type::EXCEPTION,
+				"Failed to initialize Discord!");
+		}
+		else
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::INITIALIZE,
+				Type::INFO,
+				"Successfully initialized Discord!");
+			core.reset(rawCore);
+		}
 	}
 
 	void Engine::RunEngine()
@@ -490,13 +524,66 @@ namespace Core
 		{
 			TimeManager::UpdateDeltaTime();
 			Render::WindowLoop();
+			RunDiscordRichPresence();
 
-			// Check if the window should close (e.g., user closed the window)
 			if (glfwWindowShouldClose(Render::window))
 			{
 				isEngineRunning = false;
 			}
 		}
+	}
+
+	void Engine::RunDiscordRichPresence()
+	{
+		if (core) core->RunCallbacks();
+	}
+	void Engine::SetDiscordRichPresence(
+		const string& state,
+		const string& details,
+		const time_t& time_start,
+		const time_t& time_end,
+		const string& largeImage,
+		const string& largeText,
+		const string& smallImage,
+		const string& smallText)
+	{
+		if (!core) return;
+
+		discord::Activity activity{};
+
+		//set Rich Presence details
+		activity.SetState(state.c_str());  //bottom status
+		activity.SetDetails(details.c_str());  //top status (e.g., "Playing Awesome Game")
+
+		//set start and end timestamps
+		if (time_start == -1) activity.GetTimestamps().SetStart(time(nullptr));
+		if (time_start > 0) activity.GetTimestamps().SetStart(time_start);
+		if (time_end != 0) activity.GetTimestamps().SetEnd(time_end);
+
+		//set large and small images
+		if (largeImage != "") activity.GetAssets().SetLargeImage(largeImage.c_str());
+		if (largeText != "") activity.GetAssets().SetLargeText(largeText.c_str());  //tooltip for large image
+		if (smallImage != "") activity.GetAssets().SetSmallImage(smallImage.c_str());
+		if (smallText != "") activity.GetAssets().SetSmallText(smallText.c_str());  //tooltip for small image
+
+		//update the activity via the ActivityManager
+		core->ActivityManager().UpdateActivity(activity, [](discord::Result result) 
+		{
+			if (result == discord::Result::Ok) 
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"Successfully set Rich Presence!");
+			}
+			else 
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::EXCEPTION,
+					"Failed to set Rich Presence!");
+			}
+		});
 	}
 
 	void Engine::CreateErrorPopup(const char* errorMessage)

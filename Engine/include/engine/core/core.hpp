@@ -42,6 +42,18 @@ namespace Core
 #endif
 		static void RunEngine();
 
+		static void InitializeDiscordRichPresence();
+		static void RunDiscordRichPresence();
+		static void SetDiscordRichPresence(
+			const string& state,
+			const string& details,
+			const time_t& time_start = 0,
+			const time_t& time_end = 0,
+			const string& largeImage = "",
+			const string& largeText = "",
+			const string& smallImage = "",
+			const string& smallText = "");
+
 		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
 
 		static bool IsThisProcessAlreadyRunning(const string& processName);
