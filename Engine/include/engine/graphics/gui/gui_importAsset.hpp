@@ -5,14 +5,12 @@
 
 #pragma once
 #if ENGINE_MODE
-#include <iostream>
-#include <map>
-
-using std::string;
-using std::map;
+#include <string>
 
 namespace Graphics::GUI
 {
+	using std::string;
+
 	class GUIImportAsset
 	{
 	public:

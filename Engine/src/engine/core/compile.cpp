@@ -30,6 +30,7 @@
 #include "sceneFile.hpp"
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
+#include "configFile.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -55,6 +56,7 @@ using Graphics::Render;
 using EngineFile::SceneFile;
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
+using EngineFile::ConfigFile;
 
 namespace Core
 {

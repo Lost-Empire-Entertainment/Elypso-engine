@@ -11,12 +11,13 @@
 //engine
 #include "shader.hpp"
 
-using glm::vec3;
-
-using Graphics::Shader;
-
 namespace Graphics
 {
+	using glm::vec3;
+	using glm::mat4;
+
+	using Graphics::Shader;
+
 	class Grid
 	{
 	public:

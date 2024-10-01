@@ -7,10 +7,10 @@
 #if ENGINE_MODE
 #include <string>
 
-using std::string;
-
 namespace Graphics::GUI
 {
+	using std::string;
+
 	class GUICreateScene
 	{
 	public:

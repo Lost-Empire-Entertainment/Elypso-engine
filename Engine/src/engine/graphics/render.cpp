@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
+#include <vector>
 
 //external
 #include "glad.h"
@@ -50,6 +51,7 @@ using std::cout;
 using std::endl;
 using std::to_string;
 using std::filesystem::path;
+using std::vector;
 
 using Core::Input;
 using Core::TimeManager;

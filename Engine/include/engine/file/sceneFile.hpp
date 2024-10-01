@@ -8,11 +8,11 @@
 #include <string>
 #include <map>
 
-using std::string;
-using std::map;
-
 namespace EngineFile
 {
+	using std::string;
+	using std::map;
+
 	class SceneFile
 	{
 	public:

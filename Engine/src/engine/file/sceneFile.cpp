@@ -12,6 +12,7 @@
 
 //external
 #include "magic_enum.hpp"
+#include "glm.hpp"
 
 //engine
 #include "scenefile.hpp"
@@ -37,6 +38,8 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using std::filesystem::create_directory;
+using std::vector;
+using glm::vec3;
 
 using Core::Engine;
 using Core::Select;

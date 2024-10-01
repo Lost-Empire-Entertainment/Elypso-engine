@@ -11,11 +11,11 @@
 //external
 #include "imgui.h"
 
-using std::vector;
-using std::string;
-
 namespace Graphics::GUI
 {
+	using std::vector;
+	using std::string;
+
 	class EngineGUI
 	{
 	public:

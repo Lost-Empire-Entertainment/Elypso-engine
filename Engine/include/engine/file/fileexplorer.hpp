@@ -7,10 +7,10 @@
 
 #include <string>
 
-using std::string;
-
 namespace EngineFile
 {
+	using std::string;
+
 	class FileExplorer
 	{
 	public:

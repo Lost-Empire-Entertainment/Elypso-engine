@@ -12,15 +12,15 @@
 //engine
 #include "gameobject.hpp"
 
-using std::string;
-using std::vector;
-using std::shared_ptr;
-
-using Graphics::Shape::Material;
-using Graphics::Shape::GameObject;
-
 namespace Graphics::GUI
 {
+	using std::string;
+	using std::vector;
+	using std::shared_ptr;
+
+	using Graphics::Shape::Material;
+	using Graphics::Shape::GameObject;
+
 	class GUIProjectItemsList
 	{
 	public:

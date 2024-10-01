@@ -6,19 +6,21 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 //external
 #include "glm.hpp"
 #include "gameobject.hpp"
 
-using std::vector;
-using glm::vec3;
-using glm::mat4;
-
-using Graphics::Shape::GameObject;
-
 namespace Core
 {
+	using std::vector;
+	using glm::vec3;
+	using glm::mat4;
+	using std::shared_ptr;
+
+	using Graphics::Shape::GameObject;
+
 	class Select
 	{
 	public:

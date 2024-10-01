@@ -5,19 +5,21 @@
 
 #pragma once
 
+#include <string>
+#include <memory>
+
 //external
 #include "glm.hpp"
 
-//engine
-#include "gameobject.hpp"
-
-using Graphics::Shape::GameObject;
-
-using glm::vec3;
-using glm::mat4;
-
 namespace Graphics::Shape
 {
+	class GameObject;
+
+	using glm::vec3;
+	using glm::mat4;
+	using std::string;
+	using std::shared_ptr;
+
 	class Billboard
 	{
 	public:

@@ -14,11 +14,11 @@
 //engine
 #include "input.hpp"
 
-using std::map;
-using std::string;
-
 namespace Core
 {
+    using std::map;
+    using std::string;
+
     class Input
     {
     public:

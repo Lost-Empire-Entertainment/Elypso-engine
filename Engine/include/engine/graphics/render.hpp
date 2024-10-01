@@ -11,15 +11,15 @@
 //engine
 #include "camera.hpp"
 
-using glm::vec3;
-using glm::mat4;
-using std::map;
-using std::string;
-
-using Graphics::Camera;
-
 namespace Graphics
 {
+	using glm::vec3;
+	using glm::mat4;
+	using std::map;
+	using std::string;
+
+	using Graphics::Camera;
+
 	class Render
 	{
 	public:

@@ -13,11 +13,11 @@
 //external
 #include "imgui.h"
 
-using std::vector;
-using std::function;
-
 namespace Graphics::GUI
 {
+	using std::vector;
+	using std::function;
+
 	class GameGUI
 	{
 	public:

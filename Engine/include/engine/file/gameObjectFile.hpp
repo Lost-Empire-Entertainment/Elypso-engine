@@ -11,15 +11,14 @@
 
 #include "gameobject.hpp"
 
-using std::string;
-using std::shared_ptr;
-using std::map;
-
-using Graphics::Shape::GameObject;
-using Graphics::Shape::Mesh;
-
 namespace EngineFile
 {
+	using std::string;
+	using std::shared_ptr;
+	using std::map;
+
+	using Graphics::Shape::GameObject;
+
 	class GameObjectFile
 	{
 	public:

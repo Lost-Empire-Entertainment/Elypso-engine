@@ -5,19 +5,19 @@
 
 #pragma once
 #if ENGINE_MODE
+#include <memory>
+
 //external
 #include "glm.hpp"
 
-//engine
-#include "gameobject.hpp"
-
-using glm::vec3;
-using glm::mat4;
-
-using Graphics::Shape::GameObject;
-
 namespace Graphics::Shape
 {
+	class GameObject;
+
+	using glm::vec3;
+	using glm::mat4;
+	using std::shared_ptr;
+
 	class Border
 	{
 	public:

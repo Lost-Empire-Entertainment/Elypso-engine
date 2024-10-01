@@ -12,13 +12,13 @@
 //external
 #include "glm.hpp"
 
-using std::string;
-using std::vector;
-using std::istringstream;
-using glm::vec3;
-
 namespace Utils
 {
+	using std::string;
+	using std::vector;
+	using std::istringstream;
+	using glm::vec3;
+
 	class String
 	{
 	public:

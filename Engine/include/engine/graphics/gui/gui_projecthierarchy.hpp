@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace Graphics::GUI
 {
+	using std::string;
+	using std::vector;
+
 	struct DirectoryEntry
 	{
 		string name;

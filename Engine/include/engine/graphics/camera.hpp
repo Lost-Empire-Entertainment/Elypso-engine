@@ -10,25 +10,17 @@
 #include "glm.hpp"
 #include "glfw3.h"
 
-using glm::mat4;
-using glm::vec3;
-using glm::radians;
-using std::to_string;
-
 namespace Graphics
 {
+    using glm::mat4;
+    using glm::vec3;
+    using glm::radians;
+    using std::to_string;
+
     class Camera
     {
     public:
-        Camera(GLFWwindow* window, float sensitivity) :
-            window(window),
-            yaw(-90.0f),
-            pitch(0.0f),
-            lastX(0.0), lastY(0.0),
-            sensitivity(sensitivity),
-            cameraPos(vec3(0.0f, 1.0f, 0.0f)),
-            cameraFront(vec3(0.0f, 0.0f, -1.0f)),
-            cameraUp(vec3(0.0f, 1.0f, 0.0f)) {}
+        Camera(GLFWwindow* window, float sensitivity);
 
         static inline vec3 lastKnownRotation = vec3(0);
         static inline float cameraSpeed = 2.5f;

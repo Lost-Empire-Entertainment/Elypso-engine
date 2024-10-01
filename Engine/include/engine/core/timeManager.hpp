@@ -7,11 +7,11 @@
 
 #include <chrono>
 
-using std::chrono::high_resolution_clock;
-using std::chrono::duration;
-
 namespace Core
 {
+	using std::chrono::high_resolution_clock;
+	using std::chrono::duration;
+
 	class TimeManager 
 	{
 	public:

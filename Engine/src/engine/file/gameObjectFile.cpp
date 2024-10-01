@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <filesystem>
+#include <vector>
 
 //external
 #include "magic_enum.hpp"
@@ -32,6 +33,8 @@ using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using glm::vec3;
 using std::filesystem::is_empty;
+using std::vector;
+using std::make_shared;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -50,6 +53,7 @@ using Graphics::Render;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Texture;
+using Graphics::Shader;
 
 namespace EngineFile
 {

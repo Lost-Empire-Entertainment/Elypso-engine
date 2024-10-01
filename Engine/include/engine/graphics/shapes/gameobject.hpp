@@ -9,6 +9,7 @@
 #include <memory>
 #include <map>
 #include <iostream>
+#include <string>
 
 //external
 #include "glad.h"
@@ -17,19 +18,19 @@
 //engine
 #include "shader.hpp"
 
-using std::vector;
-using std::map;
-using std::shared_ptr;
-using std::make_shared;
-using std::to_string;
-using std::cout;
-using glm::vec3;
-using glm::mat4;
-
-using Graphics::Shader;
-
 namespace Graphics::Shape
 {
+	using std::vector;
+	using std::map;
+	using std::shared_ptr;
+	using std::make_shared;
+	using std::cout;
+	using glm::vec3;
+	using glm::mat4;
+	using std::string;
+
+	using Graphics::Shader;
+
 	class Transform
 	{
 	public:

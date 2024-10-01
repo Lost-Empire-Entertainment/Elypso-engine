@@ -52,6 +52,7 @@ using std::to_string;
 using std::numeric_limits;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
+using std::filesystem::path;
 
 using Graphics::Render;
 using Core::ConsoleManager;
@@ -786,45 +787,5 @@ namespace Core
 
             ConfigFile::SetValue("camera_speedMultiplier", to_string(newSpeed));
         }
-    }
-}
-
-namespace Graphics
-{
-    void Camera::RotateCamera(double deltaX, double deltaY)
-    {
-        if (Render::camera.cameraEnabled)
-        {
-            deltaX *= Render::camera.sensitivity;
-            deltaY *= Render::camera.sensitivity;
-
-            Render::camera.yaw += static_cast<float>(deltaX);
-            Render::camera.pitch += static_cast<float>(deltaY);
-
-            //clamp yaw and pitch to prevent unnatural rotation
-            if (Render::camera.yaw > 359.99f
-                || Render::camera.yaw < -359.99f)
-            {
-                Render::camera.yaw = 0.0f;
-            }
-            if (Render::camera.pitch > 89.99f) Render::camera.pitch = 89.99f;
-            if (Render::camera.pitch < -89.99f) Render::camera.pitch = -89.99f;
-
-            //update camera front vector based on new yaw and pitch
-            vec3 front{};
-            front.x = cos(radians(Render::camera.yaw)) * cos(radians(Render::camera.pitch));
-            front.y = sin(radians(Render::camera.pitch));
-            front.z = sin(radians(Render::camera.yaw)) * cos(radians(Render::camera.pitch));
-            Render::camera.cameraFront = normalize(front);
-        }
-    }
-
-    mat4 Camera::GetViewMatrix() const
-    {
-        return lookAt(
-            Render::camera.GetCameraPosition(),
-            Render::camera.GetCameraPosition() +
-            Render::camera.GetFront(),
-            cameraUp);
     }
 }

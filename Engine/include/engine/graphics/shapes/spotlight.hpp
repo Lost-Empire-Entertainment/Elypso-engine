@@ -5,21 +5,26 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
 //external
 #include "glm.hpp"
 
 //engine
-#include "gameobject.hpp"
 #include "core.hpp"
-
-using Graphics::Shape::GameObject;
-using Core::Engine;
-
-using glm::vec3;
-using glm::mat4;
 
 namespace Graphics::Shape
 {
+	class GameObject;
+
+	using glm::vec3;
+	using glm::mat4;
+	using std::shared_ptr;
+	using std::string;
+
+	using Core::Engine;
+
 	class SpotLight
 	{
 	public:

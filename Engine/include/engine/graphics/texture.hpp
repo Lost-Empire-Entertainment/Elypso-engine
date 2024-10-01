@@ -6,6 +6,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <memory>
 
 //external
 #include "glad.h"
@@ -13,13 +14,14 @@
 //engine
 #include "gameobject.hpp"
 
-using std::unordered_map;
-
-using Graphics::Shape::GameObject;
-using Graphics::Shape::Material;
-
 namespace Graphics
 {
+	using std::unordered_map;
+	using std::shared_ptr;
+
+	using Graphics::Shape::GameObject;
+	using Graphics::Shape::Material;
+
 	class Texture
 	{
 	public:

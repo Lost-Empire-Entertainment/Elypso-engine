@@ -8,15 +8,11 @@
 #include <map>
 #include <string>
 
-#include "configFile.hpp"
-
-using EngineFile::ConfigFile;
-
-using std::map;
-using std::string;
-
 namespace Graphics::GUI
 {
+	using std::map;
+	using std::string;
+
 	class GUISettings
 	{
 	public:

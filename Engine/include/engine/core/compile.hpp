@@ -8,11 +8,11 @@
 #include <vector>
 #include <string>
 
-using std::vector;
-using std::string;
-
 namespace Core
 {
+	using std::vector;
+	using std::string;
+
 	class Compilation
 	{
 	public:

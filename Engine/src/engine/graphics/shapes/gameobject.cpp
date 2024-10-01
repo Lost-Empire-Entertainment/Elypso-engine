@@ -37,6 +37,7 @@ using std::remove;
 using std::dynamic_pointer_cast;
 using glm::distance;
 using std::filesystem::directory_iterator;
+using std::filesystem::path;
 
 using Core::Select;
 using Type = Graphics::Shape::Mesh::MeshType;

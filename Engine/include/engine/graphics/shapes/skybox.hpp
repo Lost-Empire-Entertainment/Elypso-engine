@@ -7,24 +7,26 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 //external
 #include "glm.hpp"
 
 //engine
-#include "gameobject.hpp"
+#include "gameObject.hpp"
 #include "core.hpp"
-
-using Graphics::Shape::GameObject;
-using Core::Engine;
-
-using glm::vec3;
-using glm::mat4;
-using std::vector;
-using std::string;
 
 namespace Graphics::Shape
 {
+	using glm::vec3;
+	using glm::mat4;
+	using std::vector;
+	using std::string;
+	using std::shared_ptr;
+
+	using Graphics::Shape::GameObject;
+	using Core::Engine;
+
 	class Skybox
 	{
 	public:

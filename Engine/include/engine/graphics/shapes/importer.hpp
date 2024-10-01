@@ -17,16 +17,16 @@
 //engine
 #include "gameobject.hpp"
 
-using std::shared_ptr;
-using std::string;
-using glm::vec3;
-using glm::mat4;
-
-using Graphics::Shape::GameObject;
-using Core::Engine;
-
 namespace Graphics::Shape
 {
+	using std::shared_ptr;
+	using std::string;
+	using glm::vec3;
+	using glm::mat4;
+
+	using Graphics::Shape::GameObject;
+	using Core::Engine;
+
 	class Importer
 	{
 	public:

@@ -8,11 +8,11 @@
 #include <string>
 #include <filesystem>
 
-using std::string;
-using std::filesystem::path;
-
 namespace Utils
 {
+	using std::string;
+	using std::filesystem::path;
+
 	class File
 	{
 	public:
