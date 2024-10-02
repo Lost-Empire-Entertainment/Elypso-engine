@@ -5,9 +5,9 @@
 
 #pragma once
 
-namespace Core
+namespace GameCore
 {
-	class GameCore
+	class GameTemplate
 	{
 	public:
 		static void InitializeGame();

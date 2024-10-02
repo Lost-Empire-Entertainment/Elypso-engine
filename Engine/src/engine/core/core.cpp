@@ -468,15 +468,17 @@ namespace Core
 		//otherwise load first scene
 		else SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
 
-		InitializeDiscordRichPresence();
-		SetDiscordRichPresence("Elypso engine", "Hanging out in Elypso engine", -1, 0, "icon");
+#if ENGINE_MODE
+		//app id specific for the engine
+		InitializeDiscordRichPresence(1290753615849324585);
+#endif
 	}
 
-	void Engine::InitializeDiscordRichPresence()
+	void Engine::InitializeDiscordRichPresence(const __int64& appID)
 	{
 		discord::Core* rawCore{};
 		discord::Result result = discord::Core::Create(
-			1290753615849324585,
+			appID,
 			DiscordCreateFlags_Default, 
 			&rawCore);
 		if (result != discord::Result::Ok)
@@ -552,38 +554,35 @@ namespace Core
 		discord::Activity activity{};
 
 		//set Rich Presence details
-		activity.SetState(state.c_str());  //bottom status
-		activity.SetDetails(details.c_str());  //top status (e.g., "Playing Awesome Game")
+		activity.SetState(state.c_str());
+		activity.SetDetails(details.c_str());
 
-		//set start and end timestamps
-		if (time_start == -1) activity.GetTimestamps().SetStart(time(nullptr));
-		if (time_start > 0) activity.GetTimestamps().SetStart(time_start);
+		//starts counting from when discord rich presence 
+		//was called for first time until application closes
+		if (time_start == 0)
+		{
+			static bool setCurrentTimeOnce = false;
+
+			if (!setCurrentTimeOnce)
+			{
+				activity.GetTimestamps().SetStart(time(nullptr));
+				setCurrentTimeOnce = true;
+			}
+		}
+		//starts counting from assigned time
+		else if (time_start > 0) activity.GetTimestamps().SetStart(time_start);
+
+		//ends counting at assigned time
 		if (time_end != 0) activity.GetTimestamps().SetEnd(time_end);
 
 		//set large and small images
 		if (largeImage != "") activity.GetAssets().SetLargeImage(largeImage.c_str());
-		if (largeText != "") activity.GetAssets().SetLargeText(largeText.c_str());  //tooltip for large image
+		if (largeText != "") activity.GetAssets().SetLargeText(largeText.c_str());
 		if (smallImage != "") activity.GetAssets().SetSmallImage(smallImage.c_str());
-		if (smallText != "") activity.GetAssets().SetSmallText(smallText.c_str());  //tooltip for small image
+		if (smallText != "") activity.GetAssets().SetSmallText(smallText.c_str());
 
 		//update the activity via the ActivityManager
-		core->ActivityManager().UpdateActivity(activity, [](discord::Result result) 
-		{
-			if (result == discord::Result::Ok) 
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::INFO,
-					"Successfully set Rich Presence!");
-			}
-			else 
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::EXCEPTION,
-					"Failed to set Rich Presence!");
-			}
-		});
+		core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {});
 	}
 
 	void Engine::CreateErrorPopup(const char* errorMessage)

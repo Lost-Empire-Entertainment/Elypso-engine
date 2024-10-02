@@ -120,7 +120,7 @@ target_include_directories(Game PRIVATE
 )
 
 target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
-target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
+target_link_libraries(Game PUBLIC ${DISCORD_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Game PRIVATE GLFW_INCLUDE_NONE)

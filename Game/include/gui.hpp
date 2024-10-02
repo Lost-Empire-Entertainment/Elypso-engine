@@ -5,7 +5,7 @@
 
 namespace TheGameGUI
 {
-	class GUICore
+	class GUI
 	{
 	public:
 		static void AddWindowsToList();

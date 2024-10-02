@@ -3,20 +3,23 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-//game
-#include "gui.hpp"
+//engine
 #include "gui_game.hpp"
 
+//game
+#include "gui.hpp"
+
+//engine
 using Graphics::GUI::GameGUI;
 
 namespace TheGameGUI
 {
-	void GUICore::AddWindowsToList()
+	void GUI::AddWindowsToList()
 	{
 		//GameGUI::imguiWindows.push_back(TestWindow);
 	}
 
-	void GUICore::TestWindow()
+	void GUI::TestWindow()
 	{
 		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);

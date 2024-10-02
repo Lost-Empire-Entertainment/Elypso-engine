@@ -10,21 +10,24 @@
 #include "core.hpp"
 #include "gui.hpp"
 
+//engine
 using Core::Game;
-using TheGameGUI::GUICore;
+
+//game
+using TheGameGUI::GUI;
 
 using std::string;
 
-namespace Core
+namespace GameCore
 {
-	void GameCore::InitializeGame()
+	void GameTemplate::InitializeGame()
 	{
 		string version = "0.1";
 		Game::Initialize(version);
-		GUICore::AddWindowsToList();
+		GUI::AddWindowsToList();
 	}
 
-	void GameCore::RunGame()
+	void GameTemplate::RunGame()
 	{
 		Game::Run();
 	}

@@ -290,6 +290,10 @@ namespace EngineFile
 					"Set game first scene to " + Engine::gameFirstScene + "\n");
 			}
 
+			string exeName = Engine::name;
+			string sceneName = path(Engine::scenePath).parent_path().stem().string();
+			Engine::SetDiscordRichPresence(exeName, "Loaded scene " + sceneName, 0, 0, "icon");
+
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::INFO,

@@ -5,11 +5,11 @@
 
 #include "core.hpp"
 
-using Core::GameCore;
+using GameCore::GameTemplate;
 
 int main()
 {
-	GameCore::InitializeGame();
-	GameCore::RunGame();
+	GameTemplate::InitializeGame();
+	GameTemplate::RunGame();
 	return 0;
 }
