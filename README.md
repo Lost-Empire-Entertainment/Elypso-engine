@@ -26,7 +26,6 @@ For those who want to use **CMake** and **Visual Studio 2022**, detailed setup i
 - **CMake Setup**: [Download 'Windows x64 installer here' here](https://cmake.org/download/). Setup instructions are available in `_external_shared/CMake/setup.txt`.
 - **Visual Studio Setup**: [Download preferred version here](https://visualstudio.microsoft.com/downloads/). Setup instructions are available in `_external_shared/Visual_Studio/setup.txt`.
 
-
 ---
 
 ### False positives from Windows Security
@@ -43,7 +42,7 @@ If you believe you have found a security vulnerability that may affect your comp
 
 ### Discord Game SDK and Rich Presence
 
-By default **Elypso Engine** and its **Game Template** will not include **Discord Game SDK** because Discord does not allow to distribute it, if you wish to use it in your game or in the engine then follow the instructions in _external_shared/Discord/setup.txt.
+By default **Elypso Engine** and its **Game Template** will not include **Discord Game SDK** because Discord does not allow to distribute it, if you wish to use it in your game or in the engine then follow the instructions in `_external_shared/Discord/setup.txt`.
 
 ---
 
