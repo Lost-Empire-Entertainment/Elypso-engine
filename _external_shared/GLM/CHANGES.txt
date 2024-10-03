@@ -1,0 +1,5 @@
+Original repository link:
+https://github.com/g-truc/glm
+
+Changes:
+- deleted all files and folders before copying all the content from the glm folder to this folder

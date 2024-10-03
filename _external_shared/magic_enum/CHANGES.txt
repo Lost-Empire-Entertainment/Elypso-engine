@@ -1,0 +1,5 @@
+Original repository link:
+https://github.com/Neargye/magic_enum
+
+Changes:
+- no changes have been made to this library

@@ -1,0 +1,7 @@
+Original repository link:
+https://github.com/nothings/stb
+
+Changes:
+- removed all files and folders except:
+	- stb_image.cpp
+	- stb_image.h

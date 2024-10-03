@@ -1,0 +1,12 @@
+Instructions for Setting up Visual Studio for Elypso Hub, Elypso Engine, Game Template, and Compiler
+Version: 1.0
+
+Steps:
+
+1. Run `VisualStudioSetup.exe`.
+2. Click `Continue` and wait for the Visual Studio Installer to configure.
+3. In the Workloads section, select:
+   - Desktop development with C++
+   - Game development with C++
+4. Click `Install`. On the next page, make sure the `Start after installation` checkbox is unchecked. Wait for the installation to complete.
+5. Once installed, open `Elypso Hub`, `Elypso Engine`, `Game Template`, or `Compiler` by right-clicking its folder and selecting `Open with Visual Studio`.

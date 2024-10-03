@@ -1,0 +1,5 @@
+Original repository link:
+https://github.com/assimp/assimp
+		
+Changes:
+- moved all files and folders out of include/assimp into this folders and deleted all other files and folders

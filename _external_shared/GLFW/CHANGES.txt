@@ -1,0 +1,15 @@
+Original repository link:
+https://github.com/glfw/glfw
+
+Changes:
+- copied glfw3.h and glfw3native.h from include/GLFW to this folder
+- used cmake gui to generate lib for glfw
+	- open cmake gui
+	- select the glfw folder as source
+	- click configure
+	- choose visual studio 17 2022 as generator
+	- click finish
+	- click generate
+	- open GLFW.sln
+	- right-click Solution and select Rebuild Solution
+- copied glfw3.lib from src/Debug to this folder

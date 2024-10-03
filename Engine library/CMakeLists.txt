@@ -147,6 +147,7 @@ set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Copy "Elypso engine.lib" to Game folder
+# UNCOMMENT TO USE DISCORD GAME SDK
 # add_custom_command(TARGET Elypso_engine POST_BUILD
     # COMMAND ${CMAKE_COMMAND} -E remove
     # ${LIB_TARGET}

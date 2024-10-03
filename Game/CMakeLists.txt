@@ -15,7 +15,7 @@ remove_definitions(-DENGINE_MODE)
 
 # Toggles discord mode for game
 # REPLACE 'remove' WITH 'add' TO USE DISCORD GAME SDK
-# remove_definitions(-DDISCORD_MODE)
+remove_definitions(-DDISCORD_MODE)
 
 project("Game")
 
