@@ -321,8 +321,8 @@ namespace EngineFile
 								|| key == "shininess"
 								|| key == "intensity"
 								|| key == "distance"
-								|| key == "innerAngle"
-								|| key == "outerAngle")
+								|| key == "inner angle"
+								|| key == "outer angle")
 							{
 								data[key] = value;
 							}
@@ -556,8 +556,8 @@ namespace EngineFile
 			else if (key == "shininess") shininess = stof(value);
 			else if (key == "intensity") intensity = stof(value);
 			else if (key == "distance") distance = stof(value);
-			else if (key == "innerAngle") innerAngle = stof(value);
-			else if (key == "outerAngle") outerAngle = stof(value);
+			else if (key == "inner angle") innerAngle = stof(value);
+			else if (key == "outer angle") outerAngle = stof(value);
 		}
 
 		//
