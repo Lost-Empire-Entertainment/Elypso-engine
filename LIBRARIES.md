@@ -1,8 +1,10 @@
-This file contains the full list of all libraries used for Elypso Hub, Elypso Engine and the Game template. Lost Empire Entertainment did not create, does not actively develop or contribute to these libraries and does not own any of these libraries. All rights belong to the library developers and all questions and problems related to these libraries should be forwarded to their developers and not to Lost Empire Entertainment.
+This file contains the full list of all libraries used **Elypso Hub**, **Elypso Engine**, **Game Template** and **Compiler**. Lost Empire Entertainment does not own, did not create, does not actively develop or contribute to these libraries. All rights belong to the library developers and all questions and problems related to these libraries should be forwarded to their developers and not to Lost Empire Entertainment.
 
----
+Each library (except Visual Studio and CMake) has these two files:
+	- CHANGES.txt - explains any changes made to this library compared to the developers original format
+	- LICENSE.txt - a copy of the license provided by the developers of the library
 
-[Path to libraries folder in main branch](https://github.com/Lost-Empire-Entertainment/Elypso-engine/tree/main/_external_shared)
+Note: Modifying the structure or location of any of the external library files is highly discouraged as this will break things, modify at your own risk.
 
 ---
 
