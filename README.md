@@ -36,7 +36,7 @@ If this is your first time running the program then Windows may throw false posi
 
 ### Reporting a security vulnerability
 
-If you believe you have found a security vulnerability that may affect your computer negatively in any way then please follow the [Security Policy file](https://github.com/Lost-Empire-Entertainment/Elypso-engine/security/policy).
+Lost Empire Entertainment accepts all security vulnerability concerns or discovered security bugs at sanderveski@gmail.com, do not post them as Issues.
 
 ---
 
