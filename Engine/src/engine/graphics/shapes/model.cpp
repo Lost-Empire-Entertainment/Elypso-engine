@@ -21,7 +21,6 @@
 #include "texture.hpp"
 #include "core.hpp"
 #include "console.hpp"
-#include "selectobject.hpp"
 #include "stringUtils.hpp"
 
 using std::cout;
@@ -50,7 +49,6 @@ using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Core::Select;
 using Utils::String;
 
 namespace Graphics::Shape
@@ -151,9 +149,6 @@ namespace Graphics::Shape
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
-
-		Select::selectedObj = obj;
-		Select::isObjectSelected = true;
 
 #if ENGINE_MODE
 		Render::UpdateCounts();

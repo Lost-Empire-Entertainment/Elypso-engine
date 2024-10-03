@@ -166,9 +166,6 @@ namespace Graphics::Shape
                 nodeName,
                 id,
                 isEnabled);
-
-            Select::selectedObj = newChild;
-            Select::isObjectSelected = true;
         }
 
         //after we've processed all of the meshes (if any) we then recursively process each of the children nodes

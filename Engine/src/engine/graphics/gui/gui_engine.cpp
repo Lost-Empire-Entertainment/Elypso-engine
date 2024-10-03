@@ -465,9 +465,6 @@ namespace Graphics::GUI
 							PointLight::tempName,
 							PointLight::tempID);
 
-					Select::selectedObj = obj;
-					Select::isObjectSelected = true;
-
 					SceneFile::SaveScene();
 				}
 				if (ImGui::MenuItem("Spotlight"))
@@ -502,9 +499,6 @@ namespace Graphics::GUI
 							32,
 							SpotLight::tempName,
 							SpotLight::tempID);
-
-					Select::selectedObj = obj;
-					Select::isObjectSelected = true;
 
 					SceneFile::SaveScene();
 				}
@@ -546,9 +540,6 @@ namespace Graphics::GUI
 								32,
 								SpotLight::tempName,
 								SpotLight::tempID);
-
-						Select::selectedObj = obj;
-						Select::isObjectSelected = true;
 
 						SceneFile::SaveScene();
 					}

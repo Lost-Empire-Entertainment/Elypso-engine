@@ -453,7 +453,7 @@ namespace Core
 
 				if (exists(foundScenePath))
 				{
-					SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+					SceneFile::LoadScene(foundScenePath);
 				}
 				else 
 				{

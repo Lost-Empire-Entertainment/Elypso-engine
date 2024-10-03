@@ -211,13 +211,6 @@ namespace EngineFile
 
 	void GameObjectFile::LoadGameObjects(const string& targetPath)
 	{
-		if (Select::selectedObj != nullptr
-			|| Select::isObjectSelected)
-		{
-			Select::selectedObj = nullptr;
-			Select::isObjectSelected = false;
-		}
-
 		if (is_empty(targetPath))
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -573,6 +566,11 @@ namespace EngineFile
 
 		if (type == Mesh::MeshType::model)
 		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				"Loading model '" + name + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
 			string diff_missing = Engine::filesPath + "\\textures\\diff_missing.png";
 			string diffuseTexture = textures[0];
 			if (diffuseTexture != "EMPTY"
@@ -617,11 +615,6 @@ namespace EngineFile
 					"Height texture " + heightTexture + " for " + name + " not found!\n");
 				heightTexture = "EMPTY";
 			}
-
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::DEBUG,
-				"Loading model " + name + " for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
 			vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 			shared_ptr<GameObject> foundObj;

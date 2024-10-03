@@ -209,7 +209,7 @@ namespace Graphics::Shape
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
-			ConsoleType::INFO,
+			ConsoleType::DEBUG,
 			"Deleted gameobject " + thisName + ".\n");
 	}
 }

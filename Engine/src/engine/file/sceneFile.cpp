@@ -363,11 +363,12 @@ namespace EngineFile
 				Type::EXCEPTION,
 				"Couldn't write into last saved scene file '" + Engine::scenePath + "'!\n");
 		}
-		else 
+		else
 		{
-			lastSavedSceneFile << targetLevel;
-			lastSavedSceneFile.close();
+			string currentScene = Engine::scenePath;
+			lastSavedSceneFile << currentScene;
 		}
+		lastSavedSceneFile.close();
 
 		switch (saveType)
 		{
