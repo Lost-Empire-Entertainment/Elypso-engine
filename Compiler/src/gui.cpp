@@ -188,13 +188,26 @@ namespace Graphics
 				string setPath = File::SetPath();
 
 				bool isValidFolder = false;
-				if (path(setPath).stem().string() != "Elypso-engine")
+				for (const auto& folder : directory_iterator(setPath))
 				{
-					string targetName;
-					if (target == Target::Hub) targetName = "Elypso hub";
-					if (target == Target::Engine) targetName = "Elypso engine";
-
-					string msg = "---- Cannot set path to '" + setPath + "' because the chosen folder is not used by Elypso engine! Look for a folder named 'Elypso-engine'";
+					string folderName = path(folder).stem().string();
+					if (folderName == "Engine")
+					{
+						for (const auto& file : directory_iterator(folder))
+						{
+							string fileName = path(file).filename().string();
+							if (fileName == "CMakeLists.txt")
+							{
+								isValidFolder = true;
+								break;
+							}
+						}
+						if (isValidFolder) break;
+					}
+				}
+				if (!isValidFolder)
+				{
+					string msg = "---- Cannot set path to '" + setPath + "' because the chosen folder is not used by Elypso engine! Look for the folder where the Engine folder is inside of.";
 
 					cout << msg << "\n";
 					output.emplace_back(msg);
