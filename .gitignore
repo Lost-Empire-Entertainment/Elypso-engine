@@ -22,3 +22,7 @@ Game/out/
 Hub/build/
 Hub/.vs/
 Hub/out/
+
+# Ignore _external_shared files and folders
+# that are not allowed to be redistributed
+_external_shared/Discord/

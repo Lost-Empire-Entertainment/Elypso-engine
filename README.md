@@ -24,6 +24,12 @@ If you believe you have found a security vulnerability that may affect your comp
 
 ---
 
+### Discord Game SDK and Rich Presence
+
+By default Elypso Engine and its game template will not include Discord Game SDK because Discord does not allow to distribute it, if you wish to use it in your game or engine then follow the instructions in _external_shared/discord_game_sdk.txt.
+
+---
+
 ### Links
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)

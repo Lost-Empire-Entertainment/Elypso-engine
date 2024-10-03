@@ -14,7 +14,9 @@
 #include <memory>
 
 //external
+#if DISCORD_MODE
 #include "discord.h"
+#endif
 
 //engine
 #include "core.hpp"
@@ -64,8 +66,9 @@ using Graphics::GUI::GameGUI;
 
 namespace Core
 {
+#if DISCORD_MODE
 	unique_ptr<discord::Core> core{};
-
+#endif
 	void Engine::InitializeEngine(const string& assignedVersion)
 	{
 		version = assignedVersion;
@@ -469,11 +472,13 @@ namespace Core
 		else SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
 
 #if ENGINE_MODE
+#if DISCORD_MODE
 		//app id specific for the engine
 		InitializeDiscordRichPresence(1290753615849324585);
 #endif
+#endif
 	}
-
+#if DISCORD_MODE
 	void Engine::InitializeDiscordRichPresence(const __int64& appID)
 	{
 		discord::Core* rawCore{};
@@ -497,7 +502,7 @@ namespace Core
 			core.reset(rawCore);
 		}
 	}
-
+#endif
 	void Engine::RunEngine()
 	{
 		ConsoleManager::WriteConsoleMessage(
@@ -526,15 +531,16 @@ namespace Core
 		{
 			TimeManager::UpdateDeltaTime();
 			Render::WindowLoop();
+#if DISCORD_MODE
 			RunDiscordRichPresence();
-
+#endif
 			if (glfwWindowShouldClose(Render::window))
 			{
 				isEngineRunning = false;
 			}
 		}
 	}
-
+#if DISCORD_MODE
 	void Engine::RunDiscordRichPresence()
 	{
 		if (core) core->RunCallbacks();
@@ -584,7 +590,7 @@ namespace Core
 		//update the activity via the ActivityManager
 		core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {});
 	}
-
+#endif
 	void Engine::CreateErrorPopup(const char* errorMessage)
 	{
 		string title = name + " has shut down";

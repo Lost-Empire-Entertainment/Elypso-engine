@@ -10,9 +10,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Turns engine mode on for engine
+# Toggles engine mode for engine
 add_definitions(-DENGINE_MODE)
-# remove_definitions(-DENGINE_MODE)
+
+# Toggles discord sdk mode for engine
+# REPLACE 'remove' WITH 'add' TO USE DISCORD GAME SDK
+remove_definitions(-DDISCORD_MODE)
 
 set(PROJECT_MAJOR_VERSION 1)
 set(PROJECT_MINOR_VERSION 0)
@@ -42,7 +45,8 @@ set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
-set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Discord")
+# UNCOMMENT TO USE DISCORD GAME SDK
+# set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Discord")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -59,7 +63,8 @@ add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${EXT_MAGIC_ENUM_DIR})
 
 # Add discord
-set(DISCORD_LIBRARY_PATH "${EXT_DISCORD_DIR}/discord_game_sdk.dll.lib")
+# UNCOMMENT TO USE DISCORD GAME SDK
+# set(DISCORD_LIBRARY_PATH "${EXT_DISCORD_DIR}/discord_game_sdk.dll.lib")
 
 # Group external libraries
 add_library(external_libs INTERFACE)
@@ -80,7 +85,8 @@ set(SOURCE_FILES
 )
 
 # Add discord source files
-file(GLOB DISCORD_SRC_FILES ${EXT_DISCORD_DIR}/src/*.cpp)
+# UNCOMMENT TO USE DISCORD GAME SDK
+# file(GLOB DISCORD_SRC_FILES ${EXT_DISCORD_DIR}/src/*.cpp)
 
 # Add external source files
 list(APPEND SOURCE_FILES
@@ -92,7 +98,8 @@ list(APPEND SOURCE_FILES
 	${EXT_IMGUI_DIR}/imgui_tables.cpp
 	${EXT_IMGUI_DIR}/imgui_widgets.cpp
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
-	${DISCORD_SRC_FILES}
+	# UNCOMMENT TO USE DISCORD GAME SDK
+	# ${DISCORD_SRC_FILES}
 )
 
 # Build as engine exe
@@ -122,11 +129,13 @@ target_include_directories(Elypso_engine PRIVATE
 	${EXT_MAGIC_ENUM_DIR}
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
-	${EXT_DISCORD_DIR}/include
+	# UNCOMMENT TO USE DISCORD GAME SDK
+	# ${EXT_DISCORD_DIR}/include
 )
 
 target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
-target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
+# UNCOMMENT TO USE DISCORD GAME SDK
+# target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
@@ -166,13 +175,14 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 )
 
 # Copy discord dll to the install directory after build
-add_custom_command(TARGET Elypso_engine POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove
-	$<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
-	COMMAND ${CMAKE_COMMAND} -E copy
-	${CMAKE_SOURCE_DIR}/files/external\ dlls/discord_game_sdk.dll
-	$<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
-)
+# UNCOMMENT TO USE DISCORD GAME SDK
+# add_custom_command(TARGET Elypso_engine POST_BUILD
+	# COMMAND ${CMAKE_COMMAND} -E remove
+	# $<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
+	# COMMAND ${CMAKE_COMMAND} -E copy
+	# ${CMAKE_SOURCE_DIR}/files/external\ dlls/discord_game_sdk.dll
+	# $<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
+# )
 
 # Copy "LICENSE.md" to install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD

@@ -42,6 +42,7 @@ namespace Core
 #endif
 		static void RunEngine();
 
+#if DISCORD_MODE
 		/// <summary>
 		/// Initializes Discord presence with a specific appID
 		/// </summary>
@@ -71,6 +72,7 @@ namespace Core
 			const string& largeText = "",
 			const string& smallImage = "",
 			const string& smallText = "");
+#endif
 
 		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
 
