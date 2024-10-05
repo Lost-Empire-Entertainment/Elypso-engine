@@ -207,6 +207,10 @@ namespace Graphics::Shape
 				shader.SetVec3("dirLight.diffuse", dirVar->GetDiffuse());
 				shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 			}
+			else 
+			{
+				shader.SetBool("dirLight.enabled", false);
+			}
 
 			//point lights
 			const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointLights();
