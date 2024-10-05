@@ -63,12 +63,6 @@ namespace Graphics::GUI
 		if (renderProjectHierarchy
 			&& ImGui::Begin("Project hierarchy", NULL, windowFlags))
 		{
-			string buttonText = showPathTooltip ? "Hide path" : "Show path";
-			if (ImGui::Button(buttonText.c_str()))
-			{
-				showPathTooltip = !showPathTooltip;
-			}
-
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -86,186 +80,130 @@ namespace Graphics::GUI
 		}
 	}
 
-	vector<DirectoryEntry> GUIProjectHierarchy::GetDirectoryContents(const string& directoryPath)
-	{
-		vector<DirectoryEntry> contents;
-
-		for (const auto& entry : directory_iterator(directoryPath))
-		{
-			DirectoryEntry dirEntry;
-			dirEntry.name = entry.path().filename().string();
-			dirEntry.path = entry.path().string();
-
-			contents.push_back(dirEntry);
-		}
-
-		return contents;
-	}
-
 	void GUIProjectHierarchy::DisplayDirectoryContents(const string& directoryPath)
 	{
-		auto contents = GetDirectoryContents(directoryPath);
-		static string chosenEntry = "";
+        static string chosenEntry = "";
+        for (const auto& entry : directory_iterator(directoryPath))
+        {
+            const string fullPath = entry.path().string();
+            const string name = entry.path().filename().string();
 
-		for (const auto& entry : contents)
-		{
-			if (chosenEntry == entry.path)
-			{
-				ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
-				ImGui::PushStyleColor(ImGuiCol_Text, color);
-			}
+            bool isSelected = (chosenEntry == fullPath);
 
-			if (ImGui::Selectable(entry.name.c_str()))
-			{
-				chosenEntry = entry.path;
-				//cout << "clicked on " << entry.path << "\n";
-			}
+            ImGuiTreeNodeFlags nodeFlags =
+                ImGuiTreeNodeFlags_OpenOnArrow
+                | ImGuiTreeNodeFlags_SpanAvailWidth
+                | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+            if (isSelected)
+            {
+                nodeFlags |= ImGuiTreeNodeFlags_Selected;
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.6f, 1.0f));
+            }
 
-			if (is_directory(entry.path))
-			{
-				ImGuiTreeNodeFlags nodeFlags =
-					ImGuiTreeNodeFlags_OpenOnArrow
-					| ImGuiTreeNodeFlags_OpenOnDoubleClick;
-				bool nodeOpen = ImGui::TreeNodeEx(entry.name.c_str(), nodeFlags);
+            if (entry.is_directory())
+            {
+                bool nodeOpen = ImGui::TreeNodeEx(name.c_str(), nodeFlags);
+                if (ImGui::IsItemClicked())
+                {
+                    chosenEntry = fullPath;
+                }
 
-				//hover over folder to show its path in tooltip
-				if (ImGui::IsItemHovered()
-					&& showPathTooltip)
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(entry.path.c_str());
-					ImGui::EndTooltip();
-				}
+                if (isSelected) ImGui::PopStyleColor();
 
-				if (ImGui::BeginPopupContextItem())
-				{
-					//open selected scene folder
-					if (path(entry.path).parent_path().stem().string() == "scenes"
-						&& ImGui::MenuItem("Open scene"))
-					{
-						if (path(entry.path).stem().string() ==
-							path(Engine::scenePath).parent_path().stem().string())
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::FILE,
-								Type::EXCEPTION,
-								"Cannot switch to scene " + path(entry.path).stem().string() + " because it is already open!\n");
-						}
-						else
-						{
-							if (SceneFile::unsavedChanges)
-							{
-								EngineGUI::targetScene = entry.path + "\\scene.txt";
-								EngineGUI::renderUnsavedSceneSwitchWindow = true;
-							}
-							else SceneFile::LoadScene(entry.path + "\\scene.txt");
-						}
-					}
-					//delete selected folder
-					if (ImGui::MenuItem("Delete"))
-					{
-						string scenesFolder = path(Engine::scenePath).parent_path().parent_path().string();
+                string thisParentFolder = path(entry).parent_path().string();
+                if (path(thisParentFolder).stem().string() == "scenes"
+                    || path(thisParentFolder).stem().string() == "gameobjects")
+                {
+                    if (ImGui::BeginPopupContextItem())
+                    {
+                        if (path(thisParentFolder).stem().string() == "scenes")
+                        {
+                            string scenesFolder = path(Engine::scenePath).parent_path().parent_path().string();
+                            if (thisParentFolder == scenesFolder)
+                            {
+                                //can open scenes from scene folders
+                                if (ImGui::MenuItem("Open scene"))
+                                {
+                                    if (entry == path(Engine::scenePath).parent_path())
+                                    {
+                                        cout << "can not open scene " << path(entry).stem().string() << "\n";
+                                    }
+                                    else
+                                    {
+                                        cout << "can open scene " << path(entry).stem().string() << "\n";
+                                    }
+                                }
+                                else if (ImGui::MenuItem("Delete scene"))
+                                {
+                                    //can delete scenes from scene folders
+                                    if (entry == path(Engine::scenePath).parent_path())
+                                    {
+                                        cout << "can not delete scene " << path(entry).stem().string() << "\n";
+                                    }
+                                    else
+                                    {
+                                        cout << "can delete scene " << path(entry).stem().string() << "\n";
+                                    }
+                                }
+                            }
+                        }
+                        //can delete gameobject parent folders
+                        else if (path(thisParentFolder).stem().string() == "gameobjects")
+                        {
+                            if (ImGui::MenuItem("Delete gameobject"))
+                            {
+                                cout << "deleted gameobject " << path(entry).stem().string() << "\n";
+                            }
+                        }
+                        ImGui::EndPopup();
+                    }
+                }
 
-						//if trying to delete scene folder
-						if (path(entry.path).parent_path().string() == scenesFolder)
-						{
-							vector<string> sceneFolderNames;
-							for (const auto& sceneFolder : directory_iterator(scenesFolder))
-							{
-								sceneFolderNames.push_back(path(sceneFolder).string());
-							}
+                if (nodeOpen)
+                {
+                    DisplayDirectoryContents(fullPath);
+                    ImGui::TreePop();
+                }
+            }
+            else
+            {
+                if (ImGui::Selectable(name.c_str(), isSelected))
+                {
+                    chosenEntry = fullPath;
+                }
 
-							string currentSceneFolder = path(Engine::scenePath).parent_path().string();
-							if (entry.path == currentSceneFolder)
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::FILE,
-									Type::EXCEPTION,
-									"Cannot delete scene folder '" + entry.name + "' because it is the current scene folder!\n");
-							}
-							else
-							{
-								if (nodeOpen)
-								{
-									ConsoleManager::WriteConsoleMessage(
-										Caller::FILE,
-										Type::EXCEPTION,
-										"Cannot delete scene folder '" + entry.name + "' because it is open! Close it before deleting it.\n");
-								}
-								else File::DeleteFileOrfolder(entry.path);
-							}
-						}
-						//if trying to delete gameobject folder
-						else if (path(entry.path).parent_path().string() == Engine::currentGameobjectsPath)
-						{
-							if (nodeOpen)
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::FILE,
-									Type::EXCEPTION,
-									"Cannot delete gameobject folder '" + entry.name + "' because it is open! Close it before deleting it.\n");
-							}
-							else File::DeleteFileOrfolder(entry.path);
-						}
-						//if trying to delete any other folder
-						else
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::FILE,
-								Type::EXCEPTION,
-								"Cannot delete folder '" + entry.name + "' because it is used by this scene!\n");
-						}
-					}
+                if (isSelected) ImGui::PopStyleColor();
 
-					ImGui::EndPopup();
-				}
-
-				if (nodeOpen)
-				{
-					DisplayDirectoryContents(entry.path);
-					ImGui::TreePop();
-				}
-			}
-			else if (is_regular_file(entry.path))
-			{
-				//hover over file to show its path in tooltip
-				if (ImGui::IsItemHovered()
-					&& showPathTooltip)
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(entry.path.c_str());
-					ImGui::EndTooltip();
-				}
-
-				if (ImGui::BeginPopupContextItem())
-				{
-					//delete selected file
-					if (ImGui::MenuItem("Delete"))
-					{
-						//if trying to delete texture from textures folder
-						if (path(entry.path).parent_path().stem().string() == "textures")
-						{
-							File::DeleteFileOrfolder(entry.path);
-						}
-						//if trying to delete any other file
-						else
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::FILE,
-								Type::EXCEPTION,
-								"Cannot delete file '" + entry.name + "' because it is used by this scene!\n");
-						}
-					}
-
-					ImGui::EndPopup();
-				}
-			}
-
-			if (chosenEntry == entry.path)
-			{
-				ImGui::PopStyleColor();
-			}
-		}
+                string thisParentFolder = path(entry).parent_path().string();
+                string thisExtension = path(entry).extension().string();
+                if (path(entry).extension().string() == ".png"
+                    || path(entry).extension().string() == ".jpg"
+                    || path(entry).extension().string() == ".jpeg")
+                {
+                    if (ImGui::BeginPopupContextItem())
+                    {
+                        string gameobjectsFolder = Engine::currentGameobjectsPath;
+                        //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
+                        if (path(thisParentFolder).stem().string() == "textures")
+                        {
+                            string texturesFolder = path(Engine::scenePath).parent_path().parent_path().parent_path().string() + "\\" + "textures";
+                            if (thisParentFolder == texturesFolder
+                                && ImGui::MenuItem("Delete texture"))
+                            {
+                                cout << "deleted texture " << path(entry).filename().string() << "\n";
+                            }
+                        }
+                        //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
+                        else if (path(thisParentFolder).parent_path().parent_path().stem().string() == "gameobjects"
+                                 && ImGui::MenuItem("Delete texture"))
+                        {
+                            cout << "deleted texture " << path(entry).filename().string() << "\n";
+                        }
+                        ImGui::EndPopup();
+                    }
+                }
+            }
+        }
 	}
 }
 #endif

@@ -13,21 +13,11 @@ namespace Graphics::GUI
 	using std::string;
 	using std::vector;
 
-	struct DirectoryEntry
-	{
-		string name;
-		string path;
-	};
-
 	class GUIProjectHierarchy
 	{
 	public:
 		static void RenderProjectHierarchy();
 	private:
-		static inline bool showPathTooltip;
-
-		static vector<DirectoryEntry> GetDirectoryContents(const string& directoryPath);
-
 		static void DisplayDirectoryContents(const string& directoryPath);
 	};
 }
