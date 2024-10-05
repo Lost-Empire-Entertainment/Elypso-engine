@@ -145,6 +145,9 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		Render::UpdateCounts();
 #endif
+		Select::selectedObj = obj;
+		Select::isObjectSelected = true;
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,

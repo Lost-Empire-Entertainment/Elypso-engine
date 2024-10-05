@@ -23,6 +23,8 @@ using std::endl;
 using std::filesystem::directory_iterator;
 using std::filesystem::path;
 using std::filesystem::exists;
+using std::filesystem::is_directory;
+using std::filesystem::is_regular_file;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -105,25 +107,53 @@ namespace Graphics
 		}
 		else
 		{
+			bool foundObject = false;
 			string copiedTexturePath;
+			//first iteration to loop through all folders in gameobjects folder
 			for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
 			{
 				string objName = obj->GetName();
 				string folderName = path(folder).stem().string();
-
-				if (folderName == objName)
+				if (is_directory(folder))
 				{
-					string textureFolder = path(folder).string();
-					string textureName = "\\" + path(texturePath).filename().string();
-					copiedTexturePath = textureFolder + textureName;
-
-					if (!exists(copiedTexturePath))
+					//second iteration to loop through all folders of selected gameobject folder
+					//because gameobjects always have a master model file but folders for each actual txt file of each model piece
+					for (const auto& childFolder : directory_iterator(folder))
 					{
-						File::CopyFileOrFolder(texturePath, copiedTexturePath);
-					}
+						//ignore the master model file, only look for folders
+						if (is_directory(childFolder))
+						{
+							//third iteration to look for txt file of the target gameobject
+							for (const auto& file : directory_iterator(childFolder))
+							{
+								//only check this file if it is a regular file and has '.txt' extension
+								string extension = path(file).extension().string();
+								if (extension == ".txt"
+									&& is_regular_file(file))
+								{
+									string fileName = path(file).stem().string();
+									if (fileName == objName)
+									{
+										string objPath = path(file).string();
+										string textureName = path(texturePath).filename().string();
+										copiedTexturePath = path(objPath).parent_path().string() + "\\" + textureName;
 
-					break;
+										if (!exists(copiedTexturePath))
+										{
+											File::CopyFileOrFolder(texturePath, copiedTexturePath);
+										}
+
+										foundObject = true;
+
+										break;
+									}
+								}
+							}
+						}
+						if (foundObject) break;
+					}
 				}
+				if (foundObject) break;
 			}
 
 			finalTexturePath = copiedTexturePath;

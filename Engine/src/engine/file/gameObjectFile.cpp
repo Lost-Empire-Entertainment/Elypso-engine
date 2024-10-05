@@ -33,6 +33,8 @@ using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using glm::vec3;
 using std::filesystem::is_empty;
+using std::filesystem::is_directory;
+using std::filesystem::is_regular_file;
 using std::vector;
 using std::make_shared;
 
@@ -61,6 +63,11 @@ namespace EngineFile
 	{
 		string objectFilePath = obj->GetDirectory();
 
+		string objectFileParentPath = path(objectFilePath).parent_path().string();
+		if (!exists(objectFileParentPath))
+		{
+			File::CreateNewFolder(objectFileParentPath);
+		}
 		if (exists(objectFilePath))
 		{
 			File::DeleteFileOrfolder(objectFilePath);
@@ -258,80 +265,165 @@ namespace EngineFile
 						Importer::tempID);
 				}
 			}
-			//second iteration loads all txt files
+			//second iteration checks if 
 			for (const auto& file : directory_iterator(folder))
 			{
-				string extension = path(file).extension().string();
-				if (extension == ".txt")
+				//iterates through all files in model folder
+				//because models have a master model file and folder
+				//with a txt file inside it for each 'node' of the master model file
+				if (is_directory(file))
 				{
-					string filePath = path(file).string();
-
-					ifstream settingsFile(filePath);
-					if (!settingsFile.is_open())
+					for (const auto& dirFile : directory_iterator(file))
 					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							"Failed to open settings file '" + filePath + "'!\n\n");
-						return;
-					}
-
-					map<string, string> data;
-					string line;
-					while (getline(settingsFile, line))
-					{
-						if (!line.empty()
-							&& line.find("=") != string::npos)
+						string extension = path(dirFile).extension().string();
+						if (extension == ".txt")
 						{
-							vector<string> splitLine = String::Split(line, '=');
-							string key = splitLine[0];
-							string value = splitLine[1];
+							string filePath = path(dirFile).string();
 
-							//remove one space in front of value if it exists
-							if (value[0] == ' ') value.erase(0, 1);
-							//remove one space in front of each value comma if it exists
-							for (size_t i = 0; i < value.length(); i++)
+							ifstream settingsFile(filePath);
+							if (!settingsFile.is_open())
 							{
-								if (value[i] == ','
-									&& i + 1 < value.length()
-									&& value[i + 1] == ' ')
+								ConsoleManager::WriteConsoleMessage(
+									Caller::FILE,
+									Type::EXCEPTION,
+									"Failed to open settings file '" + filePath + "'!\n\n");
+								return;
+							}
+
+							map<string, string> data;
+							string line;
+							while (getline(settingsFile, line))
+							{
+								if (!line.empty()
+									&& line.find("=") != string::npos)
 								{
-									value.erase(i + 1, 1);
+									vector<string> splitLine = String::Split(line, '=');
+									string key = splitLine[0];
+									string value = splitLine[1];
+
+									//remove one space in front of value if it exists
+									if (value[0] == ' ') value.erase(0, 1);
+									//remove one space in front of each value comma if it exists
+									for (size_t i = 0; i < value.length(); i++)
+									{
+										if (value[i] == ','
+											&& i + 1 < value.length()
+											&& value[i + 1] == ' ')
+										{
+											value.erase(i + 1, 1);
+										}
+									}
+
+									if (key == "name"
+										|| key == "id"
+										|| key == "isEnabled"
+										|| key == "type"
+										|| key == "position"
+										|| key == "rotation"
+										|| key == "scale"
+										|| key == "model"
+										|| key == "textures"
+										|| key == "shaders"
+
+										|| key == "billboard name"
+										|| key == "billboard id"
+										|| key == "billboard texture"
+										|| key == "billboard shaders"
+										|| key == "billboard shininess"
+
+										|| key == "diffuse"
+										|| key == "shininess"
+										|| key == "intensity"
+										|| key == "distance"
+										|| key == "inner angle"
+										|| key == "outer angle")
+									{
+										data[key] = value;
+									}
 								}
 							}
 
-							if (key == "name"
-								|| key == "id"
-								|| key == "isEnabled"
-								|| key == "type"
-								|| key == "position"
-								|| key == "rotation"
-								|| key == "scale"
-								|| key == "model"
-								|| key == "textures"
-								|| key == "shaders"
+							settingsFile.close();
 
-								|| key == "billboard name"
-								|| key == "billboard id"
-								|| key == "billboard texture"
-								|| key == "billboard shaders"
-								|| key == "billboard shininess"
-
-								|| key == "diffuse"
-								|| key == "shininess"
-								|| key == "intensity"
-								|| key == "distance"
-								|| key == "inner angle"
-								|| key == "outer angle")
-							{
-								data[key] = value;
-							}
+							LoadGameObject(data, path(dirFile).stem().string());
 						}
 					}
+				}
+				//otherwise loads the txt file directly if it doesnt have any folders
+				else if (is_regular_file(file))
+				{
+					string extension = path(file).extension().string();
+					if (extension == ".txt")
+					{
+						string filePath = path(file).string();
 
-					settingsFile.close();
+						ifstream settingsFile(filePath);
+						if (!settingsFile.is_open())
+						{
+							ConsoleManager::WriteConsoleMessage(
+								Caller::FILE,
+								Type::EXCEPTION,
+								"Failed to open settings file '" + filePath + "'!\n\n");
+							return;
+						}
 
-					LoadGameObject(data, path(file).stem().string());
+						map<string, string> data;
+						string line;
+						while (getline(settingsFile, line))
+						{
+							if (!line.empty()
+								&& line.find("=") != string::npos)
+							{
+								vector<string> splitLine = String::Split(line, '=');
+								string key = splitLine[0];
+								string value = splitLine[1];
+
+								//remove one space in front of value if it exists
+								if (value[0] == ' ') value.erase(0, 1);
+								//remove one space in front of each value comma if it exists
+								for (size_t i = 0; i < value.length(); i++)
+								{
+									if (value[i] == ','
+										&& i + 1 < value.length()
+										&& value[i + 1] == ' ')
+									{
+										value.erase(i + 1, 1);
+									}
+								}
+
+								if (key == "name"
+									|| key == "id"
+									|| key == "isEnabled"
+									|| key == "type"
+									|| key == "position"
+									|| key == "rotation"
+									|| key == "scale"
+									|| key == "model"
+									|| key == "textures"
+									|| key == "shaders"
+
+									|| key == "billboard name"
+									|| key == "billboard id"
+									|| key == "billboard texture"
+									|| key == "billboard shaders"
+									|| key == "billboard shininess"
+
+									|| key == "diffuse"
+									|| key == "shininess"
+									|| key == "intensity"
+									|| key == "distance"
+									|| key == "inner angle"
+									|| key == "outer angle")
+								{
+									data[key] = value;
+								}
+							}
+						}
+
+						settingsFile.close();
+
+						LoadGameObject(data, path(file).stem().string());
+					}
 				}
 			}
 		}
@@ -419,7 +511,7 @@ namespace EngineFile
 
 				string fullTex0Path = split[0] == "DEFAULTDIFF"
 					? "DEFAULTDIFF"
-					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[0];
+					: path(modelPath).parent_path().string() + "\\" + split[0];
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
@@ -439,7 +531,7 @@ namespace EngineFile
 
 				string fullTex1Path = split[1] == "DEFAULTSPEC"
 					? "DEFAULTSPEC"
-					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[1];
+					: path(modelPath).parent_path().string() + "\\" + split[1];
 				if (fullTex1Path == "DEFAULTSPEC")
 				{
 					fullTex1Path = Engine::filesPath + "\\textures\\spec_default.png";
@@ -458,7 +550,7 @@ namespace EngineFile
 
 				string fullTex2Path = split[2] == "EMPTY"
 					? "EMPTY"
-					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[2];
+					: path(modelPath).parent_path().string() + "\\" + split[2];
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
@@ -472,7 +564,7 @@ namespace EngineFile
 
 				string fullTex3Path = split[3] == "EMPTY"
 					? "EMPTY"
-					: Engine::currentGameobjectsPath + "\\" + folderPath + "\\" + split[3];
+					: path(modelPath).parent_path().string() + "\\" + split[3];
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{

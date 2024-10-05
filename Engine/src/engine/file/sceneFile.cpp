@@ -115,9 +115,6 @@ namespace EngineFile
 			Engine::scenePath = scenePath;
 			Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
 
-			Select::isObjectSelected = false;
-			Select::selectedObj = nullptr;
-
 			vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 			if (objects.size() != 0)
 			{
@@ -299,6 +296,9 @@ namespace EngineFile
 				Type::INFO,
 				"Successfully loaded scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 		}
+
+		Select::selectedObj = nullptr;
+		Select::isObjectSelected = false;
 	}
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)

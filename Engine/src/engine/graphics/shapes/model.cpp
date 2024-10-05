@@ -22,6 +22,7 @@
 #include "core.hpp"
 #include "console.hpp"
 #include "stringUtils.hpp"
+#include "selectobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -50,6 +51,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::String;
+using Core::Select;
 
 namespace Graphics::Shape
 {
@@ -144,7 +146,7 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
 
-		string thisPath = path(modelPath).parent_path().string() + "\\" + name + ".txt";
+		string thisPath = path(modelPath).parent_path().string() + "\\" + name + "\\" + name + ".txt";
 		obj->SetDirectory(thisPath);
 
 		GameObjectManager::AddGameObject(obj);
@@ -153,6 +155,9 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		Render::UpdateCounts();
 #endif
+		Select::selectedObj = obj;
+		Select::isObjectSelected = true;
+
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
