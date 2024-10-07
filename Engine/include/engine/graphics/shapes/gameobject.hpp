@@ -716,35 +716,35 @@ namespace Graphics::Shape
 
 		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly = false);
 
-		static vector<shared_ptr<GameObject>>& GetObjects()
+		static const vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
 		}
-		static vector<shared_ptr<GameObject>> GetPointLights()
+		static const vector<shared_ptr<GameObject>> GetPointLights()
 		{
 			return pointLights;
 		}
-		static vector<shared_ptr<GameObject>> GetSpotLights()
+		static const vector<shared_ptr<GameObject>> GetSpotLights()
 		{
 			return spotLights;
 		}
-		static shared_ptr<GameObject> GetDirectionalLight()
+		static const shared_ptr<GameObject> GetDirectionalLight()
 		{
 			return directionalLight;
 		}
-		static shared_ptr<GameObject> GetActionTex()
+		static const shared_ptr<GameObject> GetActionTex()
 		{
 			return actionTex;
 		}
-		static shared_ptr<GameObject> GetBorder()
+		static const shared_ptr<GameObject> GetBorder()
 		{
 			return border;
 		}
-		static vector<shared_ptr<GameObject>> GetBillboards()
+		static const vector<shared_ptr<GameObject>> GetBillboards()
 		{
 			return billboards;
 		}
-		static shared_ptr<GameObject> GetSkybox()
+		static const shared_ptr<GameObject> GetSkybox()
 		{
 			return skybox;
 		}

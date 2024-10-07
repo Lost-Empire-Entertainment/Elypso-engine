@@ -5,6 +5,7 @@
 #if ENGINE_MODE
 #include <filesystem>
 #include <iostream>
+#include <memory>
 
 //external
 #include "imgui.h"
@@ -34,6 +35,7 @@ using std::to_string;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::exception;
+using std::shared_ptr;
 
 using EngineFile::ConfigFile;
 using EngineFile::SceneFile;
@@ -46,6 +48,7 @@ using Utils::File;
 using Graphics::Render;
 using Graphics::Shape::GameObjectManager;
 using EngineFile::SceneFile;
+using Graphics::Shape::GameObject;
 
 namespace Graphics::GUI
 {
@@ -125,11 +128,19 @@ namespace Graphics::GUI
                                 {
                                     if (entry == path(Engine::scenePath).parent_path())
                                     {
-                                        cout << "can not open scene " << path(entry).stem().string() << "\n";
+                                        ConsoleManager::WriteConsoleMessage(
+                                            Caller::FILE,
+                                            Type::EXCEPTION,
+                                            "Cannot switch to scene '" + path(entry).stem().string() + "' because it is already open!\n");
                                     }
                                     else
                                     {
-                                        cout << "can open scene " << path(entry).stem().string() << "\n";
+                                        if (SceneFile::unsavedChanges)
+                                        {
+                                            EngineGUI::targetScene = path(entry).string() + "\\scene.txt";
+                                            EngineGUI::renderUnsavedSceneSwitchWindow = true;
+                                        }
+                                        else SceneFile::LoadScene(path(entry).string() + "\\scene.txt");
                                     }
                                 }
                                 else if (ImGui::MenuItem("Delete scene"))
@@ -137,11 +148,22 @@ namespace Graphics::GUI
                                     //can delete scenes from scene folders
                                     if (entry == path(Engine::scenePath).parent_path())
                                     {
-                                        cout << "can not delete scene " << path(entry).stem().string() << "\n";
+                                        ConsoleManager::WriteConsoleMessage(
+                                            Caller::FILE,
+                                            Type::EXCEPTION,
+                                            "Cannot delete scene '" + path(entry).stem().string() + "' because it is currently loaded! Switch to another scene to delete this scene.\n");
                                     }
                                     else
                                     {
-                                        cout << "can delete scene " << path(entry).stem().string() << "\n";
+                                        if (nodeOpen)
+                                        {
+                                         
+                                            //ImGui::TreePop();
+                                        }
+                                        else
+                                        {
+                                            File::DeleteFileOrfolder(entry);
+                                        }
                                     }
                                 }
                             }
@@ -151,7 +173,30 @@ namespace Graphics::GUI
                         {
                             if (ImGui::MenuItem("Delete gameobject"))
                             {
-                                cout << "deleted gameobject " << path(entry).stem().string() << "\n";
+                                if (nodeOpen)
+                                {
+                                    //ImGui::TreePop();
+                                }
+                                else
+                                {
+                                    shared_ptr<GameObject> targetObj;
+                                    for (const auto& obj : GameObjectManager::GetObjects())
+                                    {
+                                        string objName = obj->GetName();
+                                        string thisName = path(entry).stem().string();
+
+                                        if (objName == thisName)
+                                        {
+                                            targetObj = obj;
+                                            break;
+                                        }
+                                    }
+                                    if (targetObj != nullptr)
+                                    {
+                                        GameObjectManager::DestroyGameObject(targetObj);
+                                        File::DeleteFileOrfolder(entry);
+                                    }
+                                }
                             }
                         }
                         ImGui::EndPopup();
@@ -189,14 +234,14 @@ namespace Graphics::GUI
                             if (thisParentFolder == texturesFolder
                                 && ImGui::MenuItem("Delete texture"))
                             {
-                                cout << "deleted texture " << path(entry).filename().string() << "\n";
+                                File::DeleteFileOrfolder(entry);
                             }
                         }
                         //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
                         else if (path(thisParentFolder).parent_path().parent_path().stem().string() == "gameobjects"
                                  && ImGui::MenuItem("Delete texture"))
                         {
-                            cout << "deleted texture " << path(entry).filename().string() << "\n";
+                            File::DeleteFileOrfolder(entry);
                         }
                         ImGui::EndPopup();
                     }

@@ -241,31 +241,6 @@ namespace Utils
             if (is_regular_file(sourcePath)) remove(sourcePath);
             else if (is_directory(sourcePath))
             {
-                //delete gameobject in scene if folder parent is gameobjects folder
-                if (path(sourcePath).parent_path().stem().string() == "gameobjects")
-                {
-                    for (const auto& entry : directory_iterator(sourcePath))
-                    {
-                        string entryPath = path(entry).string();
-                        string entryName = path(entry).stem().string();
-                        string entryExtension = path(entry).extension().string();
-
-                        if (entryExtension == ".fbx"
-                            || entryExtension == ".obj"
-                            || entryExtension == ".gltf")
-                        {
-                            for (const auto& obj : GameObjectManager::GetObjects())
-                            {
-                                if (obj->GetName() == entryName)
-                                {
-                                    GameObjectManager::DestroyGameObject(obj);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
                 remove_all(sourcePath);
             }
 

@@ -185,27 +185,11 @@ namespace Graphics::Shape
 			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
 		}
-
-		if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::billboard
-			&& !localOnly)
-		{
-			string gameobjectsFolder = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
-			for (const auto& entry : directory_iterator(gameobjectsFolder))
-			{
-				if (path(entry).stem().string() == thisName)
-				{
-					File::DeleteFileOrfolder(path(entry).string());
-					break;
-				}
-			}
-
-			//force-saves the game to ensure everything is up to date
-			SceneFile::SaveScene();
-		}
-
 #if ENGINE_MODE
 		Render::UpdateCounts();
 #endif
+		//force-saves the game to ensure everything is up to date
+		SceneFile::SaveScene();
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
