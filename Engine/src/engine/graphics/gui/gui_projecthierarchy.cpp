@@ -92,7 +92,6 @@ namespace Graphics::GUI
 
             ImGuiTreeNodeFlags nodeFlags =
                 ImGuiTreeNodeFlags_OpenOnArrow
-                | ImGuiTreeNodeFlags_SpanAvailWidth
                 | ImGuiTreeNodeFlags_OpenOnDoubleClick;
             if (isSelected)
             {
