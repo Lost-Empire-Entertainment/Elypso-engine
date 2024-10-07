@@ -86,6 +86,7 @@ namespace Graphics::GUI
 	void GUIProjectHierarchy::DisplayDirectoryContents(const string& directoryPath)
 	{
         static string chosenEntry = "";
+        static path toBeDeleted;
         for (const auto& entry : directory_iterator(directoryPath))
         {
             const string fullPath = entry.path().string();
@@ -155,15 +156,7 @@ namespace Graphics::GUI
                                     }
                                     else
                                     {
-                                        if (nodeOpen)
-                                        {
-                                         
-                                            //ImGui::TreePop();
-                                        }
-                                        else
-                                        {
-                                            File::DeleteFileOrfolder(entry);
-                                        }
+                                        toBeDeleted = entry;
                                     }
                                 }
                             }
@@ -173,29 +166,22 @@ namespace Graphics::GUI
                         {
                             if (ImGui::MenuItem("Delete gameobject"))
                             {
-                                if (nodeOpen)
+                                shared_ptr<GameObject> targetObj;
+                                for (const auto& obj : GameObjectManager::GetObjects())
                                 {
-                                    //ImGui::TreePop();
-                                }
-                                else
-                                {
-                                    shared_ptr<GameObject> targetObj;
-                                    for (const auto& obj : GameObjectManager::GetObjects())
-                                    {
-                                        string objName = obj->GetName();
-                                        string thisName = path(entry).stem().string();
+                                    string objName = obj->GetName();
+                                    string thisName = path(entry).stem().string();
 
-                                        if (objName == thisName)
-                                        {
-                                            targetObj = obj;
-                                            break;
-                                        }
-                                    }
-                                    if (targetObj != nullptr)
+                                    if (objName == thisName)
                                     {
-                                        GameObjectManager::DestroyGameObject(targetObj);
-                                        File::DeleteFileOrfolder(entry);
+                                        targetObj = obj;
+                                        break;
                                     }
+                                }
+                                if (targetObj != nullptr)
+                                {
+                                    GameObjectManager::DestroyGameObject(targetObj);
+                                    toBeDeleted = entry;
                                 }
                             }
                         }
@@ -247,6 +233,12 @@ namespace Graphics::GUI
                     }
                 }
             }
+        }
+
+        if (toBeDeleted.string() != "")
+        {
+            File::DeleteFileOrfolder(toBeDeleted);
+            toBeDeleted = "";
         }
 	}
 }
