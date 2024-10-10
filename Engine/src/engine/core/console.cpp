@@ -61,7 +61,7 @@ namespace Core
         auto now_ms = time_point_cast<milliseconds>(now);
 
         auto now_c = system_clock::to_time_t(now);
-        auto ms = duration_cast<microseconds>(now - now_ms);
+        auto ms = duration_cast<milliseconds>(now_ms.time_since_epoch()) % 1000;
 
         tm tm;
         localtime_s(&tm, &now_c);
@@ -72,7 +72,7 @@ namespace Core
             << setw(2) << setfill('0') << tm.tm_hour << ":"
             << setw(2) << setfill('0') << tm.tm_min << ":"
             << setw(2) << setfill('0') << tm.tm_sec << ":"
-            << setw(3) << ms.count()
+            << setw(3) << setfill('0') << ms.count()
             << "] ";
         return ss.str();
     }

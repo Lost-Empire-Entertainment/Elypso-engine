@@ -30,36 +30,37 @@ namespace Core
 
         //how often should displayed framerate update
         smoothing_interval = 0.1; 
+
+        //set to 60 at the start to prevent "slow buildup" to true current fps
+        displayedFPS = 60.0;
     }
 
 	void TimeManager::UpdateDeltaTime()
 	{
-        high_resolution_clock::time_point current_time = 
-            high_resolution_clock::now();
-        frame_duration = 
-            current_time 
-            - last_frame_time;
-        deltaTime = frame_duration.count();
+        high_resolution_clock::time_point current_time = high_resolution_clock::now();
+        
+        duration<double> frame_duration = current_time - last_frame_time;
+        last_frame_time = current_time;
+
+        double uncappedDeltaTime = frame_duration.count();
 
         const double targetFPS = 60.0;
         const double targetFrameTime = 1.0 / targetFPS;
 
-        deltaTime = min(frame_duration.count(), targetFrameTime);
-
-        last_frame_time = current_time;
+        deltaTime = min(uncappedDeltaTime, targetFrameTime);
 
         smoothed_frame_count++;
 
-        current_time = high_resolution_clock::now();
-        elapsed_seconds = 
-            current_time - 
-            last_smoothed_update;
-        if (elapsed_seconds.count() 
-            >= smoothing_interval)
+        duration<double> elapsed_seconds = current_time - last_smoothed_update;
+        double elapsedTimeInSeconds = elapsed_seconds.count();
+
+        if (elapsedTimeInSeconds >= smoothing_interval)
         {
-            displayedFPS = 
-                static_cast<double>(smoothed_frame_count) 
-                / elapsed_seconds.count();
+            double currentFPS = smoothed_frame_count / elapsedTimeInSeconds;
+
+            double smoothingFactor = 0.5;
+            displayedFPS = (smoothingFactor * displayedFPS) + ((1.0 - smoothingFactor) * currentFPS);
+
             smoothed_frame_count = 0;
             last_smoothed_update = current_time;
         }

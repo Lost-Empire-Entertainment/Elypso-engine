@@ -6,6 +6,7 @@
 #include <fstream>
 #include <filesystem>
 #include <vector>
+#include <iostream>
 
 //external
 #include "magic_enum.hpp"
@@ -37,6 +38,7 @@ using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::vector;
 using std::make_shared;
+using std::cout;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -214,6 +216,8 @@ namespace EngineFile
 		}
 
 		objectFile.close();
+
+		cout << "saved to " << objectFilePath << "\n";
 	}
 
 	void GameObjectFile::LoadGameObjects(const string& targetPath)
