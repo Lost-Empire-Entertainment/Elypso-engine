@@ -5,14 +5,25 @@
 
 #pragma once
 #if ENGINE_MODE
+
+#include <memory>
+
+//engine
+#include "gameobject.hpp"
+
 namespace Graphics::GUI
 {
+	using std::shared_ptr;
+
+	using Graphics::Shape::GameObject;
+
 	class GUISceneHierarchy
 	{
 	public:
 		static void RenderSceneHierarchy();
 	private:
-		static void DisplayGameObjects();
+		static void RenderParentGameobjects();
+		static void RenderChildGameobjects(const shared_ptr<GameObject>& obj);
 	};
 }
 #endif

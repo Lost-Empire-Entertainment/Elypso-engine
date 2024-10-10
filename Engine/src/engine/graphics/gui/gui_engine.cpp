@@ -303,6 +303,8 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
+					unsigned int nextID = GameObject::nextID++;
+
 					Importer::Initialize(
 						newPos,
 						vec3(0),
@@ -316,7 +318,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Importer::tempID);
+						nextID);
 
 					SceneFile::SaveScene();
 				}
@@ -330,6 +332,8 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
+					unsigned int nextID = GameObject::nextID++;
+
 					Importer::Initialize(
 						newPos,
 						vec3(0),
@@ -343,7 +347,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Importer::tempID);
+						nextID);
 
 					SceneFile::SaveScene();
 				}
@@ -357,6 +361,8 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
+					unsigned int nextID = GameObject::nextID++;
+
 					Importer::Initialize(
 						newPos,
 						vec3(0),
@@ -370,7 +376,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Importer::tempID);
+						nextID);
 
 					SceneFile::SaveScene();
 				}
@@ -384,6 +390,8 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
+					unsigned int nextID = GameObject::nextID++;
+
 					Importer::Initialize(
 						newPos,
 						vec3(0),
@@ -397,7 +405,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Importer::tempID);
+						nextID);
 
 					SceneFile::SaveScene();
 				}
@@ -411,6 +419,8 @@ namespace Graphics::GUI
 					string destinationPath = targetPath + "\\" + targetName + ".fbx";
 					File::CopyFileOrFolder(originPath, destinationPath);
 
+					unsigned int nextID = GameObject::nextID++;
+
 					Importer::Initialize(
 						newPos,
 						vec3(0),
@@ -424,7 +434,7 @@ namespace Graphics::GUI
 						"EMPTY",
 						32,
 						targetName,
-						Importer::tempID);
+						nextID);
 
 					SceneFile::SaveScene();
 				}
@@ -442,6 +452,10 @@ namespace Graphics::GUI
 
 					string filePath = targetPath + "\\" + targetName + ".txt";
 
+					string name = "Billboard";
+					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID2 = GameObject::nextID++;
+
 					shared_ptr<GameObject> obj = 
 						PointLight::InitializePointLight(
 							newPos,
@@ -454,7 +468,7 @@ namespace Graphics::GUI
 							1.0f,
 							1.0f,
 							targetName,
-							PointLight::tempID,
+							nextID,
 							true,
 
 							//billboard values
@@ -462,8 +476,8 @@ namespace Graphics::GUI
 							Engine::filesPath + "\\shaders\\Basic_texture.frag",
 							Engine::filesPath + "\\icons\\pointLight.png",
 							32,
-							PointLight::tempName,
-							PointLight::tempID);
+							name,
+							nextID2);
 
 					SceneFile::SaveScene();
 				}
@@ -474,6 +488,10 @@ namespace Graphics::GUI
 					File::CreateNewFolder(targetPath);
 
 					string filePath = targetPath + "\\" + targetName + ".txt";
+
+					string name = "Billboard";
+					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID2 = GameObject::nextID++;
 
 					shared_ptr<GameObject> obj = 
 						SpotLight::InitializeSpotLight(
@@ -489,7 +507,7 @@ namespace Graphics::GUI
 							12.5f,
 							17.5f,
 							targetName,
-							SpotLight::tempID,
+							nextID,
 							true,
 
 							//billboard values
@@ -497,8 +515,8 @@ namespace Graphics::GUI
 							Engine::filesPath + "\\shaders\\Basic_texture.frag",
 							Engine::filesPath + "\\icons\\spotLight.png",
 							32,
-							SpotLight::tempName,
-							SpotLight::tempID);
+							name,
+							nextID2);
 
 					SceneFile::SaveScene();
 				}
@@ -519,6 +537,10 @@ namespace Graphics::GUI
 
 						string filePath = targetPath + "\\" + targetName + ".txt";
 
+						string name = "Billboard";
+						unsigned int nextID = GameObject::nextID++;
+						unsigned int nextID2 = GameObject::nextID++;
+
 						shared_ptr<GameObject> obj =
 							DirectionalLight::InitializeDirectionalLight(
 								newPos,
@@ -530,7 +552,7 @@ namespace Graphics::GUI
 								vec3(1),
 								1.0f,
 								targetName,
-								SpotLight::tempID,
+								nextID,
 								true,
 
 								//billboard values
@@ -538,8 +560,8 @@ namespace Graphics::GUI
 								Engine::filesPath + "\\shaders\\Basic_texture.frag",
 								Engine::filesPath + "\\icons\\directionalLight.png",
 								32,
-								SpotLight::tempName,
-								SpotLight::tempID);
+								name,
+								nextID2);
 
 						SceneFile::SaveScene();
 					}

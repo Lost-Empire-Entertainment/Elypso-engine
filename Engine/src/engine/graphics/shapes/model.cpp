@@ -122,7 +122,6 @@ namespace Graphics::Shape
 
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
-		if (id == tempID) id = GameObject::nextID++;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,
 			name,

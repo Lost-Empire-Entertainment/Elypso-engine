@@ -150,6 +150,8 @@ namespace Graphics::GUI
 				string destinationPath = targetPath + "\\" + assetName + extension;
 				File::CopyFileOrFolder(assetPath, destinationPath);
 
+				unsigned int nextID = GameObject::nextID++;
+
 				Importer::Initialize(
 					vec3(0),
 					vec3(0),
@@ -163,7 +165,7 @@ namespace Graphics::GUI
 					"EMPTY",
 					32,
 					targetName,
-					Importer::tempID);
+					nextID);
 
 				SceneFile::SaveScene();
 			}

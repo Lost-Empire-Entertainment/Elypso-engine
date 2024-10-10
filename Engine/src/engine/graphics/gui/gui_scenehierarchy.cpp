@@ -6,6 +6,7 @@
 #include <memory>
 #include <filesystem>
 #include <vector>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -29,6 +30,8 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::exception;
 using std::vector;
+using std::cout;
+using std::to_string;
 
 using EngineFile::ConfigFile;
 using Graphics::Shape::GameObject;
@@ -61,53 +64,96 @@ namespace Graphics::GUI
 				ConfigFile::SetValue("gui_sceneHierarchy", "0");
 			}
 
-			DisplayGameObjects();
+			RenderParentGameobjects();
 
 			ImGui::End();
 		}
 	}
 
-	void GUISceneHierarchy::DisplayGameObjects()
+	void GUISceneHierarchy::RenderParentGameobjects()
 	{
 		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 
-		for (const shared_ptr<GameObject>& obj : objects)
+		if (objects.size() > 0)
 		{
-			//ignores empty gameobjects
-			if (obj == nullptr) continue;
-			//ignores billboards for lightsources
-			if (obj->GetParentBillboardHolder() != nullptr) continue;
-
-			string name = obj->GetName();
-
-			bool isSelected = (obj == Select::selectedObj);
-
-			if (isSelected)
+			for (const shared_ptr<GameObject>& obj : objects)
 			{
-				ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
-				ImGui::PushStyleColor(ImGuiCol_Text, color);
+				if (obj->GetParent() == nullptr)
+				{
+					RenderChildGameobjects(obj);
+				}
 			}
+		}
+	}
 
-			if (ImGui::Selectable(name.c_str()))
+	void GUISceneHierarchy::RenderChildGameobjects(const shared_ptr<GameObject>& obj)
+	{
+		if (obj == nullptr) return;
+
+		if (obj->GetParentBillboardHolder() != nullptr) return;
+
+		string name = obj->GetName();
+		string label = name + "##" + to_string(obj->GetID());
+
+		bool isSelected = (obj == Select::selectedObj);
+
+		if (isSelected)
+		{
+			ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
+			ImGui::PushStyleColor(ImGuiCol_Text, color);
+		}
+
+		bool hasChildren = obj->GetChildren().size() > 0;
+		if (!hasChildren)
+		{
+			if (ImGui::Selectable(label.c_str(), isSelected))
 			{
 				Select::selectedObj = obj;
 				Select::isObjectSelected = true;
 			}
 
-			if (isSelected)
-			{
-				ImGui::PopStyleColor();
-			}
+			if (isSelected) ImGui::PopStyleColor();
 
-			if (ImGui::BeginPopupContextItem())
+			if (ImGui::BeginPopupContextItem(label.c_str()))
 			{
-				//delete selected gameobject
 				if (ImGui::MenuItem("Delete"))
 				{
 					GameObjectManager::DestroyGameObject(obj);
 				}
-
 				ImGui::EndPopup();
+			}
+		}
+		else
+		{
+			ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
+			if (isSelected)
+				node_flags |= ImGuiTreeNodeFlags_Selected;
+
+			if (ImGui::TreeNodeEx(label.c_str(), node_flags))
+			{
+				if (ImGui::IsItemClicked())
+				{
+					Select::selectedObj = obj;
+					Select::isObjectSelected = true;
+				}
+
+				if (isSelected) ImGui::PopStyleColor();
+
+				if (ImGui::BeginPopupContextItem(label.c_str()))
+				{
+					if (ImGui::MenuItem("Delete"))
+					{
+						GameObjectManager::DestroyGameObject(obj);
+					}
+					ImGui::EndPopup();
+				}
+
+				for (const auto& child : obj->GetChildren())
+				{
+					RenderChildGameobjects(child);
+				}
+
+				ImGui::TreePop();
 			}
 		}
 	}
