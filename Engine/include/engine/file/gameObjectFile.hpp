@@ -23,15 +23,13 @@ namespace EngineFile
 	{
 	public:
 		/// <summary>
-		/// Save gameobject data to project folder.
+		/// Save all current scene gameobjects.
 		/// </summary>
-		/// <param name="obj"></param>
-		static void SaveGameObject(const shared_ptr<GameObject>& obj);
+		static void SaveGameObjects();
 
 		/// <summary>
 		/// Handle the loading of the gameobjects folder.
 		/// </summary>
-		/// <param name="path"></param>
 		static void LoadGameObjects(const string& path);
 	private:
 		/// <summary>

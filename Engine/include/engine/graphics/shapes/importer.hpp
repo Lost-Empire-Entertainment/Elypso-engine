@@ -65,7 +65,8 @@ namespace Graphics::Shape
 			const string& heightTexture,
 			const float& shininess,
 			aiNode* node,
-			const aiScene* scene);
+			const aiScene* scene,
+			unsigned int nodeIndex);
 
 		static AssimpMesh ProcessMesh(
 			aiMesh* mesh,

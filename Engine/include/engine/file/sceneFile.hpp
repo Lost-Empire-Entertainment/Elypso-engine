@@ -31,7 +31,5 @@ namespace EngineFile
 
 		static void LoadScene(const string& scenePath);
 		static void SaveScene(SaveType saveType = SaveType::defaultSave, const string& targetLevel = "");
-	private:
-		static inline map<string, bool> models;
 	};
 }

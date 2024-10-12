@@ -39,6 +39,7 @@ using std::filesystem::is_regular_file;
 using std::vector;
 using std::make_shared;
 using std::cout;
+using std::to_string;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -61,163 +62,253 @@ using Graphics::Shader;
 
 namespace EngineFile
 {
-	void GameObjectFile::SaveGameObject(const shared_ptr<GameObject>& obj)
+	void GameObjectFile::SaveGameObjects()
 	{
-		string objectFilePath = obj->GetDirectory();
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 
-		string objectFileParentPath = path(objectFilePath).parent_path().string();
-		if (!exists(objectFileParentPath))
+		for (const auto& obj : objects)
 		{
-			File::CreateNewFolder(objectFileParentPath);
+			if (obj->GetParentBillboardHolder() == nullptr)
+			{
+				string objectFilePath = obj->GetDirectory();
+
+				vector<string> data;
+
+				//
+				// GET IMPORTED MODEL DATA FROM FILE
+				//
+				if (objectFilePath != ""
+					&& exists(objectFilePath))
+				{
+					ifstream existingData(objectFilePath);
+					if (!existingData.is_open())
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							"Couldn't read from object file '" + objectFilePath + "'!\n");
+						return;
+					}
+
+					data.push_back("---- IMPORTED FILE ----\n");
+
+					string line;
+					while (getline(existingData, line))
+					{
+						if (!line.empty()
+							&& line != "---- IMPORTED FILE ----"
+							&& line != "---- SCENE FILE ----"
+							&& line.find("=") != string::npos)
+						{
+							vector<string> splitLine = String::Split(line, '=');
+							string key = splitLine[0];
+							string value = splitLine[1];
+
+							//remove one space in front of value if it exists
+							if (value[0] == ' ') value.erase(0, 1);
+							//remove one space in front of each value comma if it exists
+							for (size_t i = 0; i < value.length(); i++)
+							{
+								if (value[i] == ','
+									&& i + 1 < value.length()
+									&& value[i + 1] == ' ')
+								{
+									value.erase(i + 1, 1);
+								}
+							}
+
+							if (key == "originalName")
+							{
+								data.push_back("originalName= " + value + "\n");
+							}
+							else if (key == "nodeIndex")
+							{
+								data.push_back("nodeIndex= " + value + "\n");
+							}
+						}
+					}
+				}
+
+				data.push_back("\n---- SCENE FILE ----\n");
+
+				//
+				// SAVE SCENE OBJECT DATA INTO VECTOR
+				//
+
+				data.push_back("name= " + obj->GetName() + "\n");
+
+				data.push_back("id= " + to_string(obj->GetID()) + "\n");
+
+				data.push_back("isEnabled= " + to_string(obj->IsEnabled()) + "\n");
+
+				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
+				data.push_back("type= " + type + "\n");
+
+				//position
+				float posX = obj->GetTransform()->GetPosition().x;
+				float posY = obj->GetTransform()->GetPosition().y;
+				float posZ = obj->GetTransform()->GetPosition().z;
+				data.push_back(
+					"position= " + to_string(posX) + ", "
+					+ to_string(posY) + ", "
+					+ to_string(posZ) + "\n");
+
+				//rotation
+				float rotX = obj->GetTransform()->GetRotation().x;
+				float rotY = obj->GetTransform()->GetRotation().y;
+				float rotZ = obj->GetTransform()->GetRotation().z;
+				data.push_back(
+					"rotation= " + to_string(rotX) + ", "
+					+ to_string(rotY) + ", "
+					+ to_string(rotZ) + "\n");
+
+				//scale
+				float scaleX = obj->GetTransform()->GetScale().x;
+				float scaleY = obj->GetTransform()->GetScale().y;
+				float scaleZ = obj->GetTransform()->GetScale().z;
+				data.push_back(
+					"scale= " + to_string(scaleX) + ", "
+					+ to_string(scaleY) + ", "
+					+ to_string(scaleZ) + "\n");
+
+				data.push_back("\n");
+
+				//object textures
+				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
+				if (meshType == Mesh::MeshType::model)
+				{
+					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					diffuseTexture = path(diffuseTexture).filename().string();
+					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
+
+					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
+					specularTexture = path(specularTexture).filename().string();
+					if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
+
+					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
+					normalTexture = path(normalTexture).filename().string();
+
+					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
+					heightTexture = path(heightTexture).filename().string();
+
+					data.push_back(
+						+"textures= "
+						+ diffuseTexture + ", "
+						+ specularTexture + ", "
+						+ normalTexture + ", "
+						+ heightTexture + "\n");
+				}
+
+				//shaders
+				string vertexShader = obj->GetMaterial()->GetShaderName(0);
+				vertexShader = path(vertexShader).filename().string();
+				string fragmentShader = obj->GetMaterial()->GetShaderName(1);
+				fragmentShader = path(fragmentShader).filename().string();
+				data.push_back("shaders= " + vertexShader + ", " + fragmentShader + "\n");
+
+				//path to save file of this gameobject
+				string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
+				data.push_back("model= " + modelPath + "\n");
+
+				//material variables
+				if (meshType == Mesh::MeshType::model)
+				{
+					data.push_back("shininess= " + to_string(obj->GetBasicShape()->GetShininess()) + "\n");
+				}
+				else if (meshType == Mesh::MeshType::point_light)
+				{
+					float pointDiffuseX = obj->GetPointLight()->GetDiffuse().x;
+					float pointDiffuseY = obj->GetPointLight()->GetDiffuse().y;
+					float pointDiffuseZ = obj->GetPointLight()->GetDiffuse().z;
+					data.push_back(
+						"diffuse= " + to_string(pointDiffuseX) + ", "
+						+ to_string(pointDiffuseY) + ", "
+						+ to_string(pointDiffuseZ) + "\n");
+
+					data.push_back("intensity= " + to_string(obj->GetPointLight()->GetIntensity()) + "\n");
+
+					data.push_back("distance= " + to_string(obj->GetPointLight()->GetDistance()) + "\n");
+				}
+				else if (meshType == Mesh::MeshType::spot_light)
+				{
+					float spotDiffuseX = obj->GetSpotLight()->GetDiffuse().x;
+					float spotDiffuseY = obj->GetSpotLight()->GetDiffuse().y;
+					float spotDiffuseZ = obj->GetSpotLight()->GetDiffuse().z;
+					data.push_back(
+						"diffuse= " + to_string(spotDiffuseX) + ", "
+						+ to_string(spotDiffuseY) + ", "
+						+ to_string(spotDiffuseZ) + "\n");
+
+					data.push_back("intensity= " + to_string(obj->GetSpotLight()->GetIntensity()) + "\n");
+
+					data.push_back("distance= " + to_string(obj->GetSpotLight()->GetDistance()) + "\n");
+
+					data.push_back("inner angle= " + to_string(obj->GetSpotLight()->GetInnerAngle()) + "\n");
+
+					data.push_back("outer angle= " + to_string(obj->GetSpotLight()->GetOuterAngle()) + "\n");
+				}
+				else if (meshType == Mesh::MeshType::directional_light)
+				{
+					float dirDiffuseX = obj->GetDirectionalLight()->GetDiffuse().x;
+					float dirDiffuseY = obj->GetDirectionalLight()->GetDiffuse().y;
+					float dirDiffuseZ = obj->GetDirectionalLight()->GetDiffuse().z;
+					data.push_back(
+						"diffuse= " + to_string(dirDiffuseX) + ", "
+						+ to_string(dirDiffuseY) + ", "
+						+ to_string(dirDiffuseZ) + "\n");
+
+					data.push_back("intensity= " + to_string(obj->GetDirectionalLight()->GetIntensity()) + "\n");
+				}
+
+				//also save billboard data of each light source
+				if (meshType == Mesh::MeshType::point_light
+					|| meshType == Mesh::MeshType::spot_light
+					|| meshType == Mesh::MeshType::directional_light)
+				{
+					data.push_back("\n");
+					data.push_back("---attatched billboard data---\n");
+					data.push_back("\n");
+
+					data.push_back("billboard name= " + obj->GetChildBillboard()->GetName() + "\n");
+
+					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
+
+					string billboardVertShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(0);
+					billboardVertShader = path(billboardVertShader).filename().string();
+					string billboardFragShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(1);
+					billboardFragShader = path(billboardFragShader).filename().string();
+					data.push_back("billboard shaders= " + billboardVertShader + ", " + billboardFragShader + "\n");
+
+					string billboardTexture = obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					billboardTexture = path(billboardTexture).filename().string();
+					data.push_back("billboard texture= " + billboardTexture + "\n");
+
+					data.push_back("billboard shininess= " + to_string(obj->GetChildBillboard()->GetBasicShape()->GetShininess()) + "\n");
+				}
+
+				//
+				// WRITE ALL DATA INTO NEW TXT FILE
+				//
+
+				ofstream objectFile(objectFilePath);
+
+				if (!objectFile.is_open())
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Couldn't write into object file '" + objectFilePath + "'!\n");
+					return;
+				}
+
+				for (const string dataLine : data)
+				{
+					objectFile << dataLine;
+				}
+
+				objectFile.close();
+			}
 		}
-		if (exists(objectFilePath))
-		{
-			File::DeleteFileOrfolder(objectFilePath);
-		}
-
-		ofstream objectFile(objectFilePath);
-
-		if (!objectFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Couldn't write into object file '" + objectFilePath + "'!\n");
-			return;
-		}
-
-		objectFile << "name= " << obj->GetName() << "\n";
-
-		objectFile << "id= " << obj->GetID() << "\n";
-
-		objectFile << "isEnabled= " << obj->IsEnabled() << "\n";
-
-		string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
-		objectFile << "type= " << type << "\n";
-
-		//position
-		float posX = obj->GetTransform()->GetPosition().x;
-		float posY = obj->GetTransform()->GetPosition().y;
-		float posZ = obj->GetTransform()->GetPosition().z;
-		objectFile << "position= " << posX << ", " << posY << ", " << posZ << "\n";
-
-		//rotation
-		float rotX = obj->GetTransform()->GetRotation().x;
-		float rotY = obj->GetTransform()->GetRotation().y;
-		float rotZ = obj->GetTransform()->GetRotation().z;
-		objectFile << "rotation= " << rotX << ", " << rotY << ", " << rotZ << "\n";
-
-		//scale
-		float scaleX = obj->GetTransform()->GetScale().x;
-		float scaleY = obj->GetTransform()->GetScale().y;
-		float scaleZ = obj->GetTransform()->GetScale().z;
-		objectFile << "scale= " << scaleX << ", " << scaleY << ", " << scaleZ << "\n";
-
-		objectFile << "\n";
-
-		//object textures
-		Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
-		if (meshType == Mesh::MeshType::model)
-		{
-			string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
-			diffuseTexture = path(diffuseTexture).filename().string();
-			if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
-			string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
-			specularTexture = path(specularTexture).filename().string();
-			if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
-			string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
-			normalTexture = path(normalTexture).filename().string();
-			string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
-			heightTexture = path(heightTexture).filename().string();
-			objectFile
-				<< "textures= "
-				<< diffuseTexture << ", "
-				<< specularTexture << ", "
-				<< normalTexture << ", "
-				<< heightTexture << "\n";
-		}
-
-		//shaders
-		string vertexShader = obj->GetMaterial()->GetShaderName(0);
-		vertexShader = path(vertexShader).filename().string();
-		string fragmentShader = obj->GetMaterial()->GetShaderName(1);
-		fragmentShader = path(fragmentShader).filename().string();
-		objectFile << "shaders= " << vertexShader << ", " << fragmentShader << "\n";
-
-		//path to save file of this gameobject
-		string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
-		objectFile << "model= " << modelPath << "\n";
-
-		//material variables
-		if (meshType == Mesh::MeshType::model)
-		{
-			objectFile << "shininess= " << obj->GetBasicShape()->GetShininess() << "\n";
-		}
-		else if (meshType == Mesh::MeshType::point_light)
-		{
-			float pointDiffuseX = obj->GetPointLight()->GetDiffuse().x;
-			float pointDiffuseY = obj->GetPointLight()->GetDiffuse().y;
-			float pointDiffuseZ = obj->GetPointLight()->GetDiffuse().z;
-			objectFile << "diffuse= " << pointDiffuseX << ", " << pointDiffuseY << ", " << pointDiffuseZ << "\n";
-
-			objectFile << "intensity= " << obj->GetPointLight()->GetIntensity() << "\n";
-
-			objectFile << "distance= " << obj->GetPointLight()->GetDistance() << "\n";
-		}
-		else if (meshType == Mesh::MeshType::spot_light)
-		{
-			float spotDiffuseX = obj->GetSpotLight()->GetDiffuse().x;
-			float spotDiffuseY = obj->GetSpotLight()->GetDiffuse().y;
-			float spotDiffuseZ = obj->GetSpotLight()->GetDiffuse().z;
-			objectFile << "diffuse= " << spotDiffuseX << ", " << spotDiffuseY << ", " << spotDiffuseZ << "\n";
-
-			objectFile << "intensity= " << obj->GetSpotLight()->GetIntensity() << "\n";
-
-			objectFile << "distance= " << obj->GetSpotLight()->GetDistance() << "\n";
-
-			objectFile << "inner angle= " << obj->GetSpotLight()->GetInnerAngle() << "\n";
-
-			objectFile << "outer angle= " << obj->GetSpotLight()->GetOuterAngle() << "\n";
-		}
-		else if (meshType == Mesh::MeshType::directional_light)
-		{
-			float dirDiffuseX = obj->GetDirectionalLight()->GetDiffuse().x;
-			float dirDiffuseY = obj->GetDirectionalLight()->GetDiffuse().y;
-			float dirDiffuseZ = obj->GetDirectionalLight()->GetDiffuse().z;
-			objectFile << "diffuse= " << dirDiffuseX << ", " << dirDiffuseY << ", " << dirDiffuseZ << "\n";
-
-			objectFile << "intensity= " << obj->GetDirectionalLight()->GetIntensity() << "\n";
-		}
-
-		//also save billboard data of each light source
-		if (meshType == Mesh::MeshType::point_light
-			|| meshType == Mesh::MeshType::spot_light
-			|| meshType == Mesh::MeshType::directional_light)
-		{
-			objectFile << "\n";
-			objectFile << "---attatched billboard data---" << "\n";
-			objectFile << "\n";
-
-			objectFile << "billboard name= " << obj->GetChildBillboard()->GetName() << "\n";
-
-			objectFile << "billboard id= " << obj->GetChildBillboard()->GetID() << "\n";
-
-			string billboardVertShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(0);
-			billboardVertShader = path(billboardVertShader).filename().string();
-			string billboardFragShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(1);
-			billboardFragShader = path(billboardFragShader).filename().string();
-			objectFile << "billboard shaders= " << billboardVertShader << ", " << billboardFragShader << "\n";
-
-			string billboardTexture = obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
-			billboardTexture = path(billboardTexture).filename().string();
-			objectFile << "billboard texture= " << billboardTexture << "\n";
-
-			objectFile << "billboard shininess= " << obj->GetChildBillboard()->GetBasicShape()->GetShininess() << "\n";
-		}
-
-		objectFile.close();
-
-		cout << "saved to " << objectFilePath << "\n";
 	}
 
 	void GameObjectFile::LoadGameObjects(const string& targetPath)
@@ -242,7 +333,7 @@ namespace EngineFile
 #endif
 		for (const auto& folder : directory_iterator(targetPath))
 		{
-			//first iteration always loads the model if it exists
+			//first iteration always loads the fbx or other assimp file if it exists
 			for (const auto& file : directory_iterator(folder))
 			{
 				string extension = path(file).extension().string();
@@ -269,14 +360,13 @@ namespace EngineFile
 						Importer::tempID);
 				}
 			}
-			//second iteration checks if 
+			//second iteration checks for txt file folder paths that are usually 
+			//inside the same directory where the assimp file is inside of
 			for (const auto& file : directory_iterator(folder))
 			{
-				//iterates through all files in model folder
-				//because models have a master model file and folder
-				//with a txt file inside it for each 'node' of the master model file
 				if (is_directory(file))
 				{
+					//third iteration actually loads node txt files of the assimp model
 					for (const auto& dirFile : directory_iterator(file))
 					{
 						string extension = path(dirFile).extension().string();
@@ -376,6 +466,8 @@ namespace EngineFile
 						while (getline(settingsFile, line))
 						{
 							if (!line.empty()
+								&& line != "---- IMPORTED FILE ----"
+								&& line != "---- SCENE FILE ----"
 								&& line.find("=") != string::npos)
 							{
 								vector<string> splitLine = String::Split(line, '=');

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <filesystem>
+#include <fstream>
 
 //external
 #include "glad.h"
@@ -24,6 +25,7 @@
 #include "core.hpp"
 #include "console.hpp"
 #include "selectobject.hpp"
+#include "fileUtils.hpp"
 
 using std::cout;
 using std::endl;
@@ -36,7 +38,9 @@ using glm::quat;
 using glm::scale;
 using glm::rotate;
 using std::filesystem::path;
+using std::filesystem::exists;
 using glm::decompose;
+using std::ofstream;
 
 using Graphics::Render;
 using Graphics::Shader;
@@ -49,6 +53,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Select;
+using Utils::File;
 
 namespace Graphics::Shape
 {
@@ -88,6 +93,8 @@ namespace Graphics::Shape
             return;
         }
 
+        unsigned int nodeIndex = 0;
+
         for (unsigned int i = 0; i < scene->mRootNode->mNumChildren; i++)
         {
             aiNode* topLevelNode = scene->mRootNode->mChildren[i];
@@ -109,7 +116,8 @@ namespace Graphics::Shape
                 heightTexture,
                 shininess,
                 topLevelNode,
-                scene);
+                scene,
+                nodeIndex++);
         }
     }
 
@@ -129,7 +137,8 @@ namespace Graphics::Shape
         const string& heightTexture,
         const float& shininess,
         aiNode* node,
-        const aiScene* scene)
+        const aiScene* scene,
+        unsigned int nodeIndex)
     {
         string nodeName = node->mName.C_Str();
         if (nodeName.empty()) nodeName = "Model";
@@ -166,6 +175,23 @@ namespace Graphics::Shape
                 nodeName,
                 id,
                 isEnabled);
+
+            string folderPath = path(modelPath).parent_path().string() + "\\" + nodeName;
+            string filePath = folderPath + "\\" + nodeName + ".txt";
+            if (!exists(folderPath))
+            {
+                File::CreateNewFolder(folderPath);
+
+                ofstream file(filePath);
+
+                file << "---- IMPORTED FILE ----" << "\n";
+                file << "originalName= " << nodeName << "\n";
+                file << "nodeIndex= " << nodeIndex << "\n";
+
+                file << "\n---- SCENE FILE ----\n";
+
+                file.close();
+            }
         }
 
         //after we've processed all of the meshes (if any) we then recursively process each of the children nodes
@@ -190,7 +216,8 @@ namespace Graphics::Shape
                 heightTexture,
                 shininess,
                 node->mChildren[i], 
-                scene);
+                scene,
+                nodeIndex++);
         }
     }
 

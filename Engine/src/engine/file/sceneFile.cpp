@@ -303,15 +303,7 @@ namespace EngineFile
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
 	{
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-
-		for (const auto& obj : objects)
-		{
-			if (obj->GetParentBillboardHolder() == nullptr)
-			{
-				GameObjectFile::SaveGameObject(obj);
-			}
-		}
+		GameObjectFile::SaveGameObjects();
 
 		ofstream sceneFile(Engine::scenePath);
 		if (!sceneFile.is_open())
