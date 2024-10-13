@@ -32,11 +32,11 @@ namespace EngineFile
 		/// </summary>
 		static void LoadGameObjects();
 	private:
-		/// <summary>
-		/// Loads each individual gameobject.
-		/// </summary>
-		/// <param name="data">Data map for this gameobject</param>
-		/// <param name="folderPath">The name of the folder of this gameobject</param>
-		static void LoadGameObject(const map<string, string>& data, const string& folderPath);
+		static string GetType(const string& file);
+
+		static void LoadModel(const string& file);
+		static void LoadPointLight(const string& file);
+		static void LoadSpotlight(const string& file);
+		static void LoadDirectionalLight(const string& file);
 	};
 }

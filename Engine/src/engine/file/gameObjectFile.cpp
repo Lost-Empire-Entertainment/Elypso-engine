@@ -317,8 +317,36 @@ namespace EngineFile
 		}
 	}
 
+	string GameObjectFile::GetType(const string& file)
+	{
+		ifstream objFile(file);
+
+		if (!objFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Couldn't read from object file '" + file + "'!\n");
+			return "";
+		}
+
+		string target = "type= ";
+		string line;
+		while (getline(objFile, line))
+		{
+			size_t pos = line.find(target);
+			if (pos != string::npos)
+			{
+				return line.substr(pos + target.length());
+			}
+		}
+		objFile.close();
+
+		return "";
+	}
+
 	void GameObjectFile::LoadGameObjects()
-	{		
+	{
 		if (is_empty(Engine::currentGameobjectsPath))
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -333,13 +361,16 @@ namespace EngineFile
 			Caller::FILE,
 			Type::DEBUG,
 			"Started loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
-
 #if ENGINE_MODE
 		Render::waitBeforeCountsUpdate = true;
 #endif
+		vector<string> validAssimpPaths;
+		vector<string> validGameobjectPaths;
+
+		//look through parent gameobjects folder
 		for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
 		{
-			//first iteration always loads the fbx or other assimp file if it exists
+			//look for assimp model files (fbs, glfw, obj)
 			for (const auto& file : directory_iterator(folder))
 			{
 				string extension = path(file).extension().string();
@@ -347,236 +378,185 @@ namespace EngineFile
 					|| extension == ".obj"
 					|| extension == ".glfw")
 				{
-					string fileName = path(file).stem().string();
-					string filePath = path(file).string();
-
-					Importer::Initialize(
-						vec3(0),
-						vec3(0),
-						vec3(1),
-						filePath,
-						Engine::filesPath + "\\shaders\\GameObject.vert",
-						Engine::filesPath + "\\shaders\\GameObject.frag",
-						"DEFAULTDIFF",
-						"DEFAULTSPEC",
-						"EMPTY",
-						"EMPTY",
-						32,
-						fileName,
-						Importer::tempID);
+					validAssimpPaths.push_back(path(file).string());
 				}
 			}
-			//second iteration checks for txt file folder paths that are usually 
-			//inside the same directory where the assimp file is inside of
+			//look through child gameobject folders
 			for (const auto& file : directory_iterator(folder))
 			{
+				//model txt files are always inside their own child gameobject folder
+				//so that textures for that specific assimp node file can be separated
+				//from the rest of the assimp node txt files for this assimp file
 				if (is_directory(file))
 				{
-					//third iteration actually loads node txt files of the assimp model
+					//look for model txt files
 					for (const auto& dirFile : directory_iterator(file))
 					{
 						string extension = path(dirFile).extension().string();
 						if (extension == ".txt")
 						{
-							string filePath = path(dirFile).string();
-
-							ifstream settingsFile(filePath);
-							if (!settingsFile.is_open())
-							{
-								ConsoleManager::WriteConsoleMessage(
-									Caller::FILE,
-									Type::EXCEPTION,
-									"Failed to open settings file '" + filePath + "'!\n\n");
-								return;
-							}
-
-							map<string, string> data;
-							string line;
-							while (getline(settingsFile, line))
-							{
-								if (!line.empty()
-									&& line.find("=") != string::npos)
-								{
-									vector<string> splitLine = String::Split(line, '=');
-									string key = splitLine[0];
-									string value = splitLine[1];
-
-									//remove one space in front of value if it exists
-									if (value[0] == ' ') value.erase(0, 1);
-									//remove one space in front of each value comma if it exists
-									for (size_t i = 0; i < value.length(); i++)
-									{
-										if (value[i] == ','
-											&& i + 1 < value.length()
-											&& value[i + 1] == ' ')
-										{
-											value.erase(i + 1, 1);
-										}
-									}
-
-									if (key == "name"
-										|| key == "id"
-										|| key == "isEnabled"
-										|| key == "type"
-										|| key == "position"
-										|| key == "rotation"
-										|| key == "scale"
-										|| key == "model"
-										|| key == "textures"
-										|| key == "shaders"
-
-										|| key == "billboard name"
-										|| key == "billboard id"
-										|| key == "billboard texture"
-										|| key == "billboard shaders"
-										|| key == "billboard shininess"
-
-										|| key == "diffuse"
-										|| key == "shininess"
-										|| key == "intensity"
-										|| key == "distance"
-										|| key == "inner angle"
-										|| key == "outer angle")
-									{
-										data[key] = value;
-									}
-								}
-							}
-
-							settingsFile.close();
-
-							LoadGameObject(data, path(dirFile).stem().string());
+							validGameobjectPaths.push_back(path(dirFile).string());
 						}
 					}
 				}
-				//otherwise loads the txt file directly if it doesnt have any folders
+				//look for light txt files
 				else if (is_regular_file(file))
 				{
 					string extension = path(file).extension().string();
 					if (extension == ".txt")
 					{
-						string filePath = path(file).string();
-
-						ifstream settingsFile(filePath);
-						if (!settingsFile.is_open())
-						{
-							ConsoleManager::WriteConsoleMessage(
-								Caller::FILE,
-								Type::EXCEPTION,
-								"Failed to open settings file '" + filePath + "'!\n\n");
-							return;
-						}
-
-						map<string, string> data;
-						string line;
-						while (getline(settingsFile, line))
-						{
-							if (!line.empty()
-								&& line != "---- IMPORTED FILE ----"
-								&& line != "---- SCENE FILE ----"
-								&& line.find("=") != string::npos)
-							{
-								vector<string> splitLine = String::Split(line, '=');
-								string key = splitLine[0];
-								string value = splitLine[1];
-
-								//remove one space in front of value if it exists
-								if (value[0] == ' ') value.erase(0, 1);
-								//remove one space in front of each value comma if it exists
-								for (size_t i = 0; i < value.length(); i++)
-								{
-									if (value[i] == ','
-										&& i + 1 < value.length()
-										&& value[i + 1] == ' ')
-									{
-										value.erase(i + 1, 1);
-									}
-								}
-
-								if (key == "name"
-									|| key == "id"
-									|| key == "isEnabled"
-									|| key == "type"
-									|| key == "position"
-									|| key == "rotation"
-									|| key == "scale"
-									|| key == "model"
-									|| key == "textures"
-									|| key == "shaders"
-
-									|| key == "billboard name"
-									|| key == "billboard id"
-									|| key == "billboard texture"
-									|| key == "billboard shaders"
-									|| key == "billboard shininess"
-
-									|| key == "diffuse"
-									|| key == "shininess"
-									|| key == "intensity"
-									|| key == "distance"
-									|| key == "inner angle"
-									|| key == "outer angle")
-								{
-									data[key] = value;
-								}
-							}
-						}
-
-						settingsFile.close();
-
-						LoadGameObject(data, path(file).stem().string());
+						validGameobjectPaths.push_back(path(file).string());
 					}
 				}
 			}
 		}
 
+		//loads all assimp models
+		for (const auto& assimpPath : validAssimpPaths)
+		{
+			string fileName = path(assimpPath).stem().string();
+			string filePath = path(assimpPath).string();
+
+			Importer::Initialize(
+				vec3(0),
+				vec3(0),
+				vec3(1),
+				filePath,
+				Engine::filesPath + "\\shaders\\GameObject.vert",
+				Engine::filesPath + "\\shaders\\GameObject.frag",
+				"DEFAULTDIFF",
+				"DEFAULTSPEC",
+				"EMPTY",
+				"EMPTY",
+				32,
+				fileName,
+				Importer::tempID);
+		}
+
+		//loads all model and light txt files
+		for (const auto& gameobjectPath : validGameobjectPaths)
+		{
+			string filePath = path(gameobjectPath).string();
+
+			cout << "---- reading from txt file " << filePath << "\n";
+
+			if (GetType(filePath) == "model")
+			{
+				LoadModel(filePath);
+			}
+			else if (GetType(filePath) == "point_light")
+			{
+				LoadPointLight(filePath);
+			}
+			else if (GetType(filePath) == "spot_light")
+			{
+				LoadSpotlight(filePath);
+			}
+			else if (GetType(filePath) == "directional_light")
+			{
+				LoadDirectionalLight(filePath);
+			}
+		}
 #if ENGINE_MODE
 		Render::waitBeforeCountsUpdate = false;
 		Render::UpdateCounts();
 #endif
-
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			"Finished loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 	}
 
-	void GameObjectFile::LoadGameObject(const map<string, string>& data, const string& folderPath)
+	void GameObjectFile::LoadModel(const string& file)
 	{
-		string name = "MISSING NAME";
-		unsigned int id = 0;
-		bool isEnabled = false;
-		Mesh::MeshType type = Mesh::MeshType::model;
-		string scene = "";
-		vec3 pos = vec3();
-		vec3 rot = vec3();
-		vec3 scale = vec3();
-		string modelPath = "";
+		//
+		//READ FROM MODEL FILE
+		//
+
+		ifstream modelFile(file);
+		if (!modelFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Failed to open model file '" + file + "'!\n\n");
+			return;
+		}
+
+		map<string, string> data;
+		string line;
+		while (getline(modelFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "isEnabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+
+					|| key == "textures"
+					|| key == "shaders"
+					|| key == "model"
+					|| key == "shininess")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		modelFile.close();
+
+		//
+		// ASSIGN MODEL DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		Mesh::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+
 		vector<string> textures{};
 		vector<string> shaders{};
-
-		string billboardName = "MISSING NAME";
-		unsigned int billboardID = 0;
-		string billboardDiffTexture = "";
-		vector<string> billboardShaders{};
-		float billboardShininess = 32.0f;
-
-		vec3 diffuse = vec3();
-		float shininess = 32.0f;
-		float intensity = 1.0f;
-		float distance = 2.0f;
-		float innerAngle = 12.0f;
-		float outerAngle = 25.0f;
+		string model{};
+		float shininess{};
 
 		for (const auto& kvp : data)
 		{
 			string key = kvp.first;
-			string value = kvp.second;
+			auto& value = kvp.second;
 
-			if (key == "scene") scene = value;
-			else if (key == "name") name = value;
-			else if (key == "id") id = stoul(value);
-			else if (key == "isEnabled") isEnabled = stoi(value);
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
 			else if (key == "type")
 			{
 				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
@@ -603,17 +583,14 @@ namespace EngineFile
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
-			else if (key == "model")
-			{
-				modelPath = value;
-			}
+
 			else if (key == "textures")
 			{
 				vector<string> split = String::Split(value, ',');
 
 				string fullTex0Path = split[0] == "DEFAULTDIFF"
 					? "DEFAULTDIFF"
-					: path(modelPath).parent_path().string() + "\\" + split[0];
+					: path(model).parent_path().string() + "\\" + split[0];
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
@@ -633,7 +610,7 @@ namespace EngineFile
 
 				string fullTex1Path = split[1] == "DEFAULTSPEC"
 					? "DEFAULTSPEC"
-					: path(modelPath).parent_path().string() + "\\" + split[1];
+					: path(model).parent_path().string() + "\\" + split[1];
 				if (fullTex1Path == "DEFAULTSPEC")
 				{
 					fullTex1Path = Engine::filesPath + "\\textures\\spec_default.png";
@@ -652,7 +629,7 @@ namespace EngineFile
 
 				string fullTex2Path = split[2] == "EMPTY"
 					? "EMPTY"
-					: path(modelPath).parent_path().string() + "\\" + split[2];
+					: path(model).parent_path().string() + "\\" + split[2];
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
@@ -666,7 +643,7 @@ namespace EngineFile
 
 				string fullTex3Path = split[3] == "EMPTY"
 					? "EMPTY"
-					: path(modelPath).parent_path().string() + "\\" + split[3];
+					: path(model).parent_path().string() + "\\" + split[3];
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{
@@ -700,9 +677,296 @@ namespace EngineFile
 					shaders.push_back(fullShader1Path);
 				}
 			}
+			else if (key == "model")
+			{
+				model = value;
+			}
+			else if (key == "shininess")
+			{
+				shininess = stof(value);
+			}
+		}
 
-			else if (key == "billboard name") billboardName = value;
-			else if (key == "billboard id") billboardID = stoul(value);
+		//
+		// SET UP TEXTURES FOR MODEL
+		//
+
+		string diff_missing = Engine::filesPath + "\\textures\\diff_missing.png";
+		string diffuseTexture = textures[0];
+		if (diffuseTexture != "EMPTY"
+			&& !exists(diffuseTexture))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
+			diffuseTexture = diff_missing;
+		}
+
+		string specularTexture = textures[1];
+		if (specularTexture != "EMPTY"
+			&& !exists(specularTexture))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Specular texture " + specularTexture + " for " + name + " not found!\n");
+			specularTexture = "EMPTY";
+		}
+
+		string normalTexture = textures[2];
+		if (normalTexture != "EMPTY"
+			&& !exists(normalTexture))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Normal texture " + normalTexture + " for " + name + " not found!\n");
+			normalTexture = "EMPTY";
+		}
+
+		string heightTexture = textures[3];
+		if (heightTexture != "EMPTY"
+			&& !exists(heightTexture))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Height texture " + heightTexture + " for " + name + " not found!\n");
+			heightTexture = "EMPTY";
+		}
+
+		//
+		// LOAD MODEL
+		//
+
+		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
+		shared_ptr<GameObject> foundObj;
+		for (const auto& obj : objects)
+		{
+			if (obj->GetName() == name)
+			{
+				foundObj = obj;
+				break;
+			}
+		}
+
+		if (foundObj == nullptr)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Tried to apply data to scene model '" + name + "' with ID '" + to_string(ID) + "' but it does not exist!");
+		}
+		else
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				"Loading model '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+			foundObj->SetName(name);
+			foundObj->SetID(ID);
+			foundObj->SetEnableState(isEnabled);
+
+			foundObj->GetTransform()->SetPosition(pos);
+			foundObj->GetTransform()->SetRotation(rot);
+			foundObj->GetTransform()->SetScale(scale);
+
+			Shader modelShader = Shader::LoadShader(shaders[0], shaders[1]);
+			shared_ptr<Material> mat = make_shared<Material>();
+			mat->AddShader(shaders[0], shaders[1], modelShader);
+
+			Texture::LoadTexture(foundObj, diffuseTexture, Material::TextureType::diffuse, false);
+			Texture::LoadTexture(foundObj, specularTexture, Material::TextureType::specular, false);
+			Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
+			Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
+
+			foundObj->SetDirectory(model);
+
+			foundObj->GetBasicShape()->SetShininess(shininess);
+
+			GameObject::nextID = ID + 1;
+		}
+	}
+
+	void GameObjectFile::LoadPointLight(const string& file)
+	{
+		//
+		// READ FROM POINT LIGHT FILE
+		//
+
+		ifstream pointLightFile(file);
+		if (!pointLightFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Failed to open point light file '" + file + "'!\n\n");
+			return;
+		}
+
+		map<string, string> data;
+		string line;
+		while (getline(pointLightFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "isEnabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+
+					|| key == "shaders"
+					|| key == "model"
+
+					|| key == "diffuse"
+					|| key == "intensity"
+					|| key == "distance"
+
+					|| key == "billboard name"
+					|| key == "billboard id"
+					|| key == "billboard shaders"
+					|| key == "billboard texture"
+					|| key == "billboard shininess")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		pointLightFile.close();
+
+		//
+		// ASSIGN POINT LIGHT DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		Mesh::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+
+		vector<string> shaders{};
+		string model{};
+
+		vec3 diffuse{};
+		float intensity{};
+		float distance{};
+
+		string billboardName{};
+		unsigned int billboardID{};
+		vector<string> billboardShaders{};
+		string billboardTexture{};
+		float billboardShininess{};
+
+		for (const auto& kvp : data)
+		{
+			string key = kvp.first;
+			auto& value = kvp.second;
+
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
+			else if (key == "type")
+			{
+				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				if (typeAuto.has_value())
+				{
+					type = typeAuto.value();
+				}
+			}
+			else if (key == "position")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				pos = newPos;
+			}
+			else if (key == "rotation")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				rot = newRot;
+			}
+			else if (key == "scale")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				scale = newScale;
+			}
+
+			else if (key == "shaders")
+			{
+				vector<string> split = String::Split(value, ',');
+
+				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
+				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+
+				if (!exists(fullShader0Path)
+					|| !exists(fullShader1Path))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
+					return;
+				}
+				else
+				{
+					shaders.push_back(fullShader0Path);
+					shaders.push_back(fullShader1Path);
+				}
+			}
+			else if (key == "model")
+			{
+				model = value;
+			}
+
+			else if (key == "diffuse")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newDiffuse = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				diffuse = newDiffuse;
+			}
+			else if (key == "intensity") intensity = stof(value);
+			else if (key == "distance") distance = stof(value);
+
+			else if (key == "billboardName")
+			{
+				billboardName = value;
+			}
+			else if (key == "billboardID")
+			{
+				billboardID = stoul(value);
+			}
 			else if (key == "billboard texture")
 			{
 				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
@@ -715,7 +979,7 @@ namespace EngineFile
 						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
 					return;
 				}
-				else billboardDiffTexture = fullTexPath;
+				else billboardTexture = fullTexPath;
 			}
 			else if (key == "billboard shaders")
 			{
@@ -740,6 +1004,203 @@ namespace EngineFile
 				}
 			}
 			else if (key == "billboard shininess") billboardShininess = stof(value);
+		}
+
+		//
+		// LOAD POINT LIGHT
+		//
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Loading point light '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+		PointLight::InitializePointLight(
+			pos,
+			rot,
+			scale,
+			model,
+			shaders[0],
+			shaders[1],
+			diffuse,
+			intensity,
+			distance,
+			name,
+			ID,
+			isEnabled,
+			billboardShaders[0],
+			billboardShaders[1],
+			billboardTexture,
+			billboardShininess,
+			billboardName,
+			billboardID);
+
+		GameObject::nextID = ID + 1;
+	}
+
+	void GameObjectFile::LoadSpotlight(const string& file)
+	{
+		//
+		// READ FROM SPOTLIGHT FILE
+		//
+
+		ifstream spotLightFile(file);
+		if (!spotLightFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Failed to open spotlight file '" + file + "'!\n\n");
+			return;
+		}
+
+		map<string, string> data;
+		string line;
+		while (getline(spotLightFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "isEnabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+
+					|| key == "shaders"
+					|| key == "model"
+
+					|| key == "diffuse"
+					|| key == "intensity"
+					|| key == "distance"
+					|| key == "inner angle"
+					|| key == "outer angle"
+
+					|| key == "billboard name"
+					|| key == "billboard id"
+					|| key == "billboard shaders"
+					|| key == "billboard texture"
+					|| key == "billboard shininess")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		spotLightFile.close();
+
+		//
+		// ASSIGN SPOTLIGHT DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		Mesh::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+
+		vector<string> shaders{};
+		string model{};
+
+		vec3 diffuse{};
+		float intensity{};
+		float distance{};
+		float innerAngle{};
+		float outerAngle{};
+
+		string billboardName{};
+		unsigned int billboardID{};
+		vector<string> billboardShaders{};
+		string billboardTexture{};
+		float billboardShininess{};
+
+		for (const auto& kvp : data)
+		{
+			string key = kvp.first;
+			auto& value = kvp.second;
+
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
+			else if (key == "type")
+			{
+				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				if (typeAuto.has_value())
+				{
+					type = typeAuto.value();
+				}
+			}
+			else if (key == "position")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				pos = newPos;
+			}
+			else if (key == "rotation")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				rot = newRot;
+			}
+			else if (key == "scale")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				scale = newScale;
+			}
+
+			else if (key == "shaders")
+			{
+				vector<string> split = String::Split(value, ',');
+
+				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
+				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+
+				if (!exists(fullShader0Path)
+					|| !exists(fullShader1Path))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
+					return;
+				}
+				else
+				{
+					shaders.push_back(fullShader0Path);
+					shaders.push_back(fullShader1Path);
+				}
+			}
+			else if (key == "model")
+			{
+				model = value;
+			}
 
 			else if (key == "diffuse")
 			{
@@ -747,210 +1208,334 @@ namespace EngineFile
 				vec3 newDiffuse = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				diffuse = newDiffuse;
 			}
-			else if (key == "shininess") shininess = stof(value);
 			else if (key == "intensity") intensity = stof(value);
 			else if (key == "distance") distance = stof(value);
 			else if (key == "inner angle") innerAngle = stof(value);
 			else if (key == "outer angle") outerAngle = stof(value);
-		}
 
-		//
-		// LOAD REGULAR GAMEOBJECT
-		//
-
-		if (type == Mesh::MeshType::model)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::DEBUG,
-				"Loading model '" + name + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
-
-			string diff_missing = Engine::filesPath + "\\textures\\diff_missing.png";
-			string diffuseTexture = textures[0];
-			if (diffuseTexture != "EMPTY"
-				&& !exists(diffuseTexture))
+			else if (key == "billboardName")
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::EXCEPTION,
-					"Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
-				diffuseTexture = diff_missing;
+				billboardName = value;
 			}
-
-			string specularTexture = textures[1];
-			if (specularTexture != "EMPTY"
-				&& !exists(specularTexture))
+			else if (key == "billboardID")
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::EXCEPTION,
-					"Specular texture " + specularTexture + " for " + name + " not found!\n");
-				specularTexture = "EMPTY";
+				billboardID = stoul(value);
 			}
-
-			string normalTexture = textures[2];
-			if (normalTexture != "EMPTY"
-				&& !exists(normalTexture))
+			else if (key == "billboard texture")
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::EXCEPTION,
-					"Normal texture " + normalTexture + " for " + name + " not found!\n");
-				normalTexture = "EMPTY";
-			}
+				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
 
-			string heightTexture = textures[3];
-			if (heightTexture != "EMPTY"
-				&& !exists(heightTexture))
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::EXCEPTION,
-					"Height texture " + heightTexture + " for " + name + " not found!\n");
-				heightTexture = "EMPTY";
-			}
-
-			vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-			shared_ptr<GameObject> foundObj;
-			for (const auto& obj : objects)
-			{
-				if (obj->GetName() == name)
+				if (!exists(fullTexPath))
 				{
-					foundObj = obj;
-					break;
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
+					return;
+				}
+				else billboardTexture = fullTexPath;
+			}
+			else if (key == "billboard shaders")
+			{
+				vector<string> split = String::Split(value, ',');
+
+				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
+				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+
+				if (!exists(fullShader0Path)
+					|| !exists(fullShader1Path))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
+					return;
+				}
+				else
+				{
+					billboardShaders.push_back(fullShader0Path);
+					billboardShaders.push_back(fullShader1Path);
 				}
 			}
-
-			if (foundObj == nullptr)
-			{
-
-			}
-			else
-			{
-				foundObj->SetName(name);
-				foundObj->SetID(id);
-				foundObj->SetEnableState(isEnabled);
-
-				foundObj->GetTransform()->SetPosition(pos);
-				foundObj->GetTransform()->SetRotation(rot);
-				foundObj->GetTransform()->SetScale(scale);
-
-				foundObj->SetDirectory(modelPath);
-
-				Shader modelShader = Shader::LoadShader(shaders[0], shaders[1]);
-				shared_ptr<Material> mat = make_shared<Material>();
-				mat->AddShader(shaders[0], shaders[1], modelShader);
-
-				Texture::LoadTexture(foundObj, diffuseTexture, Material::TextureType::diffuse, false);
-				Texture::LoadTexture(foundObj, specularTexture, Material::TextureType::specular, false);
-				Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
-				Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
-
-				GameObject::nextID = id + 1;
-			}
-		}
-
-		//
-		// LOAD POINT LIGHT
-		//
-
-		else if (type == Mesh::MeshType::point_light)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::DEBUG,
-				"Loading light source '" + name + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
-
-			PointLight::InitializePointLight(
-				pos,
-				rot,
-				scale,
-				modelPath,
-				shaders[0],
-				shaders[1],
-				diffuse,
-				intensity,
-				distance,
-				name,
-				id,
-				isEnabled,
-				billboardShaders[0],
-				billboardShaders[1],
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				billboardID);
-
-			GameObject::nextID = id + 1;
+			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
 		//
 		// LOAD SPOTLIGHT
 		//
 
-		else if (type == Mesh::MeshType::spot_light)
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Loading spotlight '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+		SpotLight::InitializeSpotLight(
+			pos,
+			rot,
+			scale,
+			model,
+			shaders[0],
+			shaders[1],
+			diffuse,
+			intensity,
+			distance,
+			innerAngle,
+			outerAngle,
+			name,
+			ID,
+			isEnabled,
+			billboardShaders[0],
+			billboardShaders[1],
+			billboardTexture,
+			billboardShininess,
+			billboardName,
+			billboardID);
+
+		GameObject::nextID = ID + 1;
+	}
+
+	void GameObjectFile::LoadDirectionalLight(const string& file)
+	{
+		//
+		// READ FROM DIRECTIONAL LIGHT FILE
+		//
+
+		ifstream directionalLightFile(file);
+		if (!directionalLightFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
-				Type::DEBUG,
-				"Loading light source '" + name + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+				Type::EXCEPTION,
+				"Failed to open directional light file '" + file + "'!\n\n");
+			return;
+		}
 
-			SpotLight::InitializeSpotLight(
-				pos,
-				rot,
-				scale,
-				modelPath,
-				shaders[0],
-				shaders[1],
-				diffuse,
-				intensity,
-				distance,
-				innerAngle,
-				outerAngle,
-				name,
-				id,
-				isEnabled,
-				billboardShaders[0],
-				billboardShaders[1],
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				billboardID);
+		map<string, string> data;
+		string line;
+		while (getline(directionalLightFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
 
-			GameObject::nextID = id + 1;
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "isEnabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+
+					|| key == "shaders"
+					|| key == "model"
+
+					|| key == "diffuse"
+					|| key == "intensity"
+					|| key == "distance"
+
+					|| key == "billboard name"
+					|| key == "billboard id"
+					|| key == "billboard shaders"
+					|| key == "billboard texture"
+					|| key == "billboard shininess")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		directionalLightFile.close();
+
+		//
+		// ASSIGN DIRECTIONAL LIGHT DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		Mesh::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+
+		vector<string> shaders{};
+		string model{};
+
+		vec3 diffuse{};
+		float intensity{};
+
+		string billboardName{};
+		unsigned int billboardID{};
+		vector<string> billboardShaders{};
+		string billboardTexture{};
+		float billboardShininess{};
+
+		for (const auto& kvp : data)
+		{
+			string key = kvp.first;
+			auto& value = kvp.second;
+
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
+			else if (key == "type")
+			{
+				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				if (typeAuto.has_value())
+				{
+					type = typeAuto.value();
+				}
+			}
+			else if (key == "position")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				pos = newPos;
+			}
+			else if (key == "rotation")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				rot = newRot;
+			}
+			else if (key == "scale")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				scale = newScale;
+			}
+
+			else if (key == "shaders")
+			{
+				vector<string> split = String::Split(value, ',');
+
+				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
+				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+
+				if (!exists(fullShader0Path)
+					|| !exists(fullShader1Path))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
+					return;
+				}
+				else
+				{
+					shaders.push_back(fullShader0Path);
+					shaders.push_back(fullShader1Path);
+				}
+			}
+			else if (key == "model")
+			{
+				model = value;
+			}
+
+			else if (key == "diffuse")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newDiffuse = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				diffuse = newDiffuse;
+			}
+			else if (key == "intensity") intensity = stof(value);
+
+			else if (key == "billboardName")
+			{
+				billboardName = value;
+			}
+			else if (key == "billboardID")
+			{
+				billboardID = stoul(value);
+			}
+			else if (key == "billboard texture")
+			{
+				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
+
+				if (!exists(fullTexPath))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
+					return;
+				}
+				else billboardTexture = fullTexPath;
+			}
+			else if (key == "billboard shaders")
+			{
+				vector<string> split = String::Split(value, ',');
+
+				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
+				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+
+				if (!exists(fullShader0Path)
+					|| !exists(fullShader1Path))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
+					return;
+				}
+				else
+				{
+					billboardShaders.push_back(fullShader0Path);
+					billboardShaders.push_back(fullShader1Path);
+				}
+			}
+			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
 		//
 		// LOAD DIRECTIONAL LIGHT
 		//
 
-		else if (type == Mesh::MeshType::directional_light)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::DEBUG,
-				"Loading light source '" + name + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Loading directional light '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-			DirectionalLight::InitializeDirectionalLight(
-				pos,
-				rot,
-				scale,
-				modelPath,
-				shaders[0],
-				shaders[1],
-				diffuse,
-				intensity,
-				name,
-				id,
-				isEnabled,
-				billboardShaders[0],
-				billboardShaders[1],
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				billboardID);
+		DirectionalLight::InitializeDirectionalLight(
+			pos,
+			rot,
+			scale,
+			model,
+			shaders[0],
+			shaders[1],
+			diffuse,
+			intensity,
+			name,
+			ID,
+			isEnabled,
+			billboardShaders[0],
+			billboardShaders[1],
+			billboardTexture,
+			billboardShininess,
+			billboardName,
+			billboardID);
 
-			GameObject::nextID = id + 1;
-		}
+		GameObject::nextID = ID + 1;
 	}
 }
