@@ -64,9 +64,7 @@ namespace EngineFile
 {
 	void GameObjectFile::SaveGameObjects()
 	{
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-
-		for (const auto& obj : objects)
+		for (const auto& obj : GameObjectManager::GetObjects())
 		{
 			if (obj->GetParentBillboardHolder() == nullptr)
 			{
@@ -77,6 +75,7 @@ namespace EngineFile
 				//
 				// GET IMPORTED MODEL DATA FROM FILE
 				//
+
 				if (objectFilePath != ""
 					&& exists(objectFilePath))
 				{
@@ -290,6 +289,8 @@ namespace EngineFile
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
+				if (exists(objectFilePath)) File::DeleteFileOrfolder(objectFilePath);
+
 				ofstream objectFile(objectFilePath);
 
 				if (!objectFile.is_open())
@@ -307,13 +308,18 @@ namespace EngineFile
 				}
 
 				objectFile.close();
+
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::DEBUG,
+					"Successfully saved gameobject " + obj->GetName() + " with ID " + to_string(obj->GetID()) + ".\n");
 			}
 		}
 	}
 
-	void GameObjectFile::LoadGameObjects(const string& targetPath)
-	{
-		if (is_empty(targetPath))
+	void GameObjectFile::LoadGameObjects()
+	{		
+		if (is_empty(Engine::currentGameobjectsPath))
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
@@ -331,7 +337,7 @@ namespace EngineFile
 #if ENGINE_MODE
 		Render::waitBeforeCountsUpdate = true;
 #endif
-		for (const auto& folder : directory_iterator(targetPath))
+		for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
 		{
 			//first iteration always loads the fbx or other assimp file if it exists
 			for (const auto& file : directory_iterator(folder))

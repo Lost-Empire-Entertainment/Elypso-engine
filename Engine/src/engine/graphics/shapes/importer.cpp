@@ -12,7 +12,7 @@
 #include "glad.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
-#include <glm/gtx/matrix_decompose.hpp>
+#include "glm/gtx/matrix_decompose.hpp"
 #include "assimp/postprocess.h"
 #include "stb_image.h"
 

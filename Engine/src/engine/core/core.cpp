@@ -429,6 +429,7 @@ namespace Core
 		Render::RenderSetup();
 
 		string lastSavedScenePath = Engine::docsPath + "\\lastSavedScene.txt";
+		//attempt to load last saved scene
 		if (exists(lastSavedScenePath))
 		{
 			ifstream lastSavedSceneFile(lastSavedScenePath);

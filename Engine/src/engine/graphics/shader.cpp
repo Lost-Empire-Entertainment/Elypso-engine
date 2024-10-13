@@ -33,7 +33,7 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics
 {
-    Shader shader;
+    unordered_map<string, unsigned int> Shader::shaders;
 
     Shader Shader::LoadShader(const string& vertexPath, const string& fragmentPath)
     {
@@ -47,10 +47,10 @@ namespace Graphics
         string fragmentStemExtension = fragmentStemPath.extension().string();
         fragmentStemPath = fragmentStemPath.stem();
 
-        string shaderKey = vertexStemPath.string() + vertexStemExtension + "|" + fragmentStemPath.string() + fragmentStemExtension;
+        string shaderKey = absolute(vertexPath).string() + "|" + absolute(fragmentPath).string();
 
-        auto it = shader.shaders.find(shaderKey);
-        if (it != shader.shaders.end())
+        auto it = shaders.find(shaderKey);
+        if (it != shaders.end())
         {
             shader.ID = it->second;
             return shader;
@@ -109,33 +109,50 @@ namespace Graphics
             }
             const char* vShaderCode = vertexCode.c_str();
             const char* fShaderCode = fragmentCode.c_str();
-            //compile shaders
+
             unsigned int vertex, fragment;
+
             //vertex shader
             vertex = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(vertex, 1, &vShaderCode, NULL);
             glCompileShader(vertex);
-            shader.CheckCompileErrors(vertex, "VERTEX");
+            if (!shader.CheckCompileErrors(vertex, "VERTEX"))
+            {
+                shader.ID = 0;
+                return shader;
+            }
+
             //fragment shader
             fragment = glCreateShader(GL_FRAGMENT_SHADER);
             glShaderSource(fragment, 1, &fShaderCode, NULL);
             glCompileShader(fragment);
-            shader.CheckCompileErrors(fragment, "FRAGMENT");
+            if (!shader.CheckCompileErrors(fragment, "FRAGMENT"))
+            {
+                shader.ID = 0;
+                return shader;
+            }
+
             //shader program
             shader.ID = glCreateProgram();
             glAttachShader(shader.ID, vertex);
             glAttachShader(shader.ID, fragment);
             glLinkProgram(shader.ID);
-            shader.CheckCompileErrors(shader.ID, "PROGRAM");
+            if (!shader.CheckCompileErrors(shader.ID, "PROGRAM"))
+            {
+                shader.ID = 0;
+                return shader;
+            }
+
             //delete shaders as they are no longer needed
             glDeleteShader(vertex);
             glDeleteShader(fragment);
 
-            shader.shaders.emplace(shaderKey, shader.ID);
+            shaders.emplace(shaderKey, shader.ID);
 
             return shader;
         }
 
+        shader.ID = 0;
         return shader;
     }
 
@@ -197,7 +214,7 @@ namespace Graphics
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    void Shader::CheckCompileErrors(GLuint shader, string type)
+    bool Shader::CheckCompileErrors(GLuint shader, const string& type)
     {
         GLint success;
         GLchar infoLog[1024];
@@ -210,9 +227,8 @@ namespace Graphics
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
-                    "Shader compilation error: " +
-                    string(type) + " " +
-                    string(infoLog) + "\n\n");
+                    "Shader compilation error (" + type + "): " + infoLog + "\n\n");
+                return false;
             }
         }
         else
@@ -224,10 +240,10 @@ namespace Graphics
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
-                    "Shader linking error: " +
-                    string(type) + " " +
-                    string(infoLog) + "\n\n");
+                    "Shader linking error (" + type + "): " + infoLog + "\n\n");
+                return false;
             }
         }
+        return true;
     }
 }

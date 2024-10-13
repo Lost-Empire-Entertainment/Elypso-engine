@@ -26,7 +26,7 @@ namespace Graphics
 	class Shader
 	{
 	public:
-		unsigned int ID;
+		unsigned int ID{};
 
 		static Shader LoadShader(const string& vertexPath = "", const string& fragmentPath = "");
 
@@ -49,8 +49,8 @@ namespace Graphics
 		void SetMat3(const string& name, const mat3& mat) const;
 		void SetMat4(const string& name, const mat4& mat) const;
 	private:
-		unordered_map<string, unsigned int> shaders;
+		static unordered_map<string, unsigned int> shaders;
 
-		void CheckCompileErrors(GLuint shader, string type);
+		bool CheckCompileErrors(GLuint shader, const string& type);
 	};
 }

@@ -262,7 +262,7 @@ namespace EngineFile
 			}
 			Skybox::AssignSkyboxTextures(skyboxTextures, false);
 
-			GameObjectFile::LoadGameObjects(Engine::currentGameobjectsPath);
+			GameObjectFile::LoadGameObjects();
 
 			Render::SetWindowNameAsUnsaved(false);
 

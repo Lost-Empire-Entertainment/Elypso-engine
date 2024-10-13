@@ -30,7 +30,7 @@ namespace EngineFile
 		/// <summary>
 		/// Handle the loading of the gameobjects folder.
 		/// </summary>
-		static void LoadGameObjects(const string& path);
+		static void LoadGameObjects();
 	private:
 		/// <summary>
 		/// Loads each individual gameobject.
