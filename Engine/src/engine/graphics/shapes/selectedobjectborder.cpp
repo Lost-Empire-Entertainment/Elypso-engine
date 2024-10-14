@@ -126,26 +126,45 @@ namespace Graphics::Shape
 		shader.SetVec3("color", vec3(1.0));
 
 		mat4 model = mat4(1.0f);
+
 		if (Select::isObjectSelected)
 		{
 			shader.SetFloat("transparency", 0.5f);
 
-			model = translate(model, Select::selectedObj->GetTransform()->GetPosition());
+			//retrieve vertices and calculate bounding box
+			const vector<AssimpVertex>& vertices = Select::selectedObj->GetMesh()->GetVertices();
+			vec3 minBound, maxBound;
+			vec3 position = Select::selectedObj->GetTransform()->GetPosition();
+			vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
+			float margin = 0.025f;
+
+			//calculate the bounding box based on vertices
+			Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale, margin);
+
+			//compute the center and scale of the bounding box
+			vec3 boxCenter = (minBound + maxBound) * 0.5f;
+			vec3 boxScale = maxBound - minBound;
+
+			model = translate(model, boxCenter); //translate to the center of the bounding box
+
+			//apply rotation
 			quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
 			model *= mat4_cast(newRot);
-			model = scale(model, Select::selectedObj->GetTransform()->GetScale() + vec3(0.025f, 0.025f, 0.025f));
+
+			//scale based on the bounding box size, with a slight margin
+			model = scale(model, boxScale + vec3(0.025f));
 		}
 		else
 		{
 			shader.SetFloat("transparency", 0.0f);
 
+			//move the border out of view when no object is selected
 			model = translate(model, vec3(0.0f, -100.0f, 0.0f));
-			quat newRot = quat(radians(vec3(0)));
-			model *= mat4_cast(newRot);
 			model = scale(model, vec3(0.01f));
 		}
 
 		shader.SetMat4("model", model);
+
 		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);

@@ -289,6 +289,7 @@ namespace EngineFile
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
+				/*
 				if (exists(objectFilePath)) File::DeleteFileOrfolder(objectFilePath);
 
 				ofstream objectFile(objectFilePath);
@@ -313,6 +314,7 @@ namespace EngineFile
 					Caller::FILE,
 					Type::DEBUG,
 					"Successfully saved gameobject " + obj->GetName() + " with ID " + to_string(obj->GetID()) + ".\n");
+				*/
 			}
 		}
 	}
@@ -765,6 +767,10 @@ namespace EngineFile
 				Type::DEBUG,
 				"Loading model '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
+			cout << "---- last name was '" << foundObj->GetName() << "', new name is '" << name 
+				<< "', last ID was '" << foundObj->GetID() << "' new ID is '" << ID << "'\n";
+
+			/*
 			foundObj->SetName(name);
 			foundObj->SetID(ID);
 			foundObj->SetEnableState(isEnabled);
@@ -787,6 +793,7 @@ namespace EngineFile
 			foundObj->GetBasicShape()->SetShininess(shininess);
 
 			GameObject::nextID = ID + 1;
+			*/
 		}
 	}
 

@@ -7,6 +7,8 @@
 #include <map>
 #include <filesystem>
 #include <fstream>
+#include <chrono>
+#include <iomanip>
 
 //external
 #include "glad.h"
@@ -39,8 +41,15 @@ using glm::scale;
 using glm::rotate;
 using std::filesystem::path;
 using std::filesystem::exists;
+using std::filesystem::file_time_type;
+using std::filesystem::last_write_time;
 using glm::decompose;
 using std::ofstream;
+using std::put_time;
+using std::localtime;
+using std::ostringstream;
+using std::clock;
+using std::chrono::system_clock;
 
 using Graphics::Render;
 using Graphics::Shader;
@@ -145,8 +154,34 @@ namespace Graphics::Shape
 
         name = nodeName;
 
+        //get parent node
+        string parentName =
+            (node->mParent
+            && string(node->mParent->mName.C_Str()) != "RootNode")
+            ? node->mParent->mName.C_Str()
+            : "";
+
+        //get all child nodes
+        string childNames;
+        for (unsigned int i = 0; i < node->mNumChildren; i++)
+        {
+            childNames += node->mChildren[i]->mName.C_Str();
+            if (i != node->mNumChildren - 1)
+            {
+                childNames += ", ";
+            }
+        }
+
+        //apply the parents transformation to the current node
+        aiMatrix4x4 globalTransformation = node->mTransformation;
+
+        if (node->mParent) 
+        {
+            globalTransformation = node->mParent->mTransformation * node->mTransformation;
+        }
+
         vec3 nodePosition, nodeRotation, nodeScale;
-        DecomposeTransform(node->mTransformation, nodePosition, nodeRotation, nodeScale);
+        DecomposeTransform(globalTransformation, nodePosition, nodeRotation, nodeScale);
 
         //process each mesh located at the current node
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
@@ -186,7 +221,14 @@ namespace Graphics::Shape
 
                 file << "---- IMPORTED FILE ----" << "\n";
                 file << "originalName= " << nodeName << "\n";
+                file << "nodeID= " << id << "\n";
                 file << "nodeIndex= " << nodeIndex << "\n";
+                file << "parent= " << parentName << "\n";
+                file << "children= " << childNames << "\n\n";
+
+                file << "pos= " << nodePosition.x << ", " << nodePosition.y << ", " << nodePosition.z << "\n";
+                file << "rot= " << nodeRotation.x << ", " << nodeRotation.y << ", " << nodeRotation.z << "\n";
+                file << "scale= " << nodeScale.x << ", " << nodeScale.y << ", " << nodeScale.z << "\n";
 
                 file << "\n---- SCENE FILE ----\n";
 
@@ -202,7 +244,7 @@ namespace Graphics::Shape
 
             ProcessNode(
                 childName,
-                id, 
+                id,
                 isEnabled,
                 nodePosition,
                 nodeRotation,
@@ -215,7 +257,7 @@ namespace Graphics::Shape
                 normalTexture,
                 heightTexture,
                 shininess,
-                node->mChildren[i], 
+                node->mChildren[i],
                 scene,
                 nodeIndex++);
         }
