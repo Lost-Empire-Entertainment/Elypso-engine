@@ -5,6 +5,8 @@
 
 //external
 #include "imgui.h"
+#include "quaternion.hpp"
+#include "matrix_transform.hpp"
 
 //engine
 #include "selectobject.hpp"
@@ -16,6 +18,8 @@ using glm::max;
 using glm::min;
 using glm::vec4;
 using std::numeric_limits;
+using glm::quat;
+using glm::scale;
 
 using Graphics::Render;
 using Type = Graphics::Shape::Mesh::MeshType;
@@ -79,20 +83,37 @@ namespace Core
 			|| objType == Type::spot_light
 			|| objType == Type::directional_light)
 		{
-			//get vertices from the mesh
-			const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
-
-			//calculate the bounding box using vertices and object's position and scale
 			vec3 minBound, maxBound;
-			vec3 position = shape->GetTransform()->GetPosition();
-			vec3 scale = shape->GetTransform()->GetScale(); //apply scale transformation
-			float margin = 0.1f; //adjust margin as necessary
+			vec3 pos = shape->GetTransform()->GetPosition();
+			vec3 objectScale = shape->GetTransform()->GetScale();
+			quat rotation = quat(radians(shape->GetTransform()->GetRotation()));
+			float margin = 0.1f;
 
-			CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, scale, margin);
+			if (objType == Type::model)
+			{
+				const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
 
-			//perform ray-box intersection with the updated bounding box
-			vec3 tMin = (minBound - ray.origin) / ray.direction;
-			vec3 tMax = (maxBound - ray.origin) / ray.direction;
+				//complex bounding box for models
+				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), objectScale, margin);
+			}
+			else
+			{
+				//simple bounding box for non-model objects
+				minBound = -0.5f * objectScale;
+				maxBound = 0.5f * objectScale;
+			}
+
+			//create the model matrix (translation, rotation, scale)
+			mat4 modelMatrix = translate(mat4(1.0f), pos) * mat4_cast(rotation) * scale(mat4(1.0f), objectScale);
+
+			//inverse the model matrix to transform the ray into local space
+			mat4 inverseModel = inverse(modelMatrix);
+			vec3 localRayOrigin = vec3(inverseModel * vec4(ray.origin, 1.0f));
+			vec3 localRayDir = normalize(vec3(inverseModel * vec4(ray.direction, 0.0f)));
+
+			//perform ray-box intersection in local space
+			vec3 tMin = (minBound - localRayOrigin) / localRayDir;
+			vec3 tMax = (maxBound - localRayOrigin) / localRayDir;
 
 			float tEnter = max(max(
 				min(tMin.x, tMax.x),
@@ -103,7 +124,8 @@ namespace Core
 				max(tMin.y, tMax.y)),
 				max(tMin.z, tMax.z));
 
-			if (tEnter < tExit && tExit > 0.0f)
+			if (tEnter < tExit 
+				&& tExit > 0.0f)
 			{
 				*distance = tEnter;
 				return true;
@@ -112,6 +134,7 @@ namespace Core
 
 		return false;
 	}
+
 
 	void Select::CalculateInteractionBoxFromVertices(
 		const vector<AssimpVertex>& vertices,
