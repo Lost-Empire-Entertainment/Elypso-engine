@@ -79,12 +79,23 @@ namespace Graphics::GUI
 			{
 				shared_ptr<GameObject> obj = Select::selectedObj;
 
-				bool state = obj->IsEnabled();
-				if (ImGui::Checkbox("Is enabled", &state))
+				bool gameobjectState = obj->IsEnabled();
+				if (ImGui::Checkbox("Enable gameobject", &gameobjectState))
 				{
-					obj->SetEnableState(state);
+					obj->SetEnableState(gameobjectState);
 
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				if (obj->GetChildBillboard() != nullptr)
+				{
+					bool billboardState = obj->GetChildBillboard()->IsEnabled();
+					if (ImGui::Checkbox("Enable billboard", &billboardState))
+					{
+						obj->GetChildBillboard()->SetEnableState(billboardState);
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
 			}
 

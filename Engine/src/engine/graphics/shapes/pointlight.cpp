@@ -47,7 +47,8 @@ namespace Graphics::Shape
 		const string& billboardDiffTexture,
 		const float& billboardShininess,
 		string& billboardName,
-		unsigned int& billboardID)
+		unsigned int& billboardID,
+		const bool& isBillboardEnabled)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -127,7 +128,8 @@ namespace Graphics::Shape
 			billboardDiffTexture,
 			billboardShininess,
 			billboardName,
-			billboardID);
+			billboardID,
+			isBillboardEnabled);
 
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			true,

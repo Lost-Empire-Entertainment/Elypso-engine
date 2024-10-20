@@ -640,6 +640,26 @@ namespace Graphics
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
+			ImGui::Text("Render billboards");
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 150);
+			bool renderBillboards = GameObjectManager::renderBillboards;
+			if (ImGui::Checkbox("##renderBillboards", &renderBillboards))
+			{
+				GameObjectManager::renderBillboards = renderBillboards;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Text("Render light borders");
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 200);
+			bool renderLightBorders = GameObjectManager::renderLightBorders;
+			if (ImGui::Checkbox("##renderLightBorders", &renderBillboards))
+			{
+				GameObjectManager::renderLightBorders = renderLightBorders;
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			//
 			// CAMERA SETTINGS
 			//

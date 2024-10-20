@@ -184,7 +184,16 @@ namespace EngineFile
 							stof(splitValue[2]));
 						Render::camera.SetCameraRotation(cameraRot);
 					}
-
+#if ENGINE_MODE
+					else if (type == "renderBillboards")
+					{
+						GameObjectManager::renderBillboards = stoi(value);
+					}
+					else if (type == "renderLightBorders")
+					{
+						GameObjectManager::renderLightBorders = stoi(value);
+					}
+#endif
 					else if (type == "skybox_right")
 					{
 						string finalValue = value != ""
@@ -328,7 +337,10 @@ namespace EngineFile
 			to_string(rot[1]) + "," +
 			to_string(rot[2]);
 		sceneFile << "camera_rotation= " << cameraRot << "\n";
-
+#if ENGINE_MODE
+		sceneFile << "renderBillboards= " << GameObjectManager::renderBillboards << "\n";
+		sceneFile << "renderLightBordders= " << GameObjectManager::renderLightBorders << "\n";
+#endif
 		sceneFile << "skybox_right= " << skyboxTexturesMap["right"] << "\n";
 		sceneFile << "skybox_left= " << skyboxTexturesMap["left"] << "\n";
 		sceneFile << "skybox_top= " << skyboxTexturesMap["top"] << "\n";

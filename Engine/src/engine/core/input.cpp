@@ -204,9 +204,15 @@ namespace Core
                         copiedObject["outerAngle"] = to_string(selectedObj->GetSpotLight()->GetOuterAngle());
                     }
 
-                    selectedObj = nullptr;
+                    else if (selectedObj->GetSpotLight() != nullptr)
+                    {
+                        ConsoleManager::WriteConsoleMessage(
+                            Caller::INPUT,
+                            Type::EXCEPTION,
+                            "Error: Cannot copy directional light! There can only be one per scene.");
+                    }
 
-                    //copiedObject = Select::selectedObj;
+                    selectedObj = nullptr;
 
                     ConsoleManager::WriteConsoleMessage(
                         Caller::FILE,

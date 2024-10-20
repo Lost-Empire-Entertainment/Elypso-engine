@@ -138,7 +138,7 @@ namespace EngineFile
 
 				data.push_back("id= " + to_string(obj->GetID()) + "\n");
 
-				data.push_back("isEnabled= " + to_string(obj->IsEnabled()) + "\n");
+				data.push_back("enabled= " + to_string(obj->IsEnabled()) + "\n");
 
 				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
 				data.push_back("type= " + type + "\n");
@@ -271,6 +271,8 @@ namespace EngineFile
 					data.push_back("billboard name= " + obj->GetChildBillboard()->GetName() + "\n");
 
 					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
+
+					data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
 
 					string billboardVertShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(0);
 					billboardVertShader = path(billboardVertShader).filename().string();
@@ -507,7 +509,7 @@ namespace EngineFile
 
 				if (key == "name"
 					|| key == "id"
-					|| key == "isEnabled"
+					|| key == "enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -552,7 +554,7 @@ namespace EngineFile
 			{
 				ID = stoul(value);
 			}
-			else if (key == "isEnabled")
+			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
 			}
@@ -831,7 +833,7 @@ namespace EngineFile
 
 				if (key == "name"
 					|| key == "id"
-					|| key == "isEnabled"
+					|| key == "enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -878,6 +880,7 @@ namespace EngineFile
 
 		string billboardName{};
 		unsigned int billboardID{};
+		bool isBillboardEnabled{};
 		vector<string> billboardShaders{};
 		string billboardTexture{};
 		float billboardShininess{};
@@ -892,7 +895,7 @@ namespace EngineFile
 			{
 				ID = stoul(value);
 			}
-			else if (key == "isEnabled")
+			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
 			}
@@ -959,13 +962,17 @@ namespace EngineFile
 			else if (key == "intensity") intensity = stof(value);
 			else if (key == "distance") distance = stof(value);
 
-			else if (key == "billboardName")
+			else if (key == "billboard name")
 			{
 				billboardName = value;
 			}
-			else if (key == "billboardID")
+			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
+			}
+			else if (key == "billboard enabled")
+			{
+				isBillboardEnabled = stoi(value);
 			}
 			else if (key == "billboard texture")
 			{
@@ -1033,7 +1040,8 @@ namespace EngineFile
 			billboardTexture,
 			billboardShininess,
 			billboardName,
-			billboardID);
+			billboardID,
+			isBillboardEnabled);
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1080,7 +1088,7 @@ namespace EngineFile
 
 				if (key == "name"
 					|| key == "id"
-					|| key == "isEnabled"
+					|| key == "enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -1097,6 +1105,7 @@ namespace EngineFile
 
 					|| key == "billboard name"
 					|| key == "billboard id"
+					|| key == "billboard enabled"
 					|| key == "billboard shaders"
 					|| key == "billboard texture"
 					|| key == "billboard shininess")
@@ -1131,6 +1140,7 @@ namespace EngineFile
 
 		string billboardName{};
 		unsigned int billboardID{};
+		bool isBillboardEnabled{};
 		vector<string> billboardShaders{};
 		string billboardTexture{};
 		float billboardShininess{};
@@ -1145,7 +1155,7 @@ namespace EngineFile
 			{
 				ID = stoul(value);
 			}
-			else if (key == "isEnabled")
+			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
 			}
@@ -1214,13 +1224,17 @@ namespace EngineFile
 			else if (key == "inner angle") innerAngle = stof(value);
 			else if (key == "outer angle") outerAngle = stof(value);
 
-			else if (key == "billboardName")
+			else if (key == "billboard name")
 			{
 				billboardName = value;
 			}
-			else if (key == "billboardID")
+			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
+			}
+			else if (key == "billboard enabled")
+			{
+				isBillboardEnabled = stoi(value);
 			}
 			else if (key == "billboard texture")
 			{
@@ -1290,7 +1304,8 @@ namespace EngineFile
 			billboardTexture,
 			billboardShininess,
 			billboardName,
-			billboardID);
+			billboardID,
+			isBillboardEnabled);
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1337,7 +1352,7 @@ namespace EngineFile
 
 				if (key == "name"
 					|| key == "id"
-					|| key == "isEnabled"
+					|| key == "enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -1352,6 +1367,7 @@ namespace EngineFile
 
 					|| key == "billboard name"
 					|| key == "billboard id"
+					|| key == "billboard enabled"
 					|| key == "billboard shaders"
 					|| key == "billboard texture"
 					|| key == "billboard shininess")
@@ -1383,6 +1399,7 @@ namespace EngineFile
 
 		string billboardName{};
 		unsigned int billboardID{};
+		bool isBillboardEnabled{};
 		vector<string> billboardShaders{};
 		string billboardTexture{};
 		float billboardShininess{};
@@ -1397,7 +1414,7 @@ namespace EngineFile
 			{
 				ID = stoul(value);
 			}
-			else if (key == "isEnabled")
+			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
 			}
@@ -1463,13 +1480,17 @@ namespace EngineFile
 			}
 			else if (key == "intensity") intensity = stof(value);
 
-			else if (key == "billboardName")
+			else if (key == "billboard name")
 			{
 				billboardName = value;
 			}
-			else if (key == "billboardID")
+			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
+			}
+			else if (key == "billboard enabled")
+			{
+				isBillboardEnabled = stoi(value);
 			}
 			else if (key == "billboard texture")
 			{
@@ -1536,7 +1557,8 @@ namespace EngineFile
 			billboardTexture,
 			billboardShininess,
 			billboardName,
-			billboardID);
+			billboardID,
+			isBillboardEnabled);
 
 		GameObject::nextID = ID + 1;
 	}

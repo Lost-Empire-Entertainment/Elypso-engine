@@ -477,7 +477,8 @@ namespace Graphics::GUI
 							Engine::filesPath + "\\icons\\pointLight.png",
 							32,
 							name,
-							nextID2);
+							nextID2,
+							true);
 
 					SceneFile::SaveScene();
 				}
@@ -516,7 +517,8 @@ namespace Graphics::GUI
 							Engine::filesPath + "\\icons\\spotLight.png",
 							32,
 							name,
-							nextID2);
+							nextID2,
+							true);
 
 					SceneFile::SaveScene();
 				}
@@ -561,7 +563,8 @@ namespace Graphics::GUI
 								Engine::filesPath + "\\icons\\directionalLight.png",
 								32,
 								name,
-								nextID2);
+								nextID2,
+								true);
 
 						SceneFile::SaveScene();
 					}

@@ -669,6 +669,9 @@ namespace Graphics::Shape
 			const mat4& view,
 			const mat4& projection);
 
+		static bool renderBillboards;
+		static bool renderLightBorders;
+
 		static void SetCategoryNames(const map<string, vector<string>>& newCategoryNames)
 		{
 			categoryNames = newCategoryNames;
