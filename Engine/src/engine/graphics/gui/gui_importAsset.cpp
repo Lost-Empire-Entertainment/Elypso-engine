@@ -46,6 +46,8 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
+	static bool assignedName;
+
 	void GUIImportAsset::RenderImportAsset()
 	{
 		ImVec2 windowSize = ImVec2(400.0f, 400.0f);
@@ -78,7 +80,7 @@ namespace Graphics::GUI
 
 		ImGui::SetCursorPos(textfieldPos);
 
-		if (strlen(name) == 0)
+		if (!assignedName)
 		{
 			string assetName = path(assetPath).stem().string();
 			int assetNameLength = static_cast<int>(assetName.size());
@@ -86,6 +88,7 @@ namespace Graphics::GUI
 			newName = assetName;
 
 			strcpy_s(name, bufferSize, newName.c_str());
+			assignedName = true;
 		}
 
 		strcpy_s(name, bufferSize, newName.c_str());
@@ -187,6 +190,7 @@ namespace Graphics::GUI
 			}
 
 			renderImportAsset = false;
+			assignedName = false;
 		}
 		ImVec2 cancelButtonPos = ImVec2(
 			ImGui::GetWindowSize().x / 2 + buttonSize.x / 2,
@@ -195,6 +199,7 @@ namespace Graphics::GUI
 		if (ImGui::Button("Cancel", buttonSize))
 		{
 			renderImportAsset = false;
+			assignedName = false;
 		}
 	}
 }

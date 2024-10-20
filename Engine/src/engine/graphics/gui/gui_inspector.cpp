@@ -178,8 +178,8 @@ namespace Graphics::GUI
 								if (is_regular_file(oldFilePath)
 									&& oldFileName == oldName
 									&& (path(oldFilePath).extension().string() == ".fbx"
-										|| path(oldFilePath).extension().string() == ".obj"
-										|| path(oldFilePath).extension().string() == ".glfw"))
+									|| path(oldFilePath).extension().string() == ".obj"
+									|| path(oldFilePath).extension().string() == ".glfw"))
 								{
 									if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
 									else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
