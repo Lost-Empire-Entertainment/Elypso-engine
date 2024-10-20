@@ -102,7 +102,7 @@ namespace Graphics
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
-                    "File not successfully read: " +
+                    "Error: File not successfully read: " +
                     to_string(e.code().value()) +
                     "\nVertex: " + absolute(vertexPath).string() +
                     "\nFragment: " + absolute(fragmentPath).string() + "\n\n");

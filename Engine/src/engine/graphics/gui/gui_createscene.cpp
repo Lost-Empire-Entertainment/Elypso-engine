@@ -143,7 +143,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Scene name '" + assignedSceneName + "' already exists in this project! Please pick a new scene name.");
+					"Error: Scene name '" + assignedSceneName + "' already exists in this project! Please pick a new scene name.");
 
 				renderCreateSceneWindow = false;
 

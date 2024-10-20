@@ -70,7 +70,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Tried to load scene file '" + scenePath + "' but it doesn't exist! Loading default scene.\n");
+					"Error: Tried to load scene file '" + scenePath + "' but it doesn't exist! Loading default scene.\n");
 			}
 
 			//create new default scene folder if it doesnt exist
@@ -130,7 +130,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
+					"Error: Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 				return;
 			}
 
@@ -311,7 +311,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Couldn't write into scene file '" + Engine::scenePath + "'!\n");
+				"Error: Couldn't write into scene file '" + Engine::scenePath + "'!\n");
 			return;
 		}
 
@@ -353,7 +353,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Couldn't write into last saved scene file '" + Engine::scenePath + "'!\n");
+				"Error: Couldn't write into last saved scene file '" + Engine::scenePath + "'!\n");
 		}
 		else
 		{

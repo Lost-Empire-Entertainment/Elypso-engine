@@ -233,7 +233,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Did not get path!\n");
+						"Error: Did not get path!\n");
 				}
 				assetPath = String::CharReplace(assetPath, '/', '\\');
 
@@ -249,7 +249,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"File '" + name + "' with extension '" + extension + "' is not yet supported!");
+						"Error: File '" + name + "' with extension '" + extension + "' is not yet supported!");
 				}
 				else
 				{
@@ -274,7 +274,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Gameobject '" + importedFileName + "' already exists in the current scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+							"Error: Gameobject '" + importedFileName + "' already exists in the current scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 					}
 					else
 					{
@@ -527,7 +527,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							Caller::INPUT,
 							Type::EXCEPTION,
-							"Cannot have more than one directional light in scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!");
+							"Error: Cannot have more than one directional light in scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!");
 					}
 					else
 					{
@@ -648,6 +648,12 @@ namespace Graphics::GUI
 				ImGui::EndMenu();
 			}
 		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("Shortcut: Ctrl + B");
+			ImGui::EndTooltip();
+		}
 
 		ImGui::SameLine(310 * fontScale * 0.75f);
 
@@ -655,51 +661,17 @@ namespace Graphics::GUI
 		{
 			if (ImGui::IsItemClicked())
 			{
-				if (!exists(Engine::gameExePath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Game exe does not exist!\n");
-				}
-				else
-				{
-					SceneFile::SaveScene();
-
-					//
-					// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
-					//
-
-					string gameName = path(Engine::gameExePath).stem().string();
-					string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
-					if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
-
-					string gameDocsFolder = myGamesFolder + "\\" + gameName;
-					if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder + "\\scenes");
-
-					string scenePath = path(Engine::projectPath).parent_path().string();
-					for (const auto& entry : directory_iterator(path(scenePath)))
-					{
-						string stem = path(entry).stem().string();
-
-						if (stem != "models"
-							&& stem != "textures"
-							&& stem != "project")
-						{
-							string origin = path(entry).string();
-							string originFileName = path(entry).filename().string();
-							string target = gameDocsFolder + "\\" + originFileName;
-
-							File::CopyFileOrFolder(origin, target);
-						}
-					}
-
-					File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
-				}
+				Compilation::Run();
 
 				ImGui::CloseCurrentPopup();
 				ImGui::EndMenu();
 			}
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("Shortcut: F5");
+			ImGui::EndTooltip();
 		}
 
 		//on the right side
@@ -750,7 +722,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::INPUT,
 						Type::EXCEPTION,
-						"Failed to open link to Github repository issues page! " + string(e.what()) + "\n");
+						"Error: Failed to open link to Github repository issues page! " + string(e.what()) + "\n");
 				}
 
 				ImGui::CloseCurrentPopup();

@@ -143,7 +143,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Source path " + sourcePath.string() + " does not exist!\n\n");
+                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
         }
         if (exists(destinationPath))
@@ -187,7 +187,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Source path " + sourcePath.string() + " does not exist!\n\n");
+                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
             return;
         }
 
@@ -232,7 +232,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Cannot delete file or folder " + sourcePath.string() + " because it does not exist!\n\n");
+                "Error: Cannot delete file or folder " + sourcePath.string() + " because it does not exist!\n\n");
             return;
         }
 
@@ -265,7 +265,7 @@ namespace Utils
         string output;
         if (exists(folderPath))
         {
-            output = folderPath.string() + " already exists!\n\n";
+            output = "Error: " + folderPath.string() + " already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
@@ -276,7 +276,7 @@ namespace Utils
 
         if (is_regular_file(folderPath))
         {
-            output = folderPath.string() + " must be a folder!\n\n";
+            output = "Error: " + folderPath.string() + " must be a folder!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
@@ -333,7 +333,7 @@ namespace Utils
                     ConsoleManager::WriteConsoleMessage(
                         Caller::FILE,
                         Type::EXCEPTION,
-                        "Value between parentheses for '" + fileName + "' was empty so an index couldn't be added!\n");
+                        "Error: Value between parentheses for '" + fileName + "' was empty so an index couldn't be added!\n");
 
                     return newFilePath;
                 }
@@ -348,7 +348,7 @@ namespace Utils
                     ConsoleManager::WriteConsoleMessage(
                         Caller::FILE,
                         Type::EXCEPTION,
-                        "Exception occurred while processing value '" + value + "' for '" + fileName + "': " + e.what() + "\n");
+                        "Error: Exception occurred while processing value '" + value + "' for '" + fileName + "': " + e.what() + "\n");
                     
                     return newFilePath;
                 }
@@ -357,7 +357,7 @@ namespace Utils
                     ConsoleManager::WriteConsoleMessage(
                         Caller::FILE,
                         Type::EXCEPTION,
-                        "An unknown exception occurred while processing value '" + value + "' for '" + fileName + "'\n");
+                        "Error: An unknown exception occurred while processing value '" + value + "' for '" + fileName + "'\n");
                     
                     return newFilePath;
                 }

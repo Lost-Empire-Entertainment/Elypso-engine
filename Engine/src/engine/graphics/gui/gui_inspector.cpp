@@ -158,7 +158,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							ConsoleCaller::INPUT,
 							ConsoleType::EXCEPTION,
-							"Cannot change the name to '" + newFolderName + "' because a gameobject with the same name already exists in this scene " + path(Engine::scenePath).stem().string() + "!");
+							"Error: Cannot change the name to '" + newFolderName + "' because a gameobject with the same name already exists in this scene " + path(Engine::scenePath).stem().string() + "!");
 					}
 					else
 					{

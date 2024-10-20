@@ -346,7 +346,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::INPUT,
 						Type::EXCEPTION,
-						"Invalid character detected in game name! Please pick another game name.");
+						"Error: Invalid character detected in game name! Please pick another game name.");
 
 					Engine::gameExePath = Engine::gameParentPath + "\\Game.exe";
 					ConfigFile::SetValue("gameName", "Game");
@@ -359,7 +359,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::INPUT,
 						Type::EXCEPTION,
-						"Name '" + gameName + "' is not allowed to be set as the game name! Please pick another name.\n");
+						"Error: Name '" + gameName + "' is not allowed to be set as the game name! Please pick another name.\n");
 
 					Engine::gameExePath = Engine::gameParentPath + "\\Game.exe";
 					ConfigFile::SetValue("gameName", "Game");

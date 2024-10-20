@@ -71,7 +71,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Failed to open config file '" + configFilePath + "'!\n\n");
+					"Error: Failed to open config file '" + configFilePath + "'!\n\n");
 				return;
 			}
 
@@ -130,7 +130,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Couldn't write into config file '" + configFilePath + "'!\n");
+				"Error: Couldn't write into config file '" + configFilePath + "'!\n");
 			return;
 		}
 
@@ -175,7 +175,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Cannot get config key " + key + " value because it does not exist! This will cause a crash if the config file was not filled correctly.\n");
+					"Error: Cannot get config key " + key + " value because it does not exist! This will cause a crash if the config file was not filled correctly.\n");
 			}
 			return "";
 		}
@@ -207,7 +207,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Cannot set value to config key " + key + " because it does not exist!\n");
+				"Error: Cannot set value to config key " + key + " because it does not exist!\n");
 		}
 	}
 
@@ -274,7 +274,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Couldn't write into config file '" + configFilePath + "'!\n");
+				"Error: Couldn't write into config file '" + configFilePath + "'!\n");
 			return;
 		}
 

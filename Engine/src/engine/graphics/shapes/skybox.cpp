@@ -169,7 +169,7 @@ namespace Graphics::Shape
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
-                    "Failed to load cubemap at '" + textures[i] + "'.\n");
+                    "Error: Failed to load cubemap at '" + textures[i] + "'.\n");
                 stbi_image_free(data);
             }
         }

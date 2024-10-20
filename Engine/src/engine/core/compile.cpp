@@ -160,7 +160,7 @@ namespace Core
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Compilation failed because first scene file couldnt be created!\n");
+						"Error: Compilation failed because first scene file couldnt be created!\n");
 
 					renderBuildingWindow = false;
 
@@ -349,7 +349,7 @@ namespace Core
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Failed to find game template folder or game exe!\n");
+							"Error: Failed to find game template folder or game exe!\n");
 					}
 					else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 				}
@@ -366,6 +366,62 @@ namespace Core
 			}
 
 			ImGui::End();
+		}
+	}
+
+	void Compilation::Run()
+	{
+		string gameName = path(Engine::gameExePath).stem().string();
+		string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+		string gameProjectFolder = myGamesFolder + "\\" + gameName + "\\" + path(Engine::projectPath).stem().string();
+
+		if (!exists(path(gameProjectFolder).parent_path()))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Game documents folder doesn't exist! Did you forget to compile?\n");
+		}
+		else
+		{
+			if (!exists(Engine::gameExePath))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Error: Game exe does not exist! Did you forget to compile?\n");
+			}
+			else
+			{
+				SceneFile::SaveScene();
+
+				//
+				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES AND THEIR CONTENT TO IT
+				//
+
+				if (exists(gameProjectFolder)) File::DeleteFileOrfolder(gameProjectFolder + "\\scenes");
+
+				string engineProjectFolder = path(Engine::projectPath).string();
+				for (const auto& entry : directory_iterator(path(engineProjectFolder)))
+				{
+					string stem = path(entry).stem().string();
+
+					if (stem != "models"
+						&& stem != "textures"
+						&& stem != "project")
+					{
+						string origin = path(entry).string();
+						string originFileName = path(entry).filename().string();
+						string target = gameProjectFolder + "\\" + originFileName;
+
+						cout << "trying to copy from\n" << origin << "\nto\n" << target << "\n";
+
+						File::CopyFileOrFolder(origin, target);
+					}
+				}
+
+				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+			}
 		}
 	}
 }

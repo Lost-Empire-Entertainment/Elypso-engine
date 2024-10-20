@@ -27,11 +27,25 @@ namespace Core
 
 		static inline vector<string> output;
 
+		/// <summary>
+		/// Main game compilation function, also calls RunInstaller.
+		/// </summary>
 		static void Compile();
 
+		/// <summary>
+		/// Compiles the game from source.
+		/// </summary>
+		static void RunInstaller();
+
+		/// <summary>
+		/// Draws the ImGui compilation window
+		/// </summary>
 		static void RenderBuildingWindow();
 
-		static void RunInstaller();
+		/// <summary>
+		/// Run the game exe.
+		/// </summary>
+		static void Run();
 	private:
 		static inline bool finishedBuild;
 		static inline bool firstScrollToBottom;

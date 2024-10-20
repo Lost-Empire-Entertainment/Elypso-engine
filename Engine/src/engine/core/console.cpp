@@ -91,7 +91,7 @@ namespace Core
             WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Failed to open log file! Reason: " +
+                "Error: Failed to open log file! Reason: " +
                 ec.message() + "\n\n");
         }
     }
@@ -248,7 +248,7 @@ namespace Core
                 WriteConsoleMessage(
                     Caller::INPUT,
                     Type::EXCEPTION,
-                    "Please select a gameobject first before using the 'dbg' command.\n");
+                    "Error: Please select a gameobject first before using the 'dbg' command.\n");
             }
             else
             {
@@ -298,7 +298,7 @@ namespace Core
             WriteConsoleMessage(
                 Caller::INPUT,
                 Type::EXCEPTION,
-                "'" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
+                "Error: '" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
         }
     }
 

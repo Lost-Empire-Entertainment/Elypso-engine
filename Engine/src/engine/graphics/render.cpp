@@ -142,7 +142,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INITIALIZE,
 				Type::EXCEPTION,
-				"Failed to create GLFW window!\n\n");
+				"Error: Failed to create GLFW window!\n\n");
 			return;
 		}
 
@@ -188,7 +188,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INITIALIZE,
 				Type::EXCEPTION,
-				"Failed to initialize GLAD!\n\n");
+				"Error: Failed to initialize GLAD!\n\n");
 			return;
 		}
 
@@ -246,7 +246,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INITIALIZE,
 				Type::EXCEPTION,
-				"Framebuffer is not complete!\n\n");
+				"Error: Framebuffer is not complete!\n\n");
 			return;
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

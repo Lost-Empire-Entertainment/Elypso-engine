@@ -124,7 +124,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+					"Error: Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
 				strcpy_s(name, bufferSize, path(assetPath).filename().string().c_str());
 				newName = path(assetPath).filename().string();

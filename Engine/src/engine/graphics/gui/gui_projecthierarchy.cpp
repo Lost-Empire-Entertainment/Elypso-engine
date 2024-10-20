@@ -132,7 +132,7 @@ namespace Graphics::GUI
                                         ConsoleManager::WriteConsoleMessage(
                                             Caller::FILE,
                                             Type::EXCEPTION,
-                                            "Cannot switch to scene '" + path(entry).stem().string() + "' because it is already open!\n");
+                                            "Error: Cannot switch to scene '" + path(entry).stem().string() + "' because it is already open!\n");
                                     }
                                     else
                                     {
@@ -152,7 +152,7 @@ namespace Graphics::GUI
                                         ConsoleManager::WriteConsoleMessage(
                                             Caller::FILE,
                                             Type::EXCEPTION,
-                                            "Cannot delete scene '" + path(entry).stem().string() + "' because it is currently loaded! Switch to another scene to delete this scene.\n");
+                                            "Error: Cannot delete scene '" + path(entry).stem().string() + "' because it is currently loaded! Switch to another scene to delete this scene.\n");
                                     }
                                     else
                                     {

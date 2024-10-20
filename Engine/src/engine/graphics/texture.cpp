@@ -193,7 +193,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Failed to load texture '" + finalTexturePath + "'!\n\n");
+				"Error: Failed to load texture '" + finalTexturePath + "'!\n\n");
 		}
 		stbi_image_free(data);
 	}

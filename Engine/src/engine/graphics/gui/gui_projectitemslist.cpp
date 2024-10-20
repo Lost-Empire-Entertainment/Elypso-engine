@@ -246,7 +246,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							ConsoleCaller::FILE,
 							ConsoleType::EXCEPTION,
-							"Cannot switch to scene '" + path(selectedPath).parent_path().stem().string() + "' because it is already open!\n");
+							"Error: Cannot switch to scene '" + path(selectedPath).parent_path().stem().string() + "' because it is already open!\n");
 					}
 					else SceneFile::LoadScene(selectedPath);
 				}

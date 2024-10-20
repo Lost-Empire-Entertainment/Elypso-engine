@@ -85,7 +85,7 @@ namespace EngineFile
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Couldn't read from object file '" + objectFilePath + "'!\n");
+							"Error: Couldn't read from object file '" + objectFilePath + "'!\n");
 						return;
 					}
 
@@ -289,7 +289,6 @@ namespace EngineFile
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
-				/*
 				if (exists(objectFilePath)) File::DeleteFileOrfolder(objectFilePath);
 
 				ofstream objectFile(objectFilePath);
@@ -299,7 +298,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Couldn't write into object file '" + objectFilePath + "'!\n");
+						"Error: Couldn't write into object file '" + objectFilePath + "'!\n");
 					return;
 				}
 
@@ -314,7 +313,6 @@ namespace EngineFile
 					Caller::FILE,
 					Type::DEBUG,
 					"Successfully saved gameobject " + obj->GetName() + " with ID " + to_string(obj->GetID()) + ".\n");
-				*/
 			}
 		}
 	}
@@ -328,7 +326,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Couldn't read from object file '" + file + "'!\n");
+				"Error: Couldn't read from object file '" + file + "'!\n");
 			return "";
 		}
 
@@ -440,8 +438,6 @@ namespace EngineFile
 		{
 			string filePath = path(gameobjectPath).string();
 
-			cout << "---- reading from txt file " << filePath << "\n";
-
 			if (GetType(filePath) == "model")
 			{
 				LoadModel(filePath);
@@ -472,7 +468,7 @@ namespace EngineFile
 	void GameObjectFile::LoadModel(const string& file)
 	{
 		//
-		//READ FROM MODEL FILE
+		// READ FROM MODEL FILE
 		//
 
 		ifstream modelFile(file);
@@ -481,7 +477,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Failed to open model file '" + file + "'!\n\n");
+				"Error: Failed to open model file '" + file + "'!\n\n");
 			return;
 		}
 
@@ -546,11 +542,8 @@ namespace EngineFile
 		string model{};
 		float shininess{};
 
-		for (const auto& kvp : data)
+		for (const auto& [key, value] : data)
 		{
-			string key = kvp.first;
-			auto& value = kvp.second;
-
 			if (key == "name")
 			{
 				name = value;
@@ -558,6 +551,10 @@ namespace EngineFile
 			else if (key == "id")
 			{
 				ID = stoul(value);
+			}
+			else if (key == "isEnabled")
+			{
+				isEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -605,7 +602,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Texture at slot 0 for " + name + " at " + fullTex0Path + " does not exist!\n");
+						"Error: Texture at slot 0 for " + name + " at " + fullTex0Path + " does not exist!\n");
 					textures.push_back(Engine::filesPath + "\\textures\\diff_missing.png");
 				}
 				else textures.push_back(fullTex0Path);
@@ -624,7 +621,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Texture at slot 1 for " + name + " at " + fullTex1Path + " does not exist!\n");
+						"Error: Texture at slot 1 for " + name + " at " + fullTex1Path + " does not exist!\n");
 					textures.push_back("DEFAULTSPEC");
 				}
 				else textures.push_back(fullTex1Path);
@@ -638,7 +635,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Texture at slot 2 for " + name + " at " + fullTex2Path + " does not exist!\n");
+						"Error: Texture at slot 2 for " + name + " at " + fullTex2Path + " does not exist!\n");
 					textures.push_back("EMPTY");
 				}
 				else textures.push_back(fullTex2Path);
@@ -652,7 +649,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Texture at slot 3 for " + name + " at " + fullTex3Path + " does not exist!\n");
+						"Error: Texture at slot 3 for " + name + " at " + fullTex3Path + " does not exist!\n");
 					textures.push_back("EMPTY");
 				}
 				else textures.push_back(fullTex3Path);
@@ -670,7 +667,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
+						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
 					return;
 				}
 				else
@@ -701,7 +698,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
+				"Error: Diffuse texture " + diffuseTexture + " for " + name + " not found!\n");
 			diffuseTexture = diff_missing;
 		}
 
@@ -712,7 +709,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Specular texture " + specularTexture + " for " + name + " not found!\n");
+				"Error: Specular texture " + specularTexture + " for " + name + " not found!\n");
 			specularTexture = "EMPTY";
 		}
 
@@ -723,7 +720,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Normal texture " + normalTexture + " for " + name + " not found!\n");
+				"Error: Normal texture " + normalTexture + " for " + name + " not found!\n");
 			normalTexture = "EMPTY";
 		}
 
@@ -734,7 +731,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Height texture " + heightTexture + " for " + name + " not found!\n");
+				"Error: Height texture " + heightTexture + " for " + name + " not found!\n");
 			heightTexture = "EMPTY";
 		}
 
@@ -758,7 +755,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Tried to apply data to scene model '" + name + "' with ID '" + to_string(ID) + "' but it does not exist!");
+				"Error: Tried to apply data to scene model '" + name + "' with ID '" + to_string(ID) + "' but it does not exist!");
 		}
 		else
 		{
@@ -767,10 +764,6 @@ namespace EngineFile
 				Type::DEBUG,
 				"Loading model '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-			cout << "---- last name was '" << foundObj->GetName() << "', new name is '" << name 
-				<< "', last ID was '" << foundObj->GetID() << "' new ID is '" << ID << "'\n";
-
-			/*
 			foundObj->SetName(name);
 			foundObj->SetID(ID);
 			foundObj->SetEnableState(isEnabled);
@@ -793,7 +786,6 @@ namespace EngineFile
 			foundObj->GetBasicShape()->SetShininess(shininess);
 
 			GameObject::nextID = ID + 1;
-			*/
 		}
 	}
 
@@ -809,7 +801,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Failed to open point light file '" + file + "'!\n\n");
+				"Error: Failed to open point light file '" + file + "'!\n\n");
 			return;
 		}
 
@@ -890,11 +882,8 @@ namespace EngineFile
 		string billboardTexture{};
 		float billboardShininess{};
 
-		for (const auto& kvp : data)
+		for (const auto& [key, value] : data)
 		{
-			string key = kvp.first;
-			auto& value = kvp.second;
-
 			if (key == "name")
 			{
 				name = value;
@@ -902,6 +891,10 @@ namespace EngineFile
 			else if (key == "id")
 			{
 				ID = stoul(value);
+			}
+			else if (key == "isEnabled")
+			{
+				isEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -943,7 +936,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
+						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
 					return;
 				}
 				else
@@ -983,7 +976,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
+						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
 					return;
 				}
 				else billboardTexture = fullTexPath;
@@ -1001,7 +994,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
+						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
 					return;
 				}
 				else
@@ -1057,7 +1050,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Failed to open spotlight file '" + file + "'!\n\n");
+				"Error: Failed to open spotlight file '" + file + "'!\n\n");
 			return;
 		}
 
@@ -1142,11 +1135,8 @@ namespace EngineFile
 		string billboardTexture{};
 		float billboardShininess{};
 
-		for (const auto& kvp : data)
+		for (const auto& [key, value] : data)
 		{
-			string key = kvp.first;
-			auto& value = kvp.second;
-
 			if (key == "name")
 			{
 				name = value;
@@ -1154,6 +1144,10 @@ namespace EngineFile
 			else if (key == "id")
 			{
 				ID = stoul(value);
+			}
+			else if (key == "isEnabled")
+			{
+				isEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -1195,7 +1189,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
+						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
 					return;
 				}
 				else
@@ -1237,7 +1231,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
+						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
 					return;
 				}
 				else billboardTexture = fullTexPath;
@@ -1255,7 +1249,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
+						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
 					return;
 				}
 				else
@@ -1313,7 +1307,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Failed to open directional light file '" + file + "'!\n\n");
+				"Error: Failed to open directional light file '" + file + "'!\n\n");
 			return;
 		}
 
@@ -1393,11 +1387,8 @@ namespace EngineFile
 		string billboardTexture{};
 		float billboardShininess{};
 
-		for (const auto& kvp : data)
+		for (const auto& [key, value] : data)
 		{
-			string key = kvp.first;
-			auto& value = kvp.second;
-
 			if (key == "name")
 			{
 				name = value;
@@ -1405,6 +1396,10 @@ namespace EngineFile
 			else if (key == "id")
 			{
 				ID = stoul(value);
+			}
+			else if (key == "isEnabled")
+			{
+				isEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -1446,7 +1441,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
+						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
 					return;
 				}
 				else
@@ -1485,7 +1480,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
+						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
 					return;
 				}
 				else billboardTexture = fullTexPath;
@@ -1503,7 +1498,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
+						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
 					return;
 				}
 				else

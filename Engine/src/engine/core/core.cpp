@@ -332,7 +332,7 @@ namespace Core
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Failed to assign valid first scene file because the provided one does not exist! Clearing assigned value.");
+					"Error: Failed to assign valid first scene file because the provided one does not exist! Clearing assigned value.");
 				gameFirstScene = "";
 			}
 			else
@@ -438,7 +438,7 @@ namespace Core
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Couldn't open scene file '" + lastSavedScenePath + "'! Opening default scene.\n");
+					"Error: Couldn't open scene file '" + lastSavedScenePath + "'! Opening default scene.\n");
 				SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
 			}
 			else 
@@ -463,7 +463,7 @@ namespace Core
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Couldn't load scene file '" + foundScenePath + "' because it doesn't exist! Opening default scene.\n");
+							"Error: Couldn't load scene file '" + foundScenePath + "' because it doesn't exist! Opening default scene.\n");
 					}
 					SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
 				}

@@ -109,7 +109,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+					"Error: Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
 				strcpy_s(name, bufferSize, "Name");
 				newName = "Name";
@@ -146,7 +146,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"File/folder name '" + newName + "' already exists in this folder! Please pick a new file/folder name.");
+					"Error: File/folder name '" + newName + "' already exists in this folder! Please pick a new file/folder name.");
 
 				extension = "";
 				originalName = "";
@@ -172,7 +172,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
+					"Error: Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 
 				extension = "";
 				originalName = "";
@@ -209,7 +209,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Failed to open scene file '" + Engine::scenePath + "'!\n\n");
+					"Error: Failed to open scene file '" + Engine::scenePath + "'!\n\n");
 
 				extension = "";
 				originalName = "";
