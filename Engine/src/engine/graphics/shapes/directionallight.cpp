@@ -40,6 +40,7 @@ namespace Graphics::Shape
 		string& name,
 		unsigned int& id,
 		const bool& isEnabled,
+		const bool& isMeshEnabled,
 		
 		const string& billboardVertShader,
 		const string& billboardFragShader,
@@ -93,7 +94,7 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::directional_light, vao, vbo, ebo);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::directional_light, vao, vbo, ebo);
 
 		Shader directionalLightShader = Shader::LoadShader(vertShader, fragShader);
 
@@ -169,16 +170,19 @@ namespace Graphics::Shape
 			shader.SetFloat("transparency", transparency);
 			shader.SetVec3("color", obj->GetDirectionalLight()->GetDiffuse());
 
-			mat4 model = mat4(1.0f);
-			model = translate(model, obj->GetTransform()->GetPosition());
-			quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
-			model *= mat4_cast(newRot);
-			model = scale(model, obj->GetTransform()->GetScale());
+			if (obj->GetMesh()->IsEnabled())
+			{
+				mat4 model = mat4(1.0f);
+				model = translate(model, obj->GetTransform()->GetPosition());
+				quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+				model *= mat4_cast(newRot);
+				model = scale(model, obj->GetTransform()->GetScale());
 
-			shader.SetMat4("model", model);
-			GLuint VAO = obj->GetMesh()->GetVAO();
-			glBindVertexArray(VAO);
-			glDrawArrays(GL_LINES, 0, 32);
+				shader.SetMat4("model", model);
+				GLuint VAO = obj->GetMesh()->GetVAO();
+				glBindVertexArray(VAO);
+				glDrawArrays(GL_LINES, 0, 32);
+			}
 		}
 	}
 }

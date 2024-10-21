@@ -209,7 +209,8 @@ namespace Graphics::Shape
                 shininess,
                 nodeName,
                 id,
-                isEnabled);
+                isEnabled,
+                true);
 
             string folderPath = path(modelPath).parent_path().string() + "\\" + nodeName;
             string filePath = folderPath + "\\" + nodeName + ".txt";

@@ -470,6 +470,7 @@ namespace Graphics::GUI
 							targetName,
 							nextID,
 							true,
+							true,
 
 							//billboard values
 							Engine::filesPath + "\\shaders\\Basic_texture.vert",
@@ -509,6 +510,7 @@ namespace Graphics::GUI
 							17.5f,
 							targetName,
 							nextID,
+							true,
 							true,
 
 							//billboard values
@@ -555,6 +557,7 @@ namespace Graphics::GUI
 								1.0f,
 								targetName,
 								nextID,
+								true,
 								true,
 
 								//billboard values

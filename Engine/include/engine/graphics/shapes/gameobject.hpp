@@ -116,10 +116,12 @@ namespace Graphics::Shape
 			skybox
 		};
 
-		Mesh(const MeshType& type,
+		Mesh(const bool& isEnabled,
+			const MeshType& type,
 			const GLuint& VAO,
 			const GLuint& VBO,
 			const GLuint& EBO) :
+			isEnabled(isEnabled),
 			type(type),
 			VAO(VAO),
 			VBO(VBO),
@@ -133,6 +135,10 @@ namespace Graphics::Shape
 			glDeleteBuffers(1, &EBO);
 		}
 
+		void SetEnableState(const bool& newIsEnabled)
+		{
+			isEnabled = newIsEnabled;
+		}
 		void SetMeshType(const MeshType& newType)
 		{
 			type = newType;
@@ -158,6 +164,10 @@ namespace Graphics::Shape
 			indices = newIndices;
 		}
 
+		const bool& IsEnabled() const
+		{
+			return isEnabled;
+		}
 		const MeshType& GetMeshType() const
 		{
 			return type;
@@ -183,6 +193,7 @@ namespace Graphics::Shape
 			return indices;
 		}
 	private:
+		bool isEnabled;
 		MeshType type;
 		GLuint VAO;
 		GLuint VBO;
@@ -669,8 +680,8 @@ namespace Graphics::Shape
 			const mat4& view,
 			const mat4& projection);
 
-		static bool renderBillboards;
-		static bool renderLightBorders;
+		static inline bool renderBillboards;
+		static inline bool renderLightBorders;
 
 		static void SetCategoryNames(const map<string, vector<string>>& newCategoryNames)
 		{

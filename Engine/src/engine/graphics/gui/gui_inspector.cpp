@@ -86,17 +86,6 @@ namespace Graphics::GUI
 
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
-
-				if (obj->GetChildBillboard() != nullptr)
-				{
-					bool billboardState = obj->GetChildBillboard()->IsEnabled();
-					if (ImGui::Checkbox("Enable billboard", &billboardState))
-					{
-						obj->GetChildBillboard()->SetEnableState(billboardState);
-
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-				}
 			}
 
 			ImGui::SameLine();
@@ -290,6 +279,14 @@ namespace Graphics::GUI
 			ImGui::Text("Material");
 			ImGui::Separator();
 
+			bool meshState = obj->GetMesh()->IsEnabled();
+			if (ImGui::Checkbox("Enable mesh", &meshState))
+			{
+				obj->GetMesh()->SetEnableState(meshState);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			if (objType == Type::model)
 			{
 				float modelShininess = obj->GetBasicShape()->GetShininess();
@@ -398,133 +395,144 @@ namespace Graphics::GUI
 				ImGui::PopItemWidth();
 				ImGui::PopID();
 			}
-			else if (objType == Type::point_light)
+			else
 			{
-				vec3 pointDiffuse = obj->GetPointLight()->GetDiffuse();
-				ImGui::Text("Point light diffuse");
-				if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
+				bool billboardState = obj->GetChildBillboard()->IsEnabled();
+				if (ImGui::Checkbox("Enable billboard", &billboardState))
 				{
-					obj->GetPointLight()->SetDiffuse(pointDiffuse);
+					obj->GetChildBillboard()->SetEnableState(billboardState);
+
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
-				float pointIntensity = obj->GetPointLight()->GetIntensity();
-				ImGui::Text("Point light intensity");
-				if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
+				if (objType == Type::point_light)
 				{
-					obj->GetPointLight()->SetIntensity(pointIntensity);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##pointint"))
-				{
-					obj->GetPointLight()->SetIntensity(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+					vec3 pointDiffuse = obj->GetPointLight()->GetDiffuse();
+					ImGui::Text("Point light diffuse");
+					if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
+					{
+						obj->GetPointLight()->SetDiffuse(pointDiffuse);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 
-				float pointDistance = obj->GetPointLight()->GetDistance();
-				ImGui::Text("Point light distance");
-				if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
-				{
-					obj->GetPointLight()->SetDistance(pointDistance);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##pointdist"))
-				{
-					obj->GetPointLight()->SetDistance(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-			}
-			else if (objType == Type::spot_light)
-			{
-				vec3 spotDiffuse = obj->GetSpotLight()->GetDiffuse();
-				ImGui::Text("Spotlight diffuse");
-				if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
-				{
-					obj->GetSpotLight()->SetDiffuse(spotDiffuse);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+					float pointIntensity = obj->GetPointLight()->GetIntensity();
+					ImGui::Text("Point light intensity");
+					if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
+					{
+						obj->GetPointLight()->SetIntensity(pointIntensity);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Reset##pointint"))
+					{
+						obj->GetPointLight()->SetIntensity(1.0f);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 
-				float spotIntensity = obj->GetSpotLight()->GetIntensity();
-				ImGui::Text("Spotlight intensity");
-				if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
-				{
-					obj->GetSpotLight()->SetIntensity(spotIntensity);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					float pointDistance = obj->GetPointLight()->GetDistance();
+					ImGui::Text("Point light distance");
+					if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
+					{
+						obj->GetPointLight()->SetDistance(pointDistance);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Reset##pointdist"))
+					{
+						obj->GetPointLight()->SetDistance(1.0f);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotint"))
+				else if (objType == Type::spot_light)
 				{
-					obj->GetSpotLight()->SetIntensity(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+					vec3 spotDiffuse = obj->GetSpotLight()->GetDiffuse();
+					ImGui::Text("Spotlight diffuse");
+					if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
+					{
+						obj->GetSpotLight()->SetDiffuse(spotDiffuse);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 
-				float spotDistance = obj->GetSpotLight()->GetDistance();
-				ImGui::Text("Spotlight distance");
-				if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
-				{
-					obj->GetSpotLight()->SetDistance(spotDistance);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotdist"))
-				{
-					obj->GetSpotLight()->SetDistance(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+					float spotIntensity = obj->GetSpotLight()->GetIntensity();
+					ImGui::Text("Spotlight intensity");
+					if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
+					{
+						obj->GetSpotLight()->SetIntensity(spotIntensity);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Reset##spotint"))
+					{
+						obj->GetSpotLight()->SetIntensity(1.0f);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 
-				float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
-				float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
+					float spotDistance = obj->GetSpotLight()->GetDistance();
+					ImGui::Text("Spotlight distance");
+					if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
+					{
+						obj->GetSpotLight()->SetDistance(spotDistance);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Reset##spotdist"))
+					{
+						obj->GetSpotLight()->SetDistance(1.0f);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 
-				ImGui::Text("Spotlight inner angle");
-				if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
-				{
-					obj->GetSpotLight()->SetInnerAngle(spotInnerAngle);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotinnerangle"))
-				{
-					obj->GetSpotLight()->SetInnerAngle(15.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+					float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
+					float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
 
-				ImGui::Text("Spotlight outer angle");
-				if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
-				{
-					obj->GetSpotLight()->SetOuterAngle(spotOuterAngle);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotouterangle"))
-				{
-					obj->GetSpotLight()->SetOuterAngle(30.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-			}
-			else if (objType == Type::directional_light)
-			{
-				vec3 dirDiffuse = obj->GetDirectionalLight()->GetDiffuse();
-				ImGui::Text("Directional light diffuse");
-				if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
-				{
-					obj->GetDirectionalLight()->SetDiffuse(dirDiffuse);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+					ImGui::Text("Spotlight inner angle");
+					if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
+					{
+						obj->GetSpotLight()->SetInnerAngle(spotInnerAngle);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Reset##spotinnerangle"))
+					{
+						obj->GetSpotLight()->SetInnerAngle(15.0f);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 
-				float dirIntensity = obj->GetDirectionalLight()->GetIntensity();
-				ImGui::Text("Directional light intensity");
-				if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
-				{
-					obj->GetDirectionalLight()->SetIntensity(dirIntensity);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					ImGui::Text("Spotlight outer angle");
+					if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
+					{
+						obj->GetSpotLight()->SetOuterAngle(spotOuterAngle);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Reset##spotouterangle"))
+					{
+						obj->GetSpotLight()->SetOuterAngle(30.0f);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##dirint"))
+				else if (objType == Type::directional_light)
 				{
-					obj->GetDirectionalLight()->SetIntensity(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					vec3 dirDiffuse = obj->GetDirectionalLight()->GetDiffuse();
+					ImGui::Text("Directional light diffuse");
+					if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
+					{
+						obj->GetDirectionalLight()->SetDiffuse(dirDiffuse);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+
+					float dirIntensity = obj->GetDirectionalLight()->GetIntensity();
+					ImGui::Text("Directional light intensity");
+					if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
+					{
+						obj->GetDirectionalLight()->SetIntensity(dirIntensity);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Reset##dirint"))
+					{
+						obj->GetDirectionalLight()->SetIntensity(1.0f);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
 			}
 

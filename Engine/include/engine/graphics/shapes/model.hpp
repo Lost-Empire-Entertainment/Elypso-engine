@@ -47,7 +47,8 @@ namespace Graphics::Shape
 			const float& shininess = 32,
 			string& name = tempName,
 			unsigned int& id = tempID,
-			const bool& isEnabled = true);
+			const bool& isEnabled = true,
+			const bool& isMeshEnabled = true);
 
 		static void Render(
 			const shared_ptr<GameObject>& obj,

@@ -140,6 +140,8 @@ namespace EngineFile
 
 				data.push_back("enabled= " + to_string(obj->IsEnabled()) + "\n");
 
+				data.push_back("mesh enabled= " + to_string(obj->GetMesh()->IsEnabled()) + "\n");
+
 				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
 				data.push_back("type= " + type + "\n");
 
@@ -510,6 +512,7 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
+					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -534,6 +537,7 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
+		bool isMeshEnabled{};
 		Mesh::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -557,6 +561,10 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
+			}
+			else if (key == "mesh enabled")
+			{
+				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -834,6 +842,7 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
+					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -866,6 +875,7 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
+		bool isMeshEnabled{};
 		Mesh::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -898,6 +908,10 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
+			}
+			else if (key == "mesh enabled")
+			{
+				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -1035,6 +1049,7 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
+			isMeshEnabled,
 			billboardShaders[0],
 			billboardShaders[1],
 			billboardTexture,
@@ -1089,6 +1104,7 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
+					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -1124,6 +1140,7 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
+		bool isMeshEnabled{};
 		Mesh::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -1158,6 +1175,10 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
+			}
+			else if (key == "mesh enabled")
+			{
+				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -1299,6 +1320,7 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
+			isMeshEnabled,
 			billboardShaders[0],
 			billboardShaders[1],
 			billboardTexture,
@@ -1353,6 +1375,7 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
+					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -1386,6 +1409,7 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
+		bool isMeshEnabled{};
 		Mesh::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -1417,6 +1441,10 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
+			}
+			else if (key == "mesh enabled")
+			{
+				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -1552,6 +1580,7 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
+			isMeshEnabled,
 			billboardShaders[0],
 			billboardShaders[1],
 			billboardTexture,

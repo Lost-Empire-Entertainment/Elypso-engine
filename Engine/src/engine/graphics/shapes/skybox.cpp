@@ -97,7 +97,7 @@ namespace Graphics::Shape
             3 * sizeof(float),
             (void*)0);
 
-        shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::skybox, VAO, VBO, 0);
+        shared_ptr<Mesh> mesh = make_shared<Mesh>(true, MeshType::skybox, VAO, VBO, 0);
 
         Shader skyboxShader = Shader::LoadShader(vertShader, fragShader);
 

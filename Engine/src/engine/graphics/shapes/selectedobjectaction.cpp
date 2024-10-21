@@ -71,7 +71,7 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::actionTex, vao, vbo, ebo);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::actionTex, vao, vbo, ebo);
 
 		Shader borderShader = Shader::LoadShader(
 			Engine::filesPath + "\\shaders\\Basic_texture.vert",

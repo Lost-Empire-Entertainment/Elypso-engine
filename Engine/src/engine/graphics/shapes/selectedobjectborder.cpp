@@ -90,7 +90,7 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::border, vao, vbo, ebo);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::border, vao, vbo, ebo);
 
 		Shader borderShader = Shader::LoadShader(
 			Engine::filesPath + "\\shaders\\Basic_model.vert",

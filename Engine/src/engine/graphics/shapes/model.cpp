@@ -71,7 +71,8 @@ namespace Graphics::Shape
 		const float& shininess,
 		string& name,
 		unsigned int& id,
-		const bool& isEnabled)
+		const bool& isEnabled,
+		const bool& isMeshEnabled)
 	{
 		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
@@ -113,7 +114,7 @@ namespace Graphics::Shape
 		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, weights));
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(MeshType::model, VAO, VBO, EBO);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::model, VAO, VBO, EBO);
 
 		Shader modelShader = Shader::LoadShader(vertShader, fragShader);
 
@@ -306,13 +307,16 @@ namespace Graphics::Shape
 
 			shader.SetMat4("model", model);
 
-			GLuint VAO = obj->GetMesh()->GetVAO();
-			glBindVertexArray(VAO);
-			glDrawElements(
-				GL_TRIANGLES,
-				static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
-				GL_UNSIGNED_INT,
-				0);
+			if (obj->GetMesh()->IsEnabled())
+			{
+				GLuint VAO = obj->GetMesh()->GetVAO();
+				glBindVertexArray(VAO);
+				glDrawElements(
+					GL_TRIANGLES,
+					static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
+					GL_UNSIGNED_INT,
+					0);
+			}
 
 			glActiveTexture(GL_TEXTURE0);
 		}

@@ -82,7 +82,7 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(Type::billboard, vao, vbo, ebo);
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::billboard, vao, vbo, ebo);
 
 		Shader billboardShader = Shader::LoadShader(vertShader, fragShader);
 
