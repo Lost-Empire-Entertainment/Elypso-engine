@@ -279,14 +279,6 @@ namespace Graphics::GUI
 			ImGui::Text("Material");
 			ImGui::Separator();
 
-			bool meshState = obj->GetMesh()->IsEnabled();
-			if (ImGui::Checkbox("Enable mesh", &meshState))
-			{
-				obj->GetMesh()->SetEnableState(meshState);
-
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
 			if (objType == Type::model)
 			{
 				float modelShininess = obj->GetBasicShape()->GetShininess();
@@ -397,6 +389,14 @@ namespace Graphics::GUI
 			}
 			else
 			{
+				bool meshState = obj->GetMesh()->IsEnabled();
+				if (ImGui::Checkbox("Enable mesh", &meshState))
+				{
+					obj->GetMesh()->SetEnableState(meshState);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
 				bool billboardState = obj->GetChildBillboard()->IsEnabled();
 				if (ImGui::Checkbox("Enable billboard", &billboardState))
 				{

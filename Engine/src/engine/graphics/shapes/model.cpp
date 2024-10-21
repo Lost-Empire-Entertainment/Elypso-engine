@@ -307,16 +307,13 @@ namespace Graphics::Shape
 
 			shader.SetMat4("model", model);
 
-			if (obj->GetMesh()->IsEnabled())
-			{
-				GLuint VAO = obj->GetMesh()->GetVAO();
-				glBindVertexArray(VAO);
-				glDrawElements(
-					GL_TRIANGLES,
-					static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
-					GL_UNSIGNED_INT,
-					0);
-			}
+			GLuint VAO = obj->GetMesh()->GetVAO();
+			glBindVertexArray(VAO);
+			glDrawElements(
+				GL_TRIANGLES,
+				static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
+				GL_UNSIGNED_INT,
+				0);
 
 			glActiveTexture(GL_TEXTURE0);
 		}
