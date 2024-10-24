@@ -173,7 +173,8 @@ namespace Graphics::Shape
 			shader.SetFloat("transparency", transparency);
 			shader.SetVec3("color", obj->GetSpotLight()->GetDiffuse());
 
-			if (obj->GetMesh()->IsEnabled())
+			if (GameObjectManager::renderLightBorders
+				&& obj->GetMesh()->IsEnabled())
 			{
 				mat4 model = mat4(1.0f);
 				model = translate(model, obj->GetTransform()->GetPosition());

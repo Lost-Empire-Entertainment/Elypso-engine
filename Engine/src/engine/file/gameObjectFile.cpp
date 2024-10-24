@@ -857,6 +857,7 @@ namespace EngineFile
 
 					|| key == "billboard name"
 					|| key == "billboard id"
+					|| key == "billboard enabled"
 					|| key == "billboard shaders"
 					|| key == "billboard texture"
 					|| key == "billboard shininess")

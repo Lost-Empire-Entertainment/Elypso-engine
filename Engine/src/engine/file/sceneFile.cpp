@@ -339,7 +339,7 @@ namespace EngineFile
 		sceneFile << "camera_rotation= " << cameraRot << "\n";
 #if ENGINE_MODE
 		sceneFile << "renderBillboards= " << GameObjectManager::renderBillboards << "\n";
-		sceneFile << "renderLightBordders= " << GameObjectManager::renderLightBorders << "\n";
+		sceneFile << "renderLightBorders= " << GameObjectManager::renderLightBorders << "\n";
 #endif
 		sceneFile << "skybox_right= " << skyboxTexturesMap["right"] << "\n";
 		sceneFile << "skybox_left= " << skyboxTexturesMap["left"] << "\n";

@@ -116,7 +116,8 @@ namespace Graphics::Shape
 
 	void Billboard::RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
-		if (obj->IsEnabled())
+		if (GameObjectManager::renderBillboards
+			&& obj->IsEnabled())
 		{
 			Shader shader = obj->GetMaterial()->GetShader();
 

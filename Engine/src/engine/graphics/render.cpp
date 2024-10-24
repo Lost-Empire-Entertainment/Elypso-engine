@@ -103,6 +103,12 @@ namespace Graphics
 		GameGUI::Initialize();
 #endif
 		TimeManager::InitializeDeltaTime();
+
+#if	ENGINE_MODE
+#else
+		GameObjectManager::renderBillboards = false;
+		GameObjectManager::renderLightBorders = false;
+#endif
 	}
 
 	void Render::GLFWSetup()
@@ -642,7 +648,7 @@ namespace Graphics
 
 			ImGui::Text("Render billboards");
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 150);
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 			bool renderBillboards = GameObjectManager::renderBillboards;
 			if (ImGui::Checkbox("##renderBillboards", &renderBillboards))
 			{
@@ -652,9 +658,9 @@ namespace Graphics
 
 			ImGui::Text("Render light borders");
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 200);
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
 			bool renderLightBorders = GameObjectManager::renderLightBorders;
-			if (ImGui::Checkbox("##renderLightBorders", &renderBillboards))
+			if (ImGui::Checkbox("##renderLightBorders", &renderLightBorders))
 			{
 				GameObjectManager::renderLightBorders = renderLightBorders;
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
