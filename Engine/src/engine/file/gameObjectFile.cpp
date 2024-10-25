@@ -69,6 +69,7 @@ namespace EngineFile
 			if (obj->GetParentBillboardHolder() == nullptr)
 			{
 				string objectFilePath = obj->GetDirectory();
+				string objectName = obj->GetName();
 
 				vector<string> data;
 
@@ -252,6 +253,12 @@ namespace EngineFile
 				//
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
+
+				string folderPath = path(objectFilePath).parent_path().string();
+				if (!exists(folderPath))
+				{
+					File::CreateNewFolder(folderPath);
+				}
 
 				if (exists(objectFilePath)) File::DeleteFileOrfolder(objectFilePath);
 
