@@ -680,8 +680,8 @@ namespace Graphics::Shape
 			const mat4& view,
 			const mat4& projection);
 
-		static inline bool renderBillboards;
-		static inline bool renderLightBorders;
+		static inline bool renderBillboards = true;
+		static inline bool renderLightBorders = true;
 
 		static void SetCategoryNames(const map<string, vector<string>>& newCategoryNames)
 		{
