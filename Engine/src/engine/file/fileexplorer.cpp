@@ -177,10 +177,12 @@ namespace EngineFile
 		hr = pFileOpen->Show(NULL);
 		if (FAILED(hr))
 		{
+			/*
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
 				"File Explorer error: Failed to show dialog!\n");
+			*/
 			pFileOpen->Release();
 			CoUninitialize();
 			return "";

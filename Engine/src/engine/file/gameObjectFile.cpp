@@ -88,47 +88,7 @@ namespace EngineFile
 							"Error: Couldn't read from object file '" + objectFilePath + "'!\n");
 						return;
 					}
-
-					data.push_back("---- IMPORTED FILE ----\n");
-
-					string line;
-					while (getline(existingData, line))
-					{
-						if (!line.empty()
-							&& line != "---- IMPORTED FILE ----"
-							&& line != "---- SCENE FILE ----"
-							&& line.find("=") != string::npos)
-						{
-							vector<string> splitLine = String::Split(line, '=');
-							string key = splitLine[0];
-							string value = splitLine[1];
-
-							//remove one space in front of value if it exists
-							if (value[0] == ' ') value.erase(0, 1);
-							//remove one space in front of each value comma if it exists
-							for (size_t i = 0; i < value.length(); i++)
-							{
-								if (value[i] == ','
-									&& i + 1 < value.length()
-									&& value[i + 1] == ' ')
-								{
-									value.erase(i + 1, 1);
-								}
-							}
-
-							if (key == "originalName")
-							{
-								data.push_back("originalName= " + value + "\n");
-							}
-							else if (key == "nodeIndex")
-							{
-								data.push_back("nodeIndex= " + value + "\n");
-							}
-						}
-					}
 				}
-
-				data.push_back("\n---- SCENE FILE ----\n");
 
 				//
 				// SAVE SCENE OBJECT DATA INTO VECTOR

@@ -211,30 +211,6 @@ namespace Graphics::Shape
                 id,
                 isEnabled,
                 true);
-
-            string folderPath = path(modelPath).parent_path().string() + "\\" + nodeName;
-            string filePath = folderPath + "\\" + nodeName + ".txt";
-            if (!exists(folderPath))
-            {
-                File::CreateNewFolder(folderPath);
-
-                ofstream file(filePath);
-
-                file << "---- IMPORTED FILE ----" << "\n";
-                file << "originalName= " << nodeName << "\n";
-                file << "nodeID= " << id << "\n";
-                file << "nodeIndex= " << nodeIndex << "\n";
-                file << "parent= " << parentName << "\n";
-                file << "children= " << childNames << "\n\n";
-
-                file << "pos= " << nodePosition.x << ", " << nodePosition.y << ", " << nodePosition.z << "\n";
-                file << "rot= " << nodeRotation.x << ", " << nodeRotation.y << ", " << nodeRotation.z << "\n";
-                file << "scale= " << nodeScale.x << ", " << nodeScale.y << ", " << nodeScale.z << "\n";
-
-                file << "\n---- SCENE FILE ----\n";
-
-                file.close();
-            }
         }
 
         //after we've processed all of the meshes (if any) we then recursively process each of the children nodes

@@ -228,58 +228,54 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Import asset"))
 			{
 				string assetPath = FileExplorer::Select(FileExplorer::SearchType::asset);
-				if (assetPath == "")
+				if (assetPath != "")
 				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Did not get path!\n");
-				}
-				assetPath = String::CharReplace(assetPath, '/', '\\');
+					assetPath = String::CharReplace(assetPath, '/', '\\');
 
-				string name = path(assetPath).stem().string();
-				string extension = path(assetPath).extension().string();
-				if (extension != ".fbx"
-					&& extension != ".gltw"
-					&& extension != ".obj"
-					&& extension != ".png"
-					&& extension != ".jpg"
-					&& extension != ".jpeg")
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: File '" + name + "' with extension '" + extension + "' is not yet supported!");
-				}
-				else
-				{
-					bool foundExisting = false;
-					string existingFilePath;
-					string existingFileName;
-					string importedFileName = path(assetPath).stem().string();
-					for (const auto& file : directory_iterator(Engine::currentGameobjectsPath))
-					{
-						existingFilePath = file.path().string();
-						existingFileName = path(existingFilePath).stem().string();
-
-						if (importedFileName == existingFileName)
-						{
-							foundExisting = true;
-							break;
-						}
-					}
-
-					if (foundExisting)
+					string name = path(assetPath).stem().string();
+					string extension = path(assetPath).extension().string();
+					if (extension != ".fbx"
+						&& extension != ".gltw"
+						&& extension != ".obj"
+						&& extension != ".png"
+						&& extension != ".jpg"
+						&& extension != ".jpeg")
 					{
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Error: Gameobject '" + importedFileName + "' already exists in the current scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+							"Error: File '" + name + "' with extension '" + extension + "' is not yet supported!");
 					}
 					else
 					{
-						GUIImportAsset::renderImportAsset = true;
-						GUIImportAsset::assetPath = assetPath;
+						bool foundExisting = false;
+						string existingFilePath;
+						string existingFileName;
+						string importedFileName = path(assetPath).stem().string();
+						for (const auto& file : directory_iterator(Engine::currentGameobjectsPath))
+						{
+							existingFilePath = file.path().string();
+							existingFileName = path(existingFilePath).stem().string();
+
+							if (importedFileName == existingFileName)
+							{
+								foundExisting = true;
+								break;
+							}
+						}
+
+						if (foundExisting)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								Caller::FILE,
+								Type::EXCEPTION,
+								"Error: Gameobject '" + importedFileName + "' already exists in the current scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+						}
+						else
+						{
+							GUIImportAsset::renderImportAsset = true;
+							GUIImportAsset::assetPath = assetPath;
+						}
 					}
 				}
 			}
