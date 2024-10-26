@@ -124,12 +124,6 @@ namespace Graphics::GUI
 
 			ImGui::SameLine();
 
-			Type objType = obj->GetMesh()->GetMeshType();
-			string objTypeValue = "     Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
-			ImGui::Text(objTypeValue.c_str());
-
-			ImGui::SameLine();
-
 			ImGui::SetNextItemWidth(150);
 
 			ImGui::Spacing();
@@ -292,12 +286,38 @@ namespace Graphics::GUI
 	{
 		shared_ptr<GameObject>& obj = Select::selectedObj;
 
+		int height = obj->GetMesh()->GetMeshType() == Mesh::MeshType::model
+			? 75 : 150;
+
 		ImGuiChildFlags childWindowFlags{};
 
-		if (ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, 150), true, childWindowFlags))
+		if (ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
 		{
 			ImGui::Text("Mesh");
 			ImGui::Separator();
+
+			Type objType = obj->GetMesh()->GetMeshType();
+			string objTypeValue = "Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
+			ImGui::Text(objTypeValue.c_str());
+
+			if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model)
+			{
+				bool meshState = obj->GetMesh()->IsEnabled();
+				if (ImGui::Checkbox("Enable mesh", &meshState))
+				{
+					obj->GetMesh()->SetEnableState(meshState);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				bool billboardState = obj->GetChildBillboard()->IsEnabled();
+				if (ImGui::Checkbox("Enable billboard", &billboardState))
+				{
+					obj->GetChildBillboard()->SetEnableState(billboardState);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+			}
 
 			ImGui::EndChild();
 		}
@@ -427,22 +447,6 @@ namespace Graphics::GUI
 			}
 			else
 			{
-				bool meshState = obj->GetMesh()->IsEnabled();
-				if (ImGui::Checkbox("Enable mesh", &meshState))
-				{
-					obj->GetMesh()->SetEnableState(meshState);
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				bool billboardState = obj->GetChildBillboard()->IsEnabled();
-				if (ImGui::Checkbox("Enable billboard", &billboardState))
-				{
-					obj->GetChildBillboard()->SetEnableState(billboardState);
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
 				if (objType == Type::point_light)
 				{
 					vec3 pointDiffuse = obj->GetPointLight()->GetDiffuse();
