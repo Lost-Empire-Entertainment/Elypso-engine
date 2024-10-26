@@ -95,22 +95,27 @@ namespace Graphics::GUI
 				ConfigFile::SetValue("gui_inspector", "0");
 			}
 
-			PermanentComponents();
+			if (Select::isObjectSelected
+				&& Select::selectedObj->IsInitialized())
+			{
+				Component_GameObject();
+				Component_Transform();
+				Component_Mesh();
+				Component_Material();
+			}
 
 			ImGui::End();
 		}
 	}
-	void GUIInspector::PermanentComponents()
+
+	void GUIInspector::Component_GameObject()
 	{
-		if (Select::isObjectSelected
-			&& Select::selectedObj->IsInitialized())
+		shared_ptr<GameObject>& obj = Select::selectedObj;
+
+		ImGuiChildFlags childWindowFlags{};
+
+		if (ImGui::BeginChild("GameObject", ImVec2(ImGui::GetWindowWidth() - 20, 150), true, childWindowFlags))
 		{
-			shared_ptr<GameObject>& obj = Select::selectedObj;
-
-			ImGuiChildFlags childWindowFlags{};
-
-			ImGui::BeginChild("GameObject", ImVec2(ImGui::GetWindowWidth() - 20, 150), true, childWindowFlags);
-
 			ImGui::Text("GameObject");
 			ImGui::Separator();
 
@@ -178,8 +183,8 @@ namespace Graphics::GUI
 								if (is_regular_file(oldFilePath)
 									&& oldFileName == oldName
 									&& (path(oldFilePath).extension().string() == ".fbx"
-									|| path(oldFilePath).extension().string() == ".obj"
-									|| path(oldFilePath).extension().string() == ".glfw"))
+										|| path(oldFilePath).extension().string() == ".obj"
+										|| path(oldFilePath).extension().string() == ".glfw"))
 								{
 									if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
 									else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
@@ -208,9 +213,17 @@ namespace Graphics::GUI
 			}
 
 			ImGui::EndChild();
+		}
+	}
 
-			ImGui::BeginChild("Transform", ImVec2(ImGui::GetWindowWidth() - 20, 240), true, childWindowFlags);
+	void GUIInspector::Component_Transform()
+	{
+		shared_ptr<GameObject>& obj = Select::selectedObj;
 
+		ImGuiChildFlags childWindowFlags{};
+
+		if (ImGui::BeginChild("Transform", ImVec2(ImGui::GetWindowWidth() - 20, 240), true, childWindowFlags))
+		{
 			ImGui::Text("Transform");
 			ImGui::Separator();
 
@@ -229,19 +242,19 @@ namespace Graphics::GUI
 				obj->GetTransform()->SetRotation(rot);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
-			if (rot.x > 359.99f 
+			if (rot.x > 359.99f
 				|| rot.x < -359.99f)
 			{
 				rot.x = 0.0f;
 				obj->GetTransform()->SetRotation(rot);
 			}
-			if (rot.y > 359.99f 
+			if (rot.y > 359.99f
 				|| rot.y < -359.99f)
 			{
 				rot.y = 0.0f;
 				obj->GetTransform()->SetRotation(rot);
 			}
-			if (rot.z > 359.99f 
+			if (rot.z > 359.99f
 				|| rot.z < -359.99f)
 			{
 				rot.z = 0.0f;
@@ -272,12 +285,37 @@ namespace Graphics::GUI
 			}
 
 			ImGui::EndChild();
+		}
+	}
 
-			float height = Select::selectedObj->GetMesh()->GetMeshType() == Type::spot_light ? 355.0f : 240.0f;
-			ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+	void GUIInspector::Component_Mesh()
+	{
+		shared_ptr<GameObject>& obj = Select::selectedObj;
 
+		ImGuiChildFlags childWindowFlags{};
+
+		if (ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, 150), true, childWindowFlags))
+		{
+			ImGui::Text("Mesh");
+			ImGui::Separator();
+
+			ImGui::EndChild();
+		}
+	}
+
+	void GUIInspector::Component_Material()
+	{
+		shared_ptr<GameObject>& obj = Select::selectedObj;
+
+		ImGuiChildFlags childWindowFlags{};
+
+		float height = Select::selectedObj->GetMesh()->GetMeshType() == Type::spot_light ? 355.0f : 240.0f;
+		if (ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
+		{
 			ImGui::Text("Material");
 			ImGui::Separator();
+
+			Mesh::MeshType objType = obj->GetMesh()->GetMeshType();
 
 			if (objType == Type::model)
 			{
