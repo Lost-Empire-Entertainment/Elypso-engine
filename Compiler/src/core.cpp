@@ -16,12 +16,14 @@
 #include "stringUtils.hpp"
 #include "gui.hpp"
 #include "configFile.hpp"
+#include "compile.hpp"
 
 using Graphics::Render;
 using Utils::File;
 using Utils::String;
 using Graphics::GUI;
 using Core::ConfigFile;
+using Core::TheCompiler;
 
 using std::cout;
 using std::wstring;
@@ -154,6 +156,36 @@ namespace Core
 		int result = MessageBoxA(nullptr, errorMessage.c_str(), title.c_str(), MB_ICONERROR | MB_OK);
 
 		if (result == IDOK) MainShutdown();
+	}
+
+	static double lastActivityTime = 0.0f;
+	void Compiler::UpdateActivityTime()
+	{
+		lastActivityTime = glfwGetTime();
+	}
+	bool Compiler::IsInputActive()
+	{
+		const double idleThreshold = 1.0;
+		double currentTime = glfwGetTime();
+		double idleTime = currentTime - lastActivityTime;
+
+		return idleTime <= idleThreshold;
+	}
+	bool Compiler::IsUserIdle()
+	{
+		//check if glfw window is minimized
+		int width, height;
+		glfwGetWindowSize(Render::window, &width, &height);
+		if (width == 0 || height == 0) return true;
+
+		//checks if glfw window is not focused
+		if (glfwGetWindowAttrib(Render::window, GLFW_FOCUSED) == GLFW_FALSE)
+		{
+			return !TheCompiler::isCompiling;
+		}
+
+		//checks if user input is active while focused
+		return !IsInputActive();
 	}
 
 	void Compiler::MainLoop()

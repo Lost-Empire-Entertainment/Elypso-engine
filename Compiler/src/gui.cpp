@@ -82,19 +82,27 @@ namespace Graphics
 	{
 		if (isImguiInitialized)
 		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+			if (!Compiler::IsUserIdle())
+			{
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
 
-			ImGuiDockNodeFlags dockFlags =
-				ImGuiDockNodeFlags_PassthruCentralNode;
+				ImGuiDockNodeFlags dockFlags =
+					ImGuiDockNodeFlags_PassthruCentralNode;
 
-			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+				ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
 
-			RenderParentWindow();
+				RenderParentWindow();
 
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+				ImGui::Render();
+			}
+
+			ImDrawData* drawData = ImGui::GetDrawData();
+			if (drawData != nullptr)
+			{
+				ImGui_ImplOpenGL3_RenderDrawData(drawData);
+			}
 		}
 	}
 

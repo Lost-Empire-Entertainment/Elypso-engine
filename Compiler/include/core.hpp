@@ -24,6 +24,10 @@ namespace Core
 		static bool IsThisProcessAlreadyRunning(const string& processName);
 		static void CreateErrorPopup(const string& message);
 
+		static void UpdateActivityTime();
+		static bool IsInputActive();
+		static bool IsUserIdle();
+
 		static void MainLoop();
 		static void MainShutdown();
 	private:

@@ -43,7 +43,7 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad)
 
 # Add your source files
-file(GLOB SOURCE_FILES
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 	${CMAKE_SOURCE_DIR}/src/*.cpp
 )
 
@@ -72,16 +72,12 @@ target_include_directories(Compiler PRIVATE
 	${EXT_GLAD_DIR}
 	${EXT_GLFW_DIR}
 	${EXT_GLM_DIR}
-	${EXT_GLM_DIR}/detail
-	${EXT_GLM_DIR}/ext
-	${EXT_GLM_DIR}/gtc
-	${EXT_GLM_DIR}/gtx
-	${EXT_GLM_DIR}/simd
+	${EXT_GLM_DIR}
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
 )
 
-target_link_libraries(Compiler PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
+target_link_libraries(Compiler PRIVATE external_libs ${GLFW_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Compiler PRIVATE GLFW_INCLUDE_NONE)

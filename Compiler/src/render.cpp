@@ -12,11 +12,13 @@
 #include "render.hpp"
 #include "gui.hpp"
 #include "core.hpp"
+#include "input.hpp"
 
 using std::cout;
 using std::string;
 
 using Core::Compiler;
+using Core::Input;
 
 namespace Graphics
 {
@@ -77,10 +79,11 @@ namespace Graphics
 		glfwSetWindowIcon(window, 1, &icon);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		//glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
-		//glfwSetScrollCallback(window, Input::ScrollCallback);
-		//glfwSetKeyCallback(window, Input::KeyCallback);
-		//glfwSetCursorPosCallback(window, Input::MouseMovementCallback);
+
+		glfwSetKeyCallback(window, Input::KeyCallback);
+		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
+		glfwSetScrollCallback(window, Input::ScrollCallback);
+		glfwSetCursorPosCallback(window, Input::MouseMovementCallback);
 
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { Compiler::MainShutdown(); });
 
@@ -120,6 +123,10 @@ namespace Graphics
 
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
-		glfwPollEvents();
+		if (!Compiler::IsUserIdle())
+		{
+			glfwPollEvents();
+		}
+		else glfwWaitEvents();
 	}
 }

@@ -33,6 +33,8 @@ namespace Core
 	{
 		thread CompileThread([]()
 			{
+				isCompiling = true;
+
 				string hubBuildFolder = Compiler::projectsPath + "\\Hub\\build";
 				string engineBuildFolder = Compiler::projectsPath + "\\Engine\\build";
 				string engineLibraryFolder = Compiler::projectsPath + "\\Engine library\\build";
@@ -121,6 +123,8 @@ namespace Core
 				}
 
 				GUI::FinishCompile();
+
+				isCompiling = false;
 			});
 
 		CompileThread.detach();
