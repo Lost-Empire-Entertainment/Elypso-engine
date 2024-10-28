@@ -7,15 +7,18 @@
 
 #include <string>
 
-using std::string;
-
-class RemoveProject
+namespace Graphics::GUI
 {
-public:
-	static inline bool renderRemoveProjectWindow;
-	static inline string confirmFileName;
-	static inline string confirmFilePath;
+	using std::string;
 
-	static void RenderRemoveProjectWindow();
-	static void RenderRemoveProjectContent();
-};
+	class RemoveProject
+	{
+	public:
+		static inline bool renderRemoveProjectWindow;
+		static inline string confirmFileName;
+		static inline string confirmFilePath;
+
+		static void RenderRemoveProjectWindow();
+		static void RenderRemoveProjectContent();
+	};
+}

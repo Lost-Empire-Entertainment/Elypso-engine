@@ -34,7 +34,7 @@ set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}../../_external_shared/Stb_image")
 
 # Add GLAD
-add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
+add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c "src/core.cpp")
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
@@ -66,7 +66,7 @@ list(APPEND SOURCE_FILES
 )
 
 # Add the executable
-add_executable(Elypso_hub ${SOURCE_FILES} ${RESOURCE_FILE})
+add_executable(Elypso_hub ${SOURCE_FILES} ${RESOURCE_FILE} "src/core.cpp")
 
 # Forces the name to be Elypso hub
 set_target_properties(Elypso_hub PROPERTIES OUTPUT_NAME "Elypso hub")
@@ -79,10 +79,7 @@ target_include_directories(Elypso_hub PRIVATE
 	${EXT_GLFW_DIR}
 	${EXT_GLM_DIR}
 	${EXT_GLM_DIR}/detail
-	${EXT_GLM_DIR}/ext
-	${EXT_GLM_DIR}/gtc
-	${EXT_GLM_DIR}/gtx
-	${EXT_GLM_DIR}/simd
+	${EXT_GLM_DIR}
 	${EXT_MAGIC_ENUM_DIR}
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}

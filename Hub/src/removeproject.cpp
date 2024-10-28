@@ -17,65 +17,68 @@
 
 using std::cout;
 
-void RemoveProject::RenderRemoveProjectWindow()
+namespace Graphics::GUI
 {
-	ImVec2 size = ImVec2(300.0f, 200.0f);
-	ImVec2 windowPos = GUI::CenterWindow(size);
-
-	ImGui::SetNextWindowSize(size, ImGuiCond_Appearing);
-	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Appearing);
-
-	ImGuiWindowFlags windowFlags =
-		ImGuiWindowFlags_NoCollapse
-		| ImGuiWindowFlags_NoSavedSettings
-		| ImGuiWindowFlags_NoDocking
-		| ImGuiWindowFlags_NoResize
-		| ImGuiWindowFlags_NoTitleBar;
-
-	if (renderRemoveProjectWindow
-		&& ImGui::Begin("Remove project", NULL, windowFlags))
+	void RemoveProject::RenderRemoveProjectWindow()
 	{
-		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+		ImVec2 size = ImVec2(300.0f, 200.0f);
+		ImVec2 windowPos = GUI_Hub::CenterWindow(size);
+
+		ImGui::SetNextWindowSize(size, ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(windowPos, ImGuiCond_Appearing);
+
+		ImGuiWindowFlags windowFlags =
+			ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoSavedSettings
+			| ImGuiWindowFlags_NoDocking
+			| ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoTitleBar;
+
+		if (renderRemoveProjectWindow
+			&& ImGui::Begin("Remove project", NULL, windowFlags))
 		{
-			ImGui::SetWindowFocus();
+			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+			{
+				ImGui::SetWindowFocus();
+			}
+
+			RenderRemoveProjectContent();
+
+			ImGui::End();
+		}
+	}
+
+	void RemoveProject::RenderRemoveProjectContent()
+	{
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		string text = "Remove " + confirmFileName + "?";
+		float textWidth = ImGui::CalcTextSize(text.c_str()).x;
+		float offsetX = (windowSize.x - textWidth) * 0.5f;
+		if (offsetX > 0.0f) ImGui::SetCursorPos(ImVec2(offsetX, 30));
+
+		ImGui::Text("%s", text.c_str());
+
+		ImVec2 buttonSize = ImVec2(100, 30);
+
+		ImVec2 createButtonPos = ImVec2(
+			ImGui::GetWindowSize().x / 2 - buttonSize.x - buttonSize.x / 2 + 25,
+			ImGui::GetWindowSize().y - 60);
+		ImGui::SetCursorPos(createButtonPos);
+		if (ImGui::Button("Yes", buttonSize))
+		{
+			GUI::RemoveProject(confirmFilePath);
+			renderRemoveProjectWindow = false;
 		}
 
-		RenderRemoveProjectContent();
-
-		ImGui::End();
-	}
-}
-
-void RemoveProject::RenderRemoveProjectContent()
-{
-	ImVec2 windowSize = ImGui::GetWindowSize();
-
-	string text = "Remove " + confirmFileName + "?";
-	float textWidth = ImGui::CalcTextSize(text.c_str()).x;
-	float offsetX = (windowSize.x - textWidth) * 0.5f;
-	if (offsetX > 0.0f) ImGui::SetCursorPos(ImVec2(offsetX, 30));
-
-	ImGui::Text("%s", text.c_str());
-
-	ImVec2 buttonSize = ImVec2(100, 30);
-
-	ImVec2 createButtonPos = ImVec2(
-		ImGui::GetWindowSize().x / 2 - buttonSize.x - buttonSize.x / 2 + 25,
-		ImGui::GetWindowSize().y - 60);
-	ImGui::SetCursorPos(createButtonPos);
-	if (ImGui::Button("Yes", buttonSize))
-	{
-		GUI::RemoveProject(confirmFilePath);
-		renderRemoveProjectWindow = false;
-	}
-
-	ImVec2 cancelButtonPos = ImVec2(
-		ImGui::GetWindowSize().x / 2 + buttonSize.x / 2 - 25,
-		ImGui::GetWindowSize().y - 60);
-	ImGui::SetCursorPos(cancelButtonPos);
-	if (ImGui::Button("No", buttonSize))
-	{
-		cout << "Cancelled project removal.\n\n";
-		renderRemoveProjectWindow = false;
+		ImVec2 cancelButtonPos = ImVec2(
+			ImGui::GetWindowSize().x / 2 + buttonSize.x / 2 - 25,
+			ImGui::GetWindowSize().y - 60);
+		ImGui::SetCursorPos(cancelButtonPos);
+		if (ImGui::Button("No", buttonSize))
+		{
+			cout << "Cancelled project removal.\n\n";
+			renderRemoveProjectWindow = false;
+		}
 	}
 }
