@@ -123,8 +123,6 @@ namespace Core
 				}
 
 				GUI::FinishCompile();
-
-				isCompiling = false;
 			});
 
 		CompileThread.detach();

@@ -397,7 +397,7 @@ namespace Graphics
 
 					if (target == Target::Engine
 						&& (TheCompiler::finishedEngineBuild
-							|| TheCompiler::finishedLibraryBuild))
+						|| TheCompiler::finishedLibraryBuild))
 					{
 						TheCompiler::finishedEngineBuild = false;
 						TheCompiler::finishedLibraryBuild = false;
@@ -467,7 +467,7 @@ namespace Graphics
 
 					if (target == Target::Engine
 						&& (TheCompiler::finishedEngineBuild
-							|| TheCompiler::finishedLibraryBuild))
+						|| TheCompiler::finishedLibraryBuild))
 					{
 						TheCompiler::finishedEngineBuild = false;
 						TheCompiler::finishedLibraryBuild = false;
@@ -533,6 +533,9 @@ namespace Graphics
 
 				cout << msg << "\n";
 				output.emplace_back(msg);
+
+				Compiler::UpdateLastEndOfCompilerOnceTime();
+
 				break;
 			}
 			case Action::clean_rebuild:
@@ -544,6 +547,9 @@ namespace Graphics
 
 				cout << msg << "\n";
 				output.emplace_back(msg);
+
+				Compiler::UpdateLastEndOfCompilerOnceTime();
+
 				break;
 			}
 			}

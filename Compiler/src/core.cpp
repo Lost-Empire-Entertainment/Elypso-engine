@@ -158,34 +158,78 @@ namespace Core
 		if (result == IDOK) MainShutdown();
 	}
 
+	//reset last idle activity timer
 	static double lastActivityTime = 0.0f;
 	void Compiler::UpdateActivityTime()
 	{
 		lastActivityTime = glfwGetTime();
 	}
+	//check if any input has occured within the idle time
 	bool Compiler::IsInputActive()
 	{
 		const double idleThreshold = 1.0;
 		double currentTime = glfwGetTime();
 		double idleTime = currentTime - lastActivityTime;
 
-		return idleTime <= idleThreshold;
+		bool inputActive = idleTime <= idleThreshold;
+		return inputActive;
 	}
+
+	//reset last end of compile timer
+	static double lastEndOfCompileOnceTime = 0.0;
+	static bool calledEndOfCompileOnce = true;
+	void Compiler::UpdateLastEndOfCompilerOnceTime()
+	{
+		lastEndOfCompileOnceTime = glfwGetTime();
+		TheCompiler::isCompiling = false;
+	}
+	//wait for a short period before setting compilation as done 
+	//to let the compiler ui reach its end correctly
+	void Compiler::WaitBeforeCompileEnd()
+	{
+		const double endThreshold = 1.0;
+		double currentTime = glfwGetTime();
+		double endTime = currentTime - lastEndOfCompileOnceTime;
+
+		bool endOfTime = endTime >= endThreshold;
+		if (endOfTime) calledEndOfCompileOnce = true;
+	}
+
+	//returns true if short timer after compile hasnt ended or if still compiling,
+	//returns false if short timer after compile is over
+	bool Compiler::IsCompiling(const bool& isCompiling)
+	{
+		if (isCompiling)
+		{
+			calledEndOfCompileOnce = false;
+			return true;
+		}
+		else
+		{
+			if (!calledEndOfCompileOnce) WaitBeforeCompileEnd();
+			return !calledEndOfCompileOnce;
+		}
+	}
+
+	//counts as idle if minimized
+	//or unfocused and not compiling
+	//or if focused and no input was detected and not compiling
 	bool Compiler::IsUserIdle()
 	{
-		//check if glfw window is minimized
+		//checks if window is minimized
 		int width, height;
 		glfwGetWindowSize(Render::window, &width, &height);
 		if (width == 0 || height == 0) return true;
 
-		//checks if glfw window is not focused
+		//checks if window is unfocused and user is not compiling
 		if (glfwGetWindowAttrib(Render::window, GLFW_FOCUSED) == GLFW_FALSE)
 		{
-			return !TheCompiler::isCompiling;
+			return !IsCompiling(TheCompiler::isCompiling);
 		}
 
-		//checks if user input is active while focused
-		return !IsInputActive();
+		//checks if not compiling and no input is detected
+		return !IsCompiling(TheCompiler::isCompiling)
+			&& !IsInputActive();
 	}
 
 	void Compiler::MainLoop()

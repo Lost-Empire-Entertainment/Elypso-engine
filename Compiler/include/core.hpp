@@ -25,12 +25,17 @@ namespace Core
 		static void CreateErrorPopup(const string& message);
 
 		static void UpdateActivityTime();
-		static bool IsInputActive();
+		static void UpdateLastEndOfCompilerOnceTime();
 		static bool IsUserIdle();
 
 		static void MainLoop();
 		static void MainShutdown();
 	private:
 		static inline bool isCompilerRunning;
+
+		static void WaitBeforeCompileEnd();
+		static bool IsCompiling(const bool& isCompiling);
+
+		static bool IsInputActive();
 	};
 }
