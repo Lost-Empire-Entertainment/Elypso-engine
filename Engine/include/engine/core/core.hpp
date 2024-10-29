@@ -40,7 +40,9 @@ namespace Core
 #else
 		static void InitializeEngine(const string& version = "1.0");
 #endif
-		static void RunEngine();
+
+		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
+		static bool IsThisProcessAlreadyRunning(const string& processName);
 
 #if DISCORD_MODE
 		/// <summary>
@@ -74,9 +76,9 @@ namespace Core
 			const string& smallText = "");
 #endif
 
-		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
+		static bool IsUserIdle();
 
-		static bool IsThisProcessAlreadyRunning(const string& processName);
+		static void RunEngine();
 
 		/// <param name="immediate">Does the engine need to be shut down immediately?</param>
 		static void Shutdown(bool immediate = false);

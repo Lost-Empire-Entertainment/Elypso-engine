@@ -169,6 +169,7 @@ namespace Graphics
 		glfwSetWindowIcon(window, 1, &icon);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 		glfwSetScrollCallback(window, Input::ScrollCallback);
 		glfwSetKeyCallback(window, Input::KeyCallback);
@@ -390,7 +391,11 @@ namespace Graphics
 #endif
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
-		glfwPollEvents();
+		if (!Engine::IsUserIdle())
+		{
+			glfwPollEvents();
+		}
+		else glfwWaitEvents();
 	}
 #if ENGINE_MODE
 	void Render::RenderToImguiWindow()

@@ -143,50 +143,58 @@ namespace Graphics::GUI
 	{
 		if (isImguiInitialized)
 		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-
-			if (!Compilation::renderBuildingWindow) RenderTopBar();
-
-			ImGuiDockNodeFlags dockFlags =
-				ImGuiDockNodeFlags_PassthruCentralNode;
-
-			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
-
-			if (!Compilation::renderBuildingWindow)
+			if (!Engine::IsUserIdle())
 			{
-				GUIConsole::RenderConsole();
-				GUISettings::RenderSettings();
-				GUIInspector::RenderInspector();
-				GUIImportAsset::RenderImportAsset();
-				GUISceneHierarchy::RenderSceneHierarchy();
-				GUIProjectHierarchy::RenderProjectHierarchy();
-				GUICreateScene::RenderCreateSceneWindow();
-				GUIRename::RenderRenameWindow();
-				GUICredits::RenderCreditsWindow();
-				GUILinks::RenderLinksWindow();
-				GUIProjectItemsList::RenderProjectItemsList();
-				GUIFirstTime::RenderFirstTime();
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
+
+				if (!Compilation::renderBuildingWindow) RenderTopBar();
+
+				ImGuiDockNodeFlags dockFlags =
+					ImGuiDockNodeFlags_PassthruCentralNode;
+
+				ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+
+				if (!Compilation::renderBuildingWindow)
+				{
+					GUIConsole::RenderConsole();
+					GUISettings::RenderSettings();
+					GUIInspector::RenderInspector();
+					GUIImportAsset::RenderImportAsset();
+					GUISceneHierarchy::RenderSceneHierarchy();
+					GUIProjectHierarchy::RenderProjectHierarchy();
+					GUICreateScene::RenderCreateSceneWindow();
+					GUIRename::RenderRenameWindow();
+					GUICredits::RenderCreditsWindow();
+					GUILinks::RenderLinksWindow();
+					GUIProjectItemsList::RenderProjectItemsList();
+					GUIFirstTime::RenderFirstTime();
+				}
+
+				bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
+				if (renderSceneWindow) Render::RenderToImguiWindow();
+
+				Compilation::RenderBuildingWindow();
+
+				if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
+				if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
+
+				bool firstUse = stoi(ConfigFile::GetValue("firstUse"));
+				if (firstUse)
+				{
+					ConfigFile::SetValue("gui_firstTime", "1");
+					ConfigFile::SetValue("firstUse", "0");
+				}
+
+				ImGui::Render();
 			}
 
-			bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
-			if (renderSceneWindow) Render::RenderToImguiWindow();
-
-			Compilation::RenderBuildingWindow();
-
-			if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
-			if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
-
-			bool firstUse = stoi(ConfigFile::GetValue("firstUse"));
-			if (firstUse)
+			ImDrawData* drawData = ImGui::GetDrawData();
+			if (drawData != nullptr)
 			{
-				ConfigFile::SetValue("gui_firstTime", "1");
-				ConfigFile::SetValue("firstUse", "0");
+				ImGui_ImplOpenGL3_RenderDrawData(drawData);
 			}
-
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
 	}
 

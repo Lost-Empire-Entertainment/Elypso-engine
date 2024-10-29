@@ -72,30 +72,38 @@ namespace Graphics::GUI
 	{
 		if (isImguiInitialized)
 		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-
-			//
-			//RENDER TOP BAR HERE
-			//
-
-			ImGuiDockNodeFlags dockFlags =
-				ImGuiDockNodeFlags_PassthruCentralNode;
-
-			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
-
-			GUIConsole::RenderConsole();
-			if (imguiWindows.size() > 0)
+			if (!Engine::IsUserIdle())
 			{
-				for (const auto& window : imguiWindows)
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
+
+				//
+				// RENDER TOP BAR HERE
+				//
+
+				ImGuiDockNodeFlags dockFlags =
+					ImGuiDockNodeFlags_PassthruCentralNode;
+
+				ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+
+				GUIConsole::RenderConsole();
+				if (imguiWindows.size() > 0)
 				{
-					window();
+					for (const auto& window : imguiWindows)
+					{
+						window();
+					}
 				}
+
+				ImGui::Render();
 			}
 
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImDrawData* drawData = ImGui::GetDrawData();
+			if (drawData != nullptr)
+			{
+				ImGui_ImplOpenGL3_RenderDrawData(drawData);
+			}
 		}
 	}
 

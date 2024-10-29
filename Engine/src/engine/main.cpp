@@ -12,6 +12,4 @@ int main()
 {
 	Engine::InitializeEngine();
 	Engine::RunEngine();
-
-	return 0;
 }

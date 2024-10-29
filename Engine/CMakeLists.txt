@@ -71,11 +71,11 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
-file(GLOB_RECURSE ENGINE_SOURCE_FILES
+file(GLOB_RECURSE ENGINE_SOURCE_FILES CONFIGURE_DEPENDS
 	${ENGINE_SRC_DIR}/*.cpp
 	${ENGINE_SRC_DIR}/*/*.cpp
 )
-file(GLOB_RECURSE GAME_SOURCE_FILES
+file(GLOB_RECURSE GAME_SOURCE_FILES CONFIGURE_DEPENDS
 	${GAME_SRC_DIR}/*.cpp
 	${GAME_SRC_DIR}/*/*.cpp
 )
@@ -133,7 +133,7 @@ target_include_directories(Elypso_engine PRIVATE
 	# ${EXT_DISCORD_DIR}/include
 )
 
-target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
+target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
 # UNCOMMENT TO USE DISCORD GAME SDK
 # target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
 

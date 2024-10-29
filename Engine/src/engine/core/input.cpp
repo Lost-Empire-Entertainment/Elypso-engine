@@ -497,8 +497,7 @@ namespace Core
     }
 
     void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
-    {
-    }
+    {}
 
     void Input::SceneWindowInput()
     {

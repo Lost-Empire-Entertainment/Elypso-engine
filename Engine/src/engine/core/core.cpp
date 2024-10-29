@@ -31,6 +31,7 @@
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
+#include "compile.hpp"
 #else
 #include "gui_game.hpp"
 #endif
@@ -60,6 +61,7 @@ using Graphics::Shape::GameObjectManager;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
+using Core::Compilation;
 #else
 using Graphics::GUI::GameGUI;
 #endif
@@ -504,6 +506,72 @@ namespace Core
 		}
 	}
 #endif
+
+	void Engine::CreateErrorPopup(const char* errorMessage)
+	{
+		string title = name + " has shut down";
+
+		cout << "\n"
+			<< "===================="
+			<< "\n"
+#if ENGINE_MODE
+			<< "ENGINE SHUTDOWN\n"
+#else
+			<< "GAME SHUTDOWN\n"
+#endif
+			<< "\n\n"
+			<< errorMessage
+			<< "\n"
+			<< "===================="
+			<< "\n";
+
+		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
+
+		if (result == IDOK) Shutdown(true);
+	}
+
+	bool Engine::IsThisProcessAlreadyRunning(const string& processName)
+	{
+		HANDLE hProcessSnap;
+		PROCESSENTRY32 pe32{};
+		bool processFound = false;
+		DWORD currentProcessId = GetCurrentProcessId();
+
+		//take a snapshot of all processes
+		hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (hProcessSnap == INVALID_HANDLE_VALUE)
+		{
+			cout << "Error: CreateToolhelp32Snapshot failed!\n";
+			return false;
+		}
+
+		pe32.dwSize = sizeof(PROCESSENTRY32);
+
+		if (!Process32First(hProcessSnap, &pe32))
+		{
+			cout << "Error: Process32First failed!\n";
+			CloseHandle(hProcessSnap);
+			return false;
+		}
+
+		do
+		{
+			//compare the current process name with the one to check
+			if (strcmp(pe32.szExeFile, processName.c_str()) == 0)
+			{
+				//check if this is not the current process
+				if (pe32.th32ProcessID != currentProcessId)
+				{
+					processFound = true;
+					break;
+				}
+			}
+		} while (Process32Next(hProcessSnap, &pe32));
+
+		CloseHandle(hProcessSnap);
+		return processFound;
+	}
+
 	void Engine::RunEngine()
 	{
 		ConsoleManager::WriteConsoleMessage(
@@ -592,28 +660,6 @@ namespace Core
 		core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {});
 	}
 #endif
-	void Engine::CreateErrorPopup(const char* errorMessage)
-	{
-		string title = name + " has shut down";
-
-		cout << "\n"
-			<< "===================="
-			<< "\n"
-#if ENGINE_MODE
-			<< "ENGINE SHUTDOWN\n"
-#else
-			<< "GAME SHUTDOWN\n"
-#endif
-			<< "\n\n"
-			<< errorMessage 
-			<< "\n"
-			<< "===================="
-			<< "\n";
-
-		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
-
-		if (result == IDOK) Shutdown(true);
-	}
 
 #if ENGINE_MODE
 	void Engine::CheckForMissingCompilerFiles()
@@ -638,47 +684,15 @@ namespace Core
 	}
 #endif
 
-	bool Engine::IsThisProcessAlreadyRunning(const string& processName)
+	//counts as idle if minimized
+	bool Engine::IsUserIdle()
 	{
-		HANDLE hProcessSnap;
-		PROCESSENTRY32 pe32{};
-		bool processFound = false;
-		DWORD currentProcessId = GetCurrentProcessId();
+		//checks if window is minimized
+		int width, height;
+		glfwGetWindowSize(Render::window, &width, &height);
+		if (width == 0 || height == 0) return true;
 
-		//take a snapshot of all processes
-		hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-		if (hProcessSnap == INVALID_HANDLE_VALUE)
-		{
-			cout << "Error: CreateToolhelp32Snapshot failed!\n";
-			return false;
-		}
-
-		pe32.dwSize = sizeof(PROCESSENTRY32);
-
-		if (!Process32First(hProcessSnap, &pe32))
-		{
-			cout << "Error: Process32First failed!\n";
-			CloseHandle(hProcessSnap);
-			return false;
-		}
-
-		do
-		{
-			//compare the current process name with the one to check
-			if (strcmp(pe32.szExeFile, processName.c_str()) == 0)
-			{
-				//check if this is not the current process
-				if (pe32.th32ProcessID != currentProcessId)
-				{
-					processFound = true;
-					break;
-				}
-			}
-		}
-		while (Process32Next(hProcessSnap, &pe32));
-
-		CloseHandle(hProcessSnap);
-		return processFound;
+		else return false;
 	}
 
 	void Engine::Shutdown(bool immediate)

@@ -67,7 +67,7 @@ namespace Graphics::GUI
 		ImGui::SetCursorPos(createButtonPos);
 		if (ImGui::Button("Yes", buttonSize))
 		{
-			GUI::RemoveProject(confirmFilePath);
+			GUI_Hub::RemoveProject(confirmFilePath);
 			renderRemoveProjectWindow = false;
 		}
 
