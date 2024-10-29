@@ -12,12 +12,11 @@
 #include <filesystem>
 
 //external
-//#include "GLFW/glfw3.h"
-#include "Glad/glad.h"
-#include "Stb_image/stb_image.h"
-#include "ImGui/imgui_impl_glfw.h"
-#include "ImGui/imgui_impl_opengl3.h"
-#include "ImGui/imgui_internal.h"
+#include "glad.h"
+#include "stb_image.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
 #include "core.hpp"
 #include "render.hpp"
