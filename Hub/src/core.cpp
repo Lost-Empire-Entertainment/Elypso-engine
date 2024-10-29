@@ -111,8 +111,7 @@ namespace Core
 		}
 		LoadConfigFile();
 
-		//get all files if any new ones were added
-		GUI_Hub::UpdateFileList();
+		Render::Initialize();
 	}
 
 	void Hub::LoadConfigFile()
@@ -205,41 +204,6 @@ namespace Core
 		return tokens;
 	}
 
-	void Hub::Render()
-	{
-		glClearColor(
-			Render::backgroundColor.x,
-			Render::backgroundColor.y,
-			Render::backgroundColor.z,
-			1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		GUI_Hub::Render();
-
-		//swap the front and back buffers
-		glfwSwapBuffers(Render::window);
-		glfwPollEvents();
-	}
-
-	void Hub::CreateErrorPopup(const char* errorMessage)
-	{
-		string title = "Elypso Hub has shut down";
-
-		cout << "\n"
-			<< "===================="
-			<< "\n"
-			<< "HUB SHUTDOWN"
-			<< "\n\n"
-			<< errorMessage
-			<< "\n"
-			<< "===================="
-			<< "\n";
-
-		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
-
-		if (result == IDOK) Shutdown();
-	}
-
 	bool Hub::IsThisProcessAlreadyRunning(const string& processName)
 	{
 		HANDLE hProcessSnap;
@@ -282,8 +246,84 @@ namespace Core
 		return processFound;
 	}
 
+	void Hub::CreateErrorPopup(const char* errorMessage)
+	{
+		string title = "Elypso Hub has shut down";
+
+		cout << "\n"
+			<< "===================="
+			<< "\n"
+			<< "HUB SHUTDOWN"
+			<< "\n\n"
+			<< errorMessage
+			<< "\n"
+			<< "===================="
+			<< "\n";
+
+		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
+
+		if (result == IDOK) Shutdown();
+	}
+
+	//reset last idle activity timer
+	static double lastActivityTime = 0.0f;
+	void Hub::UpdateActivityTime()
+	{
+		lastActivityTime = glfwGetTime();
+	}
+	//check if any input has occured within the idle time
+	bool Hub::IsInputActive()
+	{
+		const double idleThreshold = 1.0;
+		double currentTime = glfwGetTime();
+		double idleTime = currentTime - lastActivityTime;
+
+		bool inputActive = idleTime <= idleThreshold;
+		return inputActive;
+	}
+
+	//counts as idle if minimized
+	//or unfocused and not compiling
+	//or if focused and no input was detected and not compiling
+	bool Hub::IsUserIdle()
+	{
+		//checks if window is minimized
+		int width, height;
+		glfwGetWindowSize(Render::window, &width, &height);
+		if (width == 0 || height == 0) return true;
+
+		//checks if window is unfocused and user is not compiling
+		if (glfwGetWindowAttrib(Render::window, GLFW_FOCUSED) == GLFW_FALSE)
+		{
+			return true;
+		}
+
+		//checks if not compiling and no input is detected
+		return !IsInputActive();
+	}
+
+	void Hub::Render()
+	{
+		cout << "Successfully reached render loop!\n\n";
+		cout << "==================================================\n\n";
+
+		isHubRunning = true;
+
+		while (isHubRunning)
+		{
+			Render::Run();
+			// Check if the window should close (e.g., user closed the window)
+			if (glfwWindowShouldClose(Render::window))
+			{
+				isHubRunning = false;
+			}
+		}
+	}
+
 	void Hub::Shutdown()
 	{
+		cout << "Shutting down Elypso Hub...\n";
+
 		isHubRunning = false;
 
 		SaveConfigFile();

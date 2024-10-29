@@ -8,10 +8,10 @@
 #include "glfw3.h"
 #include "glm.hpp"
 
-using glm::vec3;
-
 namespace Graphics
 {
+	using glm::vec3;
+
 	class Render
 	{
 	public:

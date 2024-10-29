@@ -13,6 +13,7 @@
 #include "render.hpp"
 #include "core.hpp"
 #include "gui.hpp"
+#include "input.hpp"
 
 using std::cout;
 using std::string;
@@ -20,6 +21,7 @@ using std::filesystem::current_path;
 
 using Core::Hub;
 using Graphics::GUI::GUI_Hub;
+using Core::Input;
 
 namespace Graphics
 {
@@ -44,7 +46,7 @@ namespace Graphics
 			NULL);
 
 		glfwMakeContextCurrent(window);
-		glfwSetFramebufferSizeCallback(window, Render::UpdateAfterRescale);
+		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
 		glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
 		glfwSetWindowSizeLimits(window, 600, 300, 7680, 4320);
 		glfwSwapInterval(1);
@@ -64,6 +66,11 @@ namespace Graphics
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
+		glfwSetKeyCallback(window, Input::KeyCallback);
+		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
+		glfwSetScrollCallback(window, Input::ScrollCallback);
+		glfwSetCursorPosCallback(window, Input::MouseMovementCallback);
+
 		cout << "Initializing GLAD...\n";
 
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -71,6 +78,7 @@ namespace Graphics
 		UpdateAfterRescale(window, currentWidth, currentHeight);
 
 		GUI_Hub::Initialize();
+		GUI_Hub::UpdateFileList();
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
@@ -87,6 +95,21 @@ namespace Graphics
 
 	void Render::Run()
 	{
+		glClearColor(
+			backgroundColor.x,
+			backgroundColor.y,
+			backgroundColor.z,
+			1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		GUI_Hub::Render();
+
+		//swap the front and back buffers
+		glfwSwapBuffers(window);
+		if (!Hub::IsUserIdle())
+		{
+			glfwPollEvents();
+		}
+		else glfwWaitEvents();
 	}
 }

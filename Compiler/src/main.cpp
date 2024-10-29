@@ -11,6 +11,4 @@ int main()
 {
 	Compiler::MainInitialize();
 	Compiler::MainLoop();
-
-	return 0;
 }

@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace Utils
 {
+	using std::string;
+	using std::vector;
+
 	class String
 	{
 	public:

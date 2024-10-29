@@ -49,7 +49,7 @@ add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
 
 # Add your source files
-file(GLOB SOURCE_FILES
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 	${CMAKE_SOURCE_DIR}/src/*.cpp
 )
 
@@ -78,14 +78,12 @@ target_include_directories(Elypso_hub PRIVATE
 	${EXT_GLAD_DIR}
 	${EXT_GLFW_DIR}
 	${EXT_GLM_DIR}
-	${EXT_GLM_DIR}/detail
-	${EXT_GLM_DIR}
 	${EXT_MAGIC_ENUM_DIR}
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
 )
 
-target_link_libraries(Elypso_hub PRIVATE external_libs glad ${GLFW_LIBRARY_PATH})
+target_link_libraries(Elypso_hub PRIVATE external_libs ${GLFW_LIBRARY_PATH})
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Elypso_hub PRIVATE GLFW_INCLUDE_NONE)

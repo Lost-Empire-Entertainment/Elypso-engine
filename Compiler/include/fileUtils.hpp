@@ -7,10 +7,10 @@
 
 #include <string>
 
-using std::string;
-
 namespace Utils
 {
+	using std::string;
+
 	class File
 	{
 	public:

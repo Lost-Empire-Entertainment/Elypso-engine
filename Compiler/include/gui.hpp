@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace Graphics
 {
+	using std::string;
+	using std::vector;
+
 	class GUI
 	{
 	public:

@@ -7,10 +7,10 @@
 
 #include <string>
 
-using std::string;
-
 namespace Core
 {
+	using std::string;
+
 	class Compiler
 	{
 	public:

@@ -38,12 +38,15 @@ namespace Core
 		static void SaveConfigFile();
 		static vector<string> StringSplit(const string& input, char delimiter);
 
-		static void Render();
-
+		static bool IsThisProcessAlreadyRunning(const string& processName);
 		static void CreateErrorPopup(const char* errorMessage = "INSERT ERROR MESSAGE");
 
-		static bool IsThisProcessAlreadyRunning(const string& processName);
+		static void UpdateActivityTime();
+		static bool IsUserIdle();
 
+		static void Render();
 		static void Shutdown();
+	private:
+		static bool IsInputActive();
 	};
 }

@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 namespace Core
 {
+	using std::string;
+	using std::vector;
+
 	class ConfigFile
 	{
 	public:
