@@ -5,6 +5,7 @@
 #if ENGINE_MODE
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 #include <memory>
 
 //external
@@ -36,6 +37,7 @@ using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::exception;
 using std::shared_ptr;
+using std::ifstream;
 
 using EngineFile::ConfigFile;
 using EngineFile::SceneFile;
@@ -166,23 +168,36 @@ namespace Graphics::GUI
                         {
                             if (ImGui::MenuItem("Delete gameobject"))
                             {
-                                shared_ptr<GameObject> targetObj;
-                                for (const auto& obj : GameObjectManager::GetObjects())
+                                for (const auto& child : directory_iterator(thisParentFolder))
                                 {
-                                    string objName = obj->GetName();
-                                    string thisName = path(entry).stem().string();
-
-                                    if (objName == thisName)
+                                    //look for lights
+                                    if (is_regular_file(child)
+                                        && path(child).extension().string() == ".txt")
                                     {
-                                        targetObj = obj;
+                                        string lightTxtFile = path(child).string();
+
+                                        FindAndDeleteGameobject(lightTxtFile);
+
                                         break;
                                     }
+                                    else if (is_directory(child))
+                                    {
+                                        for (const auto& secondChild : directory_iterator(child))
+                                        {
+                                            if (is_regular_file(secondChild)
+                                                && path(secondChild).extension().string() == ".txt")
+                                            {
+                                                string modelTxtFile = path(secondChild).string();
+
+                                                FindAndDeleteGameobject(modelTxtFile);
+
+                                                break;
+                                            }
+                                        }
+                                    }
                                 }
-                                if (targetObj != nullptr)
-                                {
-                                    GameObjectManager::DestroyGameObject(targetObj);
-                                    toBeDeleted = entry;
-                                }
+
+                                File::DeleteFileOrfolder(thisParentFolder);
                             }
                         }
                         ImGui::EndPopup();
@@ -241,5 +256,61 @@ namespace Graphics::GUI
             toBeDeleted = "";
         }
 	}
+
+    void GUIProjectHierarchy::FindAndDeleteGameobject(const string& targetFile)
+    {
+        ifstream target(targetFile);
+        if (!target.is_open())
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Failed to open target txt file '" + targetFile + "'!\n\n");
+            return;
+        }
+
+        string name;
+        unsigned int ID;
+
+        //find and store the name and ID of the object from the object txt file
+        string line;
+        while (getline(target, line))
+        {
+            if (line.find("name= "))
+            {
+                String::CharReplace(line, ' ', '\0');
+                vector<string> split = String::Split(line, '=');
+
+                name = split[1];
+            }
+            else if (line.find("id= "))
+            {
+                String::CharReplace(line, ' ', '\0');
+                vector<string> split = String::Split(line, '=');
+
+                string value = split[1];
+
+                ID = stoul(value);
+            }
+            break;
+        }
+
+        target.close();
+
+        //find and delete the object in the scene based off of the name and ID from its object txt file
+        for (const auto& obj : GameObjectManager::GetObjects())
+        {
+            string objName = obj->GetName();
+            unsigned int objID = obj->GetID();
+
+            if (name == objName
+                && ID == objID)
+            {
+                GameObjectManager::DestroyGameObject(obj, true);
+
+                break;
+            }
+        }
+    }
 }
 #endif
