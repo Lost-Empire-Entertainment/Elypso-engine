@@ -23,6 +23,7 @@
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
+#include "input.hpp"
 
 using std::shared_ptr;
 using std::filesystem::directory_iterator;
@@ -40,6 +41,7 @@ using Core::Engine;
 using Utils::File;
 using Utils::String;
 using Core::Select;
+using Core::Input;
 
 namespace Graphics::GUI
 {
@@ -110,6 +112,12 @@ namespace Graphics::GUI
 			{
 				Select::selectedObj = obj;
 				Select::isObjectSelected = true;
+
+				if (Input::objectAction == Input::ObjectAction::none)
+				{
+					Input::objectAction = Input::ObjectAction::move;
+				}
+				if (Input::axis == "") Input::axis = "X";
 			}
 
 			if (isSelected) ImGui::PopStyleColor();
@@ -132,10 +140,7 @@ namespace Graphics::GUI
 			if (ImGui::TreeNodeEx(label.c_str(), node_flags))
 			{
 				if (ImGui::IsItemClicked())
-				{
-					Select::selectedObj = obj;
-					Select::isObjectSelected = true;
-				}
+				{}
 
 				if (isSelected) ImGui::PopStyleColor();
 
