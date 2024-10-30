@@ -168,14 +168,13 @@ namespace Graphics::GUI
                         {
                             if (ImGui::MenuItem("Delete gameobject"))
                             {
-                                for (const auto& child : directory_iterator(thisParentFolder))
+                                for (const auto& child : directory_iterator(entry))
                                 {
                                     //look for lights
                                     if (is_regular_file(child)
                                         && path(child).extension().string() == ".txt")
                                     {
                                         string lightTxtFile = path(child).string();
-
                                         FindAndDeleteGameobject(lightTxtFile);
 
                                         break;
@@ -188,7 +187,6 @@ namespace Graphics::GUI
                                                 && path(secondChild).extension().string() == ".txt")
                                             {
                                                 string modelTxtFile = path(secondChild).string();
-
                                                 FindAndDeleteGameobject(modelTxtFile);
 
                                                 break;
@@ -197,7 +195,7 @@ namespace Graphics::GUI
                                     }
                                 }
 
-                                File::DeleteFileOrfolder(thisParentFolder);
+                                File::DeleteFileOrfolder(entry);
                             }
                         }
                         ImGui::EndPopup();
@@ -269,30 +267,26 @@ namespace Graphics::GUI
             return;
         }
 
-        string name;
-        unsigned int ID;
+        string name{};
+        unsigned int ID{};
 
         //find and store the name and ID of the object from the object txt file
         string line;
         while (getline(target, line))
         {
-            if (line.find("name= "))
+            if (!line.empty()
+                && line.find("=") != string::npos)
             {
-                String::CharReplace(line, ' ', '\0');
-                vector<string> split = String::Split(line, '=');
+                vector<string> splitLine = String::Split(line, '=');
+                string key = splitLine[0];
+                string value = splitLine[1];
 
-                name = split[1];
+                //remove one space in front of value if it exists
+                if (value[0] == ' ') value.erase(0, 1);
+
+                if (key == "name") name = value;
+                if (key == "id") ID = stoul(value);
             }
-            else if (line.find("id= "))
-            {
-                String::CharReplace(line, ' ', '\0');
-                vector<string> split = String::Split(line, '=');
-
-                string value = split[1];
-
-                ID = stoul(value);
-            }
-            break;
         }
 
         target.close();

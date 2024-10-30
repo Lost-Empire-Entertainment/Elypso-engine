@@ -318,7 +318,7 @@ namespace EngineFile
 
 	void GameObjectFile::LoadGameObjects()
 	{
-		if (is_empty(Engine::currentGameobjectsPath))
+		if (!Engine::currentGameobjectsPath.empty())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
