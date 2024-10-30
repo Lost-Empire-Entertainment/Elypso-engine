@@ -68,7 +68,7 @@ namespace EngineFile
 		{
 			if (obj->GetParentBillboardHolder() == nullptr)
 			{
-				string objectFilePath = obj->GetDirectory();
+				string objectTxtFilePath = obj->GetTxtFilePath();
 				string objectName = obj->GetName();
 
 				vector<string> data;
@@ -77,16 +77,16 @@ namespace EngineFile
 				// GET IMPORTED MODEL DATA FROM FILE
 				//
 
-				if (objectFilePath != ""
-					&& exists(objectFilePath))
+				if (objectTxtFilePath != ""
+					&& exists(objectTxtFilePath))
 				{
-					ifstream existingData(objectFilePath);
+					ifstream existingData(objectTxtFilePath);
 					if (!existingData.is_open())
 					{
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Error: Couldn't read from object file '" + objectFilePath + "'!\n");
+							"Error: Couldn't read from object txt file path '" + objectTxtFilePath + "'!\n");
 						return;
 					}
 				}
@@ -168,8 +168,12 @@ namespace EngineFile
 				fragmentShader = path(fragmentShader).filename().string();
 				data.push_back("shaders= " + vertexShader + ", " + fragmentShader + "\n");
 
-				//path to save file of this gameobject
-				string modelPath = String::CharReplace(obj->GetDirectory(), '/', '\\');
+				//path to txt file of this gameobject
+				string txtFilePath = String::CharReplace(obj->GetTxtFilePath(), '/', '\\');
+				data.push_back("txtFile= " + txtFilePath + "\n");
+
+				//path to model of this gameobject
+				string modelPath = String::CharReplace(obj->GetModelPath(), '/', '\\');
 				data.push_back("model= " + modelPath + "\n");
 
 				//material variables
@@ -254,22 +258,22 @@ namespace EngineFile
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
-				string folderPath = path(objectFilePath).parent_path().string();
+				string folderPath = path(objectTxtFilePath).parent_path().string();
 				if (!exists(folderPath))
 				{
 					File::CreateNewFolder(folderPath);
 				}
 
-				if (exists(objectFilePath)) File::DeleteFileOrfolder(objectFilePath);
+				if (exists(objectTxtFilePath)) File::DeleteFileOrfolder(objectTxtFilePath);
 
-				ofstream objectFile(objectFilePath);
+				ofstream objectFile(objectTxtFilePath);
 
 				if (!objectFile.is_open())
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"Error: Couldn't write into object file '" + objectFilePath + "'!\n");
+						"Error: Couldn't write into object txt file path '" + objectTxtFilePath + "'!\n");
 					return;
 				}
 
@@ -393,6 +397,7 @@ namespace EngineFile
 				vec3(0),
 				vec3(1),
 				filePath,
+				"",
 				Engine::filesPath + "\\shaders\\GameObject.vert",
 				Engine::filesPath + "\\shaders\\GameObject.frag",
 				"DEFAULTDIFF",
@@ -487,6 +492,7 @@ namespace EngineFile
 
 					|| key == "textures"
 					|| key == "shaders"
+					|| key == "txtFile"
 					|| key == "model"
 					|| key == "shininess")
 				{
@@ -512,6 +518,7 @@ namespace EngineFile
 
 		vector<string> textures{};
 		vector<string> shaders{};
+		string txtFile{};
 		string model{};
 		float shininess{};
 
@@ -653,6 +660,10 @@ namespace EngineFile
 					shaders.push_back(fullShader1Path);
 				}
 			}
+			else if (key == "txtFile")
+			{
+				txtFile = value;
+			}
 			else if (key == "model")
 			{
 				model = value;
@@ -758,7 +769,8 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
 
-			foundObj->SetDirectory(model);
+			foundObj->SetTxtFilePath(txtFile);
+			foundObj->SetModelPath(model);
 
 			foundObj->GetBasicShape()->SetShininess(shininess);
 
@@ -816,7 +828,7 @@ namespace EngineFile
 					|| key == "scale"
 
 					|| key == "shaders"
-					|| key == "model"
+					|| key == "txtFile"
 
 					|| key == "diffuse"
 					|| key == "intensity"
@@ -850,7 +862,7 @@ namespace EngineFile
 		vec3 scale{};
 
 		vector<string> shaders{};
-		string model{};
+		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
@@ -930,9 +942,9 @@ namespace EngineFile
 					shaders.push_back(fullShader1Path);
 				}
 			}
-			else if (key == "model")
+			else if (key == "txtFile")
 			{
-				model = value;
+				txtFile = value;
 			}
 
 			else if (key == "diffuse")
@@ -1008,7 +1020,7 @@ namespace EngineFile
 			pos,
 			rot,
 			scale,
-			model,
+			txtFile,
 			shaders[0],
 			shaders[1],
 			diffuse,
@@ -1079,7 +1091,7 @@ namespace EngineFile
 					|| key == "scale"
 
 					|| key == "shaders"
-					|| key == "model"
+					|| key == "txtFile"
 
 					|| key == "diffuse"
 					|| key == "intensity"
@@ -1115,7 +1127,7 @@ namespace EngineFile
 		vec3 scale{};
 
 		vector<string> shaders{};
-		string model{};
+		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
@@ -1197,9 +1209,9 @@ namespace EngineFile
 					shaders.push_back(fullShader1Path);
 				}
 			}
-			else if (key == "model")
+			else if (key == "txtFile")
 			{
-				model = value;
+				txtFile = value;
 			}
 
 			else if (key == "diffuse")
@@ -1277,7 +1289,7 @@ namespace EngineFile
 			pos,
 			rot,
 			scale,
-			model,
+			txtFile,
 			shaders[0],
 			shaders[1],
 			diffuse,
@@ -1350,7 +1362,7 @@ namespace EngineFile
 					|| key == "scale"
 
 					|| key == "shaders"
-					|| key == "model"
+					|| key == "txtFile"
 
 					|| key == "diffuse"
 					|| key == "intensity"
@@ -1384,7 +1396,7 @@ namespace EngineFile
 		vec3 scale{};
 
 		vector<string> shaders{};
-		string model{};
+		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
@@ -1463,9 +1475,9 @@ namespace EngineFile
 					shaders.push_back(fullShader1Path);
 				}
 			}
-			else if (key == "model")
+			else if (key == "txtFile")
 			{
-				model = value;
+				txtFile = value;
 			}
 
 			else if (key == "diffuse")
@@ -1540,7 +1552,7 @@ namespace EngineFile
 			pos,
 			rot,
 			scale,
-			model,
+			txtFile,
 			shaders[0],
 			shaders[1],
 			diffuse,

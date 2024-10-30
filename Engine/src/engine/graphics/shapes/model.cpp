@@ -59,6 +59,7 @@ namespace Graphics::Shape
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale,
+		const string& txtFilePath,
 		const string& modelPath,
 		const string& vertShader,
 		const string& fragShader,
@@ -147,7 +148,8 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.specular", 1);
 
 		string thisPath = path(modelPath).parent_path().string() + "\\" + name + "\\" + name + ".txt";
-		obj->SetDirectory(thisPath);
+		obj->SetTxtFilePath(thisPath);
+		obj->SetModelPath(modelPath);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);

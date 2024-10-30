@@ -187,7 +187,7 @@ namespace Graphics::GUI
 									string newFilePath = Engine::currentGameobjectsPath + "\\" + newFolderName + "\\" + newFolderName + extension;
 
 									File::MoveOrRenameFileOrFolder(oldFilePath, newFilePath, true);
-									obj->SetDirectory(newFilePath);
+									obj->SetModelPath(newFilePath);
 
 									break;
 								}

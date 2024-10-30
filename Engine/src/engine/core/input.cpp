@@ -168,7 +168,8 @@ namespace Core
                     {
                         copiedObject["type"] = "model";
 
-                        copiedObject["directory"] = selectedObj->GetDirectory();
+                        copiedObject["txtFile"] = selectedObj->GetTxtFilePath();
+                        copiedObject["model"] = selectedObj->GetModelPath();
 
                         copiedObject["diffuseTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
                         copiedObject["specularTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::specular);
@@ -291,7 +292,8 @@ namespace Core
                             newPos,
                             rot,
                             scale,
-                            copiedObject["directory"],
+                            copiedObject["txtFile"],
+                            copiedObject["model"],
                             copiedObject["vertexShader"],
                             copiedObject["fragmentShader"],
                             diffTexturePath,

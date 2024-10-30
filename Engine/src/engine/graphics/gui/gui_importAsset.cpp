@@ -160,6 +160,7 @@ namespace Graphics::GUI
 					vec3(0),
 					vec3(1),
 					destinationPath,
+					"",
 					Engine::filesPath + "\\shaders\\GameObject.vert",
 					Engine::filesPath + "\\shaders\\GameObject.frag",
 					"DEFAULTDIFF",
