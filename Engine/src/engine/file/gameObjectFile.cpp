@@ -322,7 +322,7 @@ namespace EngineFile
 
 	void GameObjectFile::LoadGameObjects()
 	{
-		if (!Engine::currentGameobjectsPath.empty())
+		if (Engine::currentGameobjectsPath.empty())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
@@ -390,14 +390,14 @@ namespace EngineFile
 		for (const auto& assimpPath : validAssimpPaths)
 		{
 			string fileName = path(assimpPath).stem().string();
-			string filePath = path(assimpPath).string();
+			string modelPath = path(assimpPath).string();
 
 			Importer::Initialize(
 				vec3(0),
 				vec3(0),
 				vec3(1),
-				filePath,
 				"",
+				modelPath,
 				Engine::filesPath + "\\shaders\\GameObject.vert",
 				Engine::filesPath + "\\shaders\\GameObject.frag",
 				"DEFAULTDIFF",
@@ -743,7 +743,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Tried to apply data to scene model '" + name + "' with ID '" + to_string(ID) + "' but it does not exist!");
+				"Error: Tried to apply data to scene model '" + name + "' with ID '" + to_string(ID) + "' but it does not exist!\n");
 		}
 		else
 		{
