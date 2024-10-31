@@ -616,12 +616,6 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			if (ImGui::MenuItem("Scene menu"))
-			{
-				ConfigFile::SetValue("gui_sceneMenu", "1");
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
 			if (ImGui::MenuItem("Console"))
 			{
 				ConfigFile::SetValue("gui_console", "1");

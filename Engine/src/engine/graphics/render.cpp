@@ -651,6 +651,8 @@ namespace Graphics
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
+			ImGui::Separator();
+
 			ImGui::Text("Render billboards");
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);

@@ -260,8 +260,6 @@ namespace EngineFile
 			values.push_back("1");
 		keys.push_back("gui_console");
 			values.push_back("1");
-		keys.push_back("gui_sceneMenu");
-			values.push_back("0");
 		keys.push_back("gui_firstTime");
 			values.push_back("0");
 #endif
