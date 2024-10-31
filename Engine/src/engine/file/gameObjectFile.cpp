@@ -232,7 +232,7 @@ namespace EngineFile
 					|| meshType == Mesh::MeshType::directional_light)
 				{
 					data.push_back("\n");
-					data.push_back("---attatched billboard data---\n");
+					data.push_back("---attached billboard data---\n");
 					data.push_back("\n");
 
 					data.push_back("billboard name= " + obj->GetChildBillboard()->GetName() + "\n");
