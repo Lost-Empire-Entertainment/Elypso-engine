@@ -68,7 +68,7 @@ namespace Core
 		/// <param name="maxBound">The calculated maximum bound of the interaction box (output).</param>
 		/// <param name="position">The position of the object in world space.</param>
 		/// <param name="scale">The scale of the object to apply to the vertices.</param>
-		/// <param name="margin">An additional margin to expand the interaction box beyond the object’s bounds.</param>
+		/// <param name="margin">An additional margin to expand the interaction box beyond the objects bounds.</param>
 		static void CalculateInteractionBoxFromVertices(
 			const vector<AssimpVertex>& vertices,
 			vec3& minBound,

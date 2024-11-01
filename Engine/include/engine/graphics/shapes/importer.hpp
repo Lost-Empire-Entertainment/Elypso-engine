@@ -37,7 +37,6 @@ namespace Graphics::Shape
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
-			const string& txtFilePath = "",
 			const string& modelPath = "",
 			const string& vertShader = Engine::filesPath + "\\shaders\\GameObject.vert",
 			const string& fragShader = Engine::filesPath + "\\shaders\\GameObject.frag",
@@ -57,7 +56,6 @@ namespace Graphics::Shape
 			const vec3& pos,
 			const vec3& rot,
 			const vec3& scale,
-			const string& txtFilePath,
 			const string& modelPath,
 			const string& vertShader,
 			const string& fragShader,
@@ -73,6 +71,8 @@ namespace Graphics::Shape
 		static AssimpMesh ProcessMesh(
 			aiMesh* mesh,
 			const aiScene* scene);
+
+		static string GetNodeTxtFile(const string& modelPath, const string& nodeName);
 
 		static void DecomposeTransform(const aiMatrix4x4& transform, vec3& outPosition, vec3& outRotation, vec3& outScale);
 	};

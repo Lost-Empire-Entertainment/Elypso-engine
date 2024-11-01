@@ -74,24 +74,6 @@ namespace EngineFile
 				vector<string> data;
 
 				//
-				// GET IMPORTED MODEL DATA FROM FILE
-				//
-
-				if (objectTxtFilePath != ""
-					&& exists(objectTxtFilePath))
-				{
-					ifstream existingData(objectTxtFilePath);
-					if (!existingData.is_open())
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							"Error: Couldn't read from object txt file path '" + objectTxtFilePath + "'!\n");
-						return;
-					}
-				}
-
-				//
 				// SAVE SCENE OBJECT DATA INTO VECTOR
 				//
 
@@ -345,7 +327,7 @@ namespace EngineFile
 		//look through parent gameobjects folder
 		for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
 		{
-			//look for assimp model files (fbs, glfw, obj)
+			//look for assimp model files (fbx, glfw, obj)
 			for (const auto& file : directory_iterator(folder))
 			{
 				string extension = path(file).extension().string();
@@ -359,23 +341,8 @@ namespace EngineFile
 			//look through child gameobject folders
 			for (const auto& file : directory_iterator(folder))
 			{
-				//model txt files are always inside their own child gameobject folder
-				//so that textures for that specific assimp node file can be separated
-				//from the rest of the assimp node txt files for this assimp file
-				if (is_directory(file))
-				{
-					//look for model txt files
-					for (const auto& dirFile : directory_iterator(file))
-					{
-						string extension = path(dirFile).extension().string();
-						if (extension == ".txt")
-						{
-							validGameobjectPaths.push_back(path(dirFile).string());
-						}
-					}
-				}
 				//look for light txt files
-				else if (is_regular_file(file))
+				if (is_regular_file(file))
 				{
 					string extension = path(file).extension().string();
 					if (extension == ".txt")
@@ -396,7 +363,6 @@ namespace EngineFile
 				vec3(0),
 				vec3(0),
 				vec3(1),
-				"",
 				modelPath,
 				Engine::filesPath + "\\shaders\\GameObject.vert",
 				Engine::filesPath + "\\shaders\\GameObject.frag",
@@ -409,16 +375,12 @@ namespace EngineFile
 				Importer::tempID);
 		}
 
-		//loads all model and light txt files
+		//loads all light txt files
 		for (const auto& gameobjectPath : validGameobjectPaths)
 		{
 			string filePath = path(gameobjectPath).string();
 
-			if (GetType(filePath) == "model")
-			{
-				LoadModel(filePath);
-			}
-			else if (GetType(filePath) == "point_light")
+			if (GetType(filePath) == "point_light")
 			{
 				LoadPointLight(filePath);
 			}
@@ -441,25 +403,29 @@ namespace EngineFile
 			"Finished loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 	}
 
-	void GameObjectFile::LoadModel(const string& file)
+	void GameObjectFile::LoadModel(const string& txtFilePath)
 	{
+		//skip running this function for newly imported models that dont actually
+		//have a txt file yet even though their txt file path was assigned
+		if (!exists(txtFilePath)) return;
+
 		//
 		// READ FROM MODEL FILE
 		//
 
-		ifstream modelFile(file);
-		if (!modelFile.is_open())
+		ifstream txtFile(txtFilePath);
+		if (!txtFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Failed to open model file '" + file + "'!\n\n");
+				"Error: Failed to open model txt file '" + txtFilePath + "'!\n\n");
 			return;
 		}
 
 		map<string, string> data;
 		string line;
-		while (getline(modelFile, line))
+		while (getline(txtFile, line))
 		{
 			if (!line.empty()
 				&& line.find("=") != string::npos)
@@ -492,7 +458,6 @@ namespace EngineFile
 
 					|| key == "textures"
 					|| key == "shaders"
-					|| key == "txtFile"
 					|| key == "model"
 					|| key == "shininess")
 				{
@@ -501,7 +466,7 @@ namespace EngineFile
 			}
 		}
 
-		modelFile.close();
+		txtFile.close();
 
 		//
 		// ASSIGN MODEL DATA TO VARIABLES
@@ -518,7 +483,6 @@ namespace EngineFile
 
 		vector<string> textures{};
 		vector<string> shaders{};
-		string txtFile{};
 		string model{};
 		float shininess{};
 
@@ -660,10 +624,6 @@ namespace EngineFile
 					shaders.push_back(fullShader1Path);
 				}
 			}
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
 			else if (key == "model")
 			{
 				model = value;
@@ -727,10 +687,12 @@ namespace EngineFile
 		// LOAD MODEL
 		//
 
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
+		cout << "trying to load model with name '" << name << "'\n";
+ 
 		shared_ptr<GameObject> foundObj;
-		for (const auto& obj : objects)
+		for (const auto& obj : GameObjectManager::GetObjects())
 		{
+			cout << "looking at object with name " << obj->GetName() << "\n";
 			if (obj->GetName() == name)
 			{
 				foundObj = obj;
@@ -769,7 +731,6 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
 
-			foundObj->SetTxtFilePath(txtFile);
 			foundObj->SetModelPath(model);
 
 			foundObj->GetBasicShape()->SetShininess(shininess);

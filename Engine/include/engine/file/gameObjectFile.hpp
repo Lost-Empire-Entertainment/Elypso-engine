@@ -31,10 +31,11 @@ namespace EngineFile
 		/// Handle the loading of the gameobjects folder.
 		/// </summary>
 		static void LoadGameObjects();
+
+		static void LoadModel(const string& file);
 	private:
 		static string GetType(const string& file);
 
-		static void LoadModel(const string& file);
 		static void LoadPointLight(const string& file);
 		static void LoadSpotlight(const string& file);
 		static void LoadDirectionalLight(const string& file);

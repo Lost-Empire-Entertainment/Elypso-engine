@@ -127,9 +127,9 @@ namespace Graphics::GUI
 		ImGui::Text("Move selected object:");
 		ImGui::Text("Press W and scroll up to increase or down to decrease value");
 		ImGui::Text("Rotate selected object:");
-		ImGui::Text("Hold E and scroll up to increase or down to decrease value");
+		ImGui::Text("Press E and scroll up to increase or down to decrease value");
 		ImGui::Text("Scale selected object:");
-		ImGui::Text("Hold R and scroll up to increase or down to decrease value");
+		ImGui::Text("Press R and scroll up to increase or down to decrease value");
 	}
 
 	void GUISettings::GUIStyleSettings()

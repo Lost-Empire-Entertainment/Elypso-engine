@@ -50,6 +50,9 @@ using std::localtime;
 using std::ostringstream;
 using std::clock;
 using std::chrono::system_clock;
+using std::filesystem::directory_iterator;
+using std::filesystem::is_directory;
+using std::filesystem::is_regular_file;
 
 using Graphics::Render;
 using Graphics::Shader;
@@ -70,7 +73,6 @@ namespace Graphics::Shape
         const vec3& pos,
         const vec3& rot,
         const vec3& scale,
-        const string& txtFilePath,
         const string& modelPath,
         const string& vertShader,
         const string& fragShader,
@@ -117,7 +119,6 @@ namespace Graphics::Shape
                 pos,
                 rot,
                 scale,
-                txtFilePath,
                 modelPath,
                 vertShader,
                 fragShader,
@@ -139,7 +140,6 @@ namespace Graphics::Shape
         const vec3& pos,
         const vec3& rot,
         const vec3& scale,
-        const string& txtFilePath,
         const string& modelPath,
         const string& vertShader,
         const string& fragShader,
@@ -196,11 +196,18 @@ namespace Graphics::Shape
 
             if (id == tempID) id = GameObject::nextID++;
 
+            string txtPath = GetNodeTxtFile(modelPath, nodeName);
+            if (txtPath == "")
+            {
+                txtPath = path(modelPath).parent_path().string() + "\\" + nodeName + "\\" + nodeName + ".txt";
+                cout << "--- txt file didnt exist for '" << nodeName << "', setting a new txt file path as '" + txtPath + "'...\n";
+            }
+
             shared_ptr<GameObject> newChild = Model::Initialize(
                 nodePosition,
                 nodeRotation,
                 nodeScale,
-                txtFilePath,
+                txtPath,
                 modelPath,
                 vertShader,
                 fragShader,
@@ -230,7 +237,6 @@ namespace Graphics::Shape
                 nodePosition,
                 nodeRotation,
                 nodeScale,
-                txtFilePath,
                 modelPath,
                 vertShader,
                 fragShader,
@@ -332,5 +338,31 @@ namespace Graphics::Shape
         outPosition *= 0.005f;
         outRotation = degrees(theEulerAngles);
         outScale = scale;
+    }
+
+    string Importer::GetNodeTxtFile(const string& modelPath, const string& nodeName)
+    {
+        string modelFolder = path(modelPath).parent_path().string();
+        string targetFile{};
+
+        for (const auto& folder : directory_iterator(modelFolder))
+        {
+            if (is_directory(folder))
+            {
+                for (const auto& folderFile : directory_iterator(folder))
+                {
+                    if (is_regular_file(folderFile)
+                        && path(folderFile).extension().string() == ".txt"
+                        && path(folderFile).stem().string() == nodeName)
+                    {
+                        targetFile = path(folderFile).string();
+                        break;
+                    }
+                }
+            }
+            if (!targetFile.empty()) break;
+        }
+
+        return targetFile;
     }
 }

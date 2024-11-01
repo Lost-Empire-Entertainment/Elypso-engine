@@ -23,6 +23,7 @@
 #include "console.hpp"
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
+#include "gameObjectFile.hpp"
 
 using std::cout;
 using std::endl;
@@ -52,6 +53,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::String;
 using Core::Select;
+using EngineFile::GameObjectFile;
 
 namespace Graphics::Shape
 {
@@ -147,8 +149,7 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
 
-		string thisPath = path(modelPath).parent_path().string() + "\\" + name + "\\" + name + ".txt";
-		obj->SetTxtFilePath(thisPath);
+		obj->SetTxtFilePath(txtFilePath);
 		obj->SetModelPath(modelPath);
 
 		GameObjectManager::AddGameObject(obj);
@@ -164,6 +165,8 @@ namespace Graphics::Shape
 			Caller::FILE,
 			Type::DEBUG,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+
+		GameObjectFile::LoadModel(txtFilePath);
 
 		return obj;
 	}
