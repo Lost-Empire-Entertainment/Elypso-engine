@@ -14,8 +14,8 @@
 #include "gameobject.hpp"
 using glm::inverse;
 using glm::normalize;
-using glm::max;
-using glm::min;
+using std::min;
+using std::max;
 using glm::vec4;
 using std::numeric_limits;
 using glm::quat;
@@ -87,14 +87,14 @@ namespace Core
 			vec3 pos = shape->GetTransform()->GetPosition();
 			vec3 objectScale = shape->GetTransform()->GetScale();
 			quat rotation = quat(radians(shape->GetTransform()->GetRotation()));
-			float margin = 0.1f;
+			float margin = 0.0f;
 
 			if (objType == Type::model)
 			{
 				const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
 
 				//complex bounding box for models
-				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), objectScale, margin);
+				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), vec3(1.0f), margin);
 			}
 			else
 			{
@@ -104,37 +104,44 @@ namespace Core
 			}
 
 			//create the model matrix (translation, rotation, scale)
-			mat4 modelMatrix = translate(mat4(1.0f), pos) * mat4_cast(rotation) * scale(mat4(1.0f), objectScale);
+			mat4 modelMatrix = 
+				translate(mat4(1.0f), pos) 
+				* mat4_cast(rotation) 
+				* scale(mat4(1.0f), objectScale);
 
 			//inverse the model matrix to transform the ray into local space
 			mat4 inverseModel = inverse(modelMatrix);
+
+			//transform ray to local space
 			vec3 localRayOrigin = vec3(inverseModel * vec4(ray.origin, 1.0f));
 			vec3 localRayDir = normalize(vec3(inverseModel * vec4(ray.direction, 0.0f)));
+
+			//ensure the direction is valid
+			if (length(localRayDir) == 0.0f) return false;
 
 			//perform ray-box intersection in local space
 			vec3 tMin = (minBound - localRayOrigin) / localRayDir;
 			vec3 tMax = (maxBound - localRayOrigin) / localRayDir;
 
-			float tEnter = max(max(
-				min(tMin.x, tMax.x),
-				min(tMin.y, tMax.y)),
-				min(tMin.z, tMax.z));
-			float tExit = min(min(
-				max(tMin.x, tMax.x),
-				max(tMin.y, tMax.y)),
-				max(tMin.z, tMax.z));
+			float tEnter = max({ min(tMin.x, tMax.x),
+								 min(tMin.y, tMax.y),
+								 min(tMin.z, tMax.z) });
+			float tExit = min({ max(tMin.x, tMax.x),
+								max(tMin.y, tMax.y),
+								max(tMin.z, tMax.z) });
 
-			if (tEnter < tExit 
-				&& tExit > 0.0f)
+			if (tEnter > tExit
+				|| tExit < 0.0f)
 			{
-				*distance = tEnter;
-				return true;
+				return false;
 			}
+
+			*distance = tEnter;
+			return true;
 		}
 
 		return false;
 	}
-
 
 	void Select::CalculateInteractionBoxFromVertices(
 		const vector<AssimpVertex>& vertices,
@@ -170,7 +177,7 @@ namespace Core
 		}
 
 		//apply margin to make the bounding box slightly larger
-		vec3 marginVec(margin, margin, margin);
+		vec3 marginVec = margin * scale;
 		minBound -= marginVec;
 		maxBound += marginVec;
 	}

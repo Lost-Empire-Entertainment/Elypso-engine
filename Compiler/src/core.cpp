@@ -8,6 +8,7 @@
 #include <ShlObj.h>
 #include <TlHelp32.h>
 #include <filesystem>
+#include <cstdlib>
 
 #include "core.hpp"
 #include "render.hpp"
@@ -18,17 +19,18 @@
 #include "configFile.hpp"
 #include "compile.hpp"
 
+using std::cout;
+using std::wstring;
+using std::filesystem::exists;
+using std::filesystem::current_path;
+using std::quick_exit;
+
 using Graphics::Render;
 using Utils::File;
 using Utils::String;
 using Graphics::GUI;
 using Core::ConfigFile;
 using Core::TheCompiler;
-
-using std::cout;
-using std::wstring;
-using std::filesystem::exists;
-using std::filesystem::current_path;
 
 namespace Core
 {
@@ -256,8 +258,10 @@ namespace Core
 
 		isCompilerRunning = false;
 		
-		ConfigFile::SaveData();
+		if (configFilePath != "") ConfigFile::SaveData();
 		GUI::GUIShutdown();
 		glfwTerminate();
+
+		quick_exit(EXIT_SUCCESS);
 	}
 }
