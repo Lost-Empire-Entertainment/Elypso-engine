@@ -10,6 +10,9 @@
 #include "skybox.hpp"
 #include "console.hpp"
 #include "render.hpp"
+#if ENGINE_MODE
+#include "gui_scenewindow.hpp"
+#endif
 
 using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
@@ -18,6 +21,10 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 
 using glm::mat3;
+
+#if ENGINE_MODE
+using Graphics::GUI::GUISceneWindow;
+#endif
 
 namespace Graphics::Shape
 {
@@ -123,7 +130,7 @@ namespace Graphics::Shape
         GameObjectManager::SetSkybox(obj);
 
 #if ENGINE_MODE
-        Render::UpdateCounts();
+        GUISceneWindow::UpdateCounts();
 #endif
 
         ConsoleManager::WriteConsoleMessage(

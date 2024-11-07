@@ -24,6 +24,9 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameObjectFile.hpp"
+#if ENGINE_MODE
+#include "gui_scenewindow.hpp"
+#endif
 
 using std::cout;
 using std::endl;
@@ -54,6 +57,9 @@ using Type = Core::ConsoleManager::Type;
 using Utils::String;
 using Core::Select;
 using EngineFile::GameObjectFile;
+#if ENGINE_MODE
+using Graphics::GUI::GUISceneWindow;
+#endif
 
 namespace Graphics::Shape
 {
@@ -156,7 +162,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddOpaqueObject(obj);
 
 #if ENGINE_MODE
-		Render::UpdateCounts();
+		GUISceneWindow::UpdateCounts();
 #endif
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;

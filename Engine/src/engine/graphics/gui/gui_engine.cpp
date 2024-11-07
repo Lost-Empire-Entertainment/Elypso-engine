@@ -27,6 +27,7 @@
 #include "gui_links.hpp"
 #include "gui_projectitemslist.hpp"
 #include "gui_firstTime.hpp"
+#include "gui_scenewindow.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
@@ -173,7 +174,7 @@ namespace Graphics::GUI
 				}
 
 				bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
-				if (renderSceneWindow) Render::RenderToImguiWindow();
+				if (renderSceneWindow) GUISceneWindow::RenderSceneWindow();
 
 				Compilation::RenderBuildingWindow();
 

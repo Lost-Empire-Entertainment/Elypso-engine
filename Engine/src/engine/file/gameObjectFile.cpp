@@ -26,6 +26,9 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "texture.hpp"
+#if ENGINE_MODE
+#include "gui_scenewindow.hpp"
+#endif
 
 using std::ifstream;
 using std::ofstream;
@@ -59,6 +62,9 @@ using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Texture;
 using Graphics::Shader;
+#if ENGINE_MODE
+using Graphics::GUI::GUISceneWindow;
+#endif
 
 namespace EngineFile
 {
@@ -319,7 +325,7 @@ namespace EngineFile
 			Type::DEBUG,
 			"Started loading gameobjects for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 #if ENGINE_MODE
-		Render::waitBeforeCountsUpdate = true;
+		GUISceneWindow::waitBeforeCountsUpdate = true;
 #endif
 		vector<string> validAssimpPaths;
 		vector<string> validGameobjectPaths;
@@ -394,8 +400,8 @@ namespace EngineFile
 			}
 		}
 #if ENGINE_MODE
-		Render::waitBeforeCountsUpdate = false;
-		Render::UpdateCounts();
+		GUISceneWindow::waitBeforeCountsUpdate = false;
+		GUISceneWindow::UpdateCounts();
 #endif
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,

@@ -27,6 +27,7 @@
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
+#include "gui_scenewindow.hpp"
 #endif
 
 using std::cout;
@@ -51,6 +52,7 @@ using Utils::File;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
+using Graphics::GUI::GUISceneWindow;
 #endif
 
 namespace Graphics::Shape
@@ -186,7 +188,7 @@ namespace Graphics::Shape
 			break;
 		}
 #if ENGINE_MODE
-		Render::UpdateCounts();
+		GUISceneWindow::UpdateCounts();
 #endif
 		//force-saves the game to ensure everything is up to date
 		SceneFile::SaveScene();

@@ -13,6 +13,9 @@
 #include "selectobject.hpp"
 #include "billboard.hpp"
 #include "console.hpp"
+#if ENGINE_MODE
+#include "gui_scenewindow.hpp"
+#endif
 
 using glm::translate;
 using glm::quat;
@@ -25,6 +28,9 @@ using Core::Select;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+#if ENGINE_MODE
+using Graphics::GUI::GUISceneWindow;
+#endif
 
 namespace Graphics::Shape
 {
@@ -144,7 +150,7 @@ namespace Graphics::Shape
 		GameObjectManager::AddSpotLight(obj);
 
 #if ENGINE_MODE
-		Render::UpdateCounts();
+		GUISceneWindow::UpdateCounts();
 #endif
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;
