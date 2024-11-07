@@ -708,6 +708,8 @@ namespace Core
 			GameGUI::Shutdown();
 #endif
 			glfwTerminate();
+
+			quick_exit(EXIT_SUCCESS);
 		}
 		else
 		{
@@ -750,10 +752,6 @@ namespace Core
 #else
 				GameGUI::Shutdown();
 #endif
-
-				//clean all glfw resources after program is closed
-				glfwTerminate();
-
 				ConsoleManager::WriteConsoleMessage(
 					Caller::SHUTDOWN,
 					Type::INFO,
@@ -773,6 +771,10 @@ namespace Core
 					<< ".\n\n";
 
 				ConsoleManager::CloseLogger();
+
+				glfwTerminate();
+
+				exit(EXIT_SUCCESS);
 			}
 		}
 	}
