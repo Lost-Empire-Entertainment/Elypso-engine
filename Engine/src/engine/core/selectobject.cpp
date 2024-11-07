@@ -135,7 +135,15 @@ namespace Core
 				return false;
 			}
 
-			*distance = tEnter;
+			//calculate intersection point in local space
+			vec3 intersectionLocal = localRayOrigin + tEnter * localRayDir;
+
+			//transform intersection point back to world space
+			vec3 intersectionWorld = vec3(modelMatrix * vec4(intersectionLocal, 1.0f));
+
+			//compute distance from ray origin to intersection point in world space
+			*distance = length(intersectionWorld - ray.origin);
+
 			return true;
 		}
 
