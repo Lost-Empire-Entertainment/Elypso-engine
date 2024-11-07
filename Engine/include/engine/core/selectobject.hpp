@@ -74,8 +74,7 @@ namespace Core
 			vec3& minBound,
 			vec3& maxBound,
 			const vec3& position,
-			const vec3& scale,
-			float margin);
+			const vec3& scale);
 	private:
 		/// <summary>
 		/// Check if the ray actually is interacting with a shape

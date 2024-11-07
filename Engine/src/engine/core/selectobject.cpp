@@ -87,14 +87,13 @@ namespace Core
 			vec3 pos = shape->GetTransform()->GetPosition();
 			vec3 objectScale = shape->GetTransform()->GetScale();
 			quat rotation = quat(radians(shape->GetTransform()->GetRotation()));
-			float margin = 0.0f;
 
 			if (objType == Type::model)
 			{
 				const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
 
 				//complex bounding box for models
-				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), vec3(1.0f), margin);
+				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), vec3(1.0f));
 			}
 			else
 			{
@@ -148,8 +147,7 @@ namespace Core
 		vec3& minBound,
 		vec3& maxBound,
 		const vec3& position,
-		const vec3& scale,
-		float margin)
+		const vec3& scale)
 	{
 		if (vertices.empty()) 
 		{
@@ -175,10 +173,5 @@ namespace Core
 			maxBound.y = std::max(maxBound.y, transformedPos.y);
 			maxBound.z = std::max(maxBound.z, transformedPos.z);
 		}
-
-		//apply margin to make the bounding box slightly larger
-		vec3 marginVec = margin * scale;
-		minBound -= marginVec;
-		maxBound += marginVec;
 	}
 }

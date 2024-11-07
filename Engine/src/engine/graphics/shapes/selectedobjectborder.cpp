@@ -138,29 +138,31 @@ namespace Graphics::Shape
 				vec3 minBound, maxBound;
 				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
 				vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
-				float margin = 0.025f;
 
 				//calculate the bounding box based on vertices
-				Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale, margin);
+				Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale);
 
 				//compute the center and scale of the bounding box
 				vec3 boxCenter = (minBound + maxBound) * 0.5f;
 				vec3 boxScale = maxBound - minBound;
 
-				model = translate(model, boxCenter); //translate to the center of the bounding box
+				//add a margin to the scale
+				vec3 margin = vec3(0.1f);
+				boxScale += margin;
+
+				model = translate(model, boxCenter); // Translate to the center of the bounding box
 
 				//apply rotation
 				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
 				model *= mat4_cast(newRot);
 
-				//scale based on the bounding box size, with a slight margin
-				model = scale(model, boxScale + vec3(margin));
+				//scale based on the bounding box size with the margin included
+				model = scale(model, boxScale);
 			}
-			else 
+			else
 			{
 				//simple position and margin values
 				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
-				float margin = 0.025f;
 
 				//simple bounding box
 				model = translate(model, position);
@@ -170,7 +172,7 @@ namespace Graphics::Shape
 				model *= mat4_cast(newRot);
 
 				//scale based on size, with a slight margin
-				model = scale(model, vec3(1) + vec3(margin));
+				model = scale(model, vec3(1) + vec3(0.1f));
 			}
 		}
 		else
@@ -182,11 +184,15 @@ namespace Graphics::Shape
 			model = scale(model, vec3(0.01f));
 		}
 
+		glLineWidth(5.0f);
+
 		shader.SetMat4("model", model);
 
 		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
+
+		glLineWidth(1.0f);
 	}
 }
 #endif
