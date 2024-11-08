@@ -175,7 +175,7 @@ namespace Graphics::GUI
                                         && path(child).extension().string() == ".txt")
                                     {
                                         string lightTxtFile = path(child).string();
-                                        FindAndDeleteGameobject(lightTxtFile);
+                                        GameObjectManager::FindAndDestroyGameObject(lightTxtFile);
 
                                         break;
                                     }
@@ -187,7 +187,7 @@ namespace Graphics::GUI
                                                 && path(secondChild).extension().string() == ".txt")
                                             {
                                                 string modelTxtFile = path(secondChild).string();
-                                                FindAndDeleteGameobject(modelTxtFile);
+                                                GameObjectManager::FindAndDestroyGameObject(modelTxtFile);
 
                                                 break;
                                             }
@@ -254,57 +254,5 @@ namespace Graphics::GUI
             toBeDeleted = "";
         }
 	}
-
-    void GUIProjectHierarchy::FindAndDeleteGameobject(const string& targetFile)
-    {
-        ifstream target(targetFile);
-        if (!target.is_open())
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Failed to open target txt file '" + targetFile + "'!\n\n");
-            return;
-        }
-
-        string name{};
-        unsigned int ID{};
-
-        //find and store the name and ID of the object from the object txt file
-        string line;
-        while (getline(target, line))
-        {
-            if (!line.empty()
-                && line.find("=") != string::npos)
-            {
-                vector<string> splitLine = String::Split(line, '=');
-                string key = splitLine[0];
-                string value = splitLine[1];
-
-                //remove one space in front of value if it exists
-                if (value[0] == ' ') value.erase(0, 1);
-
-                if (key == "name") name = value;
-                if (key == "id") ID = stoul(value);
-            }
-        }
-
-        target.close();
-
-        //find and delete the object in the scene based off of the name and ID from its object txt file
-        for (const auto& obj : GameObjectManager::GetObjects())
-        {
-            string objName = obj->GetName();
-            unsigned int objID = obj->GetID();
-
-            if (name == objName
-                && ID == objID)
-            {
-                GameObjectManager::DestroyGameObject(obj, true);
-
-                break;
-            }
-        }
-    }
 }
 #endif

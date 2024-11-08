@@ -19,8 +19,6 @@ namespace Graphics::GUI
 		static void RenderProjectHierarchy();
 	private:
 		static void DisplayDirectoryContents(const string& directoryPath);
-
-		static void FindAndDeleteGameobject(const string& targetFile);
 	};
 }
 #endif

@@ -126,7 +126,7 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Delete"))
 				{
-					GameObjectManager::DestroyGameObject(obj);
+					GameObjectManager::DestroyGameObject(obj, false);
 				}
 				ImGui::EndPopup();
 			}
@@ -148,7 +148,7 @@ namespace Graphics::GUI
 				{
 					if (ImGui::MenuItem("Delete"))
 					{
-						GameObjectManager::DestroyGameObject(obj);
+						GameObjectManager::DestroyGameObject(obj, false);
 					}
 					ImGui::EndPopup();
 				}

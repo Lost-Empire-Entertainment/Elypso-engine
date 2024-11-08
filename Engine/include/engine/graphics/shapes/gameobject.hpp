@@ -731,7 +731,14 @@ namespace Graphics::Shape
 			skybox = obj;
 		}
 
-		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly = false);
+		/// <summary>
+		/// Used for deleting gameobject directly in scene.
+		/// </summary>
+		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly = true);
+		/// <summary>
+		/// Used for trying to find gameobject through its txt file and deleting it that way in scene.
+		/// </summary>
+		static void FindAndDestroyGameObject(const string& objTxtFile, bool localOnly = true);
 
 		static const vector<shared_ptr<GameObject>>& GetObjects()
 		{

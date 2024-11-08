@@ -371,7 +371,7 @@ namespace Core
                     && Select::selectedObj != nullptr)
                 {
                     shared_ptr<GameObject> selectedObj = Select::selectedObj;
-                    GameObjectManager::DestroyGameObject(selectedObj);
+                    GameObjectManager::DestroyGameObject(selectedObj, false);
                 }
 
                 if (Select::selectedObj != nullptr)

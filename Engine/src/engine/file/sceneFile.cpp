@@ -120,7 +120,7 @@ namespace EngineFile
 			{
 				for (const auto& obj : objects)
 				{
-					GameObjectManager::DestroyGameObject(obj, true);
+					GameObjectManager::DestroyGameObject(obj);
 				}
 			}
 

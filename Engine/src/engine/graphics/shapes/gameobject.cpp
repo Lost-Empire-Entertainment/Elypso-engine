@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
 
 //external
 #include "glm.hpp"
@@ -39,6 +40,8 @@ using std::dynamic_pointer_cast;
 using glm::distance;
 using std::filesystem::directory_iterator;
 using std::filesystem::path;
+using std::ifstream;
+using std::filesystem::exists;
 
 using Core::Select;
 using Type = Graphics::Shape::Mesh::MeshType;
@@ -139,12 +142,14 @@ namespace Graphics::Shape
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
 
+		string txtFilePath = obj->GetTxtFilePath();
+
 		//destroy all children if parent is destroyed
 		if (obj->GetChildren().size() > 0)
 		{
 			for (const auto& child : obj->GetChildren())
 			{
-				GameObjectManager::DestroyGameObject(child, localOnly);
+				GameObjectManager::DestroyGameObject(child);
 			}
 		}
 		//remove object from parent children vector
@@ -187,6 +192,30 @@ namespace Graphics::Shape
 			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
 		}
+
+		//also delete the externally saved folder of this gameobject
+		if (!localOnly)
+		{
+			string txtFilePath = obj->GetTxtFilePath();
+			if (exists(txtFilePath))
+			{
+				string targetFolder;
+				if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+				{
+					targetFolder = path(txtFilePath).parent_path().parent_path().string();
+				}
+				else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
+					|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
+					|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
+				{
+					targetFolder = path(txtFilePath).parent_path().string();
+				}
+				if (exists(targetFolder))
+				{
+					File::DeleteFileOrfolder(targetFolder);
+				}
+			}
+		}
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
@@ -197,5 +226,57 @@ namespace Graphics::Shape
 			Caller::FILE,
 			ConsoleType::DEBUG,
 			"Deleted gameobject " + thisName + ".\n");
+	}
+
+	void GameObjectManager::FindAndDestroyGameObject(const string& objTxtFile, bool localOnly)
+	{
+		ifstream target(objTxtFile);
+		if (!target.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				ConsoleType::EXCEPTION,
+				"Error: Failed to open target txt file '" + objTxtFile + "'!\n\n");
+			return;
+		}
+
+		string name{};
+		unsigned int ID{};
+
+		//find and store the name and ID of the object from the object txt file
+		string line;
+		while (getline(target, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+
+				if (key == "name") name = value;
+				if (key == "id") ID = stoul(value);
+			}
+		}
+
+		target.close();
+
+		//find and delete the object in the scene based off of the name and ID from its object txt file
+		for (const auto& obj : GameObjectManager::GetObjects())
+		{
+			string objName = obj->GetName();
+			unsigned int objID = obj->GetID();
+
+			if (name == objName
+				&& ID == objID)
+			{
+				GameObjectManager::DestroyGameObject(obj);
+
+				break;
+			}
+		}
 	}
 }
