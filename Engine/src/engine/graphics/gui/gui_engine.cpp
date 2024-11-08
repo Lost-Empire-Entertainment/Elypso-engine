@@ -324,8 +324,6 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
-
-					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
@@ -353,8 +351,6 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
-
-					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
@@ -382,8 +378,6 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
-
-					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
@@ -411,8 +405,6 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
-
-					SceneFile::SaveScene();
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
@@ -440,8 +432,6 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
-
-					SceneFile::SaveScene();
 				}
 
 				ImGui::EndMenu();
@@ -485,8 +475,6 @@ namespace Graphics::GUI
 							name,
 							nextID2,
 							true);
-
-					SceneFile::SaveScene();
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
@@ -526,8 +514,6 @@ namespace Graphics::GUI
 							name,
 							nextID2,
 							true);
-
-					SceneFile::SaveScene();
 				}
 				if (ImGui::MenuItem("Directional light"))
 				{
@@ -573,8 +559,6 @@ namespace Graphics::GUI
 								name,
 								nextID2,
 								true);
-
-						SceneFile::SaveScene();
 					}
 				}
 

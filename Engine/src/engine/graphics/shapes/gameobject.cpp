@@ -219,9 +219,6 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
-		//force-saves the game to ensure everything is up to date
-		SceneFile::SaveScene();
-
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			ConsoleType::DEBUG,

@@ -357,8 +357,6 @@ namespace Core
                             nextID);
                     }
 
-                    SceneFile::SaveScene();
-
                     ConsoleManager::WriteConsoleMessage(
                         Caller::FILE,
                         Type::INFO,

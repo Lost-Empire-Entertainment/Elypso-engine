@@ -169,8 +169,6 @@ namespace Graphics::GUI
 					32,
 					targetName,
 					nextID);
-
-				SceneFile::SaveScene();
 			}
 
 			//
