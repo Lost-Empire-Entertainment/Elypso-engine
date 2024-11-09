@@ -33,6 +33,8 @@ namespace Graphics::GUI
 		static ImVec2 CenterWindow(const ImVec2& size);
 
 		static void Shutdown();
+	private:
+		static void SetStyle();
 	};
 }
 #endif

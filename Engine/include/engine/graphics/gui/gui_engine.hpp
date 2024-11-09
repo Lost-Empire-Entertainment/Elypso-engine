@@ -47,6 +47,8 @@ namespace Graphics::GUI
 
 		static inline bool filterTextProcessed;
 
+		static void SetStyle();
+
 		static void RenderTopBar();
 
 		static void SaveBefore(SaveBeforeState saveBeforeState);
