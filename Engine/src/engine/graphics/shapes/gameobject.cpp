@@ -219,6 +219,9 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
+
+		if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			ConsoleType::DEBUG,

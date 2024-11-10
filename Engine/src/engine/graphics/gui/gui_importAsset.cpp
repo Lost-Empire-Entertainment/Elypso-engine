@@ -169,6 +169,8 @@ namespace Graphics::GUI
 					32,
 					targetName,
 					nextID);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			//
@@ -185,6 +187,8 @@ namespace Graphics::GUI
 				string newFilePath = 
 					texturesFolder + "\\" + textureFilename;
 				File::CopyFileOrFolder(assetPath, newFilePath);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			renderImportAsset = false;

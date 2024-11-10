@@ -692,13 +692,10 @@ namespace EngineFile
 		//
 		// LOAD MODEL
 		//
-
-		cout << "trying to load model with name '" << name << "'\n";
  
 		shared_ptr<GameObject> foundObj;
 		for (const auto& obj : GameObjectManager::GetObjects())
 		{
-			cout << "looking at object with name " << obj->GetName() << "\n";
 			if (obj->GetName() == name)
 			{
 				foundObj = obj;

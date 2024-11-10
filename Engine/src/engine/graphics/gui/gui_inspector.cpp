@@ -200,6 +200,8 @@ namespace Graphics::GUI
 							ConsoleCaller::INPUT,
 							ConsoleType::INFO,
 							"Successfully set gameobject new name to '" + newFolderName + "'!");
+							
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 				}
 			}

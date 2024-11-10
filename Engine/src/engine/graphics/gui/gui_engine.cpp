@@ -414,6 +414,8 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
@@ -441,6 +443,8 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
@@ -468,6 +472,8 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
@@ -495,6 +501,8 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
@@ -522,6 +530,8 @@ namespace Graphics::GUI
 						32,
 						targetName,
 						nextID);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 
 				ImGui::EndMenu();
@@ -565,6 +575,8 @@ namespace Graphics::GUI
 							name,
 							nextID2,
 							true);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
@@ -604,6 +616,8 @@ namespace Graphics::GUI
 							name,
 							nextID2,
 							true);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 				if (ImGui::MenuItem("Directional light"))
 				{
@@ -649,6 +663,8 @@ namespace Graphics::GUI
 								name,
 								nextID2,
 								true);
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 				}
 

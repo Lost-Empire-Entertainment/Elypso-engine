@@ -355,6 +355,8 @@ namespace Core
                             stof(copiedObject["outerAngle"]),
                             targetName,
                             nextID);
+							
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
                     }
 
                     ConsoleManager::WriteConsoleMessage(
