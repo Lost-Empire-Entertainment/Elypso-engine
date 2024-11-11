@@ -32,7 +32,6 @@ namespace Core
 		static inline string gameParentPath;
 #endif
 		static inline bool isEngineRunning;
-		static inline bool startedWindowLoop;
 #if ENGINE_MODE
 		static void InitializeEngine(const string& version = "0.1.1");
 

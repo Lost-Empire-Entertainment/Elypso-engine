@@ -5,19 +5,11 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
-#include <map>
-
-#include "gameobject.hpp"
 
 namespace EngineFile
 {
 	using std::string;
-	using std::shared_ptr;
-	using std::map;
-
-	using Graphics::Shape::GameObject;
 
 	class GameObjectFile
 	{

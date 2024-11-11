@@ -156,7 +156,6 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.specular", 1);
 
 		obj->SetTxtFilePath(txtFilePath);
-		obj->SetModelPath(modelPath);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
@@ -164,6 +163,8 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
+		GameObjectFile::LoadModel(txtFilePath);
+
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;
 
@@ -171,8 +172,6 @@ namespace Graphics::Shape
 			Caller::FILE,
 			Type::DEBUG,
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
-
-		GameObjectFile::LoadModel(txtFilePath);
 
 		return obj;
 	}

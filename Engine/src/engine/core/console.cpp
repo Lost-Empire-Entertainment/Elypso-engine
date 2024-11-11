@@ -168,7 +168,7 @@ namespace Core
             || (!sendDebugMessages
             && type != Type::DEBUG)))
         {
-            if (Engine::startedWindowLoop) GUIConsole::AddTextToConsole(internalMsg);
+            if (Engine::isEngineRunning) GUIConsole::AddTextToConsole(internalMsg);
             else AddConsoleLog(internalMsg);
         }
 

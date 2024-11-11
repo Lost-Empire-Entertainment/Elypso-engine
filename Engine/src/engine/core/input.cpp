@@ -168,8 +168,6 @@ namespace Core
                     {
                         copiedObject["type"] = "model";
 
-                        copiedObject["model"] = selectedObj->GetModelPath();
-
                         copiedObject["diffuseTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
                         copiedObject["specularTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::specular);
                         copiedObject["normalTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::normal);

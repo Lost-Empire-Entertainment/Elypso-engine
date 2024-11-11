@@ -631,7 +631,6 @@ namespace Graphics::Shape
 		}
 
 		void SetTxtFilePath(const string& newTxtFilePath) { txtFilePath = newTxtFilePath; }
-		void SetModelPath(const string& newModelPath) { modelPath = newModelPath; }
 
 		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
@@ -652,7 +651,6 @@ namespace Graphics::Shape
 		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
 		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
 		const string& GetTxtFilePath() const { return txtFilePath; }
-		const string& GetModelPath() const { return modelPath; }
 	private:
 		bool isInitialized;
 		string name;
@@ -673,7 +671,6 @@ namespace Graphics::Shape
 		shared_ptr<GameObject> parentBillboardHolder;
 		shared_ptr<GameObject> childBillboard;
 		string txtFilePath;
-		string modelPath;
 	};
 
 	class GameObjectManager

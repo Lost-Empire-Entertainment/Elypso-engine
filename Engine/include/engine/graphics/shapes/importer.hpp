@@ -65,15 +65,30 @@ namespace Graphics::Shape
 			const string& heightTexture,
 			const float& shininess,
 			aiNode* node,
-			const aiScene* scene,
-			unsigned int nodeIndex);
+			const aiScene* scene);
 
 		static AssimpMesh ProcessMesh(
 			aiMesh* mesh,
 			const aiScene* scene);
 
-		static string GetNodeTxtFile(const string& modelPath, const string& nodeName);
-
 		static void DecomposeTransform(const aiMatrix4x4& transform, vec3& outPosition, vec3& outRotation, vec3& outScale);
+	private:
+		static bool ValidateScene(const aiScene* scene);
+
+		//check mesh data
+
+		static int AnimMeshCount(const aiMesh* scene);
+		static int BoneCount(const aiMesh* scene);
+		static int VerticeCount(const aiMesh* scene);
+
+		//check scene data
+
+		static int AnimationCount(const aiScene* scene);
+		static int CameraCount(const aiScene* scene);
+		static int LightCount(const aiScene* scene);
+		static int MaterialCount(const aiScene* scene);
+		static int MeshCount(const aiScene* scene);
+		static int SkeletonCount(const aiScene* scene);
+		static int TextureCount(const aiScene* scene);
 	};
 }

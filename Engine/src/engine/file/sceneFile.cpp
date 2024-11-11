@@ -40,6 +40,7 @@ using std::filesystem::directory_iterator;
 using std::filesystem::create_directory;
 using std::vector;
 using glm::vec3;
+using std::shared_ptr;
 
 using Core::Engine;
 using Core::Select;

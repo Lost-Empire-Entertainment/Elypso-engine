@@ -481,6 +481,7 @@ namespace Core
 #endif
 #endif
 	}
+
 #if DISCORD_MODE
 	void Engine::InitializeDiscordRichPresence(const __int64& appID)
 	{
@@ -586,15 +587,13 @@ namespace Core
 			true,
 			false);
 
-		startedWindowLoop = true;
+		isEngineRunning = true;
 #if ENGINE_MODE
 		if (!ConsoleManager::storedLogs.empty())
 		{
 			ConsoleManager::PrintLogsToBuffer();
 		}
 #endif
-
-		isEngineRunning = true;
 
 		while (isEngineRunning)
 		{

@@ -92,6 +92,7 @@ namespace Graphics::Shape
             | aiProcess_GenSmoothNormals
             | aiProcess_FlipUVs
             | aiProcess_CalcTangentSpace);
+
         //check for errors
         if (!scene
             || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
@@ -104,33 +105,28 @@ namespace Graphics::Shape
                 "Assimp error: " + errorString + "\n");
             return;
         }
+        
+        if (!ValidateScene(scene)) return;
 
-        unsigned int nodeIndex = 0;
+        aiNode* topLevelNode = scene->mRootNode->mChildren[0];
 
-        for (unsigned int i = 0; i < scene->mRootNode->mNumChildren; i++)
-        {
-            aiNode* topLevelNode = scene->mRootNode->mChildren[i];
-
-            //process assimps root node recursively
-            ProcessNode(
-                name,
-                id,
-                isEnabled,
-                pos,
-                rot,
-                scale,
-                modelPath,
-                vertShader,
-                fragShader,
-                diffTexture,
-                specTexture,
-                normalTexture,
-                heightTexture,
-                shininess,
-                topLevelNode,
-                scene,
-                nodeIndex++);
-        }
+        ProcessNode(
+            name,
+            id,
+            isEnabled,
+            pos,
+            rot,
+            scale,
+            modelPath,
+            vertShader,
+            fragShader,
+            diffTexture,
+            specTexture,
+            normalTexture,
+            heightTexture,
+            shininess,
+            topLevelNode,
+            scene);
     }
 
     void Importer::ProcessNode(
@@ -149,14 +145,8 @@ namespace Graphics::Shape
         const string& heightTexture,
         const float& shininess,
         aiNode* node,
-        const aiScene* scene,
-        unsigned int nodeIndex)
+        const aiScene* scene)
     {
-        string nodeName = node->mName.C_Str();
-        if (nodeName.empty()) nodeName = "Model";
-
-        name = nodeName;
-
         //get parent node
         string parentName =
             (node->mParent
@@ -186,69 +176,32 @@ namespace Graphics::Shape
         vec3 nodePosition, nodeRotation, nodeScale;
         DecomposeTransform(globalTransformation, nodePosition, nodeRotation, nodeScale);
 
-        //process each mesh located at the current node
-        for (unsigned int i = 0; i < node->mNumMeshes; i++)
-        {
-            //the node object only contains indices to index the actual objects in the scene. 
-            //the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            AssimpMesh newMesh = ProcessMesh(mesh, scene);
+        aiMesh* mesh = scene->mMeshes[0];
+        AssimpMesh newMesh = ProcessMesh(mesh, scene);
 
-            if (id == tempID) id = GameObject::nextID++;
+        if (id == tempID) id = GameObject::nextID++;
 
-            string txtPath = GetNodeTxtFile(modelPath, nodeName);
-            if (txtPath == "")
-            {
-                txtPath = path(modelPath).parent_path().string() + "\\" + nodeName + "\\" + nodeName + ".txt";
-                cout << "--- txt file didnt exist for '" << nodeName << "', setting a new txt file path as '" + txtPath + "'...\n";
-            }
+        string txtPath = path(modelPath).parent_path().string() + "\\model.txt";
 
-            shared_ptr<GameObject> newChild = Model::Initialize(
-                nodePosition,
-                nodeRotation,
-                nodeScale,
-                txtPath,
-                modelPath,
-                vertShader,
-                fragShader,
-                diffTexture,
-                specTexture,
-                normalTexture,
-                heightTexture,
-                newMesh.vertices,
-                newMesh.indices,
-                shininess,
-                nodeName,
-                id,
-                isEnabled,
-                true);
-        }
-
-        //after we've processed all of the meshes (if any) we then recursively process each of the children nodes
-        for (unsigned int i = 0; i < node->mNumChildren; i++)
-        {
-            string childName = node->mChildren[i]->mName.C_Str();
-            if (childName.empty()) childName = "Model";
-
-            ProcessNode(
-                childName,
-                id,
-                isEnabled,
-                nodePosition,
-                nodeRotation,
-                nodeScale,
-                modelPath,
-                vertShader,
-                fragShader,
-                diffTexture,
-                specTexture,
-                normalTexture,
-                heightTexture,
-                shininess,
-                node->mChildren[i],
-                scene,
-                nodeIndex++);
-        }
+        shared_ptr<GameObject> newChild = Model::Initialize(
+            nodePosition,
+            nodeRotation,
+            nodeScale,
+            txtPath,
+            modelPath,
+            vertShader,
+            fragShader,
+            diffTexture,
+            specTexture,
+            normalTexture,
+            heightTexture,
+            newMesh.vertices,
+            newMesh.indices,
+            shininess,
+            name,
+            id,
+            isEnabled,
+            true);
     }
 
     AssimpMesh Importer::ProcessMesh(
@@ -340,29 +293,162 @@ namespace Graphics::Shape
         outScale = scale;
     }
 
-    string Importer::GetNodeTxtFile(const string& modelPath, const string& nodeName)
+    bool Importer::ValidateScene(const aiScene* scene)
     {
-        string modelFolder = path(modelPath).parent_path().string();
-        string targetFile{};
-
-        for (const auto& folder : directory_iterator(modelFolder))
+        if (MeshCount(scene) == 1)
         {
-            if (is_directory(folder))
+            aiMesh* mesh = scene->mMeshes[0];
+            if (AnimMeshCount(mesh) > 0)
             {
-                for (const auto& folderFile : directory_iterator(folder))
-                {
-                    if (is_regular_file(folderFile)
-                        && path(folderFile).extension().string() == ".txt"
-                        && path(folderFile).stem().string() == nodeName)
-                    {
-                        targetFile = path(folderFile).string();
-                        break;
-                    }
-                }
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Assimp error: Cannot import models with animated meshes! This feature is not yet supported.\n");
+                return false;
             }
-            if (!targetFile.empty()) break;
+            if (BoneCount(mesh) > 0)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Assimp error: Cannot import models with bones! This feature is not yet supported.\n");
+                return false;
+            }
+            if (VerticeCount(mesh) == 0)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Assimp error: Cannot import models with no vertices!\n");
+                return false;
+            }
         }
 
-        return targetFile;
+        else if (MeshCount(scene) == 0)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import empty model file!\n");
+            return false;
+        }
+        else if (MeshCount(scene) > 1)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with more than one mesh! This feature is not yet supported.\n");
+            return false;
+        }
+
+        if (MaterialCount(scene) == 0)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with no materials! This feature is not yet supported.\n");
+            return false;
+        }
+        else if (MaterialCount(scene) > 1)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with more than one material! This feature is not yet supported.\n");
+            return false;
+        }
+
+        if (AnimationCount(scene) > 0)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with animations! This feature is not yet supported.\n");
+            return false;
+        }
+        if (CameraCount(scene) > 0)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with cameras! This feature is not yet supported.\n");
+            return false;
+        }
+        if (LightCount(scene) > 0)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with lights! This feature is not yet supported.\n");
+            return false;
+        }
+        if (SkeletonCount(scene) > 0)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with skeletons! This feature is not yet supported.\n");
+            return false;
+        }
+        if (TextureCount(scene) > 0)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Assimp error: Cannot import models with textures! This feature is not yet supported. Please import textures separately.\n");
+            return false;
+        }
+
+        return true;
+    }
+
+    //
+    // CHECK MESH DATA
+    //
+
+    int Importer::AnimMeshCount(const aiMesh* mesh)
+    {
+        return mesh->mNumAnimMeshes;
+    }
+    int Importer::BoneCount(const aiMesh* mesh)
+    {
+        return mesh->mNumBones;
+    }
+    int Importer::VerticeCount(const aiMesh* mesh)
+    {
+        return mesh->mNumVertices;
+    }
+
+    //
+    // CHECK SCENE DATA
+    //
+
+    int Importer::AnimationCount(const aiScene* scene)
+    {
+        return scene->mNumAnimations;
+    }
+    int Importer::CameraCount(const aiScene* scene)
+    {
+        return scene->mNumCameras;
+    }
+    int Importer::LightCount(const aiScene* scene)
+    {
+        return scene->mNumLights;
+    }
+    int Importer::MaterialCount(const aiScene* scene)
+    {
+        return scene->mNumMaterials;
+    }
+    int Importer::MeshCount(const aiScene* scene)
+    {
+        return scene->mNumMeshes;
+    }
+    int Importer::SkeletonCount(const aiScene* scene)
+    {
+        return scene->mNumSkeletons;
+    }
+    int Importer::TextureCount(const aiScene* scene)
+    {
+        return scene->mNumTextures;
     }
 }

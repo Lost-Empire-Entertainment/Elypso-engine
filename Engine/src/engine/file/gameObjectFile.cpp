@@ -5,8 +5,10 @@
 
 #include <fstream>
 #include <filesystem>
-#include <vector>
 #include <iostream>
+#include <unordered_map>
+#include <memory>
+#include <vector>
 
 //external
 #include "magic_enum.hpp"
@@ -26,6 +28,7 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "texture.hpp"
+#include "gameobject.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -39,10 +42,12 @@ using glm::vec3;
 using std::filesystem::is_empty;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
-using std::vector;
 using std::make_shared;
 using std::cout;
 using std::to_string;
+using std::unordered_map;
+using std::shared_ptr;
+using std::vector;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -62,6 +67,7 @@ using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Texture;
 using Graphics::Shader;
+using Graphics::Shape::GameObject;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -159,10 +165,6 @@ namespace EngineFile
 				//path to txt file of this gameobject
 				string txtFilePath = String::CharReplace(obj->GetTxtFilePath(), '/', '\\');
 				data.push_back("txtFile= " + txtFilePath + "\n");
-
-				//path to model of this gameobject
-				string modelPath = String::CharReplace(obj->GetModelPath(), '/', '\\');
-				data.push_back("model= " + modelPath + "\n");
 
 				//material variables
 				if (meshType == Mesh::MeshType::model)
@@ -429,7 +431,7 @@ namespace EngineFile
 			return;
 		}
 
-		map<string, string> data;
+		unordered_map<string, string> data;
 		string line;
 		while (getline(txtFile, line))
 		{
@@ -497,10 +499,14 @@ namespace EngineFile
 			if (key == "name")
 			{
 				name = value;
+
+				cout << "==== assigning name as " << name << " for\n" << txtFilePath << "\n";
 			}
 			else if (key == "id")
 			{
 				ID = stoul(value);
+
+				cout << "==== assigning id as " << ID << " for\n" << txtFilePath << "\n";
 			}
 			else if (key == "enabled")
 			{
@@ -712,6 +718,8 @@ namespace EngineFile
 		}
 		else
 		{
+			cout << "==== gameobjectfile.cpp\n" << txtFilePath << "\n";
+
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
@@ -720,6 +728,8 @@ namespace EngineFile
 			foundObj->SetName(name);
 			foundObj->SetID(ID);
 			foundObj->SetEnableState(isEnabled);
+
+			//cout << "==== name: " << name << ", id: " << ID << "\n";
 
 			foundObj->GetTransform()->SetPosition(pos);
 			foundObj->GetTransform()->SetRotation(rot);
@@ -733,8 +743,6 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, specularTexture, Material::TextureType::specular, false);
 			Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
-
-			foundObj->SetModelPath(model);
 
 			foundObj->GetBasicShape()->SetShininess(shininess);
 
@@ -758,7 +766,7 @@ namespace EngineFile
 			return;
 		}
 
-		map<string, string> data;
+		unordered_map<string, string> data;
 		string line;
 		while (getline(pointLightFile, line))
 		{
@@ -1021,7 +1029,7 @@ namespace EngineFile
 			return;
 		}
 
-		map<string, string> data;
+		unordered_map<string, string> data;
 		string line;
 		while (getline(spotLightFile, line))
 		{
@@ -1292,7 +1300,7 @@ namespace EngineFile
 			return;
 		}
 
-		map<string, string> data;
+		unordered_map<string, string> data;
 		string line;
 		while (getline(directionalLightFile, line))
 		{

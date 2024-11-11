@@ -106,7 +106,7 @@ namespace Graphics::GUI
 				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
 				if (isNearBottom
 					|| (!firstScrollToBottom
-						&& Engine::startedWindowLoop))
+					&& Engine::isEngineRunning))
 				{
 					ImGui::SetScrollHereY(1.0f);
 					firstScrollToBottom = true;
