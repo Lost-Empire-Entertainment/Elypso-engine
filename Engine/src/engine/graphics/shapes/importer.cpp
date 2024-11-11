@@ -181,7 +181,7 @@ namespace Graphics::Shape
 
         if (id == tempID) id = GameObject::nextID++;
 
-        string txtPath = path(modelPath).parent_path().string() + "\\model.txt";
+        string txtPath = path(modelPath).parent_path().string() + "\\" + name + ".txt";
 
         shared_ptr<GameObject> newChild = Model::Initialize(
             nodePosition,
