@@ -20,6 +20,11 @@ namespace Graphics::GUI
 {
 	void GUIFirstTime::RenderFirstTime()
 	{
+		/*
+		* 
+		* DISABLED FOR NOW
+		* WILL BE UPDATED IN A FUTURE VERSION
+		* 
 		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
 
@@ -46,6 +51,7 @@ namespace Graphics::GUI
 
 			ImGui::End();
 		}
+		*/
 	}
 
 	void GUIFirstTime::RenderFirstTimeContent()
