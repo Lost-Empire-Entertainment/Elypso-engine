@@ -499,14 +499,10 @@ namespace EngineFile
 			if (key == "name")
 			{
 				name = value;
-
-				cout << "==== assigning name as " << name << " for\n" << txtFilePath << "\n";
 			}
 			else if (key == "id")
 			{
 				ID = stoul(value);
-
-				cout << "==== assigning id as " << ID << " for\n" << txtFilePath << "\n";
 			}
 			else if (key == "enabled")
 			{
@@ -549,7 +545,7 @@ namespace EngineFile
 
 				string fullTex0Path = split[0] == "DEFAULTDIFF"
 					? "DEFAULTDIFF"
-					: path(model).parent_path().string() + "\\" + split[0];
+					: path(txtFilePath).parent_path().string() + "\\" + split[0];
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
@@ -557,7 +553,7 @@ namespace EngineFile
 					textures.push_back(fullTex0Path);
 				}
 				else if (fullTex0Path != "DEFAULTDIFF"
-					&& !exists(fullTex0Path))
+						 && !exists(fullTex0Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
@@ -569,7 +565,7 @@ namespace EngineFile
 
 				string fullTex1Path = split[1] == "DEFAULTSPEC"
 					? "DEFAULTSPEC"
-					: path(model).parent_path().string() + "\\" + split[1];
+					: path(txtFilePath).parent_path().string() + "\\" + split[1];
 				if (fullTex1Path == "DEFAULTSPEC")
 				{
 					fullTex1Path = Engine::filesPath + "\\textures\\spec_default.png";
@@ -588,7 +584,7 @@ namespace EngineFile
 
 				string fullTex2Path = split[2] == "EMPTY"
 					? "EMPTY"
-					: path(model).parent_path().string() + "\\" + split[2];
+					: path(txtFilePath).parent_path().string() + "\\" + split[2];
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
@@ -602,7 +598,7 @@ namespace EngineFile
 
 				string fullTex3Path = split[3] == "EMPTY"
 					? "EMPTY"
-					: path(model).parent_path().string() + "\\" + split[3];
+					: path(txtFilePath).parent_path().string() + "\\" + split[3];
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{
@@ -718,8 +714,6 @@ namespace EngineFile
 		}
 		else
 		{
-			cout << "==== gameobjectfile.cpp\n" << txtFilePath << "\n";
-
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
@@ -728,8 +722,6 @@ namespace EngineFile
 			foundObj->SetName(name);
 			foundObj->SetID(ID);
 			foundObj->SetEnableState(isEnabled);
-
-			//cout << "==== name: " << name << ", id: " << ID << "\n";
 
 			foundObj->GetTransform()->SetPosition(pos);
 			foundObj->GetTransform()->SetRotation(rot);

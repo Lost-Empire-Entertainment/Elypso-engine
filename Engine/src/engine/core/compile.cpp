@@ -414,8 +414,6 @@ namespace Core
 						string originFileName = path(entry).filename().string();
 						string target = gameProjectFolder + "\\" + originFileName;
 
-						cout << "trying to copy from\n" << origin << "\nto\n" << target << "\n";
-
 						File::CopyFileOrFolder(origin, target);
 					}
 				}

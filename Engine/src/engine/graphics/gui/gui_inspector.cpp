@@ -380,13 +380,15 @@ namespace Graphics::GUI
 				if (ImGui::Button(diff_reset.c_str()))
 				{
 					string removedTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
-					if (removedTexture.find("diff_default.png") == string::npos
-						&& removedTexture.find("diff_missing.png") == string::npos)
+					if (removedTexture.find("diff_default.png") == string::npos)
 					{
 						Texture::LoadTexture(obj, diff_defaultTexturePath.string(), Material::TextureType::diffuse, true);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 
-						File::DeleteFileOrfolder(removedTexture);
+						if (removedTexture.find("diff_missing.png") == string::npos)
+						{
+							File::DeleteFileOrfolder(removedTexture);
+						}
 					}
 					else 
 					{

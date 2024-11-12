@@ -283,8 +283,6 @@ namespace Core
                             File::CopyFileOrFolder(specTexturePath, specDestinationPath);
                         }
 
-                        cout << "---- copied\n" << originPath << "\nto\n" << targetPath << "\n";
-
                         Importer::Initialize(
                             newPos,
                             rot,

@@ -86,18 +86,23 @@ namespace Graphics
 		if (it != textures.end())
 		{
 			obj->GetMaterial()->AddTexture(texturePath, it->second, type);
+
 			return;
 		}
 
 		string finalTexturePath;
+
+		//default diff texture was assigned
 		if (texturePath == "DEFAULTDIFF")
 		{
 			finalTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
 		}
+		//default spec texture was assigned
 		else if (texturePath == "DEFAULTSPEC")
 		{
 			finalTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
 		}
+		//the texture path is assigned but doesnt exist, assigning missing texture
 		else if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model
 				 || texturePath.find("diff_default.png") != string::npos
 				 || texturePath.find("spec_default.png") != string::npos
@@ -105,6 +110,7 @@ namespace Graphics
 		{
 			finalTexturePath = texturePath;
 		}
+		//otherwise look for texture inside model folder
 		else
 		{
 			bool foundObject = false;
@@ -114,52 +120,30 @@ namespace Graphics
 			{
 				string objName = obj->GetName();
 				string folderName = path(folder).stem().string();
-				if (is_directory(folder))
+
+				if (is_directory(folder)
+					&& folderName == objName)
 				{
-					//second iteration to loop through all folders of selected gameobject folder
-					//because gameobjects always have a master model file but folders for each actual txt file of each model piece
-					for (const auto& childFolder : directory_iterator(folder))
+					for (const auto& file : directory_iterator(folder))
 					{
-						//ignore the master model file, only look for folders
-						if (is_directory(childFolder))
+						//set the image file path
+						string extension = path(file).extension().string();
+						string fileName = path(file).filename().string();
+						if (is_regular_file(file)
+							&& texturePath == fileName)
 						{
-							//third iteration to look for txt file of the target gameobject
-							for (const auto& file : directory_iterator(childFolder))
-							{
-								//only check this file if it is a regular file and has '.txt' extension
-								string extension = path(file).extension().string();
-								if (extension == ".txt"
-									&& is_regular_file(file))
-								{
-									string fileName = path(file).stem().string();
-									if (fileName == objName)
-									{
-										string objPath = path(file).string();
-										string textureName = path(texturePath).filename().string();
-										copiedTexturePath = path(objPath).parent_path().string() + "\\" + textureName;
-
-										if (!exists(copiedTexturePath))
-										{
-											File::CopyFileOrFolder(texturePath, copiedTexturePath);
-										}
-
-										foundObject = true;
-
-										break;
-									}
-								}
-							}
+							finalTexturePath = path(file).string();
+							foundObject = true;
+							break;
 						}
-						if (foundObject) break;
 					}
 				}
 				if (foundObject) break;
 			}
-
-			finalTexturePath = copiedTexturePath;
 		}
 
-		//the texture does not yet exist
+		//texture was not found and was not assigned, assign brand new texture
+		if (finalTexturePath == "") finalTexturePath = texturePath;
 
 		unsigned int texture;
 		glGenTextures(1, &texture);
@@ -183,6 +167,30 @@ namespace Graphics
 
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
+
+			string textureName = path(texturePath).filename().string();
+
+			if (textureName.find("diff_default.png") == string::npos
+				&& textureName.find("diff_missing.png") == string::npos
+				&& textureName.find("pointLight.png") == string::npos
+				&& textureName.find("spotLight.png") == string::npos
+				&& textureName.find("directionalLight.png") == string::npos
+				&& textureName.find("blank.png") == string::npos
+				&& textureName.find("move.png") == string::npos
+				&& textureName.find("rotate.png") == string::npos
+				&& textureName.find("scale.png") == string::npos
+				&& textureName.find("DEFAULTDIFF") == string::npos
+				&& textureName.find("DEFAULTSPEC") == string::npos)
+			{
+				string objFolder = path(obj->GetTxtFilePath()).parent_path().string();
+				string originPath = Engine::texturesPath + "\\" + textureName;
+				string targetPath = objFolder + "\\" + textureName;
+
+				if (!exists(targetPath))
+				{
+					File::CopyFileOrFolder(originPath, targetPath);
+				}
+			}
 
 			obj->GetMaterial()->AddTexture(finalTexturePath, texture, type);
 

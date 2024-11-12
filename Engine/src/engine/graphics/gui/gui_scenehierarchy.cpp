@@ -66,48 +66,31 @@ namespace Graphics::GUI
 				ConfigFile::SetValue("gui_sceneHierarchy", "0");
 			}
 
-			RenderParentGameobjects();
+			RenderGameobjects();
 
 			ImGui::End();
 		}
 	}
 
-	void GUISceneHierarchy::RenderParentGameobjects()
+	void GUISceneHierarchy::RenderGameobjects()
 	{
-		vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
-
-		if (objects.size() > 0)
+		for (const auto& obj : GameObjectManager::GetObjects())
 		{
-			for (const shared_ptr<GameObject>& obj : objects)
+			if (obj == nullptr) return;
+
+			if (obj->GetParentBillboardHolder() != nullptr) return;
+
+			string name = obj->GetName();
+			string label = name + "##" + to_string(obj->GetID());
+
+			bool isSelected = (obj == Select::selectedObj);
+
+			if (isSelected)
 			{
-				if (obj->GetParent() == nullptr)
-				{
-					RenderChildGameobjects(obj);
-				}
+				ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
+				ImGui::PushStyleColor(ImGuiCol_Text, color);
 			}
-		}
-	}
 
-	void GUISceneHierarchy::RenderChildGameobjects(const shared_ptr<GameObject>& obj)
-	{
-		if (obj == nullptr) return;
-
-		if (obj->GetParentBillboardHolder() != nullptr) return;
-
-		string name = obj->GetName();
-		string label = name + "##" + to_string(obj->GetID());
-
-		bool isSelected = (obj == Select::selectedObj);
-
-		if (isSelected)
-		{
-			ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
-			ImGui::PushStyleColor(ImGuiCol_Text, color);
-		}
-
-		bool hasChildren = obj->GetChildren().size() > 0;
-		if (!hasChildren)
-		{
 			if (ImGui::Selectable(label.c_str(), isSelected))
 			{
 				Select::selectedObj = obj;
@@ -129,36 +112,6 @@ namespace Graphics::GUI
 					GameObjectManager::DestroyGameObject(obj, false);
 				}
 				ImGui::EndPopup();
-			}
-		}
-		else
-		{
-			ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow;
-			if (isSelected)
-				node_flags |= ImGuiTreeNodeFlags_Selected;
-
-			if (ImGui::TreeNodeEx(label.c_str(), node_flags))
-			{
-				if (ImGui::IsItemClicked())
-				{}
-
-				if (isSelected) ImGui::PopStyleColor();
-
-				if (ImGui::BeginPopupContextItem(label.c_str()))
-				{
-					if (ImGui::MenuItem("Delete"))
-					{
-						GameObjectManager::DestroyGameObject(obj, false);
-					}
-					ImGui::EndPopup();
-				}
-
-				for (const auto& child : obj->GetChildren())
-				{
-					RenderChildGameobjects(child);
-				}
-
-				ImGui::TreePop();
 			}
 		}
 	}

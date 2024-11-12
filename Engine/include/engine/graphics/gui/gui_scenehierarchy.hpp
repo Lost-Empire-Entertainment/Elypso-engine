@@ -22,8 +22,7 @@ namespace Graphics::GUI
 	public:
 		static void RenderSceneHierarchy();
 	private:
-		static void RenderParentGameobjects();
-		static void RenderChildGameobjects(const shared_ptr<GameObject>& obj);
+		static void RenderGameobjects();
 	};
 }
 #endif
