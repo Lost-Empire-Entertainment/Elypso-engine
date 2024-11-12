@@ -33,7 +33,7 @@ namespace Core
 #endif
 		static inline bool isEngineRunning;
 #if ENGINE_MODE
-		static void InitializeEngine(const string& version = "0.1.1");
+		static void InitializeEngine(const string& version = "0.1.2");
 
 		static void CheckForMissingCompilerFiles();
 #else
