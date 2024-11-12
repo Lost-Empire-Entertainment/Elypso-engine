@@ -139,11 +139,17 @@ namespace Core
         {
             if (!ImGui::GetIO().WantCaptureMouse)
             {
+                /*
+                * 
+                * TEMPORARILY DISABLED
+                * WILL BE FIXED IN A FUTURE VERSION
+                * 
                 //copy selected object
                 if (key == GLFW_KEY_C
                     && mods == GLFW_MOD_CONTROL
                     && action == GLFW_PRESS
-                    && Select::selectedObj != nullptr)
+                    && Select::selectedObj != nullptr
+                    && Select::selectedObj->GetDirectionalLight() == nullptr) //cannot copy or paste directional light
                 {
                     shared_ptr<GameObject> selectedObj = Select::selectedObj;
                     copiedObject.clear();
@@ -200,14 +206,6 @@ namespace Core
                         copiedObject["distance"] = to_string(selectedObj->GetSpotLight()->GetDistance());
                         copiedObject["innerAngle"] = to_string(selectedObj->GetSpotLight()->GetInnerAngle());
                         copiedObject["outerAngle"] = to_string(selectedObj->GetSpotLight()->GetOuterAngle());
-                    }
-
-                    else if (selectedObj->GetSpotLight() != nullptr)
-                    {
-                        ConsoleManager::WriteConsoleMessage(
-                            Caller::INPUT,
-                            Type::EXCEPTION,
-                            "Error: Cannot copy directional light! There can only be one per scene.");
                     }
 
                     selectedObj = nullptr;
@@ -360,6 +358,7 @@ namespace Core
                         Type::INFO,
                         "Pasted file " + copiedObject["name"] + "\n");
                 }
+                */
 
                 //delete selected gameobject
                 if (key == GLFW_KEY_DELETE

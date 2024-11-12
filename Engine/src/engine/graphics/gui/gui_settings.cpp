@@ -119,8 +119,8 @@ namespace Graphics::GUI
 		ImGui::Text("Run compiled game: Ctrl + R");
 		ImGui::Text("Select GameObject: Left Mouse Button");
 		ImGui::Text("Delete selected GameObject or node: Delete");
-		ImGui::Text("Copy selected object: Ctrl + C");
-		ImGui::Text("Paste copied object: Ctrl + V");
+		//ImGui::Text("Copy selected object: Ctrl + C"); TEMPORARILY DISABLED, WILL BE FIXED IN A FUTURE VERSION
+		//ImGui::Text("Paste copied object: Ctrl + V"); TEMPORARILY DISABLED, WILL BE FIXED IN A FUTURE VERSION
 		ImGui::Text("Switch to X axis: X");
 		ImGui::Text("Switch to Y axis: Y");
 		ImGui::Text("Switch to Z axis: Z");

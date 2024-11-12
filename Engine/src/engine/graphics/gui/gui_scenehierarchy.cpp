@@ -42,6 +42,7 @@ using Utils::File;
 using Utils::String;
 using Core::Select;
 using Core::Input;
+using Graphics::Shape::Mesh;
 
 namespace Graphics::GUI
 {
@@ -78,40 +79,44 @@ namespace Graphics::GUI
 		{
 			if (obj == nullptr) return;
 
-			if (obj->GetParentBillboardHolder() != nullptr) return;
-
-			string name = obj->GetName();
-			string label = name + "##" + to_string(obj->GetID());
-
-			bool isSelected = (obj == Select::selectedObj);
-
-			if (isSelected)
+			if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model
+				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
+				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
+				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
 			{
-				ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
-				ImGui::PushStyleColor(ImGuiCol_Text, color);
-			}
+				string name = obj->GetName();
+				string label = name + "##" + to_string(obj->GetID());
 
-			if (ImGui::Selectable(label.c_str(), isSelected))
-			{
-				Select::selectedObj = obj;
-				Select::isObjectSelected = true;
+				bool isSelected = (obj == Select::selectedObj);
 
-				if (Input::objectAction == Input::ObjectAction::none)
+				if (isSelected)
 				{
-					Input::objectAction = Input::ObjectAction::move;
+					ImVec4 color = ImVec4(1.0f, 1.0f, 0.6f, 1.0f);
+					ImGui::PushStyleColor(ImGuiCol_Text, color);
 				}
-				if (Input::axis == "") Input::axis = "X";
-			}
 
-			if (isSelected) ImGui::PopStyleColor();
-
-			if (ImGui::BeginPopupContextItem(label.c_str()))
-			{
-				if (ImGui::MenuItem("Delete"))
+				if (ImGui::Selectable(label.c_str(), isSelected))
 				{
-					GameObjectManager::DestroyGameObject(obj, false);
+					Select::selectedObj = obj;
+					Select::isObjectSelected = true;
+
+					if (Input::objectAction == Input::ObjectAction::none)
+					{
+						Input::objectAction = Input::ObjectAction::move;
+					}
+					if (Input::axis == "") Input::axis = "X";
 				}
-				ImGui::EndPopup();
+
+				if (isSelected) ImGui::PopStyleColor();
+
+				if (ImGui::BeginPopupContextItem(label.c_str()))
+				{
+					if (ImGui::MenuItem("Delete"))
+					{
+						GameObjectManager::DestroyGameObject(obj, false);
+					}
+					ImGui::EndPopup();
+				}
 			}
 		}
 	}
