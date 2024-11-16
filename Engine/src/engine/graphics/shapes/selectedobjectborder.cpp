@@ -98,7 +98,7 @@ namespace Graphics::Shape
 
 		Shader borderShader = Shader::LoadShader(
 			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic_model.frag").string());
+			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
 
 		shared_ptr<Material> mat = make_shared<Material>();
 		string basicTextureVert = (path("shaders") / (path("Basic_texture.vert"))).string();
