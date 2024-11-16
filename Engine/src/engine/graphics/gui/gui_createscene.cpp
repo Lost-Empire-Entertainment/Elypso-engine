@@ -8,10 +8,10 @@
 #include <filesystem>
 
 //external
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
 
 //engine
 #include "gui_createscene.hpp"
@@ -71,13 +71,24 @@ namespace Graphics::GUI
 
 		ImGui::SetCursorPos(textfieldPos);
 
+#ifdef _WIN32
 		strcpy_s(sceneName, bufferSize, assignedSceneName.c_str());
+#elif __linux__
+		strncpy(sceneName, assignedSceneName.c_str(), bufferSize);
+#endif
 		if (ImGui::InputText("##setSceneName", sceneName, bufferSize))
 		{
 			assignedSceneName = sceneName;
 		}
 
-		if (strlen(sceneName) == 0) strcpy_s(sceneName, bufferSize, "Scene");
+		if (strlen(sceneName) == 0)
+		{
+#ifdef _WIN32
+			strcpy_s(sceneName, bufferSize, "Scene");
+#elif __linux__
+			strncpy(sceneName, "Scene", bufferSize);
+#endif
+		}
 		if (assignedSceneName == "") assignedSceneName = "Scene";
 
 		ImVec2 buttonSize = ImVec2(100, 30);
@@ -112,7 +123,12 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Error: Invalid character '" + str + "' detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!");
 
+#ifdef _WIN32
 				strcpy_s(sceneName, bufferSize, "Scene");
+#elif __linux__
+				strncpy(sceneName,"Scene", bufferSize);
+#endif
+				
 				assignedSceneName = "Scene";
 
 				renderCreateSceneWindow = false;
@@ -137,7 +153,11 @@ namespace Graphics::GUI
 
 			if (foundExistingScene)
 			{
+#ifdef _WIN32
 				strcpy_s(sceneName, bufferSize, "Scene");
+#elif __linux__
+				strncpy(sceneName, "Scene", bufferSize);
+#endif
 				assignedSceneName = "Scene";
 
 				ConsoleManager::WriteConsoleMessage(

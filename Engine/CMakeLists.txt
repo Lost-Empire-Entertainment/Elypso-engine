@@ -180,39 +180,43 @@ target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 #    )
 #endif()
 
-# Set the folder inside the install folder where the exe will be placed for this project
+if (WIN32)
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-if (WIN32)
-	# Copy "files" directory to the install directory after build
-	add_custom_command(TARGET Elypso_engine POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		$<TARGET_FILE_DIR:Elypso_engine>/files
-		COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${CMAKE_SOURCE_DIR}/files 
-		$<TARGET_FILE_DIR:Elypso_engine>/files
-	)
+elseif (UNIX)
+set(CMAKE_INSTALL_BINDIR "${CMAKE_CURRENT_SOURCE_DIR}/build")
+install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-	# Copy assimp dll to the install directory after build
-	add_custom_command(TARGET Elypso_engine POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E remove
-		$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
-		COMMAND ${CMAKE_COMMAND} -E copy
-		${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
-		$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
-	)
-
-	# Copy discord dll to the install directory after build
-	# UNCOMMENT TO USE DISCORD GAME SDK
-	# add_custom_command(TARGET Elypso_engine POST_BUILD
-		# COMMAND ${CMAKE_COMMAND} -E remove
-		# $<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
-		# COMMAND ${CMAKE_COMMAND} -E copy
-		# ${CMAKE_SOURCE_DIR}/files/external\ dlls/discord_game_sdk.dll
-		# $<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
-	# )
 endif()
+
+# Copy "files" directory to the install directory after build
+add_custom_command(TARGET Elypso_engine POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+	$<TARGET_FILE_DIR:Elypso_engine>/files
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	${CMAKE_SOURCE_DIR}/files 
+	$<TARGET_FILE_DIR:Elypso_engine>/files
+)
+
+# Copy assimp dll to the install directory after build
+add_custom_command(TARGET Elypso_engine POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+	$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
+	COMMAND ${CMAKE_COMMAND} -E copy
+	${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
+	$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
+)
+
+# Copy discord dll to the install directory after build
+# UNCOMMENT TO USE DISCORD GAME SDK
+# add_custom_command(TARGET Elypso_engine POST_BUILD
+	# COMMAND ${CMAKE_COMMAND} -E remove
+	# $<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
+	# COMMAND ${CMAKE_COMMAND} -E copy
+	# ${CMAKE_SOURCE_DIR}/files/external\ dlls/discord_game_sdk.dll
+	# $<TARGET_FILE_DIR:Elypso_engine>/discord_game_sdk.dll
+# )
 
 set(COPY_TARGETS LICENSE.md README.md SECURITY.md LIBRARIES.md)
 foreach(FILE ${COPY_TARGETS})

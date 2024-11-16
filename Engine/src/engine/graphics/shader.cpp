@@ -9,7 +9,7 @@
 #include <vector>
 
 //external
-#include "glad.h"
+#include "../../../../_external_shared/Glad/glad.h"
 
 //engine
 #include "console.hpp"

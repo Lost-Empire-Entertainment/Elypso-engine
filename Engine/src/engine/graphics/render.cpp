@@ -9,12 +9,12 @@
 #include <vector>
 
 //external
-#include "glad.h"
-#include "glfw3.h"
-#include "glm.hpp"
-#include "matrix_transform.hpp"
-#include "type_ptr.hpp"
-#include "stb_image.h"
+#include "../../../../_external_shared/Glad/glad.h"
+#include "../../../../_external_shared/GLFW/glfw3.h"
+#include "../../../../_external_shared/GLM/glm.hpp"
+#include "../../../../_external_shared/GLM/gtc/matrix_transform.hpp"
+#include "../../../../_external_shared/GLM/gtc/type_ptr.hpp"
+#include "../../../../_external_shared/Stb_image/stb_image.h"
 
 //engine
 #include "console.hpp"

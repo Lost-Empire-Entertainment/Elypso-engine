@@ -13,11 +13,11 @@
 #include <array>
 
 //external
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
-#include "glfw3.h"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
+#include "GLFW/glfw3.h"
 
 //engine
 #include "compile.hpp"
@@ -98,7 +98,7 @@ namespace Core
 				if (gameStem != "Game")
 				{
 					File::MoveOrRenameFileOrFolder(
-						Engine::gameParentPath + "\\Game.exe",
+						path(Engine::gameParentPath) / "Game.exe",
 						Engine::gameExePath,
 						true);
 				}
@@ -107,12 +107,12 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
 				//
 
-				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
+				string myGamesFolder = path(Engine::docsPath).parent_path() / "My Games";
 				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
 
 				string gameName = ConfigFile::GetValue("gameName");
 
-				string gameDocsFolder = myGamesFolder + "\\" + gameName;
+				string gameDocsFolder = path(myGamesFolder) / gameName;
 				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
 
 				File::CreateNewFolder(gameDocsFolder);
@@ -121,8 +121,8 @@ namespace Core
 				// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
 				//
 
-				string projectFileOriginPath = Engine::docsPath + "\\project.txt";
-				string projectFileTargetPath = gameDocsFolder + "\\project.txt";
+				string projectFileOriginPath = path(Engine::docsPath) / "project.txt";
+				string projectFileTargetPath = path(gameDocsFolder) / "project.txt";
 				if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
 				File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
 
@@ -141,7 +141,7 @@ namespace Core
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
-						string target = gameDocsFolder + "\\" + originFileName;
+						string target = path(gameDocsFolder) / originFileName;
 
 						File::CopyFileOrFolder(origin, target);
 					}
@@ -151,7 +151,7 @@ namespace Core
 				// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
 				//
 
-				string firstSceneFilePath = gameDocsFolder + "\\firstScene.txt";
+				string firstSceneFilePath = path(gameDocsFolder) / "firstScene.txt";
 				if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
 
 				ofstream firstSceneFile(firstSceneFilePath);
@@ -185,7 +185,7 @@ namespace Core
 	
 	void Compilation::RunInstaller()
 	{
-		string buildFolder = path(Engine::gameParentPath).parent_path().parent_path().string() + "\\build";
+		string buildFolder = path(Engine::gameParentPath).parent_path().parent_path() / "build";
 		string command = "";
 
 		switch (installerType)
@@ -233,6 +233,7 @@ namespace Core
 		string fullCommand = command + " 2>&1"; //redirect stderr to stdout
 
 		array<char, 128> buffer{};
+#ifdef _WIN32
 		unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(fullCommand.c_str(), "r"), _pclose);
 
 		if (!pipe)
@@ -242,13 +243,31 @@ namespace Core
 
 		//read the output line by line and add to the provided vector
 		while (fgets(
-			buffer.data(), 
-			static_cast<int>(buffer.size()), 
+			buffer.data(),
+			static_cast<int>(buffer.size()),
 			pipe.get()) != nullptr)
 		{
 			output.emplace_back(buffer.data());
 			cout << buffer.data() << "\n";
 		}
+#elif __linux__
+		unique_ptr<FILE, decltype(&pclose)> pipe(popen(fullCommand.c_str(), "r"), pclose);
+
+		if (!pipe)
+		{
+			throw runtime_error("popen() failed!");
+		}
+
+		//read the output line by line and add to the provided vector
+		while (fgets(
+			buffer.data(),
+			static_cast<int>(buffer.size()),
+			pipe.get()) != nullptr)
+		{
+			output.emplace_back(buffer.data());
+			cout << buffer.data() << "\n";
+		}
+#endif
 	}
 
 	void Compilation::RenderBuildingWindow()
@@ -372,8 +391,8 @@ namespace Core
 	void Compilation::Run()
 	{
 		string gameName = path(Engine::gameExePath).stem().string();
-		string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
-		string gameProjectFolder = myGamesFolder + "\\" + gameName + "\\" + path(Engine::projectPath).stem().string();
+		string myGamesFolder = path(Engine::docsPath).parent_path() / "My Games";
+		string gameProjectFolder = path(myGamesFolder) / gameName / path(Engine::projectPath).stem().string();
 
 		if (!exists(path(gameProjectFolder).parent_path()))
 		{
@@ -399,7 +418,7 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES AND THEIR CONTENT TO IT
 				//
 
-				if (exists(gameProjectFolder)) File::DeleteFileOrfolder(gameProjectFolder + "\\scenes");
+				if (exists(gameProjectFolder)) File::DeleteFileOrfolder(path(gameProjectFolder) / "scenes");
 
 				string engineProjectFolder = path(Engine::projectPath).string();
 				for (const auto& entry : directory_iterator(path(engineProjectFolder)))
@@ -412,7 +431,7 @@ namespace Core
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
-						string target = gameProjectFolder + "\\" + originFileName;
+						string target = path(gameProjectFolder) / originFileName;
 
 						File::CopyFileOrFolder(origin, target);
 					}

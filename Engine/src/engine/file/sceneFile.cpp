@@ -11,20 +11,20 @@
 #include <string>
 
 //external
-#include "magic_enum.hpp"
-#include "glm.hpp"
+#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
+#include "../../../../_external_shared/GLM/glm.hpp"
 
 //engine
-#include "scenefile.hpp"
+#include "sceneFile.hpp"
 #include "core.hpp"
 #include "gameobject.hpp"
 #include "selectobject.hpp"
-#include "stringutils.hpp"
+#include "stringUtils.hpp"
 #include "render.hpp"
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
-#include "fileutils.hpp"
+#include "fileUtils.hpp"
 #include "console.hpp"
 #include "gameObjectFile.hpp"
 #include "skybox.hpp"

@@ -4,10 +4,10 @@
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
 //external
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
 
 //engine
 #include "gui_firstTime.hpp"

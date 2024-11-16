@@ -7,12 +7,12 @@
 #include <filesystem>
 
 //external
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
-#include "type_ptr.hpp"
-#include "magic_enum.hpp"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
+#include "../../../../_external_shared/GLM/gtc/type_ptr.hpp"
+#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -130,7 +130,11 @@ namespace Graphics::GUI
 
 			ImGui::Text("Name");
 			string objName = obj->GetName();
+#ifdef _WIN32
 			strcpy_s(inputTextBuffer_objName, bufferSize, objName.c_str());
+#elif __linux__
+			strncpy(inputTextBuffer_objName, objName.c_str(), bufferSize);
+#endif
 			if (ImGui::InputText("##objName", inputTextBuffer_objName, bufferSize))
 			{
 				if (glfwGetKey(Render::window, GLFW_KEY_ENTER) == GLFW_PRESS)

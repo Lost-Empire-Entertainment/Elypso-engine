@@ -4,21 +4,22 @@
 //Read LICENSE.md for more information.
 
 #include <chrono>
+#include <iomanip>
 #include <fstream>
 #include <iostream>
 #include <memory>
 
 //external
-#include "magic_enum.hpp"
-#include "glfw3.h"
-#include "glm.hpp"
-#include "glad.h"
+#include "../../../../_external_shared/Glad/glad.h"
+#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
+#include "../../../../_external_shared/GLFW/glfw3.h"
+#include "../../../../_external_shared/GLM/glm.hpp"
 
 //engine
 #include "console.hpp"
 #include "core.hpp"
 #include "render.hpp"
-#include "stringutils.hpp"
+#include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "gui_console.hpp"
@@ -64,7 +65,11 @@ namespace Core
         auto ms = duration_cast<milliseconds>(now_ms.time_since_epoch()) % 1000;
 
         tm tm;
+#ifdef _WIN32
         localtime_s(&tm, &now_c);
+#elif __linux__
+        localtime_r(&now_c, &tm);
+#endif
 
         stringstream ss{};
         ss

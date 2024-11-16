@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 //external
-#include "stb_image.h"
+#include "../../../../_external_shared/Stb_image/stb_image.h"
 
 //engine
 #include "skybox.hpp"

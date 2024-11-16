@@ -8,13 +8,13 @@
 #include <filesystem>
 
 //external
-#include "glad.h"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtx/quaternion.hpp"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "magic_enum.hpp"
+#include "../../../../_external_shared/Glad/glad.h"
+#include "../../../../_external_shared/GLM/gtc/quaternion.hpp"
+#include "../../../../_external_shared/GLM/gtx/quaternion.hpp"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
 
 //engine
 #include "console.hpp"
@@ -31,7 +31,6 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "fileUtils.hpp"
-#include "StringUtils.h"
 #include "camera.hpp"
 #include "gui_console.hpp"
 #if ENGINE_MODE

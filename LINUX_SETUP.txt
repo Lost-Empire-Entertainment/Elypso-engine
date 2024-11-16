@@ -1,0 +1,17 @@
+# install g++
+sudo apt install binutils -y
+
+# install cmake
+sudo apt install cmake -y
+
+# install glfw3
+sudo apt install libglfw3 libglfw3-dev -y
+
+# install assimp
+sudo apt install libassimp-dev -y
+
+# install zenity
+sudo apt install zenity -y
+
+# install xdg-utils
+sudo apt install xdg-utils -y

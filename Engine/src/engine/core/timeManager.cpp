@@ -7,7 +7,7 @@
 #include <thread>
 
 //external
-#include "glfw3.h"
+#include "../../../../_external_shared/GLFW/glfw3.h"
 
 //engine
 #include "input.hpp"

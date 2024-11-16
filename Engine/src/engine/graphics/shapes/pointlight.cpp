@@ -4,8 +4,8 @@
 //Read LICENSE.md for more information.
 
 //external
-#include "quaternion.hpp"
-#include "matrix_transform.hpp"
+#include "../../../../_external_shared/GLM/gtc/quaternion.hpp"
+#include "../../../../_external_shared/GLM/gtc/matrix_transform.hpp"
 
 //engine
 #include "pointlight.hpp"

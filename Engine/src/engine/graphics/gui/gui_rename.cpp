@@ -8,10 +8,10 @@
 #include <filesystem>
 
 //external
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
 
 //engine
 #include "gui_rename.hpp"
@@ -73,14 +73,24 @@ namespace Graphics::GUI
 			windowSize.y / 2 - 50);
 
 		ImGui::SetCursorPos(textfieldPos);
-
+#ifdef _WIN32
 		strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+		strncpy(name, newName.c_str(), bufferSize);
+#endif
 		if (ImGui::InputText("##setSceneName", name, bufferSize))
 		{
 			newName = name;
 		}
 
-		if (strlen(name) == 0) strcpy_s(name, bufferSize, "_");
+		if (strlen(name) == 0)
+		{
+#ifdef _WIN32
+			strcpy_s(name, bufferSize, "_");
+#elif __linux__
+			strncpy(name, "_", bufferSize);
+#endif
+		}
 		if (newName == "") newName = "_";
 
 		ImVec2 buttonSize = ImVec2(100, 30);
@@ -111,7 +121,11 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Error: Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
+#ifdef _WIN32
 				strcpy_s(name, bufferSize, "Name");
+#elif __linux__
+				strncpy(name, "Name", bufferSize);
+#endif
 				newName = "Name";
 
 				extension = "";
@@ -140,7 +154,11 @@ namespace Graphics::GUI
 
 			if (foundExistingFile)
 			{
+#ifdef _WIN32
 				strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+				strncpy(name, newName.c_str(), bufferSize);
+#endif
 				newName = newName;
 
 				ConsoleManager::WriteConsoleMessage(

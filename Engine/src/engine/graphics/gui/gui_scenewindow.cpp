@@ -8,12 +8,12 @@
 #include <vector>
 
 //external
-#include "glad.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
-#include "type_ptr.hpp"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
+#include "../../../../_external_shared/Glad/glad.h"
+#include "../../../../_external_shared/GLM/gtc/type_ptr.hpp"
 
 //engine
 #include "gui_scenewindow.hpp"

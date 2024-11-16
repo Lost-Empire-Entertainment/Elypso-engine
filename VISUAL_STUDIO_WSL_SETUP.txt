@@ -1,0 +1,119 @@
+
+----------------------------------------------------------------------
+WSL TO VISUAL STUDIO REMOTE CONNECTION SETUP (WITHOUT REMOTE CONNECTION)
+----------------------------------------------------------------------
+
+# [WINDOWS TERMINAL] enable wsl
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+# confirm in Windows Features if these features are enabled
+Virtual Machine Platform
+Windows Hypervisor Platform
+
+# [WINDOWS TERMINAL] install wsl
+wsl --install
+
+# [WINDOWS TERMINAL] check if wsl is installed
+wsl --list --verbose
+
+# [WINDOWS TERMINAL] set wsl to version 2
+wsl --set-default-version 2
+
+# [WINDOWS TERMINAL] check if wsl is working correctly and correct version is assigned
+wsl -l -v
+
+# [WSL] update and upgrade all existing packages
+sudo apt update
+
+# [WSL] set up openssh
+sudo apt install openssh-server
+
+# [WSL] start and enable openssh
+sudo service ssh start
+
+# [WSL] check if openssh is running
+sudo service ssh status
+
+# [WSL]  start configuring openssh
+sudo nano /etc/ssh/sshd_config
+
+# uncomment the following lines
+PasswordAuthentication yes
+Port 22
+ListenAddress 0.0.0.0
+ListenAddress ::
+AllowTcpForwarding yes
+PermitEmptyPasswords no
+UseDNS no
+
+# edit the following lines
+PermitRootLogin prohibit-password (change 'prohibit-password' to 'no')
+
+# save and exit (Alt+M, Click Exit, Save Buffer)
+
+# [WSL] restart ssh
+sudo service ssh restart
+
+# [WSL] show ip
+ip addr show (or hostname -I)
+
+# [WSL] show port
+grep "^Port" /etc/ssh/sshd_config (should return double digit port like 22)
+
+# [WSL] install netstat
+sudo apt install net-tools
+
+# [WSL] check if ssh is listening to the correct interfaces
+sudo netstat -tuln | grep 22
+
+# [WSL] test local connection
+ssh yourusername@127.0.0.1 -p 22
+
+# connect to wsl on windows visual studio remote connection
+Host Name: insert.your.ip.here
+Port: 22
+Username: yourusername
+Password: yourpassword
+
+# copy _external_shared to /home/yourusername/.vs
+
+----------------------------------------------------------------------
+ADD REMOTE CONNECTION
+----------------------------------------------------------------------
+
+# [WSL] test remote connection
+ssh yourusername@insert.your.ip.here -p 22
+
+# [WINDOWS TERMINAL] if remote connection doesnt work then port forward wsl address in windows terminal
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=22 connectaddress=insert.your.ip.here connectport=22
+
+# [WINDOWS TERMINAL] check if the port forwarding rule has been added correctly
+netsh interface portproxy show v4tov4
+
+----------------------------------------------------------------------
+OTHER USEFUL COMMNANDS
+----------------------------------------------------------------------
+
+# [WSL] update ubuntu
+do-release-upgrade
+
+# [WSL] upgrade all existing ubuntu packages to their latest versions
+sudo apt upgrade -y
+
+# [WSL] remove unneeded packages that are no longer needed
+sudo apt autoremove -y
+
+# [WSL] close wsl
+wsl --shutdown
+
+# directory path to wsl network files on windows
+\\wsl$
+
+# configure with cmake, go to build folder and compile
+cmake -S . -B build
+cd build
+make -j
+
+# run Elypso engine in current folder
+"./Elypso Engine"

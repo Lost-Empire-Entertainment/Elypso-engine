@@ -4,9 +4,9 @@
 //Read LICENSE.md for more information.
 
 //external
-#include "imgui.h"
-#include "quaternion.hpp"
-#include "matrix_transform.hpp"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/GLM/gtx/quaternion.hpp"
+#include "../../../../_external_shared/GLM/gtc/matrix_transform.hpp"
 
 //engine
 #include "selectobject.hpp"

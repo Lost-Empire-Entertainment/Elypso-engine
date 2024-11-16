@@ -6,9 +6,9 @@
 #include <iostream>
 
 //external
-#include "glad.h"
-#include "quaternion.hpp"
-#include "matrix_transform.hpp"
+#include "../../../../_external_shared/Glad/glad.h"
+#include "../../../../_external_shared/GLM/gtc/quaternion.hpp"
+#include "../../../../_external_shared/GLM/gtc/matrix_transform.hpp"
 
 //engine
 #include "billboard.hpp"

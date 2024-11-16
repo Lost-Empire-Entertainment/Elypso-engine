@@ -4,7 +4,13 @@
 //Read LICENSE.md for more information.
 
 #define NOMINMAX
+#ifdef _WIN32
 #include <Windows.h>
+#elif __linux__
+#include <unistd.h>
+#include <sys/wait.h>
+#include <cstring>
+#endif
 #include <iostream>
 #include <memory>
 #include <string>
@@ -16,6 +22,7 @@
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
 
+using std::cout;
 using std::exception;
 using std::runtime_error;
 using std::wstring;
@@ -45,6 +52,7 @@ namespace Utils
 {
     string File::GetOutputFromBatFile(const char* file)
     {
+#ifdef _WIN32
         char buffer[128];
         string result = "";
         string command = "\"" + string(file) + "\"";
@@ -68,6 +76,31 @@ namespace Utils
         _pclose(pipe);
 
         return result;
+#elif __linux__
+        char buffer[128];
+        string result = "";
+        string command = "\"" + string(file) + "\"";
+        FILE* pipe = popen(command.c_str(), "r");
+
+        if (!pipe) throw runtime_error("popen() failed!");
+
+        try
+        {
+            while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+            {
+                result += buffer;
+            }
+        }
+        catch (...)
+        {
+            pclose(pipe);
+            throw;
+        }
+
+        pclose(pipe);
+
+        return result;
+#endif
     }
 
     int File::RunBatFile(const string& file, bool runSeparate, BatType type)
@@ -88,6 +121,7 @@ namespace Utils
 
     void File::RunApplication(const string& parentFolderPath, const string& exePath, const string& commands)
     {
+#ifdef _WIN32
         wstring wParentFolderPath(parentFolderPath.begin(), parentFolderPath.end());
         wstring wExePath(exePath.begin(), exePath.end());
         wstring wCommands(commands.begin(), commands.end());
@@ -129,9 +163,68 @@ namespace Utils
             LocalFree(lpMsgBuf);
         }
 
-        // Close process and thread handles
+        //close process and thread handles
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
+#elif __linux__
+        //change working directory to parentFolderPath
+        if (chdir(parentFolderPath.c_str()) != 0)
+        {
+            perror("Error changing directory");
+            return;
+        }
+
+        //parse the commands into arguments
+        vector<string> args;
+        size_t pos = 0, found;
+        while ((found = commands.find(' ', pos)) != string::npos)
+        {
+            args.push_back(commands.substr(pos, found - pos));
+            pos = found + 1;
+        }
+        args.push_back(commands.substr(pos));
+
+        //prepare arguments for execvp
+        vector<char*> execArgs;
+        execArgs.push_back(const_cast<char*>(exePath.c_str()));
+        for (auto& arg : args)
+        {
+            execArgs.push_back(const_cast<char*>(arg.c_str()));
+        }
+        execArgs.push_back(nullptr);
+
+        pid_t pid = fork();
+        if (pid == -1)
+        {
+            perror("Error during fork");
+            return;
+        }
+
+        if (pid == 0)
+        {
+            //child process: execute the program
+            execvp(execArgs[0], execArgs.data());
+            perror("Error during execvp");
+            exit(EXIT_FAILURE); //exit if execvp fails
+        }
+        else
+        {
+            //parent process: wait for the child to finish
+            int status;
+            if (waitpid(pid, &status, 0) == -1)
+            {
+                perror("Error during waitpid");
+            }
+            else if (WIFEXITED(status))
+            {
+                cout << "Child exited with status: " << WEXITSTATUS(status) << "\n";
+            }
+            else
+            {
+                cout << "Child did not exit normally\n";
+            }
+        }
+#endif
     }
 
     void File::MoveOrRenameFileOrFolder(const path& sourcePath, const path& destinationPath, const bool isRenaming)

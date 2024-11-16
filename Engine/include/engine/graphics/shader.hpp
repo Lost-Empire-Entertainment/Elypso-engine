@@ -9,8 +9,8 @@
 #include <unordered_map>
 
 //external
-#include "glm.hpp"
-#include "glad.h"
+#include "../../../../_external_shared/GLM/glm.hpp"
+#include "../../../../_external_shared/Glad/glad.h"
 
 namespace Graphics
 {

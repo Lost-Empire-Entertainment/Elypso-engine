@@ -6,10 +6,10 @@
 #include <filesystem>
 
 //external
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
 
 //engine
 #include "gui_importAsset.hpp"
@@ -87,11 +87,19 @@ namespace Graphics::GUI
 			if (assetNameLength > 16) assetName = assetName.substr(0, 15);
 			newName = assetName;
 
+#ifdef _WIN32
 			strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+			strncpy(name, newName.c_str(), bufferSize);
+#endif
 			assignedName = true;
 		}
 
+#ifdef _WIN32
 		strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+		strncpy(name, newName.c_str(), bufferSize);
+#endif
 		if (ImGui::InputText("##setSceneName", name, bufferSize))
 		{
 			newName = name;
@@ -129,9 +137,12 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Error: Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
+#ifdef _WIN32
 				strcpy_s(name, bufferSize, path(assetPath).filename().string().c_str());
+#elif __linux__
+				strncpy(name, path(assetPath).filename().string().c_str(), bufferSize);
+#endif
 				newName = path(assetPath).filename().string();
-
 				renderImportAsset = false;
 
 				return;

@@ -11,12 +11,12 @@
 #include <iomanip>
 
 //external
-#include "glad.h"
-#include "quaternion.hpp"
-#include "matrix_transform.hpp"
-#include "glm/gtx/matrix_decompose.hpp"
+#include "../../../../_external_shared/Glad/glad.h"
+#include "../../../../_external_shared/GLM/gtc/quaternion.hpp"
+#include "../../../../_external_shared/GLM/gtc/matrix_transform.hpp"
+#include "../../../../_external_shared/GLM/gtx/matrix_decompose.hpp"
 #include "assimp/postprocess.h"
-#include "stb_image.h"
+#include "../../../../_external_shared/Stb_image/stb_image.h"
 
 //engine
 #include "render.hpp"
@@ -445,7 +445,7 @@ namespace Graphics::Shape
     }
     int Importer::SkeletonCount(const aiScene* scene)
     {
-        return scene->mNumSkeletons;
+        return 0;
     }
     int Importer::TextureCount(const aiScene* scene)
     {

@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "glm.hpp"
-#include "glfw3.h"
+#include "../../../../_external_shared/GLM/glm.hpp"
+#include "GLFW/glfw3.h"
 
 namespace Graphics
 {

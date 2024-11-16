@@ -7,7 +7,7 @@
 #include <algorithm>
 
 //external
-#include "glad.h"
+#include "../../../../_external_shared/Glad/glad.h"
 
 //engine
 #include "grid.hpp"

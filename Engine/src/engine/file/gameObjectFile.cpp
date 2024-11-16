@@ -11,8 +11,8 @@
 #include <vector>
 
 //external
-#include "magic_enum.hpp"
-#include "glm.hpp"
+#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
+#include "../../../../_external_shared/GLM/glm.hpp"
 
 //engine
 #include "gameObjectFile.hpp"

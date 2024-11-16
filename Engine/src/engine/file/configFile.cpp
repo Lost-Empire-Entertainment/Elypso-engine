@@ -7,9 +7,9 @@
 #include <filesystem>
 
 //external
-#include "glm.hpp"
-#include "glfw3.h"
-#include "imgui_impl_glfw.h"
+#include "../../../../_external_shared/GLM/glm.hpp"
+#include "../../../../_external_shared/GLFW/glfw3.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
 
 //engine
 #include "configFile.hpp"

@@ -6,11 +6,11 @@
 #include <filesystem>
 
 //external
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
-#include "magic_enum.hpp"
+#include "../../../../_external_shared/ImGui/imgui.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_glfw.h"
+#include "../../../../_external_shared/ImGui/imgui_impl_opengl3.h"
+#include "../../../../_external_shared/ImGui/imgui_internal.h"
+#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
 
 //engine
 #include "gui_projectitemslist.hpp"
