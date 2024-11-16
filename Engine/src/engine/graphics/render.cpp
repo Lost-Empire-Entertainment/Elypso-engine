@@ -154,7 +154,7 @@ namespace Graphics
 		glfwSwapInterval(stoi(ConfigFile::GetValue("window_vsync")));
 
 		int width, height, channels;
-		string iconpath = Engine::filesPath + "\\icon.png";
+		string iconpath = (path(Engine::filesPath) / "icon.png").string();
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};
@@ -290,8 +290,8 @@ namespace Graphics
 		vec3 rot = vec3(0);
 		vec3 scale = vec3(1);
 
-		string skyboxVert = Engine::filesPath + "\\shaders\\Skybox.vert";
-		string skyboxFrag = Engine::filesPath + "\\shaders\\Skybox.frag";
+		string skyboxVert = (path(Engine::filesPath) / "shaders" / "Skybox.vert").string();
+		string skyboxFrag = (path(Engine::filesPath) / "shaders" / "Skybox.frag").string();
 
 		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox(
 			pos,

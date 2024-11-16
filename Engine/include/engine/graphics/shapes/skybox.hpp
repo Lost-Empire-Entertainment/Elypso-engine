@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <filesystem>
 
 //external
 #include "../../../../_external_shared/GLM/glm.hpp"
@@ -23,6 +24,7 @@ namespace Graphics::Shape
 	using std::vector;
 	using std::string;
 	using std::shared_ptr;
+	using std::filesystem::path;
 
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
@@ -37,8 +39,8 @@ namespace Graphics::Shape
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
-			const string& vertShader = Engine::filesPath + "\\shaders\\Basic_model.vert",
-			const string& fragShader = Engine::filesPath + "\\shaders\\Basic.frag",
+			const string& vertShader = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
+			const string& fragShader = (path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
 			string& thisName = name,
 			unsigned int& thisId = id,
 			const bool& isEnabled = true);

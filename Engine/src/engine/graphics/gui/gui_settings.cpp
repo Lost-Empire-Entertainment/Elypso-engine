@@ -159,13 +159,13 @@ namespace Graphics::GUI
 	{
 		if (skyboxTextures.empty())
 		{
-			string texturesFolder = Engine::filesPath + "\\textures";
-			skyboxTextures["right"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["left"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["top"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["bottom"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["front"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["back"] = texturesFolder + "\\skybox_default.png";
+			string texturesFolder = (path(Engine::filesPath) / "textures").string();
+			skyboxTextures["right"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["left"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["top"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["bottom"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["front"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["back"] = (path(texturesFolder) / "skybox_default.png").string();
 
 			vector<string> appliedSkyboxTextures
 			{
@@ -266,13 +266,13 @@ namespace Graphics::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("Reset"))
 		{
-			string texturesFolder = Engine::filesPath + "\\textures";
-			skyboxTextures["right"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["left"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["top"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["bottom"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["front"] = texturesFolder + "\\skybox_default.png";
-			skyboxTextures["back"] = texturesFolder + "\\skybox_default.png";
+			string texturesFolder = (path(Engine::filesPath) / "textures").string();
+			skyboxTextures["right"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["left"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["top"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["bottom"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["front"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["back"] = (path(texturesFolder) / "skybox_default.png").string();
 
 			vector<string> appliedSkyboxTextures
 			{
@@ -352,7 +352,7 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Error: Invalid character detected in game name! Please pick another game name.");
 
-					Engine::gameExePath = Engine::gameParentPath + "\\Game.exe";
+					Engine::gameExePath = (path(Engine::gameParentPath) / "Game.exe").string();
 					ConfigFile::SetValue("gameName", "Game");
 					ConfigFile::SaveConfigFile();
 					SceneFile::SaveScene();
@@ -365,7 +365,7 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Error: Name '" + gameName + "' is not allowed to be set as the game name! Please pick another name.\n");
 
-					Engine::gameExePath = Engine::gameParentPath + "\\Game.exe";
+					Engine::gameExePath = (path(Engine::gameParentPath) / "Game.exe").string();
 					ConfigFile::SetValue("gameName", "Game");
 					ConfigFile::SaveConfigFile();
 					SceneFile::SaveScene();
@@ -375,7 +375,8 @@ namespace Graphics::GUI
 			}
 			else
 			{
-				string finalPath = Engine::gameParentPath + "\\" + gameName + ".exe";
+				string gameNameAndExtension = gameName + ".exe";
+				string finalPath = (path(Engine::gameParentPath) / gameNameAndExtension).string();
 				Engine::gameExePath = finalPath;
 
 				ConsoleManager::WriteConsoleMessage(

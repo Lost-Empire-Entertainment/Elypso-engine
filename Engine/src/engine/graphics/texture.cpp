@@ -53,7 +53,7 @@ namespace Graphics
 		//the texture is a default diffuse texture and uses the placeholder diffuse texture
 		if (texturePath == "DEFAULTDIFF")
 		{
-			string defaultTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			string defaultTexturePath = (path(Engine::filesPath) / "textures" / "diff_default.png").string();
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
@@ -65,7 +65,7 @@ namespace Graphics
 		//the texture is a default specular texture and uses the placeholder specular texture
 		if (texturePath == "DEFAULTSPEC")
 		{
-			string defaultTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
+			string defaultTexturePath = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
@@ -95,12 +95,12 @@ namespace Graphics
 		//default diff texture was assigned
 		if (texturePath == "DEFAULTDIFF")
 		{
-			finalTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			finalTexturePath = (path(Engine::filesPath) / "textures" / "diff_default.png").string();
 		}
 		//default spec texture was assigned
 		else if (texturePath == "DEFAULTSPEC")
 		{
-			finalTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
+			finalTexturePath = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
 		}
 		//the texture path is assigned but doesnt exist, assigning missing texture
 		else if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model
@@ -183,8 +183,8 @@ namespace Graphics
 				&& textureName.find("DEFAULTSPEC") == string::npos)
 			{
 				string objFolder = path(obj->GetTxtFilePath()).parent_path().string();
-				string originPath = Engine::texturesPath + "\\" + textureName;
-				string targetPath = objFolder + "\\" + textureName;
+				string originPath = (path(Engine::texturesPath) / textureName).string();
+				string targetPath = (path(objFolder) / textureName).string();
 
 				if (!exists(targetPath))
 				{

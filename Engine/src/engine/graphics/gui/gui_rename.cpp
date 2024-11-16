@@ -30,6 +30,7 @@ using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 using std::getline;
 using std::stringstream;
+using std::filesystem::path;
 
 using EngineFile::SceneFile;
 using Graphics::Render;
@@ -179,8 +180,10 @@ namespace Graphics::GUI
 			// FIND OLD MODEL PATH FROM SCENE FILE AND WRITE WITH NEW PATH INTO BUFFER
 			//
 
-			string originalPath = parentFolder + "\\" + originalName + extension;
-			string newPath = parentFolder + "\\" + newName + extension;
+			string originalNameAndExtension = originalName + extension;
+			string originalPath = (path(parentFolder) / originalNameAndExtension).string();
+			string newNameAndExtension = newName + extension;
+			string newPath = (path(parentFolder) / newNameAndExtension).string();
 
 			stringstream buffer;
 

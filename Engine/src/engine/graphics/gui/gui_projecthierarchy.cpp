@@ -140,10 +140,10 @@ namespace Graphics::GUI
                                     {
                                         if (SceneFile::unsavedChanges)
                                         {
-                                            EngineGUI::targetScene = path(entry).string() + "\\scene.txt";
+                                            EngineGUI::targetScene = (path(entry) / "scene.txt").string();
                                             EngineGUI::renderUnsavedSceneSwitchWindow = true;
                                         }
-                                        else SceneFile::LoadScene(path(entry).string() + "\\scene.txt");
+                                        else SceneFile::LoadScene((path(entry) / "scene.txt").string());
                                     }
                                 }
                                 else if (ImGui::MenuItem("Delete scene"))
@@ -229,7 +229,7 @@ namespace Graphics::GUI
                         //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
                         if (path(thisParentFolder).stem().string() == "textures")
                         {
-                            string texturesFolder = path(Engine::scenePath).parent_path().parent_path().parent_path().string() + "\\" + "textures";
+                            string texturesFolder = (path(Engine::scenePath).parent_path().parent_path().parent_path() / "textures").string();
                             if (thisParentFolder == texturesFolder
                                 && ImGui::MenuItem("Delete texture"))
                             {

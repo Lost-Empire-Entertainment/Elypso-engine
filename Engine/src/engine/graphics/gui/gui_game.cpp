@@ -33,8 +33,8 @@ namespace Graphics::GUI
 	void GameGUI::Initialize()
 	{
 		//copies template file to documents folder if imgui file does not exist
-		string imguiConfigFile = Engine::docsPath + "\\imgui.ini";
-		string imguiTemplateFile = Engine::filesPath + "\\imgui.ini";
+		string imguiConfigFile = (path(Engine::docsPath) / "imgui.ini").string();
+		string imguiTemplateFile = (path(Engine::filesPath) / "imgui.ini").string();
 		if (!exists(imguiConfigFile))
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
@@ -50,7 +50,7 @@ namespace Graphics::GUI
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		static string tempString = Engine::docsPath + "\\imgui.ini";
+		static string tempString = (path(Engine::docsPath) / "imgui.ini").string();
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
@@ -58,7 +58,7 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "\\fonts\\coda\\Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF(((path(Engine::filesPath) / "fonts" / "coda" / "Coda-Regular.ttf").string()).c_str(), 16.0f);
 
 		SetStyle();
 

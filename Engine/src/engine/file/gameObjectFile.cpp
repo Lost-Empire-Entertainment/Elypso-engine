@@ -163,8 +163,7 @@ namespace EngineFile
 				data.push_back("shaders= " + vertexShader + ", " + fragmentShader + "\n");
 
 				//path to txt file of this gameobject
-				string txtFilePath = String::CharReplace(obj->GetTxtFilePath(), '/', '\\');
-				data.push_back("txtFile= " + txtFilePath + "\n");
+				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
 
 				//material variables
 				if (meshType == Mesh::MeshType::model)
@@ -372,8 +371,8 @@ namespace EngineFile
 				vec3(0),
 				vec3(1),
 				modelPath,
-				Engine::filesPath + "\\shaders\\GameObject.vert",
-				Engine::filesPath + "\\shaders\\GameObject.frag",
+				(path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
+				(path(Engine::filesPath) / "shaders" / "GameObject.frag").string(),
 				"DEFAULTDIFF",
 				"DEFAULTSPEC",
 				"EMPTY",
@@ -545,11 +544,11 @@ namespace EngineFile
 
 				string fullTex0Path = split[0] == "DEFAULTDIFF"
 					? "DEFAULTDIFF"
-					: path(txtFilePath).parent_path().string() + "\\" + split[0];
+					: (path(txtFilePath).parent_path() / split[0]).string();
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
-					fullTex0Path = Engine::filesPath + "\\textures\\diff_default.png";
+					fullTex0Path = (path(Engine::filesPath) / "textures" / "diff_default.png").string();
 					textures.push_back(fullTex0Path);
 				}
 				else if (fullTex0Path != "DEFAULTDIFF"
@@ -559,16 +558,16 @@ namespace EngineFile
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Error: Texture at slot 0 for " + name + " at " + fullTex0Path + " does not exist!\n");
-					textures.push_back(Engine::filesPath + "\\textures\\diff_missing.png");
+					textures.push_back((path(Engine::filesPath) / "textures" / "diff_missing.png").string());
 				}
 				else textures.push_back(fullTex0Path);
 
 				string fullTex1Path = split[1] == "DEFAULTSPEC"
 					? "DEFAULTSPEC"
-					: path(txtFilePath).parent_path().string() + "\\" + split[1];
+					: (path(txtFilePath).parent_path() / split[1]).string();
 				if (fullTex1Path == "DEFAULTSPEC")
 				{
-					fullTex1Path = Engine::filesPath + "\\textures\\spec_default.png";
+					fullTex1Path = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
 					textures.push_back(fullTex1Path);
 				}
 				else if (fullTex1Path != "DEFAULTSPEC"
@@ -584,7 +583,7 @@ namespace EngineFile
 
 				string fullTex2Path = split[2] == "EMPTY"
 					? "EMPTY"
-					: path(txtFilePath).parent_path().string() + "\\" + split[2];
+					: (path(txtFilePath).parent_path() / split[2]).string();
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
@@ -598,7 +597,7 @@ namespace EngineFile
 
 				string fullTex3Path = split[3] == "EMPTY"
 					? "EMPTY"
-					: path(txtFilePath).parent_path().string() + "\\" + split[3];
+					: (path(txtFilePath).parent_path() / split[3]).string();
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{
@@ -614,8 +613,8 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
+				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
 
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
@@ -646,7 +645,7 @@ namespace EngineFile
 		// SET UP TEXTURES FOR MODEL
 		//
 
-		string diff_missing = Engine::filesPath + "\\textures\\diff_missing.png";
+		string diff_missing = (path(Engine::filesPath) / "textures" / "diff_missing.png").string();
 		string diffuseTexture = textures[0];
 		if (diffuseTexture != "EMPTY"
 			&& !exists(diffuseTexture))
@@ -888,8 +887,8 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
+				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
 
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
@@ -934,7 +933,7 @@ namespace EngineFile
 			}
 			else if (key == "billboard texture")
 			{
-				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
+				string fullTexPath = (path(Engine::filesPath) / "icons" / value).string();
 
 				if (!exists(fullTexPath))
 				{
@@ -950,8 +949,8 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
+				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
 
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
@@ -1155,8 +1154,8 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
+				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
 
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
@@ -1203,7 +1202,7 @@ namespace EngineFile
 			}
 			else if (key == "billboard texture")
 			{
-				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
+				string fullTexPath = (path(Engine::filesPath) / "icons" / value).string();
 
 				if (!exists(fullTexPath))
 				{
@@ -1219,8 +1218,8 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
+				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
 
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
@@ -1421,8 +1420,8 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
+				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
 
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))
@@ -1466,7 +1465,7 @@ namespace EngineFile
 			}
 			else if (key == "billboard texture")
 			{
-				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
+				string fullTexPath = (path(Engine::filesPath) / "icons" / value).string();
 
 				if (!exists(fullTexPath))
 				{
@@ -1482,8 +1481,8 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
+				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
+				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
 
 				if (!exists(fullShader0Path)
 					|| !exists(fullShader1Path))

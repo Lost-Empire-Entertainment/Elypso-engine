@@ -144,7 +144,7 @@ namespace Graphics::GUI
 					string oldName = obj->GetName();
 
 					string newFolderName = inputTextBuffer_objName;
-					string newFolderPath = Engine::currentGameobjectsPath + "\\" + newFolderName;
+					string newFolderPath = (path(Engine::currentGameobjectsPath) / newFolderName).string();
 
 					for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
 					{
@@ -165,7 +165,7 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string oldFolderPath = Engine::currentGameobjectsPath + "\\" + oldName;
+						string oldFolderPath = (path(Engine::currentGameobjectsPath) / oldName).string();
 						File::MoveOrRenameFileOrFolder(oldFolderPath, newFolderPath, true);
 
 						//rename model file if gameobject mesh type is model
@@ -188,7 +188,8 @@ namespace Graphics::GUI
 									else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
 									else if (path(oldFilePath).extension().string() == ".glfw") extension = ".glfw";
 
-									string newFilePath = Engine::currentGameobjectsPath + "\\" + newFolderName + "\\" + newFolderName + extension;
+									string newFolderNameAndExtension = newFolderName + extension;
+									string newFilePath = (path(Engine::currentGameobjectsPath) / newFolderName / newFolderNameAndExtension).string();
 
 									File::MoveOrRenameFileOrFolder(oldFilePath, newFilePath, true);
 
@@ -377,7 +378,7 @@ namespace Graphics::GUI
 
 				//reset diffuse texture
 				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
-				path diff_defaultTexturePath = path(Engine::filesPath + "\\textures\\diff_default.png");
+				path diff_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "diff_default.png");
 				string diff_reset = "Reset";
 				ImGui::PushID("diffreset");
 				ImGui::PushItemWidth(200.0f);
@@ -425,7 +426,7 @@ namespace Graphics::GUI
 
 				//reset specular texture
 				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
-				path spec_defaultTexturePath = path(Engine::filesPath + "\\textures\\spec_default.png");
+				path spec_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "spec_default.png");
 				string spec_reset = "Reset";
 				ImGui::PushID("specreset");
 				ImGui::PushItemWidth(200.0f);

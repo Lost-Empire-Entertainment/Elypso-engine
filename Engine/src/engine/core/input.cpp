@@ -242,7 +242,7 @@ namespace Core
                     if (copiedObject["type"] == "model")
                     {
                         string extension;
-                        string originPath = Engine::currentGameobjectsPath + "\\" + name;
+                        string originPath = (path(Engine::currentGameobjectsPath) / name).string();
 
                         for (const auto& entry : directory_iterator(originPath))
                         {
@@ -257,16 +257,17 @@ namespace Core
                         }
                         string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
                         string targetName = path(targetPath).stem().string();
+                        string targetNameAndExtension = targetName + extension;
 
                         File::CreateNewFolder(targetPath);
-                        string destinationPath = targetPath + "\\" + targetName + extension;
+                        string destinationPath = (path(targetPath) / targetNameAndExtension).string();
                         File::CopyFileOrFolder(originPath, destinationPath);
 
                         string diffTexturePath = copiedObject["diffuseTexture"];
                         if (diffTexturePath != "DEFAULTDIFF")
                         {
                             string diffTextureFile = path(diffTexturePath).filename().string();
-                            string diffDestinationPath = targetPath + "\\" + diffTextureFile;
+                            string diffDestinationPath = (path(targetPath) / diffTextureFile).string();
 
                             File::CopyFileOrFolder(diffTexturePath, diffDestinationPath);
                         }
@@ -275,7 +276,7 @@ namespace Core
                         if (specTexturePath != "DEFAULTSPEC")
                         {
                             string specTextureFile = path(specTexturePath).filename().string();
-                            string specDestinationPath = targetPath + "\\" + specTextureFile;
+                            string specDestinationPath = (path(targetPath) / specTextureFile).string();
 
                             File::CopyFileOrFolder(specTexturePath, specDestinationPath);
                         }
@@ -303,7 +304,8 @@ namespace Core
                         string targetName = path(targetPath).stem().string();
                         File::CreateNewFolder(targetPath);
 
-                        string filePath = targetPath + "\\" + targetName + ".txt";
+                        string targetNameAndExtension = targetName + ".txt";
+                        string filePath = (path(targetPath) / targetNameAndExtension).string();
 
                         vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
                         vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
@@ -327,9 +329,10 @@ namespace Core
                     {
                         string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
                         string targetName = path(targetPath).stem().string();
+                        string targetNameAndExtension = targetName + ".txt";
                         File::CreateNewFolder(targetPath);
 
-                        string filePath = targetPath + "\\" + targetName + ".txt";
+                        string filePath = (path(targetPath) / targetNameAndExtension).string();
 
                         vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
                         vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));

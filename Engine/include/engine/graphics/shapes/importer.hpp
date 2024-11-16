@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <filesystem>
 
 //external
 #include "../../../../_external_shared/GLM/glm.hpp"
@@ -23,6 +24,7 @@ namespace Graphics::Shape
 	using std::string;
 	using glm::vec3;
 	using glm::mat4;
+	using std::filesystem::path;
 
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
@@ -38,8 +40,8 @@ namespace Graphics::Shape
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
 			const string& modelPath = "",
-			const string& vertShader = Engine::filesPath + "\\shaders\\GameObject.vert",
-			const string& fragShader = Engine::filesPath + "\\shaders\\GameObject.frag",
+			const string& vertShader = (path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
+			const string& fragShader = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string(),
 			const string& diffTexture = "DEFAULTDIFF",
 			const string& specTexture = "DEFAULTSPEC",
 			const string& normalTexture = "EMPTY",

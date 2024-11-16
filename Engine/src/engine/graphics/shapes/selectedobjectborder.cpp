@@ -3,6 +3,9 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
+
+#include <filesystem>
+
 //external
 #include "../../../../_external_shared/Glad/glad.h"
 #include "../../../../_external_shared/GLM/gtc/quaternion.hpp"
@@ -20,6 +23,7 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using std::filesystem::path;
 
 using Graphics::Shader;
 using Graphics::Shape::Mesh;
@@ -93,11 +97,13 @@ namespace Graphics::Shape
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::border, vao, vbo, ebo);
 
 		Shader borderShader = Shader::LoadShader(
-			Engine::filesPath + "\\shaders\\Basic_model.vert",
-			Engine::filesPath + "\\shaders\\Basic.frag");
+			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "Basic_model.frag").string());
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader("shaders\\Basic_model.vert", "shaders\\Basic.frag", borderShader);
+		string basicTextureVert = (path("shaders") / (path("Basic_texture.vert"))).string();
+		string basicTextureFrag = (path("shaders") / (path("Basic_texture.frag"))).string();
+		mat->AddShader(basicTextureVert, basicTextureFrag, borderShader);
 
 		float shininess = 32;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);

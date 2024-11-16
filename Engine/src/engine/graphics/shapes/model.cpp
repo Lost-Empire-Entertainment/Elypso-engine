@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <map>
-#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -37,7 +36,6 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
-using std::filesystem::path;
 using std::ofstream;
 using std::ifstream;
 using std::filesystem::exists;

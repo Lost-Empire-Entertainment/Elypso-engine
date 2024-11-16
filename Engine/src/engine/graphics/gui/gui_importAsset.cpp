@@ -159,9 +159,10 @@ namespace Graphics::GUI
 				string assetName = path(assetPath).stem().string();
 				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, assetName, "");
 				string targetName = path(targetPath).stem().string();
+				string assetNameAndExtension = assetName + extension;
 
 				File::CreateNewFolder(targetPath);
-				string destinationPath = targetPath + "\\" + assetName + extension;
+				string destinationPath = (path(targetPath) / assetNameAndExtension).string();
 				File::CopyFileOrFolder(assetPath, destinationPath);
 
 				unsigned int nextID = GameObject::nextID++;
@@ -171,8 +172,8 @@ namespace Graphics::GUI
 					vec3(0),
 					vec3(1),
 					destinationPath,
-					Engine::filesPath + "\\shaders\\GameObject.vert",
-					Engine::filesPath + "\\shaders\\GameObject.frag",
+					(path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
+					(path(Engine::filesPath) / "shaders" / "GameObject.frag").string(),
 					"DEFAULTDIFF",
 					"DEFAULTSPEC",
 					"EMPTY",
@@ -196,7 +197,7 @@ namespace Graphics::GUI
 				string texturesFolder = Engine::texturesPath;
 
 				string newFilePath = 
-					texturesFolder + "\\" + textureFilename;
+					(path(texturesFolder) / textureFilename).string();
 				File::CopyFileOrFolder(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

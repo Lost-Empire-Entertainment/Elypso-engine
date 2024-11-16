@@ -27,6 +27,7 @@ using std::cout;
 using std::ofstream;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
+using std::filesystem::path;
 
 using EngineFile::SceneFile;
 using Graphics::Render;
@@ -174,11 +175,11 @@ namespace Graphics::GUI
 			// CREATE NEW SCENE
 			//
 
-			string newSceneFolder = Engine::scenesPath + "\\" + assignedSceneName;
+			string newSceneFolder = (path(Engine::scenesPath) / assignedSceneName).string();
 			File::CreateNewFolder(newSceneFolder);
-			File::CreateNewFolder(newSceneFolder + "\\gameobjects");
+			File::CreateNewFolder((path(newSceneFolder) / "gameobjects").string());
 
-			string newSceneFile = newSceneFolder + "\\scene.txt";
+			string newSceneFile = (path(newSceneFolder) / "scene.txt").string();
 
 			ofstream sceneFile(newSceneFile);
 			sceneFile.close();

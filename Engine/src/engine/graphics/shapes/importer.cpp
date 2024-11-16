@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <map>
-#include <filesystem>
 #include <fstream>
 #include <chrono>
 #include <iomanip>
@@ -181,7 +180,8 @@ namespace Graphics::Shape
 
         if (id == tempID) id = GameObject::nextID++;
 
-        string txtPath = path(modelPath).parent_path().string() + "\\" + name + ".txt";
+        string nameAndExtension = name + ".txt";
+        string txtPath = (path(modelPath).parent_path() / nameAndExtension).string();
 
         shared_ptr<GameObject> newChild = Model::Initialize(
             nodePosition,

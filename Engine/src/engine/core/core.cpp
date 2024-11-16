@@ -131,7 +131,7 @@ namespace Core
 		// SET FILES PATH
 		//
 
-		filesPath = current_path().generic_string() + "\\files";
+		filesPath = (current_path() / "files").string();
 		if (!exists(filesPath))
 		{
 			CreateErrorPopup("Couldn't find files folder!");
@@ -148,7 +148,7 @@ namespace Core
 		// SET DOCUMENTS PATH
 		//
 
-		string narrowPath;
+
 #ifdef _WIN32
 		PWSTR docsFolderWidePath;
 		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &docsFolderWidePath);
@@ -170,7 +170,7 @@ namespace Core
 
 
 			//convert wide string to utf-8 encoded narrow string
-			narrowPath(size_needed, 0);
+			string narrowPath(size_needed, 0);
 			WideCharToMultiByte(
 				CP_UTF8,
 				0,
@@ -181,9 +181,7 @@ namespace Core
 				NULL,
 				NULL);
 #if ENGINE_MODE
-			docsPath = String::CharReplace(
-				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\" + name;
+			docsPath = (path(narrowPath) / name).string();
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 
@@ -193,16 +191,14 @@ namespace Core
 				Type::DEBUG,
 				output);
 #else
-			docsPath = String::CharReplace(
-				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\My Games";
+			docsPath = (path(narrowPath) / "My Games").string();
 
 			if (!exists(docsPath))
 			{
 				File::CreateNewFolder(docsPath);
 			}
 
-			docsPath = docsPath + "\\" + name;
+			docsPath = (path(docsPath) / name).string();
 #endif
 		}
 		else
@@ -267,8 +263,8 @@ namespace Core
 		//
 
 #if ENGINE_MODE
-		scenesPath = path(projectPath)  /  "scenes";
-		texturesPath = path(projectPath) / "textures";
+		scenesPath = (path(projectPath) / "scenes").string();
+		texturesPath = (path(projectPath) / "textures").string();
 #else
 		string projectName = path(projectPath).stem().string();
 
@@ -292,7 +288,7 @@ namespace Core
 		// SET FIRST SCENE PATH
 		//
 
-		string firstSceneFile = docsPath / path(docsPath).stem() / "firstScene.txt";
+		string firstSceneFile = (docsPath / path(docsPath).stem() / "firstScene.txt").string();
 		if (exists(firstSceneFile))
 		{
 			ifstream fsFile(firstSceneFile);
@@ -327,10 +323,10 @@ namespace Core
 					if (type == "scene")
 					{
 						string parentPath = 
-							path(firstSceneFile).parent_path() / 
-							path(projectPath).stem() / "scenes";
+							(path(firstSceneFile).parent_path() / 
+							path(projectPath).stem() / "scenes").string();
 
-						gameFirstScene = path(parentPath) / value / "scene.txt";
+						gameFirstScene = (path(parentPath) / value / "scene.txt").string();
 					}
 				}
 			}
@@ -385,31 +381,31 @@ namespace Core
 		if (parentFolder == "Release"
 			|| parentFolder == "Debug")
 		{
-			gamePath = current_path()
+			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
-				.parent_path() / "Game";
+				.parent_path() / "Game").string();
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
-			gameParentPath = path(gamePath) / "build" / "Release";
+			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
 		//if engine is ran from visual studio folder
 		else if (parentFolder == "x64-release"
 			|| parentFolder == "x64-debug")
 		{
-			gamePath = current_path()
+			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
 				.parent_path()
-				.parent_path() / "Game";
+				.parent_path() / "Game").string();
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
-			gameParentPath = path(gamePath) / "build" / "Release";
+			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
 		//if engine is not ran from repository structure
 		else
 		{
-			gamePath = current_path().parent_path() / "Game";
+			gamePath = (current_path().parent_path() / "Game").string();
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
-			gameParentPath = path(gamePath) / "build" / "Release";
+			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
 
 		output = "Game path: " + gamePath + "\n\n";
@@ -443,7 +439,7 @@ namespace Core
 
 		Render::RenderSetup();
 
-		string lastSavedScenePath = path(Engine::docsPath) / "lastSavedScene.txt";
+		string lastSavedScenePath = (path(Engine::docsPath) / "lastSavedScene.txt").string();
 		//attempt to load last saved scene
 		if (exists(lastSavedScenePath))
 		{
@@ -454,7 +450,7 @@ namespace Core
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Error: Couldn't open scene file '" + lastSavedScenePath + "'! Opening default scene.\n");
-				SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+				SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 			}
 			else 
 			{
@@ -480,12 +476,12 @@ namespace Core
 							Type::EXCEPTION,
 							"Error: Couldn't load scene file '" + foundScenePath + "' because it doesn't exist! Opening default scene.\n");
 					}
-					SceneFile::LoadScene(path(scenesPath) / "Scene1" / "scene.txt");
+					SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 				}
 			}
 		}
 		//otherwise load first scene
-		else SceneFile::LoadScene(path(scenesPath) / "Scene1" / "scene.txt");
+		else SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 
 #if ENGINE_MODE
 #if DISCORD_MODE

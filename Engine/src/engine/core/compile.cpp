@@ -107,12 +107,12 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
 				//
 
-				string myGamesFolder = path(Engine::docsPath).parent_path() / "My Games";
+				string myGamesFolder = (path(Engine::docsPath).parent_path() / "My Games").string();
 				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
 
 				string gameName = ConfigFile::GetValue("gameName");
 
-				string gameDocsFolder = path(myGamesFolder) / gameName;
+				string gameDocsFolder = (path(myGamesFolder) / gameName).string();
 				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
 
 				File::CreateNewFolder(gameDocsFolder);
@@ -121,8 +121,8 @@ namespace Core
 				// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
 				//
 
-				string projectFileOriginPath = path(Engine::docsPath) / "project.txt";
-				string projectFileTargetPath = path(gameDocsFolder) / "project.txt";
+				string projectFileOriginPath = (path(Engine::docsPath) / "project.txt").string();
+				string projectFileTargetPath = (path(gameDocsFolder) / "project.txt").string();
 				if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
 				File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
 
@@ -141,7 +141,7 @@ namespace Core
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
-						string target = path(gameDocsFolder) / originFileName;
+						string target = (path(gameDocsFolder) / originFileName).string();
 
 						File::CopyFileOrFolder(origin, target);
 					}
@@ -151,7 +151,7 @@ namespace Core
 				// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
 				//
 
-				string firstSceneFilePath = path(gameDocsFolder) / "firstScene.txt";
+				string firstSceneFilePath = (path(gameDocsFolder) / "firstScene.txt").string();
 				if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
 
 				ofstream firstSceneFile(firstSceneFilePath);
@@ -185,7 +185,7 @@ namespace Core
 	
 	void Compilation::RunInstaller()
 	{
-		string buildFolder = path(Engine::gameParentPath).parent_path().parent_path() / "build";
+		string buildFolder = (path(Engine::gameParentPath).parent_path().parent_path() / "build").string();
 		string command = "";
 
 		switch (installerType)
@@ -376,8 +376,7 @@ namespace Core
 				ImGui::SetCursorPos(button3Pos);
 				if (ImGui::Button("Clean rebuild", buttonSize))
 				{
-					string gameBatPath = Engine::gamePath + "\\quickBuild.bat";
-					gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
+					string gameBatPath = (path(Engine::gamePath) / "quickBuild.bat").string();
 
 					installerType = InstallerType::reset;
 					Compile();
@@ -391,8 +390,8 @@ namespace Core
 	void Compilation::Run()
 	{
 		string gameName = path(Engine::gameExePath).stem().string();
-		string myGamesFolder = path(Engine::docsPath).parent_path() / "My Games";
-		string gameProjectFolder = path(myGamesFolder) / gameName / path(Engine::projectPath).stem().string();
+		string myGamesFolder = (path(Engine::docsPath).parent_path() / "My Games").string();
+		string gameProjectFolder = (path(myGamesFolder) / gameName / path(Engine::projectPath).stem()).string();
 
 		if (!exists(path(gameProjectFolder).parent_path()))
 		{
@@ -431,7 +430,7 @@ namespace Core
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
-						string target = path(gameProjectFolder) / originFileName;
+						string target = (path(gameProjectFolder) / originFileName).string();
 
 						File::CopyFileOrFolder(origin, target);
 					}

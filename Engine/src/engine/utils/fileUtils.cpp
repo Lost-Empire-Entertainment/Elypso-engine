@@ -496,7 +496,8 @@ namespace Utils
                     cleanedFileName = fileName.substr(0, pos - 1);
                 }
 
-                newFilePath = parentFolderPath.string() + "\\" + cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;
+                string cleanedFileNameAndExtension = " (" + to_string(highestNumber) + ")" + extension;
+                newFilePath = (path(parentFolderPath) / cleanedFileName / cleanedFileNameAndExtension).string();
             }
         }
 

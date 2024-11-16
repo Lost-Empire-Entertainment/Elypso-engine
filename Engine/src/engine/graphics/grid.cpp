@@ -5,6 +5,7 @@
 #if ENGINE_MODE
 #include <vector>
 #include <algorithm>
+#include <filesystem>
 
 //external
 #include "../../../../_external_shared/Glad/glad.h"
@@ -20,6 +21,7 @@
 using glm::mat4;
 using std::vector;
 using std::clamp;
+using std::filesystem::path;
 
 using Graphics::Shader;
 using Core::Engine;
@@ -59,8 +61,8 @@ namespace Graphics
 		}
 
 		shader = Shader::LoadShader(
-			Engine::filesPath + "\\shaders\\Grid.vert",
-			Engine::filesPath + "\\shaders\\Grid.frag");
+			(path(Engine::filesPath) / "shaders" / "Grid.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "Grid.frag").string());
 
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
