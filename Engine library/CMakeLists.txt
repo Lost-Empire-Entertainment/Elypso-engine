@@ -1,4 +1,16 @@
-cmake_minimum_required (VERSION 3.29)
+cmake_minimum_required (VERSION 3.22)
+
+# Enable Hot Reload for MSVC compilers if supported.
+if (WIN32 AND POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
+
+# Specify the compiler for Linux builds
+if (UNIX)
+    set(CMAKE_C_COMPILER "/usr/bin/gcc")
+    set(CMAKE_CXX_COMPILER "/usr/bin/g++")
+endif()
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -143,8 +155,13 @@ target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PA
 target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 
 # Set the folder inside the install folder where the exe will be placed for this project
-set(CMAKE_INSTALL_BINDIR bin)
-install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
+if (WIN32)
+	set(CMAKE_INSTALL_BINDIR bin)
+	install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
+elseif (UNIX)
+	set(CMAKE_INSTALL_BINDIR "${CMAKE_CURRENT_SOURCE_DIR}/linux_build")
+	install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
 
 # Copy "Elypso engine.lib" to Game folder
 add_custom_command(TARGET Elypso_engine POST_BUILD

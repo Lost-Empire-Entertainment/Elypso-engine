@@ -1,9 +1,15 @@
-﻿cmake_minimum_required (VERSION 3.29)
+﻿cmake_minimum_required (VERSION 3.22)
 
 # Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
+if (WIN32 AND POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
+
+# Specify the compiler for Linux builds
+if (UNIX)
+    set(CMAKE_C_COMPILER "/usr/bin/gcc")
+    set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
@@ -19,7 +25,10 @@ project("Compiler" VERSION ${PROJECT_VERSION})
 
 # Paths to frequently used directories
 set(PARENT_DIR_PATH "${CMAKE_SOURCE_DIR}../../")
-set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
+
+if (WIN32)
+	set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
+endif()
 
 # Internal include files
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
@@ -59,8 +68,12 @@ list(APPEND SOURCE_FILES
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
 )
 
-# Add the executable
-add_executable(Compiler ${SOURCE_FILES} ${RESOURCE_FILE})
+# Build as compiler executable
+if (WIN32)
+	add_executable(Compiler ${SOURCE_FILES} ${RESOURCE_FILE})
+else()
+	add_executable(Compiler ${SOURCE_FILES})
+endif()
 
 # Forces output name
 set_target_properties(Compiler PROPERTIES OUTPUT_NAME "Compiler")
@@ -106,32 +119,16 @@ add_custom_command(TARGET Compiler POST_BUILD
 	$<TARGET_FILE_DIR:Compiler>/files
 )
 
-# Copy "LICENSE.md" to install directory after build
-add_custom_command(TARGET Compiler POST_BUILD
+set(COPY_TARGETS LICENSE.md README.md SECURITY.md LIBRARIES.md)
+foreach(FILE ${COPY_TARGETS})
+  add_custom_command(TARGET Compiler POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Compiler>/LICENSE.md
+	$<TARGET_FILE_DIR:Compiler>/${FILE}
 	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/LICENSE.md
-    $<TARGET_FILE_DIR:Compiler>/LICENSE.md
-)
-
-# Copy "README.md" to install directory after build
-add_custom_command(TARGET Compiler POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Compiler>/README.md
-	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/README.md
-    $<TARGET_FILE_DIR:Compiler>/README.md
-)
-
-# Copy "LIBRARIES.md" to install directory after build
-add_custom_command(TARGET Compiler POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Compiler>/LIBRARIES.md
-	COMMAND ${CMAKE_COMMAND} -E copy
-    ${PARENT_DIR_PATH}/LIBRARIES.md
-    $<TARGET_FILE_DIR:Compiler>/LIBRARIES.md
-)
+	${PARENT_DIR_PATH}/${FILE}
+	$<TARGET_FILE_DIR:Compiler>/${FILE}
+  )
+endforeach()
 
 # Include CPack to enable packaging
 include(CPack)

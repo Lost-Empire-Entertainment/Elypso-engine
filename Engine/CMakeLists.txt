@@ -62,18 +62,10 @@ add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
-if (WIN32)
-	set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
-elseif (UNIX)
-	find_package(glfw3 REQUIRED)
-endif()
+set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
 
 # Add Assimp
-if (WIN32)
-	set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
-elseif (UNIX)
-	find_package(assimp REQUIRED)
-endif()
+set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
 
 # Add magic_enum
 add_library(magic_enum INTERFACE)
@@ -126,7 +118,6 @@ else()
 	add_executable(Elypso_engine ${SOURCE_FILES})
 endif()
 	
-	
 set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
@@ -156,11 +147,7 @@ target_include_directories(Elypso_engine PRIVATE
 	# ${EXT_DISCORD_DIR}/include
 )
 
-if (WIN32)
-	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
-elseif (UNIX)
-	target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp)
-endif()
+target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
 
 # UNCOMMENT TO USE DISCORD GAME SDK
 # target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
@@ -180,15 +167,9 @@ target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 #    )
 #endif()
 
-if (WIN32)
+# Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-elseif (UNIX)
-set(CMAKE_INSTALL_BINDIR "${CMAKE_CURRENT_SOURCE_DIR}/build")
-install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-endif()
 
 # Copy "files" directory to the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD

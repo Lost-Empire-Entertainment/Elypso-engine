@@ -7,11 +7,10 @@ WSL TO VISUAL STUDIO REMOTE CONNECTION SETUP (WITHOUT REMOTE CONNECTION)
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 
-# confirm in Windows Features if these features are enabled
-Virtual Machine Platform
-Windows Hypervisor Platform
+# [WINDOWS TERMINAL] enable wsl if its installed
+wsl
 
-# [WINDOWS TERMINAL] install wsl
+# [WINDOWS TERMINAL] install wsl if its not installed or found
 wsl --install
 
 # [WINDOWS TERMINAL] check if wsl is installed

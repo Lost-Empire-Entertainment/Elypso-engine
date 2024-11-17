@@ -1,9 +1,15 @@
-﻿cmake_minimum_required (VERSION 3.29)
+﻿cmake_minimum_required (VERSION 3.22)
 
 # Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
+if (WIN32 AND POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
+
+# Specify the compiler for Linux builds
+if (UNIX)
+    set(CMAKE_C_COMPILER "/usr/bin/gcc")
+    set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
@@ -22,6 +28,10 @@ project("Game")
 # Set parent path
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
+
+if (WIN32)
+	set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
+endif()
 
 # Used for copying "Elypso engine.lib" to game exe folder
 set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
@@ -91,7 +101,13 @@ list(APPEND SOURCE_FILES
 	# ${DISCORD_SRC_FILES}
 )
 
-add_executable(Game ${SOURCE_FILES})
+# Build as game executable
+if (WIN32)
+	add_executable(Game ${SOURCE_FILES} ${RESOURCE_FILE})
+else()
+	add_executable(Game ${SOURCE_FILES})
+endif()
+
 set_target_properties(Game PROPERTIES OUTPUT_NAME "Game")
 target_compile_features(Game PRIVATE cxx_std_20)
 
@@ -135,6 +151,7 @@ target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASS
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Game PRIVATE GLFW_INCLUDE_NONE)
 
+# Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Game DESTINATION ${CMAKE_INSTALL_BINDIR})
 
@@ -156,6 +173,15 @@ add_custom_command(TARGET Game POST_BUILD
 	$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
 )
 
+# Copy "Elypso engine.lib" to game exe folder
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove
+    ${LIB_TARGET}
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${LIB_ORIGIN}
+    ${LIB_TARGET}
+)
+
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK
 # add_custom_command(TARGET Game POST_BUILD
@@ -166,32 +192,16 @@ add_custom_command(TARGET Game POST_BUILD
 	# $<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
 # )
 
-# Copy "LICENSE.md" to install directory after build
-add_custom_command(TARGET Game POST_BUILD
+set(COPY_TARGETS LICENSE.md README.mdLIBRARIES.md)
+foreach(FILE ${COPY_TARGETS})
+  add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-	$<TARGET_FILE_DIR:Game>/LICENSE.md
+	$<TARGET_FILE_DIR:Game>/${FILE}
 	COMMAND ${CMAKE_COMMAND} -E copy
-	${CMAKE_SOURCE_DIR}/LICENSE.md
-	$<TARGET_FILE_DIR:Game>/LICENSE.md
-)
-
-# Copy "README.md" to install directory after build
-add_custom_command(TARGET Game POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove
-	$<TARGET_FILE_DIR:Game>/README.md
-	COMMAND ${CMAKE_COMMAND} -E copy
-	${PARENT_DIR_PATH}/README.md
-	$<TARGET_FILE_DIR:Game>/README.md
-)
-
-# Copy "Elypso engine.lib" to game exe folder
-add_custom_command(TARGET Game POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove
-    ${LIB_TARGET}
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${LIB_ORIGIN}
-    ${LIB_TARGET}
-)
+	${PARENT_DIR_PATH}/${FILE}
+	$<TARGET_FILE_DIR:Game>/${FILE}
+  )
+endforeach()
 
 # Include CPack to enable packaging
 include(CPack)
