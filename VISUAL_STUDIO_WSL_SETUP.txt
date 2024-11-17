@@ -10,14 +10,11 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 # [WINDOWS TERMINAL] enable wsl if its installed
 wsl
 
-# [WINDOWS TERMINAL] install wsl if its not installed or found
-wsl --install
-
-# [WINDOWS TERMINAL] check if wsl is installed
-wsl --list --verbose
-
 # [WINDOWS TERMINAL] set wsl to version 2
 wsl --set-default-version 2
+
+# [WINDOWS TERMINAL] install wsl if its not installed or found
+wsl --install Ubuntu
 
 # [WINDOWS TERMINAL] check if wsl is working correctly and correct version is assigned
 wsl -l -v
@@ -26,7 +23,7 @@ wsl -l -v
 sudo apt update
 
 # [WSL] set up openssh
-sudo apt install openssh-server
+sudo apt install openssh-server -y
 
 # [WSL] start and enable openssh
 sudo service ssh start
@@ -38,12 +35,12 @@ sudo service ssh status
 sudo nano /etc/ssh/sshd_config
 
 # uncomment the following lines
-PasswordAuthentication yes
 Port 22
 ListenAddress 0.0.0.0
 ListenAddress ::
-AllowTcpForwarding yes
+PasswordAuthentication yes
 PermitEmptyPasswords no
+AllowTcpForwarding yes
 UseDNS no
 
 # edit the following lines
@@ -55,7 +52,7 @@ PermitRootLogin prohibit-password (change 'prohibit-password' to 'no')
 sudo service ssh restart
 
 # [WSL] show ip
-ip addr show (or hostname -I)
+hostname -I
 
 # [WSL] show port
 grep "^Port" /etc/ssh/sshd_config (should return double digit port like 22)

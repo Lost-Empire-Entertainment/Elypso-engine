@@ -1,14 +1,8 @@
-# install g++
-sudo apt install binutils -y
+# install gcc, g++, make and other essential build tools
+sudo apt install build-essential -y
 
 # install cmake
 sudo apt install cmake -y
-
-# install glfw3
-sudo apt install libglfw3 libglfw3-dev -y
-
-# install assimp
-sudo apt install libassimp-dev -y
 
 # install zenity
 sudo apt install zenity -y
