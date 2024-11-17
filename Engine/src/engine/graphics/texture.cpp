@@ -9,8 +9,8 @@
 #include <filesystem>
 
 //external
-#include "../../../../_external_shared/GLFW/glfw3.h"
-#include "../../../../_external_shared/Stb_image/stb_image.h"
+#include "glfw3.h"
+#include "Stb_image/stb_image.h"
 
 //engine
 #include "texture.hpp"

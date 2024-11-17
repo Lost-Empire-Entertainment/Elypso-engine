@@ -4,7 +4,7 @@
 //Read LICENSE.md for more information.
 
 //external
-#include "../../../../_external_shared/GLM/gtc/matrix_transform.hpp"
+#include "matrix_transform.hpp"
 
 //engine
 #include "camera.hpp"

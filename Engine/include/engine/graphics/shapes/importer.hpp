@@ -10,7 +10,7 @@
 #include <filesystem>
 
 //external
-#include "../../../../_external_shared/GLM/glm.hpp"
+#include "glm.hpp"
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "core.hpp"

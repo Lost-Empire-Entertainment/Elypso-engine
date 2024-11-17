@@ -10,7 +10,7 @@
 #include <sstream>
 
 //external
-#include "../../../../_external_shared/GLM/glm.hpp"
+#include "glm.hpp"
 
 namespace Utils
 {

@@ -9,7 +9,7 @@
 #include <string>
 
 //external
-#include "../../../../_external_shared/ImGui/imgui.h"
+#include "imgui.h"
 
 namespace Graphics::GUI
 {

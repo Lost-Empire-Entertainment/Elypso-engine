@@ -16,7 +16,7 @@
 #include <memory>
 
 //external
-#include "GLFW/glfw3.h"
+#include "glfw3.h"
 #if DISCORD_MODE
 #include "discord.h"
 #endif

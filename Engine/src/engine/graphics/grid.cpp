@@ -8,7 +8,7 @@
 #include <filesystem>
 
 //external
-#include "../../../../_external_shared/Glad/glad.h"
+#include "glad.h"
 
 //engine
 #include "grid.hpp"

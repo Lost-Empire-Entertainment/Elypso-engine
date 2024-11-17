@@ -11,8 +11,8 @@
 #include <string>
 
 //external
-#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
-#include "../../../../_external_shared/GLM/glm.hpp"
+#include "magic_enum/magic_enum.hpp"
+#include "glm.hpp"
 
 //engine
 #include "sceneFile.hpp"

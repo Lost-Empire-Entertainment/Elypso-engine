@@ -10,12 +10,12 @@
 #include <iomanip>
 
 //external
-#include "../../../../_external_shared/Glad/glad.h"
-#include "../../../../_external_shared/GLM/gtc/quaternion.hpp"
-#include "../../../../_external_shared/GLM/gtc/matrix_transform.hpp"
-#include "../../../../_external_shared/GLM/gtx/matrix_decompose.hpp"
+#include "glad.h"
+#include "quaternion.hpp"
+#include "matrix_transform.hpp"
+#include "matrix_decompose.hpp"
 #include "assimp/postprocess.h"
-#include "../../../../_external_shared/Stb_image/stb_image.h"
+#include "Stb_image/stb_image.h"
 
 //engine
 #include "render.hpp"

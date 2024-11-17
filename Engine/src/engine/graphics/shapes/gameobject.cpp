@@ -9,7 +9,7 @@
 #include <fstream>
 
 //external
-#include "../../../../_external_shared/GLM/glm.hpp"
+#include "glm.hpp"
 
 //engine
 #include "gameobject.hpp"

@@ -8,7 +8,7 @@
 #include <memory>
 
 //external
-#include "../../../../_external_shared/GLM/glm.hpp"
+#include "glm.hpp"
 
 namespace Graphics::Shape
 {

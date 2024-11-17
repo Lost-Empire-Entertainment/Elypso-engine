@@ -10,10 +10,10 @@
 #include <memory>
 
 //external
-#include "../../../../_external_shared/Glad/glad.h"
-#include "../../../../_external_shared/magic_enum/magic_enum.hpp"
-#include "../../../../_external_shared/GLFW/glfw3.h"
-#include "../../../../_external_shared/GLM/glm.hpp"
+#include "glad.h"
+#include "magic_enum/magic_enum.hpp"
+#include "glfw3.h"
+#include "glm.hpp"
 
 //engine
 #include "console.hpp"
