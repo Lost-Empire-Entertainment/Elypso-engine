@@ -7,11 +7,14 @@
 #include "imgui.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
+#include "glm.hpp"
+#include "algorithm"
 
 //engine
 #include "selectobject.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+
 using glm::inverse;
 using glm::normalize;
 using std::min;
@@ -122,12 +125,12 @@ namespace Core
 			vec3 tMin = (minBound - localRayOrigin) / localRayDir;
 			vec3 tMax = (maxBound - localRayOrigin) / localRayDir;
 
-			float tEnter = max({ min(tMin.x, tMax.x),
+			float tEnter = std::ranges::max({min(tMin.x, tMax.x),
 								 min(tMin.y, tMax.y),
-								 min(tMin.z, tMax.z) });
-			float tExit = min({ max(tMin.x, tMax.x),
+								 min(tMin.z, tMax.z)});
+			float tExit = std::ranges::min({max(tMin.x, tMax.x),
 								max(tMin.y, tMax.y),
-								max(tMin.z, tMax.z) });
+								max(tMin.z, tMax.z)});
 
 			if (tEnter > tExit
 				|| tExit < 0.0f)
