@@ -16,10 +16,11 @@
 #include "matrix_decompose.hpp"
 #include "postprocess.h"
 #include "stb_image.h"
+#include "Assimp/Importer.hpp"
 
 //engine
-#include "render.hpp"
 #include "importer.hpp"
+#include "render.hpp"
 #include "model.hpp"
 #include "shader.hpp"
 #include "texture.hpp"
