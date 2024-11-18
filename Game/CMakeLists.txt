@@ -60,10 +60,23 @@ add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
+if (WIN32)
 set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
+else()
+find_package(glfw3 REQUIRED)
+endif()
+
+# Add x11 (linux only)
+if (UNIX)
+find_package(X11 REQUIRED)
+endif()
 
 # Add Assimp
+if (WIN32)
 set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
+else()
+find_package(assimp REQUIRED)
+endif()
 
 # Add magic_enum
 add_library(magic_enum INTERFACE)
@@ -144,7 +157,13 @@ target_include_directories(Game PRIVATE
 	# ${EXT_DISCORD_DIR}/include
 )
 
+if (WIN32)
 target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+else()
+target_link_libraries(Game PRIVATE external_libs glad glfw assimp "${CMAKE_SOURCE_DIR}/Elypso engine.lib" ${X11_LIBRARIES})
+endif()
+
+
 # UNCOMMENT TO USE DISCORD GAME SDK
 # target_link_libraries(Game PUBLIC ${DISCORD_LIBRARY_PATH})
 

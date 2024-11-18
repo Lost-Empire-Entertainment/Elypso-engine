@@ -3,15 +3,19 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <iostream>
-#include <algorithm>
+#ifdef _WIN32
 #include <Windows.h>
 #include <ShlObj.h>
 #include <TlHelp32.h>
+#endif
+#include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <filesystem>
 
 //external
+#include "glfw3.h"
+#include "glm.hpp"
 #include "glad.h"
 #include "stb_image.h"
 #include "imgui_impl_glfw.h"
@@ -28,6 +32,7 @@ using Graphics::Render;
 using std::cout;
 using std::exception;
 using std::filesystem::current_path;
+using std::filesystem::create_directory;
 using std::filesystem::exists;
 using std::ofstream;
 using std::ifstream;
@@ -56,12 +61,13 @@ namespace Core
 
 		cout << "Initializing Elypso Hub...\n";
 
-		PWSTR path;
-		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &path);
+#ifdef _WIN32
+		PWSTR pwstrPath;
+		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &pwstrPath);
 		if (SUCCEEDED(result))
 		{
-			wstring wPath(path);
-			CoTaskMemFree(path); //free the allocated memory
+			wstring wPath(pwstrPath);
+			CoTaskMemFree(pwstrPath); //free the allocated memory
 
 			//get the required buffer size
 			int size_needed = WideCharToMultiByte(
@@ -87,19 +93,28 @@ namespace Core
 				NULL);
 
 			size_t pos = 0;
-			string incorrectSlash = "\\";
-			string correctSlash = "/";
-			while ((pos = narrowPath.find(incorrectSlash, pos)) != string::npos)
-			{
-				narrowPath.replace(pos, incorrectSlash.length(), correctSlash);
-				pos += correctSlash.length();
-			}
-			docsPath = narrowPath + "/Elypso hub";
+			docsPath = (path(narrowPath) / "Elypso hub").string();
 		}
 
 		if (!exists(docsPath)) create_directory(docsPath);
+#elif __linux__
+		const char* homeDir = getenv("HOME");
+		cout << "home dir: " << homeDir << "\n";
+		if (!homeDir)
+		{
+			CreateErrorPopup("HOME environment is not set!");
+		}
 
-		configFilePath = docsPath.string() + "/config.txt";
+		string documentsFolder = path(homeDir) / "Documents";
+		if (!exists(documentsFolder)) create_directory(documentsFolder);
+
+		docsPath = path(documentsFolder) / "Elypso hub";
+		if (!exists(docsPath)) create_directory(docsPath);
+		cout << "docs path: " << docsPath << "\n";
+#endif
+
+		configFilePath = (path(docsPath.string()) / "config.txt").string();
+		cout << "config file path: " << configFilePath << "\n";
 		if (!exists(configFilePath))
 		{
 			ofstream configFile(configFilePath);
@@ -206,6 +221,7 @@ namespace Core
 
 	bool Hub::IsThisProcessAlreadyRunning(const string& processName)
 	{
+#ifdef _WIN32
 		HANDLE hProcessSnap;
 		PROCESSENTRY32 pe32{};
 		bool processFound = false;
@@ -244,6 +260,10 @@ namespace Core
 
 		CloseHandle(hProcessSnap);
 		return processFound;
+#elif __linux__
+		string command = "pgrep -l \"" + processName + "\"";
+		return !system(command.c_str());
+#endif
 	}
 
 	void Hub::CreateErrorPopup(const char* errorMessage)
@@ -260,9 +280,15 @@ namespace Core
 			<< "===================="
 			<< "\n";
 
+#ifdef _WIN32
 		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
 
 		if (result == IDOK) Shutdown();
+#elif __linux__
+		string command = "zenity --error --text=\"" + (string)errorMessage + "\" --title=\"" + title + "\"";
+		system(command.c_str());
+		Shutdown();
+#endif
 	}
 
 	//reset last idle activity timer
@@ -329,5 +355,6 @@ namespace Core
 		SaveConfigFile();
 		GUI_Hub::Shutdown();
 		glfwTerminate();
+		quick_exit(EXIT_SUCCESS);
 	}
 }

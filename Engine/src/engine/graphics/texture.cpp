@@ -10,7 +10,7 @@
 
 //external
 #include "glfw3.h"
-#include "Stb_image/stb_image.h"
+#include "stb_image.h"
 
 //engine
 #include "texture.hpp"

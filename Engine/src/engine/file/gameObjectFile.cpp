@@ -11,7 +11,7 @@
 #include <vector>
 
 //external
-#include "magic_enum/magic_enum.hpp"
+#include "magic_enum.hpp"
 #include "glm.hpp"
 
 //engine

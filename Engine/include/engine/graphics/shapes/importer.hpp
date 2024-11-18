@@ -11,8 +11,8 @@
 
 //external
 #include "glm.hpp"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
+#include "Importer.hpp"
+#include "scene.h"
 #include "core.hpp"
 
 //engine

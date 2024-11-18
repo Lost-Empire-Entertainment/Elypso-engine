@@ -14,8 +14,8 @@
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
 #include "matrix_decompose.hpp"
-#include "assimp/postprocess.h"
-#include "Stb_image/stb_image.h"
+#include "postprocess.h"
+#include "stb_image.h"
 
 //engine
 #include "render.hpp"

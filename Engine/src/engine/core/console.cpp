@@ -11,7 +11,7 @@
 
 //external
 #include "glad.h"
-#include "magic_enum/magic_enum.hpp"
+#include "magic_enum.hpp"
 #include "glfw3.h"
 #include "glm.hpp"
 

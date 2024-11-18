@@ -47,7 +47,16 @@ add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
+if (WIN32)
 set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
+else()
+find_package(glfw3 REQUIRED)
+endif()
+
+# Add x11 (linux only)
+if (UNIX)
+find_package(X11 REQUIRED)
+endif()
 
 # Add magic_enum
 add_library(magic_enum INTERFACE)
@@ -96,7 +105,11 @@ target_include_directories(Elypso_hub PRIVATE
 	${EXT_STB_IMAGE_DIR}
 )
 
+if (WIN32)
 target_link_libraries(Elypso_hub PRIVATE external_libs ${GLFW_LIBRARY_PATH})
+else()
+target_link_libraries(Elypso_hub PRIVATE external_libs glfw ${X11_LIBRARIES})
+endif()
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Elypso_hub PRIVATE GLFW_INCLUDE_NONE)

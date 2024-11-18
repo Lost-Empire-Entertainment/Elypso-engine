@@ -12,7 +12,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "type_ptr.hpp"
-#include "magic_enum/magic_enum.hpp"
+#include "magic_enum.hpp"
 
 //engine
 #include "gui_inspector.hpp"

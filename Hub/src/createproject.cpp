@@ -76,13 +76,24 @@ namespace Graphics::GUI
 
 		ImGui::SetCursorPos(textfieldPos);
 
+#ifdef _WIN32
 		strcpy_s(projectName, bufferSize, assignedProjectName.c_str());
+#elif __linux__
+		strncpy(projectName, assignedProjectName.c_str(), bufferSize);
+#endif
 		if (ImGui::InputText("##setProjectName", projectName, bufferSize))
 		{
 			assignedProjectName = projectName;
 		}
 
-		if (strlen(projectName) == 0) strcpy_s(projectName, bufferSize, "Project");
+		if (strlen(projectName) == 0)
+		{
+#ifdef _WIN32
+			strcpy_s(projectName, bufferSize, "Project");
+#elif __linux__
+			strncpy(projectName, "Project", bufferSize);
+#endif
+		}
 		if (assignedProjectName == "") assignedProjectName = "Project";
 
 		ImVec2 buttonSize = ImVec2(100, 30);
@@ -113,7 +124,11 @@ namespace Graphics::GUI
 				string str(1, illegalChar);
 				cout << "Error: Invalid character '" + str + "' detected in project name '" + assignedProjectName + "'! Please only use english letters, roman numbers and dash or underscore symbol!";
 
+#ifdef _WIN32
 				strcpy_s(projectName, bufferSize, "Project");
+#elif __linux__
+				strncpy(projectName, "Project", bufferSize);
+#endif
 				assignedProjectName = "Project";
 
 				renderCreateProjectWindow = false;
@@ -138,7 +153,11 @@ namespace Graphics::GUI
 
 			if (foundExistingProject)
 			{
+#ifdef _WIN32
 				strcpy_s(projectName, bufferSize, "Project");
+#elif __linux__
+				strncpy(projectName, "Project", bufferSize);
+#endif
 				assignedProjectName = "Project";
 
 				cout << "Error: Project name '" + assignedProjectName + "' already exists in this project! Please pick a new project name.";
@@ -153,21 +172,21 @@ namespace Graphics::GUI
 			//
 
 			//create parent project folder
-			string newProjectFile = Hub::projectsFolderPath.string() + "\\" + assignedProjectName;
+			string newProjectFile = (path(Hub::projectsFolderPath.string()) / assignedProjectName).string();
 			create_directory(newProjectFile);
 
 			//create scenes folder
-			string scenesFolder = newProjectFile + "\\scenes";
+			string scenesFolder = (path(newProjectFile) / "scenes").string();
 			create_directory(scenesFolder);
 
 			//create textures folder inside parent project folder
-			string texturesFolder = newProjectFile + "\\textures";
+			string texturesFolder = (path(newProjectFile) / "textures").string();
 			create_directory(texturesFolder);
 
 			//put project.txt inside engine documents folder
-			string engineDocsFolder = path(Hub::docsPath).parent_path().string() + "\\Elypso engine";
+			string engineDocsFolder = (path(Hub::docsPath).parent_path() / "Elypso engine").string();
 			if (!exists(engineDocsFolder)) create_directory(engineDocsFolder);
-			string projectFilePath = engineDocsFolder + "\\project.txt";
+			string projectFilePath = (path(engineDocsFolder) / "project.txt").string();
 			ofstream projectFile(projectFilePath);
 			if (!projectFile.is_open())
 			{

@@ -14,7 +14,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "magic_enum/magic_enum.hpp"
+#include "magic_enum.hpp"
 
 //engine
 #include "console.hpp"

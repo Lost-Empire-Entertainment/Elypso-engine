@@ -14,7 +14,7 @@
 #include "glm.hpp"
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"
-#include "Stb_image/stb_image.h"
+#include "stb_image.h"
 
 //engine
 #include "console.hpp"

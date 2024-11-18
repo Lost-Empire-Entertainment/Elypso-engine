@@ -105,11 +105,3 @@ wsl --shutdown
 
 # directory path to wsl network files on windows
 \\wsl$
-
-# configure with cmake, go to build folder and compile
-cmake -S . -B build
-cd build
-make -j
-
-# run Elypso engine in current folder
-"./Elypso Engine"

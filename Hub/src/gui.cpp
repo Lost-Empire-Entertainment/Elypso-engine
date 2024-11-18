@@ -3,8 +3,15 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#ifdef _WIN32
 #include <Windows.h>
 #include <ShlObj.h>
+#elif __linux__
+#include <unistd.h>
+#include <sys/wait.h>
+#include <cstring>
+#include <array>
+#endif
 #include <iostream>
 #include <filesystem>
 
@@ -23,9 +30,13 @@
 using Core::Hub;
 using Graphics::Render;
 
+#ifdef _WIN32
+using std::wstring;
+#elif __linux__
+using std::array;
+#endif
 using std::cout;
 using std::getline;
-using std::wstring;
 using std::filesystem::is_empty;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
@@ -51,18 +62,18 @@ namespace Graphics::GUI
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		static string tempString = Hub::docsPath.string() + "/imgui.ini";
+		static string tempString = (path(Hub::docsPath) / "imgui.ini").string();
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
 		ImGui_ImplGlfw_InitForOpenGL(Render::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 
-		string fontPath = Hub::defaultPath.string() + "/files/fonts/coda/Coda-Regular.ttf";
+		string fontPath = (path(Hub::defaultPath) / "files" / "fonts" / "coda" / "Coda-Regular.ttf").string();
 		if (exists(fontPath))
 		{
 			io.Fonts->Clear();
-			io.Fonts->AddFontFromFileTTF((Hub::defaultPath.string() + "/files/fonts/coda/Coda-Regular.ttf").c_str(), 16.0f);
+			io.Fonts->AddFontFromFileTTF(((path(Hub::defaultPath) / "files" / "fonts" / "coda" / "Coda-Regular.ttf")).string().c_str(), 16.0f);
 		}
 		else
 		{
@@ -289,12 +300,20 @@ namespace Graphics::GUI
 		}
 
 		path enginePath(filePath);
+#ifdef _WIN32
 		if (enginePath.stem().string() != "Elypso engine"
 			|| enginePath.extension().string() != ".exe")
 		{
 			cout << "Error: Path " << filePath << " does not lead to Elypso engine.exe!\n\n";
 			return;
 		}
+#elif __linux__
+		if (enginePath.stem().string() != "Elypso engine")
+		{
+			cout << "Error: Path " << filePath << " does not lead to Elypso engine!\n\n";
+			return;
+		}
+#endif
 
 		Hub::enginePath = filePath;
 
@@ -310,7 +329,7 @@ namespace Graphics::GUI
 			return;
 		}
 
-		string projectsFile = path(Hub::docsPath).parent_path().string() + "\\Elypso engine\\project.txt";
+		string projectsFile = (path(Hub::docsPath).parent_path() / "Elypso engine" / "project.txt").string();
 		if (exists(projectsFile)) remove(projectsFile);
 
 		remove_all(projectPath);
@@ -333,12 +352,20 @@ namespace Graphics::GUI
 			return false;
 		}
 
+#ifdef _WIN32
 		if (Hub::enginePath.stem().string() != "Elypso engine"
 			|| Hub::enginePath.extension().string() != ".exe")
 		{
 			cout << "Error: Path '" << Hub::enginePath << "' does not lead to Elypso engine.exe!\n\n";
 			return false;
 		}
+#elif __linux__
+		if (Hub::enginePath.stem().string() != "Elypso engine")
+		{
+			cout << "Error: Path '" << Hub::enginePath << "' does not lead to Elypso engine.exe!\n\n";
+			return false;
+		}
+#endif
 
 		return true;
 	}
@@ -362,6 +389,7 @@ namespace Graphics::GUI
 
 	void GUI_Hub::RunApplication(const string& parentFolderPath, const string& exePath, const string& commands)
 	{
+#ifdef _WIN32
 		wstring wParentFolderPath(parentFolderPath.begin(), parentFolderPath.end());
 		wstring wExePath(exePath.begin(), exePath.end());
 		wstring wCommands(commands.begin(), commands.end());
@@ -406,6 +434,65 @@ namespace Graphics::GUI
 		// Close process and thread handles
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);
+#elif __linux__
+		//change working directory to parentFolderPath
+		if (chdir(parentFolderPath.c_str()) != 0)
+		{
+			perror("Error changing directory");
+			return;
+		}
+
+		//parse the commands into arguments
+		vector<string> args;
+		size_t pos = 0, found;
+		while ((found = commands.find(' ', pos)) != string::npos)
+		{
+			args.push_back(commands.substr(pos, found - pos));
+			pos = found + 1;
+		}
+		args.push_back(commands.substr(pos));
+
+		//prepare arguments for execvp
+		vector<char*> execArgs;
+		execArgs.push_back(const_cast<char*>(exePath.c_str()));
+		for (auto& arg : args)
+		{
+			execArgs.push_back(const_cast<char*>(arg.c_str()));
+		}
+		execArgs.push_back(nullptr);
+
+		pid_t pid = fork();
+		if (pid == -1)
+		{
+			perror("Error during fork");
+			return;
+		}
+
+		if (pid == 0)
+		{
+			//child process: execute the program
+			execvp(execArgs[0], execArgs.data());
+			perror("Error during execvp");
+			exit(EXIT_FAILURE); //exit if execvp fails
+		}
+		else
+		{
+			//parent process: wait for the child to finish
+			int status;
+			if (waitpid(pid, &status, 0) == -1)
+			{
+				perror("Error during waitpid");
+			}
+			else if (WIFEXITED(status))
+			{
+				cout << "Child exited with status: " << WEXITSTATUS(status) << "\n";
+			}
+			else
+			{
+				cout << "Child did not exit normally\n";
+			}
+		}
+#endif
 	}
 
 	void GUI_Hub::UpdateFileList()
@@ -425,6 +512,7 @@ namespace Graphics::GUI
 
 	string GUI_Hub::SelectWithExplorer(SelectType selectType)
 	{
+#ifdef _WIN32
 		//initialize COM
 		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 		if (FAILED(hr))
@@ -573,14 +661,67 @@ namespace Graphics::GUI
 		CoUninitialize();
 
 		return narrowPath;
+#elif __linux__
+		string command = "zenity --file-selection";
+
+		switch (selectType)
+		{
+		case SelectType::txt_file:
+			command += " --file-filter='*.txt'";
+			break;
+		case SelectType::engine_path:
+			command += " --file-filter='All files | *'";
+			break;
+		case SelectType::folder:
+			command = "zenity --file-selection --directory";
+			break;
+		}
+
+		//execute the command and capture the output
+		array<char, 128> buffer{};
+		string result;
+		FILE* pipe = popen(command.c_str(), "r");
+		if (!pipe)
+		{
+			Hub::CreateErrorPopup("Failed to open file dialog!");
+		}
+		while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
+		{
+			result += buffer.data();
+		}
+		pclose(pipe);
+
+		//remove trailing newline from result
+		if (!result.empty()
+			&& result.back() == '\n')
+		{
+			result.pop_back();
+		}
+
+		//check if selected file is executable
+		if (selectType == SelectType::engine_path)
+		{
+			if (access(result.c_str(), X_OK) != 0)
+			{
+				//Hub::CreateErrorPopup("Selected file is not executable!");
+				cout << "not executable!\n";
+				return "";
+			}
+		}
+
+		return result;
+#endif
 	}
 
 	void GUI_Hub::Shutdown()
 	{
-		isImguiInitialized = false;
+		if (isImguiInitialized)
+		{
+			isImguiInitialized = false;
 
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+			ImGui::DestroyContext();
+		}
 	}
 }

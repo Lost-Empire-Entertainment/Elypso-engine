@@ -13,7 +13,7 @@
 
 //external
 #include "glad.h"
-#include "magic_enum/magic_enum.hpp"
+#include "magic_enum.hpp"
 
 //engine
 #include "shader.hpp"

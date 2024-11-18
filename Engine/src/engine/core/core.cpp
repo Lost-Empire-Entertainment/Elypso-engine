@@ -379,31 +379,38 @@ namespace Core
 		//if engine is ran from repository structure
 		string parentFolder = current_path().stem().string();
 		if (parentFolder == "Release"
-			|| parentFolder == "Debug")
+			|| parentFolder == "Debug"
+			|| parentFolder == "Linux Release"
+			|| parentFolder == "Linux Debug")
 		{
 			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
 				.parent_path() / "Game").string();
+			cout << "game template folder 1: " << gamePath << "\n";
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
 			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
 		//if engine is ran from visual studio folder
 		else if (parentFolder == "x64-release"
-			|| parentFolder == "x64-debug")
+				 || parentFolder == "x64-debug"
+				 || parentFolder == "linux-debug"
+				 || parentFolder == "linux-release")
 		{
 			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
 				.parent_path()
 				.parent_path() / "Game").string();
+			cout << "game template folder 2: " << gamePath << "\n";
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
 			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
-		//if engine is not ran from repository structure
+		//if engine is ran from public release configuration or something else
 		else
 		{
 			gamePath = (current_path().parent_path() / "Game").string();
+			cout << "game template folder 3: " << gamePath << "\n";
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
 			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
@@ -542,6 +549,7 @@ namespace Core
 #elif __linux__
 		string command = "zenity --error --text=\"" + (string)errorMessage + "\" --title=\"" + title + "\"";
 		system(command.c_str());
+		Shutdown(true);
 #endif
 	}
 
@@ -588,7 +596,7 @@ namespace Core
 		CloseHandle(hProcessSnap);
 		return processFound;
 #elif __linux__
-		string command = "pgrep -l \"" + name + "\"";
+		string command = "pgrep -l \"" + processName + "\"";
 		return !system(command.c_str());
 #endif
 		return false;

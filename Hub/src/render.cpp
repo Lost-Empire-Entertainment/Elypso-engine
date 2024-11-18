@@ -18,6 +18,7 @@
 using std::cout;
 using std::string;
 using std::filesystem::current_path;
+using std::filesystem::path;
 
 using Core::Hub;
 using Graphics::GUI::GUI_Hub;
@@ -54,7 +55,8 @@ namespace Graphics
 		Hub::defaultPath = current_path().generic_string();
 
 		int width, height, channels;
-		string iconpath = Hub::defaultPath.string() + "/icon.png";
+		string iconpath = (path(Hub::defaultPath) / "files" / "icon.png").string();
+		cout << "icon path: " << iconpath << "\n";
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};
