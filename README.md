@@ -1,10 +1,10 @@
 # Elypso engine
 
-**Elypso Engine** is a game development engine that is made with OpenGL, C++ 20 and [several libraries](https://github.com/Lost-Empire-Entertainment/Elypso-engine/blob/main/LIBRARIES.md) and it is primarily aimed for Windows 10 and 11. Linux support is coming very soon and this README file will be updated accordingly once Linux support is confirmed to be working.
+**Elypso Engine** is a game development engine that is made with OpenGL, C++ 20 and [several libraries](https://github.com/Lost-Empire-Entertainment/Elypso-engine/blob/main/LIBRARIES.md) and it runs natively on Windows and Linux.
 
 The engine is currently in the Alpha stage and has finished all of its Prototype versions.
-- Elypso Engine beta release date is aimed for spring 2025.
-- Elypso Engine full release date is aimed for spring 2026.
+- Elypso Engine beta release date is aimed for winter 2025.
+- Elypso Engine full release date is aimed for winter 2026.
 
 These dates are not final and may change so check back here regularly to see updates.
 
