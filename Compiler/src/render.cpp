@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string>
+#include <filesystem>
 
 #include "stb_image.h"
 #include "glad.h"
@@ -16,6 +17,7 @@
 
 using std::cout;
 using std::string;
+using std::filesystem::path;
 
 using Core::Compiler;
 using Core::Input;
@@ -68,7 +70,8 @@ namespace Graphics
 		glfwSwapInterval(1);
 
 		int width, height, channels;
-		string iconpath = Compiler::filesPath + "\\icon.png";
+		string iconpath = (path(Compiler::filesPath) / "icon.png").string();
+		cout << "icon path: " << iconpath << "\n";
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};

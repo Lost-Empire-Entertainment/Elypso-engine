@@ -3,10 +3,12 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <iostream>
+#ifdef _WIN32
 #include <Windows.h>
 #include <ShlObj.h>
 #include <TlHelp32.h>
+#endif
+#include <iostream>
 #include <filesystem>
 #include <cstdlib>
 
@@ -16,14 +18,16 @@
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
 #include "gui.hpp"
-#include "configFile.hpp"
 #include "compile.hpp"
 
-using std::cout;
+#ifdef _WIN32
 using std::wstring;
+#endif
+using std::cout;
 using std::filesystem::exists;
 using std::filesystem::current_path;
 using std::quick_exit;
+using std::filesystem::path;
 
 using Graphics::Render;
 using Utils::File;
@@ -49,6 +53,7 @@ namespace Core
 		// SET DOCUMENTS PATH
 		//
 
+#ifdef _WIN32
 		PWSTR docsFolderWidePath;
 		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &docsFolderWidePath);
 		if (SUCCEEDED(result))
@@ -79,38 +84,48 @@ namespace Core
 				NULL,
 				NULL);
 
-			docsPath = String::CharReplace(
-				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\Compiler";
-
-			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
-
-			cout << "Compiler documents path: " << docsPath << "\n";
-
-			filesPath = current_path().generic_string() + "\\files";
-			filesPath = String::CharReplace(filesPath, '/', '\\');
-			if (!exists(filesPath))
-			{
-				CreateErrorPopup("Couldn't find files folder!");
-				return;
-			}
-
-			cout << "Files path: " << filesPath << "\n";
-
-			configFilePath = docsPath + "\\config.txt";
-
-			ConfigFile::LoadData();
+			docsPath = (path(narrowPath) / "Compiler").string();
 		}
 		else
 		{
 			CreateErrorPopup("Couldn't find engine documents folder!");
 		}
+#elif __linux__
+		const char* homeDir = getenv("HOME");
+		if (!homeDir)
+		{
+			CreateErrorPopup("HOME environment is not set!");
+		}
+
+		string documentsFolder = path(homeDir) / "Documents";
+		if (!exists(documentsFolder)) File::CreateNewFolder(documentsFolder);
+
+		docsPath = path(documentsFolder) / "Compiler";
+#endif
+
+		if (!exists(docsPath)) File::CreateNewFolder(docsPath);
+
+		cout << "Compiler documents path: " << docsPath << "\n";
+
+		filesPath = (path(current_path()) / "files").string();
+		if (!exists(filesPath))
+		{
+			CreateErrorPopup("Couldn't find files folder!");
+			return;
+		}
+
+		cout << "Files path: " << filesPath << "\n";
+
+		configFilePath = (path(docsPath) / "config.txt").string();
+
+		ConfigFile::LoadData();
 
 		Render::RenderInitialize();
 	}
 
 	bool Compiler::IsThisProcessAlreadyRunning(const string& processName)
 	{
+#ifdef _WIN32
 		HANDLE hProcessSnap;
 		PROCESSENTRY32 pe32{};
 		bool processFound = false;
@@ -149,15 +164,25 @@ namespace Core
 
 		CloseHandle(hProcessSnap);
 		return processFound;
+#elif __linux__
+		string command = "pgrep -l \"" + processName + "\"";
+		return !system(command.c_str());
+#endif
 	}
 
 	void Compiler::CreateErrorPopup(const string& errorMessage)
 	{
 		string title = "Compiler has shut down";
 
+#ifdef _WIN32
 		int result = MessageBoxA(nullptr, errorMessage.c_str(), title.c_str(), MB_ICONERROR | MB_OK);
 
 		if (result == IDOK) MainShutdown();
+#elif __linux__
+		string command = "zenity --error --text=\"" + (string)errorMessage + "\" --title=\"" + title + "\"";
+		system(command.c_str());
+		MainShutdown();
+#endif
 	}
 
 	//reset last idle activity timer

@@ -21,6 +21,7 @@ using std::filesystem::exists;
 using std::cout;
 using std::map;
 using std::ios;
+using std::filesystem::path;
 
 using Utils::File;
 using Utils::String;
@@ -38,7 +39,7 @@ namespace Core
 			File::DeleteFileOrfolder(Compiler::configFilePath);
 		}
 
-		string configFilePath = Compiler::docsPath + "\\config.txt";
+		string configFilePath = (path(Compiler::docsPath) / "config.txt").string();
 		ofstream configFile(configFilePath);
 
 		if (!configFile.is_open())
@@ -140,7 +141,7 @@ namespace Core
 		keys.push_back("projectsPath");
 		values.push_back("");
 
-		string configFilePath = Compiler::docsPath + "\\config.txt";
+		string configFilePath = (path(Compiler::docsPath) / "config.txt").string();
 		ofstream configFile(configFilePath);
 
 		if (!configFile.is_open())

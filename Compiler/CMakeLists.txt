@@ -24,7 +24,8 @@ set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 project("Compiler" VERSION ${PROJECT_VERSION})
 
 # Paths to frequently used directories
-set(PARENT_DIR_PATH "${CMAKE_SOURCE_DIR}../../")
+get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
+set(PARENT_DIR_PATH "${PARENT_DIR}")
 
 if (WIN32)
 	set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")

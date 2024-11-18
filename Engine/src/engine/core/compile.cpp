@@ -198,16 +198,24 @@ namespace Core
 			}
 			File::CreateNewFolder(buildFolder);
 
+#ifdef _WIN32
 			command =
 				"cd " + buildFolder +
-				+" && cmake -A x64 .." +
-				+" && cmake --build . --config Release -- /m";
+				" && cmake -A x64 .."
+				" && cmake --build . --config Release -- /m";
 
 			command = "cmd /c \"" + command + "\"";
+#elif __linux__
+			command =
+				"cd " + buildFolder +
+				" && cmake -S .. -B " + buildFolder + " -DCMAKE_BUILD_TYPE=Release"
+				" && make -j";
+#endif
 			break;
 		}
 		case InstallerType::compile:
 		{
+#ifdef _WIN32
 			if (exists(buildFolder))
 			{
 				command =
@@ -220,11 +228,28 @@ namespace Core
 
 				command =
 					"cd " + buildFolder +
-					+" && cmake -A x64 .." +
-					+" && cmake --build . --config Release -- /m";
+					" && cmake -A x64 .."
+					" && cmake --build . --config Release -- /m";
 			}
 
 			command = "cmd /c \"" + command + "\"";
+#elif __linux__
+			if (exists(buildFolder))
+			{
+				command =
+					"cd " + buildFolder +
+					" && make -j";
+			}
+			else
+			{
+				File::CreateNewFolder(buildFolder);
+
+				command =
+					"cd " + buildFolder +
+					" && cmake -S .. -B " + buildFolder + " -DCMAKE_BUILD_TYPE=Release"
+					" && make -j";
+			}
+#endif
 			break;
 		}
 		}

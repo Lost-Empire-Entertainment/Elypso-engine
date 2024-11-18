@@ -103,5 +103,11 @@ sudo apt autoremove -y
 # [WSL] close wsl
 wsl --shutdown
 
+# [WSL] install dos2unix to convert windows-made .sh scripts to correct format for unix systems
+sudo apt install dos2unix -y
+
+# [WSL] convert chosen .sh file to unix format
+dos2unix yourshellscript.sh
+
 # directory path to wsl network files on windows
 \\wsl$

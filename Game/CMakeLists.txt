@@ -211,7 +211,7 @@ add_custom_command(TARGET Game POST_BUILD
 	# $<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
 # )
 
-set(COPY_TARGETS LICENSE.md README.mdLIBRARIES.md)
+set(COPY_TARGETS LICENSE.md README.md LIBRARIES.md)
 foreach(FILE ${COPY_TARGETS})
   add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove

@@ -3,13 +3,23 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#ifdef _WIN32
 #include <windows.h>
 #include <ShlObj.h>
+#elif __linux__
+#include <array>
+#endif
 #include <filesystem>
 #include <iostream>
 
 #include "fileUtils.hpp"
+#include "core.hpp"
 
+#ifdef _WIN32
+using std::wstring;
+#elif __linux__
+using std::array;
+#endif
 using std::cout;
 using std::exception;
 using std::filesystem::create_directory;
@@ -20,7 +30,8 @@ using std::filesystem::directory_iterator;
 using std::filesystem::remove_all;
 using std::filesystem::remove;
 using std::filesystem::path;
-using std::wstring;
+
+using Core::Compiler;
 
 namespace Utils
 {
@@ -101,6 +112,7 @@ namespace Utils
 
 	string File::SetPath()
 	{
+#ifdef _WIN32
 		//initialize COM
 		HRESULT hr = CoInitializeEx(
 			NULL,
@@ -221,5 +233,31 @@ namespace Utils
 		CoUninitialize();
 
 		return narrowPath;
+#elif __linux__
+		string command = "zenity --file-selection --directory";
+
+		//execute the command and capture the output
+		array<char, 128> buffer{};
+		string result;
+		FILE* pipe = popen(command.c_str(), "r");
+		if (!pipe)
+		{
+			Compiler::CreateErrorPopup("Failed to open file dialog!");
+		}
+		while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
+		{
+			result += buffer.data();
+		}
+		pclose(pipe);
+
+		//remove trailing newline from result
+		if (!result.empty()
+			&& result.back() == '\n')
+		{
+			result.pop_back();
+		}
+
+		return result;
+#endif
 	}
 }

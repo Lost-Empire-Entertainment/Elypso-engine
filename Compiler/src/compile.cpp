@@ -21,6 +21,7 @@ using std::array;
 using std::cout;
 using std::runtime_error;
 using std::thread;
+using std::filesystem::path;
 
 using Graphics::GUI;
 using Core::Compiler;
@@ -35,9 +36,9 @@ namespace Core
 			{
 				isCompiling = true;
 
-				string hubBuildFolder = Compiler::projectsPath + "\\Hub\\build";
-				string engineBuildFolder = Compiler::projectsPath + "\\Engine\\build";
-				string engineLibraryFolder = Compiler::projectsPath + "\\Engine library\\build";
+				string hubBuildFolder = (path(Compiler::projectsPath) / "Hub" / "build").string();
+				string engineBuildFolder = (path(Compiler::projectsPath) / "Engine" / "build").string();
+				string engineLibraryFolder = (path(Compiler::projectsPath) / "Engine library" / "build").string();
 
 				string buildFolder;
 				if (GUI::target == GUI::Target::Hub) buildFolder = hubBuildFolder;
@@ -60,16 +61,24 @@ namespace Core
 					}
 					File::CreateNewFolder(buildFolder);
 
+#ifdef _WIN32
 					command =
 						"cd " + buildFolder +
-						+" && cmake -A x64 .." +
-						+" && cmake --build . --config Release -- /m";
+						" && cmake -A x64 .."
+						" && cmake --build . --config Release -- /m";
 
 					command = "cmd /c \"" + command + "\"";
+#elif __linux__
+					command =
+						"cd " + buildFolder +
+						" && cmake -S .. -B " + buildFolder + " -DCMAKE_BUILD_TYPE=Release"
+						" && make -j";
+#endif
 					break;
 				}
 				case CompileType::compile:
 				{
+#ifdef _WIN32
 					if (exists(buildFolder))
 					{
 						command =
@@ -82,11 +91,28 @@ namespace Core
 
 						command =
 							"cd " + buildFolder +
-							+" && cmake -A x64 .." +
-							+" && cmake --build . --config Release -- /m";
+							" && cmake -A x64 .."
+							" && cmake --build . --config Release -- /m";
 					}
 
 					command = "cmd /c \"" + command + "\"";
+#elif __linux__
+					if (exists(buildFolder))
+					{
+						command =
+							"cd " + buildFolder +
+							" && make -j";
+					}
+					else
+					{
+						File::CreateNewFolder(buildFolder);
+
+						command =
+							"cd " + buildFolder +
+							" && cmake -S .. -B " + buildFolder + " -DCMAKE_BUILD_TYPE=Release"
+							" && make -j";
+					}
+#endif
 					break;
 				}
 				}
@@ -95,8 +121,11 @@ namespace Core
 				string fullCommand = command + " 2>&1"; //redirect stderr to stdout
 
 				array<char, 128> buffer{};
+#ifdef _WIN32
 				unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(fullCommand.c_str(), "r"), _pclose);
-
+#elif __linux__
+				unique_ptr<FILE, decltype(&pclose)> pipe(popen(fullCommand.c_str(), "r"), pclose);
+#endif
 				if (!pipe)
 				{
 					throw runtime_error("_popen() failed!");

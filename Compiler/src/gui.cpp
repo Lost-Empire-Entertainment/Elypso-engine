@@ -41,7 +41,7 @@ namespace Graphics
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		static string tempString = Compiler::docsPath + "\\imgui.ini";
+		static string tempString = (path(Compiler::docsPath) / "imgui.ini").string();
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
@@ -49,7 +49,7 @@ namespace Graphics
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Compiler::filesPath + "\\fonts\\coda\\Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF(((path(Compiler::filesPath) / "fonts" / "coda" / "Coda-Regular.ttf").string()).c_str(), 16.0f);
 
 		bgrColor.x = Render::backgroundColor.x;
 		bgrColor.y = Render::backgroundColor.y;
@@ -558,10 +558,13 @@ namespace Graphics
 
 	void GUI::GUIShutdown()
 	{
-		isImguiInitialized = false;
+		if (isImguiInitialized)
+		{
+			isImguiInitialized = false;
 
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+			ImGui::DestroyContext();
+		}
 	}
 }
