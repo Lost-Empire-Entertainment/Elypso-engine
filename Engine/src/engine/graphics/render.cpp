@@ -195,7 +195,7 @@ namespace Graphics
       //enable debug callback if opengl version is high enough
       if (major >= 4 && minor >= 3) {
          glEnable(GL_DEBUG_OUTPUT);
-         glDebugMessageCallback(MessageCallback, 0);
+         glDebugMessageCallbak(MessageCallback, 0);
       }
 
 
