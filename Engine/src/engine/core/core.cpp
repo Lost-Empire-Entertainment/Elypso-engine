@@ -376,18 +376,28 @@ namespace Core
 #if ENGINE_MODE
 		string gameName = ConfigFile::GetValue("gameName");
 
-		//if engine is ran from repository structure
+		//if engine is ran from build folder
 		string parentFolder = current_path().stem().string();
-		if (parentFolder == "Release"
-			|| parentFolder == "Debug"
-			|| parentFolder == "Linux Release"
-			|| parentFolder == "Linux Debug")
+		if (parentFolder == "build")
+		{
+			gamePath = (current_path()
+				.parent_path()
+				.parent_path() / "Game").string();
+			cout << "game template folder 1: " << gamePath << "\n";
+			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
+			gameParentPath = (path(gamePath) / "build" / "Release").string();
+		}
+		//if engine is ran from repository structure
+		else if (parentFolder == "Release"
+				 || parentFolder == "Debug"
+				 || parentFolder == "Linux Release"
+				 || parentFolder == "Linux Debug")
 		{
 			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
 				.parent_path() / "Game").string();
-			cout << "game template folder 1: " << gamePath << "\n";
+			cout << "game template folder 2: " << gamePath << "\n";
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
 			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
@@ -402,7 +412,7 @@ namespace Core
 				.parent_path()
 				.parent_path()
 				.parent_path() / "Game").string();
-			cout << "game template folder 2: " << gamePath << "\n";
+			cout << "game template folder 3: " << gamePath << "\n";
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
 			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}
@@ -410,7 +420,7 @@ namespace Core
 		else
 		{
 			gamePath = (current_path().parent_path() / "Game").string();
-			cout << "game template folder 3: " << gamePath << "\n";
+			cout << "game template folder 4: " << gamePath << "\n";
 			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
 			gameParentPath = (path(gamePath) / "build" / "Release").string();
 		}

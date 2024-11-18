@@ -24,7 +24,8 @@ namespace Utils
 		ShellExecuteA(nullptr, "open", link, nullptr, nullptr, SW_SHOWNORMAL);
 #elif __linux__
 		string command = "xdg-open \"" + string(link) + "\"";
-		system(command.c_str());
+		int result = system(command.c_str());
+		(void)result;
 #endif
 	}
 }

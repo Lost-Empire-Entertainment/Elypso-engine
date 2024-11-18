@@ -197,6 +197,7 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	$<TARGET_FILE_DIR:Elypso_engine>/files
 )
 
+if (WIN32)
 # Copy assimp dll to the install directory after build
 add_custom_command(TARGET Elypso_engine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
@@ -205,6 +206,7 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
 	$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
 )
+endif()
 
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK

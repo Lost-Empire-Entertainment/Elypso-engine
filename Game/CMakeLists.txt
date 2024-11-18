@@ -34,8 +34,13 @@ if (WIN32)
 endif()
 
 # Used for copying "Elypso engine.lib" to game exe folder
+if (WIN32)
 set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
-set(LIB_TARGET "${CMAKE_SOURCE_DIR}/build/Release/Elypso engine.lib")
+set(LIB_TARGET "${CMAKE_SOURCE_DIR}/build/Elypso engine.lib")
+else()
+set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/libElypso engine.a")
+set(LIB_TARGET "${CMAKE_SOURCE_DIR}/build/libElypso engine.a")
+endif()
 
 # Set src and include file paths
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -160,9 +165,8 @@ target_include_directories(Game PRIVATE
 if (WIN32)
 target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
 else()
-target_link_libraries(Game PRIVATE external_libs glad glfw assimp "${CMAKE_SOURCE_DIR}/Elypso engine.lib" ${X11_LIBRARIES})
+target_link_libraries(Game PRIVATE external_libs glad glfw assimp "${CMAKE_SOURCE_DIR}/libElypso engine.a" ${X11_LIBRARIES})
 endif()
-
 
 # UNCOMMENT TO USE DISCORD GAME SDK
 # target_link_libraries(Game PUBLIC ${DISCORD_LIBRARY_PATH})
@@ -183,6 +187,7 @@ add_custom_command(TARGET Game POST_BUILD
 	$<TARGET_FILE_DIR:Game>/files
 )
 
+if (WIN32)
 # Copy assimp dll to the install directory after build
 add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
@@ -191,8 +196,9 @@ add_custom_command(TARGET Game POST_BUILD
 	${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.dll
 	$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
 )
+endif()
 
-# Copy "Elypso engine.lib" to game exe folder
+# Copy "elypso engine library" to game exe folder
 add_custom_command(TARGET Game POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove
     ${LIB_TARGET}

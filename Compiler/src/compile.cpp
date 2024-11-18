@@ -64,15 +64,15 @@ namespace Core
 #ifdef _WIN32
 					command =
 						"cd " + buildFolder +
-						" && cmake -A x64 .."
+						" && cmake -A x64 .." +
 						" && cmake --build . --config Release -- /m";
 
 					command = "cmd /c \"" + command + "\"";
 #elif __linux__
 					command =
-						"cd " + buildFolder +
-						" && cmake -S .. -B " + buildFolder + " -DCMAKE_BUILD_TYPE=Release"
-						" && make -j";
+						"cd \"" + buildFolder + "\"" +
+						" && cmake -DCMAKE_BUILD_TYPE=Release .." +
+						" && cmake --build . -- -j$(nproc)";
 #endif
 					break;
 				}
@@ -83,7 +83,7 @@ namespace Core
 					{
 						command =
 							"cd " + buildFolder +
-							+" && cmake --build . --config Release -- /m";
+							" && cmake --build . --config Release -- /m";
 					}
 					else
 					{
@@ -91,7 +91,7 @@ namespace Core
 
 						command =
 							"cd " + buildFolder +
-							" && cmake -A x64 .."
+							" && cmake -A x64 .." +
 							" && cmake --build . --config Release -- /m";
 					}
 
@@ -100,17 +100,18 @@ namespace Core
 					if (exists(buildFolder))
 					{
 						command =
-							"cd " + buildFolder +
-							" && make -j";
+							"cd \"" + buildFolder + "\"" +
+							" && cmake --build . -- -j$(nproc)";
 					}
 					else
 					{
+						cout << "attempting to create folder " << buildFolder << "\n";
 						File::CreateNewFolder(buildFolder);
 
 						command =
-							"cd " + buildFolder +
-							" && cmake -S .. -B " + buildFolder + " -DCMAKE_BUILD_TYPE=Release"
-							" && make -j";
+							"cd \"" + buildFolder + "\"" +
+							" && cmake -DCMAKE_BUILD_TYPE=Release .." +
+							" && cmake --build . -- -j$(nproc)";
 					}
 #endif
 					break;
