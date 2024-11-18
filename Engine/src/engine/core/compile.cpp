@@ -276,7 +276,10 @@ namespace Core
 			cout << buffer.data() << "\n";
 		}
 #elif __linux__
-		unique_ptr<FILE, decltype(&pclose)> pipe(popen(fullCommand.c_str(), "r"), pclose);
+		auto pipe = unique_ptr<FILE, void(*)(FILE*)>(
+			popen(fullCommand.c_str(), "r"),
+			[](FILE* file) { if (file) pclose(file); }
+		);
 
 		if (!pipe)
 		{
@@ -318,7 +321,7 @@ namespace Core
 			string text = !finishedBuild 
 				? "Building " + gameName
 				: "Finished building " + gameName;
-			ImGui::Text(text.c_str());
+			ImGui::Text("%s", text.c_str());
 
 			ImVec2 scrollingRegionSize(
 				ImGui::GetContentRegionAvail().x,

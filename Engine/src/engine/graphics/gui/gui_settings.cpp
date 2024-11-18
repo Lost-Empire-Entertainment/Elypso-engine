@@ -190,7 +190,7 @@ namespace Graphics::GUI
 		}
 		ImGui::SameLine();
 		string rightName = path(skyboxTextures["right"]).filename().string();
-		ImGui::Text(rightName.c_str());
+		ImGui::Text("%s", rightName.c_str());
 
 		if (ImGui::Button("Left"))
 		{
@@ -200,7 +200,7 @@ namespace Graphics::GUI
 		}
 		ImGui::SameLine();
 		string leftName = path(skyboxTextures["left"]).filename().string();
-		ImGui::Text(leftName.c_str());
+		ImGui::Text("%s", leftName.c_str());
 
 		if (ImGui::Button("Top"))
 		{
@@ -210,7 +210,7 @@ namespace Graphics::GUI
 		}
 		ImGui::SameLine();
 		string topName = path(skyboxTextures["top"]).filename().string();
-		ImGui::Text(topName.c_str());
+		ImGui::Text("%s", topName.c_str());
 
 		if (ImGui::Button("Bottom"))
 		{
@@ -220,7 +220,7 @@ namespace Graphics::GUI
 		}
 		ImGui::SameLine();
 		string bottomName = path(skyboxTextures["bottom"]).filename().string();
-		ImGui::Text(bottomName.c_str());
+		ImGui::Text("%s", bottomName.c_str());
 
 		if (ImGui::Button("Front"))
 		{
@@ -230,7 +230,7 @@ namespace Graphics::GUI
 		}
 		ImGui::SameLine();
 		string frontName = path(skyboxTextures["front"]).filename().string();
-		ImGui::Text(frontName.c_str());
+		ImGui::Text("%s", frontName.c_str());
 
 		if (ImGui::Button("Back"))
 		{
@@ -240,7 +240,7 @@ namespace Graphics::GUI
 		}
 		ImGui::SameLine();
 		string backName = path(skyboxTextures["back"]).filename().string();
-		ImGui::Text(backName.c_str());
+		ImGui::Text("%s", backName.c_str());
 
 		if (ImGui::Button("Apply"))
 		{
@@ -311,7 +311,7 @@ namespace Graphics::GUI
 		}
 		if (ImGui::IsItemHovered())
 		{
-			ImGui::SetTooltip(Engine::gameExePath.c_str());
+			ImGui::SetTooltip("%s", Engine::gameExePath.c_str());
 		}
 
 		ImGui::SameLine();

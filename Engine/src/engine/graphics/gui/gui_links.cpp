@@ -60,7 +60,7 @@ namespace Graphics::GUI
 				Browser::OpenLink("https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6");
 			}
 
-			ImGui::Text("");
+			ImGui::Text(" ");
 			ImGui::Separator();
 			ImGui::Text("Check out the official website for documentation (in development)");
 			ImGui::Separator();
@@ -70,7 +70,7 @@ namespace Graphics::GUI
 				Browser::OpenLink("https://elypsoengine.com");
 			}
 
-			ImGui::Text("");
+			ImGui::Text(" ");
 			ImGui::Separator();
 			ImGui::Text("Join the official Discord server");
 			ImGui::Separator();
@@ -80,7 +80,7 @@ namespace Graphics::GUI
 				Browser::OpenLink("https://discord.gg/FqJgy2SvDs");
 			}
 
-			ImGui::Text("");
+			ImGui::Text(" ");
 			ImGui::Separator();
 			ImGui::Text("Subscribe to the Lost Empire Entertainment youtube channel");
 			ImGui::Separator();
@@ -90,7 +90,7 @@ namespace Graphics::GUI
 				Browser::OpenLink("https://youtube.com/greenlaser");
 			}
 
-			ImGui::Text("");
+			ImGui::Text(" ");
 			ImGui::Separator();
 			ImGui::Text("Check out the repository where all the engine code is stored");
 			ImGui::Separator();
@@ -100,7 +100,7 @@ namespace Graphics::GUI
 				Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine");
 			}
 
-			ImGui::Text("");
+			ImGui::Text(" ");
 			ImGui::Separator();
 			ImGui::Text("Check out the Trello board to check what has already been done and what is coming in future updates");
 			ImGui::Separator();

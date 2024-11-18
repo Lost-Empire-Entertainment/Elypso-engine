@@ -276,9 +276,9 @@ namespace Graphics::GUI
 			ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 
 			string strObjectsCount = "Objects: " + to_string(objectsCount);
-			ImGui::Text(strObjectsCount.c_str());
+			ImGui::Text("%s", strObjectsCount.c_str());
 			string strVerticesCount = "Vertices: " + to_string(verticesCount);
-			ImGui::Text(strVerticesCount.c_str());
+			ImGui::Text("%s", strVerticesCount.c_str());
 
 			ImGui::Text(
 				"Position: %.2f, %.2f, %.2f",

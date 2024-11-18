@@ -120,7 +120,7 @@ namespace Graphics::GUI
 			ImGui::Separator();
 
 			string objID = "ID: " + to_string(obj->GetID());
-			ImGui::Text(objID.c_str());
+			ImGui::Text("%s", objID.c_str());
 
 			ImGui::SameLine();
 
@@ -302,7 +302,7 @@ namespace Graphics::GUI
 
 			Type objType = obj->GetMesh()->GetMeshType();
 			string objTypeValue = "Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
-			ImGui::Text(objTypeValue.c_str());
+			ImGui::Text("%s", objTypeValue.c_str());
 
 			if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model)
 			{

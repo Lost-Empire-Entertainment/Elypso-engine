@@ -54,7 +54,7 @@ namespace Graphics::GUI
 
 			ImGui::Text("Lead developer: greenlaser");
 
-			ImGui::Text("");
+			ImGui::Text(" ");
 			ImGui::Separator();
 			ImGui::Text("Testers");
 			ImGui::Separator();

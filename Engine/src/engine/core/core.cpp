@@ -548,7 +548,8 @@ namespace Core
 		if (result == IDOK) Shutdown(true);
 #elif __linux__
 		string command = "zenity --error --text=\"" + (string)errorMessage + "\" --title=\"" + title + "\"";
-		system(command.c_str());
+		int result = system(command.c_str());
+		(void)result;
 		Shutdown(true);
 #endif
 	}
