@@ -124,7 +124,10 @@ namespace Core
 #ifdef _WIN32
 				unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(fullCommand.c_str(), "r"), _pclose);
 #elif __linux__
-				unique_ptr<FILE, decltype(&pclose)> pipe(popen(fullCommand.c_str(), "r"), pclose);
+				auto pipe = unique_ptr<FILE, void(*)(FILE*)>(
+					popen(fullCommand.c_str(), "r"),
+					[](FILE* file) { if (file) pclose(file); }
+				);
 #endif
 				if (!pipe)
 				{

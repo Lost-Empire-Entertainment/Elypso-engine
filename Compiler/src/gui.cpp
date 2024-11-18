@@ -283,7 +283,7 @@ namespace Graphics
 			}
 			sentMsg = true;
 		}
-		ImGui::Text(progressText.c_str());
+		ImGui::Text("%s", progressText.c_str());
 
 		ImVec2 scrollingRegionSize(
 			ImGui::GetContentRegionAvail().x,
