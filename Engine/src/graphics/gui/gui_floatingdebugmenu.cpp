@@ -207,11 +207,12 @@ namespace Graphics::GUI
 		}
 	   ImGui::SeparatorText("GPU Info");
       ImGui::Text("GPU Vendor : %s", glGetString(GL_VENDOR));
-      ImGui::Text("GPU : %s", glGetString(GL_RENDERER))
-
-      ImGui::SeparatorText("Librarys");      
+      ImGui::Text("GPU : %s", glGetString(GL_RENDERER))ImGui::SeparatorText("Librarys");
+            
       ImGui::Text("OpenGL Version : %s", glGetString(GL_VERSION));
       ImGui::Text("GLFW Version : %s", glfwGetVersionString());
+      ImGui::Text("Operating System : %s", os);
+      ImGui::Text("Compiled With GCC Version : C = %d, C++ = %d", __GNUC__, __GNUG__);
             
       ImGui::SeparatorText("Window");
       int w,h;
