@@ -6,7 +6,6 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
-#include <vector>
 
 //external
 #include "glad.h"
@@ -19,27 +18,18 @@
 //engine
 #include "console.hpp"
 #include "core.hpp"
+#include "gui.hpp"
 #include "render.hpp"
 #include "texture.hpp"
 #include "timeManager.hpp"
 #include "pointlight.hpp"
 #include "gameobject.hpp"
-#include "sceneFile.hpp"
-#include "configFile.hpp"
-#include "input.hpp"
-#include "stringUtils.hpp"
-#include "shader.hpp"
-#include "selectobject.hpp"
-#include "skybox.hpp"
-#if ENGINE_MODE
-#include "compile.hpp"
 #include "grid.hpp"
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
-#include "gui_engine.hpp"
-#else
-#include "gui_game.hpp"
-#endif
+#include "sceneFile.hpp"
+#include "configFile.hpp"
+#include "input.hpp"
 
 using glm::perspective;
 using glm::radians;
@@ -51,60 +41,50 @@ using std::cout;
 using std::endl;
 using std::to_string;
 using std::filesystem::path;
-using std::vector;
 
 using Core::Input;
 using Core::TimeManager;
 using Core::Engine;
 using Graphics::Shape::GameObjectManager;
+using Graphics::GUI::EngineGUI;
 using Graphics::Shape::PointLight;
-using Graphics::Shape::Skybox;
+using Graphics::Grid;
+using Graphics::Shape::ActionTex;
+using Graphics::Shape::Border;
 using EngineFile::SceneFile;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::ConfigFile;
-using Utils::String;
-using Core::Select;
-#if ENGINE_MODE
-using Core::Compilation;
-using Graphics::Grid;
-using Graphics::Shape::Border;
-using Graphics::Shape::ActionTex;
-using Graphics::GUI::EngineGUI;
-#else
-using Graphics::GUI::GameGUI;
-#endif
 
 namespace Graphics
 {
 	Camera Render::camera(Render::window, 0.05f);
-#if ENGINE_MODE
-	unsigned int framebuffer;
-#endif
+
+   void GLAPIENTRY GLErrorCallback( GLenum source,
+                                    GLenum type,
+                                    GLuint id,
+                                    GLenum severity,
+                                    GLsizei length,
+                                    const GLchar* message,
+                                    const void* userParam)
+   {
+#if 1 // replace this with however you check that your compiling with DEBUG, or make it an int that you can change in the editor or something like that 
+      std::cout << "GL ERROR : TYPE " << type <<" : SEVERITY " << severity << " : MESSAGE " << message << "\n"; 
+#endif 
+   }
 
 	void Render::RenderSetup()
 	{
 		GLFWSetup();
 		WindowSetup();
 		GladSetup();
-#if ENGINE_MODE
-		FramebufferSetup();
-#endif
+
 		ContentSetup();
 
-#if ENGINE_MODE
 		EngineGUI::Initialize();
-#else
-		GameGUI::Initialize();
-#endif
-		TimeManager::InitializeDeltaTime();
 
-#if	ENGINE_MODE
-#else
-		GameObjectManager::renderBillboards = false;
-		GameObjectManager::renderLightBorders = false;
-#endif
+		TimeManager::InitializeDeltaTime();
 	}
 
 	void Render::GLFWSetup()
@@ -144,7 +124,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INITIALIZE,
 				Type::EXCEPTION,
-				"Error: Failed to create GLFW window!\n\n");
+				"Failed to create GLFW window!\n\n");
 			return;
 		}
 
@@ -154,7 +134,7 @@ namespace Graphics
 		glfwSwapInterval(stoi(ConfigFile::GetValue("window_vsync")));
 
 		int width, height, channels;
-		string iconpath = (path(Engine::filesPath) / "icon.png").string();
+		string iconpath = Engine::filesPath + "\\icon.png";
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};
@@ -165,7 +145,6 @@ namespace Graphics
 		glfwSetWindowIcon(window, 1, &icon);
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
 		glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 		glfwSetScrollCallback(window, Input::ScrollCallback);
 		glfwSetKeyCallback(window, Input::KeyCallback);
@@ -191,7 +170,7 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INITIALIZE,
 				Type::EXCEPTION,
-				"Error: Failed to initialize GLAD!\n\n");
+				"Failed to initialize GLAD!\n\n");
 			return;
 		}
 
@@ -200,67 +179,8 @@ namespace Graphics
 			Type::DEBUG,
 			"GLAD initialized successfully!\n\n");
 	}
-#if ENGINE_MODE
-	void Render::FramebufferSetup()
-	{
-		//set up framebuffer
-		glGenFramebuffers(1, &framebuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-
-		//set up color attachment texture
-		glGenTextures(1, &textureColorbuffer);
-		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-		glTexImage2D(
-			GL_TEXTURE_2D, 
-			0, 
-			GL_RGB, 
-			1280, 
-			720, 
-			0, 
-			GL_RGB, 
-			GL_UNSIGNED_BYTE, 
-			NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, 
-			GL_COLOR_ATTACHMENT0, 
-			GL_TEXTURE_2D, 
-			textureColorbuffer, 
-			0);
-
-		//set up renderbuffer object 
-		//for depth and stencil attachment
-		glGenRenderbuffers(1, &rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(
-			GL_RENDERBUFFER, 
-			GL_DEPTH24_STENCIL8, 
-			1280, 
-			720);
-		glFramebufferRenderbuffer(
-			GL_FRAMEBUFFER, 
-			GL_DEPTH_STENCIL_ATTACHMENT, 
-			GL_RENDERBUFFER, 
-			rbo);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INITIALIZE,
-				Type::EXCEPTION,
-				"Error: Framebuffer is not complete!\n\n");
-			return;
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-#endif
 	void Render::ContentSetup()
 	{
-		//enable face culling
-		glEnable(GL_CULL_FACE);
-		//cull back faces
-		glCullFace(GL_BACK);
 		//enable depth testing
 		glEnable(GL_DEPTH_TEST);
 		//enable blending
@@ -268,7 +188,17 @@ namespace Graphics
 		//set blending function
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#if ENGINE_MODE
+      //get gl version for debug callback
+      int minor, major;
+      glGetIntegerv(GL_MINOR_VERSION, &minor);
+      glGetIntegerv(GL_MAJOR_VERSION, &major);
+      //enable debug callback if opengl version is high enough
+      if (major >= 4 && minor >= 3) {
+         glEnable(GL_DEBUG_OUTPUT);
+         glDebugMessageCallback(MessageCallback, 0);
+      }
+
+
 		Grid::InitializeGrid();
 
 		shared_ptr<GameObject> border = Border::InitializeBorder();
@@ -278,37 +208,17 @@ namespace Graphics
 		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
 		GameObjectManager::SetActionTex(actionTex);
 		GameObjectManager::AddTransparentObject(actionTex);
-#endif
-		SkyboxSetup();
 
 		glfwMaximizeWindow(window);
 	}
 
-	void Render::SkyboxSetup()
-	{
-		vec3 pos = camera.GetCameraPosition();
-		vec3 rot = vec3(0);
-		vec3 scale = vec3(1);
-
-		string skyboxVert = (path(Engine::filesPath) / "shaders" / "Skybox.vert").string();
-		string skyboxFrag = (path(Engine::filesPath) / "shaders" / "Skybox.frag").string();
-
-		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox(
-			pos,
-			rot,
-			scale,
-			skyboxVert,
-			skyboxFrag);
-
-		GameObjectManager::SetSkybox(skybox);
-	}
-
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
-#ifndef ENGINE_MODE
-		glViewport(0, 0, width, height);
+		//Calculate the new aspect ratio
 		Camera::aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-#endif
+
+		//Set the viewport based on the aspect ratio
+		glViewport(0, 0, width, height);
 	}
 
 	void Render::SetWindowNameAsUnsaved(bool state)
@@ -330,6 +240,13 @@ namespace Graphics
 
 	void Render::WindowLoop()
 	{
+		glClearColor(
+			backgroundColor.x,
+			backgroundColor.y,
+			backgroundColor.z,
+			1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		//camera transformation
 		Input::ProcessKeyboardInput(window);
 
@@ -346,51 +263,14 @@ namespace Graphics
 		//update the camera
 		view = camera.GetViewMatrix();
 
-#if ENGINE_MODE
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-#endif
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-		glEnable(GL_DEPTH_TEST);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		if (GameObjectManager::GetSkybox() != nullptr)
-		{
-			mat4 nonConstView = view;
-			Skybox::RenderSkybox(
-				GameObjectManager::GetSkybox(), 
-				nonConstView, 
-				projection);
-		}
-
-#if ENGINE_MODE
-		glDepthMask(GL_FALSE);
 		Grid::RenderGrid(view, projection);
-		glDepthMask(GL_TRUE);
-#endif
+
 		GameObjectManager::RenderAll(view, projection);
 
-#if ENGINE_MODE
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-
-		//all windows, including RenderToImguiWindow 
-		//with scene content are called in the Render function
 		EngineGUI::Render();
-#else
-		GameGUI::Render();
-		Input::SceneWindowInput();
-#endif
+
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
-		if (!Engine::IsUserIdle())
-		{
-			glfwPollEvents();
-		}
-		else glfwWaitEvents();
+		glfwPollEvents();
 	}
 }
