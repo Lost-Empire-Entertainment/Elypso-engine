@@ -35,8 +35,10 @@ endif()
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 
 # External files
-set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
+if (WIN32)
 set(EXT_GLFW_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLFW")
+endif()
+set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
@@ -90,14 +92,24 @@ set_target_properties(Compiler PROPERTIES OUTPUT_NAME "Compiler")
 
 target_compile_features(Compiler PRIVATE cxx_std_20)
 
-target_include_directories(Compiler PRIVATE 
+# Add directories conditionally for Windows
+if (WIN32)
+    list(APPEND COMPILER_INCLUDE_DIRS
+        ${EXT_GLFW_DIR}
+    )
+endif()
+
+# Add general directories
+list(APPEND COMPILER_INCLUDE_DIRS PRIVATE 
 	${INCLUDE_DIR}
 	${EXT_GLAD_DIR}
-	${EXT_GLFW_DIR}
 	${EXT_GLM_DIR}
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
 )
+
+# Apply all directories to target
+target_include_directories(Compiler PRIVATE ${COMPILER_INCLUDE_DIRS})
 
 if (WIN32)
 target_link_libraries(Compiler PRIVATE external_libs ${GLFW_LIBRARY_PATH})

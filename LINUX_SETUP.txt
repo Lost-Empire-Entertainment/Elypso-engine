@@ -9,9 +9,6 @@ sudo apt install build-essential -y
 # install gnu debugger
 sudo apt install gdb -y
 
-# install remote gnu debugger
-sudo apt install gdbserver -y
-
 # install cmake
 sudo apt install cmake -y
 
@@ -26,17 +23,6 @@ sudo apt install mesa-vulkan-drivers mesa-utils -y
 
 # install vulkan drivers
 sudo apt install vulkan-tools vulkan-validationlayers -y
-
-# install amd drivers (if using amd gpu and drivers arent installed)
-sudo apt install mesa-vulkan-drivers mesa-opencl-icd libgl1-mesa-dri xserver-xorg-video-amdgpu -y
-
-# look for latest nvidia drivers (if using nvidia gpu and nvidia drivers arent installed)
-sudo add-apt-repository ppa:graphics-drivers/ppa
-sudo apt update
-apt search nvidia-driver
-
-# install nvidia drivers (if using nvidia gpu and nvidia drivers arent installed, replace xxx with nvidia driver version)
-sudo apt install nvidia-driver-xxx nvidia-utils-xxx -y
 
 # install x11 drivers
 sudo apt install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev -y

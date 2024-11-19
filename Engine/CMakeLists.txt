@@ -47,9 +47,11 @@ set(GAME_SRC_DIR "${CMAKE_SOURCE_DIR}/src/game")
 set(GAME_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/game")
 
 # External files
-set(EXT_ASSIMP_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Assimp")
-set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
+if (WIN32)
 set(EXT_GLFW_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLFW")
+set(EXT_ASSIMP_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Assimp")
+endif()
+set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
@@ -135,30 +137,35 @@ set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
-target_include_directories(Elypso_engine PRIVATE 
-	${GAME_INCLUDE_DIR}/core
-	${ENGINE_INCLUDE_DIR}/core
-	${ENGINE_INCLUDE_DIR}/file
-	${ENGINE_INCLUDE_DIR}/graphics
-	${ENGINE_INCLUDE_DIR}/graphics/gui
-	${ENGINE_INCLUDE_DIR}/graphics/shapes
-	${ENGINE_INCLUDE_DIR}/physics
-	${ENGINE_INCLUDE_DIR}/utils
-	${EXT_ASSIMP_DIR}
-	${EXT_GLAD_DIR}
-	${EXT_GLFW_DIR}
-	${EXT_GLM_DIR}
-	${EXT_GLM_DIR}/detail
-	${EXT_GLM_DIR}/ext
-	${EXT_GLM_DIR}/gtc
-	${EXT_GLM_DIR}/gtx
-	${EXT_GLM_DIR}/simd
-	${EXT_MAGIC_ENUM_DIR}
-	${EXT_IMGUI_DIR}
-	${EXT_STB_IMAGE_DIR}
-	# UNCOMMENT TO USE DISCORD GAME SDK
-	# ${EXT_DISCORD_DIR}/include
+# Add directories conditionally for Windows
+if (WIN32)
+    list(APPEND ENGINE_INCLUDE_DIRS
+        ${EXT_ASSIMP_DIR}
+        ${EXT_GLFW_DIR}
+    )
+endif()
+
+# Add general directories
+list(APPEND ENGINE_INCLUDE_DIRS
+    ${GAME_INCLUDE_DIR}/core
+    ${ENGINE_INCLUDE_DIR}/core
+    ${ENGINE_INCLUDE_DIR}/file
+    ${ENGINE_INCLUDE_DIR}/graphics
+    ${ENGINE_INCLUDE_DIR}/graphics/gui
+    ${ENGINE_INCLUDE_DIR}/graphics/shapes
+    ${ENGINE_INCLUDE_DIR}/physics
+    ${ENGINE_INCLUDE_DIR}/utils
+    ${EXT_GLAD_DIR}
+    ${EXT_GLM_DIR}
+    ${EXT_MAGIC_ENUM_DIR}
+    ${EXT_IMGUI_DIR}
+    ${EXT_STB_IMAGE_DIR}
+    # UNCOMMENT TO USE DISCORD GAME SDK
+    # ${EXT_DISCORD_DIR}/include
 )
+
+# Apply all directories to target
+target_include_directories(Elypso_engine PRIVATE ${ENGINE_INCLUDE_DIRS})
 
 if (WIN32)
 target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
