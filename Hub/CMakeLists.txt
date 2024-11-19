@@ -35,9 +35,7 @@ endif()
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 
 # External files
-if (WIN32)
 set(EXT_GLFW_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLFW")
-endif()
 set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
@@ -97,16 +95,9 @@ set_target_properties(Elypso_hub PROPERTIES OUTPUT_NAME "Elypso hub")
 
 target_compile_features(Elypso_hub PRIVATE cxx_std_20)
 
-# Add directories conditionally for Windows
-if (WIN32)
-    list(APPEND HUB_INCLUDE_DIRS
-        ${EXT_GLFW_DIR}
-    )
-endif()
-
-# Add general directories
-list(APPEND HUB_INCLUDE_DIRS PRIVATE 
+target_include_directories(Elypso_hub PRIVATE  
 	${INCLUDE_DIR}
+	${EXT_GLFW_DIR}
 	${EXT_GLAD_DIR}
 	${EXT_GLM_DIR}
 	${EXT_MAGIC_ENUM_DIR}

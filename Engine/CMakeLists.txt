@@ -47,10 +47,8 @@ set(GAME_SRC_DIR "${CMAKE_SOURCE_DIR}/src/game")
 set(GAME_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/game")
 
 # External files
-if (WIN32)
 set(EXT_GLFW_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLFW")
 set(EXT_ASSIMP_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Assimp")
-endif()
 set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
@@ -137,16 +135,7 @@ set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
-# Add directories conditionally for Windows
-if (WIN32)
-    list(APPEND ENGINE_INCLUDE_DIRS
-        ${EXT_ASSIMP_DIR}
-        ${EXT_GLFW_DIR}
-    )
-endif()
-
-# Add general directories
-list(APPEND ENGINE_INCLUDE_DIRS
+target_include_directories(Elypso_engine PRIVATE 
     ${GAME_INCLUDE_DIR}/core
     ${ENGINE_INCLUDE_DIR}/core
     ${ENGINE_INCLUDE_DIR}/file
@@ -155,6 +144,8 @@ list(APPEND ENGINE_INCLUDE_DIRS
     ${ENGINE_INCLUDE_DIR}/graphics/shapes
     ${ENGINE_INCLUDE_DIR}/physics
     ${ENGINE_INCLUDE_DIR}/utils
+	${EXT_ASSIMP_DIR}
+    ${EXT_GLFW_DIR}
     ${EXT_GLAD_DIR}
     ${EXT_GLM_DIR}
     ${EXT_MAGIC_ENUM_DIR}
