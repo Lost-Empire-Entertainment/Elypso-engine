@@ -62,7 +62,7 @@ set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
 set(EXT_GLFW_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLFW")
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
-set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Magic_enum")
+set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 # UNCOMMENT TO USE DISCORD GAME SDK
 # set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Discord")
@@ -72,10 +72,23 @@ add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
+if (WIN32)
 set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
+else()
+find_package(glfw3 REQUIRED)
+endif()
+
+# Add x11 (linux only)
+if (UNIX)
+find_package(X11 REQUIRED)
+endif()
 
 # Add Assimp
+if (WIN32)
 set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
+else()
+find_package(assimp REQUIRED)
+endif()
 
 # Add magic_enum
 add_library(magic_enum INTERFACE)
@@ -152,7 +165,12 @@ target_include_directories(Elypso_engine PRIVATE
 		# ${EXT_DISCORD_DIR}/include
 )
 
-target_link_libraries(Elypso_engine PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
+if (WIN32)
+target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
+else()
+target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+endif()
+
 # UNCOMMENT TO USE DISCORD GAME SDK
 # target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
 
