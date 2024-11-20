@@ -161,35 +161,35 @@ namespace Graphics::Shape
 		switch (type)
 		{
 		case Type::model:
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;
 		case Type::point_light:
 			DestroyGameObject(obj->GetChildBillboard());
 			obj->SetChildBillboard(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			pointLights.erase(remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			pointLights.erase(std::remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
 			break;
 		case Type::spot_light:
 			DestroyGameObject(obj->GetChildBillboard());
 			obj->SetChildBillboard(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			spotLights.erase(remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			spotLights.erase(std::remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
 			break;
 		case Type::directional_light:
 			DestroyGameObject(obj->GetChildBillboard());
 			obj->SetChildBillboard(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			directionalLight = nullptr;
 			break;
 		case Type::billboard:
 			obj->SetParentBillboardHolder(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			transparentObjects.erase(remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
-			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
+			billboards.erase(std::remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
 		}
 

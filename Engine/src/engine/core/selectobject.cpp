@@ -3,23 +3,27 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <algorithm>
+
 //external
 #include "imgui.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
+#include "glm.hpp"
 
 //engine
 #include "selectobject.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+
 using glm::inverse;
 using glm::normalize;
-using std::min;
-using std::max;
 using glm::vec4;
 using std::numeric_limits;
 using glm::quat;
 using glm::scale;
+using std::ranges::max;
+using std::ranges::min;
 
 using Graphics::Render;
 using Type = Graphics::Shape::Mesh::MeshType;
@@ -173,13 +177,13 @@ namespace Core
 		{
 			vec3 transformedPos = position + vertex.pos * scale;
 
-			minBound.x = std::min(minBound.x, transformedPos.x);
-			minBound.y = std::min(minBound.y, transformedPos.y);
-			minBound.z = std::min(minBound.z, transformedPos.z);
+			minBound.x = min(minBound.x, transformedPos.x);
+			minBound.y = min(minBound.y, transformedPos.y);
+			minBound.z = min(minBound.z, transformedPos.z);
 
-			maxBound.x = std::max(maxBound.x, transformedPos.x);
-			maxBound.y = std::max(maxBound.y, transformedPos.y);
-			maxBound.z = std::max(maxBound.z, transformedPos.z);
+			maxBound.x = max(maxBound.x, transformedPos.x);
+			maxBound.y = max(maxBound.y, transformedPos.y);
+			maxBound.z = max(maxBound.z, transformedPos.z);
 		}
 	}
 }

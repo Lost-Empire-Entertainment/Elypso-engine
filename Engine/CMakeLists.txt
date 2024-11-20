@@ -148,6 +148,11 @@ target_include_directories(Elypso_engine PRIVATE
     ${EXT_GLFW_DIR}
     ${EXT_GLAD_DIR}
     ${EXT_GLM_DIR}
+	${EXT_GLM_DIR}/detail
+	${EXT_GLM_DIR}/ext
+	${EXT_GLM_DIR}/gtc
+	${EXT_GLM_DIR}/gtx
+	${EXT_GLM_DIR}/simd
     ${EXT_MAGIC_ENUM_DIR}
     ${EXT_IMGUI_DIR}
     ${EXT_STB_IMAGE_DIR}

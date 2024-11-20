@@ -10,6 +10,7 @@
 #include <map>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 //external
 #include "glad.h"
@@ -618,7 +619,7 @@ namespace Graphics::Shape
 		}
 		void RemoveChild(const shared_ptr<GameObject>& removedChild)
 		{
-			children.erase(remove(children.begin(), children.end(), removedChild), children.end());
+			children.erase(std::remove(children.begin(), children.end(), removedChild), children.end());
 			removedChild->RemoveParent(removedChild);
 		}
 		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder)
