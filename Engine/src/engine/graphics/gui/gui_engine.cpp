@@ -744,8 +744,8 @@ namespace Graphics::GUI
 				GUISettings::renderSettings = true;
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		ImGui::SameLine(240 * fontScale * 0.75f);
@@ -758,8 +758,8 @@ namespace Graphics::GUI
 				Compilation::Compile();
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -777,8 +777,8 @@ namespace Graphics::GUI
 				Compilation::Run();
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -797,8 +797,8 @@ namespace Graphics::GUI
 				GUILinks::renderLinksWindow = true;
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		//on the right side
@@ -811,8 +811,8 @@ namespace Graphics::GUI
 				GUICredits::renderCreditsWindow = true;
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		//on the right side
@@ -839,8 +839,8 @@ namespace Graphics::GUI
 				}
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		ImGui::EndMainMenuBar();
