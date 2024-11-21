@@ -11,58 +11,65 @@ cpinf="[CPACK_INFO]"
 cpexc="[CPACK_EXCEPTION]"
 cpsuc="[CPACK_SUCCESS]"
 
-# Get the script directory
+# Define paths
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-buildPath="$script_dir/build"
-
-# Navigate to the script directory
-cd "$script_dir"
+buildPath="$script_dir/out/build/x64-release"
+sourcePath="$script_dir"
 
 # Function to pause
 function pause() {
     read -p "$*"
 }
 
-# Build the project
-if [ ! -d "$buildPath" ]; then
-    echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
-    goto_cmake=1
-else
-    cd "$buildPath"
-	
-    # Build the project
-    echo "$cminf Started build generation."
-    make -j$(nproc)
-	
-    if [ $? -ne 0 ]; then
-        echo "$cmexc Build failed because the compiler did not generate properly. Retrying clean rebuild."
-        goto_cmake=1
-    else
-        echo "$cmsuc Build succeeded!"
-    fi
+# Initialize the environment
+echo "$cminf Initializing environment for g++ build..."
+if ! command -v g++ &> /dev/null; then
+    echo "$prexc g++ is not installed or not in PATH. Please install g++."
+    pause "Press Enter to exit..."
+    exit 1
 fi
 
-if [ "$goto_cmake" == "1" ]; then
-    # Remove build directory if it exists
-    if [ -d "$buildPath" ]; then
-        rm -rf "$buildPath"
-    fi
-    mkdir "$buildPath"
-    cd "$buildPath"
-	
-    # Configure the project
-    cmake -DCMAKE_BUILD_TYPE=Release ..
-	
-    # Build the project
-    echo "$cminf Started build generation."
-    make clean
-    make -j$(nproc)
-	
+# Main logic
+if [ ! -d "$buildPath" ]; then
+    echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
+    cmake_configure
+else
+    build
+fi
+
+# Build the project
+build() {
+    cd "$buildPath" || exit
+    echo "$cminf Started build generation using $numCores cores."
+    make -j
     if [ $? -ne 0 ]; then
-        echo "$cmexc Build failed because the compiler did not generate properly."
+        echo "$cmexc Build failed. Retrying clean rebuild."
+        cmake_configure
     else
         echo "$cmsuc Build succeeded!"
+        pause "Press Enter to exit..."
+        exit 0
     fi
-fi
+}
+
+# Configure CMake
+cmake_configure() {
+    if [ -d "$buildPath" ]; then
+        echo "$prcln Removing existing build directory."
+        rm -rf "$buildPath"
+    fi
+    mkdir -p "$buildPath"
+    cd "$buildPath" || exit
+
+    echo "$cminf Configuring the project with CMake..."
+    cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" "$sourcePath"
+    if [ $? -ne 0 ]; then
+        echo "$cmexc Configuration failed."
+        pause "Press Enter to exit..."
+        exit 1
+    fi
+
+    build
+}
 
 pause "Press Enter to exit..."

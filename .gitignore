@@ -17,6 +17,8 @@ Engine library/out/
 Game/build/
 Game/.vs/
 Game/out/
+Game/Elypso engine.lib # ignore windows library in game folder
+Game/libElypso engine.a # ignore linux library in game folder
 
 # Elypso hub ignored files and folders
 Hub/build/

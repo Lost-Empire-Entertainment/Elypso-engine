@@ -10,7 +10,17 @@ set "cpinf=[CPACK_INFO]"
 set "cpexc=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
-set "buildPath=%~dp0build"
+set "buildPath=%~dp0out/build/x64-release"
+set "sourcePath=%~dp0"
+set "numCores=%NUMBER_OF_PROCESSORS%"
+
+:: Initialize Visual Studio environment
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+if %errorlevel% neq 0 (
+    echo %prexc% Failed to initialize Visual Studio environment.
+    pause
+    exit /b 1
+)
 
 :build
 
@@ -24,15 +34,16 @@ if not exist "%buildPath%" (
 	cd /d "%buildPath%"
 		
 	:: Build the project
-	echo %cminf% Started build generation.
-	cmake --build . --config Release -- /m
-	
+	echo %cminf% Started build generation using %numCores% cores.
+	cmake --build . -- -j%numCores%
 	if %errorlevel% neq 0 (
-		echo %cmexc% Build failed because Compiler.exe did not get generated properly. Retrying clean rebuild
+		echo %cmexc% Build failed. Retrying clean rebuild.
 		goto cmake
 	) else (
-		echo %cmsuc% Build succeeded!
-	)
+        echo %cmsuc% Build succeeded!
+        pause
+        exit /b 0
+    )
 )
 
 pause
@@ -42,24 +53,15 @@ exit /b
 :: Change to the build folder
 if exist "%buildPath%" (
     rd /S /Q "%buildPath%"
-	
 )
 mkdir "%buildPath%"
 cd /d "%buildPath%"
 
 :: Configure the project
-cmake -A x64 ..
-
-:: Build the project
-echo %cminf% Started build generation.
-cmake --build . --target clean
-cmake --build . --config Release -- /m
-	
+cmake --preset x64-release -S "%sourcePath%"
 if %errorlevel% neq 0 (
-	echo %cmexc% Build failed because Compiler.exe did not get generated properly.
-) else (
-	echo %cmsuc% Build succeeded!
+    echo %cmexc% Configuration failed.
+    pause
+    exit /b 1
 )
-	
-pause
-exit /b
+goto build

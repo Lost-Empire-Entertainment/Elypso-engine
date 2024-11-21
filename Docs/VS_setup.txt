@@ -1,5 +1,6 @@
-Instructions for Setting up Visual Studio for Elypso Hub, Elypso Engine, Game Template, and Compiler
-Version: 1.0
+Instructions for Setting up Visual Studio on Windows
+
+Download link: https://visualstudio.microsoft.com/vs/
 
 Steps:
 
