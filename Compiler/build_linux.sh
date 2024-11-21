@@ -29,14 +29,6 @@ if ! command -v g++ &> /dev/null; then
     exit 1
 fi
 
-# Main logic
-if [ ! -d "$buildPath" ]; then
-    echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
-    cmake_configure
-else
-    build
-fi
-
 # Build the project
 build() {
     cd "$buildPath" || exit
@@ -71,5 +63,13 @@ cmake_configure() {
 
     build
 }
+
+# Main logic
+if [ ! -d "$buildPath" ]; then
+    echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
+    cmake_configure
+else
+    build
+fi
 
 pause "Press Enter to exit..."
