@@ -1,8 +1,3 @@
-# Compiler ignored files and folders
-Compiler/build/
-Compiler/.vs/
-Compiler/out/
-
 # Elypso engine ignored files and folders
 Engine/build/
 Engine/.vs/
@@ -19,8 +14,3 @@ Game/.vs/
 Game/out/
 Game/Elypso engine.lib # ignore windows library in game folder
 Game/libElypso engine.a # ignore linux library in game folder
-
-# Elypso hub ignored files and folders
-Hub/build/
-Hub/.vs/
-Hub/out/
