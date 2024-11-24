@@ -21,7 +21,7 @@ numCores=$(nproc)
 
 # Function to pause
 function pause() {
-    if [ "$1" != "skipwait" ]; then
+    if [ "$2" != "skipwait" ]; then
         read -p "Press Enter to exit..."
     fi
 }
@@ -30,7 +30,7 @@ function pause() {
 echo "$cminf Initializing environment for g++ build..."
 if ! command -v g++ &> /dev/null; then
     echo "$prexc g++ is not installed or not in PATH. Please install g++."
-    pause "$2"
+    pause "$1" "$2"
     exit 1
 fi
 
@@ -41,10 +41,10 @@ function build() {
     make -j"$numCores"
     if [ $? -ne 0 ]; then
         echo "$cmexc Build failed. Retrying clean rebuild."
-        cmake_configure
+        cmake_configure "$1" "$2"
     else
         echo "$cmsuc Build succeeded!"
-        pause "$2"
+        pause "$1" "$2"
         exit 0
     fi
 }
@@ -62,11 +62,11 @@ function cmake_configure() {
     cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" "$sourcePath"
     if [ $? -ne 0 ]; then
         echo "$cmexc Configuration failed."
-        pause "$2"
+        pause "$1" "$2"
         exit 1
     fi
 
-    build "$2"
+    build "$1" "$2"
 }
 
 # Main logic
@@ -78,18 +78,18 @@ case "$1" in
     build)
         if [ ! -d "$buildPath" ]; then
             echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
-            cmake_configure "$2"
+            cmake_configure "$1" "$2"
         else
-            build "$2"
+            build "$1" "$2"
         fi
         ;;
     cmake)
-        cmake_configure "$2"
+        cmake_configure "$1" "$2"
         ;;
     *)
         echo "$prexc Unknown command. Defaulting to 'cmake'."
-        cmake_configure "$2"
+        cmake_configure "$1" "$2"
         ;;
 esac
 
-pause "$2"
+pause "$1" "$2"
