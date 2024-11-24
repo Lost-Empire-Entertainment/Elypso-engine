@@ -2,6 +2,8 @@
 Engine/build/
 Engine/.vs/
 Engine/out/
+Engine/Elypso engine.lib
+Engine/libElypso engine.a
 
 # Engine library
 Engine library/build/
