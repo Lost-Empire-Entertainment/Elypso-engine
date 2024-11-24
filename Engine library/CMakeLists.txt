@@ -181,14 +181,5 @@ target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 set(CMAKE_INSTALL_BINDIR bin)
 install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Copy "elypso engine library" to Game folder
-add_custom_command(TARGET Elypso_engine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove
-    ${LIB_TARGET}
-    COMMAND ${CMAKE_COMMAND} -E copy
-	${LIB_ORIGIN}
-    ${LIB_TARGET}
-)
-
 # Include CPack to enable packaging
 include(CPack)
