@@ -16,36 +16,41 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 buildPath="$script_dir/out/build/x64-release"
 sourcePath="$script_dir"
 
+# Initialize number of cores
+numCores=$(nproc)
+
 # Function to pause
 function pause() {
-    read -p "$*"
+    if [ "$1" != "skipwait" ]; then
+        read -p "Press Enter to exit..."
+    fi
 }
 
 # Initialize the environment
 echo "$cminf Initializing environment for g++ build..."
 if ! command -v g++ &> /dev/null; then
     echo "$prexc g++ is not installed or not in PATH. Please install g++."
-    pause "Press Enter to exit..."
+    pause "$2"
     exit 1
 fi
 
 # Build the project
-build() {
+function build() {
     cd "$buildPath" || exit
     echo "$cminf Started build generation using $numCores cores."
-    make -j
+    make -j"$numCores"
     if [ $? -ne 0 ]; then
         echo "$cmexc Build failed. Retrying clean rebuild."
         cmake_configure
     else
         echo "$cmsuc Build succeeded!"
-        pause "Press Enter to exit..."
+        pause "$2"
         exit 0
     fi
 }
 
 # Configure CMake
-cmake_configure() {
+function cmake_configure() {
     if [ -d "$buildPath" ]; then
         echo "$prcln Removing existing build directory."
         rm -rf "$buildPath"
@@ -57,19 +62,34 @@ cmake_configure() {
     cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" "$sourcePath"
     if [ $? -ne 0 ]; then
         echo "$cmexc Configuration failed."
-        pause "Press Enter to exit..."
+        pause "$2"
         exit 1
     fi
 
-    build
+    build "$2"
 }
 
 # Main logic
-if [ ! -d "$buildPath" ]; then
-    echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
-    cmake_configure
-else
-    build
+if [ -z "$1" ]; then
+    set -- build "$2"
 fi
 
-pause "Press Enter to exit..."
+case "$1" in
+    build)
+        if [ ! -d "$buildPath" ]; then
+            echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
+            cmake_configure "$2"
+        else
+            build "$2"
+        fi
+        ;;
+    cmake)
+        cmake_configure "$2"
+        ;;
+    *)
+        echo "$prexc Unknown command. Defaulting to 'cmake'."
+        cmake_configure "$2"
+        ;;
+esac
+
+pause "$2"
