@@ -34,12 +34,18 @@ if (WIN32)
 endif()
 
 # Used for copying "Elypso engine.lib" to game exe folder
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(BUILD_FOLDER "x64-debug")
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(BUILD_FOLDER "x64-release")
+endif()
+
 if (WIN32)
-set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
-set(LIB_TARGET "${CMAKE_SOURCE_DIR}/build/Elypso engine.lib")
+    set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+    set(LIB_TARGET "${CMAKE_SOURCE_DIR}/out/build/${BUILD_FOLDER}/Elypso engine.lib")
 else()
-set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/libElypso engine.a")
-set(LIB_TARGET "${CMAKE_SOURCE_DIR}/build/libElypso engine.a")
+    set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/libElypso engine.a")
+    set(LIB_TARGET "${CMAKE_SOURCE_DIR}/out/build/${BUILD_FOLDER}/libElypso engine.a")
 endif()
 
 # Set src and include file paths

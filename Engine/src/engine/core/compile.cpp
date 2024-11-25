@@ -186,30 +186,40 @@ namespace Core
 	
 	void Compilation::RunInstaller()
 	{
-		string gameBuilder = "";
+		string engineRootFolder = "";
+		string gameRootFolder = "";
 
-		string parentFolder = current_path().string();
-		string parentFolderStem = path(parentFolder).stem().string();
+		string parentFolderStem = current_path().stem().string();
 		if (parentFolderStem == "x64-release"
 			|| parentFolderStem == "x64-debug")
 		{
-			gameBuilder = (path(parentFolder).parent_path().parent_path().parent_path()).string();
+			engineRootFolder = (current_path().parent_path().parent_path().parent_path()).string();
+			gameRootFolder = (current_path().parent_path().parent_path().parent_path().parent_path() / "Game").string();
 		}
 		else if (parentFolderStem == "Engine")
 		{
-			gameBuilder = (path(parentFolder).parent_path()).string();
+			engineRootFolder = (current_path().parent_path()).string();
+			gameRootFolder = (current_path().parent_path().parent_path() / "Game").string();
 		}
 
-		if (gameBuilder == ""
-			|| !exists(gameBuilder))
+		if (gameRootFolder == ""
+			|| !exists(gameRootFolder))
 		{
 			Engine::CreateErrorPopup("Failed to assign path to game builder!");
 		}
 
 #if _WIN32
-		gameBuilder = (path(gameBuilder) / "build_windows.bat").string();
+		string origin = (path(engineRootFolder) / "Elypso engine.lib").string();
+		string target = (path(gameRootFolder) / "Elypso engine.lib").string();
+		File::CopyFileOrFolder(origin, target);
+
+		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
-		gameBuilder = (path(gameBuilder) / "build_linux.sh").string();
+		string origin = (path(engineRootFolder) / "libElypso engine.a").string();
+		string target = (path(gameRootFolder) / "libElypso engine.a").string();
+		File::CopyFileOrFolder(origin, target);
+
+		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
 #endif
 
 		string command = "";
@@ -370,6 +380,8 @@ namespace Core
 				if (ImGui::Button("Run game", buttonSize))
 				{
 					renderBuildingWindow = false;
+
+					cout << "Attempting to run game from " << Engine::gameExePath << "\n";
 
 					if (!exists(Engine::gameExePath)
 						|| !exists(Engine::gameParentPath))

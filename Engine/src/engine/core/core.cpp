@@ -376,53 +376,25 @@ namespace Core
 #if ENGINE_MODE
 		string gameName = ConfigFile::GetValue("gameName");
 
-		//if engine is ran from build folder
 		string parentFolder = current_path().stem().string();
-		if (parentFolder == "build")
-		{
-			gamePath = (current_path()
-				.parent_path()
-				.parent_path() / "Game").string();
-			cout << "game template folder 1: " << gamePath << "\n";
-			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
-			gameParentPath = (path(gamePath) / "build" / "Release").string();
-		}
-		//if engine is ran from repository structure
-		else if (parentFolder == "Release"
-				 || parentFolder == "Debug"
-				 || parentFolder == "Linux Release"
-				 || parentFolder == "Linux Debug")
-		{
-			gamePath = (current_path()
-				.parent_path()
-				.parent_path()
-				.parent_path() / "Game").string();
-			cout << "game template folder 2: " << gamePath << "\n";
-			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
-			gameParentPath = (path(gamePath) / "build" / "Release").string();
-		}
-		//if engine is ran from visual studio folder
-		else if (parentFolder == "x64-release"
-				 || parentFolder == "x64-debug"
-				 || parentFolder == "linux-debug"
-				 || parentFolder == "linux-release")
+		//if engine is ran from repository or visual studio folder
+		if (parentFolder == "x64-release"
+			|| parentFolder == "x64-debug")
 		{
 			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
 				.parent_path()
 				.parent_path() / "Game").string();
-			cout << "game template folder 3: " << gamePath << "\n";
-			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
-			gameParentPath = (path(gamePath) / "build" / "Release").string();
+			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string() + ".exe";
+			gameParentPath = path(gameExePath).parent_path().string();
 		}
 		//if engine is ran from public release configuration or something else
 		else
 		{
 			gamePath = (current_path().parent_path() / "Game").string();
-			cout << "game template folder 4: " << gamePath << "\n";
-			gameExePath = (path(gamePath) / "build" / "Release" / gameName).string() + ".exe";
-			gameParentPath = (path(gamePath) / "build" / "Release").string();
+			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string() + ".exe";
+			gameParentPath = path(gameExePath).parent_path().string();
 		}
 
 		output = "Game path: " + gamePath + "\n\n";
