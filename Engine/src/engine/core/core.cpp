@@ -86,15 +86,27 @@ namespace Core
 
 		for (const auto& file : directory_iterator(gameFolder))
 		{
-			string extension = path(file).extension().string();
-			if (extension == ".exe")
+			if (is_regular_file(file))
 			{
-				name = path(file).stem().string();
-				break;
+				string extension = path(file).extension().string();
+#if _WIN32
+				if (extension == ".exe")
+				{
+					name = path(file).stem().string();
+					break;
+				}
+#elif __linux__
+				if (path(file).extension().empty())
+				{
+					name = path(file).stem().string();
+					break;
+				}
+#endif	
 			}
 		}
 #endif
-		if (IsThisProcessAlreadyRunning(name + ".exe"))
+
+		if (IsThisProcessAlreadyRunning(name))
 		{
 			CreateErrorPopup((name + " is already running!").c_str());
 		}
