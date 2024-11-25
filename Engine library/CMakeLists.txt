@@ -168,7 +168,7 @@ target_include_directories(Elypso_engine PRIVATE
 if (WIN32)
 target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH})
 else()
-target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+target_link_libraries(Elypso_engine PUBLIC external_libs glfw assimp ${X11_LIBRARIES})
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK

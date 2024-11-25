@@ -171,7 +171,7 @@ target_include_directories(Game PRIVATE
 if (WIN32)
 target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
 else()
-target_link_libraries(Game PRIVATE external_libs glad glfw assimp "${CMAKE_SOURCE_DIR}/libElypso engine.a" ${X11_LIBRARIES})
+target_link_libraries(Game PRIVATE external_libs glad glfw "${CMAKE_SOURCE_DIR}/libElypso engine.a" assimp ${X11_LIBRARIES})
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK
