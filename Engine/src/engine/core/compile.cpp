@@ -42,6 +42,7 @@ using std::ofstream;
 using std::runtime_error;
 using std::array;
 using std::unique_ptr;
+using std::filesystem::current_path;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -185,70 +186,50 @@ namespace Core
 	
 	void Compilation::RunInstaller()
 	{
-		string buildFolder = (path(Engine::gameParentPath).parent_path().parent_path() / "build").string();
-		string command = "";
+		string gameBuilder = "";
 
+		string parentFolder = current_path().string();
+		string parentFolderStem = path(parentFolder).stem().string();
+		if (parentFolderStem == "x64-release"
+			|| parentFolderStem == "x64-debug")
+		{
+			gameBuilder = (path(parentFolder).parent_path().parent_path().parent_path()).string();
+		}
+		else if (parentFolderStem == "Engine")
+		{
+			gameBuilder = (path(parentFolder).parent_path()).string();
+		}
+
+		if (gameBuilder == ""
+			|| !exists(gameBuilder))
+		{
+			Engine::CreateErrorPopup("Failed to assign path to game builder!");
+		}
+
+#if _WIN32
+		gameBuilder = (path(gameBuilder) / "build_windows.bat").string();
+#elif __linux__
+		gameBuilder = (path(gameBuilder) / "build_linux.sh").string();
+#endif
+
+		string command = "";
 		switch (installerType)
 		{
 		case InstallerType::reset:
 		{
-			if (exists(buildFolder))
-			{
-				File::DeleteFileOrfolder(buildFolder);
-			}
-			File::CreateNewFolder(buildFolder);
-
 #ifdef _WIN32
-			command =
-				"cd " + buildFolder +
-				" && cmake -A x64 .." +
-				" && cmake --build . --config Release -- /m";
-
-			command = "cmd /c \"" + command + "\"";
+			command = "cmd /c \"" + gameBuilder + "\" cmake skipwait";
 #elif __linux__
-			command =
-				"cd \"" + buildFolder + "\"" +
-				" && cmake -DCMAKE_BUILD_TYPE=Release .." +
-				" && cmake --build . -- -j$(nproc)";
+			command = "bash \"" + gameBuilder + "\" cmake skipwait";
 #endif
 			break;
 		}
 		case InstallerType::compile:
 		{
 #ifdef _WIN32
-			if (exists(buildFolder))
-			{
-				command =
-					"cd " + buildFolder +
-					" && cmake --build . --config Release -- /m";
-			}
-			else
-			{
-				File::CreateNewFolder(buildFolder);
-
-				command =
-					"cd " + buildFolder +
-					" && cmake -A x64 .." +
-					" && cmake --build . --config Release -- /m";
-			}
-
-			command = "cmd /c \"" + command + "\"";
+			command = "cmd /c \"" + gameBuilder + "\" build skipwait";
 #elif __linux__
-			if (exists(buildFolder))
-			{
-				command =
-					"cd \"" + buildFolder + "\"" +
-					" && cmake --build . -- -j$(nproc)";
-			}
-			else
-			{
-				File::CreateNewFolder(buildFolder);
-
-				command =
-					"cd \"" + buildFolder + "\"" +
-					" && cmake -DCMAKE_BUILD_TYPE=Release .." +
-					" && cmake --build . -- -j$(nproc)";
-			}
+			command = "bash \"" + gameBuilder + "\" build skipwait";
 #endif
 			break;
 		}
