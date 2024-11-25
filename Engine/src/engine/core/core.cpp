@@ -386,15 +386,23 @@ namespace Core
 				.parent_path()
 				.parent_path()
 				.parent_path() / "Game").string();
-			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string() + ".exe";
+			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string();
 			gameParentPath = path(gameExePath).parent_path().string();
+
+#if _WIN32
+			gameExePath = gameExePath + ".exe";
+#endif
 		}
 		//if engine is ran from public release configuration or something else
 		else
 		{
 			gamePath = (current_path().parent_path() / "Game").string();
-			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string() + ".exe";
+			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string();
 			gameParentPath = path(gameExePath).parent_path().string();
+
+#if _WIN32
+			gameExePath = gameExePath + ".exe";
+#endif
 		}
 
 		output = "Game path: " + gamePath + "\n\n";
