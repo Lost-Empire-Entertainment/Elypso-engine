@@ -208,7 +208,7 @@ namespace Core
 			Engine::CreateErrorPopup("Failed to assign path to game builder!");
 		}
 
-#if _WIN32
+#ifdef _WIN32
 		string origin = (path(engineRootFolder) / "Elypso engine.lib").string();
 		string target = (path(gameRootFolder) / "Elypso engine.lib").string();
 		File::CopyFileOrFolder(origin, target);

@@ -92,7 +92,7 @@ namespace Core
 			if (is_regular_file(file))
 			{
 				string extension = path(file).extension().string();
-#if _WIN32
+#ifdef _WIN32
 				if (extension == ".exe")
 				{
 					name = path(file).stem().string();
@@ -109,10 +109,18 @@ namespace Core
 		}
 #endif
 
+#ifdef _WIN32
+		string nameAndExe = name + ".exe";
+		if (IsThisProcessAlreadyRunning(nameAndExe))
+		{
+			CreateErrorPopup((name + " is already running!").c_str());
+		}
+#elif __linux__
 		if (IsThisProcessAlreadyRunning(name))
 		{
 			CreateErrorPopup((name + " is already running!").c_str());
 		}
+#endif
 
 #if ENGINE_MODE
 #else
@@ -404,7 +412,7 @@ namespace Core
 			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string();
 			gameParentPath = path(gameExePath).parent_path().string();
 
-#if _WIN32
+#ifdef _WIN32
 			gameExePath = gameExePath + ".exe";
 #endif
 		}
@@ -415,7 +423,7 @@ namespace Core
 			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string();
 			gameParentPath = path(gameExePath).parent_path().string();
 
-#if _WIN32
+#ifdef _WIN32
 			gameExePath = gameExePath + ".exe";
 #endif
 		}
