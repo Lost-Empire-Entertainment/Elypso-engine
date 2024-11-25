@@ -45,8 +45,11 @@ if not exist "%buildPath%" (
 	echo %cminf% Started build generation using %numCores% cores.
 	cmake --build . -- -j%numCores%
 	if %errorlevel% neq 0 (
-		echo %cmexc% Build failed. Retrying clean rebuild.
-		goto cmake
+		echo %cmexc% Build failed.
+		if not "%~2"=="skipwait" (
+			pause
+		)
+        exit /b 0
 	) else (
         echo %cmsuc% Build succeeded!
 		if not "%~2"=="skipwait" (

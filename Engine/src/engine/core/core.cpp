@@ -9,6 +9,8 @@
 #include <ShlObj.h>
 #include <TlHelp32.h>
 #include <tchar.h>
+#elif __linux__
+#include <unistd.h>
 #endif
 #include <filesystem>
 #include <fstream>
@@ -50,6 +52,7 @@ using std::filesystem::current_path;
 using std::filesystem::create_directory;
 using std::system;
 using std::unique_ptr;
+using std::to_string;
 
 using Utils::String;
 using Utils::File;
@@ -599,8 +602,14 @@ namespace Core
 		CloseHandle(hProcessSnap);
 		return processFound;
 #elif __linux__
-		string command = "pgrep -l \"" + processName + "\"";
-		return !system(command.c_str());
+		//get the process id
+		pid_t currentPID = getpid();
+
+		//construct the command to find processes by name, excluding the currend PID
+		string command = "pgrep -x \"" + processName + "\" | grep -v " + to_string(currentPID) + " > /dev/null";
+
+		//execute the command and return the result
+		return (system(command.c_str()) == 0);
 #endif
 		return false;
 	}

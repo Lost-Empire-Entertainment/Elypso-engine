@@ -40,8 +40,9 @@ function build() {
     echo "$cminf Started build generation using $numCores cores."
     make -j"$numCores"
     if [ $? -ne 0 ]; then
-        echo "$cmexc Build failed. Retrying clean rebuild."
-        cmake_configure "$1" "$2"
+        echo "$cmexc Build failed."
+        pause "$1" "$2"
+        exit 0
     else
         echo "$cmsuc Build succeeded!"
         pause "$1" "$2"
