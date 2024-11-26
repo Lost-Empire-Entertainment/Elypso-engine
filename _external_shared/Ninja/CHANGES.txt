@@ -1,5 +1,0 @@
-Original repository link:
-https://github.com/ninja-build/ninja
-
-Changes:
-- no changes were made

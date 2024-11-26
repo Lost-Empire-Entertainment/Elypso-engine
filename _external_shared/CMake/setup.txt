@@ -1,9 +1,0 @@
-Instructions for Setting up CMake for Elypso Hub, Elypso Engine, Game Template, and Compiler
-Version: 1.0
-
-Steps:
-
-1. Run the installer (e.g., `cmake-3.30.4-windows-x86_64.msi`—the version may vary).
-2. On the first page, click `Next`. On the second page, check the box to accept the license agreement, and click `Next` again.
-3. On the following page, you will see two options. Make sure to check the first box labeled `Add CMake to the PATH for all users`. None of the programs will compile without this enabled. Then, click `Next` twice, and finally, click `Install`.
-4. Wait for the installation to complete, and click `Finish` to finalize the setup.

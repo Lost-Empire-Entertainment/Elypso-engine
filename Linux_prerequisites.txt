@@ -1,6 +1,5 @@
-
 ----------------------------------------------------------------------
-IMPORTANT LINUX SETUP COMMANDS
+HOW TO SET UP NECESSARY THINGS TO RUN ENGINE NATIVELY ON LINUX
 ----------------------------------------------------------------------
 
 # install gcc, g++, make and other essential build tools
@@ -32,18 +31,3 @@ sudo apt install libglfw3-dev -y
 
 # install linux-compatible assimp
 sudo apt install libassimp-dev -y
-
-----------------------------------------------------------------------
-COMPILE AND RUN ELYPSO ENGINE OR OTHER PROGRAM
-----------------------------------------------------------------------
-
-# configure with cmake and compile with make
-username=$USER
-cd /home/$username/.vs/
-rm -rf build
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cd build
-make -j
-
-# run Elypso engine in current folder
-"./Elypso Engine"
