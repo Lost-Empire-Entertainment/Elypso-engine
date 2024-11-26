@@ -235,10 +235,15 @@ namespace Core
 			CreateErrorPopup("HOME environment is not set!");
 		}
 
-		string documentsFolder = path(homeDir) / "Documents";
+		string documentsFolder = (path(homeDir) / "Documents").string();
 		if (!exists(documentsFolder)) File::CreateNewFolder(documentsFolder);
 
-		docsPath = path(documentsFolder) / name;
+#if ENGINE_MODE
+		docsPath = (path(documentsFolder) / name).string();
+#else
+		docsPath = (path(documentsFolder) / "My Games" / name).string();
+#endif
+
 #endif
 
 #if ENGINE_MODE
