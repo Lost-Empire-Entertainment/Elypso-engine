@@ -59,7 +59,5 @@ namespace Graphics::Shape
 			string& billboardName = tempName,
 			unsigned int& billboardID = tempID,
 			const bool& isBillboardEnabled = true);
-
-		static void RenderPointLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
 	};
 }

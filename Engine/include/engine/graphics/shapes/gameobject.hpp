@@ -15,24 +15,57 @@
 //external
 #include "glad.h"
 #include "magic_enum.hpp"
+#include "quaternion.hpp"
+#include "matrix_transform.hpp"
 
 //engine
+#include "selectobject.hpp"
 #include "shader.hpp"
+#include "billboard.hpp"
+
+namespace Core
+{
+	class Select;
+}
 
 namespace Graphics::Shape
 {
 	using std::vector;
 	using std::map;
 	using std::shared_ptr;
+	using std::weak_ptr;
 	using std::make_shared;
 	using std::cout;
 	using glm::vec3;
 	using glm::mat4;
+	using glm::scale;
+	using glm::translate;
+	using glm::mat4_cast;
+	using glm::quat;
 	using std::string;
+	using std::enable_shared_from_this;
 
 	using Graphics::Shader;
+	using Core::Select;
 
-	class Transform
+	class Component
+	{
+	public:
+		virtual ~Component() = default;
+
+		virtual void Initialize(const shared_ptr<GameObject>& parent)
+		{
+			this->parent = parent;
+		}
+
+		virtual void Update(float deltaTime) {}
+		virtual void Render(const mat4& view, const mat4& projection) {}
+
+	protected:
+		weak_ptr<GameObject> parent;
+	};
+
+	class Transform : public Component
 	{
 	public:
 		Transform(
@@ -44,6 +77,8 @@ namespace Graphics::Shape
 			scale(scale)
 		{
 		}
+
+		void Update(float deltaTime) override {}
 
 		void SetPosition(const vec3& newPosition)
 		{
@@ -102,7 +137,7 @@ namespace Graphics::Shape
 		}
 	};
 
-	class Mesh
+	class Mesh : public Component
 	{
 	public:
 		enum class MeshType
@@ -134,6 +169,14 @@ namespace Graphics::Shape
 			glDeleteVertexArrays(1, &VAO);
 			glDeleteBuffers(1, &VBO);
 			glDeleteBuffers(1, &EBO);
+		}
+
+		void Render(const mat4& view, const mat4& projection) override
+		{
+			if (isEnabled)
+			{
+				
+			}
 		}
 
 		void SetEnableState(const bool& newIsEnabled)
@@ -203,7 +246,7 @@ namespace Graphics::Shape
 		vector<unsigned int> indices;
 	};
 
-	class Material
+	class Material : public Component
 	{
 	public:
 		enum class TextureType
@@ -218,9 +261,7 @@ namespace Graphics::Shape
 			misc_icon_scale
 		};
 
-		Material()
-		{
-		}
+		Material() {}
 
 		void AddTexture(const string& textureName, const unsigned int& textureID, const TextureType& textureType)
 		{
@@ -310,308 +351,625 @@ namespace Graphics::Shape
 		Shader shader;
 	};
 
-	class BasicShape_Variables
+	class LightComponent : public Component
 	{
 	public:
-		BasicShape_Variables(const float& shininess) : shininess(shininess)
-		{
-		}
+		LightComponent(
+			const vec3& diffuse, 
+			const float& intensity) : 
+			diffuse(diffuse), 
+			intensity(intensity) {}
 
-		void SetShininess(const float& newShininess)
-		{
-			shininess = newShininess;
-		}
+		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
+		void SetIntensity(const float& newIntensity) { intensity = newIntensity; }
 
-		const float& GetShininess() const
-		{
-			return shininess;
-		}
-	private:
-		float shininess;
-	};
+		const vec3& GetDiffuse() const { return diffuse; }
+		const float& GetIntensity() const { return intensity; }
 
-	class PointLight_Variables
-	{
-	public:
-		PointLight_Variables(
-			const vec3& diffuse,
-			const float& intensity,
-			const float& distance) :
-			diffuse(diffuse),
-			intensity(intensity),
-			distance(distance)
-		{
-		}
-
-		void SetDiffuse(const vec3& newDiffuse)
-		{
-			diffuse = newDiffuse;
-		}
-		void SetIntensity(const float& newIntensity)
-		{
-			intensity = newIntensity;
-		}
-		void SetDistance(const float& newDistance)
-		{
-			distance = newDistance;
-		}
-
-		const vec3& GetDiffuse() const
-		{
-			return diffuse;
-		}
-		const float& GetIntensity() const
-		{
-			return intensity;
-		}
-		const float& GetDistance() const
-		{
-			return distance;
-		}
-	private:
+	protected:
 		vec3 diffuse;
 		float intensity;
-		float distance;
 	};
 
-	class SpotLight_Variables
+	class PointLightComponent : public LightComponent
 	{
 	public:
-		SpotLight_Variables(
+		PointLightComponent(
+			const vec3& diffuse,
+			const float& intensity,
+			const float& distance,
+			const string& vertShader,
+			const string& fragShader,
+			const bool isMeshEnabled,
+			const string& billboardVertShader,
+			const string& billboardFragShader,
+			const string& billboardDiffTexture,
+			const float& billboardShininess,
+			const bool& isBillboardEnabled)
+			: LightComponent(diffuse, intensity),
+			distance(distance),
+			vertShader(vertShader),
+			fragShader(fragShader),
+			isMeshEnabled(isMeshEnabled),
+			billboardVertShader(billboardVertShader),
+			billboardFragShader(billboardFragShader),
+			billboardDiffTexture(billboardDiffTexture),
+			billboardShininess(billboardShininess),
+			isBillboardEnabled(isBillboardEnabled) {}
+
+		void Initialize(const shared_ptr<GameObject>& parent) override
+		{
+			this->parent = parent;
+
+			// Mesh Initialization
+			SetupMesh(parent);
+
+			// Material Initialization
+			auto material = parent->AddComponent<Material>();
+			Shader shader = Shader::LoadShader(vertShader, fragShader);
+			material->AddShader(vertShader, fragShader, shader);
+
+			// Billboard Initialization
+			SetupBillboard(parent);
+		}
+
+		void Render(const mat4& view, const mat4& projection) override
+		{
+			auto parentPtr = parent.lock();
+			if (!parentPtr
+				|| !parentPtr->IsEnabled())
+			{
+				return;
+			}
+
+			auto material = parentPtr->GetComponent<Material>();
+			auto mesh = parentPtr->GetComponent<Mesh>();
+			auto& transform = parentPtr->GetTransform();
+
+			if (material 
+				&& mesh 
+				&& transform)
+			{
+				Shader shader = material->GetShader();
+				shader.Use();
+				shader.SetMat4("projection", projection);
+				shader.SetMat4("view", view);
+
+				// Set transparency based on selection
+				float transparency = (Select::selectedObj == 
+					parentPtr 
+					&& Select::isObjectSelected) 
+					? 1.0f : 0.5f;
+				shader.SetFloat("transparency", transparency);
+
+				// Set light color
+				shader.SetVec3("color", GetDiffuse());
+
+				// Render light borders if enabled
+				if (GameObjectManager::renderLightBorders && mesh->IsEnabled())
+				{
+					RenderLightBorders(transform, shader);
+				}
+			}
+		}
+
+		void Update(float deltaTime) override {}
+
+		void SetDistance(const float& newDistance) { distance = newDistance; }
+		const float& GetDistance() const { return distance; }
+
+	private:
+		void SetupMesh(const shared_ptr<GameObject>& parent)
+		{
+			float vertices[] = {
+				-0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f,
+				0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
+				0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
+				-0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
+				-0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,
+				0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
+				0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
+				-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f,
+				-0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
+				0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f,
+				0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f,
+				-0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f,
+			};
+
+			GLuint vao, vbo;
+			glGenVertexArrays(1, &vao);
+			glGenBuffers(1, &vbo);
+
+			glBindVertexArray(vao);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+			glBindVertexArray(0);
+
+			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light, vao, vbo, 0);
+		}
+
+		void SetupBillboard(const shared_ptr<GameObject>& parent) const
+		{
+			string billboardName = parent->GetName() + "_Billboard";
+			auto billboard = Billboard::InitializeBillboard(
+				parent->GetTransform()->GetPosition(),
+				parent->GetTransform()->GetRotation(),
+				parent->GetTransform()->GetScale(),
+				billboardVertShader,
+				billboardFragShader,
+				billboardDiffTexture,
+				billboardShininess,
+				billboardName,
+				++GameObject::nextID,
+				isBillboardEnabled);
+
+			billboard->SetParent(parent);
+			parent->AddChild(parent, billboard);
+		}
+
+		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader)
+		{
+			mat4 model = mat4(1.0f);
+			model = translate(model, transform->GetPosition());
+			quat newRot = quat(radians(transform->GetRotation()));
+			model *= mat4_cast(newRot);
+			model = scale(model, transform->GetScale());
+
+			shader.SetMat4("model", model);
+
+			glBindVertexArray(parent.lock()->GetComponent<Mesh>()->GetVAO());
+			glDrawArrays(GL_LINES, 0, 24);
+		}
+
+		float distance;
+		string vertShader;
+		string fragShader;
+		bool isMeshEnabled;
+
+		string billboardVertShader;
+		string billboardFragShader;
+		string billboardDiffTexture;
+		float billboardShininess;
+		bool isBillboardEnabled;
+
+		weak_ptr<GameObject> parent;
+	};
+
+	class SpotLightComponent : public LightComponent
+	{
+	public:
+		SpotLightComponent(
 			const vec3& diffuse,
 			const float& intensity,
 			const float& distance,
 			const float& innerAngle,
-			const float& outerAngle) :
-			diffuse(diffuse),
-			intensity(intensity),
+			const float& outerAngle,
+			const string& vertShader,
+			const string& fragShader,
+			const bool isMeshEnabled,
+			const string& billboardVertShader,
+			const string& billboardFragShader,
+			const string& billboardDiffTexture,
+			const float& billboardShininess,
+			const bool& isBillboardEnabled)
+			: LightComponent(diffuse, intensity),
 			distance(distance),
 			innerAngle(innerAngle),
-			outerAngle(outerAngle)
+			outerAngle(outerAngle),
+			vertShader(vertShader),
+			fragShader(fragShader),
+			isMeshEnabled(isMeshEnabled),
+			billboardVertShader(billboardVertShader),
+			billboardFragShader(billboardFragShader),
+			billboardDiffTexture(billboardDiffTexture),
+			billboardShininess(billboardShininess),
+			isBillboardEnabled(isBillboardEnabled) {}
+
+		void Initialize(const shared_ptr<GameObject>& parent) override
 		{
+			this->parent = parent;
+
+			// Mesh Initialization
+			SetupMesh(parent);
+
+			// Material Initialization
+			auto material = parent->AddComponent<Material>();
+			Shader shader = Shader::LoadShader(vertShader, fragShader);
+			material->AddShader(vertShader, fragShader, shader);
+
+			// Billboard Initialization
+			SetupBillboard(parent);
 		}
 
-		void SetDiffuse(const vec3& newDiffuse)
+		void Render(const mat4& view, const mat4& projection) override
 		{
-			diffuse = newDiffuse;
-		}
-		void SetIntensity(const float& newIntensity)
-		{
-			intensity = newIntensity;
-		}
-		void SetDistance(const float& newDistance)
-		{
-			distance = newDistance;
-		}
-		void SetInnerAngle(const float& newInnerAngle)
-		{
-			innerAngle = newInnerAngle;
-		}
-		void SetOuterAngle(const float& newOuterAngle)
-		{
-			outerAngle = newOuterAngle;
+			auto parentPtr = parent.lock();
+			if (!parentPtr
+				|| !parentPtr->IsEnabled())
+			{
+				return;
+			}
+
+			auto material = parentPtr->GetComponent<Material>();
+			auto mesh = parentPtr->GetComponent<Mesh>();
+			auto& transform = parentPtr->GetTransform();
+
+			if (material
+				&& mesh
+				&& transform)
+			{
+				Shader shader = material->GetShader();
+
+				shader.Use();
+				shader.SetMat4("projection", projection);
+				shader.SetMat4("view", view);
+
+				float transparency = (Select::selectedObj == 
+					parentPtr 
+					&& Select::isObjectSelected) 
+					? 1.0f : 0.5f;
+				shader.SetFloat("transparency", transparency);
+				shader.SetVec3("color", GetDiffuse());
+
+				// Render light borders if enabled
+				if (GameObjectManager::renderLightBorders 
+					&& mesh->IsEnabled())
+				{
+					RenderLightBorders(transform, shader);
+				}
+			}
 		}
 
-		const vec3& GetDiffuse() const
-		{
-			return diffuse;
-		}
-		const float& GetIntensity() const
-		{
-			return intensity;
-		}
-		const float& GetDistance() const
-		{
-			return distance;
-		}
-		const float& GetInnerAngle() const
-		{
-			return innerAngle;
-		}
-		const float& GetOuterAngle() const
-		{
-			return outerAngle;
-		}
+		void Update(float deltaTime) override {}
+
+		void SetDistance(const float& newDistance) { distance = newDistance; }
+		void SetInnerAngle(const float& newInnerAngle) { innerAngle = newInnerAngle; }
+		void SetOuterAngle(const float& newOuterAngle) { outerAngle = newOuterAngle; }
+
+		const float& GetDistance() const { return distance; }
+		const float& GetInnerAngle() const { return innerAngle; }
+		const float& GetOuterAngle() const { return outerAngle; }
+
 	private:
-		vec3 diffuse;
-		float intensity;
+		void SetupMesh(const shared_ptr<GameObject>& parent)
+		{
+			float vertices[] = 
+			{
+				//four corner edges
+				0.0f,  0.5f,  0.0f,
+			   -0.5f, -0.5f, -0.5f,
+
+				0.0f,  0.5f,  0.0f,
+				0.5f, -0.5f, -0.5f,
+
+				0.0f,  0.5f,  0.0f,
+			   -0.5f, -0.5f,  0.5f,
+
+				0.0f,  0.5f,  0.0f,
+				0.5f, -0.5f,  0.5f,
+
+				//four bottom edges
+				0.5f, -0.5f,  0.5f,
+			   -0.5f, -0.5f,  0.5f,
+
+				0.5f, -0.5f, -0.5f,
+			   -0.5f, -0.5f, -0.5f,
+
+			   -0.5f, -0.5f, -0.5f,
+			   -0.5f, -0.5f,  0.5f,
+
+				0.5f, -0.5f, -0.5f,
+				0.5f, -0.5f,  0.5f
+			};
+
+			GLuint vao, vbo;
+			glGenVertexArrays(1, &vao);
+			glGenBuffers(1, &vbo);
+
+			glBindVertexArray(vao);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+			glBindVertexArray(0);
+
+			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::spot_light, vao, vbo, 0);
+		}
+
+		void SetupBillboard(const shared_ptr<GameObject>& parent) const
+		{
+			string billboardName = parent->GetName() + "_Billboard";
+			auto billboard = Billboard::InitializeBillboard(
+				parent->GetTransform()->GetPosition(),
+				parent->GetTransform()->GetRotation(),
+				parent->GetTransform()->GetScale(),
+				billboardVertShader,
+				billboardFragShader,
+				billboardDiffTexture,
+				billboardShininess,
+				billboardName,
+				++GameObject::nextID,
+				isBillboardEnabled);
+
+			billboard->SetParent(parent);
+			parent->AddChild(parent, billboard);
+		}
+
+		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader)
+		{
+			mat4 model = mat4(1.0f);
+			model = translate(model, transform->GetPosition());
+			quat newRot = quat(radians(transform->GetRotation()));
+			model *= mat4_cast(newRot);
+			model = scale(model, transform->GetScale());
+
+			shader.SetMat4("model", model);
+
+			glBindVertexArray(parent.lock()->GetComponent<Mesh>()->GetVAO());
+			glDrawArrays(GL_LINES, 0, 32);
+		}
+
 		float distance;
 		float innerAngle;
 		float outerAngle;
+		string vertShader;
+		string fragShader;
+		bool isMeshEnabled;
+
+		string billboardVertShader;
+		string billboardFragShader;
+		string billboardDiffTexture;
+		float billboardShininess;
+		bool isBillboardEnabled;
+
+		weak_ptr<GameObject> parent;
 	};
 
-	class Directional_light_Variables
+	class DirectionalLightComponent : public LightComponent
 	{
 	public:
-		Directional_light_Variables(
+		DirectionalLightComponent(
 			const vec3& diffuse,
-			const float& intensity) :
-			diffuse(diffuse),
-			intensity(intensity)
+			const float& intensity,
+			const string& vertShader,
+			const string& fragShader,
+			const bool isMeshEnabled,
+			const string& billboardVertShader,
+			const string& billboardFragShader,
+			const string& billboardDiffTexture,
+			const float& billboardShininess,
+			const bool& isBillboardEnabled)
+			: LightComponent(diffuse, intensity),
+			vertShader(vertShader),
+			fragShader(fragShader),
+			isMeshEnabled(isMeshEnabled),
+			billboardVertShader(billboardVertShader),
+			billboardFragShader(billboardFragShader),
+			billboardDiffTexture(billboardDiffTexture),
+			billboardShininess(billboardShininess),
+			isBillboardEnabled(isBillboardEnabled) {}
+
+		void Initialize(const shared_ptr<GameObject>& parent) override
 		{
+			this->parent = parent;
+
+			// Mesh Initialization
+			SetupMesh(parent);
+
+			// Material Initialization
+			auto material = parent->AddComponent<Material>();
+			Shader shader = Shader::LoadShader(vertShader, fragShader);
+			material->AddShader(vertShader, fragShader, shader);
+
+			// Billboard Initialization
+			SetupBillboard(parent);
 		}
 
-		void SetDiffuse(const vec3& newDiffuse)
+		void Render(const mat4& view, const mat4& projection) override
 		{
-			diffuse = newDiffuse;
-		}
-		void SetIntensity(const float& newIntensity)
-		{
-			intensity = newIntensity;
+			auto parentPtr = parent.lock();
+			if (!parentPtr
+				|| !parentPtr->IsEnabled())
+			{
+				return;
+			}
+
+			auto material = parentPtr->GetComponent<Material>();
+			auto mesh = parentPtr->GetComponent<Mesh>();
+			auto& transform = parentPtr->GetTransform();
+
+			if (material
+				&& mesh
+				&& transform)
+			{
+				Shader shader = material->GetShader();
+
+				shader.Use();
+				shader.SetMat4("projection", projection);
+				shader.SetMat4("view", view);
+
+				float transparency = (Select::selectedObj ==
+					parentPtr
+					&& Select::isObjectSelected)
+					? 1.0f : 0.5f;
+				shader.SetFloat("transparency", transparency);
+				shader.SetVec3("color", GetDiffuse());
+
+				// Render light borders if enabled
+				if (GameObjectManager::renderLightBorders
+					&& mesh->IsEnabled())
+				{
+					RenderLightBorders(transform, shader);
+				}
+			}
 		}
 
-		const vec3& GetDiffuse() const
-		{
-			return diffuse;
-		}
-		const float& GetIntensity() const
-		{
-			return intensity;
-		}
+		void Update(float deltaTime) override {}
+
 	private:
-		vec3 diffuse;
-		float intensity;
+		void SetupMesh(const shared_ptr<GameObject>& parent)
+		{
+			float vertices[] = 
+			{
+				//four corner edges
+				0.0f,  0.5f,  0.0f,
+			   -0.5f, -0.5f, -0.5f,
+
+				0.0f,  0.5f,  0.0f,
+				0.5f, -0.5f, -0.5f,
+
+				0.0f,  0.5f,  0.0f,
+			   -0.5f, -0.5f,  0.5f,
+
+				0.0f,  0.5f,  0.0f,
+				0.5f, -0.5f,  0.5f,
+
+				//four bottom edges
+				0.5f, -0.5f,  0.5f,
+			   -0.5f, -0.5f,  0.5f,
+
+				0.5f, -0.5f, -0.5f,
+			   -0.5f, -0.5f, -0.5f,
+
+			   -0.5f, -0.5f, -0.5f,
+			   -0.5f, -0.5f,  0.5f,
+
+				0.5f, -0.5f, -0.5f,
+				0.5f, -0.5f,  0.5f
+			};
+
+			GLuint vao, vbo;
+			glGenVertexArrays(1, &vao);
+			glGenBuffers(1, &vbo);
+
+			glBindVertexArray(vao);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+			glBindVertexArray(0);
+
+			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::directional_light, vao, vbo, 0);
+		}
+
+		void SetupBillboard(const shared_ptr<GameObject>& parent) const
+		{
+			string billboardName = parent->GetName() + "_Billboard";
+			auto billboard = Billboard::InitializeBillboard(
+				parent->GetTransform()->GetPosition(),
+				parent->GetTransform()->GetRotation(),
+				parent->GetTransform()->GetScale(),
+				billboardVertShader,
+				billboardFragShader,
+				billboardDiffTexture,
+				billboardShininess,
+				billboardName,
+				++GameObject::nextID,
+				isBillboardEnabled);
+
+			billboard->SetParent(parent);
+			parent->AddChild(parent, billboard);
+		}
+
+		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader)
+		{
+			mat4 model = mat4(1.0f);
+			model = translate(model, transform->GetPosition());
+			quat newRot = quat(radians(transform->GetRotation()));
+			model *= mat4_cast(newRot);
+			model = scale(model, transform->GetScale());
+
+			shader.SetMat4("model", model);
+			GLuint VAO = parent.lock()->GetComponent<Mesh>()->GetVAO();
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_LINES, 0, 32);
+		}
+
+		string vertShader;
+		string fragShader;
+		bool isMeshEnabled;
+
+		string billboardVertShader;
+		string billboardFragShader;
+		string billboardDiffTexture;
+		float billboardShininess;
+		bool isBillboardEnabled;
+
+		weak_ptr<GameObject> parent;
 	};
 
-	class GameObject
+	class GameObject : public enable_shared_from_this<GameObject>
 	{
 	public:
 		static inline unsigned int nextID;
 
-		//basic gameobject
+		static shared_ptr<GameObject> Create(
+			const string& name,
+			unsigned int id,
+			bool isEnabled,
+			const vec3& position,
+			const vec3& rotation,
+			const vec3& scale)
+		{
+			auto transform = make_shared<Transform>(position, rotation, scale);
+			return make_shared<GameObject>(name, id, isEnabled, transform);
+		}
+
 		GameObject(
-			const bool& isInitialized,
 			const string& name,
 			const unsigned int& ID,
 			const bool& isEnabled,
-			const shared_ptr<Transform>& transform,
-			const shared_ptr<Mesh>& mesh,
-			const shared_ptr<Material>& material,
-			const shared_ptr<BasicShape_Variables>& basicShape) :
-			isInitialized(isInitialized),
-			name(name),
-			ID(ID),
-			isEnabled(isEnabled),
-			transform(transform),
-			mesh(mesh),
-			material(material),
-			basicShape(basicShape)
-		{
+			const shared_ptr<Transform>& transform)
+			: name(name), ID(ID), isEnabled(isEnabled), transform(transform) {
 		}
 
-		//point light
-		GameObject(
-			const bool& isInitialized,
-			const string& name,
-			const unsigned int& ID,
-			const bool& isEnabled,
-			const shared_ptr<Transform>& transform,
-			const shared_ptr<Mesh>& mesh,
-			const shared_ptr<Material>& material,
-			const shared_ptr<PointLight_Variables>& pointLight) :
-			isInitialized(isInitialized),
-			name(name),
-			ID(ID),
-			isEnabled(isEnabled),
-			transform(transform),
-			mesh(mesh),
-			material(material),
-			pointLight(pointLight)
+		virtual ~GameObject() = default;
+
+		template <typename T, typename... Args>
+		shared_ptr<T> AddComponent(Args&&... args)
 		{
+			auto component = make_shared<T>(std::forward<Args>(args)...);
+			components[typeid(T).hash_code()] = component;
+			return component;
 		}
 
-		//spotlight
-		GameObject(
-			const bool& isInitialized,
-			const string& name,
-			const unsigned int& ID,
-			const bool& isEnabled,
-			const shared_ptr<Transform>& transform,
-			const shared_ptr<Mesh>& mesh,
-			const shared_ptr<Material>& material,
-			const shared_ptr<SpotLight_Variables>& spotLight) :
-			isInitialized(isInitialized),
-			name(name),
-			ID(ID),
-			isEnabled(isEnabled),
-			transform(transform),
-			mesh(mesh),
-			material(material),
-			spotLight(spotLight)
+		template <typename T>
+		shared_ptr<T> GetComponent()
 		{
+			auto it = components.find(typeid(T).hash_code());
+			if (it != components.end())
+			{
+				return dynamic_pointer_cast<T>(it->second);
+			}
+			return nullptr;
 		}
 
-		//directional light
-		GameObject(
-			const bool& isInitialized,
-			const string& name,
-			const unsigned int& ID,
-			const bool& isEnabled,
-			const shared_ptr<Transform>& transform,
-			const shared_ptr<Mesh>& mesh,
-			const shared_ptr<Material>& material,
-			const shared_ptr<Directional_light_Variables>& directionalLight) :
-			isInitialized(isInitialized),
-			name(name),
-			ID(ID),
-			isEnabled(isEnabled),
-			transform(transform),
-			mesh(mesh),
-			material(material),
-			directionalLight(directionalLight)
+		void Update(float deltaTime)
 		{
+			for (auto& [_, component] : components)
+			{
+				component->Update(deltaTime);
+			}
 		}
 
-		//assimp model
-		GameObject(
-			const bool& isInitialized,
-			const string& name,
-			const unsigned int& ID,
-			const bool& isEnabled,
-			const shared_ptr<Transform>& transform,
-			const shared_ptr<Mesh>& mesh,
-			const vector<AssimpMesh>& assimpMeshes,
-			const shared_ptr<Material>& material) :
-			isInitialized(isInitialized),
-			name(name),
-			ID(ID),
-			isEnabled(isEnabled),
-			transform(transform),
-			mesh(mesh),
-			assimpMeshes(assimpMeshes),
-			material(material)
+		void Render(const mat4& view, const mat4& projection)
 		{
+			for (auto& [_, component] : components)
+			{
+				component->Render(view, projection);
+			}
 		}
 
-		void Initialize() { isInitialized = true; }
 		void SetName(const string& newName) { name = newName; }
-		void SetID(const unsigned int& newID) { ID = newID; }
-
 		void SetEnableState(const bool& newEnableState) { isEnabled = newEnableState; }
 
-		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
-		void SetMesh(const shared_ptr<Mesh>& newMesh) { mesh = newMesh; }
-		void AddAssimpMesh(const AssimpMesh& newMesh) { assimpMeshes.push_back(newMesh); }
-		void SetMaterial(const shared_ptr<Material>& newMaterial) { material = newMaterial; }
-		void SetBasicShape(const shared_ptr<BasicShape_Variables>& newBasicShape)
-		{
-			basicShape = newBasicShape;
-		}
-		void SetPointLight(const shared_ptr<PointLight_Variables>& newPointLight)
-		{
-			pointLight = newPointLight;
-		}
-		void SetSpotLight(const shared_ptr<SpotLight_Variables>& newSpotLight)
-		{
-			spotLight = newSpotLight;
-		}
-		void SetDirectionalLight(const shared_ptr<Directional_light_Variables>& newDirectionalLight)
-		{
-			directionalLight = newDirectionalLight;
-		}
+		void SetTxtFilePath(const string& newTxtFile) { txtFile = newTxtFile; }
 
-		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
-		void RemoveParent(const shared_ptr<GameObject>) { parent = nullptr; }
 		void AddChild(const shared_ptr<GameObject>& target, const shared_ptr<GameObject>& addedChild)
 		{
 			children.push_back(addedChild);
@@ -619,168 +977,84 @@ namespace Graphics::Shape
 		}
 		void RemoveChild(const shared_ptr<GameObject>& removedChild)
 		{
-			children.erase(std::remove(children.begin(), children.end(), removedChild), children.end());
+			children.erase(
+				std::remove(children.begin(), 
+					children.end(), 
+					removedChild), 
+					children.end());
 			removedChild->RemoveParent(removedChild);
 		}
-		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder)
-		{
-			parentBillboardHolder = newParentBillboardHolder;
-		}
-		void SetChildBillboard(const shared_ptr<GameObject>& newChildBillboard)
-		{
-			childBillboard = newChildBillboard;
-		}
 
-		void SetTxtFilePath(const string& newTxtFilePath) { txtFilePath = newTxtFilePath; }
-
-		const bool& IsInitialized() const { return isInitialized; }
 		const string& GetName() const { return name; }
-		const unsigned int& GetID() const {  return ID; }
-
+		const unsigned int& GetID() const { return ID; }
 		const bool& IsEnabled() const { return isEnabled; }
-
+		const string& GetTxtFile() const { return txtFile; }
 		const shared_ptr<Transform>& GetTransform() const { return transform; }
-		const shared_ptr<Mesh>& GetMesh() const { return mesh; }
-		const vector<AssimpMesh>& GetAssimpMeshes() const { return assimpMeshes; }
-		const shared_ptr<Material>& GetMaterial() const { return material; }
-		const shared_ptr<BasicShape_Variables>& GetBasicShape() const { return basicShape; }
-		const shared_ptr<PointLight_Variables>& GetPointLight() const { return pointLight; }
-		const shared_ptr<SpotLight_Variables>& GetSpotLight() const { return spotLight; }
-		const shared_ptr<Directional_light_Variables>& GetDirectionalLight() const { return directionalLight; }
 		const shared_ptr<GameObject>& GetParent() const { return parent; }
 		const vector<shared_ptr<GameObject>>& GetChildren() const { return children; }
-		const shared_ptr<GameObject>& GetParentBillboardHolder() const { return parentBillboardHolder; }
-		const shared_ptr<GameObject>& GetChildBillboard() const { return childBillboard; }
-		const string& GetTxtFilePath() const { return txtFilePath; }
+
+		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
+		void RemoveParent(const shared_ptr<GameObject>&) { parent = nullptr; }
+
 	private:
-		bool isInitialized;
 		string name;
 		unsigned int ID;
-
 		bool isEnabled;
 
-		shared_ptr<Transform> transform;
-		shared_ptr<Mesh> mesh;
-		vector<AssimpMesh> assimpMeshes;
-		shared_ptr<Material> material;
-		shared_ptr<BasicShape_Variables> basicShape;
-		shared_ptr<PointLight_Variables> pointLight;
-		shared_ptr<SpotLight_Variables> spotLight;
-		shared_ptr<Directional_light_Variables> directionalLight;
+		string txtFile;
+
+		shared_ptr<Transform> transform; //non-removable core component
 		shared_ptr<GameObject> parent;
 		vector<shared_ptr<GameObject>> children;
-		shared_ptr<GameObject> parentBillboardHolder;
-		shared_ptr<GameObject> childBillboard;
-		string txtFilePath;
+		map<size_t, shared_ptr<Component>> components;
 	};
 
 	class GameObjectManager
 	{
 	public:
-		static void RenderAll(
-			const mat4& view,
-			const mat4& projection);
+		static void RenderAll(const mat4& view, const mat4& projection);
 
 		static inline bool renderBillboards = true;
 		static inline bool renderLightBorders = true;
 
-		static void SetCategoryNames(const map<string, vector<string>>& newCategoryNames)
-		{
-			categoryNames = newCategoryNames;
-		}
 		static void AddGameObject(const shared_ptr<GameObject>& obj)
 		{
 			objects.push_back(obj);
 		}
-		static void AddOpaqueObject(const shared_ptr<GameObject>& obj)
-		{
-			opaqueObjects.push_back(obj);
-		}
-		static void AddTransparentObject(const shared_ptr<GameObject>& obj)
-		{
-			transparentObjects.push_back(obj);
-		}
-		static void AddPointLight(const shared_ptr<GameObject>& obj)
-		{
-			pointLights.push_back(obj);
-		}
-		static void AddSpotLight(const shared_ptr<GameObject>& obj)
-		{
-			spotLights.push_back(obj);
-		}
 		static void SetDirectionalLight(const shared_ptr<GameObject>& newDirectionalLight)
 		{
 			directionalLight = newDirectionalLight;
-		}
-		static void SetActionTex(const shared_ptr<GameObject>& newActionTex)
-		{
-			actionTex = newActionTex;
-		}
-		static void SetBorder(const shared_ptr<GameObject>& newBorder)
-		{
-			border = newBorder;
-		}
-		static void AddBillboard(const shared_ptr<GameObject>& obj)
-		{
-			billboards.push_back(obj);
 		}
 		static void SetSkybox(const shared_ptr<GameObject>& obj)
 		{
 			skybox = obj;
 		}
 
-		/// <summary>
-		/// Used for deleting gameobject directly in scene.
-		/// </summary>
-		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly = true);
-		/// <summary>
-		/// Used for trying to find gameobject through its txt file and deleting it that way in scene.
-		/// </summary>
-		static void FindAndDestroyGameObject(const string& objTxtFile, bool localOnly = true);
+		static void DestroyGameObject(const shared_ptr<GameObject>& obj)
+		{
+			objects.erase(std::remove(
+				objects.begin(), 
+				objects.end(), 
+				obj), 
+				objects.end());
+		}
 
 		static const vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
 		}
-		static const vector<shared_ptr<GameObject>> GetPointLights()
-		{
-			return pointLights;
-		}
-		static const vector<shared_ptr<GameObject>> GetSpotLights()
-		{
-			return spotLights;
-		}
 		static const shared_ptr<GameObject> GetDirectionalLight()
 		{
 			return directionalLight;
-		}
-		static const shared_ptr<GameObject> GetActionTex()
-		{
-			return actionTex;
-		}
-		static const shared_ptr<GameObject> GetBorder()
-		{
-			return border;
-		}
-		static const vector<shared_ptr<GameObject>> GetBillboards()
-		{
-			return billboards;
 		}
 		static const shared_ptr<GameObject> GetSkybox()
 		{
 			return skybox;
 		}
+
 	private:
-		static inline map<string, vector<string>> categoryNames;
-		static inline vector<shared_ptr<GameObject>> objects;
-		static inline vector<shared_ptr<GameObject>> opaqueObjects;
-		static inline vector<shared_ptr<GameObject>> transparentObjects;
-		static inline vector<shared_ptr<GameObject>> pointLights;
-		static inline vector<shared_ptr<GameObject>> spotLights;
-		static inline shared_ptr<GameObject> directionalLight;
-		static inline shared_ptr<GameObject> actionTex;
-		static inline shared_ptr<GameObject> border;
-		static inline vector<shared_ptr<GameObject>> billboards;
-		static inline shared_ptr<GameObject> skybox;
+		static inline vector<shared_ptr<GameObject>> objects;    //main list of all game objects
+		static inline shared_ptr<GameObject> directionalLight;   //single directional light
+		static inline shared_ptr<GameObject> skybox;             //single skybox
 	};
 }
