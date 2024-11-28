@@ -354,48 +354,32 @@ namespace Graphics::Shape
 	class LightComponent : public Component
 	{
 	public:
-		LightComponent(
-			const vec3& diffuse, 
-			const float& intensity) : 
-			diffuse(diffuse), 
-			intensity(intensity) {}
+		struct LightConfig 
+		{
+			vec3 diffuse;
+			float intensity;
+			string vertShader;
+			string fragShader;
+			bool isMeshEnabled;
+			string billboardVertShader;
+			string billboardFragShader;
+			string billboardDiffTexture;
+			float billboardShininess;
+			bool isBillboardEnabled;
+		};
 
-		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
-		void SetIntensity(const float& newIntensity) { intensity = newIntensity; }
-
-		const vec3& GetDiffuse() const { return diffuse; }
-		const float& GetIntensity() const { return intensity; }
-
-	protected:
-		vec3 diffuse;
-		float intensity;
-	};
-
-	class PointLightComponent : public LightComponent
-	{
-	public:
-		PointLightComponent(
-			const vec3& diffuse,
-			const float& intensity,
-			const float& distance,
-			const string& vertShader,
-			const string& fragShader,
-			const bool isMeshEnabled,
-			const string& billboardVertShader,
-			const string& billboardFragShader,
-			const string& billboardDiffTexture,
-			const float& billboardShininess,
-			const bool& isBillboardEnabled)
-			: LightComponent(diffuse, intensity),
-			distance(distance),
-			vertShader(vertShader),
-			fragShader(fragShader),
-			isMeshEnabled(isMeshEnabled),
-			billboardVertShader(billboardVertShader),
-			billboardFragShader(billboardFragShader),
-			billboardDiffTexture(billboardDiffTexture),
-			billboardShininess(billboardShininess),
-			isBillboardEnabled(isBillboardEnabled) {}
+		LightComponent(const LightConfig& config) :
+			diffuse(config.diffuse),
+			intensity(config.intensity),
+			vertShader(config.vertShader),
+			fragShader(config.fragShader),
+			isMeshEnabled(config.isMeshEnabled),
+			billboardVertShader(config.billboardVertShader),
+			billboardFragShader(config.billboardFragShader),
+			billboardDiffTexture(config.billboardDiffTexture),
+			billboardShininess(config.billboardShininess),
+			isBillboardEnabled(config.isBillboardEnabled) {
+		}
 
 		void Initialize(const shared_ptr<GameObject>& parent) override
 		{
@@ -413,10 +397,90 @@ namespace Graphics::Shape
 			SetupBillboard(parent);
 		}
 
+		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
+		void SetIntensity(const float& newIntensity) { intensity = newIntensity; }
+
+		const vec3& GetDiffuse() const { return diffuse; }
+		const float& GetIntensity() const { return intensity; }
+
+	protected:
+		// Helper method for setting up shaders for rendering
+		void SetupShaderUniforms(Shader& shader, const mat4& view, const mat4& projection, const vec3& lightColor)
+		{
+			shader.Use();
+			shader.SetMat4("projection", projection);
+			shader.SetMat4("view", view);
+			shader.SetVec3("color", lightColor);
+
+			float transparency = (Select::selectedObj == parent.lock() && Select::isObjectSelected) ? 1.0f : 0.5f;
+			shader.SetFloat("transparency", transparency);
+		}
+
+		// Helper method for light border rendering (if common behavior is needed)
+		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader, GLuint vao, int vertexCount)
+		{
+			mat4 model = mat4(1.0f);
+			model = translate(model, transform->GetPosition());
+			quat newRot = quat(radians(transform->GetRotation()));
+			model *= mat4_cast(newRot);
+			model = scale(model, transform->GetScale());
+
+			shader.SetMat4("model", model);
+
+			glBindVertexArray(vao);
+			glDrawArrays(GL_LINES, 0, vertexCount);
+		}
+
+		virtual void SetupMesh(const shared_ptr<GameObject>& parent) = 0;
+
+		void SetupBillboard(const shared_ptr<GameObject>& parent) const
+		{
+			string billboardName = parent->GetName() + "_Billboard";
+			auto billboard = Billboard::InitializeBillboard(
+				parent->GetTransform()->GetPosition(),
+				parent->GetTransform()->GetRotation(),
+				parent->GetTransform()->GetScale(),
+				billboardVertShader,
+				billboardFragShader,
+				billboardDiffTexture,
+				billboardShininess,
+				billboardName,
+				++GameObject::nextID,
+				isBillboardEnabled);
+
+			billboard->SetParent(parent);
+			parent->AddChild(parent, billboard);
+		}
+
+		vec3 diffuse;
+		float intensity;
+
+		string vertShader;
+		string fragShader;
+		bool isMeshEnabled;
+
+		string billboardVertShader;
+		string billboardFragShader;
+		string billboardDiffTexture;
+		float billboardShininess;
+		bool isBillboardEnabled;
+
+		weak_ptr<GameObject> parent;
+	};
+
+	class PointLightComponent : public LightComponent
+	{
+	public:
+		PointLightComponent(
+			const LightConfig& config, 
+			float distance) : 
+			LightComponent(config),
+			distance(distance) {}
+
 		void Render(const mat4& view, const mat4& projection) override
 		{
 			auto parentPtr = parent.lock();
-			if (!parentPtr
+			if (!parentPtr 
 				|| !parentPtr->IsEnabled())
 			{
 				return;
@@ -431,29 +495,26 @@ namespace Graphics::Shape
 				&& transform)
 			{
 				Shader shader = material->GetShader();
-				shader.Use();
-				shader.SetMat4("projection", projection);
-				shader.SetMat4("view", view);
 
-				// Set transparency based on selection
-				float transparency = (Select::selectedObj == 
-					parentPtr 
-					&& Select::isObjectSelected) 
-					? 1.0f : 0.5f;
-				shader.SetFloat("transparency", transparency);
+				// Use the helper method to setup common shader uniforms
+				SetupShaderUniforms(
+					shader, 
+					view, 
+					projection, 
+					GetDiffuse());
 
-				// Set light color
-				shader.SetVec3("color", GetDiffuse());
-
-				// Render light borders if enabled
-				if (GameObjectManager::renderLightBorders && mesh->IsEnabled())
+				// Render light borders (specific to PointLightComponent)
+				if (GameObjectManager::renderLightBorders 
+					&& mesh->IsEnabled())
 				{
-					RenderLightBorders(transform, shader);
+					RenderLightBorders(
+						transform, 
+						shader, 
+						mesh->GetVAO(), 
+						24);
 				}
 			}
 		}
-
-		void Update(float deltaTime) override {}
 
 		void SetDistance(const float& newDistance) { distance = newDistance; }
 		const float& GetDistance() const { return distance; }
@@ -461,7 +522,8 @@ namespace Graphics::Shape
 	private:
 		void SetupMesh(const shared_ptr<GameObject>& parent)
 		{
-			float vertices[] = {
+			float vertices[] = 
+			{
 				-0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f,
 				0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
 				0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
@@ -491,103 +553,26 @@ namespace Graphics::Shape
 			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light, vao, vbo, 0);
 		}
 
-		void SetupBillboard(const shared_ptr<GameObject>& parent) const
-		{
-			string billboardName = parent->GetName() + "_Billboard";
-			auto billboard = Billboard::InitializeBillboard(
-				parent->GetTransform()->GetPosition(),
-				parent->GetTransform()->GetRotation(),
-				parent->GetTransform()->GetScale(),
-				billboardVertShader,
-				billboardFragShader,
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				++GameObject::nextID,
-				isBillboardEnabled);
-
-			billboard->SetParent(parent);
-			parent->AddChild(parent, billboard);
-		}
-
-		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader)
-		{
-			mat4 model = mat4(1.0f);
-			model = translate(model, transform->GetPosition());
-			quat newRot = quat(radians(transform->GetRotation()));
-			model *= mat4_cast(newRot);
-			model = scale(model, transform->GetScale());
-
-			shader.SetMat4("model", model);
-
-			glBindVertexArray(parent.lock()->GetComponent<Mesh>()->GetVAO());
-			glDrawArrays(GL_LINES, 0, 24);
-		}
-
 		float distance;
-		string vertShader;
-		string fragShader;
-		bool isMeshEnabled;
-
-		string billboardVertShader;
-		string billboardFragShader;
-		string billboardDiffTexture;
-		float billboardShininess;
-		bool isBillboardEnabled;
-
-		weak_ptr<GameObject> parent;
 	};
 
 	class SpotLightComponent : public LightComponent
 	{
 	public:
 		SpotLightComponent(
-			const vec3& diffuse,
-			const float& intensity,
-			const float& distance,
-			const float& innerAngle,
-			const float& outerAngle,
-			const string& vertShader,
-			const string& fragShader,
-			const bool isMeshEnabled,
-			const string& billboardVertShader,
-			const string& billboardFragShader,
-			const string& billboardDiffTexture,
-			const float& billboardShininess,
-			const bool& isBillboardEnabled)
-			: LightComponent(diffuse, intensity),
+			const LightConfig& config,
+			float distance,
+			float innerAngle,
+			float outerAngle) :
+			LightComponent(config),
 			distance(distance),
 			innerAngle(innerAngle),
-			outerAngle(outerAngle),
-			vertShader(vertShader),
-			fragShader(fragShader),
-			isMeshEnabled(isMeshEnabled),
-			billboardVertShader(billboardVertShader),
-			billboardFragShader(billboardFragShader),
-			billboardDiffTexture(billboardDiffTexture),
-			billboardShininess(billboardShininess),
-			isBillboardEnabled(isBillboardEnabled) {}
-
-		void Initialize(const shared_ptr<GameObject>& parent) override
-		{
-			this->parent = parent;
-
-			// Mesh Initialization
-			SetupMesh(parent);
-
-			// Material Initialization
-			auto material = parent->AddComponent<Material>();
-			Shader shader = Shader::LoadShader(vertShader, fragShader);
-			material->AddShader(vertShader, fragShader, shader);
-
-			// Billboard Initialization
-			SetupBillboard(parent);
-		}
+			outerAngle(outerAngle) {}
 
 		void Render(const mat4& view, const mat4& projection) override
 		{
 			auto parentPtr = parent.lock();
-			if (!parentPtr
+			if (!parentPtr 
 				|| !parentPtr->IsEnabled())
 			{
 				return;
@@ -597,33 +582,31 @@ namespace Graphics::Shape
 			auto mesh = parentPtr->GetComponent<Mesh>();
 			auto& transform = parentPtr->GetTransform();
 
-			if (material
-				&& mesh
+			if (material 
+				&& mesh 
 				&& transform)
 			{
 				Shader shader = material->GetShader();
 
-				shader.Use();
-				shader.SetMat4("projection", projection);
-				shader.SetMat4("view", view);
+				// Use the helper method to setup common shader uniforms
+				SetupShaderUniforms(
+					shader, 
+					view, 
+					projection, 
+					GetDiffuse());
 
-				float transparency = (Select::selectedObj == 
-					parentPtr 
-					&& Select::isObjectSelected) 
-					? 1.0f : 0.5f;
-				shader.SetFloat("transparency", transparency);
-				shader.SetVec3("color", GetDiffuse());
-
-				// Render light borders if enabled
+				// Render light borders (specific to SpotLightComponent)
 				if (GameObjectManager::renderLightBorders 
 					&& mesh->IsEnabled())
 				{
-					RenderLightBorders(transform, shader);
+					RenderLightBorders(
+						transform, 
+						shader, 
+						mesh->GetVAO(), 
+						32);
 				}
 			}
 		}
-
-		void Update(float deltaTime) override {}
 
 		void SetDistance(const float& newDistance) { distance = newDistance; }
 		void SetInnerAngle(const float& newInnerAngle) { innerAngle = newInnerAngle; }
@@ -680,99 +663,22 @@ namespace Graphics::Shape
 			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::spot_light, vao, vbo, 0);
 		}
 
-		void SetupBillboard(const shared_ptr<GameObject>& parent) const
-		{
-			string billboardName = parent->GetName() + "_Billboard";
-			auto billboard = Billboard::InitializeBillboard(
-				parent->GetTransform()->GetPosition(),
-				parent->GetTransform()->GetRotation(),
-				parent->GetTransform()->GetScale(),
-				billboardVertShader,
-				billboardFragShader,
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				++GameObject::nextID,
-				isBillboardEnabled);
-
-			billboard->SetParent(parent);
-			parent->AddChild(parent, billboard);
-		}
-
-		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader)
-		{
-			mat4 model = mat4(1.0f);
-			model = translate(model, transform->GetPosition());
-			quat newRot = quat(radians(transform->GetRotation()));
-			model *= mat4_cast(newRot);
-			model = scale(model, transform->GetScale());
-
-			shader.SetMat4("model", model);
-
-			glBindVertexArray(parent.lock()->GetComponent<Mesh>()->GetVAO());
-			glDrawArrays(GL_LINES, 0, 32);
-		}
-
 		float distance;
 		float innerAngle;
 		float outerAngle;
-		string vertShader;
-		string fragShader;
-		bool isMeshEnabled;
-
-		string billboardVertShader;
-		string billboardFragShader;
-		string billboardDiffTexture;
-		float billboardShininess;
-		bool isBillboardEnabled;
-
-		weak_ptr<GameObject> parent;
 	};
 
 	class DirectionalLightComponent : public LightComponent
 	{
 	public:
 		DirectionalLightComponent(
-			const vec3& diffuse,
-			const float& intensity,
-			const string& vertShader,
-			const string& fragShader,
-			const bool isMeshEnabled,
-			const string& billboardVertShader,
-			const string& billboardFragShader,
-			const string& billboardDiffTexture,
-			const float& billboardShininess,
-			const bool& isBillboardEnabled)
-			: LightComponent(diffuse, intensity),
-			vertShader(vertShader),
-			fragShader(fragShader),
-			isMeshEnabled(isMeshEnabled),
-			billboardVertShader(billboardVertShader),
-			billboardFragShader(billboardFragShader),
-			billboardDiffTexture(billboardDiffTexture),
-			billboardShininess(billboardShininess),
-			isBillboardEnabled(isBillboardEnabled) {}
-
-		void Initialize(const shared_ptr<GameObject>& parent) override
-		{
-			this->parent = parent;
-
-			// Mesh Initialization
-			SetupMesh(parent);
-
-			// Material Initialization
-			auto material = parent->AddComponent<Material>();
-			Shader shader = Shader::LoadShader(vertShader, fragShader);
-			material->AddShader(vertShader, fragShader, shader);
-
-			// Billboard Initialization
-			SetupBillboard(parent);
-		}
+			const LightConfig& config) :
+			LightComponent(config) {}
 
 		void Render(const mat4& view, const mat4& projection) override
 		{
 			auto parentPtr = parent.lock();
-			if (!parentPtr
+			if (!parentPtr 
 				|| !parentPtr->IsEnabled())
 			{
 				return;
@@ -782,33 +688,31 @@ namespace Graphics::Shape
 			auto mesh = parentPtr->GetComponent<Mesh>();
 			auto& transform = parentPtr->GetTransform();
 
-			if (material
-				&& mesh
+			if (material 
+				&& mesh 
 				&& transform)
 			{
 				Shader shader = material->GetShader();
 
-				shader.Use();
-				shader.SetMat4("projection", projection);
-				shader.SetMat4("view", view);
+				// Use the helper method to setup common shader uniforms
+				SetupShaderUniforms(
+					shader, 
+					view, 
+					projection, 
+					GetDiffuse());
 
-				float transparency = (Select::selectedObj ==
-					parentPtr
-					&& Select::isObjectSelected)
-					? 1.0f : 0.5f;
-				shader.SetFloat("transparency", transparency);
-				shader.SetVec3("color", GetDiffuse());
-
-				// Render light borders if enabled
-				if (GameObjectManager::renderLightBorders
+				// Render light borders (specific to DirectionalLightComponent)
+				if (GameObjectManager::renderLightBorders 
 					&& mesh->IsEnabled())
 				{
-					RenderLightBorders(transform, shader);
+					RenderLightBorders(
+						transform, 
+						shader, 
+						mesh->GetVAO(), 
+						32);
 				}
 			}
 		}
-
-		void Update(float deltaTime) override {}
 
 	private:
 		void SetupMesh(const shared_ptr<GameObject>& parent)
@@ -856,51 +760,6 @@ namespace Graphics::Shape
 
 			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::directional_light, vao, vbo, 0);
 		}
-
-		void SetupBillboard(const shared_ptr<GameObject>& parent) const
-		{
-			string billboardName = parent->GetName() + "_Billboard";
-			auto billboard = Billboard::InitializeBillboard(
-				parent->GetTransform()->GetPosition(),
-				parent->GetTransform()->GetRotation(),
-				parent->GetTransform()->GetScale(),
-				billboardVertShader,
-				billboardFragShader,
-				billboardDiffTexture,
-				billboardShininess,
-				billboardName,
-				++GameObject::nextID,
-				isBillboardEnabled);
-
-			billboard->SetParent(parent);
-			parent->AddChild(parent, billboard);
-		}
-
-		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader)
-		{
-			mat4 model = mat4(1.0f);
-			model = translate(model, transform->GetPosition());
-			quat newRot = quat(radians(transform->GetRotation()));
-			model *= mat4_cast(newRot);
-			model = scale(model, transform->GetScale());
-
-			shader.SetMat4("model", model);
-			GLuint VAO = parent.lock()->GetComponent<Mesh>()->GetVAO();
-			glBindVertexArray(VAO);
-			glDrawArrays(GL_LINES, 0, 32);
-		}
-
-		string vertShader;
-		string fragShader;
-		bool isMeshEnabled;
-
-		string billboardVertShader;
-		string billboardFragShader;
-		string billboardDiffTexture;
-		float billboardShininess;
-		bool isBillboardEnabled;
-
-		weak_ptr<GameObject> parent;
 	};
 
 	class GameObject : public enable_shared_from_this<GameObject>
@@ -909,24 +768,38 @@ namespace Graphics::Shape
 		static inline unsigned int nextID;
 
 		static shared_ptr<GameObject> Create(
-			const string& name,
-			unsigned int id,
-			bool isEnabled,
-			const vec3& position,
-			const vec3& rotation,
-			const vec3& scale)
+			const string& name = "",
+			unsigned int id = 0,
+			bool isEnabled = true,
+			const vec3& position = vec3(0),
+			const vec3& rotation = vec3(0),
+			const vec3& scale = vec3(1))
 		{
-			auto transform = make_shared<Transform>(position, rotation, scale);
-			return make_shared<GameObject>(name, id, isEnabled, transform);
+			if (id == 0) id = ++nextID;
+			string finalName = name.empty() 
+				? "GameObject_" + to_string(id) 
+				: name;
+
+			return make_shared<GameObject>(
+				finalName, 
+				id, 
+				isEnabled, 
+				position,
+				rotation,
+				scale);
 		}
 
 		GameObject(
 			const string& name,
 			const unsigned int& ID,
-			const bool& isEnabled,
-			const shared_ptr<Transform>& transform)
-			: name(name), ID(ID), isEnabled(isEnabled), transform(transform) {
-		}
+			const bool& isEnabled = true,
+			const vec3& position = vec3(0),
+			const vec3& rotation = vec3(0),
+			const vec3& scale = vec3(1)) :
+			name(name), 
+			ID(ID), 
+			isEnabled(isEnabled), 
+			transform(make_shared<Transform>(position, rotation, scale)) {}
 
 		virtual ~GameObject() = default;
 

@@ -14,6 +14,12 @@
 //engine
 #include "gameobject.hpp"
 
+namespace Graphics::Shape
+{
+	class GameObject;
+	class AssimpVertex;
+}
+
 namespace Core
 {
 	using std::vector;
