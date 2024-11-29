@@ -44,6 +44,7 @@ namespace Graphics::Shape
 	using glm::quat;
 	using std::string;
 	using std::enable_shared_from_this;
+	using std::to_string;
 
 	using Graphics::Shader;
 	using Core::Select;
@@ -405,19 +406,32 @@ namespace Graphics::Shape
 
 	protected:
 		// Helper method for setting up shaders for rendering
-		void SetupShaderUniforms(Shader& shader, const mat4& view, const mat4& projection, const vec3& lightColor)
+		void SetupShaderUniforms(
+			Shader& shader, 
+			const mat4& view, 
+			const mat4& projection, 
+			const vec3& lightColor)
 		{
 			shader.Use();
 			shader.SetMat4("projection", projection);
 			shader.SetMat4("view", view);
 			shader.SetVec3("color", lightColor);
 
-			float transparency = (Select::selectedObj == parent.lock() && Select::isObjectSelected) ? 1.0f : 0.5f;
+			float transparency = 
+				(Select::selectedObj 
+					== parent.lock() 
+					&& Select::isObjectSelected) 
+				? 1.0f 
+				: 0.5f;
 			shader.SetFloat("transparency", transparency);
 		}
 
 		// Helper method for light border rendering (if common behavior is needed)
-		void RenderLightBorders(const shared_ptr<Transform>& transform, Shader& shader, GLuint vao, int vertexCount)
+		void RenderLightBorders(
+			const shared_ptr<Transform>& transform, 
+			Shader& shader, 
+			GLuint vao, 
+			int vertexCount)
 		{
 			mat4 model = mat4(1.0f);
 			model = translate(model, transform->GetPosition());
@@ -777,7 +791,7 @@ namespace Graphics::Shape
 		{
 			if (id == 0) id = ++nextID;
 			string finalName = name.empty() 
-				? "GameObject_" + to_string(id) 
+				? "GameObject_" + to_string(id)
 				: name;
 
 			return make_shared<GameObject>(
