@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <iostream>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -24,6 +25,7 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using std::filesystem::path;
 
 using Graphics::Shader;
 using Graphics::Texture;
@@ -49,7 +51,13 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = GameObject::Create(
+			name,
+			id,
+			isEnabled,
+			pos,
+			rot,
+			scale);
 
 		float vertices[] =
 		{
@@ -62,64 +70,43 @@ namespace Graphics::Shape
 			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f
 		};
 
-		GLuint vao, vbo, ebo;
+		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::billboard);
+		mesh->Initialize(Mesh::MeshType::border, vertices, sizeof(vertices));
 
-		glGenVertexArrays(1, &vao);
-		glGenBuffers(1, &vbo);
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		auto material = obj->AddComponent<Material>();
+		material->Initialize(
+			(path(Engine::filesPath) / "shaders" / vertShader).string(),
+			(path(Engine::filesPath) / "shaders" / fragShader).string());
 
-		//position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		//normal attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-		//texture attribute
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(2);
+		Shader billboardShader = material->GetShader();
+		billboardShader.Use();
+		billboardShader.SetInt("material.diffuse", 0);
 
-		glBindVertexArray(0);
-
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::billboard, vao, vbo, ebo);
-
-		Shader billboardShader = Shader::LoadShader(vertShader, fragShader);
-
-		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(vertShader, fragShader, billboardShader);
-
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
-
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
-			name,
-			id,
-			isEnabled,
-			transform,
-			mesh,
-			mat,
-			basicShape);
-
+		//load billboard texture
 		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, true);
 
-		Shader assignedShader = obj->GetMaterial()->GetShader();
-		assignedShader.Use();
-		assignedShader.SetInt("material.diffuse", 0);
-
 		GameObjectManager::AddGameObject(obj);
-		GameObjectManager::AddTransparentObject(obj);
-		GameObjectManager::AddBillboard(obj);
 
 		return obj;
 	}
 
-	void Billboard::RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void Billboard::RenderBillboard(
+		const shared_ptr<GameObject>& obj, 
+		const mat4& view, 
+		const mat4& projection)
 	{
 		if (GameObjectManager::renderBillboards
 			&& obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto material = obj->GetComponent<Material>();
+			auto mesh = obj->GetComponent<Mesh>();
+			if (!material
+				|| !mesh)
+			{
+				return;
+			}
+
+			Shader shader = material->GetShader();
 
 			shader.Use();
 			shader.SetMat4("projection", projection);
@@ -130,7 +117,7 @@ namespace Graphics::Shape
 
 			mat4 model = mat4(1.0f);
 
-			vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
+			vec3 pos = obj->GetParent()->GetTransform()->GetPosition();
 			obj->GetTransform()->SetPosition(pos);
 
 			vec3 objectPos = obj->GetTransform()->GetPosition();
@@ -145,10 +132,10 @@ namespace Graphics::Shape
 
 			//bind diffuse map
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse));
+			glBindTexture(GL_TEXTURE_2D, material->GetTextureID(Material::TextureType::diffuse));
 
 			shader.SetMat4("model", model);
-			GLuint VAO = obj->GetMesh()->GetVAO();
+			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}

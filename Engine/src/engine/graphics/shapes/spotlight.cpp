@@ -59,7 +59,42 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		auto obj = GameObject::Create(name, id, isEnabled, pos, rot, scale);
+		auto obj = GameObject::Create(
+			name, 
+			id, 
+			isEnabled, 
+			pos, 
+			rot, 
+			scale);
+
+		float vertices[] =
+		{
+			//four corner edges
+			0.0f,  0.5f,  0.0f,
+		   -0.5f, -0.5f, -0.5f,
+
+			0.0f,  0.5f,  0.0f,
+			0.5f, -0.5f, -0.5f,
+
+			0.0f,  0.5f,  0.0f,
+		   -0.5f, -0.5f,  0.5f,
+
+			0.0f,  0.5f,  0.0f,
+			0.5f, -0.5f,  0.5f,
+
+			//four bottom edges
+			0.5f, -0.5f,  0.5f,
+		   -0.5f, -0.5f,  0.5f,
+
+			0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f, -0.5f,
+
+		   -0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f,  0.5f,
+
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f,  0.5f
+		};
 
 		auto spotLight = obj->AddComponent<SpotLightComponent>(
 			diffuse,
@@ -76,7 +111,7 @@ namespace Graphics::Shape
 			billboardShininess,
 			isBillboardEnabled);
 
-		spotLight->Initialize(obj);
+		spotLight->Initialize(obj, vertices, sizeof(vertices));
 
 		obj->SetTxtFilePath(txtFilePath);
 

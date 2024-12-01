@@ -54,7 +54,7 @@ namespace Graphics::Shape
 	public:
 		virtual ~Component() = default;
 
-		virtual void Initialize(const shared_ptr<GameObject>& parent)
+		virtual void Initialize(const shared_ptr<GameObject>& parent, const float* vertices, size_t verticeSize)
 		{
 			this->parent = parent;
 		}
@@ -154,15 +154,12 @@ namespace Graphics::Shape
 		};
 
 		Mesh(const bool& isEnabled,
-			const MeshType& type,
-			const GLuint& VAO,
-			const GLuint& VBO,
-			const GLuint& EBO) :
+			const MeshType& type) :
 			isEnabled(isEnabled),
 			type(type),
-			VAO(VAO),
-			VBO(VBO),
-			EBO(EBO)
+			VAO(0),
+			VBO(0),
+			EBO(0)
 		{
 		}
 		~Mesh()
@@ -172,11 +169,111 @@ namespace Graphics::Shape
 			glDeleteBuffers(1, &EBO);
 		}
 
-		void Render(const mat4& view, const mat4& projection) override
+		void Initialize(const MeshType& meshType, const float* vertices, size_t vertexSize)
 		{
-			if (isEnabled)
+			switch (meshType)
 			{
-				
+			case MeshType::border:
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+				glEnableVertexAttribArray(0);
+
+				glBindVertexArray(0);
+
+				break;
+			case MeshType::actionTex:
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, vertexSize, vertices, GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+				glEnableVertexAttribArray(0);
+
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+				glEnableVertexAttribArray(1);
+
+				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+				glEnableVertexAttribArray(2);
+
+				glBindVertexArray(0);
+
+				break;
+			case MeshType::skybox:
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+				break;
+
+			case MeshType::billboard:
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+				glEnableVertexAttribArray(0);
+
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+				glEnableVertexAttribArray(1);
+
+				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+				glEnableVertexAttribArray(2);
+
+				glBindVertexArray(0);
+
+				break;
+			case MeshType::point_light:
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+				glEnableVertexAttribArray(0);
+				glBindVertexArray(0);
+
+				break;
+			case MeshType::spot_light:
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+				glEnableVertexAttribArray(0);
+				glBindVertexArray(0);
+
+				break;
+			case MeshType::directional_light:
+				glGenVertexArrays(1, &VAO);
+				glGenBuffers(1, &VBO);
+
+				glBindVertexArray(VAO);
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+				glEnableVertexAttribArray(0);
+				glBindVertexArray(0);
+
+				break;
 			}
 		}
 
@@ -263,6 +360,15 @@ namespace Graphics::Shape
 		};
 
 		Material() {}
+
+		void Initialize(const string& vertShaderPath, const string& fragShaderPath)
+		{
+			Shader newShader = Shader::LoadShader(vertShaderPath, fragShaderPath);
+			AddShader(vertShaderPath, fragShaderPath, newShader);
+
+			newShader.Use();
+			newShader.SetInt("material.diffuse", 0);
+		}
 
 		void AddTexture(const string& textureName, const unsigned int& textureID, const TextureType& textureType)
 		{
@@ -382,20 +488,56 @@ namespace Graphics::Shape
 			isBillboardEnabled(config.isBillboardEnabled) {
 		}
 
-		void Initialize(const shared_ptr<GameObject>& parent) override
+		void Initialize(const shared_ptr<GameObject>& parent, const float* vertices, size_t verticeSize) override
 		{
 			this->parent = parent;
 
-			// Mesh Initialization
-			SetupMesh(parent);
+			auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light);
+			mesh->Initialize(Mesh::MeshType::point_light, vertices, verticeSize);
 
-			// Material Initialization
 			auto material = parent->AddComponent<Material>();
-			Shader shader = Shader::LoadShader(vertShader, fragShader);
-			material->AddShader(vertShader, fragShader, shader);
+			material->Initialize(
+				(path(Engine::filesPath) / "shaders" / vertShader).string(),
+				(path(Engine::filesPath) / "shaders" / fragShader).string());
 
-			// Billboard Initialization
 			SetupBillboard(parent);
+		}
+
+		void Render(const mat4& view, const mat4& projection) override
+		{
+			auto parentPtr = parent.lock();
+			if (!parentPtr 
+				|| !parentPtr->IsEnabled())
+			{
+				return;
+			}
+
+			auto material = parentPtr->GetComponent<Material>();
+			auto mesh = parentPtr->GetComponent<Mesh>();
+			auto& transform = parentPtr->GetTransform();
+
+			if (material 
+				&& mesh 
+				&& transform)
+			{
+				Shader shader = material->GetShader();
+
+				CastLight(
+					shader, 
+					view, 
+					projection, 
+					GetDiffuse());
+
+				if (GameObjectManager::renderLightBorders 
+					&& mesh->IsEnabled())
+				{
+					RenderBorder(
+						transform, 
+						shader, 
+						mesh->GetVAO(), 
+						GetVertexCount());
+				}
+			}
 		}
 
 		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
@@ -405,8 +547,9 @@ namespace Graphics::Shape
 		const float& GetIntensity() const { return intensity; }
 
 	protected:
-		// Helper method for setting up shaders for rendering
-		void SetupShaderUniforms(
+		virtual int GetVertexCount() const = 0;
+
+		void CastLight(
 			Shader& shader, 
 			const mat4& view, 
 			const mat4& projection, 
@@ -426,8 +569,7 @@ namespace Graphics::Shape
 			shader.SetFloat("transparency", transparency);
 		}
 
-		// Helper method for light border rendering (if common behavior is needed)
-		void RenderLightBorders(
+		void RenderBorder(
 			const shared_ptr<Transform>& transform, 
 			Shader& shader, 
 			GLuint vao, 
@@ -444,8 +586,6 @@ namespace Graphics::Shape
 			glBindVertexArray(vao);
 			glDrawArrays(GL_LINES, 0, vertexCount);
 		}
-
-		virtual void SetupMesh(const shared_ptr<GameObject>& parent) = 0;
 
 		void SetupBillboard(const shared_ptr<GameObject>& parent) const
 		{
@@ -491,81 +631,13 @@ namespace Graphics::Shape
 			LightComponent(config),
 			distance(distance) {}
 
-		void Render(const mat4& view, const mat4& projection) override
-		{
-			auto parentPtr = parent.lock();
-			if (!parentPtr 
-				|| !parentPtr->IsEnabled())
-			{
-				return;
-			}
-
-			auto material = parentPtr->GetComponent<Material>();
-			auto mesh = parentPtr->GetComponent<Mesh>();
-			auto& transform = parentPtr->GetTransform();
-
-			if (material 
-				&& mesh 
-				&& transform)
-			{
-				Shader shader = material->GetShader();
-
-				// Use the helper method to setup common shader uniforms
-				SetupShaderUniforms(
-					shader, 
-					view, 
-					projection, 
-					GetDiffuse());
-
-				// Render light borders (specific to PointLightComponent)
-				if (GameObjectManager::renderLightBorders 
-					&& mesh->IsEnabled())
-				{
-					RenderLightBorders(
-						transform, 
-						shader, 
-						mesh->GetVAO(), 
-						24);
-				}
-			}
-		}
-
 		void SetDistance(const float& newDistance) { distance = newDistance; }
 		const float& GetDistance() const { return distance; }
 
+	protected:
+		int GetVertexCount() const override { return 24; }
+
 	private:
-		void SetupMesh(const shared_ptr<GameObject>& parent)
-		{
-			float vertices[] = 
-			{
-				-0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f,
-				0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
-				0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
-				-0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
-				-0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,
-				0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
-				0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
-				-0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f,
-				-0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
-				0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f,
-				0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f,
-				-0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f,
-			};
-
-			GLuint vao, vbo;
-			glGenVertexArrays(1, &vao);
-			glGenBuffers(1, &vbo);
-
-			glBindVertexArray(vao);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-			glBindVertexArray(0);
-
-			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light, vao, vbo, 0);
-		}
 
 		float distance;
 	};
@@ -583,45 +655,6 @@ namespace Graphics::Shape
 			innerAngle(innerAngle),
 			outerAngle(outerAngle) {}
 
-		void Render(const mat4& view, const mat4& projection) override
-		{
-			auto parentPtr = parent.lock();
-			if (!parentPtr 
-				|| !parentPtr->IsEnabled())
-			{
-				return;
-			}
-
-			auto material = parentPtr->GetComponent<Material>();
-			auto mesh = parentPtr->GetComponent<Mesh>();
-			auto& transform = parentPtr->GetTransform();
-
-			if (material 
-				&& mesh 
-				&& transform)
-			{
-				Shader shader = material->GetShader();
-
-				// Use the helper method to setup common shader uniforms
-				SetupShaderUniforms(
-					shader, 
-					view, 
-					projection, 
-					GetDiffuse());
-
-				// Render light borders (specific to SpotLightComponent)
-				if (GameObjectManager::renderLightBorders 
-					&& mesh->IsEnabled())
-				{
-					RenderLightBorders(
-						transform, 
-						shader, 
-						mesh->GetVAO(), 
-						32);
-				}
-			}
-		}
-
 		void SetDistance(const float& newDistance) { distance = newDistance; }
 		void SetInnerAngle(const float& newInnerAngle) { innerAngle = newInnerAngle; }
 		void SetOuterAngle(const float& newOuterAngle) { outerAngle = newOuterAngle; }
@@ -630,53 +663,10 @@ namespace Graphics::Shape
 		const float& GetInnerAngle() const { return innerAngle; }
 		const float& GetOuterAngle() const { return outerAngle; }
 
+	protected:
+		int GetVertexCount() const override { return 32; }
+
 	private:
-		void SetupMesh(const shared_ptr<GameObject>& parent)
-		{
-			float vertices[] = 
-			{
-				//four corner edges
-				0.0f,  0.5f,  0.0f,
-			   -0.5f, -0.5f, -0.5f,
-
-				0.0f,  0.5f,  0.0f,
-				0.5f, -0.5f, -0.5f,
-
-				0.0f,  0.5f,  0.0f,
-			   -0.5f, -0.5f,  0.5f,
-
-				0.0f,  0.5f,  0.0f,
-				0.5f, -0.5f,  0.5f,
-
-				//four bottom edges
-				0.5f, -0.5f,  0.5f,
-			   -0.5f, -0.5f,  0.5f,
-
-				0.5f, -0.5f, -0.5f,
-			   -0.5f, -0.5f, -0.5f,
-
-			   -0.5f, -0.5f, -0.5f,
-			   -0.5f, -0.5f,  0.5f,
-
-				0.5f, -0.5f, -0.5f,
-				0.5f, -0.5f,  0.5f
-			};
-
-			GLuint vao, vbo;
-			glGenVertexArrays(1, &vao);
-			glGenBuffers(1, &vbo);
-
-			glBindVertexArray(vao);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-			glBindVertexArray(0);
-
-			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::spot_light, vao, vbo, 0);
-		}
-
 		float distance;
 		float innerAngle;
 		float outerAngle;
@@ -689,91 +679,8 @@ namespace Graphics::Shape
 			const LightConfig& config) :
 			LightComponent(config) {}
 
-		void Render(const mat4& view, const mat4& projection) override
-		{
-			auto parentPtr = parent.lock();
-			if (!parentPtr 
-				|| !parentPtr->IsEnabled())
-			{
-				return;
-			}
-
-			auto material = parentPtr->GetComponent<Material>();
-			auto mesh = parentPtr->GetComponent<Mesh>();
-			auto& transform = parentPtr->GetTransform();
-
-			if (material 
-				&& mesh 
-				&& transform)
-			{
-				Shader shader = material->GetShader();
-
-				// Use the helper method to setup common shader uniforms
-				SetupShaderUniforms(
-					shader, 
-					view, 
-					projection, 
-					GetDiffuse());
-
-				// Render light borders (specific to DirectionalLightComponent)
-				if (GameObjectManager::renderLightBorders 
-					&& mesh->IsEnabled())
-				{
-					RenderLightBorders(
-						transform, 
-						shader, 
-						mesh->GetVAO(), 
-						32);
-				}
-			}
-		}
-
-	private:
-		void SetupMesh(const shared_ptr<GameObject>& parent)
-		{
-			float vertices[] = 
-			{
-				//four corner edges
-				0.0f,  0.5f,  0.0f,
-			   -0.5f, -0.5f, -0.5f,
-
-				0.0f,  0.5f,  0.0f,
-				0.5f, -0.5f, -0.5f,
-
-				0.0f,  0.5f,  0.0f,
-			   -0.5f, -0.5f,  0.5f,
-
-				0.0f,  0.5f,  0.0f,
-				0.5f, -0.5f,  0.5f,
-
-				//four bottom edges
-				0.5f, -0.5f,  0.5f,
-			   -0.5f, -0.5f,  0.5f,
-
-				0.5f, -0.5f, -0.5f,
-			   -0.5f, -0.5f, -0.5f,
-
-			   -0.5f, -0.5f, -0.5f,
-			   -0.5f, -0.5f,  0.5f,
-
-				0.5f, -0.5f, -0.5f,
-				0.5f, -0.5f,  0.5f
-			};
-
-			GLuint vao, vbo;
-			glGenVertexArrays(1, &vao);
-			glGenBuffers(1, &vbo);
-
-			glBindVertexArray(vao);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-			glBindVertexArray(0);
-
-			parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::directional_light, vao, vbo, 0);
-		}
+	protected:
+		int GetVertexCount() const override { return 32; }
 	};
 
 	class GameObject : public enable_shared_from_this<GameObject>

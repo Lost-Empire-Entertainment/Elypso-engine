@@ -40,9 +40,18 @@ using Core::Input;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> ActionTex::InitializeActionTex(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> ActionTex::InitializeActionTex(
+		const vec3& pos, 
+		const vec3& rot, 
+		const vec3& scale)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = GameObject::Create(
+			"ActionTex", 
+			10000001, 
+			true, 
+			pos, 
+			rot, 
+			scale);
 
 		float vertices[] =
 		{
@@ -55,65 +64,44 @@ namespace Graphics::Shape
 			-0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,   0.0f, 0.0f, // Bottom-left
 		};
 
-		GLuint vao, vbo, ebo;
+		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::actionTex);
+		mesh->Initialize(Mesh::MeshType::actionTex, vertices, sizeof(vertices));
 
-		glGenVertexArrays(1, &vao);
-		glGenBuffers(1, &vbo);
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		//position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		//normal attribute
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-		//texture attribute
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		glEnableVertexAttribArray(2);
-
-		glBindVertexArray(0);
-
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::actionTex, vao, vbo, ebo);
-
-		Shader borderShader = Shader::LoadShader(
+		auto material = obj->AddComponent<Material>();
+		material->Initialize(
 			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string());
 
-		shared_ptr<Material> mat = make_shared<Material>();
-		string basicTextureVert = (path("shaders") / (path("Basic_texture.vert"))).string();
-		string basicTextureFrag = (path("shaders") / (path("Basic_texture.frag"))).string();
-		mat->AddShader(basicTextureVert, basicTextureFrag, borderShader);
+		if (!material
+			|| !mesh)
+		{
+			return nullptr;
+		}
 
-		float shininess = 32;
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
-
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false,
-			"ActionTex",
-			id,
-			true,
-			transform,
-			mesh,
-			mat,
-			basicShape);
-
+		//load selected object action textures
 		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "blank.png").string(), Material::TextureType::misc_icon_blank, true);
 		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "move.png").string(), Material::TextureType::misc_icon_move, true);
 		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "rotate.png").string(), Material::TextureType::misc_icon_rotate, true);
 		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "scale.png").string(), Material::TextureType::misc_icon_scale, true);
 
-		Shader assignedShader = obj->GetMaterial()->GetShader();
-		assignedShader.Use();
-		assignedShader.SetInt("material.diffuse", 0);
-
 		return obj;
 	}
 
-	void ActionTex::RenderActionTex(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void ActionTex::RenderActionTex(
+		const shared_ptr<GameObject>& obj, 
+		const mat4& view, 
+		const mat4& projection)
 	{
-		Shader shader = obj->GetMaterial()->GetShader();
+		auto& transform = obj->GetTransform();
+		auto material = obj->GetComponent<Material>();
+		auto mesh = obj->GetComponent<Mesh>();
+		if (!material
+			|| !mesh)
+		{
+			return;
+		}
+
+		Shader shader = material->GetShader();
 
 		shader.Use();
 		shader.SetMat4("projection", projection);
@@ -131,13 +119,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
+					model = translate(model, transform->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 0.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
+					model = translate(model, transform->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -147,13 +135,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
+					model = translate(model, transform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
+					model = translate(model, transform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -163,13 +151,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
+					model = translate(model, transform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
+					model = translate(model, transform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -191,23 +179,23 @@ namespace Graphics::Shape
 		glActiveTexture(GL_TEXTURE0);
 		if (Input::objectAction == Input::ObjectAction::none)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_blank));
+			glBindTexture(GL_TEXTURE_2D, material->GetTextureID(Material::TextureType::misc_icon_blank));
 		}
 		else if (Input::objectAction == Input::ObjectAction::move)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_move));
+			glBindTexture(GL_TEXTURE_2D, material->GetTextureID(Material::TextureType::misc_icon_move));
 		}
 		else if (Input::objectAction == Input::ObjectAction::rotate)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_rotate));
+			glBindTexture(GL_TEXTURE_2D, material->GetTextureID(Material::TextureType::misc_icon_rotate));
 		}
 		else if (Input::objectAction == Input::ObjectAction::scale)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_scale));
+			glBindTexture(GL_TEXTURE_2D, material->GetTextureID(Material::TextureType::misc_icon_scale));
 		}
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMesh()->GetVAO();
+		GLuint VAO = mesh->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

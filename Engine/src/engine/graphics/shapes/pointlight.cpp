@@ -57,7 +57,54 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		auto obj = GameObject::Create(name, id, isEnabled, pos, rot, scale);
+		auto obj = GameObject::Create(
+			name, 
+			id, 
+			isEnabled, 
+			pos, 
+			rot, 
+			scale);
+
+		float vertices[] =
+		{
+			//edges of the cube
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			//connecting edges
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+
+			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f,  0.5f,
+		};
 
 		auto pointLight = obj->AddComponent<PointLightComponent>(
 			diffuse,
@@ -72,7 +119,7 @@ namespace Graphics::Shape
 			billboardShininess,
 			isBillboardEnabled);
 
-		pointLight->Initialize(obj);
+		pointLight->Initialize(obj, vertices, sizeof(vertices));
 
 		obj->SetTxtFilePath(txtFilePath);
 
