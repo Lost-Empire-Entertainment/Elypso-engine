@@ -105,7 +105,7 @@ namespace Graphics::Shape
 			billboardShininess,
 			isBillboardEnabled);
 
-		directionalLight->Initialize(obj, vertices, sizeof(vertices));
+		directionalLight->Initialize(obj, vertices);
 
 		obj->SetTxtFilePath(txtFilePath);
 

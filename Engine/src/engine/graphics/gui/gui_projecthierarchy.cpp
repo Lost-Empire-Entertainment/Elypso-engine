@@ -175,7 +175,7 @@ namespace Graphics::GUI
                                         && path(child).extension().string() == ".txt")
                                     {
                                         string lightTxtFile = path(child).string();
-                                        GameObjectManager::FindAndDestroyGameObject(lightTxtFile);
+                                        GameObjectManager::FindAndDestroyGameObject(lightTxtFile, false);
 
                                         break;
                                     }
@@ -187,7 +187,7 @@ namespace Graphics::GUI
                                                 && path(secondChild).extension().string() == ".txt")
                                             {
                                                 string modelTxtFile = path(secondChild).string();
-                                                GameObjectManager::FindAndDestroyGameObject(modelTxtFile);
+                                                GameObjectManager::FindAndDestroyGameObject(modelTxtFile, false);
 
                                                 break;
                                             }

@@ -61,6 +61,9 @@ using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
+using Graphics::Shape::PointLightComponent;
+using Graphics::Shape::SpotLightComponent;
+using Graphics::Shape::DirectionalLightComponent;
 using Core::Select;
 using Graphics::Render;
 using Graphics::Shape::GameObject;
@@ -78,10 +81,14 @@ namespace EngineFile
 	{
 		for (const auto& obj : GameObjectManager::GetObjects())
 		{
-			if (obj->GetParentBillboardHolder() == nullptr)
+			if (obj->GetParent() != nullptr
+				&& obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::billboard)
 			{
-				string objectTxtFilePath = obj->GetTxtFilePath();
+				string objectTxtFilePath = obj->GetTxtFile();
 				string objectName = obj->GetName();
+
+				auto material = obj->GetComponent<Material>();
+				auto mesh = obj->GetComponent<Mesh>();
 
 				vector<string> data;
 
@@ -95,9 +102,9 @@ namespace EngineFile
 
 				data.push_back("enabled= " + to_string(obj->IsEnabled()) + "\n");
 
-				data.push_back("mesh enabled= " + to_string(obj->GetMesh()->IsEnabled()) + "\n");
+				data.push_back("mesh enabled= " + to_string(mesh->IsEnabled()) + "\n");
 
-				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
+				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
 				data.push_back("type= " + type + "\n");
 
 				//position
@@ -130,21 +137,21 @@ namespace EngineFile
 				data.push_back("\n");
 
 				//object textures
-				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
+				Mesh::MeshType meshType = mesh->GetMeshType();
 				if (meshType == Mesh::MeshType::model)
 				{
-					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					string diffuseTexture = material->GetTextureName(Material::TextureType::diffuse);
 					diffuseTexture = path(diffuseTexture).filename().string();
 					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
 
-					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
+					string specularTexture = material->GetTextureName(Material::TextureType::specular);
 					specularTexture = path(specularTexture).filename().string();
 					if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
 
-					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
+					string normalTexture = material->GetTextureName(Material::TextureType::normal);
 					normalTexture = path(normalTexture).filename().string();
 
-					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
+					string heightTexture = material->GetTextureName(Material::TextureType::height);
 					heightTexture = path(heightTexture).filename().string();
 
 					data.push_back(
@@ -156,63 +163,69 @@ namespace EngineFile
 				}
 
 				//shaders
-				string vertexShader = obj->GetMaterial()->GetShaderName(0);
+				string vertexShader = material->GetShaderName(0);
 				vertexShader = path(vertexShader).filename().string();
-				string fragmentShader = obj->GetMaterial()->GetShaderName(1);
+				string fragmentShader = material->GetShaderName(1);
 				fragmentShader = path(fragmentShader).filename().string();
 				data.push_back("shaders= " + vertexShader + ", " + fragmentShader + "\n");
 
 				//path to txt file of this gameobject
-				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
+				data.push_back("txtFile= " + obj->GetTxtFile() + "\n");
 
 				//material variables
 				if (meshType == Mesh::MeshType::model)
 				{
-					data.push_back("shininess= " + to_string(obj->GetBasicShape()->GetShininess()) + "\n");
+					data.push_back("shininess= " + to_string(32) + "\n");
 				}
 				else if (meshType == Mesh::MeshType::point_light)
 				{
-					float pointDiffuseX = obj->GetPointLight()->GetDiffuse().x;
-					float pointDiffuseY = obj->GetPointLight()->GetDiffuse().y;
-					float pointDiffuseZ = obj->GetPointLight()->GetDiffuse().z;
+					auto pointLightComponent = obj->GetComponent<PointLightComponent>();
+
+					float pointDiffuseX = pointLightComponent->GetDiffuse().x;
+					float pointDiffuseY = pointLightComponent->GetDiffuse().y;
+					float pointDiffuseZ = pointLightComponent->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(pointDiffuseX) + ", "
 						+ to_string(pointDiffuseY) + ", "
 						+ to_string(pointDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetPointLight()->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(pointLightComponent->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(obj->GetPointLight()->GetDistance()) + "\n");
+					data.push_back("distance= " + to_string(pointLightComponent->GetDistance()) + "\n");
 				}
 				else if (meshType == Mesh::MeshType::spot_light)
 				{
-					float spotDiffuseX = obj->GetSpotLight()->GetDiffuse().x;
-					float spotDiffuseY = obj->GetSpotLight()->GetDiffuse().y;
-					float spotDiffuseZ = obj->GetSpotLight()->GetDiffuse().z;
+					auto spotLightComponent = obj->GetComponent<SpotLightComponent>();
+
+					float spotDiffuseX = spotLightComponent->GetDiffuse().x;
+					float spotDiffuseY = spotLightComponent->GetDiffuse().y;
+					float spotDiffuseZ = spotLightComponent->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(spotDiffuseX) + ", "
 						+ to_string(spotDiffuseY) + ", "
 						+ to_string(spotDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetSpotLight()->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(spotLightComponent->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(obj->GetSpotLight()->GetDistance()) + "\n");
+					data.push_back("distance= " + to_string(spotLightComponent->GetDistance()) + "\n");
 
-					data.push_back("inner angle= " + to_string(obj->GetSpotLight()->GetInnerAngle()) + "\n");
+					data.push_back("inner angle= " + to_string(spotLightComponent->GetInnerAngle()) + "\n");
 
-					data.push_back("outer angle= " + to_string(obj->GetSpotLight()->GetOuterAngle()) + "\n");
+					data.push_back("outer angle= " + to_string(spotLightComponent->GetOuterAngle()) + "\n");
 				}
 				else if (meshType == Mesh::MeshType::directional_light)
 				{
-					float dirDiffuseX = obj->GetDirectionalLight()->GetDiffuse().x;
-					float dirDiffuseY = obj->GetDirectionalLight()->GetDiffuse().y;
-					float dirDiffuseZ = obj->GetDirectionalLight()->GetDiffuse().z;
+					auto dirLightComponent = obj->GetComponent<DirectionalLightComponent>();
+
+					float dirDiffuseX = dirLightComponent->GetDiffuse().x;
+					float dirDiffuseY = dirLightComponent->GetDiffuse().y;
+					float dirDiffuseZ = dirLightComponent->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(dirDiffuseX) + ", "
 						+ to_string(dirDiffuseY) + ", "
 						+ to_string(dirDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetDirectionalLight()->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(dirLightComponent->GetIntensity()) + "\n");
 				}
 
 				//also save billboard data of each light source
@@ -220,27 +233,37 @@ namespace EngineFile
 					|| meshType == Mesh::MeshType::spot_light
 					|| meshType == Mesh::MeshType::directional_light)
 				{
+					shared_ptr<GameObject> childBillboard = nullptr;
+					for (const auto& child : obj->GetChildren())
+					{
+						if (child->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::billboard)
+						{
+							childBillboard = child;
+							break;
+						}
+					}
+
 					data.push_back("\n");
 					data.push_back("---attached billboard data---\n");
 					data.push_back("\n");
 
-					data.push_back("billboard name= " + obj->GetChildBillboard()->GetName() + "\n");
+					data.push_back("billboard name= " + childBillboard->GetName() + "\n");
 
-					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
+					data.push_back("billboard id= " + to_string(childBillboard->GetID()) + "\n");
 
-					data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
+					data.push_back("billboard enabled= " + to_string(childBillboard->IsEnabled()) + "\n");
 
-					string billboardVertShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(0);
+					string billboardVertShader = childBillboard->GetComponent<Material>()->GetShaderName(0);
 					billboardVertShader = path(billboardVertShader).filename().string();
-					string billboardFragShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(1);
+					string billboardFragShader = childBillboard->GetComponent<Material>()->GetShaderName(1);
 					billboardFragShader = path(billboardFragShader).filename().string();
 					data.push_back("billboard shaders= " + billboardVertShader + ", " + billboardFragShader + "\n");
 
-					string billboardTexture = obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					string billboardTexture = childBillboard->GetComponent<Material>()->GetTextureName(Material::TextureType::diffuse);
 					billboardTexture = path(billboardTexture).filename().string();
 					data.push_back("billboard texture= " + billboardTexture + "\n");
 
-					data.push_back("billboard shininess= " + to_string(obj->GetChildBillboard()->GetBasicShape()->GetShininess()) + "\n");
+					data.push_back("billboard shininess= " + to_string(32) + "\n");
 				}
 
 				//
@@ -735,7 +758,13 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
 
+			/*
+			* 
+			* SHININESS VARIABLE IS CURRENTLY UNUSED
+			* IT WILL BE RE-ENABLED IN THE FUTURE
+			* 
 			foundObj->GetBasicShape()->SetShininess(shininess);
+			*/
 
 			GameObject::nextID = ID + 1;
 		}

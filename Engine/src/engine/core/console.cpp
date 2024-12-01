@@ -47,6 +47,9 @@ using Core::Select;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::Mesh;
 using Graphics::Shape::Material;
+using Graphics::Shape::PointLightComponent;
+using Graphics::Shape::SpotLightComponent;
+using Graphics::Shape::DirectionalLightComponent;
 using Graphics::GUI::GUIConsole;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
@@ -313,6 +316,8 @@ namespace Core
 
         stringstream ss;
 
+        auto mesh = obj->GetComponent<Mesh>();
+
         ss << "\n--------------------\n"
             << "name: " << obj->GetName() << "\n"
             << "id: " << obj->GetID() << "\n"
@@ -330,47 +335,53 @@ namespace Core
             << obj->GetTransform()->GetScale().y << ", "
             << obj->GetTransform()->GetScale().z << "\n"
 
-            << "mesh type: " << magic_enum::enum_name(obj->GetMesh()->GetMeshType()) << "\n"
+            << "mesh type: " << magic_enum::enum_name(obj->GetComponent<Mesh>()->GetMeshType()) << "\n"
             << "--------------------\n";
 
-        if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model) 
+        if (mesh->GetMeshType() == Mesh::MeshType::model) 
         {
-            ss << "model shininess: " << obj->GetBasicShape()->GetShininess() << "\n";
+            ss << "model shininess: 32\n";
         }
-        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light)
+        else if (mesh->GetMeshType() == Mesh::MeshType::point_light)
         {
+            auto pointLightComponent = obj->GetComponent<PointLightComponent>();
+
             ss << "point light diffuse: "
-                << obj->GetPointLight()->GetDiffuse().x << ", "
-                << obj->GetPointLight()->GetDiffuse().y << ", "
-                << obj->GetPointLight()->GetDiffuse().z << "\n"
+                << pointLightComponent->GetDiffuse().x << ", "
+                << pointLightComponent->GetDiffuse().y << ", "
+                << pointLightComponent->GetDiffuse().z << "\n"
 
-                << "point light intensity: " << obj->GetPointLight()->GetIntensity() << "\n"
+                << "point light intensity: " << pointLightComponent->GetIntensity() << "\n"
 
-                << "point light distance: " << obj->GetPointLight()->GetDistance() << "\n";
+                << "point light distance: " << pointLightComponent->GetDistance() << "\n";
         }
-        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light)
+        else if (mesh->GetMeshType() == Mesh::MeshType::spot_light)
         {
+            auto spotLightComponent = obj->GetComponent<SpotLightComponent>();
+
             ss << "spotlight diffuse: "
-                << obj->GetSpotLight()->GetDiffuse().x << ", "
-                << obj->GetSpotLight()->GetDiffuse().y << ", "
-                << obj->GetSpotLight()->GetDiffuse().z << "\n"
+                << spotLightComponent->GetDiffuse().x << ", "
+                << spotLightComponent->GetDiffuse().y << ", "
+                << spotLightComponent->GetDiffuse().z << "\n"
 
-                << "spotlight intensity: " << obj->GetSpotLight()->GetIntensity() << "\n"
+                << "spotlight intensity: " << spotLightComponent->GetIntensity() << "\n"
 
-                << "spotlight distance: " << obj->GetSpotLight()->GetDistance() << "\n"
+                << "spotlight distance: " << spotLightComponent->GetDistance() << "\n"
 
-                << "spotlight outer angle: " << obj->GetSpotLight()->GetOuterAngle() << "\n"
+                << "spotlight outer angle: " << spotLightComponent->GetOuterAngle() << "\n"
 
-                << "spotlight inner angle: " << obj->GetSpotLight()->GetInnerAngle() << "\n";
+                << "spotlight inner angle: " << spotLightComponent->GetInnerAngle() << "\n";
         }
-        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light) 
+        else if (mesh->GetMeshType() == Mesh::MeshType::directional_light) 
         {
-            ss << "directional light diffuse: "
-                << obj->GetDirectionalLight()->GetDiffuse().x << ", "
-                << obj->GetDirectionalLight()->GetDiffuse().y << ", "
-                << obj->GetDirectionalLight()->GetDiffuse().z << "\n"
+            auto dirLightComponent = obj->GetComponent<DirectionalLightComponent>();
 
-                << "directional light intensity: " << obj->GetDirectionalLight()->GetIntensity() << "\n";
+            ss << "directional light diffuse: "
+                << dirLightComponent->GetDiffuse().x << ", "
+                << dirLightComponent->GetDiffuse().y << ", "
+                << dirLightComponent->GetDiffuse().z << "\n"
+
+                << "directional light intensity: " << dirLightComponent->GetIntensity() << "\n";
         }
 
         ss << "--------------------\n";

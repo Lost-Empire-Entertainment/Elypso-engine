@@ -121,7 +121,7 @@ namespace EngineFile
 			{
 				for (const auto& obj : objects)
 				{
-					GameObjectManager::DestroyGameObject(obj);
+					GameObjectManager::DestroyGameObject(obj, false);
 				}
 			}
 

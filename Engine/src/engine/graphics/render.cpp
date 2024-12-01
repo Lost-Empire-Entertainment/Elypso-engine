@@ -273,11 +273,11 @@ namespace Graphics
 
 		shared_ptr<GameObject> border = Border::InitializeBorder();
 		GameObjectManager::SetBorder(border);
-		GameObjectManager::AddOpaqueObject(border);
+		//GameObjectManager::AddOpaqueObject(border);
 
 		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
 		GameObjectManager::SetActionTex(actionTex);
-		GameObjectManager::AddTransparentObject(actionTex);
+		//GameObjectManager::AddTransparentObject(actionTex);
 #endif
 		SkyboxSetup();
 

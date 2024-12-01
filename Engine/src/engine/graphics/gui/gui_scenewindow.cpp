@@ -40,6 +40,7 @@ using Core::Select;
 using EngineFile::SceneFile;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
+using Graphics::Shape::Mesh;
 using Utils::String;
 using Core::TimeManager;
 
@@ -604,7 +605,7 @@ namespace Graphics::GUI
 			verticesCount = 0;
 			for (const shared_ptr<GameObject>& obj : GameObjectManager::GetObjects())
 			{
-				verticesCount += static_cast<int>(obj->GetMesh()->GetVertices().size());
+				verticesCount += static_cast<int>(obj->GetComponent<Mesh>()->GetVertices().size());
 			}
 		}
 	}

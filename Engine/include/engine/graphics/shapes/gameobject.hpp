@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -22,11 +23,6 @@
 #include "selectobject.hpp"
 #include "shader.hpp"
 #include "billboard.hpp"
-
-namespace Core
-{
-	class Select;
-}
 
 namespace Graphics::Shape
 {
@@ -45,6 +41,7 @@ namespace Graphics::Shape
 	using std::string;
 	using std::enable_shared_from_this;
 	using std::to_string;
+	using std::filesystem::path;
 
 	using Graphics::Shader;
 	using Core::Select;
@@ -54,7 +51,12 @@ namespace Graphics::Shape
 	public:
 		virtual ~Component() = default;
 
-		virtual void Initialize(const shared_ptr<GameObject>& parent, const float* vertices, size_t verticeSize)
+		virtual void Initialize(const shared_ptr<GameObject>& parent, const float* vertices)
+		{
+			this->parent = parent;
+		}
+
+		virtual void InitializeModel(const shared_ptr<GameObject>& parent, const vector<AssimpVertex>& vertices)
 		{
 			this->parent = parent;
 		}
@@ -75,9 +77,7 @@ namespace Graphics::Shape
 			const vec3& scale) :
 			position(position),
 			rotation(rotation),
-			scale(scale)
-		{
-		}
+			scale(scale) {}
 
 		void Update(float deltaTime) override {}
 
@@ -133,9 +133,7 @@ namespace Graphics::Shape
 			vector<AssimpVertex> vertices,
 			vector<unsigned int> indices) :
 			vertices(vertices),
-			indices(indices)
-		{
-		}
+			indices(indices) {}
 	};
 
 	class Mesh : public Component
@@ -159,9 +157,7 @@ namespace Graphics::Shape
 			type(type),
 			VAO(0),
 			VBO(0),
-			EBO(0)
-		{
-		}
+			EBO(0) {}
 		~Mesh()
 		{
 			glDeleteVertexArrays(1, &VAO);
@@ -275,6 +271,47 @@ namespace Graphics::Shape
 
 				break;
 			}
+		}
+
+		void InitializeModel(const MeshType& meshType, const vector<AssimpVertex> assimpVertex)
+		{
+			size_t verticeSize = sizeof(vertices) * sizeof(assimpVertex);
+
+			glGenVertexArrays(1, &VAO);
+			glGenBuffers(1, &VBO);
+			glGenBuffers(1, &EBO);
+
+			glBindVertexArray(VAO);
+
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+			glBufferData(GL_ARRAY_BUFFER, verticeSize, &vertices[0], GL_STATIC_DRAW);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+			//vertex Positions
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(assimpVertex), (void*)0);
+			//vertex normals
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(assimpVertex), (void*)offsetof(AssimpVertex, normal));
+			//vertex texture coords
+			glEnableVertexAttribArray(2);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(assimpVertex), (void*)offsetof(AssimpVertex, texCoords));
+			//vertex tangent
+			glEnableVertexAttribArray(3);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(assimpVertex), (void*)offsetof(AssimpVertex, tangent));
+			//vertex bitangent
+			glEnableVertexAttribArray(4);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(assimpVertex), (void*)offsetof(AssimpVertex, bitangent));
+			//ids
+			glEnableVertexAttribArray(5);
+			glVertexAttribIPointer(5, 4, GL_INT, sizeof(assimpVertex), (void*)offsetof(AssimpVertex, boneIDs));
+			//weights
+			glEnableVertexAttribArray(6);
+			glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(assimpVertex), (void*)offsetof(AssimpVertex, weights));
+			glBindVertexArray(0);
 		}
 
 		void SetEnableState(const bool& newIsEnabled)
@@ -485,15 +522,14 @@ namespace Graphics::Shape
 			billboardFragShader(config.billboardFragShader),
 			billboardDiffTexture(config.billboardDiffTexture),
 			billboardShininess(config.billboardShininess),
-			isBillboardEnabled(config.isBillboardEnabled) {
-		}
+			isBillboardEnabled(config.isBillboardEnabled) {}
 
-		void Initialize(const shared_ptr<GameObject>& parent, const float* vertices, size_t verticeSize) override
+		void Initialize(const shared_ptr<GameObject>& parent, const float* vertices) override
 		{
 			this->parent = parent;
 
 			auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light);
-			mesh->Initialize(Mesh::MeshType::point_light, vertices, verticeSize);
+			mesh->Initialize(Mesh::MeshType::point_light, vertices, sizeof(vertices));
 
 			auto material = parent->AddComponent<Material>();
 			material->Initialize(
@@ -760,6 +796,7 @@ namespace Graphics::Shape
 		}
 
 		void SetName(const string& newName) { name = newName; }
+		void SetID(const unsigned int& newID) { ID = newID; }
 		void SetEnableState(const bool& newEnableState) { isEnabled = newEnableState; }
 
 		void SetTxtFilePath(const string& newTxtFile) { txtFile = newTxtFile; }
@@ -815,16 +852,38 @@ namespace Graphics::Shape
 		{
 			objects.push_back(obj);
 		}
+		static void AddBillboard(const shared_ptr<GameObject>& obj)
+		{
+			billboards.push_back(obj);
+		}
+
+		static void AddPointlight(const shared_ptr<GameObject>& obj)
+		{
+			pointLights.push_back(obj);
+		}
+		static void AddSpotLight(const shared_ptr<GameObject>& obj)
+		{
+			spotLights.push_back(obj);
+		}
 		static void SetDirectionalLight(const shared_ptr<GameObject>& newDirectionalLight)
 		{
 			directionalLight = newDirectionalLight;
 		}
+
 		static void SetSkybox(const shared_ptr<GameObject>& obj)
 		{
 			skybox = obj;
 		}
+		static void SetActionTex(const shared_ptr<GameObject>& obj)
+		{
+			selectedAction = obj;
+		}
+		static void SetBorder(const shared_ptr<GameObject>& obj)
+		{
+			border = obj;
+		}
 
-		static void DestroyGameObject(const shared_ptr<GameObject>& obj)
+		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly)
 		{
 			objects.erase(std::remove(
 				objects.begin(), 
@@ -833,22 +892,53 @@ namespace Graphics::Shape
 				objects.end());
 		}
 
+		static void FindAndDestroyGameObject(const string& objTxtFile, bool localOnly);
+
 		static const vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
+		}
+		static const vector<shared_ptr<GameObject>>& GetBillboards()
+		{
+			return billboards;
+		}
+
+		static const vector<shared_ptr<GameObject>>& GetPointlights()
+		{
+			return pointLights;
+		}
+		static const vector<shared_ptr<GameObject>>& GetSpotLights()
+		{
+			return spotLights;
 		}
 		static const shared_ptr<GameObject> GetDirectionalLight()
 		{
 			return directionalLight;
 		}
+
 		static const shared_ptr<GameObject> GetSkybox()
 		{
 			return skybox;
 		}
+		static const shared_ptr<GameObject> GetActionTex()
+		{
+			return selectedAction;
+		}
+		static const shared_ptr<GameObject> GetSelectedObjectBorder()
+		{
+			return border;
+		}
 
 	private:
-		static inline vector<shared_ptr<GameObject>> objects;    //main list of all game objects
-		static inline shared_ptr<GameObject> directionalLight;   //single directional light
-		static inline shared_ptr<GameObject> skybox;             //single skybox
+		static inline vector<shared_ptr<GameObject>> objects;			  //main list of all game objects
+		static inline vector<shared_ptr<GameObject>> opaqueObjects;
+		static inline vector<shared_ptr<GameObject>> transparentObjects;
+		static inline vector<shared_ptr<GameObject>> billboards;
+		static inline vector<shared_ptr<GameObject>> pointLights;
+		static inline vector<shared_ptr<GameObject>> spotLights;
+		static inline shared_ptr<GameObject> directionalLight;			  //single directional light
+		static inline shared_ptr<GameObject> skybox;					  //single skybox
+		static inline shared_ptr<GameObject> selectedAction;			  //single selected object action
+		static inline shared_ptr<GameObject> border;					  //single selected object border
 	};
 }

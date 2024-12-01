@@ -69,20 +69,16 @@ namespace Graphics::Shape
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetMesh()->GetMeshType();
+				Type type = obj->GetComponent<Mesh>()->GetMeshType();
 				switch (type)
 				{
 				case Type::model:
 					Model::Render(obj, view, projection);
 					break;
 				case Type::directional_light:
-					DirectionalLight::RenderDirectionalLight(obj, view, projection);
-					break;
 				case Type::point_light:
-					PointLight::RenderPointLight(obj, view, projection);
-					break;
 				case Type::spot_light:
-					SpotLight::RenderSpotLight(obj, view, projection);
+					obj->Render(view, projection);
 					break;
 				}
 			}
@@ -113,13 +109,19 @@ namespace Graphics::Shape
 			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
 #if ENGINE_MODE
-			ActionTex::RenderActionTex(actionTex, view, projection);
+			for (const auto& obj : transparentObjects)
+			{
+				if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::actionTex)
+				{
+					obj->Render(view, projection);
+				}
+			}
 #endif
 			for (const auto& obj : transparentObjects)
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetMesh()->GetMeshType();
+				Type type = obj->GetComponent<Mesh>()->GetMeshType();
 				switch (type)
 				{
 				case Type::billboard:
@@ -137,12 +139,12 @@ namespace Graphics::Shape
 	{
 		string thisName = obj->GetName();
 
-		Type type = obj->GetMesh()->GetMeshType();
+		Type type = obj->GetComponent<Mesh>()->GetMeshType();
 
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
 
-		string txtFilePath = obj->GetTxtFilePath();
+		string txtFilePath = obj->GetTxtFile();
 
 		//destroy all children if parent is destroyed
 		if (obj->GetChildren().size() > 0)
@@ -158,6 +160,19 @@ namespace Graphics::Shape
 			obj->GetParent()->RemoveChild(obj);
 		}
 
+		shared_ptr<GameObject> billboard = nullptr;
+		if (obj->GetChildren().size() > 0)
+		{
+			for (const auto& child : obj->GetChildren())
+			{
+				if (child->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::billboard)
+				{
+					billboard = child;
+					break;
+				}
+			}
+		}
+
 		switch (type)
 		{
 		case Type::model:
@@ -165,28 +180,28 @@ namespace Graphics::Shape
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;
 		case Type::point_light:
-			DestroyGameObject(obj->GetChildBillboard());
-			obj->SetChildBillboard(nullptr);
+			obj->RemoveChild(billboard);
+			DestroyGameObject(billboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			pointLights.erase(std::remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
 			break;
 		case Type::spot_light:
-			DestroyGameObject(obj->GetChildBillboard());
-			obj->SetChildBillboard(nullptr);
+			obj->RemoveChild(billboard);
+			DestroyGameObject(billboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			spotLights.erase(std::remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
 			break;
 		case Type::directional_light:
-			DestroyGameObject(obj->GetChildBillboard());
-			obj->SetChildBillboard(nullptr);
+			obj->RemoveChild(billboard);
+			DestroyGameObject(billboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			directionalLight = nullptr;
 			break;
 		case Type::billboard:
-			obj->SetParentBillboardHolder(nullptr);
+			billboard->SetParent(nullptr);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
 			billboards.erase(std::remove(billboards.begin(), billboards.end(), obj), billboards.end());
@@ -196,17 +211,17 @@ namespace Graphics::Shape
 		//also delete the externally saved folder of this gameobject
 		if (!localOnly)
 		{
-			string txtFilePath = obj->GetTxtFilePath();
+			string txtFilePath = obj->GetTxtFile();
 			if (exists(txtFilePath))
 			{
 				string targetFolder;
-				if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+				if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::model)
 				{
 					targetFolder = path(txtFilePath).parent_path().parent_path().string();
 				}
-				else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
-					|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
-					|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
+				else if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::point_light
+					|| obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::spot_light
+					|| obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::directional_light)
 				{
 					targetFolder = path(txtFilePath).parent_path().string();
 				}

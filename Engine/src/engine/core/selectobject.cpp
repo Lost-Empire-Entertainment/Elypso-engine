@@ -26,6 +26,7 @@ using std::ranges::max;
 using std::ranges::min;
 
 using Graphics::Render;
+using Graphics::Shape::Mesh;
 using Type = Graphics::Shape::Mesh::MeshType;
 
 namespace Core
@@ -53,7 +54,7 @@ namespace Core
 
 		for (int i = 0; i < objects.size(); i++)
 		{
-			Type objType = objects[i]->GetMesh()->GetMeshType();
+			Type objType = objects[i]->GetComponent<Mesh>()->GetMeshType();
 			if (objType == Type::model
 				|| objType == Type::point_light
 				|| objType == Type::spot_light
@@ -80,7 +81,7 @@ namespace Core
 		const shared_ptr<GameObject>& shape,
 		float* distance)
 	{
-		Type objType = shape->GetMesh()->GetMeshType();
+		Type objType = shape->GetComponent<Mesh>()->GetMeshType();
 
 		if (objType == Type::model
 			|| objType == Type::point_light
@@ -94,7 +95,7 @@ namespace Core
 
 			if (objType == Type::model)
 			{
-				const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
+				const vector<AssimpVertex>& vertices = shape->GetComponent<Mesh>()->GetVertices();
 
 				//complex bounding box for models
 				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), vec3(1.0f));

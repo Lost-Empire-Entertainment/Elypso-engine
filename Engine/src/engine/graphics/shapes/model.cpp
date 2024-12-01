@@ -81,82 +81,39 @@ namespace Graphics::Shape
 		const bool& isEnabled,
 		const bool& isMeshEnabled)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
-
-		GLuint VAO, VBO, EBO;
-
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(AssimpVertex), &vertices[0], GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-		//vertex Positions
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)0);
-		//vertex normals
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, normal));
-		//vertex texture coords
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, texCoords));
-		//vertex tangent
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, tangent));
-		//vertex bitangent
-		glEnableVertexAttribArray(4);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, bitangent));
-		//ids
-		glEnableVertexAttribArray(5);
-		glVertexAttribIPointer(5, 4, GL_INT, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, boneIDs));
-		//weights
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, weights));
-		glBindVertexArray(0);
-
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::model, VAO, VBO, EBO);
-
-		Shader modelShader = Shader::LoadShader(vertShader, fragShader);
-
-		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(vertShader, fragShader, modelShader);
-
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
-
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
+		auto obj = GameObject::Create(
 			name,
 			id,
 			isEnabled,
-			transform,
-			mesh,
-			mat,
-			basicShape);
+			pos,
+			rot,
+			scale);
 
-		obj->GetMesh()->SetVertices(vertices);
-		obj->GetMesh()->SetIndices(indices);
+		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::billboard);
+		mesh->InitializeModel(Mesh::MeshType::border, vertices);
 
+		auto material = obj->AddComponent<Material>();
+		material->Initialize(
+			(path(Engine::filesPath) / "shaders" / vertShader).string(),
+			(path(Engine::filesPath) / "shaders" / fragShader).string());
+
+		mesh->SetVertices(vertices);
+		mesh->SetIndices(indices);
+
+		//load model textures
 		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, false);
 		Texture::LoadTexture(obj, specTexture, Material::TextureType::specular, false);
 		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::height, false);
 		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::normal, false);
 
-		Shader assignedShader = obj->GetMaterial()->GetShader();
-		assignedShader.Use();
-		assignedShader.SetInt("material.diffuse", 0);
-		assignedShader.SetInt("material.specular", 1);
+		Shader modelShader = material->GetShader();
+		modelShader.Use();
+		modelShader.SetInt("material.diffuse", 0);
+		modelShader.SetInt("material.specular", 1);
 
 		obj->SetTxtFilePath(txtFilePath);
 
 		GameObjectManager::AddGameObject(obj);
-		GameObjectManager::AddOpaqueObject(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
@@ -181,11 +138,19 @@ namespace Graphics::Shape
 	{
 		if (obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto material = obj->GetComponent<Material>();
+			auto mesh = obj->GetComponent<Mesh>();
+			if (!material
+				|| !mesh)
+			{
+				return;
+			}
+
+			Shader shader = material->GetShader();
 
 			shader.Use();
 			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
-			shader.SetFloat("material.shininess", obj->GetBasicShape()->GetShininess());
+			shader.SetFloat("material.shininess", 32);
 
 			//directional light
 			if (GameObjectManager::GetDirectionalLight() != nullptr)
@@ -196,7 +161,7 @@ namespace Graphics::Shape
 				shader.SetInt("dirLightCount", count);
 				
 				shared_ptr<Transform> transform = dirLight->GetTransform();
-				shared_ptr<Directional_light_Variables> dirVar = dirLight->GetDirectionalLight();
+				auto dirVar = dirLight->GetComponent<DirectionalLightComponent>();
 
 				vec3 dirRot = transform->GetRotation();
 				quat dirQuat = quat(radians(dirRot));
@@ -221,7 +186,7 @@ namespace Graphics::Shape
 			}
 
 			//point lights
-			const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointLights();
+			const vector<shared_ptr<GameObject>>& pointLights = GameObjectManager::GetPointlights();
 			int pointLightCount = static_cast<int>(pointLights.size());
 			shader.SetInt("pointLightCount", pointLightCount);
 			if (pointLightCount > 0)
@@ -229,7 +194,7 @@ namespace Graphics::Shape
 				for (int i = 0; i < pointLightCount; i++)
 				{
 					shared_ptr<Transform> transform = pointLights[i]->GetTransform();
-					shared_ptr<PointLight_Variables> pointLight = pointLights[i]->GetPointLight();
+					auto pointLight = pointLights[i]->GetComponent<PointLightComponent>();
 					string lightPrefix = "pointLights[" + to_string(i) + "].";
 
 					shader.SetBool(lightPrefix + "enabled", pointLights[i]->IsEnabled());
@@ -255,7 +220,7 @@ namespace Graphics::Shape
 				for (int i = 0; i < spotLightCount; i++)
 				{
 					shared_ptr<Transform> transform = spotLights[i]->GetTransform();
-					shared_ptr<SpotLight_Variables> spotLight = spotLights[i]->GetSpotLight();
+					auto spotLight = spotLights[i]->GetComponent<SpotLightComponent>();
 					string lightPrefix = "spotLights[" + to_string(i) + "].";
 					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
 
@@ -295,10 +260,8 @@ namespace Graphics::Shape
 
 			model = scale(model, obj->GetTransform()->GetScale());
 
-			shared_ptr<Material> mat = obj->GetMaterial();
-
 			//bind diffuse texture
-			unsigned int diffuseTextureID = mat->GetTextureID(Material::TextureType::diffuse);
+			unsigned int diffuseTextureID = material->GetTextureID(Material::TextureType::diffuse);
 			if (diffuseTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -306,7 +269,7 @@ namespace Graphics::Shape
 			}
 
 			//bind specular texture
-			unsigned int specularTextureID = mat->GetTextureID(Material::TextureType::specular);
+			unsigned int specularTextureID = material->GetTextureID(Material::TextureType::specular);
 			if (specularTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE1);
@@ -315,11 +278,11 @@ namespace Graphics::Shape
 
 			shader.SetMat4("model", model);
 
-			GLuint VAO = obj->GetMesh()->GetVAO();
+			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawElements(
 				GL_TRIANGLES,
-				static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
+				static_cast<unsigned int>(mesh->GetIndices().size()),
 				GL_UNSIGNED_INT,
 				0);
 

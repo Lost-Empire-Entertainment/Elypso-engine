@@ -79,10 +79,12 @@ namespace Graphics::GUI
 		{
 			if (obj == nullptr) return;
 
-			if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model
-				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
-				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
-				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
+			Mesh::MeshType type = obj->GetComponent<Mesh>()->GetMeshType();
+
+			if (type == Mesh::MeshType::model
+				|| type == Mesh::MeshType::point_light
+				|| type == Mesh::MeshType::spot_light
+				|| type == Mesh::MeshType::directional_light)
 			{
 				string name = obj->GetName();
 				string label = name + "##" + to_string(obj->GetID());
