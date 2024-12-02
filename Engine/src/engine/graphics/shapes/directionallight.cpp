@@ -31,6 +31,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Select;
 using Graphics::Components::DirectionalLightComponent;
+using Graphics::Components::LightComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -96,7 +97,8 @@ namespace Graphics::Shape
 			0.5f, -0.5f,  0.5f
 		};
 
-		auto directionalLight = obj->AddComponent<DirectionalLightComponent>(
+		auto lightConfig = LightComponent::LightConfig
+		{
 			diffuse,
 			intensity,
 			vertShader,
@@ -106,9 +108,15 @@ namespace Graphics::Shape
 			billboardFragShader,
 			billboardDiffTexture,
 			billboardShininess,
-			isBillboardEnabled);
+			isBillboardEnabled
+		};
 
-		directionalLight->Initialize(obj, vertices);
+		auto dirLight = obj->AddComponent<DirectionalLightComponent>
+		(
+			lightConfig
+		);
+
+		dirLight->Initialize(obj, vertices);
 
 		obj->SetTxtFilePath(txtFilePath);
 

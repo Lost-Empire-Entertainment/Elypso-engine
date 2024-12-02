@@ -32,6 +32,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Components::SpotLightComponent;
+using Graphics::Components::LightComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -100,12 +101,10 @@ namespace Graphics::Shape
 			0.5f, -0.5f,  0.5f
 		};
 
-		auto spotLight = obj->AddComponent<SpotLightComponent>(
+		auto lightConfig = LightComponent::LightConfig
+		{
 			diffuse,
 			intensity,
-			distance,
-			innerAngle,
-			outerAngle,
 			vertShader,
 			fragShader,
 			isMeshEnabled,
@@ -113,7 +112,16 @@ namespace Graphics::Shape
 			billboardFragShader,
 			billboardDiffTexture,
 			billboardShininess,
-			isBillboardEnabled);
+			isBillboardEnabled
+		};
+
+		auto spotLight = obj->AddComponent<SpotLightComponent>
+		(
+			lightConfig,
+			distance,
+			innerAngle,
+			outerAngle
+		);
 
 		spotLight->Initialize(obj, vertices);
 

@@ -31,6 +31,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Components::PointLightComponent;
+using Graphics::Components::LightComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -109,10 +110,10 @@ namespace Graphics::Shape
 			-0.5f,  0.5f,  0.5f,
 		};
 
-		auto pointLight = obj->AddComponent<PointLightComponent>(
+		auto lightConfig = LightComponent::LightConfig
+		{
 			diffuse,
 			intensity,
-			distance,
 			vertShader,
 			fragShader,
 			isMeshEnabled,
@@ -120,7 +121,14 @@ namespace Graphics::Shape
 			billboardFragShader,
 			billboardDiffTexture,
 			billboardShininess,
-			isBillboardEnabled);
+			isBillboardEnabled
+		};
+
+		auto pointLight = obj->AddComponent<PointLightComponent>
+		(
+			lightConfig,
+			distance 
+		);
 
 		pointLight->Initialize(obj, vertices);
 

@@ -23,7 +23,6 @@
 #include "shader.hpp"
 #include "billboard.hpp"
 #include "core.hpp"
-//#include "transformcomponent.hpp"
 
 namespace Graphics::Components
 {
@@ -52,7 +51,6 @@ namespace Graphics::Shape
 
 	using Graphics::Shader;
 	using Core::Engine;
-	//using Graphics::Components::Transform;
 
 	class AssimpVertex;
 
