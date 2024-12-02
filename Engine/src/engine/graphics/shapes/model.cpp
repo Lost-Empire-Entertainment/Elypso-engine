@@ -23,6 +23,9 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameObjectFile.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lighttcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -45,9 +48,9 @@ using std::stof;
 using Graphics::Render;
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::Mesh;
+using MeshType = Graphics::Components::Mesh::MeshType;
+using Graphics::Components::Material;
 using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -55,6 +58,9 @@ using Type = Core::ConsoleManager::Type;
 using Utils::String;
 using Core::Select;
 using EngineFile::GameObjectFile;
+using Graphics::Components::PointLightComponent;
+using Graphics::Components::SpotLightComponent;
+using Graphics::Components::DirectionalLightComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif

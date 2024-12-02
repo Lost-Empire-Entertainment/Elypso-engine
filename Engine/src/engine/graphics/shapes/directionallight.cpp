@@ -13,6 +13,8 @@
 #include "render.hpp"
 #include "console.hpp"
 #include "selectobject.hpp"
+#include "meshcomponent.hpp"
+#include "lighttcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -20,14 +22,15 @@
 using glm::translate;
 using glm::quat;
 
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::Mesh;
+using MeshType = Graphics::Components::Mesh::MeshType;
 using Graphics::Shape::Billboard;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Select;
+using Graphics::Components::DirectionalLightComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif

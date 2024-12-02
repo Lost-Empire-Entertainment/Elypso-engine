@@ -23,7 +23,7 @@
 #include "shader.hpp"
 #include "billboard.hpp"
 #include "core.hpp"
-#include "transformcomponent.hpp"
+//#include "transformcomponent.hpp"
 
 namespace Graphics::Components
 {
@@ -48,10 +48,11 @@ namespace Graphics::Shape
 	using std::enable_shared_from_this;
 	using std::to_string;
 	using std::filesystem::path;
+	using std::forward;
 
 	using Graphics::Shader;
 	using Core::Engine;
-	using Graphics::Components::Transform;
+	//using Graphics::Components::Transform;
 
 	class AssimpVertex;
 
@@ -76,8 +77,13 @@ namespace Graphics::Shape
 	protected:
 		weak_ptr<GameObject> parent;
 	};
+}
 
 #include "transformcomponent.hpp"
+
+namespace Graphics::Shape
+{
+	using Graphics::Components::Transform;
 
 	struct AssimpVertex
 	{
@@ -147,7 +153,7 @@ namespace Graphics::Shape
 		template <typename T, typename... Args>
 		shared_ptr<T> AddComponent(Args&&... args)
 		{
-			auto component = make_shared<T>(std::forward<Args>(args)...);
+			auto component = make_shared<T>(forward<Args>(args)...);
 			components[typeid(T).hash_code()] = component;
 			return component;
 		}
@@ -267,15 +273,7 @@ namespace Graphics::Shape
 			border = obj;
 		}
 
-		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly)
-		{
-			objects.erase(std::remove(
-				objects.begin(), 
-				objects.end(), 
-				obj), 
-				objects.end());
-		}
-
+		static void DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly);
 		static void FindAndDestroyGameObject(const string& objTxtFile, bool localOnly);
 
 		static const vector<shared_ptr<GameObject>>& GetObjects()

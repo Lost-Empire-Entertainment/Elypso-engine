@@ -10,12 +10,15 @@
 #include "skybox.hpp"
 #include "console.hpp"
 #include "render.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
 
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::Mesh;
+using Graphics::Components::Material;
+using MeshType = Graphics::Components::Mesh::MeshType;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;

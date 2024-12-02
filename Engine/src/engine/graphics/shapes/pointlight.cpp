@@ -13,6 +13,8 @@
 #include "selectobject.hpp"
 #include "billboard.hpp"
 #include "console.hpp"
+#include "meshcomponent.hpp"
+#include "lighttcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -21,13 +23,14 @@ using glm::translate;
 using glm::quat;
 
 using Graphics::Shader;
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::Mesh;
+using MeshType = Graphics::Components::Mesh::MeshType;
 using Graphics::Render;
 using Core::Select;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using Graphics::Components::PointLightComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -119,7 +122,7 @@ namespace Graphics::Shape
 			billboardShininess,
 			isBillboardEnabled);
 
-		pointLight->Initialize(obj, vertices, sizeof(vertices));
+		pointLight->Initialize(obj, vertices);
 
 		obj->SetTxtFilePath(txtFilePath);
 

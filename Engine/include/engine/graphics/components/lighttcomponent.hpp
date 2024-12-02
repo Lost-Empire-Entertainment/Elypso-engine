@@ -90,8 +90,7 @@ namespace Graphics::Components
 			const LightConfig& config,
 			float distance) :
 			LightComponent(config),
-			distance(distance) {
-		}
+			distance(distance) {}
 
 		void SetDistance(const float& newDistance) { distance = newDistance; }
 		const float& GetDistance() const { return distance; }
@@ -115,8 +114,7 @@ namespace Graphics::Components
 			LightComponent(config),
 			distance(distance),
 			innerAngle(innerAngle),
-			outerAngle(outerAngle) {
-		}
+			outerAngle(outerAngle) {}
 
 		void SetDistance(const float& newDistance) { distance = newDistance; }
 		void SetInnerAngle(const float& newInnerAngle) { innerAngle = newInnerAngle; }
@@ -140,8 +138,7 @@ namespace Graphics::Components
 	public:
 		DirectionalLightComponent(
 			const LightConfig& config) :
-			LightComponent(config) {
-		}
+			LightComponent(config) {}
 
 	protected:
 		int GetVertexCount() const override { return 32; }

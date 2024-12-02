@@ -18,6 +18,7 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "meshcomponent.hpp"
 
 using std::cout;
 using glm::translate;
@@ -29,9 +30,9 @@ using std::filesystem::path;
 
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::Mesh;
+using Type = Graphics::Components::Mesh::MeshType;
+using Graphics::Components::Material;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;

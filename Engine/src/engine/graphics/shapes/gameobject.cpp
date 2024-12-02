@@ -25,6 +25,7 @@
 #include "sceneFile.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#include "meshcomponent.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -44,7 +45,8 @@ using std::ifstream;
 using std::filesystem::exists;
 
 using Core::Select;
-using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::Mesh;
+using Type = Graphics::Components::Mesh::MeshType;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -151,7 +153,7 @@ namespace Graphics::Shape
 		{
 			for (const auto& child : obj->GetChildren())
 			{
-				GameObjectManager::DestroyGameObject(child);
+				GameObjectManager::DestroyGameObject(child, true);
 			}
 		}
 		//remove object from parent children vector
@@ -288,7 +290,7 @@ namespace Graphics::Shape
 			if (name == objName
 				&& ID == objID)
 			{
-				GameObjectManager::DestroyGameObject(obj);
+				GameObjectManager::DestroyGameObject(obj, true);
 
 				break;
 			}
