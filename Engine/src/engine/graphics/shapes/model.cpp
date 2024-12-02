@@ -95,8 +95,10 @@ namespace Graphics::Shape
 			rot,
 			scale);
 
-		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::billboard);
-		mesh->InitializeModel(Mesh::MeshType::border, vertices);
+		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::model);
+		mesh->InitializeModel(Mesh::MeshType::border, vertices, indices);
+		mesh->SetVertices(vertices);
+		mesh->SetIndices(indices);
 
 		auto material = obj->AddComponent<Material>();
 		material->Initialize(

@@ -48,7 +48,10 @@ namespace Graphics::Components
 		}
 
 		void Initialize(const MeshType& meshType, const float* vertices, size_t vertexSize);
-		void InitializeModel(const MeshType& meshType, const vector<AssimpVertex> assimpVertex);
+		void InitializeModel(
+			const MeshType& meshType, 
+			const vector<AssimpVertex> assimpVertex,
+			const vector<unsigned int> indices);
 
 		void SetEnableState(const bool& newIsEnabled)
 		{

@@ -44,7 +44,6 @@
 #include "configFile.hpp"
 #include "fileexplorer.hpp"
 #include "compile.hpp"
-#include "configFile.hpp"
 
 using std::cout;
 using std::endl;
