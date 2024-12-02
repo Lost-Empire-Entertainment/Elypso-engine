@@ -24,6 +24,7 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "input.hpp"
+#include "meshcomponent.hpp"
 
 using std::shared_ptr;
 using std::filesystem::directory_iterator;
@@ -42,7 +43,7 @@ using Utils::File;
 using Utils::String;
 using Core::Select;
 using Core::Input;
-using Graphics::Shape::Mesh;
+using Graphics::Components::Mesh;
 
 namespace Graphics::GUI
 {

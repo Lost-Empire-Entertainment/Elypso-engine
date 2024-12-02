@@ -27,6 +27,7 @@
 #include "gameobject.hpp"
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
+#include "meshcomponent.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -40,7 +41,7 @@ using Core::Select;
 using EngineFile::SceneFile;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
-using Graphics::Shape::Mesh;
+using Graphics::Components::Mesh;
 using Utils::String;
 using Core::TimeManager;
 

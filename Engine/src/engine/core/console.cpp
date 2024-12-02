@@ -23,6 +23,9 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "gui_console.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lighttcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #endif
@@ -45,11 +48,11 @@ using Graphics::Render;
 using Utils::String;
 using Core::Select;
 using Graphics::Shape::GameObject;
-using Graphics::Shape::Mesh;
-using Graphics::Shape::Material;
-using Graphics::Shape::PointLightComponent;
-using Graphics::Shape::SpotLightComponent;
-using Graphics::Shape::DirectionalLightComponent;
+using Graphics::Components::Mesh;
+using Graphics::Components::Material;
+using Graphics::Components::PointLightComponent;
+using Graphics::Components::SpotLightComponent;
+using Graphics::Components::DirectionalLightComponent;
 using Graphics::GUI::GUIConsole;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;

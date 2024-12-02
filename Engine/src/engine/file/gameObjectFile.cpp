@@ -28,7 +28,9 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "texture.hpp"
-#include "gameobject.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lighttcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -54,16 +56,16 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::File;
-using Graphics::Shape::Mesh;
 using Utils::String;
-using Graphics::Shape::Material;
 using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
-using Graphics::Shape::PointLightComponent;
-using Graphics::Shape::SpotLightComponent;
-using Graphics::Shape::DirectionalLightComponent;
+using Graphics::Components::Mesh;
+using Graphics::Components::Material;
+using Graphics::Components::PointLightComponent;
+using Graphics::Components::SpotLightComponent;
+using Graphics::Components::DirectionalLightComponent;
 using Core::Select;
 using Graphics::Render;
 using Graphics::Shape::GameObject;

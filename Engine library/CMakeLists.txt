@@ -145,6 +145,7 @@ target_include_directories(Elypso_engine PRIVATE
 		${ENGINE_INCLUDE_DIR}/core
 		${ENGINE_INCLUDE_DIR}/file
 		${ENGINE_INCLUDE_DIR}/graphics
+		${ENGINE_INCLUDE_DIR}/graphics/components
 		${ENGINE_INCLUDE_DIR}/graphics/gui
 		${ENGINE_INCLUDE_DIR}/graphics/shapes
 		${ENGINE_INCLUDE_DIR}/physics

@@ -31,6 +31,7 @@
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
 #include "configFile.hpp"
+#include "meshcomponent.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -52,7 +53,7 @@ using Utils::String;
 using Utils::File;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
-using Graphics::Shape::Mesh;
+using Graphics::Components::Mesh;
 using Graphics::Render;
 using EngineFile::SceneFile;
 using Graphics::GUI::EngineGUI;

@@ -30,6 +30,10 @@
 #include "gui_projectitemslist.hpp"
 #include "fileUtils.hpp"
 #include "console.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lighttcomponent.hpp"
 
 using std::cout;
 using std::endl;
@@ -42,9 +46,13 @@ using std::filesystem::exists;
 using Graphics::Render;
 using Core::Select;
 using Graphics::Shape::GameObject;
-using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Transform;
-using Graphics::Shape::Material;
+using Type = Graphics::Components::Mesh::MeshType;
+using Graphics::Components::Transform;
+using Graphics::Components::Material;
+using Graphics::Components::Mesh;
+using Graphics::Components::PointLightComponent;
+using Graphics::Components::SpotLightComponent;
+using Graphics::Components::DirectionalLightComponent;
 using EngineFile::SceneFile;
 using Core::Input;
 using Graphics::Texture;
@@ -56,10 +64,6 @@ using Utils::File;
 using Core::ConsoleManager;
 using ConsoleCaller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
-using Graphics::Shape::Mesh;
-using Graphics::Shape::PointLightComponent;
-using Graphics::Shape::SpotLightComponent;
-using Graphics::Shape::DirectionalLightComponent;
 
 namespace Graphics::GUI
 {

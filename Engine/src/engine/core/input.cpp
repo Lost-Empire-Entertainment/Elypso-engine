@@ -32,6 +32,7 @@
 #include "fileUtils.hpp"
 #include "camera.hpp"
 #include "gui_console.hpp"
+#include "materialcomponent.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #endif
@@ -60,7 +61,7 @@ using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::Importer;
-using Graphics::Shape::Material;
+using Graphics::Components::Material;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Utils::File;

@@ -11,6 +11,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "materialcomponent.hpp"
 
 namespace Graphics::GUI
 {
@@ -18,7 +19,7 @@ namespace Graphics::GUI
 	using std::vector;
 	using std::shared_ptr;
 
-	using Graphics::Shape::Material;
+	using Graphics::Components::Material;
 	using Graphics::Shape::GameObject;
 
 	class GUIProjectItemsList

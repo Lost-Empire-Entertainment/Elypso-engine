@@ -15,6 +15,7 @@
 #include "selectobject.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+#include "meshcomponent.hpp"
 
 using glm::inverse;
 using glm::normalize;
@@ -26,8 +27,8 @@ using std::ranges::max;
 using std::ranges::min;
 
 using Graphics::Render;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::Mesh;
+using Type = Graphics::Components::Mesh::MeshType;
 
 namespace Core
 {
