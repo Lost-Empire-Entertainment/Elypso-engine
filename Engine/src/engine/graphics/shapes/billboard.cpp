@@ -87,6 +87,8 @@ namespace Graphics::Shape
 		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, true);
 
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddTransparentObject(obj);
+		GameObjectManager::AddBillboard(obj);
 
 		return obj;
 	}

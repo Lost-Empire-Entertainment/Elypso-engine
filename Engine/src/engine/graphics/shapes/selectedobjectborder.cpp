@@ -114,7 +114,7 @@ namespace Graphics::Shape
 		const mat4& view, 
 		const mat4& projection)
 	{
-		auto transform = obj->GetTransform();
+		auto& transform = obj->GetTransform();
 		auto material = obj->GetComponent<Material>();
 		auto mesh = obj->GetComponent<Mesh>();
 		if (!material

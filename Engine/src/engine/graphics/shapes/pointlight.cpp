@@ -61,6 +61,10 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
+		cout << "vert shader: " << vertShader << "\n";
+		cout << "frag shader: " << fragShader << "\n";
+		cout << "txt file path: " << txtFilePath << "\n";
+
 		auto obj = GameObject::Create(
 			name, 
 			id, 
@@ -132,6 +136,7 @@ namespace Graphics::Shape
 		obj->SetTxtFilePath(txtFilePath);
 
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddOpaqueObject(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
