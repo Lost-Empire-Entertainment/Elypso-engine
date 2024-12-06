@@ -44,10 +44,7 @@ namespace Graphics::Shape
         auto obj = GameObject::Create(
             "Skybox",
             10000003,
-            true,
-            pos,
-            rot,
-            scale);
+            true);
 
         float vertices[] =
         {        
@@ -93,6 +90,9 @@ namespace Graphics::Shape
             -1.0f, -1.0f,  1.0f,
              1.0f, -1.0f,  1.0f
         };
+
+        auto transform = make_shared<Transform>(pos, rot, scale);
+        obj->SetTransform(transform);
 
         auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::border);
         mesh->Initialize(Mesh::MeshType::border, vertices, sizeof(vertices));

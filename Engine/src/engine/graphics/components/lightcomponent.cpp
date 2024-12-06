@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <filesystem>
+#include <memory>
 
 //external
 #include "glm.hpp"
@@ -19,6 +20,7 @@ using std::filesystem::path;
 using glm::quat;
 using glm::mat4;
 using glm::vec3;
+using std::make_shared;
 
 using Core::Engine;
 using Graphics::Shape::GameObjectManager;
@@ -28,9 +30,15 @@ namespace Graphics::Components
 {
 	void LightComponent::Initialize(
 		const shared_ptr<GameObject>& parent, 
-		const float* vertices)
+		const float* vertices,
+		const vec3& pos,
+		const vec3& rot,
+		const vec3& scale)
 	{
 		this->parent = parent;
+
+		auto transform = make_shared<Transform>(pos, rot, scale);
+		parent->SetTransform(transform);
 
 		auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light);
 		mesh->Initialize(Mesh::MeshType::point_light, vertices, sizeof(vertices));

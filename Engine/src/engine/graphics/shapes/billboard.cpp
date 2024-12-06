@@ -55,10 +55,7 @@ namespace Graphics::Shape
 		auto obj = GameObject::Create(
 			name,
 			id,
-			isEnabled,
-			pos,
-			rot,
-			scale);
+			isEnabled);
 
 		float vertices[] =
 		{
@@ -70,6 +67,9 @@ namespace Graphics::Shape
 			-0.25f,  0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
 			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f
 		};
+
+		auto transform = make_shared<Transform>(pos, rot, scale);
+		obj->SetTransform(transform);
 
 		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::billboard);
 		mesh->Initialize(Mesh::MeshType::border, vertices, sizeof(vertices));

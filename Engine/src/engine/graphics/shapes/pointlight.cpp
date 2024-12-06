@@ -64,10 +64,7 @@ namespace Graphics::Shape
 		auto obj = GameObject::Create(
 			name, 
 			id, 
-			isEnabled, 
-			pos, 
-			rot, 
-			scale);
+			isEnabled);
 
 		float vertices[] =
 		{
@@ -130,7 +127,7 @@ namespace Graphics::Shape
 			distance 
 		);
 
-		pointLight->Initialize(obj, vertices);
+		pointLight->Initialize(obj, vertices, pos, rot, scale);
 
 		obj->SetTxtFilePath(txtFilePath);
 

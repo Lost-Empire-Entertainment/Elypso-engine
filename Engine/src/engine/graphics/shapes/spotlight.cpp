@@ -67,10 +67,7 @@ namespace Graphics::Shape
 		auto obj = GameObject::Create(
 			name, 
 			id, 
-			isEnabled, 
-			pos, 
-			rot, 
-			scale);
+			isEnabled);
 
 		float vertices[] =
 		{
@@ -123,7 +120,7 @@ namespace Graphics::Shape
 			outerAngle
 		);
 
-		spotLight->Initialize(obj, vertices);
+		spotLight->Initialize(obj, vertices, pos, rot, scale);
 
 		obj->SetTxtFilePath(txtFilePath);
 

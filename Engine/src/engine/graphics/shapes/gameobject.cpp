@@ -146,7 +146,7 @@ namespace Graphics::Shape
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
 
-		string txtFilePath = obj->GetTxtFile();
+		string txtFilePath = obj->GetTxtFilePath();
 
 		//destroy all children if parent is destroyed
 		if (obj->GetChildren().size() > 0)
@@ -213,7 +213,7 @@ namespace Graphics::Shape
 		//also delete the externally saved folder of this gameobject
 		if (!localOnly)
 		{
-			string txtFilePath = obj->GetTxtFile();
+			string txtFilePath = obj->GetTxtFilePath();
 			if (exists(txtFilePath))
 			{
 				string targetFolder;
@@ -222,8 +222,8 @@ namespace Graphics::Shape
 					targetFolder = path(txtFilePath).parent_path().parent_path().string();
 				}
 				else if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::point_light
-					|| obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::spot_light
-					|| obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::directional_light)
+						 || obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::spot_light
+						 || obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::directional_light)
 				{
 					targetFolder = path(txtFilePath).parent_path().string();
 				}

@@ -46,10 +46,7 @@ namespace Graphics::Shape
 		auto obj = GameObject::Create(
 			"Border",
 			10000002,
-			true,
-			pos,
-			rot,
-			scale);
+			true);
 
 		float vertices[] =
 		{
@@ -92,6 +89,9 @@ namespace Graphics::Shape
 			-0.5f,  0.5f,  0.5f,
 		};
 
+		auto transform = make_shared<Transform>(pos, rot, scale);
+		obj->SetTransform(transform);
+
 		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::border);
 		mesh->Initialize(Mesh::MeshType::border, vertices, sizeof(vertices));
 
@@ -114,7 +114,7 @@ namespace Graphics::Shape
 		const mat4& view, 
 		const mat4& projection)
 	{
-		auto transform = obj->GetComponent<Transform>();
+		auto transform = obj->GetTransform();
 		auto material = obj->GetComponent<Material>();
 		auto mesh = obj->GetComponent<Mesh>();
 		if (!material
@@ -156,7 +156,8 @@ namespace Graphics::Shape
 				vec3 margin = vec3(0.1f);
 				boxScale += margin;
 
-				model = translate(model, boxCenter); // Translate to the center of the bounding box
+				//translate to the center of the bounding box
+				model = translate(model, boxCenter);
 
 				//apply rotation
 				quat newRot = quat(radians(transform->GetRotation()));

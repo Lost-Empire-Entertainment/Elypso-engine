@@ -59,7 +59,12 @@ namespace Graphics::Shape
 	public:
 		virtual ~Component() = default;
 
-		virtual void Initialize(const shared_ptr<GameObject>& parent, const float* vertices)
+		virtual void Initialize(
+			const shared_ptr<GameObject>& parent, 
+			const float* vertices,
+			const vec3& pos,
+			const vec3& rot,
+			const vec3& scale)
 		{
 			this->parent = parent;
 		}
@@ -115,10 +120,7 @@ namespace Graphics::Shape
 		static shared_ptr<GameObject> Create(
 			const string& name = "",
 			unsigned int id = 0,
-			bool isEnabled = true,
-			const vec3& position = vec3(0),
-			const vec3& rotation = vec3(0),
-			const vec3& scale = vec3(1))
+			bool isEnabled = true)
 		{
 			if (id == 0) id = ++nextID;
 			string finalName = name.empty() 
@@ -128,23 +130,16 @@ namespace Graphics::Shape
 			return make_shared<GameObject>(
 				finalName, 
 				id, 
-				isEnabled, 
-				position,
-				rotation,
-				scale);
+				isEnabled);
 		}
 
 		GameObject(
 			const string& name,
 			const unsigned int& ID,
-			const bool& isEnabled = true,
-			const vec3& position = vec3(0),
-			const vec3& rotation = vec3(0),
-			const vec3& scale = vec3(1)) :
+			const bool& isEnabled = true) :
 			name(name), 
 			ID(ID), 
-			isEnabled(isEnabled), 
-			transform(make_shared<Transform>(position, rotation, scale)) {}
+			isEnabled(isEnabled) {}
 
 		virtual ~GameObject() = default;
 
@@ -186,7 +181,6 @@ namespace Graphics::Shape
 		void SetName(const string& newName) { name = newName; }
 		void SetID(const unsigned int& newID) { ID = newID; }
 		void SetEnableState(const bool& newEnableState) { isEnabled = newEnableState; }
-
 		void SetTxtFilePath(const string& newTxtFile) { txtFile = newTxtFile; }
 
 		void AddChild(const shared_ptr<GameObject>& target, const shared_ptr<GameObject>& addedChild)
@@ -203,18 +197,18 @@ namespace Graphics::Shape
 					children.end());
 			removedChild->RemoveParent(removedChild);
 		}
+		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
+		void RemoveParent(const shared_ptr<GameObject>&) { parent = nullptr; }
+		void SetTransform(const shared_ptr<Transform>& newTransform) { transform = newTransform; }
 
 		const string& GetName() const { return name; }
 		const unsigned int& GetID() const { return ID; }
 		const bool& IsEnabled() const { return isEnabled; }
-		const string& GetTxtFile() const { return txtFile; }
-		const shared_ptr<Transform>& GetTransform() const { return transform; }
-		const shared_ptr<GameObject>& GetParent() const { return parent; }
+		const string& GetTxtFilePath() const { return txtFile; }
+		
 		const vector<shared_ptr<GameObject>>& GetChildren() const { return children; }
-
-		void SetParent(const shared_ptr<GameObject>& newParent) { parent = newParent; }
-		void RemoveParent(const shared_ptr<GameObject>&) { parent = nullptr; }
-
+		const shared_ptr<GameObject>& GetParent() const { return parent; }
+		const shared_ptr<Transform>& GetTransform() const { return transform; }
 	private:
 		string name;
 		unsigned int ID;
@@ -239,6 +233,14 @@ namespace Graphics::Shape
 		static void AddGameObject(const shared_ptr<GameObject>& obj)
 		{
 			objects.push_back(obj);
+		}
+		static void AddOpaqueObject(const shared_ptr<GameObject>& obj)
+		{
+			opaqueObjects.push_back(obj);
+		}
+		static void AddTransparentObject(const shared_ptr<GameObject>& obj)
+		{
+			transparentObjects.push_back(obj);
 		}
 		static void AddBillboard(const shared_ptr<GameObject>& obj)
 		{
@@ -277,6 +279,14 @@ namespace Graphics::Shape
 		static const vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
+		}
+		static const vector<shared_ptr<GameObject>>& GetOpaqueObjects()
+		{
+			return opaqueObjects;
+		}
+		static const vector<shared_ptr<GameObject>>& GetTransparentObjects()
+		{
+			return transparentObjects;
 		}
 		static const vector<shared_ptr<GameObject>>& GetBillboards()
 		{

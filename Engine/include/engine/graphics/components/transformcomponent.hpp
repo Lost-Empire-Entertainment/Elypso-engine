@@ -26,8 +26,7 @@ namespace Graphics::Components
 			const vec3& scale) :
 			position(position),
 			rotation(rotation),
-			scale(scale) {
-		}
+			scale(scale) {}
 
 		void Update(float deltaTime) override {}
 

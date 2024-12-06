@@ -63,10 +63,7 @@ namespace Graphics::Shape
 		auto obj = GameObject::Create(
 			name, 
 			id, 
-			isEnabled, 
-			pos, 
-			rot, 
-			scale);
+			isEnabled);
 
 		float vertices[] =
 		{
@@ -116,7 +113,7 @@ namespace Graphics::Shape
 			lightConfig
 		);
 
-		dirLight->Initialize(obj, vertices);
+		dirLight->Initialize(obj, vertices, pos, rot, scale);
 
 		obj->SetTxtFilePath(txtFilePath);
 

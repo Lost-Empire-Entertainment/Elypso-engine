@@ -185,7 +185,7 @@ namespace Graphics
 				&& textureName.find("DEFAULTDIFF") == string::npos
 				&& textureName.find("DEFAULTSPEC") == string::npos)
 			{
-				string objFolder = path(obj->GetTxtFile()).parent_path().string();
+				string objFolder = path(obj->GetTxtFilePath()).parent_path().string();
 				string originPath = (path(Engine::texturesPath) / textureName).string();
 				string targetPath = (path(objFolder) / textureName).string();
 

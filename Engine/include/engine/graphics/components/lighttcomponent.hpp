@@ -50,7 +50,12 @@ namespace Graphics::Components
 			isBillboardEnabled(config.isBillboardEnabled) {
 		}
 
-		void Initialize(const shared_ptr<GameObject>& parent, const float* vertices) override;
+		void Initialize(
+			const shared_ptr<GameObject>& parent, 
+			const float* vertices,
+			const vec3& pos,
+			const vec3& rot,
+			const vec3& scale) override;
 		void Render(const mat4& view, const mat4& projection) override;
 
 		void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }

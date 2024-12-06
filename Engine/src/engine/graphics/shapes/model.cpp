@@ -90,10 +90,10 @@ namespace Graphics::Shape
 		auto obj = GameObject::Create(
 			name,
 			id,
-			isEnabled,
-			pos,
-			rot,
-			scale);
+			isEnabled);
+
+		auto transform = make_shared<Transform>(pos, rot, scale);
+		obj->SetTransform(transform);
 
 		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::model);
 		mesh->InitializeModel(Mesh::MeshType::border, vertices, indices);

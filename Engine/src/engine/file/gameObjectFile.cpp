@@ -86,7 +86,7 @@ namespace EngineFile
 			if (obj->GetParent() != nullptr
 				&& obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::billboard)
 			{
-				string objectTxtFilePath = obj->GetTxtFile();
+				string objectTxtFilePath = obj->GetTxtFilePath();
 				string objectName = obj->GetName();
 
 				auto material = obj->GetComponent<Material>();
@@ -172,7 +172,7 @@ namespace EngineFile
 				data.push_back("shaders= " + vertexShader + ", " + fragmentShader + "\n");
 
 				//path to txt file of this gameobject
-				data.push_back("txtFile= " + obj->GetTxtFile() + "\n");
+				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
 
 				//material variables
 				if (meshType == Mesh::MeshType::model)

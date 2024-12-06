@@ -336,13 +336,15 @@ namespace Graphics::GUI
 					}
 				}
 
-
-				bool billboardState = childBillboard->IsEnabled();
-				if (ImGui::Checkbox("Enable billboard", &billboardState))
+				if (childBillboard != nullptr)
 				{
-					childBillboard->SetEnableState(billboardState);
+					bool billboardState = childBillboard->IsEnabled();
+					if (ImGui::Checkbox("Enable billboard", &billboardState))
+					{
+						childBillboard->SetEnableState(billboardState);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					}
 				}
 			}
 

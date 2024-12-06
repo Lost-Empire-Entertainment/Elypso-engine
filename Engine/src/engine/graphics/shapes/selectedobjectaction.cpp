@@ -50,10 +50,7 @@ namespace Graphics::Shape
 		auto obj = GameObject::Create(
 			"ActionTex", 
 			10000001, 
-			true, 
-			pos, 
-			rot, 
-			scale);
+			true);
 
 		float vertices[] =
 		{
@@ -65,6 +62,9 @@ namespace Graphics::Shape
 			-0.5f,  0.5f, -0.5f,     0.0f,  0.0f, -1.0f,   0.0f, 1.0f, // Top-left
 			-0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,   0.0f, 0.0f, // Bottom-left
 		};
+
+		auto transform = make_shared<Transform>(pos, rot, scale);
+		obj->SetTransform(transform);
 
 		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::actionTex);
 		mesh->Initialize(Mesh::MeshType::actionTex, vertices, sizeof(vertices));
