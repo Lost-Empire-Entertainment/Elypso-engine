@@ -125,6 +125,8 @@ namespace Graphics::Shape
 		obj->SetTxtFilePath(txtFilePath);
 
 		GameObjectManager::AddGameObject(obj);
+		GameObjectManager::AddOpaqueObject(obj);
+		GameObjectManager::AddSpotLight(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();

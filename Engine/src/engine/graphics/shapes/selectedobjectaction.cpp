@@ -86,6 +86,8 @@ namespace Graphics::Shape
 		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "rotate.png").string(), Material::TextureType::misc_icon_rotate, true);
 		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "scale.png").string(), Material::TextureType::misc_icon_scale, true);
 
+		GameObjectManager::SetActionTex(obj);
+
 		return obj;
 	}
 

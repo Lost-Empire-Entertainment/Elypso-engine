@@ -119,6 +119,7 @@ namespace Graphics::Shape
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
+		GameObjectManager::SetDirectionalLight(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();

@@ -111,13 +111,7 @@ namespace Graphics::Shape
 			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
 #if ENGINE_MODE
-			for (const auto& obj : transparentObjects)
-			{
-				if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::actionTex)
-				{
-					obj->Render(view, projection);
-				}
-			}
+			ActionTex::RenderActionTex(selectedAction, view, projection);
 #endif
 			for (const auto& obj : transparentObjects)
 			{
@@ -139,6 +133,8 @@ namespace Graphics::Shape
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly)
 	{
+		if (obj == nullptr) return;
+
 		string thisName = obj->GetName();
 
 		Type type = obj->GetComponent<Mesh>()->GetMeshType();
@@ -157,12 +153,15 @@ namespace Graphics::Shape
 			}
 		}
 		//remove object from parent children vector
+		/*
 		if (obj->GetParent() != nullptr)
 		{
 			obj->GetParent()->RemoveChild(obj);
 		}
+		*/
 
 		shared_ptr<GameObject> billboard = nullptr;
+		/*
 		if (obj->GetChildren().size() > 0)
 		{
 			for (const auto& child : obj->GetChildren())
@@ -174,6 +173,7 @@ namespace Graphics::Shape
 				}
 			}
 		}
+		*/
 
 		switch (type)
 		{
@@ -182,28 +182,28 @@ namespace Graphics::Shape
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;
 		case Type::point_light:
-			obj->RemoveChild(billboard);
+			//obj->RemoveChild(billboard);
 			DestroyGameObject(billboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			pointLights.erase(std::remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
 			break;
 		case Type::spot_light:
-			obj->RemoveChild(billboard);
+			//obj->RemoveChild(billboard);
 			DestroyGameObject(billboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			spotLights.erase(std::remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
 			break;
 		case Type::directional_light:
-			obj->RemoveChild(billboard);
+			//obj->RemoveChild(billboard);
 			DestroyGameObject(billboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			directionalLight = nullptr;
 			break;
 		case Type::billboard:
-			billboard->SetParent(nullptr);
+			//billboard->SetParent(nullptr);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
 			billboards.erase(std::remove(billboards.begin(), billboards.end(), obj), billboards.end());
@@ -211,7 +211,8 @@ namespace Graphics::Shape
 		}
 
 		//also delete the externally saved folder of this gameobject
-		if (!localOnly)
+		if (!localOnly
+			&& obj != nullptr)
 		{
 			string txtFilePath = obj->GetTxtFilePath();
 			if (exists(txtFilePath))

@@ -16,6 +16,7 @@
 #include "materialcomponent.hpp"
 #include "core.hpp"
 #include "billboard.hpp"
+#include "selectobject.hpp"
 
 using std::filesystem::path;
 using glm::quat;
@@ -27,6 +28,7 @@ using std::cout;
 using Core::Engine;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::Billboard;
+using Core::Select;
 
 namespace Graphics::Components
 {
@@ -101,20 +103,16 @@ namespace Graphics::Components
 		shader.Use();
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
-		shader.SetVec3("color", lightColor);
 
-		//shared_ptr<GameObject> par = parent.lock();
-		//cout << "rendering " << par->GetName() << "\n";
-
-		/*
 		float transparency =
 			(Select::selectedObj
 				== parent.lock()
 				&& Select::isObjectSelected)
 			? 1.0f
 			: 0.5f;
-		*/
 		shader.SetFloat("transparency", 1.0f);
+
+		shader.SetVec3("color", lightColor);
 	}
 
 	void LightComponent::RenderBorder(

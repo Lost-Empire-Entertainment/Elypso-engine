@@ -106,6 +106,8 @@ namespace Graphics::Shape
 			return nullptr;
 		}
 
+		GameObjectManager::SetBorder(obj);
+
 		return obj;
 	}
 

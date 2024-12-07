@@ -138,6 +138,7 @@ namespace Graphics::Shape
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
+		GameObjectManager::AddPointlight(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
