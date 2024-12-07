@@ -22,7 +22,7 @@ If this is your first time running the program then Windows may throw false posi
 
 ### Reporting a security vulnerability
 
-Lost Empire Entertainment accepts all security vulnerability concerns or discovered security bugs at (our business email)[sander@elypsoengine.com], do not post them as Issues.
+Lost Empire Entertainment accepts all security vulnerability concerns or discovered security bugs at [our business email](mailto:sander@elypsoengine.com), do not post them as Issues.
 
 ---
 
