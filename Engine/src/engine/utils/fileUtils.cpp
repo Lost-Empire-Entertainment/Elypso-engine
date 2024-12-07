@@ -404,7 +404,7 @@ namespace Utils
         const string& extension,
         const bool& bypassParenthesesCheck)
     {
-        string newFilePath = parentFolderPath.string() + "/" + fileName + extension;
+        string newFilePath = (path(parentFolderPath) / (fileName + extension)).string();
 
         if (exists(newFilePath))
         {
@@ -413,7 +413,8 @@ namespace Utils
                 && fileName.find('(') == string::npos 
                 && fileName.find(')') == string::npos)
             {
-                newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
+                string newName = fileName + " (1)" + extension;
+                newFilePath = (path(parentFolderPath.string()) / newName).string();
 
                 return newFilePath;
             }

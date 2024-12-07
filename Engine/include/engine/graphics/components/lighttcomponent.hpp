@@ -67,7 +67,7 @@ namespace Graphics::Components
 	protected:
 		virtual int GetVertexCount() const = 0;
 
-		void CastLight(Shader& shader, const mat4& view, const mat4& projection, const vec3& lightColor);
+		void CastLight(Shader& shader, const mat4& view, const mat4& projection, const vec3& lightColor) const;
 		void RenderBorder(const shared_ptr<Transform>& transform, Shader& shader, GLuint vao, int vertexCount);
 
 		void SetupBillboard(const shared_ptr<GameObject>& parent) const;

@@ -61,6 +61,7 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
+		cout << "name: " << name << "\n";
 		cout << "vert shader: " << vertShader << "\n";
 		cout << "frag shader: " << fragShader << "\n";
 		cout << "txt file path: " << txtFilePath << "\n";

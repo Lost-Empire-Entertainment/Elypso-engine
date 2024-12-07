@@ -83,8 +83,7 @@ namespace EngineFile
 	{
 		for (const auto& obj : GameObjectManager::GetObjects())
 		{
-			if (obj->GetParent() != nullptr
-				&& obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::billboard)
+			if (obj->GetComponent<Mesh>()->GetMeshType() != Mesh::MeshType::billboard)
 			{
 				string objectTxtFilePath = obj->GetTxtFilePath();
 				string objectName = obj->GetName();

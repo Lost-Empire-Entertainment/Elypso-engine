@@ -5,6 +5,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <iostream>
 
 //external
 #include "glm.hpp"
@@ -21,6 +22,7 @@ using glm::quat;
 using glm::mat4;
 using glm::vec3;
 using std::make_shared;
+using std::cout;
 
 using Core::Engine;
 using Graphics::Shape::GameObjectManager;
@@ -94,12 +96,15 @@ namespace Graphics::Components
 		Shader& shader, 
 		const mat4& view, 
 		const mat4& projection, 
-		const vec3& lightColor)
+		const vec3& lightColor) const
 	{
 		shader.Use();
 		shader.SetMat4("projection", projection);
 		shader.SetMat4("view", view);
 		shader.SetVec3("color", lightColor);
+
+		//shared_ptr<GameObject> par = parent.lock();
+		//cout << "rendering " << par->GetName() << "\n";
 
 		/*
 		float transparency =
@@ -132,7 +137,7 @@ namespace Graphics::Components
 
 	void LightComponent::SetupBillboard(const shared_ptr<GameObject>& parent) const
 	{
-		string billboardName = parent->GetName() + "_Billboard";
+		string billboardName = parent->GetName() + " billboard";
 		auto billboard = Billboard::InitializeBillboard(
 			parent->GetTransform()->GetPosition(),
 			parent->GetTransform()->GetRotation(),
