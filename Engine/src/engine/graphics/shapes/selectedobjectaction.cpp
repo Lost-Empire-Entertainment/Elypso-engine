@@ -21,6 +21,7 @@
 #include "input.hpp"
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
+#include "console.hpp"
 
 using glm::translate;
 using glm::rotate;
@@ -39,6 +40,9 @@ using Core::Engine;
 using Graphics::Render;
 using Core::Select;
 using Core::Input;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
@@ -49,7 +53,7 @@ namespace Graphics::Shape
 	{
 		auto obj = GameObject::Create(
 			"ActionTex", 
-			10000001, 
+			10000002, 
 			true);
 
 		float vertices[] =
@@ -88,6 +92,11 @@ namespace Graphics::Shape
 
 		GameObjectManager::SetActionTex(obj);
 
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			ConsoleType::DEBUG,
+			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+
 		return obj;
 	}
 
@@ -116,6 +125,8 @@ namespace Graphics::Shape
 		mat4 model = mat4(1.0f);
 		if (Select::isObjectSelected)
 		{
+			auto& selectedObjTransform = Select::selectedObj->GetTransform();
+
 			shader.SetFloat("transparency", 1.0f);
 
 			if (Input::axis == "X")
@@ -123,13 +134,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, transform->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 0.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, transform->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -139,13 +150,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, transform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, transform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -155,13 +166,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, transform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, transform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}

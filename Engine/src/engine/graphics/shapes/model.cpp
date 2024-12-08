@@ -87,11 +87,6 @@ namespace Graphics::Shape
 		const bool& isEnabled,
 		const bool& isMeshEnabled)
 	{
-		cout << "vert shader: " << vertShader << "\n";
-		cout << "frag shader: " << fragShader << "\n";
-		cout << "model path: " << modelPath << "\n";
-		cout << "txt file path: " << txtFilePath << "\n";
-
 		auto obj = GameObject::Create(
 			name,
 			id,

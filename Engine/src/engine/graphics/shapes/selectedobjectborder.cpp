@@ -19,6 +19,7 @@
 #include "selectobject.hpp"
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
+#include "console.hpp"
 
 using glm::translate;
 using glm::rotate;
@@ -35,6 +36,9 @@ using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
 using Core::Select;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
@@ -45,7 +49,7 @@ namespace Graphics::Shape
 	{
 		auto obj = GameObject::Create(
 			"Border",
-			10000002,
+			10000001,
 			true);
 
 		float vertices[] =
@@ -108,6 +112,11 @@ namespace Graphics::Shape
 
 		GameObjectManager::SetBorder(obj);
 
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			ConsoleType::DEBUG,
+			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+
 		return obj;
 	}
 
@@ -137,15 +146,18 @@ namespace Graphics::Shape
 
 		if (Select::isObjectSelected)
 		{
+			auto& selectedObjTransform = Select::selectedObj->GetTransform();
+			auto selectedObjMesh = Select::selectedObj->GetComponent<Mesh>();
+
 			shader.SetFloat("transparency", 0.5f);
 
 			if (mesh->GetMeshType() == Mesh::MeshType::model)
 			{
 				//retrieve vertices and calculate bounding box
-				const vector<AssimpVertex>& vertices = mesh->GetVertices();
+				const vector<AssimpVertex>& vertices = selectedObjMesh->GetVertices();
 				vec3 minBound, maxBound;
-				vec3 position = transform->GetPosition();
-				vec3 initialScale = transform->GetScale();
+				vec3 position = selectedObjTransform->GetPosition();
+				vec3 initialScale = selectedObjTransform->GetScale();
 
 				//calculate the bounding box based on vertices
 				Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale);
@@ -162,7 +174,7 @@ namespace Graphics::Shape
 				model = translate(model, boxCenter);
 
 				//apply rotation
-				quat newRot = quat(radians(transform->GetRotation()));
+				quat newRot = quat(radians(selectedObjTransform->GetRotation()));
 				model *= mat4_cast(newRot);
 
 				//scale based on the bounding box size with the margin included
@@ -171,13 +183,13 @@ namespace Graphics::Shape
 			else
 			{
 				//simple position and margin values
-				vec3 position = transform->GetPosition();
+				vec3 position = selectedObjTransform->GetPosition();
 
 				//simple bounding box
 				model = translate(model, position);
 
 				//apply rotation
-				quat newRot = quat(radians(transform->GetRotation()));
+				quat newRot = quat(radians(selectedObjTransform->GetRotation()));
 				model *= mat4_cast(newRot);
 
 				//scale based on size, with a slight margin

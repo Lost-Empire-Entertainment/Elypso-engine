@@ -38,8 +38,7 @@ namespace Graphics::Components
 			type(type),
 			VAO(0),
 			VBO(0),
-			EBO(0) {
-		}
+			EBO(0) {}
 		~Mesh()
 		{
 			glDeleteVertexArrays(1, &VAO);
