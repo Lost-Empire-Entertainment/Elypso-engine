@@ -214,6 +214,7 @@ namespace Core
 				Type::DEBUG,
 				output);
 #else
+			/*
 			docsPath = (path(narrowPath) / "My Games").string();
 
 			if (!exists(docsPath))
@@ -222,6 +223,7 @@ namespace Core
 			}
 
 			docsPath = (path(docsPath) / name).string();
+			*/
 #endif
 		}
 		else
@@ -293,11 +295,13 @@ namespace Core
 #if ENGINE_MODE
 		scenesPath = (path(projectPath) / "scenes").string();
 		texturesPath = (path(projectPath) / "textures").string();
+
 #else
 		string projectName = path(projectPath).stem().string();
 
-		scenesPath = (path(current_path) / "Project" / "scenes").string();
-		texturesPath = (path(current_path) / "Project" / "textures").string();
+		path currentPath = current_path();
+		scenesPath = (currentPath / "project" / "scenes").string();
+		texturesPath = (currentPath / "project" / "textures").string();
 #endif
 
 		output = "Scenes path: " + scenesPath + "\n\n";

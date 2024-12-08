@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -42,6 +43,8 @@ using std::error_code;
 using std::errc;
 using std::cout;
 using glm::vec3;
+using std::filesystem::path;
+using std::filesystem::current_path;
 
 using Core::Engine;
 using Graphics::Render;
@@ -91,9 +94,10 @@ namespace Core
     void ConsoleManager::InitializeLogger()
     {
 #if ENGINE_MODE
-        logFile.open(Engine::docsPath + "/engine_log.txt");
+        logFile.open((path(Engine::docsPath) / "engine_log.txt").string());
 #else
-        logFile.open(Engine::docsPath + "/game_log.txt");
+        path currentPath = current_path();
+        logFile.open((currentPath / "game_log.txt").string());
 #endif
         if (!logFile.is_open())
         {

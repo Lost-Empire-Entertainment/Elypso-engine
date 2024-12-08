@@ -23,6 +23,7 @@
 using std::string;
 using std::filesystem::exists;
 using std::filesystem::path;
+using std::filesystem::current_path;
 
 using Core::Engine;
 using Utils::File;
@@ -34,7 +35,8 @@ namespace Graphics::GUI
 	void GameGUI::Initialize()
 	{
 		//copies template file to documents folder if imgui file does not exist
-		string imguiConfigFile = (path(Engine::docsPath) / "imgui.ini").string();
+		path currentPath = current_path();
+		string imguiConfigFile = (currentPath / "imgui.ini").string();
 		string imguiTemplateFile = (path(Engine::filesPath) / "imgui.ini").string();
 		if (!exists(imguiConfigFile))
 		{
@@ -51,7 +53,7 @@ namespace Graphics::GUI
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		static string tempString = (path(Engine::docsPath) / "imgui.ini").string();
+		static string tempString = (currentPath / "imgui.ini").string();
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 

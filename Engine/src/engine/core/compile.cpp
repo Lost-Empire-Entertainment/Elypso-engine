@@ -43,6 +43,7 @@ using std::runtime_error;
 using std::array;
 using std::unique_ptr;
 using std::filesystem::current_path;
+using std::filesystem::is_directory;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -108,6 +109,7 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
 				//
 
+				/*
 				string myGamesFolder = (path(Engine::docsPath).parent_path() / "My Games").string();
 				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
 
@@ -117,32 +119,36 @@ namespace Core
 				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
 
 				File::CreateNewFolder(gameDocsFolder);
+				*/
 
 				//
 				// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
 				//
 
+				string targetFolder = (path(Engine::gameParentPath) / "project").string();
+				if (exists(targetFolder)) File::DeleteFileOrfolder(targetFolder);
+				File::CreateNewFolder(targetFolder);
+
 				string projectFileOriginPath = (path(Engine::docsPath) / "project.txt").string();
-				string projectFileTargetPath = (path(gameDocsFolder) / "project.txt").string();
+				string projectFileTargetPath = (path(targetFolder) / "project.txt").string();
 				if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
 				File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
 
 				//
-				// COPY SCENE FILES TO GAME DOCUMENTS FOLDER
+				// COPY SCENE FILES TO GAME EXE FOLDER
 				//
 
-				string scenePath = path(Engine::projectPath).parent_path().string();
+				string scenePath = path(Engine::projectPath).string();
+
 				for (const auto& entry : directory_iterator(path(scenePath)))
 				{
 					string stem = path(entry).stem().string();
 
-					if (stem != "models"
-						&& stem != "textures"
-						&& stem != "project")
+					if (is_directory(entry))
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
-						string target = (path(gameDocsFolder) / originFileName).string();
+						string target = (path(targetFolder) / originFileName).string();
 
 						File::CopyFileOrFolder(origin, target);
 					}
@@ -152,7 +158,7 @@ namespace Core
 				// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
 				//
 
-				string firstSceneFilePath = (path(gameDocsFolder) / "firstScene.txt").string();
+				string firstSceneFilePath = (path(targetFolder) / "firstScene.txt").string();
 				if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
 
 				ofstream firstSceneFile(firstSceneFilePath);

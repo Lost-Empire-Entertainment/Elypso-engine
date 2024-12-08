@@ -29,6 +29,7 @@ using std::filesystem::exists;
 using glm::vec3;
 using std::ios;
 using std::filesystem::path;
+using std::filesystem::current_path;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -45,7 +46,12 @@ namespace EngineFile
 {
 	void ConfigFile::LoadConfigFile()
 	{
+#if ENGINE_MODE
 		if (configFilePath == "") configFilePath = (path(Engine::docsPath) / "config.txt").string();
+#else
+		path currentPath = current_path();
+		if (configFilePath == "") configFilePath = (currentPath / "config.txt").string();
+#endif
 
 		if (!exists(configFilePath)) CreateNewConfigFile();
 		else 
@@ -214,7 +220,12 @@ namespace EngineFile
 
 	void ConfigFile::CreateNewConfigFile()
 	{
+#if ENGINE_MODE
 		if (configFilePath == "") configFilePath = (path(Engine::docsPath) / "config.txt").string();
+#else
+		path currentPath = current_path();
+		if (configFilePath == "") configFilePath = (currentPath / "config.txt").string();
+#endif
 
 		keys.clear();
 		values.clear();
