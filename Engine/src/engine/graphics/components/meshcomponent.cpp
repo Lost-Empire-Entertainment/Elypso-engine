@@ -10,8 +10,7 @@ namespace Graphics::Components
 {
 	void Mesh::Initialize(
 		const MeshType& meshType, 
-		const float* vertices, 
-		size_t vertexSize)
+		const float* vertices)
 	{
 		switch (meshType)
 		{
@@ -33,7 +32,7 @@ namespace Graphics::Components
 			glGenBuffers(1, &VBO);
 			glBindVertexArray(VAO);
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferData(GL_ARRAY_BUFFER, vertexSize, vertices, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 			glEnableVertexAttribArray(0);

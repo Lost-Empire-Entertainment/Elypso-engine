@@ -45,7 +45,7 @@ namespace Graphics::Components
 		parent->SetTransform(transform);
 
 		auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light);
-		mesh->Initialize(Mesh::MeshType::point_light, vertices, sizeof(vertices));
+		mesh->Initialize(Mesh::MeshType::point_light, vertices);
 
 		auto material = parent->AddComponent<Material>();
 		material->Initialize(
@@ -140,8 +140,6 @@ namespace Graphics::Components
 			parent->GetTransform()->GetPosition(),
 			parent->GetTransform()->GetRotation(),
 			parent->GetTransform()->GetScale(),
-			billboardVertShader,
-			billboardFragShader,
 			billboardDiffTexture,
 			billboardShininess,
 			billboardName,

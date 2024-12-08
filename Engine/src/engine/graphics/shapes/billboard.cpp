@@ -44,8 +44,6 @@ namespace Graphics::Shape
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale,
-		const string& vertShader,
-		const string& fragShader,
 		const string& diffTexture,
 		const float& shininess,
 		string& name,
@@ -72,12 +70,12 @@ namespace Graphics::Shape
 		obj->SetTransform(transform);
 
 		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::billboard);
-		mesh->Initialize(Mesh::MeshType::border, vertices, sizeof(vertices));
+		mesh->Initialize(Mesh::MeshType::billboard, vertices);
 
 		auto material = obj->AddComponent<Material>();
 		material->Initialize(
-			(path(Engine::filesPath) / "shaders" / vertShader).string(),
-			(path(Engine::filesPath) / "shaders" / fragShader).string());
+			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string());
 
 		Shader billboardShader = material->GetShader();
 		billboardShader.Use();

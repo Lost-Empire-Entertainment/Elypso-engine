@@ -577,8 +577,6 @@ namespace Graphics::GUI
 							true,
 
 							//billboard values
-							(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
-							(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string(),
 							(path(Engine::filesPath) / "icons" / "pointLight.png").string(),
 							32,
 							name,
@@ -619,8 +617,6 @@ namespace Graphics::GUI
 							true,
 
 							//billboard values
-							(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
-							(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string(),
 							(path(Engine::filesPath) / "icons" / "spotLight.png").string(),
 							32,
 							name,
@@ -667,8 +663,6 @@ namespace Graphics::GUI
 								true,
 
 								//billboard values
-								(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
-								(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string(),
 								(path(Engine::filesPath) / "icons" / "directionalLight.png").string(),
 								32,
 								name,

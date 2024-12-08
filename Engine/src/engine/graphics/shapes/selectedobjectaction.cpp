@@ -71,7 +71,7 @@ namespace Graphics::Shape
 		obj->SetTransform(transform);
 
 		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::actionTex);
-		mesh->Initialize(Mesh::MeshType::actionTex, vertices, sizeof(vertices));
+		mesh->Initialize(Mesh::MeshType::actionTex, vertices);
 
 		auto material = obj->AddComponent<Material>();
 		material->Initialize(

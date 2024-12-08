@@ -46,7 +46,7 @@ namespace Graphics::Components
 			glDeleteBuffers(1, &EBO);
 		}
 
-		void Initialize(const MeshType& meshType, const float* vertices, size_t vertexSize);
+		void Initialize(const MeshType& meshType, const float* vertices);
 		void InitializeModel(
 			const MeshType& meshType, 
 			const vector<AssimpVertex> assimpVertex,

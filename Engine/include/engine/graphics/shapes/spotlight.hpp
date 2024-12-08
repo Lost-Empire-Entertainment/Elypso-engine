@@ -54,8 +54,6 @@ namespace Graphics::Shape
 			// BILLBOARD VALUES
 			//
 
-			const string& billboardVertShader = (path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
-			const string& billboardFragShader = (path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string(),
 			const string& billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string(),
 			const float& billboardShininess = 32,
 			string& billboardName = tempName,

@@ -97,12 +97,12 @@ namespace Graphics::Shape
 		obj->SetTransform(transform);
 
 		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::border);
-		mesh->Initialize(Mesh::MeshType::border, vertices, sizeof(vertices));
+		mesh->Initialize(Mesh::MeshType::border, vertices);
 
 		auto material = obj->AddComponent<Material>();
 		material->Initialize(
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string());
+			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
 
 		if (!material
 			|| !mesh)

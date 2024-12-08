@@ -830,7 +830,6 @@ namespace EngineFile
 					|| key == "billboard name"
 					|| key == "billboard id"
 					|| key == "billboard enabled"
-					|| key == "billboard shaders"
 					|| key == "billboard texture"
 					|| key == "billboard shininess")
 				{
@@ -864,7 +863,6 @@ namespace EngineFile
 		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		vector<string> billboardShaders{};
 		string billboardTexture{};
 		float billboardShininess{};
 
@@ -975,28 +973,6 @@ namespace EngineFile
 				}
 				else billboardTexture = fullTexPath;
 			}
-			else if (key == "billboard shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
-				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
-					return;
-				}
-				else
-				{
-					billboardShaders.push_back(fullShader0Path);
-					billboardShaders.push_back(fullShader1Path);
-				}
-			}
 			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
@@ -1023,8 +999,6 @@ namespace EngineFile
 			ID,
 			isEnabled,
 			isMeshEnabled,
-			billboardShaders[0],
-			billboardShaders[1],
 			billboardTexture,
 			billboardShininess,
 			billboardName,
@@ -1095,7 +1069,6 @@ namespace EngineFile
 					|| key == "billboard name"
 					|| key == "billboard id"
 					|| key == "billboard enabled"
-					|| key == "billboard shaders"
 					|| key == "billboard texture"
 					|| key == "billboard shininess")
 				{
@@ -1131,7 +1104,6 @@ namespace EngineFile
 		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		vector<string> billboardShaders{};
 		string billboardTexture{};
 		float billboardShininess{};
 
@@ -1244,28 +1216,6 @@ namespace EngineFile
 				}
 				else billboardTexture = fullTexPath;
 			}
-			else if (key == "billboard shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
-				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
-					return;
-				}
-				else
-				{
-					billboardShaders.push_back(fullShader0Path);
-					billboardShaders.push_back(fullShader1Path);
-				}
-			}
 			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
@@ -1294,8 +1244,6 @@ namespace EngineFile
 			ID,
 			isEnabled,
 			isMeshEnabled,
-			billboardShaders[0],
-			billboardShaders[1],
 			billboardTexture,
 			billboardShininess,
 			billboardName,
@@ -1364,7 +1312,6 @@ namespace EngineFile
 					|| key == "billboard name"
 					|| key == "billboard id"
 					|| key == "billboard enabled"
-					|| key == "billboard shaders"
 					|| key == "billboard texture"
 					|| key == "billboard shininess")
 				{
@@ -1397,7 +1344,6 @@ namespace EngineFile
 		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		vector<string> billboardShaders{};
 		string billboardTexture{};
 		float billboardShininess{};
 
@@ -1507,28 +1453,7 @@ namespace EngineFile
 				}
 				else billboardTexture = fullTexPath;
 			}
-			else if (key == "billboard shaders")
-			{
-				vector<string> split = String::Split(value, ',');
 
-				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
-				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
-					return;
-				}
-				else
-				{
-					billboardShaders.push_back(fullShader0Path);
-					billboardShaders.push_back(fullShader1Path);
-				}
-			}
 			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
@@ -1554,8 +1479,6 @@ namespace EngineFile
 			ID,
 			isEnabled,
 			isMeshEnabled,
-			billboardShaders[0],
-			billboardShaders[1],
 			billboardTexture,
 			billboardShininess,
 			billboardName,

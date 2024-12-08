@@ -53,8 +53,6 @@ namespace Graphics::Shape
 		const bool& isEnabled,
 		const bool& isMeshEnabled,
 
-		const string& billboardVertShader,
-		const string& billboardFragShader,
 		const string& billboardDiffTexture,
 		const float& billboardShininess,
 		string& billboardName,
@@ -114,8 +112,6 @@ namespace Graphics::Shape
 			vertShader,
 			fragShader,
 			isMeshEnabled,
-			billboardVertShader,
-			billboardFragShader,
 			billboardDiffTexture,
 			billboardShininess,
 			isBillboardEnabled

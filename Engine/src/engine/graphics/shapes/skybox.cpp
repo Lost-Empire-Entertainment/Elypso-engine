@@ -94,8 +94,8 @@ namespace Graphics::Shape
         auto transform = make_shared<Transform>(pos, rot, scale);
         obj->SetTransform(transform);
 
-        auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::border);
-        mesh->Initialize(Mesh::MeshType::border, vertices, sizeof(vertices));
+        auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::skybox);
+        mesh->Initialize(Mesh::MeshType::border, vertices);
 
         auto material = obj->AddComponent<Material>();
         material->Initialize(

@@ -30,8 +30,6 @@ namespace Graphics::Components
 			string vertShader;
 			string fragShader;
 			bool isMeshEnabled;
-			string billboardVertShader;
-			string billboardFragShader;
 			string billboardDiffTexture;
 			float billboardShininess;
 			bool isBillboardEnabled;
@@ -43,8 +41,6 @@ namespace Graphics::Components
 			vertShader(config.vertShader),
 			fragShader(config.fragShader),
 			isMeshEnabled(config.isMeshEnabled),
-			billboardVertShader(config.billboardVertShader),
-			billboardFragShader(config.billboardFragShader),
 			billboardDiffTexture(config.billboardDiffTexture),
 			billboardShininess(config.billboardShininess),
 			isBillboardEnabled(config.isBillboardEnabled) {
@@ -79,8 +75,6 @@ namespace Graphics::Components
 		string fragShader;
 		bool isMeshEnabled;
 
-		string billboardVertShader;
-		string billboardFragShader;
 		string billboardDiffTexture;
 		float billboardShininess;
 		bool isBillboardEnabled;
