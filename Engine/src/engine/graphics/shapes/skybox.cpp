@@ -123,7 +123,9 @@ namespace Graphics::Shape
         for (unsigned int i = 0; i < textures.size(); i++)
         {
             stbi_set_flip_vertically_on_load(flipTextures);
-            unsigned char* data = stbi_load(textures[i].c_str(), &width, &height, &nrChannels, 0);
+
+            string texturePath = (path(Engine::projectPath) / textures[i]).string();
+            unsigned char* data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
             if (data)
             {
                 GLenum format{};
@@ -148,7 +150,7 @@ namespace Graphics::Shape
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
-                    "Error: Failed to load cubemap at '" + textures[i] + "'.\n");
+                    "Error: Failed to load skybox texture at '" + texturePath + "'.\n");
                 stbi_image_free(data);
             }
         }

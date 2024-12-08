@@ -85,7 +85,7 @@ namespace EngineFile
 		{
 			if (obj->GetComponent<Mesh>()->GetMeshType() != Mesh::MeshType::billboard)
 			{
-				string objectTxtFilePath = obj->GetTxtFilePath();
+				string objectTxtFilePath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
 				string objectName = obj->GetName();
 
 				auto material = obj->GetComponent<Material>();
@@ -250,7 +250,7 @@ namespace EngineFile
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
-				string folderPath = path(objectTxtFilePath).parent_path().string();
+				string folderPath = (path(Engine::scenePath) /path(objectTxtFilePath).parent_path().string()).string();
 				if (!exists(folderPath))
 				{
 					File::CreateNewFolder(folderPath);

@@ -184,13 +184,16 @@ namespace Graphics::Shape
         if (id == tempID) id = GameObject::nextID++;
 
         string nameAndExtension = name + ".txt";
-        string txtPath = (path(modelPath).parent_path() / nameAndExtension).string();
+
+        string scenePath = path(Engine::scenePath).parent_path().filename().string();
+        string parentFolderName = path(modelPath).parent_path().filename().string();
+        string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / parentFolderName / nameAndExtension).string();
 
         shared_ptr<GameObject> newChild = Model::Initialize(
             nodePosition,
             nodeRotation,
             nodeScale,
-            txtPath,
+            finalTxtPath,
             modelPath,
             diffTexture,
             specTexture,

@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
 #include <filesystem>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -21,6 +22,7 @@
 #include "console.hpp"
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
+#include "fileUtils.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -28,6 +30,7 @@ using std::filesystem::directory_iterator;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::exception;
+using std::cout;
 
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
@@ -36,6 +39,7 @@ using Graphics::Texture;
 using Core::ConsoleManager;
 using ConsoleCaller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -204,37 +208,57 @@ namespace Graphics::GUI
 			{
 			case Type::SkyboxTexture_right:
 			{
-				SceneFile::skyboxTexturesMap["right"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+
+				SceneFile::skyboxTexturesMap["right"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_left:
 			{
-				SceneFile::skyboxTexturesMap["left"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				SceneFile::skyboxTexturesMap["left"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_top:
 			{
-				SceneFile::skyboxTexturesMap["top"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				SceneFile::skyboxTexturesMap["top"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_bottom:
 			{
-				SceneFile::skyboxTexturesMap["bottom"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				SceneFile::skyboxTexturesMap["bottom"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_front:
 			{
-				SceneFile::skyboxTexturesMap["front"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				SceneFile::skyboxTexturesMap["front"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_back:
 			{
-				SceneFile::skyboxTexturesMap["back"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				SceneFile::skyboxTexturesMap["back"] = texPath;
 				break;
 			}
 			case Type::GameobjectTexture:
 			{
-				Texture::LoadTexture(obj, selectedPath, textureType, true);
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+
+				string originPath = (path(Engine::projectPath) / "textures" / fileAndExtension).string();
+				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().string() / fileAndExtension).string();
+				
+				File::CopyFileOrFolder(originPath, targetPath);
+
+				Texture::LoadTexture(obj, targetPath, textureType, true);
 				break;
 			}
 			case Type::Scene:

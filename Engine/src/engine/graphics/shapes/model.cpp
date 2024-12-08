@@ -130,7 +130,8 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
-		GameObjectFile::LoadModel(txtFilePath);
+		string fullTxtFilePath = (path(Engine::projectPath) / txtFilePath).string();
+		GameObjectFile::LoadModel(fullTxtFilePath);
 
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;

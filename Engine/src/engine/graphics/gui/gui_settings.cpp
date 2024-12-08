@@ -159,13 +159,12 @@ namespace Graphics::GUI
 	{
 		if (skyboxTextures.empty())
 		{
-			string texturesFolder = (path(Engine::filesPath) / "textures").string();
-			skyboxTextures["right"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["left"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["top"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["bottom"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["front"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["back"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["right"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["left"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["top"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["bottom"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["front"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["back"] = (path("textures") / "skybox_default.png").string();
 
 			vector<string> appliedSkyboxTextures
 			{
@@ -266,13 +265,12 @@ namespace Graphics::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("Reset"))
 		{
-			string texturesFolder = (path(Engine::filesPath) / "textures").string();
-			skyboxTextures["right"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["left"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["top"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["bottom"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["front"] = (path(texturesFolder) / "skybox_default.png").string();
-			skyboxTextures["back"] = (path(texturesFolder) / "skybox_default.png").string();
+			skyboxTextures["right"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["left"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["top"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["bottom"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["front"] = (path("textures") / "skybox_default.png").string();
+			skyboxTextures["back"] = (path("textures") / "skybox_default.png").string();
 
 			vector<string> appliedSkyboxTextures
 			{

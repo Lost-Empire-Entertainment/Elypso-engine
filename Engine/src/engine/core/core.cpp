@@ -296,8 +296,8 @@ namespace Core
 #else
 		string projectName = path(projectPath).stem().string();
 
-		scenesPath = (path(docsPath) / "Project" / "scenes").string();
-		texturesPath = (path(docsPath) / "Project" / "textures").string();
+		scenesPath = (path(current_path) / "Project" / "scenes").string();
+		texturesPath = (path(current_path) / "Project" / "textures").string();
 #endif
 
 		output = "Scenes path: " + scenesPath + "\n\n";

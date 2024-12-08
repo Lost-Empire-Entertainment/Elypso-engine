@@ -214,7 +214,7 @@ namespace Graphics::Shape
 		if (!localOnly
 			&& obj != nullptr)
 		{
-			string txtFilePath = obj->GetTxtFilePath();
+			string txtFilePath = (path(Engine::scenePath) / obj->GetTxtFilePath()).string();
 			if (exists(txtFilePath))
 			{
 				string targetFolder;

@@ -554,7 +554,8 @@ namespace Graphics::GUI
 					string targetNameAndExtension = targetName + ".txt";
 					File::CreateNewFolder(targetPath);
 
-					string filePath = (path(targetPath) / targetNameAndExtension).string();
+					string scenePath = path(Engine::scenePath).parent_path().filename().string();
+					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 					string name = "Billboard";
 					unsigned int nextID = GameObject::nextID++;
@@ -565,7 +566,7 @@ namespace Graphics::GUI
 							newPos,
 							vec3(0),
 							vec3(1),
-							filePath,
+							finalTxtPath,
 							vec3(1),
 							1.0f,
 							1.0f,
@@ -587,7 +588,8 @@ namespace Graphics::GUI
 					string targetNameAndExtension = targetName + ".txt";
 					File::CreateNewFolder(targetPath);
 
-					string filePath = (path(targetPath) / targetNameAndExtension).string();
+					string scenePath = path(Engine::scenePath).parent_path().filename().string();
+					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 					string name = "Billboard";
 					unsigned int nextID = GameObject::nextID++;
@@ -598,7 +600,7 @@ namespace Graphics::GUI
 							newPos,
 							vec3(0),
 							vec3(1),
-							filePath,
+							finalTxtPath,
 							vec3(1),
 							1.0f,
 							1.0f,
@@ -631,7 +633,8 @@ namespace Graphics::GUI
 						string targetNameAndExtension = targetName + ".txt";
 						File::CreateNewFolder(targetPath);
 
-						string filePath = (path(targetPath) / targetNameAndExtension).string();
+						string scenePath = path(Engine::scenePath).parent_path().filename().string();
+						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 						string name = "Billboard";
 						unsigned int nextID = GameObject::nextID++;
@@ -642,7 +645,7 @@ namespace Graphics::GUI
 								newPos,
 								vec3(0),
 								vec3(1),
-								filePath,
+								finalTxtPath,
 								vec3(1),
 								1.0f,
 								targetName,
