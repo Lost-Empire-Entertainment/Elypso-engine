@@ -73,8 +73,6 @@ namespace Graphics::Shape
 		const vec3& scale,
 		const string& txtFilePath,
 		const string& modelPath,
-		const string& vertShader,
-		const string& fragShader,
 		const string& diffTexture,
 		const string& specTexture,
 		const string& normalTexture,
@@ -102,8 +100,13 @@ namespace Graphics::Shape
 
 		auto material = obj->AddComponent<Material>();
 		material->Initialize(
-			(path(Engine::filesPath) / "shaders" / vertShader).string(),
-			(path(Engine::filesPath) / "shaders" / fragShader).string());
+			(path(Engine::filesPath) / "shaders" / "Gameobject.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "Gameobject.frag").string());
+
+		string objName = obj->GetName();
+		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
+		if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
+		if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
 
 		mesh->SetVertices(vertices);
 		mesh->SetIndices(indices);

@@ -78,11 +78,10 @@ namespace Graphics::Shape
 			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string());
 
-		if (!material
-			|| !mesh)
-		{
-			return nullptr;
-		}
+		string objName = obj->GetName();
+		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
+		if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
+		if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
 
 		//load selected object action textures
 		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "blank.png").string(), Material::TextureType::misc_icon_blank, true);

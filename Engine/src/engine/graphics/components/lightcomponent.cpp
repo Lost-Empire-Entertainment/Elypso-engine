@@ -9,6 +9,7 @@
 
 //external
 #include "glm.hpp"
+#include "magic_enum.hpp"
 
 //engine
 #include "lighttcomponent.hpp"
@@ -17,6 +18,7 @@
 #include "core.hpp"
 #include "billboard.hpp"
 #include "selectobject.hpp"
+#include "console.hpp"
 
 using std::filesystem::path;
 using glm::quat;
@@ -29,12 +31,16 @@ using Core::Engine;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::Billboard;
 using Core::Select;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::Components
 {
 	void LightComponent::Initialize(
 		const shared_ptr<GameObject>& parent, 
 		const float* vertices,
+		const string& meshType,
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale)
@@ -44,15 +50,51 @@ namespace Graphics::Components
 		auto transform = make_shared<Transform>(pos, rot, scale);
 		parent->SetTransform(transform);
 
-		auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light);
-		mesh->Initialize(Mesh::MeshType::point_light, vertices);
+		Mesh::MeshType type{};
+		auto searchType = magic_enum::enum_cast<Mesh::MeshType>(meshType);
+		if (searchType.has_value()) type = searchType.value();
+		else
+		{
+			Engine::CreateErrorPopup(("Unknown mesh type '" + meshType + "' was provided for " + parent->GetName()).c_str());
+		}
 
-		auto material = parent->AddComponent<Material>();
-		material->Initialize(
-			(path(Engine::filesPath) / "shaders" / vertShader).string(),
-			(path(Engine::filesPath) / "shaders" / fragShader).string());
+		if (type != Mesh::MeshType::point_light
+			&& type != Mesh::MeshType::spot_light
+			&& type != Mesh::MeshType::directional_light)
+		{
+			Engine::CreateErrorPopup(("Non-light mesh type '" + meshType + "' was provided for " + parent->GetName()).c_str());
+		}
+		else
+		{
+			switch (type)
+			{
+			case Mesh::MeshType::point_light:
+			{
+				auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::point_light);
+				mesh->Initialize(Mesh::MeshType::point_light, vertices);
+				break;
+			}
+			case Mesh::MeshType::spot_light:
+			{
+				auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::spot_light);
+				mesh->Initialize(Mesh::MeshType::spot_light, vertices);
+				break;
+			}
+			case Mesh::MeshType::directional_light:
+			{
+				auto mesh = parent->AddComponent<Mesh>(isMeshEnabled, Mesh::MeshType::directional_light);
+				mesh->Initialize(Mesh::MeshType::directional_light, vertices);
+				break;
+			}
+			}
 
-		SetupBillboard(parent);
+			auto material = parent->AddComponent<Material>();
+			material->Initialize(
+				(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
+				(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
+
+			SetupBillboard(parent);
+		}
 	}
 
 	void LightComponent::Render(

@@ -27,8 +27,6 @@ namespace Graphics::Components
 		{
 			vec3 diffuse;
 			float intensity;
-			string vertShader;
-			string fragShader;
 			bool isMeshEnabled;
 			string billboardDiffTexture;
 			float billboardShininess;
@@ -38,8 +36,6 @@ namespace Graphics::Components
 		LightComponent(const LightConfig& config) :
 			diffuse(config.diffuse),
 			intensity(config.intensity),
-			vertShader(config.vertShader),
-			fragShader(config.fragShader),
 			isMeshEnabled(config.isMeshEnabled),
 			billboardDiffTexture(config.billboardDiffTexture),
 			billboardShininess(config.billboardShininess),
@@ -49,6 +45,7 @@ namespace Graphics::Components
 		void Initialize(
 			const shared_ptr<GameObject>& parent, 
 			const float* vertices,
+			const string& meshType,
 			const vec3& pos,
 			const vec3& rot,
 			const vec3& scale) override;
@@ -71,8 +68,6 @@ namespace Graphics::Components
 		vec3 diffuse;
 		float intensity;
 
-		string vertShader;
-		string fragShader;
 		bool isMeshEnabled;
 
 		string billboardDiffTexture;

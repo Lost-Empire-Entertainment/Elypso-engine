@@ -15,6 +15,8 @@
 #include "console.hpp"
 #include "meshcomponent.hpp"
 #include "lighttcomponent.hpp"
+#include "core.hpp"
+#include "materialcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -22,6 +24,7 @@
 using glm::translate;
 using glm::quat;
 
+using Core::Engine;
 using Graphics::Shader;
 using Graphics::Components::Mesh;
 using MeshType = Graphics::Components::Mesh::MeshType;
@@ -32,6 +35,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Components::PointLightComponent;
 using Graphics::Components::LightComponent;
+using Graphics::Components::Material;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -43,8 +47,6 @@ namespace Graphics::Shape
 		const vec3& rot,
 		const vec3& scale,
 		const string& txtFilePath,
-		const string& vertShader,
-		const string& fragShader,
 		const vec3& diffuse,
 		const float& intensity,
 		const float& distance,
@@ -53,9 +55,6 @@ namespace Graphics::Shape
 		const bool& isEnabled,
 		const bool& isMeshEnabled,
 
-		const string& billboardDiffTexture,
-		const float& billboardShininess,
-		string& billboardName,
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
@@ -109,11 +108,9 @@ namespace Graphics::Shape
 		{
 			diffuse,
 			intensity,
-			vertShader,
-			fragShader,
 			isMeshEnabled,
-			billboardDiffTexture,
-			billboardShininess,
+			(path(Engine::filesPath) / "icons" / "pointLight.png").string(),
+			32,
 			isBillboardEnabled
 		};
 
@@ -123,7 +120,12 @@ namespace Graphics::Shape
 			distance 
 		);
 
-		pointLight->Initialize(obj, vertices, pos, rot, scale);
+		pointLight->Initialize(obj, vertices, "point_light", pos, rot, scale);
+
+		string objName = obj->GetName();
+		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
+		if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
+		if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
 
 		obj->SetTxtFilePath(txtFilePath);
 

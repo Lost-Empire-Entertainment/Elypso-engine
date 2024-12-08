@@ -163,13 +163,6 @@ namespace EngineFile
 						+ heightTexture + "\n");
 				}
 
-				//shaders
-				string vertexShader = material->GetShaderName(0);
-				vertexShader = path(vertexShader).filename().string();
-				string fragmentShader = material->GetShaderName(1);
-				fragmentShader = path(fragmentShader).filename().string();
-				data.push_back("shaders= " + vertexShader + ", " + fragmentShader + "\n");
-
 				//path to txt file of this gameobject
 				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
 
@@ -248,17 +241,9 @@ namespace EngineFile
 					data.push_back("---attached billboard data---\n");
 					data.push_back("\n");
 
-					data.push_back("billboard name= " + childBillboard->GetName() + "\n");
-
 					data.push_back("billboard id= " + to_string(childBillboard->GetID()) + "\n");
 
 					data.push_back("billboard enabled= " + to_string(childBillboard->IsEnabled()) + "\n");
-
-					string billboardTexture = childBillboard->GetComponent<Material>()->GetTextureName(Material::TextureType::diffuse);
-					billboardTexture = path(billboardTexture).filename().string();
-					data.push_back("billboard texture= " + billboardTexture + "\n");
-
-					data.push_back("billboard shininess= " + to_string(32) + "\n");
 				}
 
 				//
@@ -482,7 +467,6 @@ namespace EngineFile
 					|| key == "scale"
 
 					|| key == "textures"
-					|| key == "shaders"
 					|| key == "model"
 					|| key == "shininess")
 				{
@@ -507,7 +491,6 @@ namespace EngineFile
 		vec3 scale{};
 
 		vector<string> textures{};
-		vector<string> shaders{};
 		string model{};
 		float shininess{};
 
@@ -627,28 +610,6 @@ namespace EngineFile
 				}
 				else textures.push_back(fullTex3Path);
 			}
-			else if (key == "shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
-				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
-			}
 			else if (key == "model")
 			{
 				model = value;
@@ -744,9 +705,11 @@ namespace EngineFile
 			foundObj->GetTransform()->SetRotation(rot);
 			foundObj->GetTransform()->SetScale(scale);
 
-			Shader modelShader = Shader::LoadShader(shaders[0], shaders[1]);
+			string vert = (path(Engine::filesPath) / "shaders" / "Gameobject.vert").string();
+			string frag = (path(Engine::filesPath) / "shaders" / "Gameobject.frag").string();
+			Shader modelShader = Shader::LoadShader(vert, frag);
 			shared_ptr<Material> mat = make_shared<Material>();
-			mat->AddShader(shaders[0], shaders[1], modelShader);
+			mat->AddShader(vert, frag, modelShader);
 
 			Texture::LoadTexture(foundObj, diffuseTexture, Material::TextureType::diffuse, false);
 			Texture::LoadTexture(foundObj, specularTexture, Material::TextureType::specular, false);
@@ -814,18 +777,14 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "shaders"
 					|| key == "txtFile"
 
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
 
-					|| key == "billboard name"
 					|| key == "billboard id"
-					|| key == "billboard enabled"
-					|| key == "billboard texture"
-					|| key == "billboard shininess")
+					|| key == "billboard enabled")
 				{
 					data[key] = value;
 				}
@@ -847,18 +806,14 @@ namespace EngineFile
 		vec3 rot{};
 		vec3 scale{};
 
-		vector<string> shaders{};
 		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
 		float distance{};
 
-		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		string billboardTexture{};
-		float billboardShininess{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -905,28 +860,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
-				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
-			}
 			else if (key == "txtFile")
 			{
 				txtFile = value;
@@ -941,10 +874,6 @@ namespace EngineFile
 			else if (key == "intensity") intensity = stof(value);
 			else if (key == "distance") distance = stof(value);
 
-			else if (key == "billboard name")
-			{
-				billboardName = value;
-			}
 			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
@@ -953,21 +882,6 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-			else if (key == "billboard texture")
-			{
-				string fullTexPath = (path(Engine::filesPath) / "icons" / value).string();
-
-				if (!exists(fullTexPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
-					return;
-				}
-				else billboardTexture = fullTexPath;
-			}
-			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
 		//
@@ -984,8 +898,6 @@ namespace EngineFile
 			rot,
 			scale,
 			txtFile,
-			shaders[0],
-			shaders[1],
 			diffuse,
 			intensity,
 			distance,
@@ -993,9 +905,6 @@ namespace EngineFile
 			ID,
 			isEnabled,
 			isMeshEnabled,
-			billboardTexture,
-			billboardShininess,
-			billboardName,
 			billboardID,
 			isBillboardEnabled);
 
@@ -1051,7 +960,6 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "shaders"
 					|| key == "txtFile"
 
 					|| key == "diffuse"
@@ -1060,11 +968,8 @@ namespace EngineFile
 					|| key == "inner angle"
 					|| key == "outer angle"
 
-					|| key == "billboard name"
 					|| key == "billboard id"
-					|| key == "billboard enabled"
-					|| key == "billboard texture"
-					|| key == "billboard shininess")
+					|| key == "billboard enabled")
 				{
 					data[key] = value;
 				}
@@ -1086,7 +991,6 @@ namespace EngineFile
 		vec3 rot{};
 		vec3 scale{};
 
-		vector<string> shaders{};
 		string txtFile{};
 
 		vec3 diffuse{};
@@ -1095,11 +999,8 @@ namespace EngineFile
 		float innerAngle{};
 		float outerAngle{};
 
-		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		string billboardTexture{};
-		float billboardShininess{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1146,28 +1047,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
-				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
-			}
 			else if (key == "txtFile")
 			{
 				txtFile = value;
@@ -1184,10 +1063,6 @@ namespace EngineFile
 			else if (key == "inner angle") innerAngle = stof(value);
 			else if (key == "outer angle") outerAngle = stof(value);
 
-			else if (key == "billboard name")
-			{
-				billboardName = value;
-			}
 			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
@@ -1196,21 +1071,6 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-			else if (key == "billboard texture")
-			{
-				string fullTexPath = (path(Engine::filesPath) / "icons" / value).string();
-
-				if (!exists(fullTexPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
-					return;
-				}
-				else billboardTexture = fullTexPath;
-			}
-			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
 		//
@@ -1227,8 +1087,6 @@ namespace EngineFile
 			rot,
 			scale,
 			txtFile,
-			shaders[0],
-			shaders[1],
 			diffuse,
 			intensity,
 			distance,
@@ -1238,9 +1096,6 @@ namespace EngineFile
 			ID,
 			isEnabled,
 			isMeshEnabled,
-			billboardTexture,
-			billboardShininess,
-			billboardName,
 			billboardID,
 			isBillboardEnabled);
 
@@ -1296,18 +1151,14 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "shaders"
 					|| key == "txtFile"
 
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
 
-					|| key == "billboard name"
 					|| key == "billboard id"
-					|| key == "billboard enabled"
-					|| key == "billboard texture"
-					|| key == "billboard shininess")
+					|| key == "billboard enabled")
 				{
 					data[key] = value;
 				}
@@ -1329,17 +1180,13 @@ namespace EngineFile
 		vec3 rot{};
 		vec3 scale{};
 
-		vector<string> shaders{};
 		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
 
-		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		string billboardTexture{};
-		float billboardShininess{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1386,28 +1233,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = (path(Engine::filesPath) / "shaders" / split[0]).string();
-				string fullShader1Path = (path(Engine::filesPath) / "shaders" / split[1]).string();
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
-			}
 			else if (key == "txtFile")
 			{
 				txtFile = value;
@@ -1421,10 +1246,6 @@ namespace EngineFile
 			}
 			else if (key == "intensity") intensity = stof(value);
 
-			else if (key == "billboard name")
-			{
-				billboardName = value;
-			}
 			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
@@ -1433,22 +1254,6 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-			else if (key == "billboard texture")
-			{
-				string fullTexPath = (path(Engine::filesPath) / "icons" / value).string();
-
-				if (!exists(fullTexPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
-					return;
-				}
-				else billboardTexture = fullTexPath;
-			}
-
-			else if (key == "billboard shininess") billboardShininess = stof(value);
 		}
 
 		//
@@ -1465,17 +1270,12 @@ namespace EngineFile
 			rot,
 			scale,
 			txtFile,
-			shaders[0],
-			shaders[1],
 			diffuse,
 			intensity,
 			name,
 			ID,
 			isEnabled,
 			isMeshEnabled,
-			billboardTexture,
-			billboardShininess,
-			billboardName,
 			billboardID,
 			isBillboardEnabled);
 

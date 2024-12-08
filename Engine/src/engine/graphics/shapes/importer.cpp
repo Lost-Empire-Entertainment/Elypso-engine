@@ -192,8 +192,6 @@ namespace Graphics::Shape
             nodeScale,
             txtPath,
             modelPath,
-            vertShader,
-            fragShader,
             diffTexture,
             specTexture,
             normalTexture,

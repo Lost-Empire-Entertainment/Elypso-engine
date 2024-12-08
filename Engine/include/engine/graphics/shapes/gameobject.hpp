@@ -62,6 +62,7 @@ namespace Graphics::Shape
 		virtual void Initialize(
 			const shared_ptr<GameObject>& parent, 
 			const float* vertices,
+			const string& meshType,
 			const vec3& pos,
 			const vec3& rot,
 			const vec3& scale)

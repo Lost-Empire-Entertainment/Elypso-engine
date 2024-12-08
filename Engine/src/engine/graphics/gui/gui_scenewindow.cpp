@@ -6,6 +6,7 @@
 #if ENGINE_MODE
 #include <memory>
 #include <vector>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -31,6 +32,7 @@
 
 using std::shared_ptr;
 using std::vector;
+using std::cout;
 
 using Graphics::Camera;
 using Core::Input;

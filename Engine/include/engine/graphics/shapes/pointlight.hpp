@@ -38,8 +38,6 @@ namespace Graphics::Shape
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
 			const string& txtFilePath = "",
-			const string& vertShader = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-			const string& fragShader = (path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
 			const vec3& diffuse = vec3(1),
 			const float& intensity = 1.0f,
 			const float& distance = 1.0f,
@@ -52,9 +50,6 @@ namespace Graphics::Shape
 			// BILLBOARD VALUES
 			//
 
-			const string& billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string(),
-			const float& billboardShininess = 32,
-			string& billboardName = tempName,
 			unsigned int& billboardID = tempID,
 			const bool& isBillboardEnabled = true);
 	};

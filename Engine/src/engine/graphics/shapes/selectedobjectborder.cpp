@@ -104,11 +104,10 @@ namespace Graphics::Shape
 			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
 
-		if (!material
-			|| !mesh)
-		{
-			return nullptr;
-		}
+		string objName = obj->GetName();
+		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
+		if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
+		if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
 
 		GameObjectManager::SetBorder(obj);
 

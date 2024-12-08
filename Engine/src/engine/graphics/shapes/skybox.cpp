@@ -94,15 +94,16 @@ namespace Graphics::Shape
             (path(Engine::filesPath) / "shaders" / "Skybox.vert").string(),
             (path(Engine::filesPath) / "shaders" / "Skybox.frag").string());
 
+        string objName = obj->GetName();
+        if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
+        if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
+        if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
+
         Shader skyboxShader = material->GetShader();
         skyboxShader.Use();
         skyboxShader.SetInt("skybox", 0);
 
         GameObjectManager::SetSkybox(obj);
-
-#if ENGINE_MODE
-        GUISceneWindow::UpdateCounts();
-#endif
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,

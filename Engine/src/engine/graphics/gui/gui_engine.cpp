@@ -566,8 +566,6 @@ namespace Graphics::GUI
 							vec3(0),
 							vec3(1),
 							filePath,
-							(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-							(path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
 							vec3(1),
 							1.0f,
 							1.0f,
@@ -577,9 +575,6 @@ namespace Graphics::GUI
 							true,
 
 							//billboard values
-							(path(Engine::filesPath) / "icons" / "pointLight.png").string(),
-							32,
-							name,
 							nextID2,
 							true);
 
@@ -604,8 +599,6 @@ namespace Graphics::GUI
 							vec3(0),
 							vec3(1),
 							filePath,
-							(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-							(path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
 							vec3(1),
 							1.0f,
 							1.0f,
@@ -617,9 +610,6 @@ namespace Graphics::GUI
 							true,
 
 							//billboard values
-							(path(Engine::filesPath) / "icons" / "spotLight.png").string(),
-							32,
-							name,
 							nextID2,
 							true);
 
@@ -653,8 +643,6 @@ namespace Graphics::GUI
 								vec3(0),
 								vec3(1),
 								filePath,
-								(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-								(path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
 								vec3(1),
 								1.0f,
 								targetName,
@@ -663,9 +651,6 @@ namespace Graphics::GUI
 								true,
 
 								//billboard values
-								(path(Engine::filesPath) / "icons" / "directionalLight.png").string(),
-								32,
-								name,
 								nextID2,
 								true);
 
