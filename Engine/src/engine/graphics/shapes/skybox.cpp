@@ -124,7 +124,9 @@ namespace Graphics::Shape
         {
             stbi_set_flip_vertically_on_load(flipTextures);
 
-            string texturePath = (path(Engine::projectPath) / textures[i]).string();
+            string texturePath = path(textures[i]).stem().string() != "skybox_default"
+                ? (path(Engine::projectPath) / textures[i]).string()
+                : (path(Engine::filesPath) / textures[i]).string();
             unsigned char* data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
             if (data)
             {

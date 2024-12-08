@@ -138,7 +138,7 @@ namespace EngineFile
 			}
 
 			string texturesFolder = (path(Engine::filesPath) / "textures").string();
-			string skyboxDefault = (path(texturesFolder) / "skybox_default.png").string();
+			string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
 			vector<string> skyboxTextures;
 
 			string line;
