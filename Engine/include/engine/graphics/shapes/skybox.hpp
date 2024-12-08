@@ -32,18 +32,7 @@ namespace Graphics::Shape
 	class Skybox
 	{
 	public:
-		static inline string name = "Skybox";
-		static inline unsigned int id = 10000002;
-
-		static shared_ptr<GameObject> InitializeSkybox(
-			const vec3& pos = vec3(0),
-			const vec3& rot = vec3(0),
-			const vec3& scale = vec3(1),
-			const string& vertShader = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-			const string& fragShader = (path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
-			string& thisName = name,
-			unsigned int& thisId = id,
-			const bool& isEnabled = true);
+		static shared_ptr<GameObject> InitializeSkybox();
 
 		static void RenderSkybox(
 			const shared_ptr<GameObject>& obj,

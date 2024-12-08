@@ -254,12 +254,6 @@ namespace EngineFile
 
 					data.push_back("billboard enabled= " + to_string(childBillboard->IsEnabled()) + "\n");
 
-					string billboardVertShader = childBillboard->GetComponent<Material>()->GetShaderName(0);
-					billboardVertShader = path(billboardVertShader).filename().string();
-					string billboardFragShader = childBillboard->GetComponent<Material>()->GetShaderName(1);
-					billboardFragShader = path(billboardFragShader).filename().string();
-					data.push_back("billboard shaders= " + billboardVertShader + ", " + billboardFragShader + "\n");
-
 					string billboardTexture = childBillboard->GetComponent<Material>()->GetTextureName(Material::TextureType::diffuse);
 					billboardTexture = path(billboardTexture).filename().string();
 					data.push_back("billboard texture= " + billboardTexture + "\n");

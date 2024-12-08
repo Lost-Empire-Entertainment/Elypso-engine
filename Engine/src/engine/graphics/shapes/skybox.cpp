@@ -31,15 +31,7 @@ using Graphics::GUI::GUISceneWindow;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> Skybox::InitializeSkybox(
-		const vec3& pos,
-		const vec3& rot,
-		const vec3& scale,
-		const string& vertShader,
-		const string& fragShader,
-		string& thisName,
-		unsigned int& thisId,
-		const bool& isEnabled)
+	shared_ptr<GameObject> Skybox::InitializeSkybox()
 	{
         auto obj = GameObject::Create(
             "Skybox",
@@ -91,16 +83,16 @@ namespace Graphics::Shape
              1.0f, -1.0f,  1.0f
         };
 
-        auto transform = make_shared<Transform>(pos, rot, scale);
+        auto transform = make_shared<Transform>(vec3(0), vec3(0), vec3(1));
         obj->SetTransform(transform);
 
         auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::skybox);
-        mesh->Initialize(Mesh::MeshType::border, vertices);
+        mesh->Initialize(Mesh::MeshType::skybox, vertices);
 
         auto material = obj->AddComponent<Material>();
         material->Initialize(
-            (path(Engine::filesPath) / "shaders" / vertShader).string(),
-            (path(Engine::filesPath) / "shaders" / fragShader).string());
+            (path(Engine::filesPath) / "shaders" / "Skybox.vert").string(),
+            (path(Engine::filesPath) / "shaders" / "Skybox.frag").string());
 
         Shader skyboxShader = material->GetShader();
         skyboxShader.Use();

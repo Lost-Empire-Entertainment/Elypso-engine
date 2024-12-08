@@ -279,28 +279,9 @@ namespace Graphics
 		GameObjectManager::SetActionTex(actionTex);
 		GameObjectManager::AddTransparentObject(actionTex);
 #endif
-		SkyboxSetup();
+		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox();
 
 		glfwMaximizeWindow(window);
-	}
-
-	void Render::SkyboxSetup()
-	{
-		vec3 pos = camera.GetCameraPosition();
-		vec3 rot = vec3(0);
-		vec3 scale = vec3(1);
-
-		string skyboxVert = (path(Engine::filesPath) / "shaders" / "Skybox.vert").string();
-		string skyboxFrag = (path(Engine::filesPath) / "shaders" / "Skybox.frag").string();
-
-		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox(
-			pos,
-			rot,
-			scale,
-			skyboxVert,
-			skyboxFrag);
-
-		GameObjectManager::SetSkybox(skybox);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
