@@ -75,6 +75,11 @@ namespace Graphics::Shape
 			this->parent = parent;
 		}
 
+		void SetParent(const shared_ptr<GameObject>& parentObj)
+		{
+			parent = parentObj;
+		}
+
 		virtual void Update(float deltaTime) {}
 		virtual void Render(const mat4& view, const mat4& projection) {}
 
@@ -147,7 +152,13 @@ namespace Graphics::Shape
 		template <typename T, typename... Args>
 		shared_ptr<T> AddComponent(Args&&... args)
 		{
+			//create the component
 			auto component = make_shared<T>(forward<Args>(args)...);
+
+			//set the parent for the component
+			component->SetParent(shared_from_this());
+
+			//add the component to the map
 			components[typeid(T).hash_code()] = component;
 			return component;
 		}

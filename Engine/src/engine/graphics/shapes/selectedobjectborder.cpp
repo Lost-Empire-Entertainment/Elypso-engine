@@ -51,6 +51,7 @@ namespace Graphics::Shape
 			"Border",
 			10000001,
 			true);
+		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize Border");
 
 		float vertices[] =
 		{
@@ -150,7 +151,7 @@ namespace Graphics::Shape
 
 			shader.SetFloat("transparency", 0.5f);
 
-			if (mesh->GetMeshType() == Mesh::MeshType::model)
+			if (selectedObjMesh->GetMeshType() == Mesh::MeshType::model)
 			{
 				//retrieve vertices and calculate bounding box
 				const vector<AssimpVertex>& vertices = selectedObjMesh->GetVertices();

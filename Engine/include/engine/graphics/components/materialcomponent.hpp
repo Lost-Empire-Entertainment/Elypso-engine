@@ -8,18 +8,22 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "gameobject.hpp"
 #include "shader.hpp"
+#include "core.hpp"
 
 namespace Graphics::Components
 {
 	using std::map;
 	using std::vector;
 	using std::string;
+	using std::cout;
 
 	using Graphics::Shader;
 	using Graphics::Shape::Component;
+	using Core::Engine;
 
 	class Material : public Component
 	{
@@ -40,11 +44,11 @@ namespace Graphics::Components
 
 		void Initialize(const string& vertShaderPath, const string& fragShaderPath)
 		{
+			auto par = parent.lock();
+			cout << "initialized material for " << par->GetName() << "\n";
+
 			Shader newShader = Shader::LoadShader(vertShaderPath, fragShaderPath);
 			AddShader(vertShaderPath, fragShaderPath, newShader);
-
-			newShader.Use();
-			newShader.SetInt("material.diffuse", 0);
 		}
 
 		void AddTexture(const string& textureName, const unsigned int& textureID, const TextureType& textureType)

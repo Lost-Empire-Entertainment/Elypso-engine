@@ -3,8 +3,12 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <iostream>
+
 //engine
 #include "meshcomponent.hpp"
+
+using std::cout;
 
 namespace Graphics::Components
 {
@@ -15,6 +19,7 @@ namespace Graphics::Components
 		switch (meshType)
 		{
 		case MeshType::border:
+		{
 			glGenVertexArrays(1, &VAO);
 			glGenBuffers(1, &VBO);
 			glBindVertexArray(VAO);
@@ -26,8 +31,13 @@ namespace Graphics::Components
 
 			glBindVertexArray(0);
 
+			auto par = parent.lock();
+			cout << "initialized mesh for " << par->GetName() << "\n";
+
 			break;
+		}
 		case MeshType::actionTex:
+		{
 			glGenVertexArrays(1, &VAO);
 			glGenBuffers(1, &VBO);
 			glBindVertexArray(VAO);
@@ -45,8 +55,13 @@ namespace Graphics::Components
 
 			glBindVertexArray(0);
 
+			auto par = parent.lock();
+			cout << "initialized mesh for " << par->GetName() << "\n";
+
 			break;
+		}
 		case MeshType::skybox:
+		{
 			glGenVertexArrays(1, &VAO);
 			glGenBuffers(1, &VBO);
 			glBindVertexArray(VAO);
@@ -55,9 +70,13 @@ namespace Graphics::Components
 			glEnableVertexAttribArray(0);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-			break;
+			auto par = parent.lock();
+			cout << "initialized mesh for " << par->GetName() << "\n";
 
+			break;
+		}
 		case MeshType::billboard:
+		{
 			glGenVertexArrays(1, &VAO);
 			glGenBuffers(1, &VBO);
 			glBindVertexArray(VAO);
@@ -75,8 +94,13 @@ namespace Graphics::Components
 
 			glBindVertexArray(0);
 
+			auto par = parent.lock();
+			cout << "initialized mesh for " << par->GetName() << "\n";
+
 			break;
+		}
 		case MeshType::point_light:
+		{
 			glGenVertexArrays(1, &VAO);
 			glGenBuffers(1, &VBO);
 
@@ -88,8 +112,13 @@ namespace Graphics::Components
 			glEnableVertexAttribArray(0);
 			glBindVertexArray(0);
 
+			auto par = parent.lock();
+			cout << "initialized mesh for " << par->GetName() << "\n";
+
 			break;
+		}
 		case MeshType::spot_light:
+		{
 			glGenVertexArrays(1, &VAO);
 			glGenBuffers(1, &VBO);
 
@@ -101,8 +130,13 @@ namespace Graphics::Components
 			glEnableVertexAttribArray(0);
 			glBindVertexArray(0);
 
+			auto par = parent.lock();
+			cout << "initialized mesh for " << par->GetName() << "\n";
+
 			break;
+		}
 		case MeshType::directional_light:
+		{
 			glGenVertexArrays(1, &VAO);
 			glGenBuffers(1, &VBO);
 
@@ -114,7 +148,11 @@ namespace Graphics::Components
 			glEnableVertexAttribArray(0);
 			glBindVertexArray(0);
 
+			auto par = parent.lock();
+			cout << "initialized mesh for " << par->GetName() << "\n";
+
 			break;
+		}
 		}
 	}
 
@@ -158,5 +196,8 @@ namespace Graphics::Components
 		glEnableVertexAttribArray(6);
 		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, weights));
 		glBindVertexArray(0);
+
+		auto par = parent.lock();
+		cout << "initialized mesh for " << par->GetName() << "\n";
 	}
 }
