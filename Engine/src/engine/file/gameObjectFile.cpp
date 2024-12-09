@@ -374,13 +374,10 @@ namespace EngineFile
 				vec3(0),
 				vec3(1),
 				modelPath,
-				(path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
-				(path(Engine::filesPath) / "shaders" / "GameObject.frag").string(),
 				"DEFAULTDIFF",
 				"DEFAULTSPEC",
 				"EMPTY",
 				"EMPTY",
-				32,
 				fileName,
 				Importer::tempID);
 		}

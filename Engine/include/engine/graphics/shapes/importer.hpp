@@ -40,13 +40,10 @@ namespace Graphics::Shape
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
 			const string& modelPath = "",
-			const string& vertShader = (path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
-			const string& fragShader = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string(),
 			const string& diffTexture = "DEFAULTDIFF",
 			const string& specTexture = "DEFAULTSPEC",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
-			const float& shininess = 32,
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
@@ -59,13 +56,10 @@ namespace Graphics::Shape
 			const vec3& rot,
 			const vec3& scale,
 			const string& modelPath,
-			const string& vertShader,
-			const string& fragShader,
 			const string& diffTexture,
 			const string& specTexture,
 			const string& normalTexture,
 			const string& heightTexture,
-			const float& shininess,
 			aiNode* node,
 			const aiScene* scene);
 

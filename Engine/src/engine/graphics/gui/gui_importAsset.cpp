@@ -172,13 +172,10 @@ namespace Graphics::GUI
 					vec3(0),
 					vec3(1),
 					destinationPath,
-					(path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
-					(path(Engine::filesPath) / "shaders" / "GameObject.frag").string(),
 					"DEFAULTDIFF",
 					"DEFAULTSPEC",
 					"EMPTY",
 					"EMPTY",
-					32,
 					targetName,
 					nextID);
 

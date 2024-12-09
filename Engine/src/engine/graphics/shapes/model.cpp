@@ -79,7 +79,6 @@ namespace Graphics::Shape
 		const string& heightTexture,
 		const vector<AssimpVertex> vertices,
 		const vector<unsigned int> indices,
-		const float& shininess,
 		string& name,
 		unsigned int& id,
 		const bool& isEnabled,
@@ -100,8 +99,8 @@ namespace Graphics::Shape
 
 		auto material = obj->AddComponent<Material>();
 		material->Initialize(
-			(path(Engine::filesPath) / "shaders" / "Gameobject.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Gameobject.frag").string());
+			(path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "GameObject.frag").string());
 
 		string objName = obj->GetName();
 		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
