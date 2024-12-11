@@ -51,7 +51,7 @@ namespace Graphics::Shape
 			"Border",
 			10000001,
 			true);
-		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize Border");
+		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize border");
 
 		float vertices[] =
 		{

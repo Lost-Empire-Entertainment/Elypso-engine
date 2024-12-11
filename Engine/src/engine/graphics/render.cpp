@@ -272,12 +272,8 @@ namespace Graphics
 		Grid::InitializeGrid();
 
 		shared_ptr<GameObject> border = Border::InitializeBorder();
-		GameObjectManager::SetBorder(border);
-		GameObjectManager::AddOpaqueObject(border);
 
 		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
-		GameObjectManager::SetActionTex(actionTex);
-		GameObjectManager::AddTransparentObject(actionTex);
 #endif
 		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox();
 

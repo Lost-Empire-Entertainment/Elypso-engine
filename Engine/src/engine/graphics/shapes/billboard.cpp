@@ -54,6 +54,7 @@ namespace Graphics::Shape
 			name,
 			id,
 			isEnabled);
+		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize billboard");
 
 		float vertices[] =
 		{

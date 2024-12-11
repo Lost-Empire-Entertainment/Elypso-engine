@@ -55,6 +55,7 @@ namespace Graphics::Shape
 			"ActionTex", 
 			10000002, 
 			true);
+		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize action texture");
 
 		float vertices[] =
 		{

@@ -37,6 +37,7 @@ namespace Graphics::Shape
             "Skybox",
             10000003,
             true);
+        if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize skybox");
 
         float vertices[] =
         {        

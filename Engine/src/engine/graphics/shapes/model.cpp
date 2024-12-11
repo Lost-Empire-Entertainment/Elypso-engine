@@ -88,6 +88,7 @@ namespace Graphics::Shape
 			name,
 			id,
 			isEnabled);
+		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize model");
 
 		auto transform = make_shared<Transform>(pos, rot, scale);
 		obj->SetTransform(transform);
