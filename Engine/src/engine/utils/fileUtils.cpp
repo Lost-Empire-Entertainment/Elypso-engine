@@ -491,14 +491,14 @@ namespace Utils
 
                 string cleanedFileName = fileName;
                 size_t pos = fileName.find('(');
-                if (pos != string::npos
-                    && pos > 0)
+                if (pos != string::npos)
                 {
-                    cleanedFileName = fileName.substr(0, pos - 1);
+                    cleanedFileName = fileName.substr(0, pos);
                 }
 
-                string cleanedFileNameAndExtension = " (" + to_string(highestNumber) + ")" + extension;
-                newFilePath = (path(parentFolderPath) / cleanedFileName / cleanedFileNameAndExtension).string();
+                cleanedFileName = cleanedFileName.empty() ? fileName : cleanedFileName;
+                string newFileName = cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;
+                newFilePath = (path(parentFolderPath) / newFileName).string();
             }
         }
 
