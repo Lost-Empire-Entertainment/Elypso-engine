@@ -25,7 +25,6 @@
 #include "sceneFile.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
-#include "meshcomponent.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -45,8 +44,8 @@ using std::ifstream;
 using std::filesystem::exists;
 
 using Core::Select;
-using Graphics::Components::Mesh;
-using Type = Graphics::Components::Mesh::MeshType;
+using Graphics::Shape::Mesh;
+using Type = Graphics::Shape::Mesh::MeshType;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -71,16 +70,20 @@ namespace Graphics::Shape
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetComponent<Mesh>()->GetMeshType();
+				Type type = obj->GetMesh()->GetMeshType();
 				switch (type)
 				{
 				case Type::model:
 					Model::Render(obj, view, projection);
 					break;
 				case Type::directional_light:
+					DirectionalLight::RenderDirectionalLight(obj, view, projection);
+					break;
 				case Type::point_light:
+					PointLight::RenderPointLight(obj, view, projection);
+					break;
 				case Type::spot_light:
-					obj->Render(view, projection);
+					SpotLight::RenderSpotLight(obj, view, projection);
 					break;
 				}
 			}
@@ -111,13 +114,13 @@ namespace Graphics::Shape
 			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
 #if ENGINE_MODE
-			ActionTex::RenderActionTex(selectedAction, view, projection);
+			ActionTex::RenderActionTex(actionTex, view, projection);
 #endif
 			for (const auto& obj : transparentObjects)
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetComponent<Mesh>()->GetMeshType();
+				Type type = obj->GetMesh()->GetMeshType();
 				switch (type)
 				{
 				case Type::billboard:
@@ -137,7 +140,7 @@ namespace Graphics::Shape
 
 		string thisName = obj->GetName();
 
-		Type type = obj->GetComponent<Mesh>()->GetMeshType();
+		Type type = obj->GetMesh()->GetMeshType();
 
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
@@ -218,13 +221,13 @@ namespace Graphics::Shape
 			if (exists(txtFilePath))
 			{
 				string targetFolder;
-				if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::model)
+				if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
 				{
 					targetFolder = path(txtFilePath).parent_path().parent_path().string();
 				}
-				else if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::point_light
-						 || obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::spot_light
-						 || obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::directional_light)
+				else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
+						 || obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
+						 || obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
 				{
 					targetFolder = path(txtFilePath).parent_path().string();
 				}

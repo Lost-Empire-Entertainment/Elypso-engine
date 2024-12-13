@@ -10,15 +10,12 @@
 #include "skybox.hpp"
 #include "console.hpp"
 #include "render.hpp"
-#include "meshcomponent.hpp"
-#include "materialcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
 
-using Graphics::Components::Mesh;
-using Graphics::Components::Material;
-using MeshType = Graphics::Components::Mesh::MeshType;
+using Graphics::Shape::Mesh;
+using MeshType = Graphics::Shape::Mesh::MeshType;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -33,14 +30,10 @@ namespace Graphics::Shape
 {
 	shared_ptr<GameObject> Skybox::InitializeSkybox()
 	{
-        auto obj = GameObject::Create(
-            "Skybox",
-            10000003,
-            true);
-        if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize skybox");
+        shared_ptr<Transform> transform = make_shared<Transform>(vec3(0), vec3(0), vec3(1));
 
-        float vertices[] =
-        {        
+        float skyboxVertices[] =
+        {
             -1.0f,  1.0f, -1.0f,
             -1.0f, -1.0f, -1.0f,
              1.0f, -1.0f, -1.0f,
@@ -84,27 +77,60 @@ namespace Graphics::Shape
              1.0f, -1.0f,  1.0f
         };
 
-        auto transform = make_shared<Transform>(vec3(0), vec3(0), vec3(1));
-        obj->SetTransform(transform);
+        unsigned int VAO, VBO;
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            sizeof(skyboxVertices),
+            &skyboxVertices,
+            GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            3 * sizeof(float),
+            (void*)0);
 
-        auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::skybox);
-        mesh->Initialize(Mesh::MeshType::skybox, vertices);
+        shared_ptr<Mesh> mesh = make_shared<Mesh>(true, MeshType::skybox, VAO, VBO, 0);
 
-        auto material = obj->AddComponent<Material>();
-        material->Initialize(
+        Shader skyboxShader = Shader::LoadShader(
             (path(Engine::filesPath) / "shaders" / "Skybox.vert").string(),
             (path(Engine::filesPath) / "shaders" / "Skybox.frag").string());
 
-        string objName = obj->GetName();
-        if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
-        if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
-        if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
-
-        Shader skyboxShader = material->GetShader();
         skyboxShader.Use();
         skyboxShader.SetInt("skybox", 0);
 
+        shared_ptr<Material> mat = make_shared<Material>();
+        mat->AddShader(
+            (path(Engine::filesPath) / "shaders" / "Skybox.vert").string(),
+            (path(Engine::filesPath) / "shaders" / "Skybox.frag").string(), 
+            skyboxShader);
+
+        float shininess = 32.0f;
+        shared_ptr<BasicShape_Variables> skybox = make_shared<BasicShape_Variables>(shininess);
+
+        string skyboxName = "Skybox";
+        unsigned int skyboxID = 10000001;
+        shared_ptr<GameObject> obj = make_shared<GameObject>(
+            true,
+            skyboxName,
+            skyboxID,
+            true,
+            transform,
+            mesh,
+            mat,
+            skybox);
+
         GameObjectManager::SetSkybox(obj);
+
+#if ENGINE_MODE
+        GUISceneWindow::UpdateCounts();
+#endif
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
@@ -171,25 +197,17 @@ namespace Graphics::Shape
         mat4& view,
         const mat4& projection)
 	{
-        auto material = obj->GetComponent<Material>();
-        auto mesh = obj->GetComponent<Mesh>();
-        if (!material
-            || !mesh)
-        {
-            return;
-        }
-
         glDepthFunc(GL_LEQUAL);
 
         glDepthMask(GL_FALSE);
 
-        Shader skyboxShader = material->GetShader();
+        Shader skyboxShader = obj->GetMaterial()->GetShader();
         skyboxShader.Use();
         view = mat4(mat3(Render::camera.GetViewMatrix()));
         skyboxShader.SetMat4("view", view);
         skyboxShader.SetMat4("projection", projection);
 
-        glBindVertexArray(mesh->GetVAO());
+        glBindVertexArray(obj->GetMesh()->GetVAO());
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);

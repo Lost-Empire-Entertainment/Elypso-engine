@@ -31,8 +31,6 @@ namespace Graphics::Shape
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
 			const string& diffTexture = "",
-			const float& shininess = 32,
-			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
 

@@ -17,7 +17,6 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "fileUtils.hpp"
-#include "meshcomponent.hpp"
 
 using std::cout;
 using std::endl;
@@ -32,7 +31,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Engine;
 using Utils::File;
-using Graphics::Components::Mesh;
+using Graphics::Shape::Mesh;
 
 namespace Graphics
 {
@@ -42,10 +41,8 @@ namespace Graphics
 		const Material::TextureType type,
 		bool flipTexture)
 	{
-		auto mesh = obj->GetComponent<Mesh>();
-		auto mat = obj->GetComponent<Material>();
 		//the texture already exists and has already been assigned to this model once
-		if (mat->TextureExists(texturePath)
+		if (obj->GetMaterial()->TextureExists(texturePath)
 			&& texturePath != "DEFAULTDIFF"
 			&& texturePath != "DEFAULTSPEC"
 			&& texturePath != "EMPTY")
@@ -60,7 +57,7 @@ namespace Graphics
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
-				mat->AddTexture(defaultTexturePath, it->second, type);
+				obj->GetMaterial()->AddTexture(defaultTexturePath, it->second, type);
 				return;
 			}
 		}
@@ -72,7 +69,7 @@ namespace Graphics
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
-				mat->AddTexture(defaultTexturePath, it->second, type);
+				obj->GetMaterial()->AddTexture(defaultTexturePath, it->second, type);
 				return;
 			}
 		}
@@ -80,7 +77,7 @@ namespace Graphics
 		//the texture is EMPTY and is just a placeholder
 		if (texturePath == "EMPTY")
 		{
-			mat->AddTexture(texturePath, 0, type);
+			obj->GetMaterial()->AddTexture(texturePath, 0, type);
 			return;
 		}
 
@@ -88,7 +85,7 @@ namespace Graphics
 		auto it = textures.find(texturePath);
 		if (it != textures.end())
 		{
-			mat->AddTexture(texturePath, it->second, type);
+			obj->GetMaterial()->AddTexture(texturePath, it->second, type);
 
 			return;
 		}
@@ -106,7 +103,7 @@ namespace Graphics
 			finalTexturePath = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
 		}
 		//the texture path is assigned but doesnt exist, assigning missing texture
-		else if (mesh->GetMeshType() != Mesh::MeshType::model
+		else if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model
 				 || texturePath.find("diff_default.png") != string::npos
 				 || texturePath.find("spec_default.png") != string::npos
 				 || texturePath.find("diff_missing.png") != string::npos)
@@ -195,7 +192,7 @@ namespace Graphics
 				}
 			}
 
-			mat->AddTexture(finalTexturePath, texture, type);
+			obj->GetMaterial()->AddTexture(finalTexturePath, texture, type);
 
 			textures[finalTexturePath] = texture;
 		}

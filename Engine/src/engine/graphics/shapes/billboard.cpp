@@ -18,7 +18,6 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
-#include "meshcomponent.hpp"
 
 using std::cout;
 using glm::translate;
@@ -30,9 +29,9 @@ using std::filesystem::path;
 
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Components::Mesh;
-using Type = Graphics::Components::Mesh::MeshType;
-using Graphics::Components::Material;
+using Graphics::Shape::Mesh;
+using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Shape::Material;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
@@ -45,16 +44,11 @@ namespace Graphics::Shape
 		const vec3& rot,
 		const vec3& scale,
 		const string& diffTexture,
-		const float& shininess,
-		string& name,
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-		auto obj = GameObject::Create(
-			name,
-			id,
-			isEnabled);
-		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize billboard");
+
+		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
 		float vertices[] =
 		{
@@ -67,28 +61,56 @@ namespace Graphics::Shape
 			-0.25f, -0.25f, -0.25f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f
 		};
 
-		auto transform = make_shared<Transform>(pos, rot, scale);
-		obj->SetTransform(transform);
+		GLuint vao, vbo, ebo;
 
-		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::billboard);
-		mesh->Initialize(Mesh::MeshType::billboard, vertices);
+		glGenVertexArrays(1, &vao);
+		glGenBuffers(1, &vbo);
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		auto material = obj->AddComponent<Material>();
-		material->Initialize(
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
+		//position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		//normal attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		//texture attribute
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+
+		glBindVertexArray(0);
+
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::billboard, vao, vbo, ebo);
+
+		Shader billboardShader = Shader::LoadShader(
+			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(), 
 			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string());
 
-		string objName = obj->GetName();
-		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
-		if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
-		if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
+		shared_ptr<Material> mat = make_shared<Material>();
+		mat->AddShader(
+			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(), 
+			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string(), billboardShader);
 
-		Shader billboardShader = material->GetShader();
-		billboardShader.Use();
-		billboardShader.SetInt("material.diffuse", 0);
+		float shininess = 32.0f;
+		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
-		//load billboard texture
+		string billboardName = "Billboard";
+		shared_ptr<GameObject> obj = make_shared<GameObject>(
+			true,
+			billboardName,
+			id,
+			isEnabled,
+			transform,
+			mesh,
+			mat,
+			basicShape);
+
 		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, true);
+
+		Shader assignedShader = obj->GetMaterial()->GetShader();
+		assignedShader.Use();
+		assignedShader.SetInt("material.diffuse", 0);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddTransparentObject(obj);
@@ -105,15 +127,7 @@ namespace Graphics::Shape
 		if (GameObjectManager::renderBillboards
 			&& obj->IsEnabled())
 		{
-			auto material = obj->GetComponent<Material>();
-			auto mesh = obj->GetComponent<Mesh>();
-			if (!material
-				|| !mesh)
-			{
-				return;
-			}
-
-			Shader shader = material->GetShader();
+			Shader shader = obj->GetMaterial()->GetShader();
 
 			shader.Use();
 			shader.SetMat4("projection", projection);
@@ -139,10 +153,10 @@ namespace Graphics::Shape
 
 			//bind diffuse map
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, material->GetTextureID(Material::TextureType::diffuse));
+			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse));
 
 			shader.SetMat4("model", model);
-			GLuint VAO = mesh->GetVAO();
+			GLuint VAO = obj->GetMesh()->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}

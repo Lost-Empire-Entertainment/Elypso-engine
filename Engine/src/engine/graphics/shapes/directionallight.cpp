@@ -13,9 +13,6 @@
 #include "render.hpp"
 #include "console.hpp"
 #include "selectobject.hpp"
-#include "meshcomponent.hpp"
-#include "lighttcomponent.hpp"
-#include "materialcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -23,17 +20,14 @@
 using glm::translate;
 using glm::quat;
 
-using Graphics::Components::Mesh;
-using MeshType = Graphics::Components::Mesh::MeshType;
+using Graphics::Shape::Mesh;
+using MeshType = Graphics::Shape::Mesh::MeshType;
 using Graphics::Shape::Billboard;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Select;
-using Graphics::Components::DirectionalLightComponent;
-using Graphics::Components::LightComponent;
-using Graphics::Components::Material;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -51,15 +45,10 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled,
 		const bool& isMeshEnabled,
-		
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		auto obj = GameObject::Create(
-			name, 
-			id, 
-			isEnabled);
-		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize directional light");
+		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
 		float vertices[] =
 		{
@@ -90,27 +79,57 @@ namespace Graphics::Shape
 			0.5f, -0.5f,  0.5f
 		};
 
-		auto lightConfig = LightComponent::LightConfig
-		{
-			diffuse,
-			intensity,
-			isMeshEnabled,
-			(path(Engine::filesPath) / "icons" / "directionalLight.png").string(),
-			32,
-			isBillboardEnabled
-		};
+		GLuint vao, vbo, ebo;
 
-		auto dirLight = obj->AddComponent<DirectionalLightComponent>
-		(
-			lightConfig
-		);
+		glGenVertexArrays(1, &vao);
+		glGenBuffers(1, &vbo);
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		dirLight->Initialize(obj, vertices, "directional_light", pos, rot, scale);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
 
-		string objName = obj->GetName();
-		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
-		if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
-		if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
+		glBindVertexArray(0);
+
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::directional_light, vao, vbo, ebo);
+
+		Shader directionalLightShader = Shader::LoadShader(
+			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(), 
+			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
+
+		shared_ptr<Material> mat = make_shared<Material>();
+		mat->AddShader(
+			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "Basic.frag").string(), 
+			directionalLightShader);
+
+		shared_ptr<Directional_light_Variables> directionalLight =
+			make_shared<Directional_light_Variables>(
+				diffuse,
+				intensity);
+
+		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "directionalLight.png").string();
+		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+			pos,
+			rot,
+			scale,
+			billboardDiffTexture,
+			billboardID,
+			isBillboardEnabled);
+
+		shared_ptr<GameObject> obj = make_shared<GameObject>(
+			true,
+			name,
+			id,
+			isEnabled,
+			transform,
+			mesh,
+			mat,
+			directionalLight);
+
+		billboard->SetParentBillboardHolder(obj);
+		obj->SetChildBillboard(billboard);
 
 		obj->SetTxtFilePath(txtFilePath);
 
@@ -130,5 +149,41 @@ namespace Graphics::Shape
 			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
+	}
+
+	void DirectionalLight::RenderDirectionalLight(
+		const shared_ptr<GameObject>& obj,
+		const mat4& view,
+		const mat4& projection)
+	{
+		if (obj->IsEnabled())
+		{
+			Shader shader = obj->GetMaterial()->GetShader();
+
+			shader.Use();
+			shader.SetMat4("projection", projection);
+			shader.SetMat4("view", view);
+
+			float transparency =
+				Select::selectedObj == obj
+				&& Select::isObjectSelected ? 1.0f : 0.5f;
+			shader.SetFloat("transparency", transparency);
+			shader.SetVec3("color", obj->GetDirectionalLight()->GetDiffuse());
+
+			if (GameObjectManager::renderLightBorders
+				&& obj->GetMesh()->IsEnabled())
+			{
+				mat4 model = mat4(1.0f);
+				model = translate(model, obj->GetTransform()->GetPosition());
+				quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+				model *= mat4_cast(newRot);
+				model = scale(model, obj->GetTransform()->GetScale());
+
+				shader.SetMat4("model", model);
+				GLuint VAO = obj->GetMesh()->GetVAO();
+				glBindVertexArray(VAO);
+				glDrawArrays(GL_LINES, 0, 32);
+			}
+		}
 	}
 }

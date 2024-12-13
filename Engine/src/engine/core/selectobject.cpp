@@ -15,7 +15,6 @@
 #include "selectobject.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
-#include "meshcomponent.hpp"
 
 using glm::inverse;
 using glm::normalize;
@@ -27,12 +26,17 @@ using std::ranges::max;
 using std::ranges::min;
 
 using Graphics::Render;
-using Graphics::Components::Mesh;
-using Type = Graphics::Components::Mesh::MeshType;
+using Type = Graphics::Shape::Mesh::MeshType;
 
 namespace Core
 {
-	Select::Ray Select::RayFromMouse(float width, float height, double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix)
+	Select::Ray Select::RayFromMouse(
+		float width, 
+		float height, 
+		double mouseX, 
+		double mouseY, 
+		const mat4& viewMatrix, 
+		const mat4& projectionMatrix)
 	{
 		float x = (2.0f * static_cast<float>(mouseX)) / width - 1.0f;
 		float y = 1.0f - (2.0f * static_cast<float>(mouseY)) / height;
@@ -47,7 +51,9 @@ namespace Core
 		return Ray(Render::camera.GetCameraPosition(), rayDirection);
 	}
 
-	int Select::CheckRayObjectIntersections(const Ray& ray, const vector<shared_ptr<GameObject>>& objects)
+	int Select::CheckRayObjectIntersections(
+		const Ray& ray, 
+		const vector<shared_ptr<GameObject>>& objects)
 	{
 		float maxRange = 1000.0f;
 		float closestDistance = maxRange;
@@ -55,7 +61,7 @@ namespace Core
 
 		for (int i = 0; i < objects.size(); i++)
 		{
-			Type objType = objects[i]->GetComponent<Mesh>()->GetMeshType();
+			Type objType = objects[i]->GetMesh()->GetMeshType();
 			if (objType == Type::model
 				|| objType == Type::point_light
 				|| objType == Type::spot_light
@@ -82,7 +88,7 @@ namespace Core
 		const shared_ptr<GameObject>& shape,
 		float* distance)
 	{
-		Type objType = shape->GetComponent<Mesh>()->GetMeshType();
+		Type objType = shape->GetMesh()->GetMeshType();
 
 		if (objType == Type::model
 			|| objType == Type::point_light
@@ -96,7 +102,7 @@ namespace Core
 
 			if (objType == Type::model)
 			{
-				const vector<AssimpVertex>& vertices = shape->GetComponent<Mesh>()->GetVertices();
+				const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
 
 				//complex bounding box for models
 				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), vec3(1.0f));

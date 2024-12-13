@@ -13,7 +13,6 @@
 
 //engine
 #include "gameobject.hpp"
-#include "materialcomponent.hpp"
 
 namespace Graphics
 {
@@ -21,7 +20,7 @@ namespace Graphics
 	using std::shared_ptr;
 
 	using Graphics::Shape::GameObject;
-	using Graphics::Components::Material;
+	using Graphics::Shape::Material;
 
 	class Texture
 	{

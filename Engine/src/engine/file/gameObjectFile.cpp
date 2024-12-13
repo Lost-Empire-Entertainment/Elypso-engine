@@ -28,9 +28,6 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "texture.hpp"
-#include "meshcomponent.hpp"
-#include "materialcomponent.hpp"
-#include "lighttcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -57,15 +54,12 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::File;
 using Utils::String;
+using Graphics::Shape::Mesh;
+using Graphics::Shape::Material;
 using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
-using Graphics::Components::Mesh;
-using Graphics::Components::Material;
-using Graphics::Components::PointLightComponent;
-using Graphics::Components::SpotLightComponent;
-using Graphics::Components::DirectionalLightComponent;
 using Core::Select;
 using Graphics::Render;
 using Graphics::Shape::GameObject;
@@ -83,13 +77,10 @@ namespace EngineFile
 	{
 		for (const auto& obj : GameObjectManager::GetObjects())
 		{
-			if (obj->GetComponent<Mesh>()->GetMeshType() != Mesh::MeshType::billboard)
+			if (obj->GetParentBillboardHolder() == nullptr)
 			{
 				string objectTxtFilePath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
 				string objectName = obj->GetName();
-
-				auto material = obj->GetComponent<Material>();
-				auto mesh = obj->GetComponent<Mesh>();
 
 				vector<string> data;
 
@@ -103,9 +94,9 @@ namespace EngineFile
 
 				data.push_back("enabled= " + to_string(obj->IsEnabled()) + "\n");
 
-				data.push_back("mesh enabled= " + to_string(mesh->IsEnabled()) + "\n");
+				data.push_back("mesh enabled= " + to_string(obj->GetMesh()->IsEnabled()) + "\n");
 
-				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
+				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
 				data.push_back("type= " + type + "\n");
 
 				//position
@@ -138,21 +129,21 @@ namespace EngineFile
 				data.push_back("\n");
 
 				//object textures
-				Mesh::MeshType meshType = mesh->GetMeshType();
+				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
 				if (meshType == Mesh::MeshType::model)
 				{
-					string diffuseTexture = material->GetTextureName(Material::TextureType::diffuse);
+					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
 					diffuseTexture = path(diffuseTexture).filename().string();
 					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
 
-					string specularTexture = material->GetTextureName(Material::TextureType::specular);
+					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
 					specularTexture = path(specularTexture).filename().string();
 					if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
 
-					string normalTexture = material->GetTextureName(Material::TextureType::normal);
+					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
 					normalTexture = path(normalTexture).filename().string();
 
-					string heightTexture = material->GetTextureName(Material::TextureType::height);
+					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
 					heightTexture = path(heightTexture).filename().string();
 
 					data.push_back(
@@ -173,53 +164,47 @@ namespace EngineFile
 				}
 				else if (meshType == Mesh::MeshType::point_light)
 				{
-					auto pointLightComponent = obj->GetComponent<PointLightComponent>();
-
-					float pointDiffuseX = pointLightComponent->GetDiffuse().x;
-					float pointDiffuseY = pointLightComponent->GetDiffuse().y;
-					float pointDiffuseZ = pointLightComponent->GetDiffuse().z;
+					float pointDiffuseX = obj->GetPointLight()->GetDiffuse().x;
+					float pointDiffuseY = obj->GetPointLight()->GetDiffuse().y;
+					float pointDiffuseZ = obj->GetPointLight()->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(pointDiffuseX) + ", "
 						+ to_string(pointDiffuseY) + ", "
 						+ to_string(pointDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(pointLightComponent->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(obj->GetPointLight()->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(pointLightComponent->GetDistance()) + "\n");
+					data.push_back("distance= " + to_string(obj->GetPointLight()->GetDistance()) + "\n");
 				}
 				else if (meshType == Mesh::MeshType::spot_light)
 				{
-					auto spotLightComponent = obj->GetComponent<SpotLightComponent>();
-
-					float spotDiffuseX = spotLightComponent->GetDiffuse().x;
-					float spotDiffuseY = spotLightComponent->GetDiffuse().y;
-					float spotDiffuseZ = spotLightComponent->GetDiffuse().z;
+					float spotDiffuseX = obj->GetSpotLight()->GetDiffuse().x;
+					float spotDiffuseY = obj->GetSpotLight()->GetDiffuse().y;
+					float spotDiffuseZ = obj->GetSpotLight()->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(spotDiffuseX) + ", "
 						+ to_string(spotDiffuseY) + ", "
 						+ to_string(spotDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(spotLightComponent->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(obj->GetSpotLight()->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(spotLightComponent->GetDistance()) + "\n");
+					data.push_back("distance= " + to_string(obj->GetSpotLight()->GetDistance()) + "\n");
 
-					data.push_back("inner angle= " + to_string(spotLightComponent->GetInnerAngle()) + "\n");
+					data.push_back("inner angle= " + to_string(obj->GetSpotLight()->GetInnerAngle()) + "\n");
 
-					data.push_back("outer angle= " + to_string(spotLightComponent->GetOuterAngle()) + "\n");
+					data.push_back("outer angle= " + to_string(obj->GetSpotLight()->GetOuterAngle()) + "\n");
 				}
 				else if (meshType == Mesh::MeshType::directional_light)
 				{
-					auto dirLightComponent = obj->GetComponent<DirectionalLightComponent>();
-
-					float dirDiffuseX = dirLightComponent->GetDiffuse().x;
-					float dirDiffuseY = dirLightComponent->GetDiffuse().y;
-					float dirDiffuseZ = dirLightComponent->GetDiffuse().z;
+					float dirDiffuseX = obj->GetDirectionalLight()->GetDiffuse().x;
+					float dirDiffuseY = obj->GetDirectionalLight()->GetDiffuse().y;
+					float dirDiffuseZ = obj->GetDirectionalLight()->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(dirDiffuseX) + ", "
 						+ to_string(dirDiffuseY) + ", "
 						+ to_string(dirDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(dirLightComponent->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(obj->GetDirectionalLight()->GetIntensity()) + "\n");
 				}
 
 				//also save billboard data of each light source
@@ -227,23 +212,13 @@ namespace EngineFile
 					|| meshType == Mesh::MeshType::spot_light
 					|| meshType == Mesh::MeshType::directional_light)
 				{
-					shared_ptr<GameObject> childBillboard = nullptr;
-					for (const auto& child : obj->GetChildren())
-					{
-						if (child->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::billboard)
-						{
-							childBillboard = child;
-							break;
-						}
-					}
-
 					data.push_back("\n");
 					data.push_back("---attached billboard data---\n");
 					data.push_back("\n");
 
-					data.push_back("billboard id= " + to_string(childBillboard->GetID()) + "\n");
+					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
 
-					data.push_back("billboard enabled= " + to_string(childBillboard->IsEnabled()) + "\n");
+					data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
 				}
 
 				//

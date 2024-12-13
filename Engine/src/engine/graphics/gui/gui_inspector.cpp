@@ -30,10 +30,6 @@
 #include "gui_projectitemslist.hpp"
 #include "fileUtils.hpp"
 #include "console.hpp"
-#include "transformcomponent.hpp"
-#include "meshcomponent.hpp"
-#include "materialcomponent.hpp"
-#include "lighttcomponent.hpp"
 
 using std::cout;
 using std::endl;
@@ -46,13 +42,10 @@ using std::filesystem::exists;
 using Graphics::Render;
 using Core::Select;
 using Graphics::Shape::GameObject;
-using Type = Graphics::Components::Mesh::MeshType;
-using Graphics::Components::Transform;
-using Graphics::Components::Material;
-using Graphics::Components::Mesh;
-using Graphics::Components::PointLightComponent;
-using Graphics::Components::SpotLightComponent;
-using Graphics::Components::DirectionalLightComponent;
+using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Shape::Transform;
+using Graphics::Shape::Material;
+using Graphics::Shape::Mesh;
 using EngineFile::SceneFile;
 using Core::Input;
 using Graphics::Texture;
@@ -176,7 +169,7 @@ namespace Graphics::GUI
 						File::MoveOrRenameFileOrFolder(oldFolderPath, newFolderPath, true);
 
 						//rename model file if gameobject mesh type is model
-						if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::model)
+						if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
 						{
 							for (const auto& file : directory_iterator(newFolderPath))
 							{
@@ -297,9 +290,7 @@ namespace Graphics::GUI
 	{
 		shared_ptr<GameObject>& obj = Select::selectedObj;
 
-		auto mesh = obj->GetComponent<Mesh>();
-
-		int height = mesh->GetMeshType() == Mesh::MeshType::model
+		int height = obj->GetMesh()->GetMeshType() == Mesh::MeshType::model
 			? 75 : 150;
 
 		ImGuiChildFlags childWindowFlags{};
@@ -309,16 +300,16 @@ namespace Graphics::GUI
 			ImGui::Text("Mesh");
 			ImGui::Separator();
 
-			Type objType = mesh->GetMeshType();
+			Type objType = obj->GetMesh()->GetMeshType();
 			string objTypeValue = "Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
 			ImGui::Text("%s", objTypeValue.c_str());
 
-			if (mesh->GetMeshType() != Mesh::MeshType::model)
+			if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model)
 			{
-				bool meshState = mesh->IsEnabled();
+				bool meshState = obj->GetMesh()->IsEnabled();
 				if (ImGui::Checkbox("Enable mesh", &meshState))
 				{
-					mesh->SetEnableState(meshState);
+					obj->GetMesh()->SetEnableState(meshState);
 
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
@@ -328,7 +319,7 @@ namespace Graphics::GUI
 				{
 					for (const auto& child : obj->GetChildren())
 					{
-						if (obj->GetComponent<Mesh>()->GetMeshType() == Mesh::MeshType::billboard)
+						if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::billboard)
 						{
 							childBillboard = obj;
 							break;
@@ -356,18 +347,15 @@ namespace Graphics::GUI
 	{
 		shared_ptr<GameObject>& obj = Select::selectedObj;
 
-		auto mesh = obj->GetComponent<Mesh>();
-		auto material = obj->GetComponent<Material>();
-
 		ImGuiChildFlags childWindowFlags{};
 
-		float height = Select::selectedObj->GetComponent<Mesh>()->GetMeshType() == Type::spot_light ? 355.0f : 240.0f;
+		float height = Select::selectedObj->GetMesh()->GetMeshType() == Type::spot_light ? 355.0f : 240.0f;
 		if (ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
 		{
 			ImGui::Text("Material");
 			ImGui::Separator();
 
-			Mesh::MeshType objType = mesh->GetMeshType();
+			Mesh::MeshType objType = obj->GetMesh()->GetMeshType();
 
 			if (objType == Type::model)
 			{
@@ -399,7 +387,7 @@ namespace Graphics::GUI
 				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
 				path diff_texturePath = path(
 					Engine::filesPath
-					+ material->GetTextureName(Material::TextureType::diffuse));
+					+ obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse));
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button("Diff"))
 				{
@@ -418,7 +406,7 @@ namespace Graphics::GUI
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(diff_reset.c_str()))
 				{
-					string removedTexture = material->GetTextureName(Material::TextureType::diffuse);
+					string removedTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
 					if (removedTexture.find("diff_default.png") == string::npos)
 					{
 						Texture::LoadTexture(obj, diff_defaultTexturePath.string(), Material::TextureType::diffuse, true);
@@ -447,7 +435,7 @@ namespace Graphics::GUI
 				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
 				path spec_texturePath = path(
 					Engine::filesPath
-					+ material->GetTextureName(Material::TextureType::specular));
+					+ obj->GetMaterial()->GetTextureName(Material::TextureType::specular));
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button("Spec"))
 				{
@@ -466,7 +454,7 @@ namespace Graphics::GUI
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(spec_reset.c_str()))
 				{
-					string removedTexture = material->GetTextureName(Material::TextureType::specular);
+					string removedTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
 					if (removedTexture.find("spec_default.png") == string::npos)
 					{
 						Texture::LoadTexture(obj, spec_defaultTexturePath.string(), Material::TextureType::specular, true);
@@ -489,136 +477,130 @@ namespace Graphics::GUI
 			{
 				if (objType == Type::point_light)
 				{
-					auto pointLightComponent = obj->GetComponent<PointLightComponent>();
-
-					vec3 pointDiffuse = pointLightComponent->GetDiffuse();
+					vec3 pointDiffuse = obj->GetPointLight()->GetDiffuse();
 					ImGui::Text("Point light diffuse");
 					if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
 					{
-						pointLightComponent->SetDiffuse(pointDiffuse);
+						obj->GetPointLight()->SetDiffuse(pointDiffuse);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 
-					float pointIntensity = pointLightComponent->GetIntensity();
+					float pointIntensity = obj->GetPointLight()->GetIntensity();
 					ImGui::Text("Point light intensity");
 					if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
 					{
-						pointLightComponent->SetIntensity(pointIntensity);
+						obj->GetPointLight()->SetIntensity(pointIntensity);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Reset##pointint"))
 					{
-						pointLightComponent->SetIntensity(1.0f);
+						obj->GetPointLight()->SetIntensity(1.0f);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 
-					float pointDistance = pointLightComponent->GetDistance();
+					float pointDistance = obj->GetPointLight()->GetDistance();
 					ImGui::Text("Point light distance");
 					if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
 					{
-						pointLightComponent->SetDistance(pointDistance);
+						obj->GetPointLight()->SetDistance(pointDistance);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Reset##pointdist"))
 					{
-						pointLightComponent->SetDistance(1.0f);
+						obj->GetPointLight()->SetDistance(1.0f);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 				}
 				else if (objType == Type::spot_light)
 				{
-					auto spotLightComponent = obj->GetComponent<SpotLightComponent>();
-
-					vec3 spotDiffuse = spotLightComponent->GetDiffuse();
+					vec3 spotDiffuse = obj->GetSpotLight()->GetDiffuse();
 					ImGui::Text("Spotlight diffuse");
 					if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
 					{
-						spotLightComponent->SetDiffuse(spotDiffuse);
+						obj->GetSpotLight()->SetDiffuse(spotDiffuse);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 
-					float spotIntensity = spotLightComponent->GetIntensity();
+					float spotIntensity = obj->GetSpotLight()->GetIntensity();
 					ImGui::Text("Spotlight intensity");
 					if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
 					{
-						spotLightComponent->SetIntensity(spotIntensity);
+						obj->GetSpotLight()->SetIntensity(spotIntensity);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Reset##spotint"))
 					{
-						spotLightComponent->SetIntensity(1.0f);
+						obj->GetSpotLight()->SetIntensity(1.0f);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 
-					float spotDistance = spotLightComponent->GetDistance();
+					float spotDistance = obj->GetSpotLight()->GetDistance();
 					ImGui::Text("Spotlight distance");
 					if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
 					{
-						spotLightComponent->SetDistance(spotDistance);
+						obj->GetSpotLight()->SetDistance(spotDistance);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Reset##spotdist"))
 					{
-						spotLightComponent->SetDistance(1.0f);
+						obj->GetSpotLight()->SetDistance(1.0f);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 
-					float spotInnerAngle = spotLightComponent->GetInnerAngle();
-					float spotOuterAngle = spotLightComponent->GetOuterAngle();
+					float spotInnerAngle = obj->GetSpotLight()->GetInnerAngle();
+					float spotOuterAngle = obj->GetSpotLight()->GetOuterAngle();
 
 					ImGui::Text("Spotlight inner angle");
 					if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
 					{
-						spotLightComponent->SetInnerAngle(spotInnerAngle);
+						obj->GetSpotLight()->SetInnerAngle(spotInnerAngle);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Reset##spotinnerangle"))
 					{
-						spotLightComponent->SetInnerAngle(15.0f);
+						obj->GetSpotLight()->SetInnerAngle(15.0f);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 
 					ImGui::Text("Spotlight outer angle");
 					if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
 					{
-						spotLightComponent->SetOuterAngle(spotOuterAngle);
+						obj->GetSpotLight()->SetOuterAngle(spotOuterAngle);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Reset##spotouterangle"))
 					{
-						spotLightComponent->SetOuterAngle(30.0f);
+						obj->GetSpotLight()->SetOuterAngle(30.0f);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 				}
 				else if (objType == Type::directional_light)
 				{
-					auto dirLightComponent = obj->GetComponent<DirectionalLightComponent>();
-
-					vec3 dirDiffuse = dirLightComponent->GetDiffuse();
+					vec3 dirDiffuse = obj->GetDirectionalLight()->GetDiffuse();
 					ImGui::Text("Directional light diffuse");
 					if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
 					{
-						dirLightComponent->SetDiffuse(dirDiffuse);
+						obj->GetDirectionalLight()->SetDiffuse(dirDiffuse);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 
-					float dirIntensity = dirLightComponent->GetIntensity();
+					float dirIntensity = obj->GetDirectionalLight()->GetIntensity();
 					ImGui::Text("Directional light intensity");
 					if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
 					{
-						dirLightComponent->SetIntensity(dirIntensity);
+						obj->GetDirectionalLight()->SetIntensity(dirIntensity);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 					ImGui::SameLine();
 					if (ImGui::Button("Reset##dirint"))
 					{
-						dirLightComponent->SetIntensity(1.0f);
+						obj->GetDirectionalLight()->SetIntensity(1.0f);
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
 				}

@@ -17,8 +17,6 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
-#include "meshcomponent.hpp"
-#include "materialcomponent.hpp"
 #include "console.hpp"
 
 using glm::translate;
@@ -27,11 +25,12 @@ using glm::radians;
 using glm::quat;
 using glm::scale;
 using std::filesystem::path;
+using std::filesystem::exists;
 
 using Graphics::Shader;
-using Graphics::Components::Mesh;
-using Type = Graphics::Components::Mesh::MeshType;
-using Graphics::Components::Material;
+using Graphics::Shape::Mesh;
+using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Shape::Material;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
@@ -47,11 +46,7 @@ namespace Graphics::Shape
 		const vec3& rot, 
 		const vec3& scale)
 	{
-		auto obj = GameObject::Create(
-			"Border",
-			10000001,
-			true);
-		if (obj == nullptr) Engine::CreateErrorPopup("Failed to initialize border");
+		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
 
 		float vertices[] =
 		{
@@ -94,28 +89,47 @@ namespace Graphics::Shape
 			-0.5f,  0.5f,  0.5f,
 		};
 
-		auto transform = make_shared<Transform>(pos, rot, scale);
-		obj->SetTransform(transform);
+		GLuint vao, vbo, ebo;
 
-		auto mesh = obj->AddComponent<Mesh>(true, Mesh::MeshType::border);
-		mesh->Initialize(Mesh::MeshType::border, vertices);
+		glGenVertexArrays(1, &vao);
+		glGenBuffers(1, &vbo);
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		auto material = obj->AddComponent<Material>();
-		material->Initialize(
-			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
 
-		string objName = obj->GetName();
-		if (obj->GetTransform() == nullptr) Engine::CreateErrorPopup(("Failed to assign transform component to " + objName).c_str());
-		if (obj->GetComponent<Mesh>() == nullptr) Engine::CreateErrorPopup(("Failed to assign mesh component to " + objName).c_str());
-		if (obj->GetComponent<Material>() == nullptr) Engine::CreateErrorPopup(("Failed to assign material component to '" + objName).c_str());
+		glBindVertexArray(0);
+
+		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::border, vao, vbo, ebo);
+
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
+
+		if (!exists(vert)) Engine::CreateErrorPopup("Vertice shader path for Selected object border is invalid!");
+		if (!exists(frag)) Engine::CreateErrorPopup("Fragment shader path for Selected object border is invalid!");
+
+		Shader borderShader = Shader::LoadShader(vert, frag);
+
+		shared_ptr<Material> mat = make_shared<Material>();
+		mat->AddShader(vert, frag, borderShader);
+
+		float shininess = 32.0f;
+		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+
+		string borderName = "Border";
+		shared_ptr<GameObject> obj = make_shared<GameObject>(
+			false,
+			borderName,
+			id,
+			true,
+			transform,
+			mesh,
+			mat,
+			basicShape);
 
 		GameObjectManager::SetBorder(obj);
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			ConsoleType::DEBUG,
-			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}
@@ -125,16 +139,9 @@ namespace Graphics::Shape
 		const mat4& view, 
 		const mat4& projection)
 	{
-		auto& transform = obj->GetTransform();
-		auto material = obj->GetComponent<Material>();
-		auto mesh = obj->GetComponent<Mesh>();
-		if (!material
-			|| !mesh)
-		{
-			return;
-		}
+		if (obj == nullptr) Engine::CreateErrorPopup("Selected object border gameobject is invalid.");
 
-		Shader shader = material->GetShader();
+		Shader shader = obj->GetMaterial()->GetShader();
 
 		shader.Use();
 		shader.SetMat4("projection", projection);
@@ -146,18 +153,15 @@ namespace Graphics::Shape
 
 		if (Select::isObjectSelected)
 		{
-			auto& selectedObjTransform = Select::selectedObj->GetTransform();
-			auto selectedObjMesh = Select::selectedObj->GetComponent<Mesh>();
-
 			shader.SetFloat("transparency", 0.5f);
 
-			if (selectedObjMesh->GetMeshType() == Mesh::MeshType::model)
+			if (Select::selectedObj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
 			{
 				//retrieve vertices and calculate bounding box
-				const vector<AssimpVertex>& vertices = selectedObjMesh->GetVertices();
+				const vector<AssimpVertex>& vertices = Select::selectedObj->GetMesh()->GetVertices();
 				vec3 minBound, maxBound;
-				vec3 position = selectedObjTransform->GetPosition();
-				vec3 initialScale = selectedObjTransform->GetScale();
+				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
+				vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
 
 				//calculate the bounding box based on vertices
 				Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale);
@@ -174,7 +178,7 @@ namespace Graphics::Shape
 				model = translate(model, boxCenter);
 
 				//apply rotation
-				quat newRot = quat(radians(selectedObjTransform->GetRotation()));
+				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
 				model *= mat4_cast(newRot);
 
 				//scale based on the bounding box size with the margin included
@@ -183,13 +187,13 @@ namespace Graphics::Shape
 			else
 			{
 				//simple position and margin values
-				vec3 position = selectedObjTransform->GetPosition();
+				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
 
 				//simple bounding box
 				model = translate(model, position);
 
 				//apply rotation
-				quat newRot = quat(radians(selectedObjTransform->GetRotation()));
+				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
 				model *= mat4_cast(newRot);
 
 				//scale based on size, with a slight margin
@@ -209,7 +213,7 @@ namespace Graphics::Shape
 
 		shader.SetMat4("model", model);
 
-		GLuint VAO = mesh->GetVAO();
+		GLuint VAO = obj->GetMesh()->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
 

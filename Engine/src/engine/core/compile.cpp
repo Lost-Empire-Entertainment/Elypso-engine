@@ -30,7 +30,6 @@
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
 #include "configFile.hpp"
-#include "meshcomponent.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -53,7 +52,6 @@ using Utils::String;
 using Utils::File;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
-using Graphics::Components::Mesh;
 using Graphics::Render;
 using EngineFile::SceneFile;
 using Graphics::GUI::EngineGUI;
@@ -104,22 +102,6 @@ namespace Core
 						Engine::gameExePath,
 						true);
 				}
-
-				//
-				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
-				//
-
-				/*
-				string myGamesFolder = (path(Engine::docsPath).parent_path() / "My Games").string();
-				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
-
-				string gameName = ConfigFile::GetValue("gameName");
-
-				string gameDocsFolder = (path(myGamesFolder) / gameName).string();
-				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
-
-				File::CreateNewFolder(gameDocsFolder);
-				*/
 
 				//
 				// COPY PROJECT FILE TO GAME DOCUMETS FOLDER

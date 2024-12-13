@@ -28,8 +28,6 @@
 #include "console.hpp"
 #include "gameObjectFile.hpp"
 #include "skybox.hpp"
-#include "meshcomponent.hpp"
-#include "materialcomponent.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -50,8 +48,8 @@ using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Utils::String;
 using Graphics::Render;
-using Graphics::Components::Mesh;
-using Graphics::Components::Material;
+using Graphics::Shape::Mesh;
+using Graphics::Shape::Material;
 using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
