@@ -120,15 +120,19 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::model, VAO, VBO, EBO);
 
-		Shader modelShader = Shader::LoadShader(
-			(path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "GameObject.frag").string());
+		string vert = (path(Engine::filesPath) / "shaders" / "GameObject.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string();
+
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for model is invalid!");
+		}
+
+		Shader modelShader = Shader::LoadShader(vert, frag);
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(
-			(path(Engine::filesPath) / "shaders" / "GameObject.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "GameObject.frag").string(), 
-			modelShader);
+		mat->AddShader(vert, frag, modelShader);
 
 		float shininess = 32.0f;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
@@ -182,6 +186,8 @@ namespace Graphics::Shape
 		const mat4& view,
 		const mat4& projection)
 	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Model gameobject is invalid.");
+
 		if (obj->IsEnabled())
 		{
 			Shader shader = obj->GetMaterial()->GetShader();

@@ -107,8 +107,11 @@ namespace Graphics::Shape
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
 
-		if (!exists(vert)) Engine::CreateErrorPopup("Vertice shader path for Selected object border is invalid!");
-		if (!exists(frag)) Engine::CreateErrorPopup("Fragment shader path for Selected object border is invalid!");
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for selected object border is invalid!");
+		}
 
 		Shader borderShader = Shader::LoadShader(vert, frag);
 
@@ -119,10 +122,11 @@ namespace Graphics::Shape
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
 		string borderName = "Border";
+		unsigned int borderID = 10000002;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false,
 			borderName,
-			id,
+			borderID,
 			true,
 			transform,
 			mesh,

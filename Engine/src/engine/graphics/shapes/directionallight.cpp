@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <filesystem>
+
 //external
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
@@ -19,6 +21,7 @@
 
 using glm::translate;
 using glm::quat;
+using std::filesystem::exists;
 
 using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
@@ -94,15 +97,19 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::directional_light, vao, vbo, ebo);
 
-		Shader directionalLightShader = Shader::LoadShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(), 
-			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
+
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for directional light is invalid!");
+		}
+
+		Shader directionalLightShader = Shader::LoadShader(vert, frag);
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic.frag").string(), 
-			directionalLightShader);
+		mat->AddShader(vert, frag, directionalLightShader);
 
 		shared_ptr<Directional_light_Variables> directionalLight =
 			make_shared<Directional_light_Variables>(
@@ -156,6 +163,8 @@ namespace Graphics::Shape
 		const mat4& view,
 		const mat4& projection)
 	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Directional light gameobject is invalid.");
+
 		if (obj->IsEnabled())
 		{
 			Shader shader = obj->GetMaterial()->GetShader();

@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <filesystem>
+
 //external
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
@@ -19,6 +21,7 @@
 
 using glm::translate;
 using glm::quat;
+using std::filesystem::exists;
 
 using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
@@ -98,6 +101,15 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::spot_light, vao, vbo, ebo);
 
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
+
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for spotlight is invalid!");
+		}
+
 		Shader spotlightShader = Shader::LoadShader(
 			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
@@ -160,6 +172,8 @@ namespace Graphics::Shape
 
 	void SpotLight::RenderSpotLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Spotlight gameobject is invalid.");
+
 		if (obj->IsEnabled())
 		{
 			Shader shader = obj->GetMaterial()->GetShader();

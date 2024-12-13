@@ -27,6 +27,7 @@ using glm::radians;
 using glm::quat;
 using glm::scale;
 using std::filesystem::path;
+using std::filesystem::exists;
 
 using Graphics::Shader;
 using Graphics::Texture;
@@ -84,34 +85,44 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::actionTex, vao, vbo, ebo);
 
-		Shader borderShader = Shader::LoadShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string());
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string();
+
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for selected object action is invalid!");
+		}
+
+		Shader borderShader = Shader::LoadShader(vert, frag);
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string(), 
-			borderShader);
+		mat->AddShader(vert, frag ,borderShader);
 
 		float shininess = 32.0f;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
 
 		string actionTexName = "ActionTex";
+		unsigned int actionID = 10000003;
 		shared_ptr<GameObject> obj = make_shared<GameObject>(
 			false,
 			actionTexName,
-			id,
+			actionID,
 			true,
 			transform,
 			mesh,
 			mat,
 			basicShape);
 
-		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "blank.png").string(), Material::TextureType::misc_icon_blank, true);
-		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "move.png").string(), Material::TextureType::misc_icon_move, true);
-		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "rotate.png").string(), Material::TextureType::misc_icon_rotate, true);
-		Texture::LoadTexture(obj, (path(Engine::filesPath) / "icons" / "scale.png").string(), Material::TextureType::misc_icon_scale, true);
+		string blankTex = (path(Engine::filesPath) / "icons" / "blank.png").string();
+		string moveTex = (path(Engine::filesPath) / "icons" / "move.png").string();
+		string rotateTex = (path(Engine::filesPath) / "icons" / "rotate.png").string();
+		string scaleTex = (path(Engine::filesPath) / "icons" / "scale.png").string();
+
+		Texture::LoadTexture(obj, blankTex, Material::TextureType::misc_icon_blank, true);
+		Texture::LoadTexture(obj, moveTex, Material::TextureType::misc_icon_move, true);
+		Texture::LoadTexture(obj, rotateTex, Material::TextureType::misc_icon_rotate, true);
+		Texture::LoadTexture(obj, scaleTex, Material::TextureType::misc_icon_scale, true);
 
 		Shader assignedShader = obj->GetMaterial()->GetShader();
 		assignedShader.Use();

@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <filesystem>
+
 //external
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
@@ -20,6 +22,7 @@
 
 using glm::translate;
 using glm::quat;
+using std::filesystem::exists;
 
 using Core::Engine;
 using Graphics::Shader;
@@ -110,15 +113,19 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::point_light, vao, vbo, ebo);
 
-		Shader pointLightShader = Shader::LoadShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
+
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for point light is invalid!");
+		}
+
+		Shader pointLightShader = Shader::LoadShader(vert, frag);
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-			(path(Engine::filesPath) / "shaders" / "Basic.frag").string(), 
-			pointLightShader);
+		mat->AddShader(vert, frag, pointLightShader);
 
 		shared_ptr<PointLight_Variables> pointLight =
 			make_shared<PointLight_Variables>(
@@ -170,6 +177,8 @@ namespace Graphics::Shape
 
 	void PointLight::RenderPointLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Point light gameobject is invalid.");
+
 		if (obj->IsEnabled())
 		{
 			Shader shader = obj->GetMaterial()->GetShader();

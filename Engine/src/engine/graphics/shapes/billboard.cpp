@@ -26,6 +26,7 @@ using glm::radians;
 using glm::quat;
 using glm::scale;
 using std::filesystem::path;
+using std::filesystem::exists;
 
 using Graphics::Shader;
 using Graphics::Texture;
@@ -83,14 +84,19 @@ namespace Graphics::Shape
 
 		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::billboard, vao, vbo, ebo);
 
-		Shader billboardShader = Shader::LoadShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(), 
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string());
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string();
+
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for selected object border is invalid!");
+		}
+
+		Shader billboardShader = Shader::LoadShader(vert, frag);
 
 		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string(), 
-			(path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string(), billboardShader);
+		mat->AddShader(vert, frag, billboardShader);
 
 		float shininess = 32.0f;
 		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
@@ -124,6 +130,10 @@ namespace Graphics::Shape
 		const mat4& view, 
 		const mat4& projection)
 	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Billboard gameobject is invalid.");
+		if (obj->GetParentBillboardHolder() == nullptr) Engine::CreateErrorPopup("Billboard parent gameobject is invalid.");
+		shared_ptr<GameObject> parent = obj->GetParentBillboardHolder();
+
 		if (GameObjectManager::renderBillboards
 			&& obj->IsEnabled())
 		{
@@ -138,7 +148,7 @@ namespace Graphics::Shape
 
 			mat4 model = mat4(1.0f);
 
-			vec3 pos = obj->GetParent()->GetTransform()->GetPosition();
+			vec3 pos = parent->GetTransform()->GetPosition();
 			obj->GetTransform()->SetPosition(pos);
 
 			vec3 objectPos = obj->GetTransform()->GetPosition();

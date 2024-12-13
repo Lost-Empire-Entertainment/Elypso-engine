@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <filesystem>
+
 //external
 #include "stb_image.h"
 
@@ -14,14 +16,14 @@
 #include "gui_scenewindow.hpp"
 #endif
 
+using glm::mat3;
+using std::filesystem::exists;
+
 using Graphics::Shape::Mesh;
 using MeshType = Graphics::Shape::Mesh::MeshType;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-
-using glm::mat3;
-
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -98,18 +100,22 @@ namespace Graphics::Shape
 
         shared_ptr<Mesh> mesh = make_shared<Mesh>(true, MeshType::skybox, VAO, VBO, 0);
 
-        Shader skyboxShader = Shader::LoadShader(
-            (path(Engine::filesPath) / "shaders" / "Skybox.vert").string(),
-            (path(Engine::filesPath) / "shaders" / "Skybox.frag").string());
+        string vert = (path(Engine::filesPath) / "shaders" / "Skybox.vert").string();
+        string frag = (path(Engine::filesPath) / "shaders" / "Skybox.frag").string();
+
+        if (!exists(vert)
+            || !exists(frag))
+        {
+            Engine::CreateErrorPopup("One of the shader paths for skybox is invalid!");
+        }
+
+        Shader skyboxShader = Shader::LoadShader(vert, frag);
 
         skyboxShader.Use();
         skyboxShader.SetInt("skybox", 0);
 
         shared_ptr<Material> mat = make_shared<Material>();
-        mat->AddShader(
-            (path(Engine::filesPath) / "shaders" / "Skybox.vert").string(),
-            (path(Engine::filesPath) / "shaders" / "Skybox.frag").string(), 
-            skyboxShader);
+        mat->AddShader(vert, frag, skyboxShader);
 
         float shininess = 32.0f;
         shared_ptr<BasicShape_Variables> skybox = make_shared<BasicShape_Variables>(shininess);
@@ -197,6 +203,8 @@ namespace Graphics::Shape
         mat4& view,
         const mat4& projection)
 	{
+        if (obj == nullptr) Engine::CreateErrorPopup("Skybox gameobject is invalid.");
+
         glDepthFunc(GL_LEQUAL);
 
         glDepthMask(GL_FALSE);
