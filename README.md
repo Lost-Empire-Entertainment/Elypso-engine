@@ -1,5 +1,7 @@
 # Elypso engine
 
+![Engine screenshot](image.png)
+
 **Elypso engine** is an OpenGL C++ 20 game development engine. It runs natively on Windows and Linux (tested on Ubuntu-based distros and Arch) and it uses several libraries listed in [the library file](LIBRARIES.md).
 
 **Elypso engine** is in early alpha development and will be heavily modified during alpha development. Beta is aimed for winter 2025, full release is aimed for winter 2026.
