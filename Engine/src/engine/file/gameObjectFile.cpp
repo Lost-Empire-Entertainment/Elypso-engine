@@ -387,21 +387,23 @@ namespace EngineFile
 
 	void GameObjectFile::LoadModel(const string& txtFilePath)
 	{
+		string fullTxtFilePath = (path(Engine::projectPath) / txtFilePath).string();
+
 		//skip running this function for newly imported models that dont actually
 		//have a txt file yet even though their txt file path was assigned
-		if (!exists(txtFilePath)) return;
+		if (!exists(fullTxtFilePath)) return;
 
 		//
 		// READ FROM MODEL FILE
 		//
 
-		ifstream txtFile(txtFilePath);
+		ifstream txtFile(fullTxtFilePath);
 		if (!txtFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Failed to open model txt file '" + txtFilePath + "'!\n\n");
+				"Error: Failed to open model txt file '" + fullTxtFilePath + "'!\n\n");
 			return;
 		}
 
@@ -517,7 +519,7 @@ namespace EngineFile
 
 				string fullTex0Path = split[0] == "DEFAULTDIFF"
 					? "DEFAULTDIFF"
-					: (path(txtFilePath).parent_path() / split[0]).string();
+					: (path(fullTxtFilePath).parent_path() / split[0]).string();
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
@@ -537,7 +539,7 @@ namespace EngineFile
 
 				string fullTex1Path = split[1] == "DEFAULTSPEC"
 					? "DEFAULTSPEC"
-					: (path(txtFilePath).parent_path() / split[1]).string();
+					: (path(fullTxtFilePath).parent_path() / split[1]).string();
 				if (fullTex1Path == "DEFAULTSPEC")
 				{
 					fullTex1Path = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
@@ -556,7 +558,7 @@ namespace EngineFile
 
 				string fullTex2Path = split[2] == "EMPTY"
 					? "EMPTY"
-					: (path(txtFilePath).parent_path() / split[2]).string();
+					: (path(fullTxtFilePath).parent_path() / split[2]).string();
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
@@ -570,7 +572,7 @@ namespace EngineFile
 
 				string fullTex3Path = split[3] == "EMPTY"
 					? "EMPTY"
-					: (path(txtFilePath).parent_path() / split[3]).string();
+					: (path(fullTxtFilePath).parent_path() / split[3]).string();
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{
