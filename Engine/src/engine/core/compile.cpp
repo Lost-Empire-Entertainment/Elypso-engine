@@ -399,15 +399,15 @@ namespace Core
 	void Compilation::Run()
 	{
 		string gameName = path(Engine::gameExePath).stem().string();
-		string myGamesFolder = (path(Engine::docsPath).parent_path() / "My Games").string();
-		string gameProjectFolder = (path(myGamesFolder) / gameName / path(Engine::projectPath).stem()).string();
 
-		if (!exists(path(gameProjectFolder).parent_path()))
+		string projectFolder = (path(Engine::gameParentPath) / "project").string();
+
+		if (!exists(projectFolder))
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Game documents folder doesn't exist! Did you forget to compile?\n");
+				"Error: Game root folder doesn't exist! Did you forget to compile?\n");
 		}
 		else
 		{
@@ -426,7 +426,7 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES AND THEIR CONTENT TO IT
 				//
 
-				if (exists(gameProjectFolder)) File::DeleteFileOrfolder(path(gameProjectFolder) / "scenes");
+				if (exists(projectFolder)) File::DeleteFileOrfolder(path(projectFolder) / "scenes");
 
 				string engineProjectFolder = path(Engine::projectPath).string();
 				for (const auto& entry : directory_iterator(path(engineProjectFolder)))
@@ -439,7 +439,7 @@ namespace Core
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
-						string target = (path(gameProjectFolder) / originFileName).string();
+						string target = (path(projectFolder) / originFileName).string();
 
 						File::CopyFileOrFolder(origin, target);
 					}
