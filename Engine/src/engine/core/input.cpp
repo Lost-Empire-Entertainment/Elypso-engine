@@ -427,6 +427,15 @@ namespace Core
                 Compilation::Compile();
             }
 
+            //clean rebuild
+            if (key == GLFW_KEY_B
+                && (mods == (GLFW_MOD_CONTROL | GLFW_MOD_SHIFT))
+                && action == GLFW_PRESS)
+            {
+                Compilation::installerType = Compilation::InstallerType::reset;
+                Compilation::Compile();
+            }
+
             //run game
             if (key == GLFW_KEY_F5
                 && action == GLFW_PRESS)

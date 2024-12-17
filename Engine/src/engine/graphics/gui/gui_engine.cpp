@@ -718,20 +718,35 @@ namespace Graphics::GUI
 
 		if (ImGui::BeginMenu("Compile"))
 		{
-			if (ImGui::IsItemClicked())
+			if (ImGui::MenuItem("Compile"))
 			{
 				Compilation::installerType = Compilation::InstallerType::compile;
 				Compilation::Compile();
 
 				ImGui::CloseCurrentPopup();
 			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("Ctrl + B");
+				ImGui::EndTooltip();
+			}
+
+			if (ImGui::MenuItem("Clean rebuild"))
+			{
+				Compilation::installerType = Compilation::InstallerType::reset;
+				Compilation::Compile();
+
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("Ctrl + Shift + B");
+				ImGui::EndTooltip();
+			}
+
 			ImGui::EndMenu();
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::Text("Shortcut: Ctrl + B");
-			ImGui::EndTooltip();
 		}
 
 		ImGui::SameLine(310 * fontScale * 0.75f);
