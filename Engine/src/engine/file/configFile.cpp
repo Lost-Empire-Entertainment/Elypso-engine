@@ -276,11 +276,11 @@ namespace EngineFile
 			values.push_back("1");
 		keys.push_back("gui_projectHierarchy");
 			values.push_back("1");
-		keys.push_back("gui_console");
-			values.push_back("1");
 		keys.push_back("gui_firstTime");
 			values.push_back("0");
 #endif
+		keys.push_back("gui_console");
+			values.push_back("1");
 
 
 		ofstream configFile(configFilePath);

@@ -41,6 +41,7 @@ using glm::vec3;
 using std::filesystem::is_empty;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
+using std::filesystem::current_path;
 using std::make_shared;
 using std::cout;
 using std::to_string;
@@ -387,8 +388,11 @@ namespace EngineFile
 
 	void GameObjectFile::LoadModel(const string& txtFilePath)
 	{
+#if ENGINE_MODE
 		string fullTxtFilePath = (path(Engine::projectPath) / txtFilePath).string();
-
+#else
+		string fullTxtFilePath = (current_path() / "project" / txtFilePath).string();
+#endif
 		//skip running this function for newly imported models that dont actually
 		//have a txt file yet even though their txt file path was assigned
 		if (!exists(fullTxtFilePath)) return;
