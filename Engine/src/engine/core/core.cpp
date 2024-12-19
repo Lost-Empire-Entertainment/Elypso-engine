@@ -514,8 +514,12 @@ namespace Core
 
 #if ENGINE_MODE
 #if DISCORD_MODE
+		string appID{};
 		//app id specific for the engine
-		InitializeDiscordRichPresence(1290753615849324585);
+		if (!appID.empty())
+		{
+			InitializeDiscordRichPresence(appID);
+		}
 #endif
 #endif
 	}
