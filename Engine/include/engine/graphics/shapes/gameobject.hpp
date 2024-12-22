@@ -130,6 +130,34 @@ namespace Graphics::Shape
 
 		/*
 		*
+		* PARENT BILLBOARD HOLDER
+		*
+		*/
+		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder)
+		{
+			parentBillboardHolder = newParentBillboardHolder;
+		}
+		const shared_ptr<GameObject>& GetParentBillboardHolder() const
+		{
+			return parentBillboardHolder;
+		}
+
+		/*
+		*
+		* CHILD BILLBOARD
+		*
+		*/
+		void SetChildBillboard(const shared_ptr<GameObject>& newChildBillboard)
+		{
+			childBillboard = newChildBillboard;
+		}
+		const shared_ptr<GameObject>& GetChildBillboard() const
+		{
+			return childBillboard;
+		}
+
+		/*
+		*
 		* BASIC PROPERTIES SHARED ACROSS ALL GAMEOBJECTS
 		*
 		*/
@@ -153,10 +181,6 @@ namespace Graphics::Shape
 			transform = newTransform;
 			AddComponent<TransformComponent>(newTransform);
 		}
-
-		weak_ptr<GameObject> parent;
-		vector<shared_ptr<GameObject>> children;
-
 	private:
 		static inline unsigned int nextID = 0;
 
@@ -169,6 +193,12 @@ namespace Graphics::Shape
 		shared_ptr<TransformComponent> transform;
 
 		unordered_map<type_index, shared_ptr<Component>> components;
+
+		weak_ptr<GameObject> parent;
+		vector<shared_ptr<GameObject>> children;
+
+		shared_ptr<GameObject> parentBillboardHolder;
+		shared_ptr<GameObject> childBillboard;
 	};
 
 	class GameObjectManager
