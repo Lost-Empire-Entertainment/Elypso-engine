@@ -15,6 +15,8 @@
 #include "selectobject.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+#include "meshcomponent.hpp"
+#include "transformcomponent.hpp"
 
 using glm::inverse;
 using glm::normalize;
@@ -26,7 +28,9 @@ using std::ranges::max;
 using std::ranges::min;
 
 using Graphics::Render;
-using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::TransformComponent;
+using Type = Graphics::Components::MeshComponent::MeshType;
 
 namespace Core
 {
@@ -61,7 +65,8 @@ namespace Core
 
 		for (int i = 0; i < objects.size(); i++)
 		{
-			Type objType = objects[i]->GetMesh()->GetMeshType();
+			auto mesh = objects[i]->GetComponent<MeshComponent>();
+			Type objType = mesh->GetMeshType();
 			if (objType == Type::model
 				|| objType == Type::point_light
 				|| objType == Type::spot_light
@@ -88,7 +93,8 @@ namespace Core
 		const shared_ptr<GameObject>& shape,
 		float* distance)
 	{
-		Type objType = shape->GetMesh()->GetMeshType();
+		auto mesh = shape->GetComponent<MeshComponent>();
+		Type objType = mesh->GetMeshType();
 
 		if (objType == Type::model
 			|| objType == Type::point_light
@@ -96,13 +102,14 @@ namespace Core
 			|| objType == Type::directional_light)
 		{
 			vec3 minBound, maxBound;
-			vec3 pos = shape->GetTransform()->GetPosition();
-			vec3 objectScale = shape->GetTransform()->GetScale();
-			quat rotation = quat(radians(shape->GetTransform()->GetRotation()));
+			auto transform = shape->GetComponent<TransformComponent>();
+			vec3 pos = transform->GetPosition();
+			vec3 objectScale = transform->GetScale();
+			quat rotation = quat(radians(transform->GetRotation()));
 
 			if (objType == Type::model)
 			{
-				const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
+				const vector<AssimpVertex>& vertices = mesh->GetVertices();
 
 				//complex bounding box for models
 				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), vec3(1.0f));

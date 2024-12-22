@@ -17,6 +17,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "meshcomponent.hpp"
 
 namespace Graphics::Shape
 {
@@ -28,6 +29,7 @@ namespace Graphics::Shape
 
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
+	using Graphics::Components::AssimpMesh;
 
 	class Importer
 	{

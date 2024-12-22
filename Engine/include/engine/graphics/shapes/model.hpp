@@ -15,6 +15,7 @@
 //engine
 #include "gameobject.hpp"
 #include "core.hpp"
+#include "meshcomponent.hpp"
 
 namespace Graphics::Shape
 {
@@ -26,6 +27,7 @@ namespace Graphics::Shape
 
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
+	using Graphics::Components::AssimpVertex;
 
 	class Model
 	{

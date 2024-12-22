@@ -54,10 +54,11 @@ namespace Graphics::Shape
 		const vec3& scale)
 	{
 		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000002, "");
+		auto& transform = obj->GetTransform();
+		transform->SetPosition(pos);
+		transform->SetRotation(rot);
+		transform->SetScale(scale);
 		obj->SetEnableState(false);
-		obj->GetTransform()->SetPosition(pos);
-		obj->GetTransform()->SetRotation(rot);
-		obj->GetTransform()->SetScale(scale);
 
 		float vertices[] =
 		{

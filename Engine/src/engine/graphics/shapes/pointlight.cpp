@@ -63,10 +63,11 @@ namespace Graphics::Shape
 		const bool& isBillboardEnabled)
 	{
 		auto obj = make_shared<GameObject>(name, id, txtFilePath);
+		auto& transform = obj->GetTransform();
+		transform->SetPosition(pos);
+		transform->SetRotation(rot);
+		transform->SetScale(scale);
 		obj->SetEnableState(isEnabled);
-		obj->GetTransform()->SetPosition(pos);
-		obj->GetTransform()->SetRotation(rot);
-		obj->GetTransform()->SetScale(scale);
 
 		float vertices[] =
 		{

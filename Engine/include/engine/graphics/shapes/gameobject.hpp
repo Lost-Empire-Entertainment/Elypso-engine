@@ -12,6 +12,7 @@
 #include <string>
 #include <algorithm>
 #include <typeindex>
+#include <utility>
 
 //external
 #include "glad.h"
@@ -19,11 +20,19 @@
 
 //engine
 #include "shader.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 
 namespace Graphics::Components
 {
 	class Component;
 	class TransformComponent;
+	class MeshComponent;
+	class MaterialComponent;
+	class LightComponent;
+	class AssimpVertex;
 }
 
 namespace Graphics::Shape
@@ -39,6 +48,9 @@ namespace Graphics::Shape
 	using std::string;
 	using std::type_index;
 	using std::enable_shared_from_this;
+	using std::is_base_of;
+	using std::forward;
+	using std::invalid_argument;
 
 	using Graphics::Shader;
 	using Graphics::Components::TransformComponent;
@@ -60,7 +72,7 @@ namespace Graphics::Shape
 			txtFilePath(txtFilePath),
 			transform(make_shared<TransformComponent>())
 		{
-			AddComponent<TransformComponent>(transform);
+			components[typeid(TransformComponent)] = transform;
 		}
 
 		/*
@@ -71,8 +83,15 @@ namespace Graphics::Shape
 		template <typename T, typename... Args>
 		shared_ptr<T> AddComponent(Args&&... args)
 		{
+			//ensure that T is derived from Component
+			static_assert(is_base_of<Component, T>::value, "T must inherit from Component");
+
+			//create the component using perfect forwarding
 			auto component = make_shared<T>(forward<Args>(args)...);
+
+			//store the component in the components map
 			components[typeid(T)] = component;
+
 			return component;
 		}
 		template <typename T>
@@ -184,12 +203,15 @@ namespace Graphics::Shape
 		const shared_ptr<TransformComponent>& GetTransform() const { return transform; }
 		void SetTransform(const shared_ptr<TransformComponent>& newTransform)
 		{
+			if (!newTransform)
+			{
+				throw invalid_argument("TransformComponent cannot be null.");
+			}
+
 			transform = newTransform;
-			AddComponent<TransformComponent>(newTransform);
+			components[typeid(TransformComponent)] = newTransform;
 		}
 	private:
-		static inline unsigned int nextID = 0;
-
 		string name;
 		unsigned int ID;
 		bool isInitialized;

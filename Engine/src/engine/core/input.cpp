@@ -60,7 +60,6 @@ using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::Importer;
-using Graphics::Shape::Material;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Utils::File;

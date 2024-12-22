@@ -24,6 +24,7 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "input.hpp"
+#include "meshcomponent.hpp"
 
 using std::shared_ptr;
 using std::filesystem::directory_iterator;
@@ -42,7 +43,7 @@ using Utils::File;
 using Utils::String;
 using Core::Select;
 using Core::Input;
-using Graphics::Shape::Mesh;
+using Graphics::Components::MeshComponent;
 
 namespace Graphics::GUI
 {
@@ -79,12 +80,12 @@ namespace Graphics::GUI
 		{
 			if (obj == nullptr) return;
 
-			Mesh::MeshType type = obj->GetMesh()->GetMeshType();
+			MeshComponent::MeshType type = obj->GetComponent<MeshComponent>()->GetMeshType();
 
-			if (type == Mesh::MeshType::model
-				|| type == Mesh::MeshType::point_light
-				|| type == Mesh::MeshType::spot_light
-				|| type == Mesh::MeshType::directional_light)
+			if (type == MeshComponent::MeshType::model
+				|| type == MeshComponent::MeshType::point_light
+				|| type == MeshComponent::MeshType::spot_light
+				|| type == MeshComponent::MeshType::directional_light)
 			{
 				string name = obj->GetName();
 				string label = name + "##" + to_string(obj->GetID());

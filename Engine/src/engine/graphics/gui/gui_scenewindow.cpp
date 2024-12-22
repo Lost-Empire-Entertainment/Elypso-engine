@@ -28,6 +28,7 @@
 #include "gameobject.hpp"
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
+#include "meshcomponent.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -42,7 +43,7 @@ using Core::Select;
 using EngineFile::SceneFile;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
-using Graphics::Shape::Mesh;
+using Graphics::Components::MeshComponent;
 using Utils::String;
 using Core::TimeManager;
 
@@ -607,7 +608,8 @@ namespace Graphics::GUI
 			verticesCount = 0;
 			for (const shared_ptr<GameObject>& obj : GameObjectManager::GetObjects())
 			{
-				verticesCount += static_cast<int>(obj->GetMesh()->GetVertices().size());
+				auto mesh = obj->GetComponent<MeshComponent>();
+				verticesCount += static_cast<int>(mesh->GetVertices().size());
 			}
 		}
 	}

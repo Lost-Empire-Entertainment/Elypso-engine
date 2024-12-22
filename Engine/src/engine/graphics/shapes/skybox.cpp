@@ -40,10 +40,11 @@ namespace Graphics::Shape
 	shared_ptr<GameObject> Skybox::InitializeSkybox()
 	{
         auto obj = make_shared<GameObject>("Skybox", 10000003, "");
-        obj->SetEnableState(false);
-        obj->GetTransform()->SetPosition(vec3(0));
-        obj->GetTransform()->SetRotation(vec3(0));
-        obj->GetTransform()->SetScale(vec3(1));
+        auto& transform = obj->GetTransform();
+        transform->SetPosition(vec3(0));
+        transform->SetRotation(vec3(0));
+        transform->SetScale(vec3(1));
+        obj->SetEnableState(true);
 
         float skyboxVertices[] =
         {
