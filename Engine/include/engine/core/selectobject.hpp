@@ -13,6 +13,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "meshcomponent.hpp"
 
 namespace Core
 {

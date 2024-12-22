@@ -12,6 +12,10 @@
 #include "skybox.hpp"
 #include "console.hpp"
 #include "render.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -19,8 +23,11 @@
 using glm::mat3;
 using std::filesystem::exists;
 
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -32,7 +39,11 @@ namespace Graphics::Shape
 {
 	shared_ptr<GameObject> Skybox::InitializeSkybox()
 	{
-        shared_ptr<Transform> transform = make_shared<Transform>(vec3(0), vec3(0), vec3(1));
+        auto obj = make_shared<GameObject>("Skybox", 10000003, "");
+        obj->SetEnableState(false);
+        obj->GetTransform()->SetPosition(vec3(0));
+        obj->GetTransform()->SetRotation(vec3(0));
+        obj->GetTransform()->SetScale(vec3(1));
 
         float skyboxVertices[] =
         {
@@ -98,7 +109,12 @@ namespace Graphics::Shape
             3 * sizeof(float),
             (void*)0);
 
-        shared_ptr<Mesh> mesh = make_shared<Mesh>(true, MeshType::skybox, VAO, VBO, 0);
+        auto mesh = obj->AddComponent<MeshComponent>(
+            true, 
+            MeshType::skybox, 
+            VAO, 
+            VBO, 
+            0);
 
         string vert = (path(Engine::filesPath) / "shaders" / "Skybox.vert").string();
         string frag = (path(Engine::filesPath) / "shaders" / "Skybox.frag").string();
@@ -114,23 +130,8 @@ namespace Graphics::Shape
         skyboxShader.Use();
         skyboxShader.SetInt("skybox", 0);
 
-        shared_ptr<Material> mat = make_shared<Material>();
+        auto mat = obj->AddComponent<MaterialComponent>();
         mat->AddShader(vert, frag, skyboxShader);
-
-        float shininess = 32.0f;
-        shared_ptr<BasicShape_Variables> skybox = make_shared<BasicShape_Variables>(shininess);
-
-        string skyboxName = "Skybox";
-        unsigned int skyboxID = 10000001;
-        shared_ptr<GameObject> obj = make_shared<GameObject>(
-            true,
-            skyboxName,
-            skyboxID,
-            true,
-            transform,
-            mesh,
-            mat,
-            skybox);
 
         GameObjectManager::SetSkybox(obj);
 
@@ -209,13 +210,15 @@ namespace Graphics::Shape
 
         glDepthMask(GL_FALSE);
 
-        Shader skyboxShader = obj->GetMaterial()->GetShader();
+        auto mat = obj->GetComponent<MaterialComponent>();
+        Shader skyboxShader = mat->GetShader();
         skyboxShader.Use();
         view = mat4(mat3(Render::camera.GetViewMatrix()));
         skyboxShader.SetMat4("view", view);
         skyboxShader.SetMat4("projection", projection);
 
-        glBindVertexArray(obj->GetMesh()->GetVAO());
+        auto mesh = obj->GetComponent<MeshComponent>();
+        glBindVertexArray(mesh->GetVAO());
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);

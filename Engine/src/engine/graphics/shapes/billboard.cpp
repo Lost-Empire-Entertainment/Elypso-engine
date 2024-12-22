@@ -18,6 +18,10 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 
 using std::cout;
 using glm::translate;
@@ -30,9 +34,11 @@ using std::filesystem::exists;
 
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
@@ -48,8 +54,11 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>("Billboard", id, "");
+		obj->SetEnableState(isEnabled);
+		obj->GetTransform()->SetPosition(pos);
+		obj->GetTransform()->SetRotation(rot);
+		obj->GetTransform()->SetScale(scale);
 
 		float vertices[] =
 		{
@@ -82,7 +91,12 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::billboard, vao, vbo, ebo);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			true, 
+			MeshType::billboard, 
+			vao, 
+			vbo, 
+			ebo);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string();
@@ -95,26 +109,12 @@ namespace Graphics::Shape
 
 		Shader billboardShader = Shader::LoadShader(vert, frag);
 
-		shared_ptr<Material> mat = make_shared<Material>();
+		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->AddShader(vert, frag, billboardShader);
 
-		float shininess = 32.0f;
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+		Texture::LoadTexture(obj, diffTexture, MaterialComponent::TextureType::diffuse, true);
 
-		string billboardName = "Billboard";
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
-			billboardName,
-			id,
-			isEnabled,
-			transform,
-			mesh,
-			mat,
-			basicShape);
-
-		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, true);
-
-		Shader assignedShader = obj->GetMaterial()->GetShader();
+		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
 
@@ -137,7 +137,9 @@ namespace Graphics::Shape
 		if (GameObjectManager::renderBillboards
 			&& obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto mat = obj->GetComponent<MaterialComponent>();
+
+			Shader shader = mat->GetShader();
 
 			shader.Use();
 			shader.SetMat4("projection", projection);
@@ -163,10 +165,11 @@ namespace Graphics::Shape
 
 			//bind diffuse map
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse));
+			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::diffuse));
 
 			shader.SetMat4("model", model);
-			GLuint VAO = obj->GetMesh()->GetVAO();
+			auto mesh = obj->GetComponent<MeshComponent>();
+			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}

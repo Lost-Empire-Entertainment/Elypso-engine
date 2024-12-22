@@ -28,6 +28,10 @@
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "texture.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -55,8 +59,11 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::File;
 using Utils::String;
-using Graphics::Shape::Mesh;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
@@ -95,9 +102,10 @@ namespace EngineFile
 
 				data.push_back("enabled= " + to_string(obj->IsEnabled()) + "\n");
 
-				data.push_back("mesh enabled= " + to_string(obj->GetMesh()->IsEnabled()) + "\n");
+				auto mesh = obj->GetComponent<MeshComponent>();
+				data.push_back("mesh enabled= " + to_string(mesh->IsEnabled()) + "\n");
 
-				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
+				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
 				data.push_back("type= " + type + "\n");
 
 				//position
@@ -130,21 +138,22 @@ namespace EngineFile
 				data.push_back("\n");
 
 				//object textures
-				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
-				if (meshType == Mesh::MeshType::model)
+				MeshComponent::MeshType meshType = mesh->GetMeshType();
+				auto mat = obj->GetComponent<MaterialComponent>();
+				if (meshType == MeshComponent::MeshType::model)
 				{
-					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					string diffuseTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
 					diffuseTexture = path(diffuseTexture).filename().string();
 					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
 
-					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
+					string specularTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
 					specularTexture = path(specularTexture).filename().string();
 					if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
 
-					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
+					string normalTexture = mat->GetTextureName(MaterialComponent::TextureType::normal);
 					normalTexture = path(normalTexture).filename().string();
 
-					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
+					string heightTexture = mat->GetTextureName(MaterialComponent::TextureType::height);
 					heightTexture = path(heightTexture).filename().string();
 
 					data.push_back(
@@ -159,59 +168,62 @@ namespace EngineFile
 				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
 
 				//material variables
-				if (meshType == Mesh::MeshType::model)
+				if (meshType == MeshComponent::MeshType::model)
 				{
 					data.push_back("shininess= " + to_string(32) + "\n");
 				}
-				else if (meshType == Mesh::MeshType::point_light)
+				else if (meshType == MeshComponent::MeshType::point_light)
 				{
-					float pointDiffuseX = obj->GetPointLight()->GetDiffuse().x;
-					float pointDiffuseY = obj->GetPointLight()->GetDiffuse().y;
-					float pointDiffuseZ = obj->GetPointLight()->GetDiffuse().z;
+					auto light = obj->GetComponent<LightComponent>();
+					float pointDiffuseX = light->GetDiffuse().x;
+					float pointDiffuseY = light->GetDiffuse().y;
+					float pointDiffuseZ = light->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(pointDiffuseX) + ", "
 						+ to_string(pointDiffuseY) + ", "
 						+ to_string(pointDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetPointLight()->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(obj->GetPointLight()->GetDistance()) + "\n");
+					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
 				}
-				else if (meshType == Mesh::MeshType::spot_light)
+				else if (meshType == MeshComponent::MeshType::spot_light)
 				{
-					float spotDiffuseX = obj->GetSpotLight()->GetDiffuse().x;
-					float spotDiffuseY = obj->GetSpotLight()->GetDiffuse().y;
-					float spotDiffuseZ = obj->GetSpotLight()->GetDiffuse().z;
+					auto light = obj->GetComponent<LightComponent>();
+					float spotDiffuseX = light->GetDiffuse().x;
+					float spotDiffuseY = light->GetDiffuse().y;
+					float spotDiffuseZ = light->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(spotDiffuseX) + ", "
 						+ to_string(spotDiffuseY) + ", "
 						+ to_string(spotDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetSpotLight()->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(obj->GetSpotLight()->GetDistance()) + "\n");
+					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
 
-					data.push_back("inner angle= " + to_string(obj->GetSpotLight()->GetInnerAngle()) + "\n");
+					data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
 
-					data.push_back("outer angle= " + to_string(obj->GetSpotLight()->GetOuterAngle()) + "\n");
+					data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
 				}
-				else if (meshType == Mesh::MeshType::directional_light)
+				else if (meshType == MeshComponent::MeshType::directional_light)
 				{
-					float dirDiffuseX = obj->GetDirectionalLight()->GetDiffuse().x;
-					float dirDiffuseY = obj->GetDirectionalLight()->GetDiffuse().y;
-					float dirDiffuseZ = obj->GetDirectionalLight()->GetDiffuse().z;
+					auto light = obj->GetComponent<LightComponent>();
+					float dirDiffuseX = light->GetDiffuse().x;
+					float dirDiffuseY = light->GetDiffuse().y;
+					float dirDiffuseZ = light->GetDiffuse().z;
 					data.push_back(
 						"diffuse= " + to_string(dirDiffuseX) + ", "
 						+ to_string(dirDiffuseY) + ", "
 						+ to_string(dirDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetDirectionalLight()->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 				}
 
 				//also save billboard data of each light source
-				if (meshType == Mesh::MeshType::point_light
-					|| meshType == Mesh::MeshType::spot_light
-					|| meshType == Mesh::MeshType::directional_light)
+				if (meshType == MeshComponent::MeshType::point_light
+					|| meshType == MeshComponent::MeshType::spot_light
+					|| meshType == MeshComponent::MeshType::directional_light)
 				{
 					data.push_back("\n");
 					data.push_back("---attached billboard data---\n");
@@ -463,7 +475,7 @@ namespace EngineFile
 		unsigned int ID{};
 		bool isEnabled{};
 		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
@@ -492,7 +504,7 @@ namespace EngineFile
 			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();
@@ -686,13 +698,13 @@ namespace EngineFile
 			string vert = (path(Engine::filesPath) / "shaders" / "Gameobject.vert").string();
 			string frag = (path(Engine::filesPath) / "shaders" / "Gameobject.frag").string();
 			Shader modelShader = Shader::LoadShader(vert, frag);
-			shared_ptr<Material> mat = make_shared<Material>();
+			auto mat = foundObj->AddComponent<MaterialComponent>();
 			mat->AddShader(vert, frag, modelShader);
 
-			Texture::LoadTexture(foundObj, diffuseTexture, Material::TextureType::diffuse, false);
-			Texture::LoadTexture(foundObj, specularTexture, Material::TextureType::specular, false);
-			Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
-			Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
+			Texture::LoadTexture(foundObj, diffuseTexture, MaterialComponent::TextureType::diffuse, false);
+			Texture::LoadTexture(foundObj, specularTexture, MaterialComponent::TextureType::specular, false);
+			Texture::LoadTexture(foundObj, normalTexture, MaterialComponent::TextureType::height, false);
+			Texture::LoadTexture(foundObj, heightTexture, MaterialComponent::TextureType::normal, false);
 
 			/*
 			* 
@@ -779,7 +791,7 @@ namespace EngineFile
 		unsigned int ID{};
 		bool isEnabled{};
 		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
@@ -813,7 +825,7 @@ namespace EngineFile
 			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();
@@ -964,7 +976,7 @@ namespace EngineFile
 		unsigned int ID{};
 		bool isEnabled{};
 		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
@@ -1000,7 +1012,7 @@ namespace EngineFile
 			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();
@@ -1153,7 +1165,7 @@ namespace EngineFile
 		unsigned int ID{};
 		bool isEnabled{};
 		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
@@ -1186,7 +1198,7 @@ namespace EngineFile
 			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();

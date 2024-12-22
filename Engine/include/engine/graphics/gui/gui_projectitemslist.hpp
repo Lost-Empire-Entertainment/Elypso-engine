@@ -11,6 +11,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "materialcomponent.hpp"
 
 namespace Graphics::GUI
 {
@@ -18,7 +19,7 @@ namespace Graphics::GUI
 	using std::vector;
 	using std::shared_ptr;
 
-	using Graphics::Shape::Material;
+	using Graphics::Components::MaterialComponent;
 	using Graphics::Shape::GameObject;
 
 	class GUIProjectItemsList
@@ -50,7 +51,7 @@ namespace Graphics::GUI
 		
 		//for assigning texture to gameobjects
 		
-		static inline Material::TextureType textureType;
+		static inline MaterialComponent::TextureType textureType;
 		static inline shared_ptr<GameObject> obj;
 
 		static void RenderProjectItemsList();

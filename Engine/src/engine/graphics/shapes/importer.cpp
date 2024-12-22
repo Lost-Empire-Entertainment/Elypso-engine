@@ -28,6 +28,10 @@
 #include "console.hpp"
 #include "selectobject.hpp"
 #include "fileUtils.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 
 using std::cout;
 using std::endl;
@@ -57,9 +61,13 @@ using std::filesystem::is_regular_file;
 using Graphics::Render;
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using Graphics::Components::AssimpMesh;
+using Graphics::Components::AssimpVertex;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;

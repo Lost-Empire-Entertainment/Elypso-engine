@@ -23,6 +23,10 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameObjectFile.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -45,9 +49,12 @@ using std::stof;
 using Graphics::Render;
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using Graphics::Components::AssimpVertex;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -78,7 +85,11 @@ namespace Graphics::Shape
 		const bool& isEnabled,
 		const bool& isMeshEnabled)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>(name, id, txtFilePath);
+		obj->SetEnableState(isEnabled);
+		obj->GetTransform()->SetPosition(pos);
+		obj->GetTransform()->SetRotation(rot);
+		obj->GetTransform()->SetScale(scale);
 
 		GLuint VAO, VBO, EBO;
 
@@ -118,7 +129,12 @@ namespace Graphics::Shape
 		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, weights));
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::model, VAO, VBO, EBO);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			isMeshEnabled, 
+			MeshType::model,
+			VAO, 
+			VBO, 
+			EBO);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "GameObject.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string();
@@ -131,31 +147,20 @@ namespace Graphics::Shape
 
 		Shader modelShader = Shader::LoadShader(vert, frag);
 
-		shared_ptr<Material> mat = make_shared<Material>();
+		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->AddShader(vert, frag, modelShader);
 
-		float shininess = 32.0f;
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+		auto mesh = obj->GetComponent<MeshComponent>();
+		mesh->SetVertices(vertices);
+		mesh->SetIndices(indices);
 
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
-			name,
-			id,
-			isEnabled,
-			transform,
-			mesh,
-			mat,
-			basicShape);
+		Texture::LoadTexture(obj, diffTexture, MaterialComponent::TextureType::diffuse, false);
+		Texture::LoadTexture(obj, specTexture, MaterialComponent::TextureType::specular, false);
+		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::height, false);
+		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::normal, false);
 
-		obj->GetMesh()->SetVertices(vertices);
-		obj->GetMesh()->SetIndices(indices);
-
-		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, false);
-		Texture::LoadTexture(obj, specTexture, Material::TextureType::specular, false);
-		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::height, false);
-		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::normal, false);
-
-		Shader assignedShader = obj->GetMaterial()->GetShader();
+		auto mat = obj->GetComponent<MaterialComponent>();
+		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
@@ -190,7 +195,9 @@ namespace Graphics::Shape
 
 		if (obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto mat = obj->GetComponent<MaterialComponent>();
+
+			Shader shader = mat->GetShader();
 
 			shader.Use();
 			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
@@ -204,8 +211,8 @@ namespace Graphics::Shape
 				int count = dirLight->IsEnabled() ? 1 : 0;
 				shader.SetInt("dirLightCount", count);
 				
-				shared_ptr<Transform> transform = dirLight->GetTransform();
-				shared_ptr<Directional_light_Variables> dirVar = dirLight->GetDirectionalLight();
+				auto& transform = dirLight->GetTransform();
+				auto light = dirLight->GetComponent<LightComponent>();
 
 				vec3 dirRot = transform->GetRotation();
 				quat dirQuat = quat(radians(dirRot));
@@ -219,9 +226,9 @@ namespace Graphics::Shape
 
 				shader.SetVec3("dirLight.direction", rotatedDir);
 
-				shader.SetFloat("dirLight.intensity", dirVar->GetIntensity());
+				shader.SetFloat("dirLight.intensity", light->GetIntensity());
 				shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-				shader.SetVec3("dirLight.diffuse", dirVar->GetDiffuse());
+				shader.SetVec3("dirLight.diffuse", light->GetDiffuse());
 				shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 			}
 			else 
@@ -237,21 +244,21 @@ namespace Graphics::Shape
 			{
 				for (int i = 0; i < pointLightCount; i++)
 				{
-					shared_ptr<Transform> transform = pointLights[i]->GetTransform();
-					shared_ptr<PointLight_Variables> pointLight = pointLights[i]->GetPointLight();
+					auto& transform = pointLights[i]->GetTransform();
+					auto light = pointLights[i]->GetComponent<LightComponent>();
 					string lightPrefix = "pointLights[" + to_string(i) + "].";
 
 					shader.SetBool(lightPrefix + "enabled", pointLights[i]->IsEnabled());
 
 					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
 					shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
-					shader.SetVec3(lightPrefix + "diffuse", pointLight->GetDiffuse());
+					shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
 					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
 					shader.SetFloat(lightPrefix + "constant", 1.0f);
 					shader.SetFloat(lightPrefix + "linear", 0.09f);
 					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-					shader.SetFloat(lightPrefix + "intensity", pointLight->GetIntensity());
-					shader.SetFloat(lightPrefix + "distance", pointLight->GetDistance());
+					shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
+					shader.SetFloat(lightPrefix + "distance", light->GetDistance());
 				}
 			}
 
@@ -263,8 +270,8 @@ namespace Graphics::Shape
 			{
 				for (int i = 0; i < spotLightCount; i++)
 				{
-					shared_ptr<Transform> transform = spotLights[i]->GetTransform();
-					shared_ptr<SpotLight_Variables> spotLight = spotLights[i]->GetSpotLight();
+					auto& transform = spotLights[i]->GetTransform();
+					auto light = spotLights[i]->GetComponent<LightComponent>();
 					string lightPrefix = "spotLights[" + to_string(i) + "].";
 					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
 
@@ -279,16 +286,16 @@ namespace Graphics::Shape
 					//set the rotated direction in the shader
 					shader.SetVec3(lightPrefix + "direction", rotatedDirection);
 
-					shader.SetFloat(lightPrefix + "intensity", spotLight->GetIntensity());
-					shader.SetFloat(lightPrefix + "distance", spotLight->GetDistance());
+					shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
+					shader.SetFloat(lightPrefix + "distance", light->GetDistance());
 					shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
-					shader.SetVec3(lightPrefix + "diffuse", spotLight->GetDiffuse());
+					shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
 					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
 					shader.SetFloat(lightPrefix + "constant", 1.0f);
 					shader.SetFloat(lightPrefix + "linear", 0.09f);
 					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-					shader.SetFloat(lightPrefix + "cutOff", cos(radians(spotLight->GetInnerAngle())));
-					shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(spotLight->GetOuterAngle())));
+					shader.SetFloat(lightPrefix + "cutOff", cos(radians(light->GetInnerAngle())));
+					shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(light->GetOuterAngle())));
 				}
 			}
 
@@ -305,7 +312,8 @@ namespace Graphics::Shape
 			model = scale(model, obj->GetTransform()->GetScale());
 
 			//bind diffuse texture
-			unsigned int diffuseTextureID = obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse);
+			auto mat = obj->GetComponent<MaterialComponent>();
+			unsigned int diffuseTextureID = mat->GetTextureID(MaterialComponent::TextureType::diffuse);
 			if (diffuseTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -313,7 +321,7 @@ namespace Graphics::Shape
 			}
 
 			//bind specular texture
-			unsigned int specularTextureID = obj->GetMaterial()->GetTextureID(Material::TextureType::specular);
+			unsigned int specularTextureID = mat->GetTextureID(MaterialComponent::TextureType::specular);
 			if (specularTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE1);
@@ -322,11 +330,12 @@ namespace Graphics::Shape
 
 			shader.SetMat4("model", model);
 
-			GLuint VAO = obj->GetMesh()->GetVAO();
+			auto mesh = obj->GetComponent<MeshComponent>();
+			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawElements(
 				GL_TRIANGLES,
-				static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
+				static_cast<unsigned int>(mesh->GetIndices().size()),
 				GL_UNSIGNED_INT,
 				0);
 

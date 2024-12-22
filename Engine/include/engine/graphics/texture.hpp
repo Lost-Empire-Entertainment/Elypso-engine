@@ -13,6 +13,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "materialcomponent.hpp"
 
 namespace Graphics
 {
@@ -20,7 +21,7 @@ namespace Graphics
 	using std::shared_ptr;
 
 	using Graphics::Shape::GameObject;
-	using Graphics::Shape::Material;
+	using Graphics::Components::MaterialComponent;
 
 	class Texture
 	{
@@ -35,7 +36,7 @@ namespace Graphics
 		static void LoadTexture(
 			const shared_ptr<GameObject>& obj,
 			const string& texturePath,
-			const Material::TextureType type = Material::TextureType::diffuse,
+			const MaterialComponent::TextureType type = MaterialComponent::TextureType::diffuse,
 			bool flipTexture = false);
 		static void DeleteTexture(unsigned int texture)
 		{

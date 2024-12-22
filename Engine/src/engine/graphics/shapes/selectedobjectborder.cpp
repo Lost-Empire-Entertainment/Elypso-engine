@@ -18,6 +18,10 @@
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "console.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 
 using glm::translate;
 using glm::rotate;
@@ -28,9 +32,12 @@ using std::filesystem::path;
 using std::filesystem::exists;
 
 using Graphics::Shader;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using Graphics::Components::AssimpVertex;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
@@ -46,7 +53,11 @@ namespace Graphics::Shape
 		const vec3& rot, 
 		const vec3& scale)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000002, "");
+		obj->SetEnableState(false);
+		obj->GetTransform()->SetPosition(pos);
+		obj->GetTransform()->SetRotation(rot);
+		obj->GetTransform()->SetScale(scale);
 
 		float vertices[] =
 		{
@@ -102,7 +113,12 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::border, vao, vbo, ebo);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			true, 
+			MeshType::border, 
+			vao, 
+			vbo, 
+			ebo);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -115,23 +131,8 @@ namespace Graphics::Shape
 
 		Shader borderShader = Shader::LoadShader(vert, frag);
 
-		shared_ptr<Material> mat = make_shared<Material>();
+		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->AddShader(vert, frag, borderShader);
-
-		float shininess = 32.0f;
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
-
-		string borderName = "Border";
-		unsigned int borderID = 10000002;
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false,
-			borderName,
-			borderID,
-			true,
-			transform,
-			mesh,
-			mat,
-			basicShape);
 
 		GameObjectManager::SetBorder(obj);
 
@@ -145,7 +146,9 @@ namespace Graphics::Shape
 	{
 		if (obj == nullptr) Engine::CreateErrorPopup("Selected object border gameobject is invalid.");
 
-		Shader shader = obj->GetMaterial()->GetShader();
+		auto mat = obj->GetComponent<MaterialComponent>();
+
+		Shader shader = mat->GetShader();
 
 		shader.Use();
 		shader.SetMat4("projection", projection);
@@ -159,10 +162,11 @@ namespace Graphics::Shape
 		{
 			shader.SetFloat("transparency", 0.5f);
 
-			if (Select::selectedObj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+			auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
+			if (mesh->GetMeshType() == MeshComponent::MeshType::model)
 			{
 				//retrieve vertices and calculate bounding box
-				const vector<AssimpVertex>& vertices = Select::selectedObj->GetMesh()->GetVertices();
+				const vector<AssimpVertex>& vertices = mesh->GetVertices();
 				vec3 minBound, maxBound;
 				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
 				vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
@@ -217,7 +221,8 @@ namespace Graphics::Shape
 
 		shader.SetMat4("model", model);
 
-		GLuint VAO = obj->GetMesh()->GetVAO();
+		auto thisMesh = obj->GetComponent<MeshComponent>();
+		GLuint VAO = thisMesh->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
 

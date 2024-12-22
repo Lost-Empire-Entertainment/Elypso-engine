@@ -15,6 +15,10 @@
 #include "selectobject.hpp"
 #include "billboard.hpp"
 #include "console.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -23,9 +27,11 @@ using glm::translate;
 using glm::quat;
 using std::filesystem::exists;
 
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Render;
 using Core::Select;
 using Core::ConsoleManager;
@@ -55,7 +61,11 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>(name, id, txtFilePath);
+		obj->SetEnableState(isEnabled);
+		obj->GetTransform()->SetPosition(pos);
+		obj->GetTransform()->SetRotation(rot);
+		obj->GetTransform()->SetScale(scale);
 
 		float vertices[] =
 		{
@@ -99,7 +109,12 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::spot_light, vao, vbo, ebo);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			isMeshEnabled, 
+			MeshType::spot_light, 
+			vao, 
+			vbo, 
+			ebo);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -114,14 +129,13 @@ namespace Graphics::Shape
 			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
 
-		shared_ptr<Material> mat = make_shared<Material>();
+		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->AddShader(
 			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic.frag").string(), 
 			spotlightShader);
 
-		shared_ptr<SpotLight_Variables> spotLight =
-			make_shared<SpotLight_Variables>(
+		auto spotlight = obj->AddComponent<LightComponent>(
 				diffuse,
 				intensity,
 				distance,
@@ -136,16 +150,6 @@ namespace Graphics::Shape
 			billboardDiffTexture,
 			billboardID,
 			isBillboardEnabled);
-
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
-			name,
-			id,
-			isEnabled,
-			transform,
-			mesh,
-			mat,
-			spotLight);
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
@@ -176,7 +180,9 @@ namespace Graphics::Shape
 
 		if (obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto mat = obj->GetComponent<MaterialComponent>();
+
+			Shader shader = mat->GetShader();
 
 			shader.Use();
 			shader.SetMat4("projection", projection);
@@ -186,10 +192,14 @@ namespace Graphics::Shape
 				obj
 				&& Select::isObjectSelected ? 1.0f : 0.5f;
 			shader.SetFloat("transparency", transparency);
-			shader.SetVec3("color", obj->GetSpotLight()->GetDiffuse());
 
+			auto light = obj->GetComponent<LightComponent>();
+			shader.SetVec3("color", light->GetDiffuse());
+
+			auto mesh = obj->GetComponent<MeshComponent>();
 			if (GameObjectManager::renderLightBorders
-				&& obj->GetMesh()->IsEnabled())
+				&& mesh
+				&& mesh->IsEnabled())
 			{
 				mat4 model = mat4(1.0f);
 				model = translate(model, obj->GetTransform()->GetPosition());
@@ -198,7 +208,7 @@ namespace Graphics::Shape
 				model = scale(model, obj->GetTransform()->GetScale());
 
 				shader.SetMat4("model", model);
-				GLuint VAO = obj->GetMesh()->GetVAO();
+				GLuint VAO = mesh->GetVAO();
 				glBindVertexArray(VAO);
 				glDrawArrays(GL_LINES, 0, 32);
 			}

@@ -47,11 +47,14 @@ namespace Graphics::Shape
 	class GameObject : public enable_shared_from_this<GameObject>
 	{
 	public:
+		static inline unsigned int nextID;
+
 		GameObject(
 			const string& name, 
+			const unsigned int& ID,
 			const string& txtFilePath) : 
 			name(name),
-			ID(nextID++),
+			ID(ID),
 			isInitialized(false),
 			isEnabled(true),
 			txtFilePath(txtFilePath),
@@ -166,6 +169,9 @@ namespace Graphics::Shape
 		void SetName(const string& newName) { name = newName; }
 		const string& GetName() const { return name; }
 
+		void SetID(const unsigned int& newID) { ID = newID; }
+		unsigned int GetID() const { return ID; }
+
 		void SetTxtFilePath(const string& newTxtFilePath) { txtFilePath = newTxtFilePath; }
 		const string& GetTxtFilePath() const { return txtFilePath; }
 
@@ -174,8 +180,6 @@ namespace Graphics::Shape
 
 		void Initialize() { isInitialized = true; }
 		bool IsInitialized() const { return isInitialized; }
-
-		unsigned int GetID() const { return ID; }
 
 		const shared_ptr<TransformComponent>& GetTransform() const { return transform; }
 		void SetTransform(const shared_ptr<TransformComponent>& newTransform)

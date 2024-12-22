@@ -62,7 +62,7 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		auto obj = make_shared<GameObject>(name, txtFilePath);
+		auto obj = make_shared<GameObject>(name, id, txtFilePath);
 		obj->SetEnableState(isEnabled);
 		obj->GetTransform()->SetPosition(pos);
 		obj->GetTransform()->SetRotation(rot);
@@ -143,7 +143,10 @@ namespace Graphics::Shape
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->AddShader(vert, frag, pointLightShader);
 
-		auto pointLight = obj->AddComponent<LightComponent>(diffuse, intensity, distance);
+		auto pointLight = obj->AddComponent<LightComponent>(
+			diffuse, 
+			intensity, 
+			distance);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();
 		auto billboard = Billboard::InitializeBillboard(
@@ -183,9 +186,9 @@ namespace Graphics::Shape
 
 		if (obj->IsEnabled())
 		{
-			auto material = obj->GetComponent<MaterialComponent>();
+			auto mat = obj->GetComponent<MaterialComponent>();
 
-			Shader shader = material->GetShader();
+			Shader shader = mat->GetShader();
 
 			shader.Use();
 			shader.SetMat4("projection", projection);
