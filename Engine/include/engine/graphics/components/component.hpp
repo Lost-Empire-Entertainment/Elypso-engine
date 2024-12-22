@@ -13,7 +13,7 @@ namespace Graphics::Shape
     class GameObject;
 }
 
-namespace Components
+namespace Graphics::Components
 {
     using std::shared_ptr;
     using std::weak_ptr;

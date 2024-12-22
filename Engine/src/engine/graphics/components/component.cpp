@@ -6,7 +6,7 @@
 //engine
 #include "component.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
 
 }

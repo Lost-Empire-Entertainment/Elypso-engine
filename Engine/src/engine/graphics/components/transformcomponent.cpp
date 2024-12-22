@@ -6,7 +6,7 @@
 //engine
 #include "transformcomponent.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
 
 }

@@ -15,39 +15,40 @@
 //engine
 #include "component.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
     using std::vector;
     using glm::vec3;
     using glm::vec2;
 
+    struct AssimpVertex
+    {
+        vec3 pos{};
+        vec3 normal{};
+        vec2 texCoords{};
+        vec3 tangent{};
+        vec3 bitangent{};
+        int boneIDs = 4;
+        float weights = 4;
+    };
+
+    class AssimpMesh
+    {
+    public:
+        vector<AssimpVertex> vertices;
+        vector<unsigned int> indices;
+
+        AssimpMesh(
+            vector<AssimpVertex> vertices,
+            vector<unsigned int> indices) :
+            vertices(vertices),
+            indices(indices) {
+        }
+    };
+
     class MeshComponent : public Component
     {
     public:
-        struct AssimpVertex
-        {
-            vec3 pos{};
-            vec3 normal{};
-            vec2 texCoords{};
-            vec3 tangent{};
-            vec3 bitangent{};
-            int boneIDs = 4;
-            float weights = 4;
-        };
-
-        class AssimpMesh
-        {
-        public:
-            vector<AssimpVertex> vertices;
-            vector<unsigned int> indices;
-
-            AssimpMesh(
-                vector<AssimpVertex> vertices,
-                vector<unsigned int> indices) :
-                vertices(vertices),
-                indices(indices) {}
-        };
-
         enum class MeshType
         {
             border,

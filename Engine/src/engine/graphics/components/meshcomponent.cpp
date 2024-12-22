@@ -6,7 +6,7 @@
 //engine
 #include "meshcomponent.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
 
 }

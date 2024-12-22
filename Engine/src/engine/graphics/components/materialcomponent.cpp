@@ -6,7 +6,7 @@
 //engine
 #include "materialcomponent.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
 
 }

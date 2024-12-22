@@ -47,8 +47,10 @@ namespace Graphics::Shape
 	class GameObject : public enable_shared_from_this<GameObject>
 	{
 	public:
-		GameObject(const string& name, const string& txtFilePath)
-			: name(name),
+		GameObject(
+			const string& name, 
+			const string& txtFilePath) : 
+			name(name),
 			ID(nextID++),
 			isInitialized(false),
 			isEnabled(true),

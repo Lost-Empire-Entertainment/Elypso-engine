@@ -13,7 +13,7 @@
 #include "component.hpp"
 #include "shader.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
     using std::string;
     using std::map;

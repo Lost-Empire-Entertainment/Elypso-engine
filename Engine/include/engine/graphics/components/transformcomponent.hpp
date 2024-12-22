@@ -13,7 +13,7 @@
 //engine
 #include "component.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
     using glm::vec3;
     using std::cout;

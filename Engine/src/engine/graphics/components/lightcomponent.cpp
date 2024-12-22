@@ -6,7 +6,7 @@
 //engine
 #include "lightcomponent.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
 
 }

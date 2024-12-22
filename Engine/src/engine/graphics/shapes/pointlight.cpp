@@ -16,6 +16,10 @@
 #include "billboard.hpp"
 #include "console.hpp"
 #include "core.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -26,8 +30,11 @@ using std::filesystem::exists;
 
 using Core::Engine;
 using Graphics::Shader;
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Render;
 using Core::Select;
 using Core::ConsoleManager;
@@ -55,7 +62,11 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>(name, txtFilePath);
+		obj->SetEnableState(isEnabled);
+		obj->GetTransform()->SetPosition(pos);
+		obj->GetTransform()->SetRotation(rot);
+		obj->GetTransform()->SetScale(scale);
 
 		float vertices[] =
 		{
@@ -111,7 +122,12 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::point_light, vao, vbo, ebo);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			isMeshEnabled, 
+			MeshType::point_light, 
+			vao, 
+			vbo, 
+			ebo);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -124,33 +140,19 @@ namespace Graphics::Shape
 
 		Shader pointLightShader = Shader::LoadShader(vert, frag);
 
-		shared_ptr<Material> mat = make_shared<Material>();
+		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->AddShader(vert, frag, pointLightShader);
 
-		shared_ptr<PointLight_Variables> pointLight =
-			make_shared<PointLight_Variables>(
-				diffuse,
-				intensity,
-				distance);
+		auto pointLight = obj->AddComponent<LightComponent>(diffuse, intensity, distance);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();
-		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+		auto billboard = Billboard::InitializeBillboard(
 			pos,
 			rot,
 			scale,
 			billboardDiffTexture,
 			billboardID,
 			isBillboardEnabled);
-
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
-			name,
-			id,
-			isEnabled,
-			transform,
-			mesh,
-			mat,
-			pointLight);
 
 		billboard->SetParentBillboardHolder(obj);
 		obj->SetChildBillboard(billboard);
@@ -177,11 +179,13 @@ namespace Graphics::Shape
 
 	void PointLight::RenderPointLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
 	{
-		if (obj == nullptr) Engine::CreateErrorPopup("Point light gameobject is invalid.");
+		if (!obj) Engine::CreateErrorPopup("Point light gameobject is invalid.");
 
 		if (obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto material = obj->GetComponent<MaterialComponent>();
+
+			Shader shader = material->GetShader();
 
 			shader.Use();
 			shader.SetMat4("projection", projection);
@@ -191,10 +195,14 @@ namespace Graphics::Shape
 				Select::selectedObj == obj
 				&& Select::isObjectSelected ? 1.0f : 0.5f;
 			shader.SetFloat("transparency", transparency);
-			shader.SetVec3("color", obj->GetPointLight()->GetDiffuse());
 
+			auto light = obj->GetComponent<LightComponent>();
+			shader.SetVec3("color", light->GetDiffuse());
+
+			auto mesh = obj->GetComponent<MeshComponent>();
 			if (GameObjectManager::renderLightBorders
-				&& obj->GetMesh()->IsEnabled())
+				&& mesh
+				&& mesh->IsEnabled())
 			{
 				mat4 model = mat4(1.0f);
 				model = translate(model, obj->GetTransform()->GetPosition());
@@ -203,7 +211,7 @@ namespace Graphics::Shape
 				model = scale(model, obj->GetTransform()->GetScale());
 
 				shader.SetMat4("model", model);
-				GLuint VAO = obj->GetMesh()->GetVAO();
+				GLuint VAO = mesh->GetVAO();
 				glBindVertexArray(VAO);
 				glDrawArrays(GL_LINES, 0, 24);
 			}

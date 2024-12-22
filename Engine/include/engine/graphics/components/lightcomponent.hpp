@@ -13,7 +13,7 @@
 //engine
 #include "component.hpp"
 
-namespace Components
+namespace Graphics::Components
 {
     using std::type_index;
     using glm::vec3;

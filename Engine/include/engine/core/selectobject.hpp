@@ -21,7 +21,7 @@ namespace Core
 	using glm::mat4;
 	using std::shared_ptr;
 
-	using Graphics::Shape::AssimpVertex;
+	using Graphics::Components::AssimpVertex;
 	using Graphics::Shape::GameObject;
 
 	class Select
