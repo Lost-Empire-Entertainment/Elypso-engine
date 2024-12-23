@@ -151,7 +151,6 @@ namespace Graphics::Shape
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->AddShader(vert, frag, modelShader);
 
-		auto mesh = obj->GetComponent<MeshComponent>();
 		mesh->SetVertices(vertices);
 		mesh->SetIndices(indices);
 
@@ -160,7 +159,6 @@ namespace Graphics::Shape
 		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::height, false);
 		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::normal, false);
 
-		auto mat = obj->GetComponent<MaterialComponent>();
 		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
@@ -313,7 +311,6 @@ namespace Graphics::Shape
 			model = scale(model, obj->GetTransform()->GetScale());
 
 			//bind diffuse texture
-			auto mat = obj->GetComponent<MaterialComponent>();
 			unsigned int diffuseTextureID = mat->GetTextureID(MaterialComponent::TextureType::diffuse);
 			if (diffuseTextureID != 0)
 			{

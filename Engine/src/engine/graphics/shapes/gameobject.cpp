@@ -25,6 +25,7 @@
 #include "sceneFile.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#include "meshcomponent.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -44,8 +45,8 @@ using std::ifstream;
 using std::filesystem::exists;
 
 using Core::Select;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::MeshComponent;
+using Type = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -70,7 +71,8 @@ namespace Graphics::Shape
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetMesh()->GetMeshType();
+				auto mesh = obj->GetComponent<MeshComponent>();
+				Type type = mesh->GetMeshType();
 				switch (type)
 				{
 				case Type::model:
@@ -120,7 +122,8 @@ namespace Graphics::Shape
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetMesh()->GetMeshType();
+				auto mesh = obj->GetComponent<MeshComponent>();
+				Type type = mesh->GetMeshType();
 				switch (type)
 				{
 				case Type::billboard:
@@ -140,7 +143,8 @@ namespace Graphics::Shape
 
 		string thisName = obj->GetName();
 
-		Type type = obj->GetMesh()->GetMeshType();
+		auto mesh = obj->GetComponent<MeshComponent>();
+		Type type = mesh->GetMeshType();
 
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
@@ -220,14 +224,15 @@ namespace Graphics::Shape
 			string txtFilePath = (path(Engine::scenePath) / obj->GetTxtFilePath()).string();
 			if (exists(txtFilePath))
 			{
+				auto mesh = obj->GetComponent<MeshComponent>();
 				string targetFolder;
-				if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+				if (mesh->GetMeshType() == MeshComponent::MeshType::model)
 				{
 					targetFolder = path(txtFilePath).parent_path().parent_path().string();
 				}
-				else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
-						 || obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
-						 || obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
+				else if (mesh->GetMeshType() == MeshComponent::MeshType::point_light
+						 || mesh->GetMeshType() == MeshComponent::MeshType::spot_light
+						 || mesh->GetMeshType() == MeshComponent::MeshType::directional_light)
 				{
 					targetFolder = path(txtFilePath).parent_path().string();
 				}
