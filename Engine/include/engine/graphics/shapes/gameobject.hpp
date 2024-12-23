@@ -165,6 +165,10 @@ namespace Graphics::Shape
 		{
 			return parentBillboardHolder;
 		}
+		void RemoveParentBillboardHolder()
+		{
+			parentBillboardHolder = nullptr;
+		}
 
 		/*
 		*
@@ -178,6 +182,10 @@ namespace Graphics::Shape
 		const shared_ptr<GameObject>& GetChildBillboard() const
 		{
 			return childBillboard;
+		}
+		void RemoveChildBillboard()
+		{
+			childBillboard = nullptr;
 		}
 
 		/*

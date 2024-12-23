@@ -80,12 +80,13 @@ namespace Graphics::GUI
 		{
 			if (obj == nullptr) return;
 
-			MeshComponent::MeshType type = obj->GetComponent<MeshComponent>()->GetMeshType();
-
-			if (type == MeshComponent::MeshType::model
-				|| type == MeshComponent::MeshType::point_light
-				|| type == MeshComponent::MeshType::spot_light
-				|| type == MeshComponent::MeshType::directional_light)
+			auto mesh = obj->GetComponent<MeshComponent>();
+			if (!mesh
+				|| (mesh
+				&& mesh->GetMeshType() != MeshComponent::MeshType::actionTex
+				&& mesh->GetMeshType() != MeshComponent::MeshType::border
+				&& mesh->GetMeshType() != MeshComponent::MeshType::billboard
+				&& mesh->GetMeshType() != MeshComponent::MeshType::skybox))
 			{
 				string name = obj->GetName();
 				string label = name + "##" + to_string(obj->GetID());

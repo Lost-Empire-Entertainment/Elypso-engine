@@ -79,25 +79,7 @@ namespace Graphics::GUI
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
-			if (Select::isObjectSelected)
-			{
-				string items[] = { "Mesh", "Material", "Light" };
-				static int currentItem = -1;
-				if (ImGui::BeginCombo("##AddComponentDropdown", "Add component"))
-				{
-					for (int i = 0; i < IM_ARRAYSIZE(items); i++)
-					{
-						if (ImGui::Selectable(items[i].c_str(), currentItem == i))
-						{
-							currentItem = i;
-							cout << "Selected " << items[i] << "\n";
-							currentItem = -1;
-							break;
-						}
-					}
-					ImGui::EndCombo();
-				}
-			}
+			if (Select::isObjectSelected) AddComponent();
 
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
@@ -120,6 +102,78 @@ namespace Graphics::GUI
 			}
 
 			ImGui::End();
+		}
+	}
+
+	void GUIInspector::AddComponent()
+	{
+		string items[] = { "Mesh", "Material", "Light" };
+		static int currentItem = -1;
+		if (ImGui::BeginCombo("##AddComponentDropdown", "Add component"))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+			{
+				if (ImGui::Selectable(items[i].c_str(), currentItem == i))
+				{
+					currentItem = i;
+
+					string value = items[i];
+					cout << "Selected " << items[i] << "\n";
+
+					if (value == "Mesh")
+					{
+						auto existingMesh = Select::selectedObj->GetComponent<MeshComponent>();
+						if (existingMesh)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: " + Select::selectedObj->GetName() + " already has a mesh component!");
+						}
+						else
+						{
+							
+						}
+					}
+					else if (value == "Material")
+					{
+						auto existingMat = Select::selectedObj->GetComponent<MaterialComponent>();
+						if (existingMat)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: " + Select::selectedObj->GetName() + " already has a material component!");
+						}
+						else
+						{
+
+						}
+					}
+					else if (value == "Light")
+					{
+						auto existingLight = Select::selectedObj->GetComponent<LightComponent>();
+						if (existingLight)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: " + Select::selectedObj->GetName() + " already has a light component!");
+						}
+						else
+						{
+							auto pointLight = Select::selectedObj->AddComponent<LightComponent>(
+								vec3(1),
+								1.0f,
+								1.0f);
+						}
+					}
+
+					currentItem = -1;
+					break;
+				}
+			}
+			ImGui::EndCombo();
 		}
 	}
 
@@ -320,6 +374,8 @@ namespace Graphics::GUI
 		shared_ptr<GameObject>& obj = Select::selectedObj;
 
 		auto mesh = obj->GetComponent<MeshComponent>();
+		if (!mesh) return;
+
 		int height = mesh->GetMeshType() == MeshComponent::MeshType::model
 			? 100 : 150;
 
@@ -333,7 +389,7 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				cout << "remove mesh...\n";
+				Select::selectedObj->RemoveComponent<MeshComponent>();
 			}
 
 			ImGui::Separator();
@@ -387,9 +443,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		auto selectedMesh = Select::selectedObj->GetComponent<MeshComponent>();
-		float height = selectedMesh->GetMeshType() == MeshType::spot_light ? 355.0f : 240.0f;
-		if (ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
+		if (ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, 270), true, childWindowFlags))
 		{
 			ImGui::Text("Material");
 
@@ -397,15 +451,25 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				cout << "remove mat...\n";
+				Select::selectedObj->RemoveComponent<MaterialComponent>();
 			}
 
 			ImGui::Separator();
 
 			auto mesh = obj->GetComponent<MeshComponent>();
+			if (!mesh)
+			{
+				ImGui::EndChild();
+				return;
+			}
 			MeshComponent::MeshType objType = mesh->GetMeshType();
 
 			auto mat = obj->GetComponent<MaterialComponent>();
+			if (!mat) 
+			{
+				ImGui::EndChild();
+				return;
+			}
 
 			if (objType == MeshType::model)
 			{
@@ -429,11 +493,18 @@ namespace Graphics::GUI
 					ImGui::EndTooltip();
 				}
 
-				ImGui::Button("Billboard diffuse texture");
+				ImGui::Button("Diffuse texture");
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
 					ImGui::Text(diffTexture.c_str());
+					ImGui::EndTooltip();
+				}
+				ImGui::Button("Specular texture");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(specTexture.c_str());
 					ImGui::EndTooltip();
 				}
 
@@ -555,6 +626,11 @@ namespace Graphics::GUI
 			{
 				auto& childBillboard = obj->GetChildBillboard();
 				auto childMat = childBillboard->GetComponent<MaterialComponent>();
+				if (!childMat)
+				{
+					ImGui::EndChild();
+					return;
+				}
 
 				const string& vertShader = mat->GetShaderName(0);
 				const string& fragShader = mat->GetShaderName(1);
@@ -614,7 +690,9 @@ namespace Graphics::GUI
 		ImGuiChildFlags childWindowFlags{};
 
 		auto selectedMesh = Select::selectedObj->GetComponent<MeshComponent>();
-		float height = selectedMesh->GetMeshType() == MeshType::spot_light ? 355.0f : 240.0f;
+		if (!selectedMesh) return;
+
+		float height = selectedMesh->GetMeshType() == MeshType::spot_light ? 370 : 240;
 		if (ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
 		{
 			ImGui::Text("Light");
@@ -623,17 +701,27 @@ namespace Graphics::GUI
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
 			{
-				cout << "remove light...\n";
+				Select::selectedObj->RemoveComponent<LightComponent>();
 			}
 
 			ImGui::Separator();
 
 			auto mesh = obj->GetComponent<MeshComponent>();
+			if (!mesh)
+			{
+				ImGui::EndChild();
+				return;
+			}
 			MeshComponent::MeshType objType = mesh->GetMeshType();
 
 			if (objType == MeshType::point_light)
 			{
 				auto light = obj->GetComponent<LightComponent>();
+				if (!light)
+				{
+					ImGui::EndChild();
+					return;
+				}
 				vec3 pointDiffuse = light->GetDiffuse();
 				ImGui::Text("Point light diffuse");
 				if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
@@ -673,6 +761,11 @@ namespace Graphics::GUI
 			else if (objType == MeshType::spot_light)
 			{
 				auto light = obj->GetComponent<LightComponent>();
+				if (!light)
+				{
+					ImGui::EndChild();
+					return;
+				}
 				vec3 spotDiffuse = light->GetDiffuse();
 				ImGui::Text("Spotlight diffuse");
 				if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
@@ -690,6 +783,79 @@ namespace Graphics::GUI
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Reset##spotint"))
+				{
+					light->SetIntensity(1.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				float spotDistance = light->GetDistance();
+				ImGui::Text("Spotlight distance");
+				if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
+				{
+					light->SetDistance(spotDistance);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotdist"))
+				{
+					light->SetDistance(1.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				float spotInnerAngle = light->GetInnerAngle();
+				float spotOuterAngle = light->GetOuterAngle();
+
+				ImGui::Text("Spotlight inner angle");
+				if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
+				{
+					light->SetInnerAngle(spotInnerAngle);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotinnerangle"))
+				{
+					light->SetInnerAngle(15.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				ImGui::Text("Spotlight outer angle");
+				if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
+				{
+					light->SetOuterAngle(spotOuterAngle);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotouterangle"))
+				{
+					light->SetOuterAngle(30.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+			}
+			else if (objType == MeshType::directional_light)
+			{
+				auto light = obj->GetComponent<LightComponent>();
+				if (!light)
+				{
+					ImGui::EndChild();
+					return;
+				}
+				vec3 dirDiffuse = light->GetDiffuse();
+				ImGui::Text("Directional light diffuse");
+				if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
+				{
+					light->SetDiffuse(dirDiffuse);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				float dirIntensity = light->GetIntensity();
+				ImGui::Text("Directional light intensity");
+				if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
+				{
+					light->SetIntensity(dirIntensity);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##dirint"))
 				{
 					light->SetIntensity(1.0f);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

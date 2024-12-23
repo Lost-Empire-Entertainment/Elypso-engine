@@ -92,21 +92,15 @@ namespace EngineFile
 
 				vector<string> data;
 
-				//
-				// SAVE SCENE OBJECT DATA INTO VECTOR
-				//
-
 				data.push_back("name= " + obj->GetName() + "\n");
 
 				data.push_back("id= " + to_string(obj->GetID()) + "\n");
 
 				data.push_back("enabled= " + to_string(obj->IsEnabled()) + "\n");
 
-				auto mesh = obj->GetComponent<MeshComponent>();
-				data.push_back("mesh enabled= " + to_string(mesh->IsEnabled()) + "\n");
-
-				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
-				data.push_back("type= " + type + "\n");
+				//
+				// TRANSFORM DATA
+				//
 
 				//position
 				float posX = obj->GetTransform()->GetPosition().x;
@@ -137,6 +131,23 @@ namespace EngineFile
 
 				data.push_back("\n");
 
+				//
+				// MESH DATA
+				//
+
+				auto mesh = obj->GetComponent<MeshComponent>();
+				data.push_back("mesh enabled= " + to_string(mesh->IsEnabled()) + "\n");
+
+				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
+				data.push_back("type= " + type + "\n");
+
+				//path to txt file of this gameobject
+				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
+
+				//
+				// MATERIAL DATA
+				//
+
 				//object textures
 				MeshComponent::MeshType meshType = mesh->GetMeshType();
 				auto mat = obj->GetComponent<MaterialComponent>();
@@ -164,10 +175,6 @@ namespace EngineFile
 						+ heightTexture + "\n");
 				}
 
-				//path to txt file of this gameobject
-				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
-
-				//material variables
 				if (meshType == MeshComponent::MeshType::model)
 				{
 					data.push_back("shininess= " + to_string(32) + "\n");
@@ -175,49 +182,58 @@ namespace EngineFile
 				else if (meshType == MeshComponent::MeshType::point_light)
 				{
 					auto light = obj->GetComponent<LightComponent>();
-					float pointDiffuseX = light->GetDiffuse().x;
-					float pointDiffuseY = light->GetDiffuse().y;
-					float pointDiffuseZ = light->GetDiffuse().z;
-					data.push_back(
-						"diffuse= " + to_string(pointDiffuseX) + ", "
-						+ to_string(pointDiffuseY) + ", "
-						+ to_string(pointDiffuseZ) + "\n");
+					if (light)
+					{
+						float pointDiffuseX = light->GetDiffuse().x;
+						float pointDiffuseY = light->GetDiffuse().y;
+						float pointDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(pointDiffuseX) + ", "
+							+ to_string(pointDiffuseY) + ", "
+							+ to_string(pointDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+					}
 				}
 				else if (meshType == MeshComponent::MeshType::spot_light)
 				{
 					auto light = obj->GetComponent<LightComponent>();
-					float spotDiffuseX = light->GetDiffuse().x;
-					float spotDiffuseY = light->GetDiffuse().y;
-					float spotDiffuseZ = light->GetDiffuse().z;
-					data.push_back(
-						"diffuse= " + to_string(spotDiffuseX) + ", "
-						+ to_string(spotDiffuseY) + ", "
-						+ to_string(spotDiffuseZ) + "\n");
+					if (light)
+					{
+						float spotDiffuseX = light->GetDiffuse().x;
+						float spotDiffuseY = light->GetDiffuse().y;
+						float spotDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(spotDiffuseX) + ", "
+							+ to_string(spotDiffuseY) + ", "
+							+ to_string(spotDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
 
-					data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
+						data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
 
-					data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
+						data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
+					}
 				}
 				else if (meshType == MeshComponent::MeshType::directional_light)
 				{
 					auto light = obj->GetComponent<LightComponent>();
-					float dirDiffuseX = light->GetDiffuse().x;
-					float dirDiffuseY = light->GetDiffuse().y;
-					float dirDiffuseZ = light->GetDiffuse().z;
-					data.push_back(
-						"diffuse= " + to_string(dirDiffuseX) + ", "
-						+ to_string(dirDiffuseY) + ", "
-						+ to_string(dirDiffuseZ) + "\n");
+					if (light)
+					{
+						float dirDiffuseX = light->GetDiffuse().x;
+						float dirDiffuseY = light->GetDiffuse().y;
+						float dirDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(dirDiffuseX) + ", "
+							+ to_string(dirDiffuseY) + ", "
+							+ to_string(dirDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+					}
 				}
 
 				//also save billboard data of each light source

@@ -195,12 +195,13 @@ namespace Graphics::Shape
 		if (obj->IsEnabled())
 		{
 			auto mat = obj->GetComponent<MaterialComponent>();
+			if (!mat) return;
 
 			Shader shader = mat->GetShader();
 
 			shader.Use();
 			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
-			shader.SetFloat("material.shininess", 32);
+			shader.SetFloat("material.shininess", 12);
 
 			//directional light
 			if (GameObjectManager::GetDirectionalLight() != nullptr)
@@ -212,23 +213,29 @@ namespace Graphics::Shape
 				
 				auto& transform = dirLight->GetTransform();
 				auto light = dirLight->GetComponent<LightComponent>();
+				if (light)
+				{
+					vec3 dirRot = transform->GetRotation();
+					quat dirQuat = quat(radians(dirRot));
+					//assuming the initial direction is along the negative Y-axis
+					vec3 initialDir = vec3(0.0f, -1.0f, 0.0f);
+					//rotate the initial direction using the quaternion
+					vec3 rotatedDir = dirQuat * initialDir;
+					rotatedDir = normalize(rotatedDir);
 
-				vec3 dirRot = transform->GetRotation();
-				quat dirQuat = quat(radians(dirRot));
-				//assuming the initial direction is along the negative Y-axis
-				vec3 initialDir = vec3(0.0f, -1.0f, 0.0f);
-				//rotate the initial direction using the quaternion
-				vec3 rotatedDir = dirQuat * initialDir;
-				rotatedDir = normalize(rotatedDir);
+					shader.SetBool("dirLight.enabled", dirLight->IsEnabled());
 
-				shader.SetBool("dirLight.enabled", dirLight->IsEnabled());
+					shader.SetVec3("dirLight.direction", rotatedDir);
 
-				shader.SetVec3("dirLight.direction", rotatedDir);
-
-				shader.SetFloat("dirLight.intensity", light->GetIntensity());
-				shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-				shader.SetVec3("dirLight.diffuse", light->GetDiffuse());
-				shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+					shader.SetFloat("dirLight.intensity", light->GetIntensity());
+					shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+					shader.SetVec3("dirLight.diffuse", light->GetDiffuse());
+					shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+				}
+				else
+				{
+					shader.SetBool("dirLight.enabled", false);
+				}
 			}
 			else 
 			{
@@ -245,19 +252,28 @@ namespace Graphics::Shape
 				{
 					auto& transform = pointLights[i]->GetTransform();
 					auto light = pointLights[i]->GetComponent<LightComponent>();
-					string lightPrefix = "pointLights[" + to_string(i) + "].";
+					if (light)
+					{
+						string lightPrefix = "pointLights[" + to_string(i) + "].";
 
-					shader.SetBool(lightPrefix + "enabled", pointLights[i]->IsEnabled());
+						shader.SetBool(lightPrefix + "enabled", pointLights[i]->IsEnabled());
 
-					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
-					shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
-					shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
-					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
-					shader.SetFloat(lightPrefix + "constant", 1.0f);
-					shader.SetFloat(lightPrefix + "linear", 0.09f);
-					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-					shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
-					shader.SetFloat(lightPrefix + "distance", light->GetDistance());
+						shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+						shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
+						shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
+						shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+						shader.SetFloat(lightPrefix + "constant", 1.0f);
+						shader.SetFloat(lightPrefix + "linear", 0.09f);
+						shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+						shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
+						shader.SetFloat(lightPrefix + "distance", light->GetDistance());
+					}
+					else
+					{
+						string lightPrefix = "pointLights[" + to_string(i) + "].";
+
+						shader.SetBool(lightPrefix + "enabled", false);
+					}
 				}
 			}
 
@@ -271,30 +287,40 @@ namespace Graphics::Shape
 				{
 					auto& transform = spotLights[i]->GetTransform();
 					auto light = spotLights[i]->GetComponent<LightComponent>();
-					string lightPrefix = "spotLights[" + to_string(i) + "].";
-					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+					if (light)
+					{
+						string lightPrefix = "spotLights[" + to_string(i) + "].";
+						shader.SetVec3(lightPrefix + "position", transform->GetPosition());
 
-					shader.SetBool(lightPrefix + "enabled", spotLights[i]->IsEnabled());
+						shader.SetBool(lightPrefix + "enabled", spotLights[i]->IsEnabled());
 
-					vec3 rotationAngles = transform->GetRotation();
-					quat rotationQuat = quat(radians(rotationAngles));
-					//assuming the initial direction is along the negative Y-axis
-					vec3 initialDirection = vec3(0.0f, -1.0f, 0.0f);
-					//rotate the initial direction using the quaternion
-					vec3 rotatedDirection = rotationQuat * initialDirection;
-					//set the rotated direction in the shader
-					shader.SetVec3(lightPrefix + "direction", rotatedDirection);
+						vec3 rotationAngles = transform->GetRotation();
+						quat rotationQuat = quat(radians(rotationAngles));
+						//assuming the initial direction is along the negative Y-axis
+						vec3 initialDirection = vec3(0.0f, -1.0f, 0.0f);
+						//rotate the initial direction using the quaternion
+						vec3 rotatedDirection = rotationQuat * initialDirection;
+						//set the rotated direction in the shader
+						shader.SetVec3(lightPrefix + "direction", rotatedDirection);
 
-					shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
-					shader.SetFloat(lightPrefix + "distance", light->GetDistance());
-					shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
-					shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
-					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
-					shader.SetFloat(lightPrefix + "constant", 1.0f);
-					shader.SetFloat(lightPrefix + "linear", 0.09f);
-					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-					shader.SetFloat(lightPrefix + "cutOff", cos(radians(light->GetInnerAngle())));
-					shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(light->GetOuterAngle())));
+						shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
+						shader.SetFloat(lightPrefix + "distance", light->GetDistance());
+						shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
+						shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
+						shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+						shader.SetFloat(lightPrefix + "constant", 1.0f);
+						shader.SetFloat(lightPrefix + "linear", 0.09f);
+						shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+						shader.SetFloat(lightPrefix + "cutOff", cos(radians(light->GetInnerAngle())));
+						shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(light->GetOuterAngle())));
+					}
+					else 
+					{
+						string lightPrefix = "spotLights[" + to_string(i) + "].";
+						shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+
+						shader.SetBool(lightPrefix + "enabled", false);
+					}
 				}
 			}
 

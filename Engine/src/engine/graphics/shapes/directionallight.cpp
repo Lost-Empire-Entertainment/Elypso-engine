@@ -174,6 +174,7 @@ namespace Graphics::Shape
 		if (obj->IsEnabled())
 		{
 			auto mat = obj->GetComponent<MaterialComponent>();
+			if (!mat) return;
 
 			Shader shader = mat->GetShader();
 
@@ -187,7 +188,10 @@ namespace Graphics::Shape
 			shader.SetFloat("transparency", transparency);
 
 			auto light = obj->GetComponent<LightComponent>();
-			shader.SetVec3("color", light->GetDiffuse());
+			if (light)
+			{
+				shader.SetVec3("color", light->GetDiffuse());
+			}
 
 			auto mesh = obj->GetComponent<MeshComponent>();
 			if (GameObjectManager::renderLightBorders
