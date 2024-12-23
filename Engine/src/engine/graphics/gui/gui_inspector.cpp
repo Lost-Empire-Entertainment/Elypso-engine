@@ -79,20 +79,6 @@ namespace Graphics::GUI
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
-			if (Select::isObjectSelected
-				&& Select::selectedObj->IsEnabled())
-			{
-				shared_ptr<GameObject> obj = Select::selectedObj;
-
-				bool gameobjectState = obj->IsEnabled();
-				if (ImGui::Checkbox("Enable gameobject", &gameobjectState))
-				{
-					obj->SetEnableState(gameobjectState);
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-			}
-
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -100,8 +86,7 @@ namespace Graphics::GUI
 				ConfigFile::SetValue("gui_inspector", "0");
 			}
 
-			if (Select::isObjectSelected
-				&& Select::selectedObj->IsEnabled())
+			if (Select::isObjectSelected)
 			{
 				Component_GameObject();
 				Component_Transform();
@@ -119,7 +104,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		if (ImGui::BeginChild("GameObject", ImVec2(ImGui::GetWindowWidth() - 20, 150), true, childWindowFlags))
+		if (ImGui::BeginChild("GameObject", ImVec2(ImGui::GetWindowWidth() - 20, 180), true, childWindowFlags))
 		{
 			ImGui::Text("GameObject");
 			ImGui::Separator();
@@ -213,6 +198,19 @@ namespace Graphics::GUI
 							
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
+				}
+			}
+
+			if (Select::isObjectSelected)
+			{
+				shared_ptr<GameObject> obj = Select::selectedObj;
+
+				bool gameobjectState = obj->IsEnabled();
+				if (ImGui::Checkbox("Enable gameobject", &gameobjectState))
+				{
+					obj->SetEnableState(gameobjectState);
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 			}
 
