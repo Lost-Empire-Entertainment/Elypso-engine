@@ -92,6 +92,7 @@ namespace Graphics::GUI
 				Component_Transform();
 				Component_Mesh();
 				Component_Material();
+				Component_Light();
 			}
 
 			ImGui::End();
@@ -364,8 +365,38 @@ namespace Graphics::GUI
 			auto mesh = obj->GetComponent<MeshComponent>();
 			MeshComponent::MeshType objType = mesh->GetMeshType();
 
+			auto mat = obj->GetComponent<MaterialComponent>();
+
 			if (objType == MeshType::model)
 			{
+				const string& vertShader = mat->GetShaderName(0);
+				const string& fragShader = mat->GetShaderName(1);
+				const string& diffTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
+				const string& specTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
+
+				ImGui::Button("Vertex shader");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(vertShader.c_str());
+					ImGui::EndTooltip();
+				}
+				ImGui::Button("Fragment shader");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(fragShader.c_str());
+					ImGui::EndTooltip();
+				}
+
+				ImGui::Button("Billboard diffuse texture");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(diffTexture.c_str());
+					ImGui::EndTooltip();
+				}
+
 				/*
 				* 
 				* SHININESS IS CURRENTLY DISABLED BECAUSE IT IS UNUSED
@@ -392,7 +423,6 @@ namespace Graphics::GUI
 				//assign diffuse texture
 				ImGui::Text("Diffuse texture");
 				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
-				auto mat = obj->GetComponent<MaterialComponent>();
 				path diff_texturePath = path(
 					Engine::filesPath
 					+ mat->GetTextureName(MaterialComponent::TextureType::diffuse));
@@ -483,137 +513,138 @@ namespace Graphics::GUI
 			}
 			else
 			{
-				if (objType == MeshType::point_light)
+				auto& childBillboard = obj->GetChildBillboard();
+				auto childMat = childBillboard->GetComponent<MaterialComponent>();
+
+				const string& vertShader = mat->GetShaderName(0);
+				const string& fragShader = mat->GetShaderName(1);
+
+				const string& childVertShader = childMat->GetShaderName(0);
+				const string& childFragShader = childMat->GetShaderName(1);
+
+				const string& diffTexture = childMat->GetTextureName(MaterialComponent::TextureType::diffuse);
+
+				ImGui::Button("Vertex shader");
+				if (ImGui::IsItemHovered())
 				{
-					auto light = obj->GetComponent<LightComponent>();
-					vec3 pointDiffuse = light->GetDiffuse();
-					ImGui::Text("Point light diffuse");
-					if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
-					{
-						light->SetDiffuse(pointDiffuse);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-
-					float pointIntensity = light->GetIntensity();
-					ImGui::Text("Point light intensity");
-					if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
-					{
-						light->SetIntensity(pointIntensity);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Reset##pointint"))
-					{
-						light->SetIntensity(1.0f);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-
-					float pointDistance = light->GetDistance();
-					ImGui::Text("Point light distance");
-					if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
-					{
-						light->SetDistance(pointDistance);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Reset##pointdist"))
-					{
-						light->SetDistance(1.0f);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					ImGui::BeginTooltip();
+					ImGui::Text(vertShader.c_str());
+					ImGui::EndTooltip();
 				}
-				else if (objType == MeshType::spot_light)
+				ImGui::Button("Fragment shader");
+				if (ImGui::IsItemHovered())
 				{
-					auto light = obj->GetComponent<LightComponent>();
-					vec3 spotDiffuse = light->GetDiffuse();
-					ImGui::Text("Spotlight diffuse");
-					if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
-					{
-						light->SetDiffuse(spotDiffuse);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-
-					float spotIntensity = light->GetIntensity();
-					ImGui::Text("Spotlight intensity");
-					if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
-					{
-						light->SetIntensity(spotIntensity);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Reset##spotint"))
-					{
-						light->SetIntensity(1.0f);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-
-					float spotDistance = light->GetDistance();
-					ImGui::Text("Spotlight distance");
-					if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
-					{
-						light->SetDistance(spotDistance);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Reset##spotdist"))
-					{
-						light->SetDistance(1.0f);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-
-					float spotInnerAngle = light->GetInnerAngle();
-					float spotOuterAngle = light->GetOuterAngle();
-
-					ImGui::Text("Spotlight inner angle");
-					if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
-					{
-						light->SetInnerAngle(spotInnerAngle);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Reset##spotinnerangle"))
-					{
-						light->SetInnerAngle(15.0f);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-
-					ImGui::Text("Spotlight outer angle");
-					if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
-					{
-						light->SetOuterAngle(spotOuterAngle);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Reset##spotouterangle"))
-					{
-						light->SetOuterAngle(30.0f);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+					ImGui::BeginTooltip();
+					ImGui::Text(fragShader.c_str());
+					ImGui::EndTooltip();
 				}
-				else if (objType == MeshType::directional_light)
-				{
-					auto light = obj->GetComponent<LightComponent>();
-					vec3 dirDiffuse = light->GetDiffuse();
-					ImGui::Text("Directional light diffuse");
-					if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
-					{
-						light->SetDiffuse(dirDiffuse);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
 
-					float dirIntensity = light->GetIntensity();
-					ImGui::Text("Directional light intensity");
-					if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
-					{
-						light->SetIntensity(dirIntensity);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Reset##dirint"))
-					{
-						light->SetIntensity(1.0f);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
+				ImGui::Button("Billboard vertex shader");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(childVertShader.c_str());
+					ImGui::EndTooltip();
+				}
+				ImGui::Button("Billboard fragment shader");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(childFragShader.c_str());
+					ImGui::EndTooltip();
+				}
+
+				ImGui::Button("Billboard diffuse texture");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(diffTexture.c_str());
+					ImGui::EndTooltip();
+				}
+			}
+
+			ImGui::EndChild();
+		}
+	}
+
+	void GUIInspector::Component_Light()
+	{
+		shared_ptr<GameObject>& obj = Select::selectedObj;
+
+		ImGuiChildFlags childWindowFlags{};
+
+		auto selectedMesh = Select::selectedObj->GetComponent<MeshComponent>();
+		float height = selectedMesh->GetMeshType() == MeshType::spot_light ? 355.0f : 240.0f;
+		if (ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
+		{
+			ImGui::Text("Light");
+			ImGui::Separator();
+
+			auto mesh = obj->GetComponent<MeshComponent>();
+			MeshComponent::MeshType objType = mesh->GetMeshType();
+
+			if (objType == MeshType::point_light)
+			{
+				auto light = obj->GetComponent<LightComponent>();
+				vec3 pointDiffuse = light->GetDiffuse();
+				ImGui::Text("Point light diffuse");
+				if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
+				{
+					light->SetDiffuse(pointDiffuse);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				float pointIntensity = light->GetIntensity();
+				ImGui::Text("Point light intensity");
+				if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
+				{
+					light->SetIntensity(pointIntensity);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##pointint"))
+				{
+					light->SetIntensity(1.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				float pointDistance = light->GetDistance();
+				ImGui::Text("Point light distance");
+				if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
+				{
+					light->SetDistance(pointDistance);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##pointdist"))
+				{
+					light->SetDistance(1.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+			}
+			else if (objType == MeshType::spot_light)
+			{
+				auto light = obj->GetComponent<LightComponent>();
+				vec3 spotDiffuse = light->GetDiffuse();
+				ImGui::Text("Spotlight diffuse");
+				if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
+				{
+					light->SetDiffuse(spotDiffuse);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+
+				float spotIntensity = light->GetIntensity();
+				ImGui::Text("Spotlight intensity");
+				if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
+				{
+					light->SetIntensity(spotIntensity);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##spotint"))
+				{
+					light->SetIntensity(1.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 			}
 
