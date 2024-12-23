@@ -34,6 +34,10 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "directionallight.hpp"
+#include "spotlight.hpp"
+#include "pointlight.hpp"
+#include "billboard.hpp"
 
 using std::cout;
 using std::endl;
@@ -46,6 +50,7 @@ using std::filesystem::exists;
 using Graphics::Render;
 using Core::Select;
 using Graphics::Shape::GameObject;
+using Graphics::Shape::GameObjectManager;
 using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
 using Graphics::Components::MaterialComponent;
@@ -62,6 +67,10 @@ using Utils::File;
 using Core::ConsoleManager;
 using ConsoleCaller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
+using Graphics::Shape::DirectionalLight;
+using Graphics::Shape::SpotLight;
+using Graphics::Shape::PointLight;
+using Graphics::Shape::Billboard;
 
 namespace Graphics::GUI
 {
@@ -692,7 +701,7 @@ namespace Graphics::GUI
 		auto selectedMesh = Select::selectedObj->GetComponent<MeshComponent>();
 		if (!selectedMesh) return;
 
-		float height = selectedMesh->GetMeshType() == MeshType::spot_light ? 370 : 240;
+		float height = selectedMesh->GetMeshType() == MeshType::spot_light ? 400 : 270;
 		if (ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
 		{
 			ImGui::Text("Light");
@@ -705,6 +714,8 @@ namespace Graphics::GUI
 			}
 
 			ImGui::Separator();
+
+			ChangeLightType();
 
 			auto mesh = obj->GetComponent<MeshComponent>();
 			if (!mesh)
@@ -863,6 +874,309 @@ namespace Graphics::GUI
 			}
 
 			ImGui::EndChild();
+		}
+	}
+
+	void GUIInspector::ChangeLightType()
+	{
+		string lightTypes[] = { "Point light", "Spotlight", "Directional light" };
+		static int currentItem = -1;
+		if (ImGui::BeginCombo("##ChangeLightTypeDropdown", "Change light type"))
+		{
+			for (int i = 0; i < IM_ARRAYSIZE(lightTypes); i++)
+			{
+				if (ImGui::Selectable(lightTypes[i].c_str(), currentItem == i))
+				{
+					currentItem = i;
+
+					string value = lightTypes[i];
+					cout << "Selected " << lightTypes[i] << "\n";
+
+					MeshType type = Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType();
+					vec3 oldPos = Select::selectedObj->GetTransform()->GetPosition();
+					vec3 oldRot = Select::selectedObj->GetTransform()->GetRotation();
+					vec3 oldScale = Select::selectedObj->GetTransform()->GetScale();
+
+					if (value == "Point light")
+					{
+						if (type == MeshType::point_light)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: The current light type already is a point light!");
+						}
+						else
+						{
+							if (type == MeshType::spot_light)
+							{
+								GameObjectManager::RemoveSpotlight(Select::selectedObj);
+							}
+							else if (type == MeshType::directional_light)
+							{
+								GameObjectManager::SetDirectionalLight(nullptr);
+							}
+
+							string oldTxtPath = Select::selectedObj->GetTxtFilePath();
+							unsigned int oldBillboardID = Select::selectedObj->GetChildBillboard()->GetID();
+
+							float vertices[] =
+							{
+								//edges of the cube
+								-0.5f, -0.5f, -0.5f,
+								 0.5f, -0.5f, -0.5f,
+
+								 0.5f, -0.5f, -0.5f,
+								 0.5f,  0.5f, -0.5f,
+
+								 0.5f,  0.5f, -0.5f,
+								-0.5f,  0.5f, -0.5f,
+
+								-0.5f,  0.5f, -0.5f,
+								-0.5f, -0.5f, -0.5f,
+
+								-0.5f, -0.5f,  0.5f,
+								 0.5f, -0.5f,  0.5f,
+
+								 0.5f, -0.5f,  0.5f,
+								 0.5f,  0.5f,  0.5f,
+
+								 0.5f,  0.5f,  0.5f,
+								-0.5f,  0.5f,  0.5f,
+
+								-0.5f,  0.5f,  0.5f,
+								-0.5f, -0.5f,  0.5f,
+
+								//connecting edges
+								-0.5f, -0.5f, -0.5f,
+								-0.5f, -0.5f,  0.5f,
+
+								 0.5f, -0.5f, -0.5f,
+								 0.5f, -0.5f,  0.5f,
+
+								 0.5f,  0.5f, -0.5f,
+								 0.5f,  0.5f,  0.5f,
+
+								-0.5f,  0.5f, -0.5f,
+								-0.5f,  0.5f,  0.5f,
+							};
+
+							GLuint vao, vbo, ebo;
+
+							glGenVertexArrays(1, &vao);
+							glGenBuffers(1, &vbo);
+							glBindVertexArray(vao);
+							glBindBuffer(GL_ARRAY_BUFFER, vbo);
+							glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+							glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+							glEnableVertexAttribArray(0);
+
+							glBindVertexArray(0);
+
+							auto mesh = Select::selectedObj->AddComponent<MeshComponent>(
+								true,
+								MeshType::point_light,
+								vao,
+								vbo,
+								ebo);
+
+							string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+							string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
+
+							if (!exists(vert)
+								|| !exists(frag))
+							{
+								Engine::CreateErrorPopup("One of the shader paths for point light is invalid!");
+							}
+
+							Shader pointLightShader = Shader::LoadShader(vert, frag);
+
+							auto mat = Select::selectedObj->AddComponent<MaterialComponent>();
+							mat->AddShader(vert, frag, pointLightShader);
+
+							auto pointLight = Select::selectedObj->AddComponent<LightComponent>(
+								vec3(1),
+								1.0f,
+								1.0f);
+
+							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();
+							auto billboard = Billboard::InitializeBillboard(
+								vec3(0),
+								vec3(0),
+								vec3(1),
+								billboardDiffTexture,
+								oldBillboardID,
+								true);
+
+							billboard->SetParentBillboardHolder(Select::selectedObj);
+							Select::selectedObj->SetChildBillboard(billboard);
+
+							Select::selectedObj->SetTxtFilePath(oldTxtPath);
+
+							GameObjectManager::AddPointLight(Select::selectedObj);
+
+							cout << "point light\n";
+						}
+					}
+					else if (value == "Spotlight")
+					{
+						if (type == MeshType::spot_light)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: The current light type already is a spotlight!");
+						}
+						else
+						{
+							if (type == MeshType::point_light)
+							{
+								GameObjectManager::RemovePointLight(Select::selectedObj);
+							}
+							else if (type == MeshType::directional_light)
+							{
+								GameObjectManager::SetDirectionalLight(nullptr);
+							}
+
+							string oldTxtPath = Select::selectedObj->GetTxtFilePath();
+							unsigned int oldBillboardID = Select::selectedObj->GetChildBillboard()->GetID();
+
+							float vertices[] =
+							{
+								//four corner edges
+								0.0f,  0.5f,  0.0f,
+							   -0.5f, -0.5f, -0.5f,
+
+								0.0f,  0.5f,  0.0f,
+								0.5f, -0.5f, -0.5f,
+
+								0.0f,  0.5f,  0.0f,
+							   -0.5f, -0.5f,  0.5f,
+
+								0.0f,  0.5f,  0.0f,
+								0.5f, -0.5f,  0.5f,
+
+								//four bottom edges
+								0.5f, -0.5f,  0.5f,
+							   -0.5f, -0.5f,  0.5f,
+
+								0.5f, -0.5f, -0.5f,
+							   -0.5f, -0.5f, -0.5f,
+
+							   -0.5f, -0.5f, -0.5f,
+							   -0.5f, -0.5f,  0.5f,
+
+								0.5f, -0.5f, -0.5f,
+								0.5f, -0.5f,  0.5f
+							};
+
+							GLuint vao, vbo, ebo;
+
+							glGenVertexArrays(1, &vao);
+							glGenBuffers(1, &vbo);
+							glBindVertexArray(vao);
+							glBindBuffer(GL_ARRAY_BUFFER, vbo);
+							glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+							glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+							glEnableVertexAttribArray(0);
+
+							glBindVertexArray(0);
+
+							auto mesh = obj->AddComponent<MeshComponent>(
+								isMeshEnabled,
+								MeshType::spot_light,
+								vao,
+								vbo,
+								ebo);
+
+							string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+							string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
+
+							if (!exists(vert)
+								|| !exists(frag))
+							{
+								Engine::CreateErrorPopup("One of the shader paths for spotlight is invalid!");
+							}
+
+							Shader spotlightShader = Shader::LoadShader(
+								(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
+								(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
+
+							auto mat = obj->AddComponent<MaterialComponent>();
+							mat->AddShader(
+								(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
+								(path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
+								spotlightShader);
+
+							auto spotlight = obj->AddComponent<LightComponent>(
+								vec3(1),
+								1.0f,
+								1.0f,
+								innerAngle,
+								outerAngle);
+
+							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();
+							shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+								pos,
+								rot,
+								scale,
+								billboardDiffTexture,
+								billboardID,
+								isBillboardEnabled);
+
+							billboard->SetParentBillboardHolder(obj);
+							obj->SetChildBillboard(billboard);
+
+							obj->SetTxtFilePath(txtFilePath);
+
+							cout << "spotlight\n";
+						}
+					}
+					else if (value == "Directional light")
+					{
+						if (GameObjectManager::GetDirectionalLight() != nullptr)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: A directional light already exists in this scene!");
+						}
+						else
+						{
+							if (type == MeshType::directional_light)
+							{
+								ConsoleManager::WriteConsoleMessage(
+									ConsoleCaller::INPUT,
+									ConsoleType::EXCEPTION,
+									"Error: The current light type already is a directional light!");
+							}
+							else
+							{
+								
+								if (type == MeshType::point_light)
+								{
+									GameObjectManager::RemovePointLight(Select::selectedObj);
+								}
+								else if (type == MeshType::spot_light)
+								{
+									GameObjectManager::RemoveSpotlight(Select::selectedObj);
+								}
+
+								string oldTxtPath = Select::selectedObj->GetTxtFilePath();
+								unsigned int oldBillboardID = Select::selectedObj->GetChildBillboard()->GetID();
+
+								cout << "dir light\n";
+							}
+						}
+					}
+
+					currentItem = -1;
+					break;
+				}
+			}
+			ImGui::EndCombo();
 		}
 	}
 }

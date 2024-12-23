@@ -143,6 +143,8 @@ namespace Graphics::Shape
 	{
 		if (obj == nullptr) return;
 
+		cout << "destroying object " << obj->GetName() << "\n";
+
 		string thisName = obj->GetName();
 
 		auto mesh = obj->GetComponent<MeshComponent>();
@@ -151,8 +153,7 @@ namespace Graphics::Shape
 		Select::selectedObj = nullptr;
 		Select::isObjectSelected = false;
 
-		string txtFilePath = obj->GetTxtFilePath();
-
+		/*
 		//destroy all children if parent is destroyed
 		if (obj->GetChildren().size() > 0)
 		{
@@ -166,6 +167,7 @@ namespace Graphics::Shape
 		{
 			obj->GetParent()->RemoveChild(obj);
 		}
+		*/
 
 		switch (type)
 		{
@@ -175,7 +177,7 @@ namespace Graphics::Shape
 			break;
 		case Type::point_light:
 		{
-			shared_ptr childBillboard = obj->GetChildBillboard();
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
 			obj->RemoveChildBillboard();
 			DestroyGameObject(childBillboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
@@ -185,7 +187,7 @@ namespace Graphics::Shape
 		}
 		case Type::spot_light:
 		{
-			shared_ptr childBillboard = obj->GetChildBillboard();
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
 			obj->RemoveChildBillboard();
 			DestroyGameObject(childBillboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
@@ -195,7 +197,7 @@ namespace Graphics::Shape
 		}
 		case Type::directional_light:
 		{
-			shared_ptr childBillboard = obj->GetChildBillboard();
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
 			obj->RemoveChildBillboard();
 			DestroyGameObject(childBillboard, false);
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());

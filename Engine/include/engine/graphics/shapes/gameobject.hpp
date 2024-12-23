@@ -333,6 +333,15 @@ namespace Graphics::Shape
 		{
 			return skybox;
 		}
+
+		static void RemovePointLight(const shared_ptr<GameObject>& existingPointLight)
+		{
+			pointLights.erase(std::remove(pointLights.begin(), pointLights.end(), existingPointLight), pointLights.end());
+		}
+		static void RemoveSpotlight(const shared_ptr<GameObject>& existingSpotLight)
+		{
+			spotLights.erase(std::remove(spotLights.begin(), spotLights.end(), existingSpotLight), spotLights.end());
+		}
 	private:
 		static inline map<string, vector<string>> categoryNames;
 		static inline vector<shared_ptr<GameObject>> objects;
