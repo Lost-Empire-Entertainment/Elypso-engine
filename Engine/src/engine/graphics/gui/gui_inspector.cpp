@@ -79,6 +79,26 @@ namespace Graphics::GUI
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
+			if (Select::isObjectSelected)
+			{
+				string items[] = { "Mesh", "Material", "Light" };
+				static int currentItem = -1;
+				if (ImGui::BeginCombo("##AddComponentDropdown", "Add component"))
+				{
+					for (int i = 0; i < IM_ARRAYSIZE(items); i++)
+					{
+						if (ImGui::Selectable(items[i].c_str(), currentItem == i))
+						{
+							currentItem = i;
+							cout << "Selected " << items[i] << "\n";
+							currentItem = -1;
+							break;
+						}
+					}
+					ImGui::EndCombo();
+				}
+			}
+
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 			if (ImGui::Button("X"))
@@ -88,11 +108,15 @@ namespace Graphics::GUI
 
 			if (Select::isObjectSelected)
 			{
+				auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
+				auto mat = Select::selectedObj->GetComponent<MaterialComponent>();
+				auto light = Select::selectedObj->GetComponent<LightComponent>();
+
 				Component_GameObject();
 				Component_Transform();
-				Component_Mesh();
-				Component_Material();
-				Component_Light();
+				if (mesh) Component_Mesh();
+				if (mat) Component_Material();
+				if (light) Component_Light();
 			}
 
 			ImGui::End();
@@ -297,13 +321,21 @@ namespace Graphics::GUI
 
 		auto mesh = obj->GetComponent<MeshComponent>();
 		int height = mesh->GetMeshType() == MeshComponent::MeshType::model
-			? 75 : 150;
+			? 100 : 150;
 
 		ImGuiChildFlags childWindowFlags{};
 
 		if (ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
 		{
 			ImGui::Text("Mesh");
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				cout << "remove mesh...\n";
+			}
+
 			ImGui::Separator();
 
 			MeshType objType = mesh->GetMeshType();
@@ -360,6 +392,14 @@ namespace Graphics::GUI
 		if (ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
 		{
 			ImGui::Text("Material");
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				cout << "remove mat...\n";
+			}
+
 			ImGui::Separator();
 
 			auto mesh = obj->GetComponent<MeshComponent>();
@@ -578,6 +618,14 @@ namespace Graphics::GUI
 		if (ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags))
 		{
 			ImGui::Text("Light");
+
+			ImGui::SameLine();
+			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+			if (ImGui::Button("X"))
+			{
+				cout << "remove light...\n";
+			}
+
 			ImGui::Separator();
 
 			auto mesh = obj->GetComponent<MeshComponent>();
