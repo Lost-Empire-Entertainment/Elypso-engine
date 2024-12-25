@@ -909,15 +909,15 @@ namespace Graphics::GUI
 					currentItem = i;
 
 					string value = lightTypes[i];
-					cout << "Selected " << lightTypes[i] << "\n";
-
+					
 					MeshType type = Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType();
 					vec3 oldPos = Select::selectedObj->GetTransform()->GetPosition();
 					vec3 oldRot = Select::selectedObj->GetTransform()->GetRotation();
 					vec3 oldScale = Select::selectedObj->GetTransform()->GetScale();
 
-					auto& obj = Select::selectedObj;
+					auto obj = Select::selectedObj;
 					string oldTxtPath = obj->GetTxtFilePath();
+					auto oldBillboard = obj->GetChildBillboard();
 					vec3 oldBillboardPos = obj->GetTransform()->GetPosition();
 					unsigned int oldBillboardID = Select::selectedObj->GetChildBillboard()->GetID();
 
@@ -1037,7 +1037,7 @@ namespace Graphics::GUI
 
 							GameObjectManager::AddPointLight(Select::selectedObj);
 
-							cout << "point light\n";
+							GameObjectManager::DestroyGameObject(oldBillboard, false);
 						}
 					}
 					else if (value == "Spotlight")
@@ -1149,7 +1149,9 @@ namespace Graphics::GUI
 
 							obj->SetTxtFilePath(oldTxtPath);
 
-							cout << "spotlight\n";
+							GameObjectManager::AddSpotLight(Select::selectedObj);
+
+							GameObjectManager::DestroyGameObject(oldBillboard, false);
 						}
 					}
 					else if (value == "Directional light")
@@ -1181,7 +1183,90 @@ namespace Graphics::GUI
 									GameObjectManager::RemoveSpotlight(Select::selectedObj);
 								}
 
-								cout << "dir light\n";
+								float vertices[] =
+								{
+									//four corner edges
+									0.0f,  0.5f,  0.0f,
+								   -0.5f, -0.5f, -0.5f,
+
+									0.0f,  0.5f,  0.0f,
+									0.5f, -0.5f, -0.5f,
+
+									0.0f,  0.5f,  0.0f,
+								   -0.5f, -0.5f,  0.5f,
+
+									0.0f,  0.5f,  0.0f,
+									0.5f, -0.5f,  0.5f,
+
+									//four bottom edges
+									0.5f, -0.5f,  0.5f,
+								   -0.5f, -0.5f,  0.5f,
+
+									0.5f, -0.5f, -0.5f,
+								   -0.5f, -0.5f, -0.5f,
+
+								   -0.5f, -0.5f, -0.5f,
+								   -0.5f, -0.5f,  0.5f,
+
+									0.5f, -0.5f, -0.5f,
+									0.5f, -0.5f,  0.5f
+								};
+
+								GLuint vao, vbo, ebo;
+
+								glGenVertexArrays(1, &vao);
+								glGenBuffers(1, &vbo);
+								glBindVertexArray(vao);
+								glBindBuffer(GL_ARRAY_BUFFER, vbo);
+								glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+								glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+								glEnableVertexAttribArray(0);
+
+								glBindVertexArray(0);
+
+								auto mesh = obj->AddComponent<MeshComponent>(
+									true,
+									MeshType::directional_light,
+									vao,
+									vbo,
+									ebo);
+
+								string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+								string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
+
+								if (!exists(vert)
+									|| !exists(frag))
+								{
+									Engine::CreateErrorPopup("One of the shader paths for spotlight is invalid!");
+								}
+
+								Shader directionalLightShader = Shader::LoadShader(vert, frag);
+
+								auto mat = obj->AddComponent<MaterialComponent>();
+								mat->AddShader(vert, frag, directionalLightShader);
+
+								auto dirlight = obj->AddComponent<LightComponent>(
+									vec3(1),
+									1.0f);
+
+								string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "directionalLight.png").string();
+								shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+									oldBillboardPos,
+									vec3(0),
+									vec3(1),
+									billboardDiffTexture,
+									oldBillboardID,
+									true);
+
+								billboard->SetParentBillboardHolder(obj);
+								obj->SetChildBillboard(billboard);
+
+								obj->SetTxtFilePath(oldTxtPath);
+
+								GameObjectManager::SetDirectionalLight(Select::selectedObj);
+
+								GameObjectManager::DestroyGameObject(oldBillboard, false);
 							}
 						}
 					}
