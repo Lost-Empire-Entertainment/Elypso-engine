@@ -219,7 +219,7 @@ namespace Graphics::Shape
 		if (!localOnly
 			&& obj != nullptr)
 		{
-			string txtFilePath = (path(Engine::scenePath) / obj->GetTxtFilePath()).string();
+			string txtFilePath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
 			if (exists(txtFilePath))
 			{
 				auto mesh = obj->GetComponent<MeshComponent>();
