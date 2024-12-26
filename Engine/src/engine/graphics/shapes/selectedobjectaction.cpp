@@ -56,7 +56,7 @@ namespace Graphics::Shape
 		const vec3& rot, 
 		const vec3& scale)
 	{
-		auto obj = make_shared<GameObject>("SelectedObjectAction", 10000001, "");
+		auto obj = make_shared<GameObject>("SelectedObjectAction", 10000002, "");
 		auto& transform = obj->GetTransform();
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
@@ -130,6 +130,11 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.diffuse", 0);
 
 		GameObjectManager::SetActionTex(obj);
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			ConsoleType::DEBUG,
+			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}
