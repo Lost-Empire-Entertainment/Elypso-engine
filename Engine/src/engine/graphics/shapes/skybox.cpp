@@ -143,7 +143,7 @@ namespace Graphics::Shape
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
             Type::DEBUG,
-            "Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+            "Successfully initialized skybox gameobject!\n");
 
         return obj;
 	}

@@ -134,7 +134,7 @@ namespace Graphics::Shape
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			ConsoleType::DEBUG,
-			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+			"Successfully initialized selected object action gameobject!\n");
 
 		return obj;
 	}

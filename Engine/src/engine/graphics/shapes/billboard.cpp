@@ -22,6 +22,7 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "console.hpp"
 
 using std::cout;
 using glm::translate;
@@ -43,6 +44,9 @@ using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
 using Core::Select;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
@@ -122,6 +126,11 @@ namespace Graphics::Shape
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddTransparentObject(obj);
 		GameObjectManager::AddBillboard(obj);
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Successfully initialized Billboard with name " + obj->GetName() + " and ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}

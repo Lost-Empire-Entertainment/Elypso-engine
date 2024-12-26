@@ -143,76 +143,81 @@ namespace Graphics::Shape
 	{
 		if (obj == nullptr) return;
 
-		cout << "destroying object " << obj->GetName() << "\n";
-
 		string thisName = obj->GetName();
 
 		auto mesh = obj->GetComponent<MeshComponent>();
-		Type type = mesh->GetMeshType();
-
-		Select::selectedObj = nullptr;
-		Select::isObjectSelected = false;
-
-		/*
-		//destroy all children if parent is destroyed
-		if (obj->GetChildren().size() > 0)
+		if (!mesh)
 		{
-			for (const auto& child : obj->GetChildren())
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+		}
+		else
+		{
+			Type type = mesh->GetMeshType();
+
+			Select::selectedObj = nullptr;
+			Select::isObjectSelected = false;
+
+			/*
+			//destroy all children if parent is destroyed
+			if (obj->GetChildren().size() > 0)
 			{
-				GameObjectManager::DestroyGameObject(child, true);
+				for (const auto& child : obj->GetChildren())
+				{
+					GameObjectManager::DestroyGameObject(child, true);
+				}
 			}
-		}
-		//remove object from parent children vector
-		if (obj->GetParent() != nullptr)
-		{
-			obj->GetParent()->RemoveChild(obj);
-		}
-		*/
+			//remove object from parent children vector
+			if (obj->GetParent() != nullptr)
+			{
+				obj->GetParent()->RemoveChild(obj);
+			}
+			*/
 
-		switch (type)
-		{
-		case Type::model:
-			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			break;
-		case Type::point_light:
-		{
-			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
-			obj->RemoveChildBillboard();
-			DestroyGameObject(childBillboard, false);
-			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			pointLights.erase(std::remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
-			break;
-		}
-		case Type::spot_light:
-		{
-			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
-			obj->RemoveChildBillboard();
-			DestroyGameObject(childBillboard, false);
-			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			spotLights.erase(std::remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
-			break;
-		}
-		case Type::directional_light:
-		{
-			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
-			obj->RemoveChildBillboard();
-			DestroyGameObject(childBillboard, false);
-			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			directionalLight = nullptr;
-			break;
-		}
-		case Type::billboard:
-		{
-			obj->SetParentBillboardHolder(nullptr);
-			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-			transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
-			billboards.erase(std::remove(billboards.begin(), billboards.end(), obj), billboards.end());
-			break;
-		}
+			switch (type)
+			{
+			case Type::model:
+				objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+				opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+				break;
+			case Type::point_light:
+			{
+				shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+				obj->RemoveChildBillboard();
+				DestroyGameObject(childBillboard, false);
+				objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+				opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+				pointLights.erase(std::remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
+				break;
+			}
+			case Type::spot_light:
+			{
+				shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+				obj->RemoveChildBillboard();
+				DestroyGameObject(childBillboard, false);
+				objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+				opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+				spotLights.erase(std::remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
+				break;
+			}
+			case Type::directional_light:
+			{
+				shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+				obj->RemoveChildBillboard();
+				DestroyGameObject(childBillboard, false);
+				objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+				opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+				directionalLight = nullptr;
+				break;
+			}
+			case Type::billboard:
+			{
+				obj->SetParentBillboardHolder(nullptr);
+				objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+				transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
+				billboards.erase(std::remove(billboards.begin(), billboards.end(), obj), billboards.end());
+				break;
+			}
+			}
 		}
 
 		//also delete the externally saved folder of this gameobject
@@ -220,24 +225,42 @@ namespace Graphics::Shape
 			&& obj != nullptr)
 		{
 			string txtFilePath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
+			cout << "???? txt file path: " << txtFilePath << "\n";
 			if (exists(txtFilePath))
 			{
 				auto mesh = obj->GetComponent<MeshComponent>();
 				string targetFolder;
-				if (mesh->GetMeshType() == MeshComponent::MeshType::model)
+
+				if (!mesh)
 				{
 					targetFolder = path(txtFilePath).parent_path().parent_path().string();
 				}
-				else if (mesh->GetMeshType() == MeshComponent::MeshType::point_light
-						 || mesh->GetMeshType() == MeshComponent::MeshType::spot_light
-						 || mesh->GetMeshType() == MeshComponent::MeshType::directional_light)
+				else
 				{
-					targetFolder = path(txtFilePath).parent_path().string();
+					if (mesh->GetMeshType() == MeshComponent::MeshType::model)
+					{
+						targetFolder = path(txtFilePath).parent_path().parent_path().string();
+					}
+					else if (mesh->GetMeshType() == MeshComponent::MeshType::point_light
+						|| mesh->GetMeshType() == MeshComponent::MeshType::spot_light
+						|| mesh->GetMeshType() == MeshComponent::MeshType::directional_light)
+					{
+						targetFolder = path(txtFilePath).parent_path().string();
+					}
 				}
-				if (exists(targetFolder))
+
+				if (!exists(targetFolder))
 				{
-					File::DeleteFileOrfolder(targetFolder);
+					if (mesh
+						&& mesh->GetMeshType() != MeshComponent::MeshType::billboard)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							ConsoleType::EXCEPTION,
+							"Error: Couldn't delete target folder at '" + targetFolder + "' for '" + obj->GetName() + "' because the folder was not found!\n");
+					}
 				}
+				else File::DeleteFileOrfolder(targetFolder);
 			}
 		}
 #if ENGINE_MODE

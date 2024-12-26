@@ -37,6 +37,7 @@ namespace Graphics::Shape
 		obj->SetEnableState(isEnabled);
 
 		obj->SetTxtFilePath(txtFilePath);
+		cout << "!!!! txt file path: " << txtFilePath << "\n";
 
 		GameObjectManager::AddGameObject(obj);
 
@@ -48,7 +49,7 @@ namespace Graphics::Shape
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
-			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+			"Successfully initialized Empty with name " + obj->GetName() + " and ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}

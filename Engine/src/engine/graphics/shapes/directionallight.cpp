@@ -159,7 +159,7 @@ namespace Graphics::Shape
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
-			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+			"Successfully initialized Directional light with name " + obj->GetName() + " and ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}
