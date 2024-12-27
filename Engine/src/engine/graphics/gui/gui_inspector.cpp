@@ -100,11 +100,16 @@ namespace Graphics::GUI
 
 			if (Select::isObjectSelected)
 			{
+				auto& obj = Select::selectedObj;
+				auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
+				auto mat = Select::selectedObj->GetComponent<MaterialComponent>();
+				auto light = Select::selectedObj->GetComponent<LightComponent>();
+
 				Component_GameObject();
 				Component_Transform();
-				Component_Mesh();
-				Component_Material();
-				Component_Light();
+				if (mesh) Component_Mesh();
+				if (mat) Component_Material();
+				if (light) Component_Light();
 			}
 
 			ImGui::End();
@@ -395,52 +400,46 @@ namespace Graphics::GUI
 		if (ImGui::Button("X"))
 		{
 			Select::selectedObj->RemoveComponent<MeshComponent>();
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		ImGui::Separator();
 
-		if (!mesh)
-		{
-			ImGui::Text("Mesh is missing.");
-		}
-		else
-		{
-			MeshType objType = mesh->GetMeshType();
-			string objTypeValue = "Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
-			ImGui::Text("%s", objTypeValue.c_str());
+		MeshType objType = mesh->GetMeshType();
+		string objTypeValue = "Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
+		ImGui::Text("%s", objTypeValue.c_str());
 
-			if (mesh->GetMeshType() != MeshComponent::MeshType::model)
+		if (mesh->GetMeshType() != MeshComponent::MeshType::model)
+		{
+			bool meshState = mesh->IsEnabled();
+			if (ImGui::Checkbox("Enable mesh", &meshState))
 			{
-				bool meshState = mesh->IsEnabled();
-				if (ImGui::Checkbox("Enable mesh", &meshState))
+				mesh->SetEnableState(meshState);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			shared_ptr<GameObject> childBillboard = nullptr;
+			if (obj->GetChildren().size() > 0)
+			{
+				for (const auto& child : obj->GetChildren())
 				{
-					mesh->SetEnableState(meshState);
+					if (mesh->GetMeshType() == MeshComponent::MeshType::billboard)
+					{
+						childBillboard = obj;
+						break;
+					}
+				}
+			}
+
+			if (childBillboard != nullptr)
+			{
+				bool billboardState = childBillboard->IsEnabled();
+				if (ImGui::Checkbox("Enable billboard", &billboardState))
+				{
+					childBillboard->SetEnableState(billboardState);
 
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				shared_ptr<GameObject> childBillboard = nullptr;
-				if (obj->GetChildren().size() > 0)
-				{
-					for (const auto& child : obj->GetChildren())
-					{
-						if (mesh->GetMeshType() == MeshComponent::MeshType::billboard)
-						{
-							childBillboard = obj;
-							break;
-						}
-					}
-				}
-
-				if (childBillboard != nullptr)
-				{
-					bool billboardState = childBillboard->IsEnabled();
-					if (ImGui::Checkbox("Enable billboard", &billboardState))
-					{
-						childBillboard->SetEnableState(billboardState);
-
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-					}
 				}
 			}
 		}
@@ -456,8 +455,7 @@ namespace Graphics::GUI
 		auto mat = obj->GetComponent<MaterialComponent>();
 
 		float height;
-		if (mesh
-			&& mat)
+		if (mesh)
 		{
 			height = 270;
 		}
@@ -474,6 +472,7 @@ namespace Graphics::GUI
 		if (ImGui::Button("X"))
 		{
 			Select::selectedObj->RemoveComponent<MaterialComponent>();
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		ImGui::Separator();
@@ -481,15 +480,6 @@ namespace Graphics::GUI
 		if (!mesh)
 		{
 			ImGui::Text("Mesh is missing.");
-		}
-		else if (!mat)
-		{
-			ImGui::Text("Material is missing.");
-		}
-		else if (!mesh
-			&& !mat)
-		{
-			ImGui::Text("Mesh and material are missing.");
 		}
 		else
 		{
@@ -711,12 +701,8 @@ namespace Graphics::GUI
 		auto mesh = obj->GetComponent<MeshComponent>();
 		auto light = obj->GetComponent<LightComponent>();
 
-		bool bothExist =
-			mesh != nullptr
-			&& light != nullptr;
-
 		float height;
-		if (!bothExist) height = 100;
+		if (!mesh) height = 100;
 		else height = mesh->GetMeshType() == MeshType::spot_light ? 400 : 270;
 
 		ImGuiChildFlags childWindowFlags{};
@@ -730,6 +716,7 @@ namespace Graphics::GUI
 		if (ImGui::Button("X"))
 		{
 			obj->RemoveComponent<LightComponent>();
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		ImGui::Separator();
@@ -737,15 +724,6 @@ namespace Graphics::GUI
 		if (!mesh)
 		{
 			ImGui::Text("Mesh is missing.");
-		}
-		else if (!light)
-		{
-			ImGui::Text("Light is missing.");
-		}
-		else if (!mesh
-			&& !light)
-		{
-			ImGui::Text("Light and mesh are missing.");
 		}
 		else
 		{
