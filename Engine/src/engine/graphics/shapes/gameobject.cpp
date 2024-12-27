@@ -239,7 +239,7 @@ namespace Graphics::Shape
 				{
 					if (mesh->GetMeshType() == MeshComponent::MeshType::model)
 					{
-						targetFolder = path(txtFilePath).parent_path().parent_path().string();
+						targetFolder = path(txtFilePath).parent_path().string();
 					}
 					else if (mesh->GetMeshType() == MeshComponent::MeshType::point_light
 						|| mesh->GetMeshType() == MeshComponent::MeshType::spot_light

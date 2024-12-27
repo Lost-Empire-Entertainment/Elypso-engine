@@ -309,7 +309,7 @@ namespace EngineFile
 		Select::isObjectSelected = false;
 	}
 
-	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
+	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel, bool sendSuccessMessage)
 	{
 		GameObjectFile::SaveGameObjects();
 
@@ -351,10 +351,13 @@ namespace EngineFile
 
 		Render::SetWindowNameAsUnsaved(false);
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::INFO,
-			"\nSuccessfully saved scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+		if (sendSuccessMessage)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::INFO,
+				"\nSuccessfully saved scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+		}
 
 		string lastSavedScenePath = (path(Engine::docsPath) / "lastSavedScene.txt").string();
 		if (exists(lastSavedScenePath)) File::DeleteFileOrfolder(lastSavedScenePath);

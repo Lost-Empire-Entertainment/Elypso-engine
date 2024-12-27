@@ -420,7 +420,6 @@ namespace EngineFile
 		for (const auto& gameobjectPath : validGameobjectPaths)
 		{
 			string filePath = path(gameobjectPath).string();
-
 			string type = GetType(filePath);
 			if (type == "point_light")
 			{

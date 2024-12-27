@@ -416,7 +416,7 @@ namespace Graphics::GUI
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
@@ -443,7 +443,7 @@ namespace Graphics::GUI
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
@@ -470,7 +470,7 @@ namespace Graphics::GUI
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
@@ -497,7 +497,7 @@ namespace Graphics::GUI
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
@@ -524,7 +524,7 @@ namespace Graphics::GUI
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 
 				ImGui::EndMenu();
@@ -564,7 +564,7 @@ namespace Graphics::GUI
 							nextID2,
 							true);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
@@ -600,7 +600,7 @@ namespace Graphics::GUI
 							nextID2,
 							true);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				if (ImGui::MenuItem("Directional light"))
 				{
@@ -642,7 +642,7 @@ namespace Graphics::GUI
 								nextID2,
 								true);
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 					}
 				}
 

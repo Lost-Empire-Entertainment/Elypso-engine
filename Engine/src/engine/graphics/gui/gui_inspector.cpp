@@ -86,10 +86,9 @@ namespace Graphics::GUI
 
 		bool renderInspector = stoi(ConfigFile::GetValue("gui_inspector"));
 
-		if (renderInspector)
+		if (renderInspector
+			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
-			ImGui::Begin("Inpsector", NULL, windowFlags);
-
 			if (Select::isObjectSelected) AddComponent();
 
 			ImGui::SameLine();

@@ -287,6 +287,8 @@ namespace Core
 			Caller::FILE,
 			Type::DEBUG,
 			output);
+#else
+		projectPath = (current_path() / "project").string();
 #endif
 		//
 		// SET SCENES AND TEXTURES PATHS
@@ -522,6 +524,8 @@ namespace Core
 		}
 #endif
 #endif
+
+		SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 	}
 
 #if DISCORD_MODE
