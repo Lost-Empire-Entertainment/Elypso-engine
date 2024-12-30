@@ -111,7 +111,6 @@ namespace Graphics::Shape
             (void*)0);
 
         auto mesh = obj->AddComponent<MeshComponent>(
-            true, 
             MeshType::skybox, 
             VAO, 
             VBO, 

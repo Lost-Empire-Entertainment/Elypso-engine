@@ -62,12 +62,10 @@ namespace Graphics::Components
         };
 
         MeshComponent(
-            const bool& isEnabled,
             const MeshType& type,
             const GLuint& VAO,
             const GLuint& VBO,
             const GLuint& EBO) : 
-            isEnabled(isEnabled), 
             type(type), 
             VAO(VAO), 
             VBO(VBO), 
@@ -83,7 +81,6 @@ namespace Graphics::Components
         void AddAssimpMesh(const AssimpMesh& newMesh) { assimpMeshes.push_back(newMesh); }
         const vector<AssimpMesh>& GetAssimpMeshes() const { return assimpMeshes; }
 
-        void SetEnableState(const bool& newIsEnabled) { isEnabled = newIsEnabled; }
         void SetMeshType(const MeshType& newType) { type = newType; }
         void SetVAO(const GLuint& newVAO) { VAO = newVAO; }
         void SetVBO(const GLuint& newVBO) { VBO = newVBO; }
@@ -91,7 +88,6 @@ namespace Graphics::Components
         void SetVertices(const vector<AssimpVertex>& newVertices) { vertices = newVertices; }
         void SetIndices(const vector<unsigned int>& newIndices) { indices = newIndices; }
 
-        const bool& IsEnabled() const { return isEnabled; }
         const MeshType& GetMeshType() const { return type; }
         const GLuint& GetVAO() const { return VAO; }
         const GLuint& GetVBO() const { return VBO; }
@@ -104,7 +100,6 @@ namespace Graphics::Components
         void Update(float deltaTime) override {}
 
     private:
-        bool isEnabled;
         MeshType type;
         GLuint VAO;
         GLuint VBO;

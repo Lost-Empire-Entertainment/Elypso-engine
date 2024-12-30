@@ -190,7 +190,7 @@ namespace Graphics
 			{
 				string objFolder = path(obj->GetTxtFilePath()).parent_path().string();
 				string originPath = (path(Engine::texturesPath) / textureName).string();
-				string targetPath = (path(objFolder) / textureName).string();
+				string targetPath = (path(Engine::projectPath) / textureName).string();
 
 				if (!exists(targetPath))
 				{

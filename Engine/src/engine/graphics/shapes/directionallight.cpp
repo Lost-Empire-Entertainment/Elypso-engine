@@ -54,7 +54,6 @@ namespace Graphics::Shape
 		string& name,
 		unsigned int& id,
 		const bool& isEnabled,
-		const bool& isMeshEnabled,
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
@@ -108,7 +107,6 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		auto mesh = obj->AddComponent<MeshComponent>(
-			isMeshEnabled, 
 			MeshType::directional_light, 
 			vao, 
 			vbo, 
@@ -194,9 +192,8 @@ namespace Graphics::Shape
 			}
 
 			auto mesh = obj->GetComponent<MeshComponent>();
-			if (GameObjectManager::renderLightBorders
-				&& mesh
-				&& mesh->IsEnabled())
+			if (mesh
+				&& GameObjectManager::renderLightBorders)
 			{
 				mat4 model = mat4(1.0f);
 				model = translate(model, obj->GetTransform()->GetPosition());

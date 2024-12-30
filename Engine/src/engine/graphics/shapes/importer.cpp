@@ -200,8 +200,7 @@ namespace Graphics::Shape
             newMesh.indices,
             name,
             id,
-            isEnabled,
-            true);
+            isEnabled);
     }
 
     AssimpMesh Importer::ProcessMesh(

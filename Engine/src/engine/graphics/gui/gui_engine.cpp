@@ -36,6 +36,7 @@
 #include "gameobject.hpp"
 #include "timeManager.hpp"
 #include "importer.hpp"
+#include "empty.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
@@ -66,6 +67,7 @@ using Utils::File;
 using Utils::Browser;
 using Utils::String;
 using Graphics::Shape::Importer;
+using Graphics::Shape::Empty;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
@@ -389,9 +391,31 @@ namespace Graphics::GUI
 			int resultZ = static_cast<int>(newPos.z);
 			newPos = vec3(resultX, resultY, resultZ);
 
-			if (ImGui::BeginMenu("Shape"))
+			if (ImGui::BeginMenu("Model"))
 			{
-				if (ImGui::MenuItem("Cube"))
+				if (ImGui::MenuItem("Empty"))
+				{
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Empty", "", true);
+					string targetName = path(targetPath).stem().string();
+
+					string targetNameAndExtension = targetName + ".txt";
+					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+
+					File::CreateNewFolder(targetPath);
+
+					unsigned int nextID = GameObject::nextID++;
+
+					Empty::InitializeEmpty(
+						newPos,
+						vec3(0),
+						vec3(1),
+						destinationPath,
+						targetName,
+						nextID);
+
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+				}
+				else if (ImGui::MenuItem("Cube"))
 				{
 					string originPath = (path(Engine::filesPath) / "models" / "cube.fbx").string();
 					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "", true);
@@ -558,7 +582,6 @@ namespace Graphics::GUI
 							targetName,
 							nextID,
 							true,
-							true,
 
 							//billboard values
 							nextID2,
@@ -593,7 +616,6 @@ namespace Graphics::GUI
 							17.5f,
 							targetName,
 							nextID,
-							true,
 							true,
 
 							//billboard values
@@ -635,7 +657,6 @@ namespace Graphics::GUI
 								1.0f,
 								targetName,
 								nextID,
-								true,
 								true,
 
 								//billboard values

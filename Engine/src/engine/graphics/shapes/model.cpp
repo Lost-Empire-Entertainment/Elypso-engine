@@ -82,8 +82,7 @@ namespace Graphics::Shape
 		const vector<unsigned int> indices,
 		string& name,
 		unsigned int& id,
-		const bool& isEnabled,
-		const bool& isMeshEnabled)
+		const bool& isEnabled)
 	{
 		auto obj = make_shared<GameObject>(name, id, txtFilePath);
 		auto& transform = obj->GetTransform();
@@ -131,7 +130,6 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		auto mesh = obj->AddComponent<MeshComponent>(
-			isMeshEnabled, 
 			MeshType::model,
 			VAO, 
 			VBO, 

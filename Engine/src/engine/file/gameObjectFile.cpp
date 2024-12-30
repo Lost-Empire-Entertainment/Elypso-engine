@@ -140,8 +140,6 @@ namespace EngineFile
 					// MESH DATA
 					//
 
-					data.push_back("mesh enabled= " + to_string(mesh->IsEnabled()) + "\n");
-
 					string type = string(magic_enum::enum_name(mesh->GetMeshType()));
 					data.push_back("type= " + type + "\n");
 
@@ -264,7 +262,7 @@ namespace EngineFile
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
-				string folderPath = (path(Engine::scenePath) /path(objectTxtFilePath).parent_path().string()).string();
+				string folderPath = (path(Engine::scenePath) / path(objectTxtFilePath).parent_path().string()).string();
 				if (!exists(folderPath))
 				{
 					File::CreateNewFolder(folderPath);
@@ -496,7 +494,6 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -520,7 +517,6 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
 		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -543,10 +539,6 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
-			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -807,7 +799,6 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -836,7 +827,6 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
 		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -864,10 +854,6 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
-			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -940,7 +926,6 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
-			isMeshEnabled,
 			billboardID,
 			isBillboardEnabled);
 
@@ -990,7 +975,6 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -1021,7 +1005,6 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
 		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -1051,10 +1034,6 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
-			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -1131,7 +1110,6 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
-			isMeshEnabled,
 			billboardID,
 			isBillboardEnabled);
 
@@ -1181,7 +1159,6 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
@@ -1210,7 +1187,6 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
 		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
@@ -1237,10 +1213,6 @@ namespace EngineFile
 			else if (key == "enabled")
 			{
 				isEnabled = stoi(value);
-			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
 			}
 			else if (key == "type")
 			{
@@ -1311,7 +1283,6 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
-			isMeshEnabled,
 			billboardID,
 			isBillboardEnabled);
 

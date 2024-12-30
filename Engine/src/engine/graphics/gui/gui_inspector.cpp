@@ -405,46 +405,18 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		MeshType objType = mesh->GetMeshType();
-		string objTypeValue = "Mesh type: " + string(magic_enum::enum_name(objType)) + "   ";
-		ImGui::Text("%s", objTypeValue.c_str());
-
-		if (mesh->GetMeshType() != MeshComponent::MeshType::model)
-		{
-			bool meshState = mesh->IsEnabled();
-			if (ImGui::Checkbox("Enable mesh", &meshState))
-			{
-				mesh->SetEnableState(meshState);
-
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
-			shared_ptr<GameObject> childBillboard = nullptr;
-			if (obj->GetChildren().size() > 0)
-			{
-				for (const auto& child : obj->GetChildren())
-				{
-					if (mesh->GetMeshType() == MeshComponent::MeshType::billboard)
-					{
-						childBillboard = obj;
-						break;
-					}
-				}
-			}
-
-			if (childBillboard != nullptr)
-			{
-				bool billboardState = childBillboard->IsEnabled();
-				if (ImGui::Checkbox("Enable billboard", &billboardState))
-				{
-					childBillboard->SetEnableState(billboardState);
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-			}
-		}
+		ChangeMeshType();
 
 		ImGui::EndChild();
+	}
+
+	void GUIInspector::ChangeMeshType()
+	{
+		if (ImGui::Button("Set mesh"))
+		{
+			auto& obj = Select::selectedObj;
+			auto mesh = obj->GetComponent<MeshComponent>();
+		}
 	}
 
 	void GUIInspector::Component_Material()
@@ -454,12 +426,7 @@ namespace Graphics::GUI
 		auto mesh = obj->GetComponent<MeshComponent>();
 		auto mat = obj->GetComponent<MaterialComponent>();
 
-		float height;
-		if (mesh)
-		{
-			height = 270;
-		}
-		else height = 100;
+		float height = mesh ? 270 : 100;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -552,7 +519,8 @@ namespace Graphics::GUI
 					Engine::filesPath
 					+ mat->GetTextureName(MaterialComponent::TextureType::diffuse));
 				ImGui::PushItemWidth(200.0f);
-				if (ImGui::Button("Diff"))
+				string diff_assign = "Assign##diff_assign";
+				if (ImGui::Button(diff_assign.c_str()))
 				{
 					GUIProjectItemsList::obj = obj;
 					GUIProjectItemsList::textureType = MaterialComponent::TextureType::diffuse;
@@ -564,8 +532,7 @@ namespace Graphics::GUI
 				//reset diffuse texture
 				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
 				path diff_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "diff_default.png");
-				string diff_reset = "Reset";
-				ImGui::PushID("diffreset");
+				string diff_reset = "Reset##diff_reset";
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(diff_reset.c_str()))
 				{
@@ -589,7 +556,6 @@ namespace Graphics::GUI
 					}
 				}
 				ImGui::PopItemWidth();
-				ImGui::PopID();
 
 				ImGui::Spacing();
 
@@ -599,8 +565,9 @@ namespace Graphics::GUI
 				path spec_texturePath = path(
 					Engine::filesPath
 					+ mat->GetTextureName(MaterialComponent::TextureType::specular));
+				string spec_assign = "Assign##spec_assign";
 				ImGui::PushItemWidth(200.0f);
-				if (ImGui::Button("Spec"))
+				if (ImGui::Button(spec_assign.c_str()))
 				{
 					GUIProjectItemsList::obj = obj;
 					GUIProjectItemsList::textureType = MaterialComponent::TextureType::specular;
@@ -612,8 +579,7 @@ namespace Graphics::GUI
 				//reset specular texture
 				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
 				path spec_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "spec_default.png");
-				string spec_reset = "Reset";
-				ImGui::PushID("specreset");
+				string spec_reset = "Reset##spec_reset";
 				ImGui::PushItemWidth(200.0f);
 				if (ImGui::Button(spec_reset.c_str()))
 				{
@@ -634,7 +600,6 @@ namespace Graphics::GUI
 					}
 				}
 				ImGui::PopItemWidth();
-				ImGui::PopID();
 			}
 			else
 			{
@@ -964,7 +929,6 @@ namespace Graphics::GUI
 							glBindVertexArray(0);
 
 							auto mesh = Select::selectedObj->AddComponent<MeshComponent>(
-								true,
 								MeshType::point_light,
 								vao,
 								vbo,
@@ -1071,7 +1035,6 @@ namespace Graphics::GUI
 							glBindVertexArray(0);
 
 							auto mesh = obj->AddComponent<MeshComponent>(
-								true,
 								MeshType::spot_light,
 								vao,
 								vbo,
@@ -1194,7 +1157,6 @@ namespace Graphics::GUI
 								glBindVertexArray(0);
 
 								auto mesh = obj->AddComponent<MeshComponent>(
-									true,
 									MeshType::directional_light,
 									vao,
 									vbo,

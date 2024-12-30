@@ -115,11 +115,12 @@ namespace Graphics::GUI
 
                 if (isSelected) ImGui::PopStyleColor();
 
-                string thisParentFolder = path(entry).parent_path().string();
-                if (path(thisParentFolder).stem().string() == "scenes"
-                    || path(thisParentFolder).stem().string() == "gameobjects")
+                if (ImGui::BeginPopupContextItem(fullPath.c_str()))
                 {
-                    if (ImGui::BeginPopupContextItem())
+                    string thisParentFolder = path(entry).parent_path().string();
+                    if (path(thisParentFolder).stem().string() == "scenes"
+                        || path(thisParentFolder).stem().string() == "gameobjects"
+                        || path(thisParentFolder).stem().string() == "models")
                     {
                         if (path(thisParentFolder).stem().string() == "scenes")
                         {
@@ -198,8 +199,9 @@ namespace Graphics::GUI
                                 File::DeleteFileOrfolder(entry);
                             }
                         }
-                        ImGui::EndPopup();
                     }
+
+                    ImGui::EndPopup();
                 }
 
                 if (nodeOpen)
@@ -217,16 +219,16 @@ namespace Graphics::GUI
 
                 if (isSelected) ImGui::PopStyleColor();
 
-                string thisParentFolder = path(entry).parent_path().string();
-                string thisExtension = path(entry).extension().string();
-                if (path(entry).extension().string() == ".png"
-                    || path(entry).extension().string() == ".jpg"
-                    || path(entry).extension().string() == ".jpeg")
+                if (ImGui::BeginPopupContextItem())
                 {
-                    if (ImGui::BeginPopupContextItem())
+                    string thisParentFolder = path(entry).parent_path().string();
+                    string thisExtension = path(entry).extension().string();
+                    if (path(entry).extension().string() == ".png"
+                        || path(entry).extension().string() == ".jpg"
+                        || path(entry).extension().string() == ".jpeg")
                     {
                         string gameobjectsFolder = Engine::currentGameobjectsPath;
-                        //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
+                        //can delete png, jpg and jpeg files as textures inside textures folder
                         if (path(thisParentFolder).stem().string() == "textures")
                         {
                             string texturesFolder = (path(Engine::scenePath).parent_path().parent_path().parent_path() / "textures").string();
@@ -238,12 +240,23 @@ namespace Graphics::GUI
                         }
                         //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
                         else if (path(thisParentFolder).parent_path().parent_path().stem().string() == "gameobjects"
-                                 && ImGui::MenuItem("Delete texture"))
+                            && ImGui::MenuItem("Delete texture"))
                         {
                             File::DeleteFileOrfolder(entry);
                         }
-                        ImGui::EndPopup();
                     }
+                    else if (path(entry).extension().string() == ".fbx"
+                             || path(entry).extension().string() == ".obj"
+                             || path(entry).extension().string() == ".gltf")
+                    {
+                        if (path(thisParentFolder).stem().string() == "models"
+                            && ImGui::MenuItem("Delete model"))
+                        {
+                            File::DeleteFileOrfolder(entry);
+                        }
+                    }
+
+                    ImGui::EndPopup();
                 }
             }
         }

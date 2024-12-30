@@ -49,8 +49,7 @@ namespace Graphics::Shape
 			const vector<unsigned int> indices = {},
 			string& name = tempName,
 			unsigned int& id = tempID,
-			const bool& isEnabled = true,
-			const bool& isMeshEnabled = true);
+			const bool& isEnabled = true);
 
 		static void Render(
 			const shared_ptr<GameObject>& obj,

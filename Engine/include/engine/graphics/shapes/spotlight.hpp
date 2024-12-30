@@ -46,7 +46,6 @@ namespace Graphics::Shape
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true,
-			const bool& isMeshEnabled = true,
 
 			//
 			// BILLBOARD VALUES

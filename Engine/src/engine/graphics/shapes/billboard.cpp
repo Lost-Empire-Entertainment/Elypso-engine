@@ -97,7 +97,6 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		auto mesh = obj->AddComponent<MeshComponent>(
-			true, 
 			MeshType::billboard, 
 			vao, 
 			vbo, 

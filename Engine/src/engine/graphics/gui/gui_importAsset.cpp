@@ -156,30 +156,23 @@ namespace Graphics::GUI
 				|| extension == ".gltf"
 				|| extension == ".obj")
 			{
-				string assetName = path(assetPath).stem().string();
-				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, assetName, "");
-				string targetName = path(targetPath).stem().string();
-				string assetNameAndExtension = assetName + extension;
+				string targetFolder = (path(Engine::projectPath) / "models").string();
+				if (!exists(targetFolder)) File::CreateNewFolder(targetFolder);
+				string assetName = path(assetPath).filename().string();
+				string targetPath = (path(targetFolder) / assetName).string();
 
-				File::CreateNewFolder(targetPath);
-				string destinationPath = (path(targetPath) / assetNameAndExtension).string();
-				File::CopyFileOrFolder(assetPath, destinationPath);
-
-				unsigned int nextID = GameObject::nextID++;
-
-				Importer::Initialize(
-					vec3(0),
-					vec3(0),
-					vec3(1),
-					destinationPath,
-					"DEFAULTDIFF",
-					"DEFAULTSPEC",
-					"EMPTY",
-					"EMPTY",
-					targetName,
-					nextID);
-
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				if (exists(targetPath))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Error: Model '" + assetName + "' already exists in this project!\n");
+				}
+				else 
+				{
+					File::CopyFileOrFolder(assetPath, targetPath);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
 			}
 
 			//
