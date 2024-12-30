@@ -405,18 +405,22 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		ChangeMeshType();
+		auto mat = obj->GetComponent<MaterialComponent>();
+
+		//assign model
+		ImGui::Text("Model");
+		ImGui::SameLine(ImGui::GetWindowWidth() - 300.0f);
+		ImGui::PushItemWidth(200.0f);
+		string model_assign = "Assign##model_assign";
+		if (ImGui::Button(model_assign.c_str()))
+		{
+			GUIProjectItemsList::obj = obj;
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectModel;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		ImGui::PopItemWidth();
 
 		ImGui::EndChild();
-	}
-
-	void GUIInspector::ChangeMeshType()
-	{
-		if (ImGui::Button("Set mesh"))
-		{
-			auto& obj = Select::selectedObj;
-			auto mesh = obj->GetComponent<MeshComponent>();
-		}
 	}
 
 	void GUIInspector::Component_Material()

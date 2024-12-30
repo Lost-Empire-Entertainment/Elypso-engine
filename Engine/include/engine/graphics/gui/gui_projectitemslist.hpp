@@ -34,6 +34,7 @@ namespace Graphics::GUI
 			SkyboxTexture_front,
 			SkyboxTexture_back,
 			GameobjectTexture,
+			GameobjectModel,
 			Scene
 		};
 

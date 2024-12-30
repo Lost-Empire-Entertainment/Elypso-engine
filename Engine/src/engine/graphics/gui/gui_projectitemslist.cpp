@@ -23,6 +23,7 @@
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
 #include "fileUtils.hpp"
+#include "importer.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -40,6 +41,7 @@ using Core::ConsoleManager;
 using ConsoleCaller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
 using Utils::File;
+using Graphics::Shape::Importer;
 
 namespace Graphics::GUI
 {
@@ -67,8 +69,9 @@ namespace Graphics::GUI
 		{
 			listType = "Skybox texture";
 		}
-		if (type == Type::GameobjectTexture) listType = "Gameobject texture";
-		if (type == Type::Scene) listType = "Scene";
+		else if (type == Type::GameobjectModel) listType = "Gameobject model";
+		else if (type == Type::GameobjectTexture) listType = "Gameobject texture";
+		else if (type == Type::Scene) listType = "Scene";
 
 		if (renderProjectItemsList
 			&& ImGui::Begin(listType.c_str(), NULL, windowFlags))
@@ -104,6 +107,24 @@ namespace Graphics::GUI
 						if (extension == ".png"
 							|| extension == ".jpg"
 							|| extension == ".jpeg")
+						{
+							content.push_back(entry.path().string());
+						}
+					}
+				}
+				break;
+			}
+			case Type::GameobjectModel:
+			{
+				string modelsFolder = (path(Engine::projectPath) / "models").string();
+				for (const auto& entry : directory_iterator(modelsFolder))
+				{
+					if (is_regular_file(entry))
+					{
+						string extension = path(entry).extension().string();
+						if (extension == ".fbx"
+							|| extension == ".obj"
+							|| extension == ".gltf")
 						{
 							content.push_back(entry.path().string());
 						}
@@ -167,6 +188,7 @@ namespace Graphics::GUI
 					case Type::SkyboxTexture_front:
 					case Type::SkyboxTexture_back:
 					case Type::GameobjectTexture:
+					case Type::GameobjectModel:
 					{
 						selectedPath = entry;
 						break;
@@ -259,6 +281,56 @@ namespace Graphics::GUI
 				File::CopyFileOrFolder(originPath, targetPath);
 
 				Texture::LoadTexture(obj, targetPath, textureType, true);
+				break;
+			}
+			case Type::GameobjectModel:
+			{
+				string parentFolder = path(obj->GetTxtFilePath()).parent_path().string();
+				string modelFileName = obj->GetName();
+
+				string finalPath;
+
+				string modelFBX = modelFileName + ".fbx";
+				string fbxPath = (path(parentFolder) / modelFBX).string();
+
+				string modelOBJ = modelFileName + ".obj";
+				string objPath = (path(parentFolder) / modelOBJ).string();
+
+				string modelGLTF = modelFileName + ".gltf";
+				string gltfPath = (path(parentFolder) / modelGLTF).string();
+
+				if (exists(fbxPath)) finalPath = fbxPath;
+				else if (exists(objPath)) finalPath = objPath;
+				else if (exists(gltfPath)) finalPath = gltfPath;
+				if (!finalPath.empty()) File::DeleteFileOrfolder(finalPath);
+
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+
+				string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
+				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().string() / fileAndExtension).string();
+
+				File::CopyFileOrFolder(originPath, targetPath);
+
+				string objName = obj->GetName();
+				unsigned int objID = obj->GetID();
+				string objTxtPath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
+				vec3 objPos = obj->GetTransform()->GetPosition();
+				vec3 objRot = obj->GetTransform()->GetRotation();
+				vec3 objScale = obj->GetTransform()->GetScale();
+				
+				GameObjectManager::DestroyGameObject(obj, true);
+
+				Importer::Initialize(
+					objPos,
+					objRot,
+					objScale,
+					targetPath,
+					"DEFAULTDIFF",
+					"DEFAULTSPEC",
+					"EMPTY",
+					"EMPTY",
+					objName,
+					objID);
 				break;
 			}
 			case Type::Scene:

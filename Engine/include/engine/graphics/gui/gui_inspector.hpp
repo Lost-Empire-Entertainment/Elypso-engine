@@ -17,7 +17,6 @@ namespace Graphics::GUI
 		static inline char inputTextBuffer_objName[bufferSize];
 
 		static void AddComponent();
-		static void ChangeMeshType();
 		static void ChangeLightType();
 
 		static void Component_GameObject();
