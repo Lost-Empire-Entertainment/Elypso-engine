@@ -414,6 +414,9 @@ namespace Graphics::GUI
 		string model_assign = "Assign##model_assign";
 		if (ImGui::Button(model_assign.c_str()))
 		{
+			string modelsFolder = (path(Engine::projectPath) / "models").string();
+			if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
+
 			GUIProjectItemsList::obj = obj;
 			GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectModel;
 			GUIProjectItemsList::renderProjectItemsList = true;

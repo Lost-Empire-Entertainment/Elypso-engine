@@ -233,7 +233,7 @@ namespace Graphics::Shape
 
 				if (!mesh)
 				{
-					targetFolder = path(txtFilePath).parent_path().parent_path().string();
+					targetFolder = path(txtFilePath).parent_path().string();
 				}
 				else
 				{

@@ -157,7 +157,6 @@ namespace Graphics::GUI
 				|| extension == ".obj")
 			{
 				string targetFolder = (path(Engine::projectPath) / "models").string();
-				if (!exists(targetFolder)) File::CreateNewFolder(targetFolder);
 				string assetName = path(assetPath).filename().string();
 				string targetPath = (path(targetFolder) / assetName).string();
 
