@@ -37,7 +37,6 @@ namespace Graphics::Shape
 		obj->SetEnableState(isEnabled);
 
 		obj->SetTxtFilePath(txtFilePath);
-		cout << "!!!! txt file path: " << txtFilePath << "\n";
 
 		GameObjectManager::AddGameObject(obj);
 

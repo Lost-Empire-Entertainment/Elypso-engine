@@ -291,13 +291,13 @@ namespace Graphics::GUI
 				string finalPath;
 
 				string modelFBX = modelFileName + ".fbx";
-				string fbxPath = (path(parentFolder) / modelFBX).string();
+				string fbxPath = (path(Engine::projectPath) / parentFolder / modelFBX).string();
 
 				string modelOBJ = modelFileName + ".obj";
-				string objPath = (path(parentFolder) / modelOBJ).string();
+				string objPath = (path(Engine::projectPath) / parentFolder / modelOBJ).string();
 
 				string modelGLTF = modelFileName + ".gltf";
-				string gltfPath = (path(parentFolder) / modelGLTF).string();
+				string gltfPath = (path(Engine::projectPath) / parentFolder / modelGLTF).string();
 
 				if (exists(fbxPath)) finalPath = fbxPath;
 				else if (exists(objPath)) finalPath = objPath;
@@ -310,6 +310,10 @@ namespace Graphics::GUI
 				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().string() / fileAndExtension).string();
 
 				File::CopyFileOrFolder(originPath, targetPath);
+
+				string nameAndExtension = modelFileName + (path(targetPath).extension()).string();
+				string newTargetPath = (path(targetPath).parent_path() / nameAndExtension).string();
+				File::MoveOrRenameFileOrFolder(targetPath, newTargetPath, true);
 
 				string objName = obj->GetName();
 				unsigned int objID = obj->GetID();
@@ -324,7 +328,7 @@ namespace Graphics::GUI
 					objPos,
 					objRot,
 					objScale,
-					targetPath,
+					newTargetPath,
 					"DEFAULTDIFF",
 					"DEFAULTSPEC",
 					"EMPTY",
