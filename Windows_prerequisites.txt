@@ -2,25 +2,5 @@
 HOW TO SET UP NECESSARY THINGS TO RUN ENGINE NATIVELY ON WINDOWS
 ----------------------------------------------------------------------
 
-# install CMake
-download: https://cmake.org/
-1. start the cmake installer executable
-2. click next until you reach path, make sure to check the box that says to set to environment path
-
-# install ninja
-download: https://github.com/ninja-build/ninja
-1. create folder at C:\ninja
-2. copy ninja.exe to C:\ninja
-3. add to system path
-	- press Win + R and run sysdm.cpl
-	- go to advanced, environment variables
-	- under system variables, find and select the Path variable, then click edit
-	- click new and add the path to the directory (C:\ninja)
-	- click ok to save
-	
-# install Visual Studio
-download: https://visualstudio.microsoft.com/vs/community/
-1. start the visual studio installer install executable
-2. run visual studio installer and select the following packages
-	- Desktop development with C++
-	- Game development with C++
+1. unpack prerequisites.7z
+2. run setup.bat

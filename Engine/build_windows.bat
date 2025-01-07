@@ -14,14 +14,6 @@ set "buildPath=%~dp0out/build/x64-release"
 set "sourcePath=%~dp0"
 set "numCores=%NUMBER_OF_PROCESSORS%"
 
-:: Initialize Visual Studio environment
-call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
-if %errorlevel% neq 0 (
-    echo %prexc% Failed to initialize Visual Studio environment.
-    pause
-    exit /b 1
-)
-
 if "%~1"=="build" (
     goto build
 )

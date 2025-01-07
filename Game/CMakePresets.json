@@ -8,67 +8,34 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "cl.exe",
-        "CMAKE_CXX_COMPILER": "cl.exe"
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
+        "CMAKE_C_COMPILER": "C:/BuildTools/mingw-bin/bin/clang.exe",
+        "CMAKE_CXX_COMPILER": "C:/BuildTools/mingw-bin/bin/clang++.exe",
+        "CMAKE_RC_COMPILER": "windres",
+        "CMAKE_C_FLAGS": "--target=x86_64-w64-mingw32 -fuse-ld=lld",
+        "CMAKE_CXX_FLAGS": "--target=x86_64-w64-mingw32 -fuse-ld=lld -pthread",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld"
       }
     },
     {
       "name": "x64-debug",
       "displayName": "X64 Debug",
       "inherits": "windows-base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      },
       "architecture": {
         "value": "x64",
         "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
       "name": "x64-release",
       "displayName": "X64 Release",
       "inherits": "windows-base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      },
       "architecture": {
         "value": "x64",
         "strategy": "external"
-      }
-    },
-    {
-      "name": "linux-base",
-      "hidden": true,
-      "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
-      "cacheVariables": {
-        "CMAKE_C_COMPILER": "/usr/bin/gcc",
-        "CMAKE_CXX_COMPILER": "/usr/bin/g++"
       },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
-      }
-    },
-    {
-      "name": "linux-debug",
-      "displayName": "Linux Debug",
-      "inherits": "linux-base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
-      "name": "linux-release",
-      "displayName": "Linux Release",
-      "inherits": "linux-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }

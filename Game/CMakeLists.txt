@@ -1,9 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.22)
 
-# Enable Hot Reload for MSVC compilers if supported.
+# Set CMP0141 to NEW for improved linker handling on Windows if supported.
 if (WIN32 AND POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
 # Specify the compiler for Linux builds
@@ -29,8 +28,9 @@ project("Game")
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
 
+# Specify resource file for Windows
 if (WIN32)
-	set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
+    set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
 endif()
 
 # Used for copying "Elypso engine.lib" to game exe folder
@@ -72,21 +72,21 @@ target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
 if (WIN32)
-set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
+	set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/libglfw3.a")
 else()
-find_package(glfw3 REQUIRED)
+	find_package(glfw3 REQUIRED)
 endif()
 
 # Add x11 (linux only)
 if (UNIX)
-find_package(X11 REQUIRED)
+	find_package(X11 REQUIRED)
 endif()
 
 # Add Assimp
 if (WIN32)
-set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
+	set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
 else()
-find_package(assimp REQUIRED)
+	find_package(assimp REQUIRED)
 endif()
 
 # Add magic_enum
@@ -126,10 +126,11 @@ list(APPEND SOURCE_FILES
 )
 
 # Build as game executable
+add_executable(Game ${SOURCE_FILES})
+
 if (WIN32)
-	add_executable(Game ${SOURCE_FILES} ${RESOURCE_FILE})
-else()
-	add_executable(Game ${SOURCE_FILES})
+	set_source_files_properties(${RESOURCE_FILE} PROPERTIES LANGUAGE RC)
+	target_sources(Game PRIVATE ${RESOURCE_FILE})
 endif()
 
 set_target_properties(Game PROPERTIES OUTPUT_NAME "Game")
@@ -170,9 +171,9 @@ target_include_directories(Game PRIVATE
 )
 
 if (WIN32)
-target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+	target_link_libraries(Game PRIVATE external_libs glad ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/Elypso engine.lib" opengl32 gdi32 user32)
 else()
-target_link_libraries(Game PRIVATE external_libs glad glfw "${CMAKE_SOURCE_DIR}/libElypso engine.a" assimp ${X11_LIBRARIES})
+	target_link_libraries(Game PRIVATE external_libs glad glfw "${CMAKE_SOURCE_DIR}/libElypso engine.a" assimp ${X11_LIBRARIES})
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK
