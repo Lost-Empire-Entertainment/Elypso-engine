@@ -63,7 +63,13 @@ target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
 if (WIN32)
-	set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/libglfw3.a")
+	if (MSVC)
+        # Using MSVC
+        set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/glfw3.lib")
+    else()
+        # Using MinGW or other toolchains
+        set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/libglfw3.a")
+    endif()
 else()
 	find_package(glfw3 REQUIRED)
 endif()
