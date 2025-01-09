@@ -2,11 +2,7 @@
   "version": 3,
   "configurePresets": [
     {
-<<<<<<< Updated upstream
-      "name": "windows-mingw-base",
-=======
       "name": "windows-clang-base",
->>>>>>> Stashed changes
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/x64-release",
@@ -25,13 +21,8 @@
       }
     },
     {
-<<<<<<< Updated upstream
-      "name": "mingw-x64-debug",
-      "displayName": "MinGW X64 Debug",
-=======
       "name": "clang-x64-debug",
       "displayName": "CLang X64 Debug",
->>>>>>> Stashed changes
       "inherits": "windows-mingw-base",
       "architecture": {
         "value": "x64",
@@ -42,13 +33,8 @@
       }
     },
     {
-<<<<<<< Updated upstream
-      "name": "mingw-x64-release",
-      "displayName": "MinGW X64 Release",
-=======
       "name": "clang-x64-release",
       "displayName": "CLang X64 Release",
->>>>>>> Stashed changes
       "inherits": "windows-mingw-base",
       "architecture": {
         "value": "x64",

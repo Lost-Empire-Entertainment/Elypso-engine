@@ -15,11 +15,6 @@ set "buildPath=%~dp0out/build/x64-release"
 set "sourcePath=%~dp0"
 set "numCores=%NUMBER_OF_PROCESSORS%"
 
-<<<<<<< Updated upstream
-:: Set up the Visual Studio environment if using MSVC
-call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
-
-=======
 :: Parameter 1 cannot be empty
 if "%~1"=="" (
 	echo Action has not been selected! Please select none, build or cmake as first parameter.
@@ -54,7 +49,6 @@ if "%~2"=="msvc" (
 )
 
 :: Either builds or sets up cmake.
->>>>>>> Stashed changes
 if "%~1"=="build" (
     goto build
 )
@@ -93,27 +87,12 @@ if exist "%buildPath%" (
 mkdir "%buildPath%"
 cd /d "%buildPath%"
 
-<<<<<<< Updated upstream
-:: For MinGW
-::cmake --preset mingw-x64-release -S "%sourcePath%"
-
-:: For MSVC
-cmake --preset msvc-x64-release -S "%sourcePath%"
-
-if %errorlevel% neq 0 (
-    echo %cmexc% Configuration failed.
-    if not "%~2"=="skipwait" (
-		pause
-	)
-    exit /b 1
-=======
 :: Configure the project
 if "%~2"=="clang" (
 	call :run "cmake --preset clang-x64-release -S "%sourcePath%""
 )
 if "%~2"=="msvc" (
 	call :run "cmake --preset msvc-x64-release -S "%sourcePath%""
->>>>>>> Stashed changes
 )
 goto build
 
