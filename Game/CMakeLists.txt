@@ -193,12 +193,12 @@ target_include_directories(Game PRIVATE
 
 if (WIN32)
 	if (MSVC)
-		target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
+		target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
 	else()
-		target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} opengl32 gdi32 user32)
+		target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} opengl32 gdi32 user32)
 	endif()
 else()
-	target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+	target_link_libraries(Game PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK
@@ -223,28 +223,28 @@ add_custom_command(TARGET Game POST_BUILD
 if (WIN32)
     if (MSVC)
         # Copy Assimp main and zlib DLLs to the install directory after build
-        add_custom_command(TARGET Elypso_engine POST_BUILD
+        add_custom_command(TARGET Game POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E remove
-            $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
+            $<TARGET_FILE_DIR:Game>/assimp-vc143-mt.lib
             COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.lib
-            $<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
+            $<TARGET_FILE_DIR:Game>/assimp-vc143-mt.lib
         )
-		add_custom_command(TARGET Elypso_engine POST_BUILD
+		add_custom_command(TARGET Game POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E remove
-            $<TARGET_FILE_DIR:Elypso_engine>/zlibstatic.lib
+            $<TARGET_FILE_DIR:Game>/zlibstatic.lib
             COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/files/external\ dlls/zlibstatic.lib
-            $<TARGET_FILE_DIR:Elypso_engine>/zlibstatic.lib
+            $<TARGET_FILE_DIR:Game>/zlibstatic.lib
         )
     else()
         # Copy Assimp static library to the install directory after build
-        add_custom_command(TARGET Elypso_engine POST_BUILD
+        add_custom_command(TARGET Game POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E remove
-            $<TARGET_FILE_DIR:Elypso_engine>/libassimp.a
+            $<TARGET_FILE_DIR:Game>/libassimp.a
             COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/files/external\ dlls/libassimp.a
-            $<TARGET_FILE_DIR:Elypso_engine>/libassimp.a
+            $<TARGET_FILE_DIR:Game>/libassimp.a
         )
     endif()
 endif()
