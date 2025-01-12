@@ -5,8 +5,8 @@
 
 :: Set the root folder as the location of this script
 set "GLFW_ROOT=%~dp0"
-set "BUILD_DIR=%GLFW_ROOT%build"
-set "INSTALL_DIR=%GLFW_ROOT%glfw-install"
+set "BUILD_DIR=%GLFW_ROOT%clang-build"
+set "INSTALL_DIR=%GLFW_ROOT%clang-install"
 
 :: Paths to required tools
 set PATH=C:\BuildTools\mingw-bin\bin;C:\BuildTools\cmake-bin\bin;C:\BuildTools\ninja-bin;%PATH%
@@ -20,6 +20,7 @@ cd /d "%BUILD_DIR%" || (
 
 :: Configure GLFW with CMake
 cmake -G "Ninja" ^
+  -DCMAKE_BUILD_TYPE=Release ^
   -DCMAKE_C_COMPILER=clang ^
   -DCMAKE_CXX_COMPILER=clang++ ^
   -DBUILD_SHARED_LIBS=OFF ^

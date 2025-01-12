@@ -5,8 +5,8 @@
 
 :: Set the root folder as the location of this script
 set "GLFW_ROOT=%~dp0"
-set "BUILD_DIR=%GLFW_ROOT%build"
-set "INSTALL_DIR=%GLFW_ROOT%glfw-install"
+set "BUILD_DIR=%GLFW_ROOT%msvc-build"
+set "INSTALL_DIR=%GLFW_ROOT%msvc-install"
 
 :: Ensure Visual Studio environment is set up
 call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" || (
@@ -23,6 +23,7 @@ cd /d "%BUILD_DIR%" || (
 
 :: Configure GLFW with CMake
 cmake -G "Ninja" ^
+  -DCMAKE_BUILD_TYPE=Release ^
   -DCMAKE_C_COMPILER=cl ^
   -DCMAKE_CXX_COMPILER=cl ^
   -DBUILD_SHARED_LIBS=OFF ^

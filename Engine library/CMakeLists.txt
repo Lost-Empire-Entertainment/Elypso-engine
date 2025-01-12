@@ -97,7 +97,15 @@ endif()
 
 # Add Assimp
 if (WIN32)
-	set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
+	if (MSVC)
+        # Using MSVC
+        set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
+		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/zlibstatic.lib")
+    else()
+        # Using MinGW or other toolchains
+        set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/libassimp.a")
+		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/libzlibstatic.a")
+    endif()
 else()
 	find_package(assimp REQUIRED)
 endif()
@@ -179,9 +187,13 @@ target_include_directories(Elypso_engine PRIVATE
 )
 
 if (WIN32)
-	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} opengl32 gdi32 user32)
+	if (MSVC)
+		target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
+	else()
+		target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} opengl32 gdi32 user32)
+	endif()
 else()
-	target_link_libraries(Elypso_engine PUBLIC external_libs glfw assimp ${X11_LIBRARIES})
+	target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK
