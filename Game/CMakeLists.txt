@@ -1,8 +1,15 @@
 ﻿cmake_minimum_required (VERSION 3.22)
 
-# Set CMP0141 to NEW for improved linker handling on Windows if supported.
-if (WIN32 AND POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
+if (WIN32)
+	# Enable hot reload for MSVC
+	if (POLICY CMP0141)
+		cmake_policy(SET CMP0141 NEW)
+		set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+	endif()
+	# Explicitly set the MSVC toolset for Visual Studio
+	if (MSVC)
+		set(CMAKE_GENERATOR_TOOLSET "v143")
+	endif()
 endif()
 
 # Specify the compiler for Linux builds

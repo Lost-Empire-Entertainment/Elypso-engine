@@ -216,7 +216,7 @@ namespace Core
 		case InstallerType::reset:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" cmake skipwait";
+			command = "cmd /c \"" + gameBuilder + "\" cmake clang skipwait";
 #elif __linux__
 			command = "bash \"" + gameBuilder + "\" cmake skipwait";
 #endif
@@ -225,7 +225,7 @@ namespace Core
 		case InstallerType::compile:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" build skipwait";
+			command = "cmd /c \"" + gameBuilder + "\" build clang skipwait";
 #elif __linux__
 			command = "bash \"" + gameBuilder + "\" build skipwait";
 #endif
