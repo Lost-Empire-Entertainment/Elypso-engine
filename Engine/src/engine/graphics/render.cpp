@@ -133,8 +133,8 @@ namespace Graphics
 
 		//create a window object holding all the windowing data
 		window = glfwCreateWindow(
-			1280,
-			720,
+			1024,
+			768,
 			(Engine::name + " " + Engine::version).c_str(),
 			NULL,
 			NULL);
@@ -150,7 +150,7 @@ namespace Graphics
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
-		glfwSetWindowSizeLimits(window, 1280, 720, 7680, 4320);
+		glfwSetWindowSizeLimits(window, 800, 600, 7680, 4320);
 		glfwSwapInterval(stoi(ConfigFile::GetValue("window_vsync")));
 
 		int width, height, channels;
@@ -214,8 +214,8 @@ namespace Graphics
 			GL_TEXTURE_2D, 
 			0, 
 			GL_RGB, 
-			1280, 
-			720, 
+			1024, 
+			768, 
 			0, 
 			GL_RGB, 
 			GL_UNSIGNED_BYTE, 
@@ -236,8 +236,8 @@ namespace Graphics
 		glRenderbufferStorage(
 			GL_RENDERBUFFER, 
 			GL_DEPTH24_STENCIL8, 
-			1280, 
-			720);
+			1024, 
+			768);
 		glFramebufferRenderbuffer(
 			GL_FRAMEBUFFER, 
 			GL_DEPTH_STENCIL_ATTACHMENT, 
