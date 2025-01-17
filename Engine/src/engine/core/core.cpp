@@ -412,8 +412,8 @@ namespace Core
 
 		string parentFolder = current_path().stem().string();
 		//if engine is ran from repository or visual studio folder
-		if (parentFolder == "x64-release"
-			|| parentFolder == "x64-debug")
+		if (parentFolder == "x64-clang"
+			|| parentFolder == "x64-msvc")
 		{
 			gamePath = (current_path()
 				.parent_path()
@@ -431,7 +431,8 @@ namespace Core
 		else
 		{
 			gamePath = (current_path().parent_path() / "Game").string();
-			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string();
+			gameExePath = (path(gamePath) / "out" / "build" / "x64-clang" / gameName).string();
+
 			gameParentPath = path(gameExePath).parent_path().string();
 
 #ifdef _WIN32

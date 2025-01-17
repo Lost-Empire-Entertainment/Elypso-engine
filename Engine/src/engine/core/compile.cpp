@@ -178,8 +178,8 @@ namespace Core
 		string gameRootFolder = "";
 
 		string parentFolderStem = current_path().stem().string();
-		if (parentFolderStem == "x64-release"
-			|| parentFolderStem == "x64-debug")
+		if (parentFolderStem == "x64-clang"
+			|| parentFolderStem == "x64-msvc")
 		{
 			engineRootFolder = (current_path().parent_path().parent_path().parent_path()).string();
 			gameRootFolder = (current_path().parent_path().parent_path().parent_path().parent_path() / "Game").string();
@@ -199,6 +199,19 @@ namespace Core
 #ifdef _WIN32
 		string origin = (path(engineRootFolder) / "Elypso engine.lib").string();
 		string target = (path(gameRootFolder) / "Elypso engine.lib").string();
+
+		if (!exists(origin))
+		{
+			origin = (path(engineRootFolder) / "libElypso engine.a").string();
+			if (!exists(origin))
+			{
+				cout << "Path to origin lib: " << origin << "\n";
+				Engine::CreateErrorPopup("Game failed to compile because the path to elypso engine library is invalid!");
+			
+				target = (path(gameRootFolder) / "libElypso engine.a").string();
+			}
+		}
+
 		File::CopyFileOrFolder(origin, target);
 
 		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
@@ -369,17 +382,10 @@ namespace Core
 				{
 					renderBuildingWindow = false;
 
-					cout << "Attempting to run game from " << Engine::gameExePath << "\n";
-
-					if (!exists(Engine::gameExePath)
-						|| !exists(Engine::gameParentPath))
+					if (GamePathCheck())
 					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							"Error: Failed to find game template folder or game exe!\n");
+						File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 					}
-					else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 				}
 
 				ImGui::SetCursorPos(button3Pos);
@@ -448,6 +454,54 @@ namespace Core
 				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
 		}
+	}
+
+	bool Compilation::GamePathCheck()
+	{
+		string output = "Checking if game exe path '" + Engine::gameExePath + "' is valid.\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		//first check if msvc is valid
+		if (!exists(Engine::gameExePath))
+		{
+			string parentFolder = path(Engine::gameExePath).parent_path().parent_path().string();
+			string gameName = path(Engine::gameExePath).filename().string();
+			string newPath = (path(parentFolder) / "msvc" / gameName).string();
+
+			output = "Failed to find game exe at '" + Engine::gameExePath + "'. Trying another compiler folder path.\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				output);
+
+			//then check if clang is valid
+			if (!exists(newPath))
+			{
+				output = "Failed to find game exe at '" + newPath + "'. Trying another compiler folder path.\n";
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::DEBUG,
+					output);
+
+				newPath = (path(parentFolder) / "clang" / gameName).string();
+				if (!exists(newPath))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Error: Failed to find game game exe from " + newPath + "!\n");
+
+					return false;
+				}
+				Engine::gameExePath = newPath;
+				return true;
+			}
+		}
+
+		return true;
 	}
 }
 #endif
