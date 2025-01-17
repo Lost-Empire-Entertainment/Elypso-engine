@@ -5,7 +5,6 @@
             "name": "windows-msvc-base",
             "hidden": true,
             "generator": "Ninja",
-			"binaryDir": "${sourceDir}/out/build/x64-release",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe"
@@ -20,6 +19,7 @@
             "name": "msvc-x64-debug",
             "displayName": "MSVC X64 Debug",
             "inherits": "windows-msvc-base",
+			"binaryDir": "${sourceDir}/out/build/msvc-x64-debug",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -32,6 +32,7 @@
             "name": "msvc-x64-release",
             "displayName": "MSVC X64 Release",
             "inherits": "windows-msvc-base",
+			"binaryDir": "${sourceDir}/out/build/msvc-x64-release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
@@ -40,7 +41,6 @@
             "name": "windows-clang-base",
             "hidden": true,
             "generator": "Ninja",
-			"binaryDir": "${sourceDir}/out/build/x64-release",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "C:/BuildTools/mingw-bin/bin/clang.exe",
                 "CMAKE_CXX_COMPILER": "C:/BuildTools/mingw-bin/bin/clang++.exe",
@@ -59,6 +59,7 @@
             "name": "clang-x64-debug",
             "displayName": "CLang X64 Debug",
             "inherits": "windows-clang-base",
+			"binaryDir": "${sourceDir}/out/build/clang-x64-debug",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -71,6 +72,7 @@
             "name": "clang-x64-release",
             "displayName": "CLang X64 Release",
             "inherits": "windows-clang-base",
+			"binaryDir": "${sourceDir}/out/build/clang-x64-release",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"

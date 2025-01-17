@@ -11,7 +11,6 @@ set "cpexc=[CPACK_EXCEPTION]"
 set "cpsuc=[CPACK_SUCCESS]"
 
 set "rootDir=%~dp0"
-set "buildPath=%~dp0out/build/x64-release"
 set "sourcePath=%~dp0"
 set "numCores=%NUMBER_OF_PROCESSORS%"
 
@@ -50,14 +49,20 @@ if NOT "%~3"=="" if NOT "%~3"=="skipwait" (
     exit /b 1
 )
 
-:: Launch cl.exe if msvc compiler is selected
+:: Launch cl.exe if msvc compiler is selected and set build path to msvc-x64-release
 if "%~2"=="msvc" (
+	set "buildPath=%~dp0out/build/msvc-x64-release"
     call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
     if %errorlevel% neq 0 (
         echo %prexc% Failed to initialize MSVC environment!
         pause
         exit /b 1
     )
+)
+
+:: Set build path to clang-x64-release
+if "%~2"=="clang" (
+	set "buildPath=%~dp0out/build/clang-x64-release"
 )
 
 :: Either builds or sets up cmake.
