@@ -268,7 +268,7 @@ add_custom_command(TARGET Game POST_BUILD
 	# $<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
 # )
 
-set(COPY_TARGETS LICENSE.md README.md LIBRARIES.md)
+set(COPY_TARGETS README.md LIBRARIES.md)
 foreach(FILE ${COPY_TARGETS})
   add_custom_command(TARGET Game POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
@@ -278,6 +278,15 @@ foreach(FILE ${COPY_TARGETS})
 	$<TARGET_FILE_DIR:Game>/${FILE}
   )
 endforeach()
+
+# Copy the MIT license from this folder, not parent folder
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove
+    $<TARGET_FILE_DIR:Game>/LICENSE.md
+    COMMAND ${CMAKE_COMMAND} -E copy
+    LICENSE.md
+    $<TARGET_FILE_DIR:Game>/LICENSE.md
+)
 
 # Include CPack to enable packaging
 include(CPack)
