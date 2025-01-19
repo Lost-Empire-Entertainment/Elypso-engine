@@ -42,8 +42,22 @@ if NOT "%~2"=="msvc" if NOT "%~2"=="clang" (
     exit /b 1
 )
 
-:: Parameter 3 must be empty or skipwait
-if NOT "%~3"=="" if NOT "%~3"=="skipwait" (
+:: Parameter 3 cannot be empty
+if "%~3"=="" (
+    echo Empty third parameter detected! Please select release or debug.
+    pause
+    exit /b 1
+)
+
+:: Parameter 3 must be release or debug
+if NOT "%~3"=="release" if NOT "%~3"=="debug" (
+    echo Invalid third parameter selected! Please select release or debug.
+    pause
+    exit /b 1
+)
+
+:: Parameter 4 must be empty or skipwait
+if NOT "%~4"=="" if NOT "%~4"=="skipwait" (
     echo Invalid third parameter detected! Please leave as empty or select skipwait.
     pause
     exit /b 1
@@ -60,16 +74,31 @@ if "%~2"=="msvc" (
     )
 )
 
-:: Set build path to clang-x64-release
+:: Set clang build path
 if "%~2"=="clang" (
-	set "buildPath=%~dp0out/build/clang-x64-release"
+	if "%~3"=="release" (
+		set "buildPath=%~dp0out/build/clang-x64-release"
+	)
+	if "%~3"=="debug" (
+		set "buildPath=%~dp0out/build/clang-x64-debug"
+	)
+)
+
+:: Set msvc build path
+if "%~2"=="msvc" (
+	if "%~3"=="release" (
+		set "buildPath=%~dp0out/build/msvc-x64-release"
+	)
+	if "%~3"=="debug" (
+		set "buildPath=%~dp0out/build/msvc-x64-debug"
+	)
 )
 
 :: Either builds or sets up cmake.
 if "%~1"=="build" (
     goto build
 )
-if "%~1"=="none" (
+if "%~1"=="" (
     goto build
 )
 if "%~1"=="cmake" (
@@ -89,13 +118,13 @@ echo %cminf% Started build generation using %numCores% cores.
 cmake --build . -- -j%numCores%
 if %errorlevel% neq 0 (
 	echo %cmexc% Build failed.
-	if not "%~3"=="skipwait" (
+	if not "%~4"=="skipwait" (
 		pause
 	)
     exit /b 0
 ) else (
     echo %cmsuc% Build succeeded!
-	if not "%~3"=="skipwait" (
+	if not "%~4"=="skipwait" (
 		pause
 	)
 	exit /b 0
@@ -116,23 +145,47 @@ cd /d "%buildPath%"
 
 :: Configure the project
 if "%~2"=="clang" (
-    cmake --preset clang-x64-release -S "%sourcePath%"
-    if %errorlevel% neq 0 (
-		echo %cmexc% Configuration failed.
-		if not "%~3"=="skipwait" (
-			pause
+	if "%~3"=="release" (
+		cmake --preset clang-x64-release -S "%sourcePath%"
+		if %errorlevel% neq 0 (
+			echo %cmexc% Configuration failed.
+			if not "%~4"=="skipwait" (
+				pause
+			)
+			exit /b 1
 		)
-		exit /b 1
+	)
+	if "%~3"=="debug" (
+		cmake --preset clang-x64-debug -S "%sourcePath%"
+		if %errorlevel% neq 0 (
+			echo %cmexc% Configuration failed.
+			if not "%~4"=="skipwait" (
+				pause
+			)
+			exit /b 1
+		)
 	)
 )
 if "%~2"=="msvc" (
-    cmake --preset msvc-x64-release -S "%sourcePath%"
-    if %errorlevel% neq 0 (
-		echo %cmexc% Configuration failed.
-		if not "%~3"=="skipwait" (
-			pause
+    if "%~3"=="release" (
+		cmake --preset msvc-x64-release -S "%sourcePath%"
+		if %errorlevel% neq 0 (
+			echo %cmexc% Configuration failed.
+			if not "%~4"=="skipwait" (
+				pause
+			)
+			exit /b 1
 		)
-		exit /b 1
+	)
+	if "%~3"=="debug" (
+		cmake --preset msvc-x64-debug -S "%sourcePath%"
+		if %errorlevel% neq 0 (
+			echo %cmexc% Configuration failed.
+			if not "%~4"=="skipwait" (
+				pause
+			)
+			exit /b 1
+		)
 	)
 )
 goto build

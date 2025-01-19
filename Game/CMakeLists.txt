@@ -98,13 +98,23 @@ endif()
 # Add Assimp
 if (WIN32)
 	if (MSVC)
-        # Using MSVC
-        set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/assimp-vc143-mt.lib")
-		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/zlibstatic.lib")
+		# Using MSVC
+		if(CMAKE_BUILD_TYPE STREQUAL "Release")
+			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/msvc-release/assimp-vc143-mt.lib")
+			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/msvc-release/zlibstatic.lib")
+		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/msvc-debug/assimp-vc143-mtd.lib")
+			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/msvc-debug/zlibstaticd.lib")
+		endif()
     else()
-        # Using MinGW or other toolchains
-        set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/libassimp.a")
-		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/libzlibstatic.a")
+		# Using CLang or other toolchains
+		if(CMAKE_BUILD_TYPE STREQUAL "Release")
+			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-release/libassimp.a")
+			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/clang-release/libzlibstatic.a")
+		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-debug/libassimpd.a")
+			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/clang-debug/libzlibstaticd.a")
+		endif()
     endif()
 else()
 	find_package(assimp REQUIRED)
@@ -220,32 +230,72 @@ add_custom_command(TARGET Game POST_BUILD
 	$<TARGET_FILE_DIR:Game>/files
 )
 
+# Copy Assimp main and zlib library to the install directory after build
 if (WIN32)
     if (MSVC)
-        # Copy Assimp main and zlib DLLs to the install directory after build
-        add_custom_command(TARGET Game POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E remove
-            $<TARGET_FILE_DIR:Game>/assimp-vc143-mt.lib
-            COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/files/external\ dlls/assimp-vc143-mt.lib
-            $<TARGET_FILE_DIR:Game>/assimp-vc143-mt.lib
-        )
-		add_custom_command(TARGET Game POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E remove
-            $<TARGET_FILE_DIR:Game>/zlibstatic.lib
-            COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/files/external\ dlls/zlibstatic.lib
-            $<TARGET_FILE_DIR:Game>/zlibstatic.lib
-        )
+		if(CMAKE_BUILD_TYPE STREQUAL "Release")
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/assimp-vc143-mt.lib
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
+			)
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/zlibstatic.lib
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/zlibstatic.lib
+				$<TARGET_FILE_DIR:Elypso_engine>/zlibstatic.lib
+			)
+		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/assimp-vc143-mtd.lib
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.lib
+			)
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/zlibstaticd.lib
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/zlibstaticd.lib
+				$<TARGET_FILE_DIR:Elypso_engine>/zlibstaticd.lib
+			)
+		endif()
     else()
-        # Copy Assimp static library to the install directory after build
-        add_custom_command(TARGET Game POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E remove
-            $<TARGET_FILE_DIR:Game>/libassimp.a
-            COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/files/external\ dlls/libassimp.a
-            $<TARGET_FILE_DIR:Game>/libassimp.a
-        )
+		if(CMAKE_BUILD_TYPE STREQUAL "Release")
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimp.a
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/libassimp.a
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimp.a
+			)
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstatic.a
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/libzlibstatic.a
+				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstatic.a
+			)
+		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimpd.a
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/libassimpd.a
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimpd.a
+			)
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstaticd.a
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/libzlibstaticd.a
+				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstaticd.a
+			)
+		endif()
     endif()
 endif()
 

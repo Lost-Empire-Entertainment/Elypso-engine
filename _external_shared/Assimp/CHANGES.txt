@@ -2,6 +2,8 @@ Original repository link:
 https://github.com/assimp/assimp
 
 Changes:
-- used clang_build.bat to make libassimp.a and libzlibstatic.a
-- used msvc_build.bat to make assimp-vc143-mtd.lib and zlibstaticd.lib
+- used clang_build_release.bat to make libassimp.a and libzlibstatic.a into new empty folder clang-release
+- used clang_build_debug.bat to make libassimpd.a and libzlibstaticd.a into new empty folder clang-debug
+- used msvc_build_release.bat to make assimp-vc143-mt.lib and zlibstatic.lib into new empty folder msvc-release
+- used msvc_build_debug.bat to make assimp-vc143-mtd.lib and zlibstaticd.lib into new empty folder msvc-debug
 - copied header files and Compiler folder to assimp root folder

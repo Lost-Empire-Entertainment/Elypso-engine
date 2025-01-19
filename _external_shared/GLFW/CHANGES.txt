@@ -2,6 +2,8 @@ Original repository link:
 https://github.com/glfw/glfw
 
 Changes:
-- used clang_build.bat to make libglfw3.a
-- used msvc_build.bat to make glfw3.lib
+- used clang_build_release.bat to make libglfw3.a into new empty folder clang-release
+- used clang_build_debug.bat to make libglfw3.a into new empty folder clang-debug
+- used msvc_build_release.bat to make glfw3.lib into new empty folder msvc-release
+- used msvc_build_debug.bat to make glfw3.lib into new empty folder msvc-debug
 - copied glfw3native.h and glfw3.h to glfw root folder
