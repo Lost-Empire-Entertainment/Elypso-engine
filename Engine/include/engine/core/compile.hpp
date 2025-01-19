@@ -38,6 +38,12 @@ namespace Core
 		static void RunInstaller();
 
 		/// <summary>
+		/// Simple function that checks all files in engine directory 
+		/// and returns the name of the assimp dll file to decide which game version to build.
+		/// </summary>
+		static string GetAssimpDLLName();
+
+		/// <summary>
 		/// Draws the ImGui compilation window
 		/// </summary>
 		static void RenderBuildingWindow();

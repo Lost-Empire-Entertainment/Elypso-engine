@@ -414,9 +414,8 @@ namespace Core
 		//if engine is ran from repository or visual studio folder
 		string clangRelease = "clang-x64-release";
 		string clangDebug = "clang-x64-debug";
-		string msvcRelease = "clang-x64-release";
-		string msvcDebug = "clang-x64-debug";
-
+		string msvcRelease = "msvc-x64-release";
+		string msvcDebug = "msvc-x64-debug";
 
 		if (parentFolder == clangRelease
 			|| parentFolder == clangDebug
@@ -469,6 +468,7 @@ namespace Core
 		//if neither one works then engine cannot proceed
 		if (!exists(gamePath))
 		{
+			cout << "parent folder: " << parentFolder << "\n";
 			cout << "game path: " << gamePath << "\n";
 			CreateErrorPopup("Failed to find game template folder!");
 		}

@@ -177,14 +177,22 @@ namespace Core
 		string engineRootFolder = "";
 		string gameRootFolder = "";
 
-		string parentFolderStem = current_path().stem().string();
-		if (parentFolderStem == "x64-clang"
-			|| parentFolderStem == "x64-msvc")
+		string parentFolder = current_path().stem().string();
+		//if engine is ran from repository or visual studio folder
+		string clangRelease = "clang-x64-release";
+		string clangDebug = "clang-x64-debug";
+		string msvcRelease = "msvc-x64-release";
+		string msvcDebug = "msvc-x64-debug";
+
+		if (parentFolder == clangRelease
+			|| parentFolder == clangDebug
+			|| parentFolder == msvcRelease
+			|| parentFolder == msvcDebug)
 		{
 			engineRootFolder = (current_path().parent_path().parent_path().parent_path()).string();
 			gameRootFolder = (current_path().parent_path().parent_path().parent_path().parent_path() / "Game").string();
 		}
-		else if (parentFolderStem == "Engine")
+		else if (parentFolder == "Engine")
 		{
 			engineRootFolder = (current_path().parent_path()).string();
 			gameRootFolder = (current_path().parent_path().parent_path() / "Game").string();
@@ -193,6 +201,7 @@ namespace Core
 		if (gameRootFolder == ""
 			|| !exists(gameRootFolder))
 		{
+			cout << "game root folder: " << gameRootFolder << "\n";
 			Engine::CreateErrorPopup("Failed to assign path to game builder!");
 		}
 
@@ -224,12 +233,39 @@ namespace Core
 #endif
 
 		string command = "";
+		string assimpDLLName = GetAssimpDLLName();
+		if (assimpDLLName == "")
+		{
+			cout << "engine folder: " << current_path().string() << "\n";
+			Engine::CreateErrorPopup("Failed to find assimp dll from engine folder!");
+		}
+
+		string msvc_release = "assimp-vc143-mt.dll";
+		string msvc_debug = "assimp-vc143-mtd.dll";
+		string clang_release = "libassimp-5.dll";
+		string clang_debug = "libassimp-5d.dll";
+		string compilerType{};
+		string releaseType{};
+
+		if (assimpDLLName == msvc_release 
+			|| assimpDLLName == msvc_debug)
+		{
+			compilerType = "msvc";
+			releaseType = (assimpDLLName == msvc_release) ? "release" : "debug";
+		}
+		else if (assimpDLLName == clang_release 
+			|| assimpDLLName == clang_debug)
+		{
+			compilerType = "clang";
+			releaseType = (assimpDLLName == clang_release) ? "release" : "debug";
+		}
+
 		switch (installerType)
 		{
 		case InstallerType::reset:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" cmake clang skipwait";
+			command = "cmd /c \"" + gameBuilder + "\" cmake " + compilerType + " " + releaseType + " skipwait";
 #elif __linux__
 			command = "bash \"" + gameBuilder + "\" cmake skipwait";
 #endif
@@ -238,7 +274,7 @@ namespace Core
 		case InstallerType::compile:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" build clang skipwait";
+			command = "cmd /c \"" + gameBuilder + "\" build " + compilerType + " " + releaseType + " skipwait";
 #elif __linux__
 			command = "bash \"" + gameBuilder + "\" build skipwait";
 #endif
@@ -288,6 +324,27 @@ namespace Core
 			cout << buffer.data() << "\n";
 		}
 #endif
+	}
+
+	string Compilation::GetAssimpDLLName()
+	{
+		string enginePath = current_path().string();
+		cout << "engine path: " << enginePath << "\n";
+
+		string msvc_release = "assimp-vc143-mt.dll";
+		string msvc_debug = "assimp-vc143-mtd.dll";
+		string clang_release = "libassimp-5.dll";
+		string clang_debug = "libassimp-5d.dll";
+
+		for (const auto& file : directory_iterator(enginePath))
+		{
+			if (path(file).filename().string() == msvc_release) return msvc_release;
+			else if (path(file).filename().string() == msvc_debug) return msvc_debug;
+			else if (path(file).filename().string() == clang_release) return clang_release;
+			else if (path(file).filename().string() == clang_debug) return clang_debug;
+		}
+
+		return "";
 	}
 
 	void Compilation::RenderBuildingWindow()
