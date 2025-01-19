@@ -1,54 +1,70 @@
 @echo off
 
-:: This batch file builds GLFW from source code using Clang.
-:: Place this script in the root GLFW folder and run it to build the static library.
+:: This batch file builds GLFW from source code using Clang (Debug mode).
 
 :: Set the root folder as the location of this script
 set "GLFW_ROOT=%~dp0"
 set "BUILD_DIR=%GLFW_ROOT%clang-build-debug"
 set "INSTALL_DIR=%GLFW_ROOT%clang-install-debug"
 
-:: Paths to required tools
+:: Add necessary tools to PATH
 set PATH=C:\BuildTools\mingw-bin\bin;C:\BuildTools\cmake-bin\bin;C:\BuildTools\ninja-bin;%PATH%
+
+:: Record start time
+set TIME_START=%TIME%
 
 :: Create the build directory
 if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
 cd /d "%BUILD_DIR%" || (
-    echo [ERROR] Failed to access build directory.
+    echo [ERROR] Failed to access build directory: %BUILD_DIR%
+    pause
     exit /b 1
 )
 
 :: Configure GLFW with CMake
+echo [INFO] Configuring GLFW with CMake...
 cmake -G "Ninja" ^
   -DCMAKE_BUILD_TYPE=Debug ^
   -DCMAKE_C_COMPILER=clang ^
-  -DCMAKE_CXX_COMPILER=clang++ ^
-  -DBUILD_SHARED_LIBS=OFF ^
+  -DBUILD_SHARED_LIBS=ON ^
   -DGLFW_BUILD_EXAMPLES=OFF ^
   -DGLFW_BUILD_TESTS=OFF ^
   -DGLFW_BUILD_DOCS=OFF ^
+  -DCMAKE_C_FLAGS="-O0 -g -Wall -Wextra -DDEBUG" ^
+  -DCMAKE_EXE_LINKER_FLAGS="-Wl,--gc-sections" ^
   -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" ^
   "%GLFW_ROOT%" || (
     echo [ERROR] CMake configuration failed.
+    pause
     exit /b 1
 )
 
 :: Build GLFW with Ninja
-ninja || (
+echo [INFO] Building GLFW...
+ninja -j%NUMBER_OF_PROCESSORS% || (
     echo [ERROR] Build process failed.
+    pause
     exit /b 1
 )
 
 :: Install GLFW
+echo [INFO] Installing GLFW...
 ninja install || (
     echo [ERROR] Install process failed.
+    pause
     exit /b 1
 )
 
+:: Record end time
+set TIME_END=%TIME%
+
 :: Success message
 echo [SUCCESS] GLFW built and installed successfully.
+echo ---------------------------------------------
 echo Static library: %INSTALL_DIR%\lib\libglfw3.a
-echo Headers: %INSTALL_DIR%\include\GLFW
+echo Include headers: %INSTALL_DIR%\include\GLFW
+echo Build duration: %TIME_START% - %TIME_END%
+echo ---------------------------------------------
 
 pause
 exit /b

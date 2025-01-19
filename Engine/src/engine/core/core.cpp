@@ -412,15 +412,23 @@ namespace Core
 
 		string parentFolder = current_path().stem().string();
 		//if engine is ran from repository or visual studio folder
-		if (parentFolder == "x64-clang"
-			|| parentFolder == "x64-msvc")
+		string clangRelease = "clang-x64-release";
+		string clangDebug = "clang-x64-debug";
+		string msvcRelease = "clang-x64-release";
+		string msvcDebug = "clang-x64-debug";
+
+
+		if (parentFolder == clangRelease
+			|| parentFolder == clangDebug
+			|| parentFolder == msvcRelease
+			|| parentFolder == msvcDebug)
 		{
 			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
 				.parent_path()
 				.parent_path() / "Game").string();
-			gameExePath = (path(gamePath) / "out" / "build" / "x64-release" / gameName).string();
+			gameExePath = (path(gamePath) / "out" / "build" / parentFolder / gameName).string();
 			gameParentPath = path(gameExePath).parent_path().string();
 
 #ifdef _WIN32
@@ -431,7 +439,7 @@ namespace Core
 		else
 		{
 			gamePath = (current_path().parent_path() / "Game").string();
-			gameExePath = (path(gamePath) / "out" / "build" / "x64-clang" / gameName).string();
+			gameExePath = (path(gamePath) / "out" / "build" / clangRelease / gameName).string();
 
 			gameParentPath = path(gameExePath).parent_path().string();
 
@@ -461,6 +469,7 @@ namespace Core
 		//if neither one works then engine cannot proceed
 		if (!exists(gamePath))
 		{
+			cout << "game path: " << gamePath << "\n";
 			CreateErrorPopup("Failed to find game template folder!");
 		}
 #endif
