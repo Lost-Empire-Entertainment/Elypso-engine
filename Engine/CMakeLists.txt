@@ -73,16 +73,16 @@ if (WIN32)
 	if (MSVC)
         # Using MSVC
 		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/msvc-release/glfw3.lib")
+			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/msvc-release/glfw3dll.lib")
 		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/msvc-debug/glfw3.lib")
+			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/msvc-debug/glfw3dll.lib")
 		endif()
     else()
         # Using MinGW or other toolchains
         if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/clang-release/libglfw3.a")
+			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/clang-release/libglfw3dll.a")
 		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/clang-debug/libglfw3.a")
+			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/clang-debug/libglfw3dll.a")
 		endif()
     endif()
 else()
@@ -108,10 +108,10 @@ if (WIN32)
     else()
 		# Using CLang or other toolchains
 		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-release/libassimp.a")
+			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-release/libassimp.dll.a")
 			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/clang-release/libzlibstatic.a")
 		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-debug/libassimpd.a")
+			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-debug/libassimpd.dll.a")
 			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/clang-debug/libzlibstaticd.a")
 		endif()
     endif()
@@ -245,70 +245,83 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 	$<TARGET_FILE_DIR:Elypso_engine>/files
 )
 
-# Copy Assimp main and zlib library to the install directory after build
+# Copy Assimp dll to the install directory after build
 if (WIN32)
     if (MSVC)
 		if(CMAKE_BUILD_TYPE STREQUAL "Release")
 			add_custom_command(TARGET Elypso_engine POST_BUILD
 				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
 				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/assimp-vc143-mt.lib
-				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
-			)
-			add_custom_command(TARGET Elypso_engine POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/zlibstatic.lib
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/zlibstatic.lib
-				$<TARGET_FILE_DIR:Elypso_engine>/zlibstatic.lib
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/assimp-vc143-mt.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll
 			)
 		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 			add_custom_command(TARGET Elypso_engine POST_BUILD
 				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.lib
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.dll
 				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/assimp-vc143-mtd.lib
-				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.lib
-			)
-			add_custom_command(TARGET Elypso_engine POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/zlibstaticd.lib
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/zlibstaticd.lib
-				$<TARGET_FILE_DIR:Elypso_engine>/zlibstaticd.lib
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/assimp-vc143-mtd.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.dll
 			)
 		endif()
     else()
 		if(CMAKE_BUILD_TYPE STREQUAL "Release")
 			add_custom_command(TARGET Elypso_engine POST_BUILD
 				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/libassimp.a
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimp-5.dll
 				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/libassimp.a
-				$<TARGET_FILE_DIR:Elypso_engine>/libassimp.a
-			)
-			add_custom_command(TARGET Elypso_engine POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstatic.a
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/libzlibstatic.a
-				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstatic.a
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/libassimp-5.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimp-5.dll
 			)
 		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 			add_custom_command(TARGET Elypso_engine POST_BUILD
 				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/libassimpd.a
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimp-5d.dll
 				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/libassimpd.a
-				$<TARGET_FILE_DIR:Elypso_engine>/libassimpd.a
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/libassimp-5d.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/libassimp-5d.dll
 			)
+		endif()
+    endif()
+endif()
+
+# Copy GLFW dll to the install directory after build
+if (WIN32)
+    if (MSVC)
+		if(CMAKE_BUILD_TYPE STREQUAL "Release")
 			add_custom_command(TARGET Elypso_engine POST_BUILD
 				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstaticd.a
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
 				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/libzlibstaticd.a
-				$<TARGET_FILE_DIR:Elypso_engine>/libzlibstaticd.a
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/glfw3.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
+			)
+		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/glfw3.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
+			)
+		endif()
+    else()
+		if(CMAKE_BUILD_TYPE STREQUAL "Release")
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/glfw3.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
+			)
+		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+			add_custom_command(TARGET Elypso_engine POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E remove
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/glfw3.dll
+				$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll
 			)
 		endif()
     endif()
