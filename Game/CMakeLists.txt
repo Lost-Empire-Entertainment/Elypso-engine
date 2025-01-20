@@ -47,14 +47,6 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(BUILD_FOLDER "x64-release")
 endif()
 
-if (WIN32)
-    set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
-    set(LIB_TARGET "${CMAKE_SOURCE_DIR}/out/build/${BUILD_FOLDER}/Elypso engine.lib")
-else()
-    set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/libElypso engine.a")
-    set(LIB_TARGET "${CMAKE_SOURCE_DIR}/out/build/${BUILD_FOLDER}/libElypso engine.a")
-endif()
-
 # Set src and include file paths
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
@@ -238,96 +230,107 @@ add_custom_command(TARGET Game POST_BUILD
 	$<TARGET_FILE_DIR:Game>/files
 )
 
-# Copy Assimp dll to the install directory after build
+# Copy Assimp DLL to the install directory after build
 if (WIN32)
     if (MSVC)
-		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/assimp-vc143-mt.dll
-				$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll
-			)
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/assimp-vc143-mtd.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/assimp-vc143-mtd.dll
-				$<TARGET_FILE_DIR:Game>/assimp-vc143-mtd.dll
-			)
-		endif()
+        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+        if(CMAKE_BUILD_TYPE STREQUAL "Release")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-release/assimp-vc143-mt.dll")
+            set(DLL_TARGET "$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll")
+        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-debug/assimp-vc143-mtd.dll")
+            set(DLL_TARGET "$<TARGET_FILE_DIR:Game>/assimp-vc143-mtd.dll")
+        endif()
+
     else()
-		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/libassimp-5.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/libassimp-5.dll
-				$<TARGET_FILE_DIR:Game>/libassimp-5.dll
-			)
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/libassimp-5d.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/libassimp-5d.dll
-				$<TARGET_FILE_DIR:Game>/libassimp-5d.dll
-			)
-		endif()
+        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+        if(CMAKE_BUILD_TYPE STREQUAL "Release")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-release/libassimp-5.dll")
+            set(DLL_TARGET "$<TARGET_FILE_DIR:Game>/libassimp-5.dll")
+        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-debug/libassimp-5d.dll")
+            set(DLL_TARGET "$<TARGET_FILE_DIR:Game>/libassimp-5d.dll")
+        endif()
+    endif()
+
+    if(DLL_ORIGIN AND DLL_TARGET)
+        add_custom_command(TARGET Game POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E remove 
+			"${DLL_TARGET}"
+            COMMAND ${CMAKE_COMMAND} -E copy 
+			"${DLL_ORIGIN}" 
+			"${DLL_TARGET}"
+        )
     endif()
 endif()
 
-# Copy GLFW dll to the install directory after build
+# Copy GLFW DLL to the install directory after build
 if (WIN32)
     if (MSVC)
-		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-release/glfw3.dll
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-			)
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/msvc-debug/glfw3.dll
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-			)
-		endif()
+        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+        if(CMAKE_BUILD_TYPE STREQUAL "Release")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-release/glfw3.dll")
+        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-debug/glfw3.dll")
+        endif()
     else()
-		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-release/glfw3.dll
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-			)
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			add_custom_command(TARGET Game POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E remove
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-				COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/files/external\ dlls/clang-debug/glfw3.dll
-				$<TARGET_FILE_DIR:Game>/glfw3.dll
-			)
-		endif()
+        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+        if(CMAKE_BUILD_TYPE STREQUAL "Release")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-release/glfw3.dll")
+        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-debug/glfw3.dll")
+        endif()
+    endif()
+
+    if(DLL_ORIGIN)
+        add_custom_command(TARGET Game POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E remove 
+			"$<TARGET_FILE_DIR:Game>/glfw3.dll"
+            COMMAND ${CMAKE_COMMAND} -E copy 
+			"${DLL_ORIGIN}" 
+			"$<TARGET_FILE_DIR:Game>/glfw3.dll"
+        )
     endif()
 endif()
 
-# Copy "elypso engine library" to game exe folder
-add_custom_command(TARGET Game POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove
-    ${LIB_TARGET}
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${LIB_ORIGIN}
-    ${LIB_TARGET}
-)
+# Copy Elypso engine library to the install directory after build
+if (MSVC)
+    set(LIB_NAME "Elypso engine.lib")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(BUILD_FOLDER "msvc-x64-debug")
+    elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(BUILD_FOLDER "msvc-x64-release")
+    else()
+        message(FATAL_ERROR "Unsupported build type for MSVC: ${CMAKE_BUILD_TYPE}")
+    endif()
+else()
+    set(LIB_NAME "libElypso engine.a")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(BUILD_FOLDER "clang-x64-debug")
+    elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(BUILD_FOLDER "clang-x64-release")
+    else()
+        message(FATAL_ERROR "Unsupported build type for Clang: ${CMAKE_BUILD_TYPE}")
+    endif()
+endif()
+
+# Set origin and target paths for the library
+set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/${LIB_NAME}")
+set(LIB_TARGET "${CMAKE_SOURCE_DIR}/out/build/${BUILD_FOLDER}/${LIB_NAME}")
+
+message(STATUS "Copying Elypso engine lib from: ${LIB_ORIGIN} to: ${LIB_TARGET}")
+
+if (EXISTS "${LIB_ORIGIN}")
+    add_custom_command(TARGET Game POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove
+		"${LIB_TARGET}"
+        COMMAND ${CMAKE_COMMAND} -E copy
+		"${LIB_ORIGIN}"
+		"${LIB_TARGET}"
+    )
+else()
+    message(FATAL_ERROR "Library not found: ${LIB_ORIGIN}")
+endif()
 
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK

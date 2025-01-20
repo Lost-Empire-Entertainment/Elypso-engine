@@ -45,15 +45,6 @@ project("Elypso engine" VERSION ${PROJECT_VERSION})
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
 
-# Used for copying "elypso engine library" from its folder to Game folder
-if (WIN32)
-	set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/build/Elypso engine.lib")
-	set(LIB_TARGET "${CMAKE_SOURCE_DIR}/../Game/Elypso engine.lib")
-else()
-	set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/build/libElypso engine.a")
-	set(LIB_TARGET "${CMAKE_SOURCE_DIR}/../Game/libElypso engine.a")
-endif()
-
 # Engine files
 set(ENGINE_SRC_DIR "${PARENT_DIR}/Engine/src/engine")
 set(ENGINE_INCLUDE_DIR "${PARENT_DIR}/Engine/include/engine")
