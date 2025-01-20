@@ -1,33 +1,28 @@
 ----------------------------------------------------------------------
-HOW TO SET UP NECESSARY THINGS TO RUN ENGINE NATIVELY ON LINUX
+HOW TO SET UP NECESSARY DEPENDENCIES TO RUN THE ENGINE ON LINUX
 ----------------------------------------------------------------------
 
-# install gcc, g++, make and other essential build tools
+# install essential build tools (GCC, G++, make)
 sudo apt install build-essential -y
 
-# install gnu debugger
+# install GNU debugger
 sudo apt install gdb -y
 
-# install cmake
+# install CMake for project configuration
 sudo apt install cmake -y
 
-# install zenity
+# install GUI tools for dialogs and file handling
 sudo apt install zenity -y
-
-# install xdg-utils
 sudo apt install xdg-utils -y
 
-# install mesa drivers
-sudo apt install mesa-vulkan-drivers mesa-utils -y
+# install Mesa utilities for OpenGL support
+sudo apt install mesa-utils -y
 
-# install vulkan drivers
-sudo apt install vulkan-tools vulkan-validationlayers -y
-
-# install x11 drivers
+# install X11 libraries for window management
 sudo apt install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev -y
 
-# install linux-compatible glfw3
+# install GLFW3 for window and context management
 sudo apt install libglfw3-dev -y
 
-# install linux-compatible assimp
+# install Assimp for model importing
 sudo apt install libassimp-dev -y
