@@ -15,43 +15,31 @@ set "numCores=%NUMBER_OF_PROCESSORS%"
 :: Validate input parameters
 if "%~1"=="" (
     echo [ERROR] Empty first parameter detected! Use 'build' or 'cmake'.
-    if not "%~4"=="skipwait" pause
+    if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
 if NOT "%~1"=="build" if NOT "%~1"=="cmake" (
     echo [ERROR] Invalid first parameter! Use 'build' or 'cmake'.
-    if not "%~4"=="skipwait" pause
+    if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
 if "%~2"=="" (
-    echo [ERROR] Empty second parameter detected! Use 'clang' or 'msvc'.
-    if not "%~4"=="skipwait" pause
-    exit /b 1
-)
-
-if NOT "%~2"=="msvc" if NOT "%~2"=="clang" (
-    echo [ERROR] Invalid second parameter! Use 'clang' or 'msvc'.
-    if not "%~4"=="skipwait" pause
-    exit /b 1
-)
-
-if "%~3"=="" (
     echo [ERROR] Empty third parameter detected! Use 'release' or 'debug'.
-    if not "%~4"=="skipwait" pause
+    if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
-if NOT "%~3"=="release" if NOT "%~3"=="debug" (
+if NOT "%~2"=="release" if NOT "%~2"=="debug" (
     echo [ERROR] Invalid third parameter! Use 'release' or 'debug'.
-    if not "%~4"=="skipwait" pause
+    if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
-if NOT "%~4"=="" if NOT "%~4"=="skipwait" (
+if NOT "%~3"=="" if NOT "%~3"=="skipwait" (
     echo [ERROR] Invalid fourth parameter! Leave empty or use 'skipwait'.
-    if not "%~4"=="skipwait" pause
+    pause
     exit /b 1
 )
 
@@ -59,14 +47,14 @@ if NOT "%~4"=="" if NOT "%~4"=="skipwait" (
 for /f "tokens=1-4 delims=:.," %%a in ("%TIME%") do set "TIME_START=%%a:%%b:%%c"
 
 :: Set build path dynamically
-set "buildPath=%rootDir%out/build/%~2-x64-%~3"
+set "buildPath=%rootDir%out/build/x64-%~2"
 
 :: Setup MSVC environment if selected
 if "%~2"=="msvc" (
     call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
     if %errorlevel% neq 0 (
         echo %prexc% Failed to initialize MSVC environment!
-        if not "%~4"=="skipwait" pause
+        if not "%~3"=="skipwait" pause
         exit /b 1
     )
 )
@@ -85,7 +73,7 @@ echo %cminf% Started build generation using %numCores% cores.
 cmake --build . -- -j%numCores%
 if %errorlevel% neq 0 (
     echo %cmexc% Build failed.
-    if not "%~4"=="skipwait" pause
+    if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
@@ -97,7 +85,7 @@ echo ---------------------------------------------
 echo Build duration: %TIME_START% - %TIME_END%
 echo ---------------------------------------------
 
-if not "%~4"=="skipwait" pause
+if not "%~3"=="skipwait" pause
 exit /b 0
 
 :cmake
@@ -106,17 +94,17 @@ if exist "%buildPath%" rd /S /Q "%buildPath%"
 mkdir "%buildPath%"
 if %errorlevel% neq 0 (
     echo %prcln% Failed to create build directory!
-    if not "%~4"=="skipwait" pause
+    if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
 cd /d "%buildPath%"
 
 :: Configure the project
-cmake --preset %~2-x64-%~3 -S "%sourcePath%"
+cmake --preset x64-%~2 -S "%sourcePath%"
 if %errorlevel% neq 0 (
     echo %cmexc% Configuration failed.
-    if not "%~4"=="skipwait" pause
+    if not "%~3"=="skipwait" pause
     exit /b 1
 )
 

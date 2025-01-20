@@ -2,7 +2,7 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "windows-msvc-base",
+            "name": "windows-base",
             "hidden": true,
             "generator": "Ninja",
             "cacheVariables": {
@@ -16,10 +16,10 @@
             }
         },
         {
-            "name": "msvc-x64-debug",
-            "displayName": "MSVC X64 Debug",
-            "inherits": "windows-msvc-base",
-			"binaryDir": "${sourceDir}/out/build/msvc-x64-debug",
+            "name": "x64-debug",
+            "displayName": "X64 Debug",
+            "inherits": "windows-base",
+			"binaryDir": "${sourceDir}/out/build/x64-debug",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -29,54 +29,10 @@
             }
         },
         {
-            "name": "msvc-x64-release",
-            "displayName": "MSVC X64 Release",
-            "inherits": "windows-msvc-base",
-			"binaryDir": "${sourceDir}/out/build/msvc-x64-release",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-		{
-            "name": "windows-clang-base",
-            "hidden": true,
-            "generator": "Ninja",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "C:/BuildTools/mingw-bin/bin/clang.exe",
-                "CMAKE_CXX_COMPILER": "C:/BuildTools/mingw-bin/bin/clang++.exe",
-                "CMAKE_RC_COMPILER": "windres",
-                "CMAKE_C_FLAGS": "--target=x86_64-w64-mingw32 -fuse-ld=lld",
-                "CMAKE_CXX_FLAGS": "--target=x86_64-w64-mingw32 -fuse-ld=lld -pthread",
-                "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "clang-x64-debug",
-            "displayName": "CLang X64 Debug",
-            "inherits": "windows-clang-base",
-			"binaryDir": "${sourceDir}/out/build/clang-x64-debug",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "clang-x64-release",
-            "displayName": "CLang X64 Release",
-            "inherits": "windows-clang-base",
-			"binaryDir": "${sourceDir}/out/build/clang-x64-release",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
+            "name": "x64-release",
+            "displayName": "X64 Release",
+            "inherits": "msvc-base",
+			"binaryDir": "${sourceDir}/out/build/x64-release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }

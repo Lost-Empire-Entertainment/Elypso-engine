@@ -70,21 +70,11 @@ target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
 if (WIN32)
-	if (MSVC)
-        # Using MSVC
-		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/msvc-release/glfw3dll.lib")
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/msvc-debug/glfw3dll.lib")
-		endif()
-    else()
-        # Using MinGW or other toolchains
-        if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/clang-release/libglfw3dll.a")
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/clang-debug/libglfw3dll.a")
-		endif()
-    endif()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/release/glfw3dll.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/debug/glfw3dll.lib")
+	endif()
 else()
 	find_package(glfw3 REQUIRED)
 endif()
@@ -96,25 +86,13 @@ endif()
 
 # Add Assimp
 if (WIN32)
-	if (MSVC)
-		# Using MSVC
-		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/msvc-release/assimp-vc143-mt.lib")
-			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/msvc-release/zlibstatic.lib")
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/msvc-debug/assimp-vc143-mtd.lib")
-			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/msvc-debug/zlibstaticd.lib")
-		endif()
-    else()
-		# Using CLang or other toolchains
-		if(CMAKE_BUILD_TYPE STREQUAL "Release")
-			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-release/libassimp.dll.a")
-			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/clang-release/libzlibstatic.a")
-		elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-			set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/clang-debug/libassimpd.dll.a")
-			set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/clang-debug/libzlibstaticd.a")
-		endif()
-    endif()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/release/assimp-vc143-mt.lib")
+		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/release/zlibstatic.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/debug/assimp-vc143-mtd.lib")
+		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/debug/zlibstaticd.lib")
+	endif()
 else()
 	find_package(assimp REQUIRED)
 endif()
@@ -205,11 +183,7 @@ target_include_directories(Elypso_engine PRIVATE
 target_include_directories(Elypso_engine PRIVATE ${ENGINE_INCLUDE_DIRS})
 
 if (WIN32)
-	if (MSVC)
-		target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
-	else()
-		target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} opengl32 gdi32 user32)
-	endif()
+	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
 else()
 	target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
 endif()
@@ -247,65 +221,40 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 
 # Copy Assimp DLL to the install directory after build
 if (WIN32)
-    if (MSVC)
-        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
-        if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-release/assimp-vc143-mt.dll")
-            set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll")
-        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-debug/assimp-vc143-mtd.dll")
-            set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.dll")
-        endif()
-
-    else()
-        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
-        if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-release/libassimp-5.dll")
-            set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/libassimp-5.dll")
-        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-debug/libassimp-5d.dll")
-            set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/libassimp-5d.dll")
-        endif()
+    set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/release/assimp-vc143-mt.dll")
+        set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/debug/assimp-vc143-mtd.dll")
+        set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.dll")
     endif()
 
-    if(DLL_ORIGIN AND DLL_TARGET)
-        add_custom_command(TARGET Elypso_engine POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E remove 
-			"${DLL_TARGET}"
-            COMMAND ${CMAKE_COMMAND} -E copy 
-			"${DLL_ORIGIN}" 
-			"${DLL_TARGET}"
-        )
-    endif()
+    add_custom_command(TARGET Elypso_engine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove 
+		${DLL_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E copy 
+		${DLL_ORIGIN}
+		${DLL_TARGET}
+    )
 endif()
 
 # Copy GLFW DLL to the install directory after build
 if (WIN32)
-    if (MSVC)
-        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
-        if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-release/glfw3.dll")
-        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/msvc-debug/glfw3.dll")
-        endif()
-    else()
-        set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
-        if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-release/glfw3.dll")
-        elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/clang-debug/glfw3.dll")
-        endif()
+    set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/release/glfw3.dll")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/debug/glfw3.dll")
     endif()
 
-    if(DLL_ORIGIN)
-        add_custom_command(TARGET Elypso_engine POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E remove 
-			"$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll"
-            COMMAND ${CMAKE_COMMAND} -E copy 
-			"${DLL_ORIGIN}" 
-			"$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll"
-        )
-    endif()
+    add_custom_command(TARGET Elypso_engine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove 
+		"$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll"
+        COMMAND ${CMAKE_COMMAND} -E copy 
+		"${DLL_ORIGIN}" 
+		"$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll"
+    )
 endif()
 
 # Copy discord dll to the install directory after build
