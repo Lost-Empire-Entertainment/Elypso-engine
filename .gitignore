@@ -3,9 +3,11 @@ Engine/build/
 Engine/.vs/
 Engine/out/
 Engine/Elypso engine.lib
+Engine/Elypso engineD.lib
 Engine/libElypso engine.a
+Engine/libElypso engineD.a
 
-# Engine library
+# Engine library ignored files and folders
 Engine library/build/
 Engine library/.vs/
 Engine library/out/
@@ -15,4 +17,6 @@ Game/build/
 Game/.vs/
 Game/out/
 Game/Elypso engine.lib
+Game/Elypso engineD.lib
 Game/libElypso engine.a
+Game/libElypso engineD.a

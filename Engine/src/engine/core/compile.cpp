@@ -202,49 +202,41 @@ namespace Core
 		}
 
 #ifdef _WIN32
-		string origin = (path(engineRootFolder) / "Elypso engine.lib").string();
-		string target = (path(gameRootFolder) / "Elypso engine.lib").string();
+		string origin{};
+		string target{};
+		string releaseType{};
 
-		if (!exists(origin))
-		{
-			origin = (path(engineRootFolder) / "libElypso engine.a").string();
-			if (!exists(origin))
-			{
-				cout << "Path to origin lib: " << origin << "\n";
-				Engine::CreateErrorPopup("Game failed to compile because the path to elypso engine library is invalid!");
-			
-				target = (path(gameRootFolder) / "libElypso engine.a").string();
-			}
-		}
+#ifdef NDEBUG
+		releaseType = "release";
+		origin = (path(engineRootFolder) / "Elypso engine.lib").string();
+		target = (path(gameRootFolder) / "Elypso engine.lib").string();
+#else
+		releaseType = "debug";
+		origin = (path(engineRootFolder) / "Elypso engineD.lib").string();
+		target = (path(gameRootFolder) / "Elypso engineD.lib").string();
+#endif
 
 		File::CopyFileOrFolder(origin, target);
 
 		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
-		string origin = (path(engineRootFolder) / "libElypso engine.a").string();
-		string target = (path(gameRootFolder) / "libElypso engine.a").string();
+		string origin{};
+		string target{};
+
+#ifdef NDEBUG
+		origin = (path(engineRootFolder) / "libElypso engine.a").string();
+		target = (path(gameRootFolder) / "libElypso engine.a").string();
+#else
+		origin = (path(engineRootFolder) / "libElypso engineD.a").string();
+		target = (path(gameRootFolder) / "libElypso engineD.a").string();
+#endif
+
 		File::CopyFileOrFolder(origin, target);
 
 		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
 #endif
 
 		string command = "";
-		string assimpDLLName = GetAssimpDLLName();
-		if (assimpDLLName == "")
-		{
-			cout << "engine folder: " << current_path().string() << "\n";
-			Engine::CreateErrorPopup("Failed to find assimp dll from engine folder!");
-		}
-
-		string msvc_release = "assimp-vc143-mt.dll";
-		string msvc_debug = "assimp-vc143-mtd.dll";
-		string releaseType{};
-
-		if (assimpDLLName == msvc_release 
-			|| assimpDLLName == msvc_debug)
-		{
-			releaseType = (assimpDLLName == msvc_release) ? "release" : "debug";
-		}
 
 		switch (installerType)
 		{
@@ -312,23 +304,6 @@ namespace Core
 #endif
 	}
 
-	string Compilation::GetAssimpDLLName()
-	{
-		string enginePath = current_path().string();
-		cout << "engine path: " << enginePath << "\n";
-
-		string msvc_release = "assimp-vc143-mt.dll";
-		string msvc_debug = "assimp-vc143-mtd.dll";
-
-		for (const auto& file : directory_iterator(enginePath))
-		{
-			if (path(file).filename().string() == msvc_release) return msvc_release;
-			else if (path(file).filename().string() == msvc_debug) return msvc_debug;
-		}
-
-		return "";
-	}
-
 	void Compilation::RenderBuildingWindow()
 	{
 		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
@@ -367,6 +342,13 @@ namespace Core
 				{
 					ImGui::TextWrapped("%s", message.c_str());
 
+					/*
+					* 
+					* DISABLED COPYING BUILD WINDOW TEXT
+					* UNTIL I BOTHER TO FIX THE ODD CRASH
+					* THAT THIS CAUSES IN VS2022 IN DEBUG MODE
+					* WHEN I BUILD A GAME
+					* 
 					if (ImGui::IsItemClicked()
 						&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 					{
@@ -376,6 +358,7 @@ namespace Core
 							"Added '" + message + "' to clipboard.\n");
 						ImGui::SetClipboardText(message.c_str());
 					}
+					*/
 				}
 
 				ImGui::PopTextWrapPos();

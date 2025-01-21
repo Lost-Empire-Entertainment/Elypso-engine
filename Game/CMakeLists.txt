@@ -173,9 +173,17 @@ target_include_directories(Game PRIVATE
 )
 
 if (WIN32)
-	target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} "${CMAKE_SOURCE_DIR}/Elypso engineD.lib")
+	endif()
 else()
-	target_link_libraries(Game PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		target_link_libraries(Game PRIVATE external_libs glfw assimp ${X11_LIBRARIES} "${CMAKE_SOURCE_DIR}/libElypso engine.a")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		target_link_libraries(Game PRIVATE external_libs glfw assimp ${X11_LIBRARIES} "${CMAKE_SOURCE_DIR}/libElypso engineD.a")
+	endif()
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK
@@ -201,11 +209,11 @@ add_custom_command(TARGET Game POST_BUILD
 if (WIN32)
     set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/release/assimp-vc143-mt.dll")
-        set(DLL_TARGET "$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll")
+        set(DLL_ORIGIN1 "${DLL_ORIGIN_BASE}/release/assimp-vc143-mt.dll")
+        set(DLL_TARGET1 "$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/debug/assimp-vc143-mtd.dll")
-        set(DLL_TARGET "$<TARGET_FILE_DIR:Game>/assimp-vc143-mtd.dll")
+        set(DLL_ORIGIN1 "${DLL_ORIGIN_BASE}/debug/assimp-vc143-mtd.dll")
+        set(DLL_TARGET1 "$<TARGET_FILE_DIR:Game>/assimp-vc143-mtd.dll")
     endif()
 
     add_custom_command(TARGET Game POST_BUILD

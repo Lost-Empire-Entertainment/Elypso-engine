@@ -138,7 +138,11 @@ list(APPEND SOURCE_FILES
 
 # Build as static library
 add_library(Elypso_engine STATIC ${SOURCE_FILES})
-set_target_properties(Elypso_engine PROPERTIES OUTPUT_NAME "Elypso engine")
+
+# Set the library output name based on the build type
+set_target_properties(Elypso_engine PROPERTIES 
+    OUTPUT_NAME "Elypso engine$<$<CONFIG:Debug>:D>"
+)
 
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
