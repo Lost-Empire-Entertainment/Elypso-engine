@@ -179,14 +179,10 @@ namespace Core
 
 		string parentFolder = current_path().stem().string();
 		//if engine is ran from repository or visual studio folder
-		string clangRelease = "clang-x64-release";
-		string clangDebug = "clang-x64-debug";
-		string msvcRelease = "msvc-x64-release";
-		string msvcDebug = "msvc-x64-debug";
+		string msvcRelease = "x64-release";
+		string msvcDebug = "x64-debug";
 
-		if (parentFolder == clangRelease
-			|| parentFolder == clangDebug
-			|| parentFolder == msvcRelease
+		if (parentFolder == msvcRelease
 			|| parentFolder == msvcDebug)
 		{
 			engineRootFolder = (current_path().parent_path().parent_path().parent_path()).string();
@@ -242,22 +238,12 @@ namespace Core
 
 		string msvc_release = "assimp-vc143-mt.dll";
 		string msvc_debug = "assimp-vc143-mtd.dll";
-		string clang_release = "libassimp-5.dll";
-		string clang_debug = "libassimp-5d.dll";
-		string compilerType{};
 		string releaseType{};
 
 		if (assimpDLLName == msvc_release 
 			|| assimpDLLName == msvc_debug)
 		{
-			compilerType = "msvc";
 			releaseType = (assimpDLLName == msvc_release) ? "release" : "debug";
-		}
-		else if (assimpDLLName == clang_release 
-			|| assimpDLLName == clang_debug)
-		{
-			compilerType = "clang";
-			releaseType = (assimpDLLName == clang_release) ? "release" : "debug";
 		}
 
 		switch (installerType)
@@ -265,7 +251,7 @@ namespace Core
 		case InstallerType::reset:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" cmake " + compilerType + " " + releaseType + " skipwait";
+			command = "cmd /c \"" + gameBuilder + "\" cmake " + releaseType + " skipwait";
 #elif __linux__
 			command = "bash \"" + gameBuilder + "\" cmake skipwait";
 #endif
@@ -274,7 +260,7 @@ namespace Core
 		case InstallerType::compile:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" build " + compilerType + " " + releaseType + " skipwait";
+			command = "cmd /c \"" + gameBuilder + "\" build " + releaseType + " skipwait";
 #elif __linux__
 			command = "bash \"" + gameBuilder + "\" build skipwait";
 #endif
@@ -333,15 +319,11 @@ namespace Core
 
 		string msvc_release = "assimp-vc143-mt.dll";
 		string msvc_debug = "assimp-vc143-mtd.dll";
-		string clang_release = "libassimp-5.dll";
-		string clang_debug = "libassimp-5d.dll";
 
 		for (const auto& file : directory_iterator(enginePath))
 		{
 			if (path(file).filename().string() == msvc_release) return msvc_release;
 			else if (path(file).filename().string() == msvc_debug) return msvc_debug;
-			else if (path(file).filename().string() == clang_release) return clang_release;
-			else if (path(file).filename().string() == clang_debug) return clang_debug;
 		}
 
 		return "";
@@ -533,31 +515,7 @@ namespace Core
 				Caller::FILE,
 				Type::DEBUG,
 				output);
-
-			//then check if clang is valid
-			if (!exists(newPath))
-			{
-				output = "Failed to find game exe at '" + newPath + "'. Trying another compiler folder path.\n";
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::DEBUG,
-					output);
-
-				newPath = (path(parentFolder) / "clang" / gameName).string();
-				if (!exists(newPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Failed to find game game exe from " + newPath + "!\n");
-
-					return false;
-				}
-				Engine::gameExePath = newPath;
-				return true;
-			}
 		}
-
 		return true;
 	}
 }

@@ -26,19 +26,19 @@ if NOT "%~1"=="build" if NOT "%~1"=="cmake" (
 )
 
 if "%~2"=="" (
-    echo [ERROR] Empty third parameter detected! Use 'release' or 'debug'.
+    echo [ERROR] Empty second parameter detected! Use 'release' or 'debug'.
     if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
 if NOT "%~2"=="release" if NOT "%~2"=="debug" (
-    echo [ERROR] Invalid third parameter! Use 'release' or 'debug'.
+    echo [ERROR] Invalid second parameter! Use 'release' or 'debug'.
     if not "%~3"=="skipwait" pause
     exit /b 1
 )
 
 if NOT "%~3"=="" if NOT "%~3"=="skipwait" (
-    echo [ERROR] Invalid fourth parameter! Leave empty or use 'skipwait'.
+    echo [ERROR] Invalid third parameter! Leave empty or use 'skipwait'.
     pause
     exit /b 1
 )
@@ -49,14 +49,12 @@ for /f "tokens=1-4 delims=:.," %%a in ("%TIME%") do set "TIME_START=%%a:%%b:%%c"
 :: Set build path dynamically
 set "buildPath=%rootDir%out/build/x64-%~2"
 
-:: Setup MSVC environment if selected
-if "%~2"=="msvc" (
-    call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
-    if %errorlevel% neq 0 (
-        echo %prexc% Failed to initialize MSVC environment!
-        if not "%~3"=="skipwait" pause
-        exit /b 1
-    )
+:: Set up MSVC environment
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+if %errorlevel% neq 0 (
+    echo %prexc% Failed to initialize MSVC environment!
+    if not "%~3"=="skipwait" pause
+    exit /b 1
 )
 
 :: Execute build or CMake configuration

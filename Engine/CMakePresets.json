@@ -31,7 +31,7 @@
         {
             "name": "x64-release",
             "displayName": "X64 Release",
-            "inherits": "msvc-base",
+            "inherits": "windows-base",
 			"binaryDir": "${sourceDir}/out/build/x64-release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"

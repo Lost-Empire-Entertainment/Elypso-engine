@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.22)
+﻿cmake_minimum_required (VERSION 3.29.5)
 
 if (WIN32)
 	# Enable hot reload for MSVC
@@ -38,13 +38,6 @@ set(PARENT_DIR_PATH "${PARENT_DIR}")
 # Specify resource file for Windows
 if (WIN32)
     set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
-endif()
-
-# Used for copying "Elypso engine.lib" to game exe folder
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(BUILD_FOLDER "x64-debug")
-elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(BUILD_FOLDER "x64-release")
 endif()
 
 # Set src and include file paths
@@ -180,7 +173,7 @@ target_include_directories(Game PRIVATE
 )
 
 if (WIN32)
-	target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
+	target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
 else()
 	target_link_libraries(Game PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
 endif()
@@ -242,27 +235,6 @@ if (WIN32)
     )
 endif()
 
-# Copy Elypso engine library to the install directory after build
-if (WIN32)
-	set(LIB_NAME "Elypso engine.lib")
-	if (CMAKE_BUILD_TYPE STREQUAL "Release")
-		set(BUILD_FOLDER "x64-release")
-	elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(BUILD_FOLDER "x64-debug")
-	endif()
-
-	set(LIB_ORIGIN "${CMAKE_SOURCE_DIR}/${LIB_NAME}")
-	set(LIB_TARGET "${CMAKE_SOURCE_DIR}/out/build/${BUILD_FOLDER}/${LIB_NAME}")
-
-	add_custom_command(TARGET Game POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E remove
-		${LIB_TARGET}
-		COMMAND ${CMAKE_COMMAND} -E copy
-		${LIB_ORIGIN}
-		${LIB_TARGET}
-	)
-endif()
-
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK
 # add_custom_command(TARGET Game POST_BUILD
@@ -289,7 +261,7 @@ add_custom_command(TARGET Game POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove
     $<TARGET_FILE_DIR:Game>/LICENSE.md
     COMMAND ${CMAKE_COMMAND} -E copy
-    LICENSE.md
+    ${CMAKE_SOURCE_DIR}/LICENSE.md
     $<TARGET_FILE_DIR:Game>/LICENSE.md
 )
 
