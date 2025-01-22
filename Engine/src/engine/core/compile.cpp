@@ -201,37 +201,51 @@ namespace Core
 			Engine::CreateErrorPopup("Failed to assign path to game builder!");
 		}
 
+		cout << "game root folder: " << gameRootFolder << "\n";
+
 #ifdef _WIN32
-		string origin{};
-		string target{};
+		string originLib{};
+		string targetLib{};
+		string originDLL{};
+		string targetDLL{};
 		string releaseType{};
 
 #ifdef NDEBUG
 		releaseType = "release";
-		origin = (path(engineRootFolder) / "Elypso engine.lib").string();
-		target = (path(gameRootFolder) / "Elypso engine.lib").string();
+		originLib = (path(engineRootFolder) / "Elypso engine.lib").string();
+		targetLib = (path(gameRootFolder) / "Elypso engine.lib").string();
+		originDLL = (path(engineRootFolder) / "Elypso_engine.dll").string();
+		targetDLL = (path(gameRootFolder) / "Elypso_engine.dll").string();
 #else
 		releaseType = "debug";
-		origin = (path(engineRootFolder) / "Elypso engineD.lib").string();
-		target = (path(gameRootFolder) / "Elypso engineD.lib").string();
+		originLib = (path(engineRootFolder) / "Elypso engineD.lib").string();
+		targetLib = (path(gameRootFolder) / "Elypso engineD.lib").string();
+		originDLL = (path(engineRootFolder) / "Elypso_engineD.dll").string();
+		targetDLL = (path(gameRootFolder) / "Elypso_engineD.dll").string();
 #endif
 
-		File::CopyFileOrFolder(origin, target);
+		File::CopyFileOrFolder(originLib, targetLib);
+		File::CopyFileOrFolder(originDLL, targetDLL);
 
 		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
-		string origin{};
-		string target{};
+		string originLib{};
+		string targetLib{};
 
 #ifdef NDEBUG
-		origin = (path(engineRootFolder) / "libElypso engine.a").string();
-		target = (path(gameRootFolder) / "libElypso engine.a").string();
+		originLib = (path(engineRootFolder) / "libElypso engine.a").string();
+		targetLib = (path(gameRootFolder) / "libElypso engine.a").string();
+		originDLL = (path(engineRootFolder) / "libElypso_engine.dll").string();
+		targetDLL = (path(gameRootFolder) / "libElypso_engine.dll").string();
 #else
-		origin = (path(engineRootFolder) / "libElypso engineD.a").string();
-		target = (path(gameRootFolder) / "libElypso engineD.a").string();
+		originLib = (path(engineRootFolder) / "libElypso engineD.a").string();
+		targetLib = (path(gameRootFolder) / "libElypso engineD.a").string();
+		originDLL = (path(engineRootFolder) / "libElypso_engineD.dll").string();
+		targetDLL = (path(gameRootFolder) / "libElypso_engineD.dll").string();
 #endif
 
-		File::CopyFileOrFolder(origin, target);
+		File::CopyFileOrFolder(originLib, targetLib);
+		File::CopyFileOrFolder(originDLL, targetDLL);
 
 		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
 #endif
