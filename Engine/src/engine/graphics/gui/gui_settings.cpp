@@ -5,6 +5,7 @@
 #if ENGINE_MODE
 #include <cmath>
 #include <filesystem>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -37,6 +38,7 @@ using std::round;
 using glm::value_ptr;
 using std::exception;
 using std::filesystem::path;
+using std::cout;
 
 using EngineFile::SceneFile;
 using Graphics::GUI::GUIConsole;
@@ -159,22 +161,12 @@ namespace Graphics::GUI
 	{
 		if (skyboxTextures.empty())
 		{
-			skyboxTextures["right"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["left"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["top"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["bottom"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["front"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["back"] = (path("textures") / "skybox_default.png").string();
-
-			vector<string> appliedSkyboxTextures
-			{
-				skyboxTextures["right"],
-				skyboxTextures["left"],
-				skyboxTextures["top"],
-				skyboxTextures["bottom"],
-				skyboxTextures["front"],
-				skyboxTextures["back"]
-			};
+			skyboxTextures["right"] = SceneFile::skyboxTexturesMap["right"];
+			skyboxTextures["left"] = SceneFile::skyboxTexturesMap["left"];
+			skyboxTextures["top"] = SceneFile::skyboxTexturesMap["top"];
+			skyboxTextures["bottom"] = SceneFile::skyboxTexturesMap["bottom"];
+			skyboxTextures["front"] = SceneFile::skyboxTexturesMap["front"];
+			skyboxTextures["back"] = SceneFile::skyboxTexturesMap["back"];
 		}
 
 		ImGui::Text("Skybox textures");
@@ -243,21 +235,23 @@ namespace Graphics::GUI
 
 		if (ImGui::Button("Apply"))
 		{
+			SceneFile::skyboxTexturesMap["right"] = skyboxTextures["right"];
+			SceneFile::skyboxTexturesMap["left"] = skyboxTextures["left"];
+			SceneFile::skyboxTexturesMap["top"] = skyboxTextures["top"];
+			SceneFile::skyboxTexturesMap["bottom"] = skyboxTextures["bottom"];
+			SceneFile::skyboxTexturesMap["front"] = skyboxTextures["front"];
+			SceneFile::skyboxTexturesMap["back"] = skyboxTextures["back"];
+
 			vector<string> appliedSkyboxTextures
 			{
-				skyboxTextures["right"],
-				skyboxTextures["left"],
-				skyboxTextures["top"],
-				skyboxTextures["bottom"],
-				skyboxTextures["front"],
-				skyboxTextures["back"]
+				SceneFile::skyboxTexturesMap["right"],
+				SceneFile::skyboxTexturesMap["left"],
+				SceneFile::skyboxTexturesMap["top"],
+				SceneFile::skyboxTexturesMap["bottom"],
+				SceneFile::skyboxTexturesMap["front"],
+				SceneFile::skyboxTexturesMap["back"]
 			};
 			Skybox::AssignSkyboxTextures(appliedSkyboxTextures, false);
-
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INPUT,
-				Type::INFO,
-				"Successfully applied new skybox textures!");
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
@@ -265,21 +259,21 @@ namespace Graphics::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("Reset"))
 		{
-			skyboxTextures["right"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["left"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["top"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["bottom"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["front"] = (path("textures") / "skybox_default.png").string();
-			skyboxTextures["back"] = (path("textures") / "skybox_default.png").string();
+			SceneFile::skyboxTexturesMap["right"] = (path("textures") / "skybox_default.png").string();
+			SceneFile::skyboxTexturesMap["left"] = (path("textures") / "skybox_default.png").string();
+			SceneFile::skyboxTexturesMap["top"] = (path("textures") / "skybox_default.png").string();
+			SceneFile::skyboxTexturesMap["bottom"] = (path("textures") / "skybox_default.png").string();
+			SceneFile::skyboxTexturesMap["front"] = (path("textures") / "skybox_default.png").string();
+			SceneFile::skyboxTexturesMap["back"] = (path("textures") / "skybox_default.png").string();
 
 			vector<string> appliedSkyboxTextures
 			{
-				skyboxTextures["right"],
-				skyboxTextures["left"],
-				skyboxTextures["top"],
-				skyboxTextures["bottom"],
-				skyboxTextures["front"],
-				skyboxTextures["back"]
+				SceneFile::skyboxTexturesMap["right"],
+				SceneFile::skyboxTexturesMap["left"],
+				SceneFile::skyboxTexturesMap["top"],
+				SceneFile::skyboxTexturesMap["bottom"],
+				SceneFile::skyboxTexturesMap["front"],
+				SceneFile::skyboxTexturesMap["back"]
 			};
 			Skybox::AssignSkyboxTextures(appliedSkyboxTextures, false);
 

@@ -225,7 +225,6 @@ namespace Graphics::Shape
 			&& obj != nullptr)
 		{
 			string txtFilePath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
-			cout << "???? txt file path: " << txtFilePath << "\n";
 			if (exists(txtFilePath))
 			{
 				auto mesh = obj->GetComponent<MeshComponent>();

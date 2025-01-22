@@ -16,6 +16,7 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "sceneFile.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -31,6 +32,7 @@ using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using EngineFile::SceneFile;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -149,46 +151,155 @@ namespace Graphics::Shape
 
     void Skybox::AssignSkyboxTextures(vector<string> textures, bool flipTextures)
     {
-        unsigned int textureID;
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
         int width, height, nrChannels;
+        bool invalidTexture = false;
+
+        vector<string> resolution{};
+
+        int firstChannelCount{};
+        vector<int> channelCount{};
+
+        //first for loop loops through all texture files and stores their width and height
         for (unsigned int i = 0; i < textures.size(); i++)
         {
-            stbi_set_flip_vertically_on_load(flipTextures);
-
             string texturePath = path(textures[i]).stem().string() != "skybox_default"
                 ? (path(Engine::projectPath) / textures[i]).string()
                 : (path(Engine::filesPath) / textures[i]).string();
             unsigned char* data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
             if (data)
             {
-                GLenum format{};
-                if (nrChannels == 1) format = GL_RED;
-                else if (nrChannels == 3) format = GL_RGB;
-                else if (nrChannels == 4) format = GL_RGBA;
+                string value = to_string(width) + "x" + to_string(height);
+                resolution.push_back(value);
+                channelCount.push_back(nrChannels);
 
-                glTexImage2D(
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    0,
-                    format,
-                    width,
-                    height,
-                    0,
-                    format,
-                    GL_UNSIGNED_BYTE,
-                    data);
-                stbi_image_free(data);
+                if (i == 0) firstChannelCount = nrChannels;
             }
             else
             {
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::EXCEPTION,
-                    "Error: Failed to load skybox texture at '" + texturePath + "'.\n");
+                    "Error: Failed to load skybox texture at '" + texturePath + "'! All skybox textures have been reset.\n");
+
+                invalidTexture = true;
                 stbi_image_free(data);
             }
+        }
+
+        //second for loop checks if all the resolution values are the same but only if all textures loaded correctly
+        if (!invalidTexture)
+        {
+            string firstResolution{};
+            string firstExtension{};
+            for (unsigned int i = 0; i < resolution.size(); i++)
+            {
+                string texture = textures[i];
+                string value = resolution[i];
+
+                if (i == 0)
+                {
+                    firstResolution = resolution[i];
+                    firstExtension = path(textures[i]).extension().string();
+                    continue;
+                }
+
+                if (resolution[i] != firstResolution)
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::EXCEPTION,
+                        "Error: One or more skybox textures don't have the same resolution as the rest! All skybox textures have been reset.\n");
+
+                    invalidTexture = true;
+                    break;
+                }
+
+                if (path(textures[i]).extension().string() != firstExtension)
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::EXCEPTION,
+                        "Error: One or more skybox textures don't have the same extension as the rest! All skybox textures have been reset.\n");
+
+                    invalidTexture = true;
+                    break;
+                }
+
+                if (channelCount[i] != firstChannelCount)
+                {
+                    ConsoleManager::WriteConsoleMessage(
+                        Caller::FILE,
+                        Type::EXCEPTION,
+                        "Error: One or more skybox textures don't have the same channel count as the rest! All skybox textures have been reset.\n");
+
+                    invalidTexture = true;
+                    break;
+                }
+            }
+        }
+
+        //third for loop is ran if one or more textures are incorrect, this resets all skybox textures
+        vector<string> finalTexturesList{};
+        bool changedTextureList = false;
+        if (invalidTexture)
+        {
+            finalTexturesList.push_back((path("textures") / "skybox_default.png").string());
+            finalTexturesList.push_back((path("textures") / "skybox_default.png").string());
+            finalTexturesList.push_back((path("textures") / "skybox_default.png").string());
+            finalTexturesList.push_back((path("textures") / "skybox_default.png").string());
+            finalTexturesList.push_back((path("textures") / "skybox_default.png").string());
+            finalTexturesList.push_back((path("textures") / "skybox_default.png").string());
+
+            SceneFile::skyboxTexturesMap.clear();
+            SceneFile::skyboxTexturesMap["right"] = (path("textures") / "skybox_default.png").string();
+            SceneFile::skyboxTexturesMap["left"] = (path("textures") / "skybox_default.png").string();
+            SceneFile::skyboxTexturesMap["top"] = (path("textures") / "skybox_default.png").string();
+            SceneFile::skyboxTexturesMap["bottom"] = (path("textures") / "skybox_default.png").string();
+            SceneFile::skyboxTexturesMap["front"] = (path("textures") / "skybox_default.png").string();
+            SceneFile::skyboxTexturesMap["back"] = (path("textures") / "skybox_default.png").string();
+
+            changedTextureList = true;
+        }
+        else 
+        {
+            finalTexturesList = textures;
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Successfully applied new skybox textures!");
+        }
+
+        unsigned int textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+        //fourth and final for loop finally loads each texture
+        for (unsigned int i = 0; i < finalTexturesList.size(); i++)
+        {
+            stbi_set_flip_vertically_on_load(flipTextures);
+
+            string texturePath = path(finalTexturesList[i]).stem().string() != "skybox_default"
+                ? (path(Engine::projectPath) / finalTexturesList[i]).string()
+                : (path(Engine::filesPath) / finalTexturesList[i]).string();
+            unsigned char* data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
+
+            GLenum format{};
+            if (nrChannels == 1) format = GL_RED;
+            else if (nrChannels == 3) format = GL_RGB;
+            else if (nrChannels == 4) format = GL_RGBA;
+
+            glTexImage2D(
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0,
+                format,
+                width,
+                height,
+                0,
+                format,
+                GL_UNSIGNED_BYTE,
+                data);
+            stbi_image_free(data);
         }
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -197,6 +308,8 @@ namespace Graphics::Shape
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
         skyboxTexture = textureID;
+
+        if (changedTextureList) SceneFile::SaveScene();
     }
 
 	void Skybox::RenderSkybox(

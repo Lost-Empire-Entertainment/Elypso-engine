@@ -130,8 +130,6 @@ namespace Graphics::GUI
 				if (ImGui::Selectable(items[i], currentItem == i))
 				{
 					currentItem = i;
-					cout << "Selected " << items[i] << "\n";
-
 					if (strcmp(items[i], "Mesh") == 0)
 					{
 						auto existingMesh = Select::selectedObj->GetComponent<MeshComponent>();

@@ -197,11 +197,8 @@ namespace Core
 		if (gameRootFolder == ""
 			|| !exists(gameRootFolder))
 		{
-			cout << "game root folder: " << gameRootFolder << "\n";
 			Engine::CreateErrorPopup("Failed to assign path to game builder!");
 		}
-
-		cout << "game root folder: " << gameRootFolder << "\n";
 
 #ifdef _WIN32
 		string originLib{};

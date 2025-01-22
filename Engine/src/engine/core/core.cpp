@@ -464,8 +464,6 @@ namespace Core
 		//if neither one works then engine cannot proceed
 		if (!exists(gamePath))
 		{
-			cout << "parent folder: " << parentFolder << "\n";
-			cout << "game path: " << gamePath << "\n";
 			CreateErrorPopup("Failed to find game template folder!");
 		}
 #endif
