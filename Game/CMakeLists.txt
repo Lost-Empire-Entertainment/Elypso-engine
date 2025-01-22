@@ -207,39 +207,59 @@ add_custom_command(TARGET Game POST_BUILD
 
 # Copy Assimp DLL to the install directory after build
 if (WIN32)
-    set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+    set(ASSIMP_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(DLL_ORIGIN1 "${DLL_ORIGIN_BASE}/release/assimp-vc143-mt.dll")
-        set(DLL_TARGET1 "$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll")
+        set(ASSIMP_DLL_ORIGIN "${ASSIMP_DLL_ORIGIN_BASE}/release/assimp-vc143-mt.dll")
+        set(ASSIMP_DLL_TARGET "$<TARGET_FILE_DIR:Game>/assimp-vc143-mt.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(DLL_ORIGIN1 "${DLL_ORIGIN_BASE}/debug/assimp-vc143-mtd.dll")
-        set(DLL_TARGET1 "$<TARGET_FILE_DIR:Game>/assimp-vc143-mtd.dll")
+        set(ASSIMP_DLL_ORIGIN "${ASSIMP_DLL_ORIGIN_BASE}/debug/assimp-vc143-mtd.dll")
+        set(ASSIMP_DLL_TARGET "$<TARGET_FILE_DIR:Game>/assimp-vc143-mtd.dll")
     endif()
 
     add_custom_command(TARGET Game POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove 
-		${DLL_TARGET}
+		${ASSIMP_DLL_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy 
-		${DLL_ORIGIN}
-		${DLL_TARGET}
+		${ASSIMP_DLL_ORIGIN}
+		${ASSIMP_DLL_TARGET}
     )
 endif()
 
 # Copy GLFW DLL to the install directory after build
 if (WIN32)
-    set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+    set(GLFW_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+	set(GLFW_DLL_TARGET "$<TARGET_FILE_DIR:Game>/glfw3.dll")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/release/glfw3.dll")
+        set(GLFW_DLL_ORIGIN "${GLFW_DLL_ORIGIN_BASE}/release/glfw3.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/debug/glfw3.dll")
+        set(GLFW_DLL_ORIGIN "${GLFW_DLL_ORIGIN_BASE}/debug/glfw3.dll")
     endif()
 
     add_custom_command(TARGET Game POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove 
-		"$<TARGET_FILE_DIR:Game>/glfw3.dll"
+		${GLFW_DLL_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy 
-		"${DLL_ORIGIN}" 
-		"$<TARGET_FILE_DIR:Game>/glfw3.dll"
+		${GLFW_DLL_ORIGIN}
+		${GLFW_DLL_TARGET}
+    )
+endif()
+
+# Copy Elypso engine DLL to the output directory after build
+if (WIN32)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(ELYPSO_DLL_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso_engine.dll")
+		set(ELYPSO_DLL_TARGET "$<TARGET_FILE_DIR:Game>/Elypso_engine.dll")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(ELYPSO_DLL_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso_engineD.dll")
+		set(ELYPSO_DLL_TARGET "$<TARGET_FILE_DIR:Game>/Elypso_engineD.dll")
+    endif()
+
+    add_custom_command(TARGET Game POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove 
+		${ELYPSO_DLL_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E copy 
+		${ELYPSO_DLL_ORIGIN}
+		${ELYPSO_DLL_TARGET}
     )
 endif()
 

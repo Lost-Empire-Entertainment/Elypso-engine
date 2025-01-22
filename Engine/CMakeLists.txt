@@ -221,39 +221,40 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 
 # Copy Assimp DLL to the install directory after build
 if (WIN32)
-    set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+    set(ASSIMP_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/release/assimp-vc143-mt.dll")
-        set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll")
+        set(ASSIMP_DLL_ORIGIN "${ASSIMP_DLL_ORIGIN_BASE}/release/assimp-vc143-mt.dll")
+        set(ASSIMP_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mt.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/debug/assimp-vc143-mtd.dll")
-        set(DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.dll")
+        set(ASSIMP_DLL_ORIGIN "${ASSIMP_DLL_ORIGIN_BASE}/debug/assimp-vc143-mtd.dll")
+        set(ASSIMP_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/assimp-vc143-mtd.dll")
     endif()
 
     add_custom_command(TARGET Elypso_engine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove 
-		${DLL_TARGET}
+		${ASSIMP_DLL_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy 
-		${DLL_ORIGIN}
-		${DLL_TARGET}
+		${ASSIMP_DLL_ORIGIN}
+		${ASSIMP_DLL_TARGET}
     )
 endif()
 
 # Copy GLFW DLL to the install directory after build
 if (WIN32)
-    set(DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+    set(GLFW_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+	set(GLFW_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/release/glfw3.dll")
+        set(GLFW_DLL_ORIGIN "${GLFW_DLL_ORIGIN_BASE}/release/glfw3.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(DLL_ORIGIN "${DLL_ORIGIN_BASE}/debug/glfw3.dll")
+        set(GLFW_DLL_ORIGIN "${GLFW_DLL_ORIGIN_BASE}/debug/glfw3.dll")
     endif()
 
     add_custom_command(TARGET Elypso_engine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove 
-		"$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll"
+		${GLFW_DLL_TARGET}
         COMMAND ${CMAKE_COMMAND} -E copy 
-		"${DLL_ORIGIN}" 
-		"$<TARGET_FILE_DIR:Elypso_engine>/glfw3.dll"
+		${GLFW_DLL_ORIGIN}
+		${GLFW_DLL_TARGET}
     )
 endif()
 
