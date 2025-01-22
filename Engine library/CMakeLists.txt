@@ -136,68 +136,58 @@ list(APPEND SOURCE_FILES
 	# ${DISCORD_SRC_FILES}
 )
 
-# Build shared (.dll or .so) and static (.lib or .a) libraries
-add_library(Elypso_engine_shared SHARED ${SOURCE_FILES})
-add_library(Elypso_engine_static STATIC ${SOURCE_FILES})
 
-# Set the output names based on build type for clarity
-set_target_properties(Elypso_engine_shared PROPERTIES 
-    OUTPUT_NAME "Elypso_engine$<$<CONFIG:Debug>:D>"
-)
-set_target_properties(Elypso_engine_static PROPERTIES 
+# Build as static library
+add_library(Elypso_engine STATIC ${SOURCE_FILES})
+
+# Set the library output name based on the build type
+set_target_properties(Elypso_engine PROPERTIES 
     OUTPUT_NAME "Elypso engine$<$<CONFIG:Debug>:D>"
 )
 
-# Common compile features for both shared and static libraries
-foreach(TARGET_NAME Elypso_engine_shared Elypso_engine_static)
-    target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
+target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
-    target_include_directories(${TARGET_NAME} PRIVATE
-        ${GAME_INCLUDE_DIR}/core
-        ${ENGINE_INCLUDE_DIR}/core
-        ${ENGINE_INCLUDE_DIR}/file
-        ${ENGINE_INCLUDE_DIR}/graphics
-        ${ENGINE_INCLUDE_DIR}/graphics/components
-        ${ENGINE_INCLUDE_DIR}/graphics/gui
-        ${ENGINE_INCLUDE_DIR}/graphics/shapes
-        ${ENGINE_INCLUDE_DIR}/physics
-        ${ENGINE_INCLUDE_DIR}/utils
-        ${EXT_ASSIMP_DIR}
-        ${EXT_GLAD_DIR}
-        ${EXT_GLFW_DIR}
-        ${EXT_GLM_DIR}
-        ${EXT_GLM_DIR}/detail
-        ${EXT_GLM_DIR}/ext
-        ${EXT_GLM_DIR}/gtc
-        ${EXT_GLM_DIR}/gtx
-        ${EXT_GLM_DIR}/simd
-        ${EXT_MAGIC_ENUM_DIR}
-        ${EXT_IMGUI_DIR}
-        ${EXT_STB_IMAGE_DIR}
-        # UNCOMMENT TO USE DISCORD GAME SDK
-        # ${EXT_DISCORD_DIR}/include
-    )
+target_include_directories(Elypso_engine PRIVATE
+		${GAME_INCLUDE_DIR}/core
+		${ENGINE_INCLUDE_DIR}/core
+		${ENGINE_INCLUDE_DIR}/file
+		${ENGINE_INCLUDE_DIR}/graphics
+		${ENGINE_INCLUDE_DIR}/graphics/components
+		${ENGINE_INCLUDE_DIR}/graphics/gui
+		${ENGINE_INCLUDE_DIR}/graphics/shapes
+		${ENGINE_INCLUDE_DIR}/physics
+		${ENGINE_INCLUDE_DIR}/utils
+		${EXT_ASSIMP_DIR}
+		${EXT_GLAD_DIR}
+		${EXT_GLFW_DIR}
+		${EXT_GLM_DIR}
+		${EXT_GLM_DIR}/detail
+		${EXT_GLM_DIR}/ext
+		${EXT_GLM_DIR}/gtc
+		${EXT_GLM_DIR}/gtx
+		${EXT_GLM_DIR}/simd
+		${EXT_MAGIC_ENUM_DIR}
+		${EXT_IMGUI_DIR}
+		${EXT_STB_IMAGE_DIR}
+		# UNCOMMENT TO USE DISCORD GAME SDK
+		# ${EXT_DISCORD_DIR}/include
+)
 
-    # Define GLFW_INCLUDE_NONE for each build
-    target_compile_definitions(${TARGET_NAME} PRIVATE GLFW_INCLUDE_NONE)
-endforeach()
-
-# Link the appropriate libraries for Windows and Linux
 if (WIN32)
-    target_link_libraries(Elypso_engine_shared PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
-    target_link_libraries(Elypso_engine_static PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
+	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
 else()
-    target_link_libraries(Elypso_engine_shared PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
-    target_link_libraries(Elypso_engine_static PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+	target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK
-# target_link_libraries(Elypso_engine_shared PUBLIC ${DISCORD_LIBRARY_PATH})
-# target_link_libraries(Elypso_engine_static PUBLIC ${DISCORD_LIBRARY_PATH})
+# target_link_libraries(Elypso_engine PUBLIC ${DISCORD_LIBRARY_PATH})
+
+# Define GLFW_INCLUDE_NONE
+target_compile_definitions(Elypso_engine PRIVATE GLFW_INCLUDE_NONE)
 
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)
-install(TARGETS Elypso_engine_shared Elypso_engine_static DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS Elypso_engine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Include CPack to enable packaging
 include(CPack)

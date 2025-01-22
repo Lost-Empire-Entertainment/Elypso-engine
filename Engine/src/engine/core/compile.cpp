@@ -206,26 +206,19 @@ namespace Core
 #ifdef _WIN32
 		string originLib{};
 		string targetLib{};
-		string originDLL{};
-		string targetDLL{};
 		string releaseType{};
 
 #ifdef NDEBUG
 		releaseType = "release";
 		originLib = (path(engineRootFolder) / "Elypso engine.lib").string();
 		targetLib = (path(gameRootFolder) / "Elypso engine.lib").string();
-		originDLL = (path(engineRootFolder) / "Elypso_engine.dll").string();
-		targetDLL = (path(gameRootFolder) / "Elypso_engine.dll").string();
 #else
 		releaseType = "debug";
 		originLib = (path(engineRootFolder) / "Elypso engineD.lib").string();
 		targetLib = (path(gameRootFolder) / "Elypso engineD.lib").string();
-		originDLL = (path(engineRootFolder) / "Elypso_engineD.dll").string();
-		targetDLL = (path(gameRootFolder) / "Elypso_engineD.dll").string();
 #endif
 
 		File::CopyFileOrFolder(originLib, targetLib);
-		File::CopyFileOrFolder(originDLL, targetDLL);
 
 		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
@@ -235,17 +228,12 @@ namespace Core
 #ifdef NDEBUG
 		originLib = (path(engineRootFolder) / "libElypso engine.a").string();
 		targetLib = (path(gameRootFolder) / "libElypso engine.a").string();
-		originDLL = (path(engineRootFolder) / "libElypso_engine.dll").string();
-		targetDLL = (path(gameRootFolder) / "libElypso_engine.dll").string();
 #else
 		originLib = (path(engineRootFolder) / "libElypso engineD.a").string();
 		targetLib = (path(gameRootFolder) / "libElypso engineD.a").string();
-		originDLL = (path(engineRootFolder) / "libElypso_engineD.dll").string();
-		targetDLL = (path(gameRootFolder) / "libElypso_engineD.dll").string();
 #endif
 
 		File::CopyFileOrFolder(originLib, targetLib);
-		File::CopyFileOrFolder(originDLL, targetDLL);
 
 		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
 #endif

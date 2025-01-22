@@ -244,25 +244,6 @@ if (WIN32)
     )
 endif()
 
-# Copy Elypso engine DLL to the output directory after build
-if (WIN32)
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(ELYPSO_DLL_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso_engine.dll")
-		set(ELYPSO_DLL_TARGET "$<TARGET_FILE_DIR:Game>/Elypso_engine.dll")
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(ELYPSO_DLL_ORIGIN "${CMAKE_SOURCE_DIR}/Elypso_engineD.dll")
-		set(ELYPSO_DLL_TARGET "$<TARGET_FILE_DIR:Game>/Elypso_engineD.dll")
-    endif()
-
-    add_custom_command(TARGET Game POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove 
-		${ELYPSO_DLL_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E copy 
-		${ELYPSO_DLL_ORIGIN}
-		${ELYPSO_DLL_TARGET}
-    )
-endif()
-
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK
 # add_custom_command(TARGET Game POST_BUILD
