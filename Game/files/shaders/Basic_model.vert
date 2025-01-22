@@ -1,4 +1,4 @@
-//Copyright (c) <2024> <Lost Empire Entertainment>
+//Copyright (c) <2025> <Lost Empire Entertainment>
 
 #version 330 core
 layout (location = 0) in vec3 aPos;
