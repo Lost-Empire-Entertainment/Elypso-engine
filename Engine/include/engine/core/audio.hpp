@@ -7,20 +7,20 @@
 
 #include <string>
 
-using std::string;
-
-namespace Audio
+namespace Core
 {
-	class AudioCore
+	using std::string;
+
+	class Audio
 	{
 	public:
-		AudioCore();
-		~AudioCore();
-
 		static bool Initialize();
 
 		static bool Import(const string& path);
 		static bool Play(const string& path);
+		static bool Delete(const string& path);
+
+		static bool IsImported(const string& path);
 
 		static void Shutdown();
 	};

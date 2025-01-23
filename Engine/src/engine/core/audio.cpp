@@ -5,13 +5,14 @@
 
 #include <unordered_map>
 #include <memory>
+#include <filesystem>
 
 //external
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
 //engine
-#include "audio_core.hpp"
+#include "audio.hpp"
 #include "console.hpp"
 
 using Core::ConsoleManager;
@@ -22,19 +23,14 @@ using std::unordered_map;
 using std::unique_ptr;
 using std::make_unique;
 using std::move;
+using std::filesystem::exists;
 
-namespace Audio
+namespace Core
 {
     static ma_engine engine;
     unordered_map<string, unique_ptr<ma_sound>> soundMap;
 
-    AudioCore::AudioCore() {}
-    AudioCore::~AudioCore()
-    {
-        Shutdown();
-    }
-
-    bool AudioCore::Initialize()
+    bool Audio::Initialize()
     {
         ma_result result = ma_engine_init(NULL, &engine);
         if (result != MA_SUCCESS)
@@ -54,8 +50,17 @@ namespace Audio
         return true;
     }
 
-    bool AudioCore::Import(const string& path)
+    bool Audio::Import(const string& path)
     {
+        if (!exists(path))
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot import audio file because it is not found: " + path + "\n");
+            return false;
+        }
+
         if (soundMap.find(path) != soundMap.end())
         {
             ConsoleManager::WriteConsoleMessage(
@@ -86,17 +91,18 @@ namespace Audio
         return true;
     }
 
-    bool AudioCore::Play(const string& path)
+    bool Audio::Play(const string& path)
     {
-        auto it = soundMap.find(path);
-        if (it == soundMap.end())
+        if (!IsImported(path))
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot play audio file because it is not found: " + path + "\n");
+                "Error: Cannot play audio file because it has not been imported: " + path + "\n");
             return false;
         }
+
+        auto it = soundMap.find(path);
 
         ma_result result = ma_sound_start(it->second.get());
         if (result != MA_SUCCESS)
@@ -116,7 +122,37 @@ namespace Audio
         return true;
     }
 
-    void AudioCore::Shutdown()
+    bool Audio::Delete(const string& path)
+    {
+        if (!IsImported(path))
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot delete audio file because it has not been imported: " + path + "\n");
+            return false;
+        }
+
+        auto it = soundMap.find(path);
+
+        ma_sound_uninit(it->second.get());
+        soundMap.erase(it);
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::DEBUG,
+            "Successfully deleted audio file: " + path + "\n");
+
+        return true;
+    }
+
+    bool Audio::IsImported(const string& path)
+    {
+        auto it = soundMap.find(path);
+        return it != soundMap.end();
+    }
+
+    void Audio::Shutdown()
     {
         ma_engine_uninit(&engine);
     }

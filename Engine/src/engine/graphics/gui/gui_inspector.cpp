@@ -38,6 +38,7 @@
 #include "spotlight.hpp"
 #include "pointlight.hpp"
 #include "billboard.hpp"
+#include "audioplayercomponent.hpp"
 
 using std::cout;
 using std::endl;
@@ -55,6 +56,7 @@ using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
 using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
+using Graphics::Components::AudioPlayerComponent;
 using MeshType = Graphics::Components::MeshComponent::MeshType;
 using EngineFile::SceneFile;
 using Core::Input;
@@ -104,12 +106,14 @@ namespace Graphics::GUI
 				auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
 				auto mat = Select::selectedObj->GetComponent<MaterialComponent>();
 				auto light = Select::selectedObj->GetComponent<LightComponent>();
+				auto audioPlayer = Select::selectedObj->GetComponent<AudioPlayerComponent>();
 
 				Component_GameObject();
 				Component_Transform();
 				if (mesh) Component_Mesh();
 				if (mat) Component_Material();
 				if (light) Component_Light();
+				if (audioPlayer) Component_AudioPlayer();
 			}
 
 			ImGui::End();
@@ -1212,6 +1216,61 @@ namespace Graphics::GUI
 			}
 			ImGui::EndCombo();
 		}
+	}
+
+	void GUIInspector::Component_AudioPlayer()
+	{
+		auto& obj = Select::selectedObj;
+		auto audioPlayer = obj->GetComponent<AudioPlayerComponent>();
+
+		float height = 50.0f;
+
+		ImGuiChildFlags childWindowFlags{};
+
+		ImGui::BeginChild("Audio player", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+
+		ImGui::Text("Audio player");
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+		if (ImGui::Button("X"))
+		{
+			obj->RemoveComponent<LightComponent>();
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		bool isPlaying = audioPlayer->isPlaying;
+		if (ImGui::Checkbox("Enable gameobject", &isPlaying))
+		{
+			string fullAudioPath = audioPlayer->audioFilePath;
+			string audioFile = path(fullAudioPath).filename().string();
+			if (isPlaying)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::DEBUG,
+					"Playing audio file '" + audioFile + "'.\n");
+			}
+			else
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::DEBUG,
+					"No longer playing audio file '" + audioFile + "'.\n");
+			}
+		}
+
+		if (ImGui::Button("Set path"))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleCaller::INPUT,
+				ConsoleType::DEBUG,
+				"assign path\n");
+		}
+
+		ImGui::EndChild();
 	}
 }
 #endif

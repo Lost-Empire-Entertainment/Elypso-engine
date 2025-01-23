@@ -33,7 +33,7 @@
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
-#include "audio_core.hpp"
+#include "audio.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
@@ -64,7 +64,6 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
-using Audio::AudioCore;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
@@ -476,16 +475,7 @@ namespace Core
 
 		Render::RenderSetup();
 
-		bool success = AudioCore::Initialize();
-
-		if (success)
-		{
-			string songPath = (current_path() / "song.mp3").string();
-			if (Audio::AudioCore::Import(songPath))
-			{
-				Audio::AudioCore::Play(songPath);
-			}
-		}
+		Audio::Initialize();
 
 		string lastSavedScenePath = (path(Engine::docsPath) / "lastSavedScene.txt").string();
 		//attempt to load last saved scene
@@ -831,7 +821,7 @@ namespace Core
 					Type::INFO,
 					"Cleaning up resources...\n");
 
-				AudioCore::Shutdown();
+				Audio::Shutdown();
 #if ENGINE_MODE
 				EngineGUI::Shutdown();
 #else

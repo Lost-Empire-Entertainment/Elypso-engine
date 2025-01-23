@@ -137,7 +137,6 @@ list(APPEND SOURCE_FILES
 	# ${DISCORD_SRC_FILES}
 )
 
-
 # Build as static library
 add_library(Elypso_engine STATIC ${SOURCE_FILES})
 
@@ -158,7 +157,6 @@ target_include_directories(Elypso_engine PRIVATE
 		${ENGINE_INCLUDE_DIR}/graphics/shapes
 		${ENGINE_INCLUDE_DIR}/physics
 		${ENGINE_INCLUDE_DIR}/utils
-		${ENGINE_INCLUDE_DIR}/audio
 		${EXT_ASSIMP_DIR}
 		${EXT_GLAD_DIR}
 		${EXT_GLFW_DIR}

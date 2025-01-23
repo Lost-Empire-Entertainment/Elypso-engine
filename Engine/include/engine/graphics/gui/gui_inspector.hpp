@@ -24,6 +24,7 @@ namespace Graphics::GUI
 		static void Component_Mesh();
 		static void Component_Material();
 		static void Component_Light();
+		static void Component_AudioPlayer();
 	};
 }
 #endif
