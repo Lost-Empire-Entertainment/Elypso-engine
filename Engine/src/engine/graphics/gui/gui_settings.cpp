@@ -280,7 +280,7 @@ namespace Graphics::GUI
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INPUT,
 				Type::INFO,
-				"Successfully reset skybox textures to default values!");
+				"Successfully reset skybox textures to default values!\n");
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}

@@ -1,0 +1,6 @@
+Original repository link:
+https://github.com/mackron/miniaudio
+
+Changes:
+- downloaded dev branch
+- deleted all files except miniaudio.h

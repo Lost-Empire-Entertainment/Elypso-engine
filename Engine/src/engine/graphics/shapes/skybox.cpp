@@ -267,7 +267,7 @@ namespace Graphics::Shape
             ConsoleManager::WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
-                "Successfully applied new skybox textures!");
+                "Successfully applied new skybox textures!\n");
         }
 
         unsigned int textureID;

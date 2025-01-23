@@ -61,6 +61,7 @@ set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
+set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
 # UNCOMMENT TO USE DISCORD GAME SDK
 # set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Discord")
 
@@ -157,6 +158,7 @@ target_include_directories(Elypso_engine PRIVATE
 		${ENGINE_INCLUDE_DIR}/graphics/shapes
 		${ENGINE_INCLUDE_DIR}/physics
 		${ENGINE_INCLUDE_DIR}/utils
+		${ENGINE_INCLUDE_DIR}/audio
 		${EXT_ASSIMP_DIR}
 		${EXT_GLAD_DIR}
 		${EXT_GLFW_DIR}
@@ -169,6 +171,7 @@ target_include_directories(Elypso_engine PRIVATE
 		${EXT_MAGIC_ENUM_DIR}
 		${EXT_IMGUI_DIR}
 		${EXT_STB_IMAGE_DIR}
+		${EXT_MINIAUDIO_DIR}
 		# UNCOMMENT TO USE DISCORD GAME SDK
 		# ${EXT_DISCORD_DIR}/include
 )
