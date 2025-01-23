@@ -26,7 +26,7 @@ namespace Graphics::GUI
 		static void RenderConsole();
 		static void AddTextToConsole(const string& message);
 	private:
-		static inline char inputTextBuffer[128];
+		static inline char inputTextBuffer[1024];
 		static constexpr int maxConsoleMessages = 1000;
 	};
 }

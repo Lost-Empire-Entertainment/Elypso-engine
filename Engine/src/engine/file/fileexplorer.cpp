@@ -22,6 +22,7 @@ using std::wstring;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using std::to_string;
 #ifdef __linux__
 using std::array;
 #endif
@@ -34,13 +35,13 @@ namespace EngineFile
 	{
 #ifdef _WIN32
 		//initialize COM
-		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-		if (FAILED(hr))
+		HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+		if (FAILED(hr) && hr != S_FALSE)
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"File Explorer error: Failed to initialize COM!\n");
+				"File Explorer error: Failed to initialize COM! HRESULT: " + std::to_string(hr) + "\n");
 			return "";
 		}
 
@@ -57,7 +58,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"File Explorer error: Failed to create File Open dialog!\n");
+				"File Explorer error: Failed to create File Open dialog! HRESULT: " + to_string(hr) + "\n");
 			CoUninitialize();
 			return "";
 		}
@@ -72,7 +73,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"File Explorer error: Failed to set file filter!\n");
+					"File Explorer error: Failed to set file filter! HRESULT: " + to_string(hr) + "\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -90,7 +91,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"File Explorer error: Failed to set file filter!\n");
+					"File Explorer error: Failed to set file filter! HRESULT: " + to_string(hr) + "\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -110,7 +111,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"File Explorer error: Failed to set file filter!\n");
+					"File Explorer error: Failed to set file filter! HRESULT: " + to_string(hr) + "\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -128,7 +129,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"File Explorer error: Failed to set file filter!\n");
+					"File Explorer error: Failed to set file filter! HRESULT: " + to_string(hr) + "\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -146,7 +147,7 @@ namespace EngineFile
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"File Explorer error: Failed to set file filter!\n");
+					"File Explorer error: Failed to set file filter! HRESULT: " + to_string(hr) + "\n");
 				pFileOpen->Release();
 				CoUninitialize();
 				return "";
@@ -166,7 +167,7 @@ namespace EngineFile
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
-						"File Explorer error: Failed to set options!\n");
+						"File Explorer error: Failed to set options! HRESULT: " + to_string(hr) + "\n");
 					pFileOpen->Release();
 					CoUninitialize();
 					return "";

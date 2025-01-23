@@ -260,20 +260,6 @@ if (WIN32)
     )
 endif()
 
-# Copy test audio file to the install directory after build
-if (WIN32)
-    set(SONG_ORIGIN "${CMAKE_SOURCE_DIR}/song.mp3")
-	set(SONG_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/song.mp3")
-
-    add_custom_command(TARGET Elypso_engine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove 
-		${SONG_TARGET}
-        COMMAND ${CMAKE_COMMAND} -E copy 
-		${SONG_ORIGIN}
-		${SONG_TARGET}
-    )
-endif()
-
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK
 # add_custom_command(TARGET Elypso_engine POST_BUILD

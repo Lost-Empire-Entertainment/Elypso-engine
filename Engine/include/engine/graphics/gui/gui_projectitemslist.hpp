@@ -35,7 +35,8 @@ namespace Graphics::GUI
 			SkyboxTexture_back,
 			GameobjectTexture,
 			GameobjectModel,
-			Scene
+			Scene,
+			Audio
 		};
 
 		static inline bool renderProjectItemsList;

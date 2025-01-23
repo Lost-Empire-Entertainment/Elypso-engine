@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
 #include <filesystem>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -29,6 +30,7 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::exception;
 using std::filesystem::directory_iterator;
+using std::cout;
 
 using Graphics::Shape::Importer;
 using EngineFile::SceneFile;
@@ -191,6 +193,29 @@ namespace Graphics::GUI
 				File::CopyFileOrFolder(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			//
+			// IMPORT AUDIO FILE
+			//
+
+			else if (extension == ".mp3"
+					 || extension == ".flac"
+					 || extension == ".wav")
+			{
+				cout << "import audio file start...\n";
+
+				string audioFilename = newName + extension;
+				string audioFolder = (path(Engine::projectPath) / "audio").string();
+				if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
+
+				string newFilePath =
+					(path(audioFolder) / audioFilename).string();
+				File::CopyFileOrFolder(assetPath, newFilePath);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+				cout << "import audio file end...\n";
 			}
 
 			renderImportAsset = false;

@@ -17,34 +17,42 @@ namespace Graphics::Components
 	class AudioPlayerComponent : public Component
 	{
 	public:
-		enum class AudioType
-		{
-			music,
-			sfx
-		};
+		AudioPlayerComponent(
+			const bool& isPlaying = false,
+			const bool& isPaused = false,
+			const bool& is3D = false,
+			const float& volume = 50.0f,
+			const float& minVolume = 0.0f, 
+			const float& maxVolume = 100.0f) :
+			isPlaying(isPlaying),
+			isPaused(isPaused),
+			is3D(is3D),
+			volume(volume),
+			minVolume(minVolume),
+			maxVolume(maxVolume) {}
 
-		static inline bool isPlaying;
-		static inline bool is2D;
+		void SetPlayState(bool state) { isPlaying = state; }
+		void SetPauseState(bool state) { isPaused = state; }
+		void Set2DState(bool state) { is3D = state; }
+		void SetVolume(float newVolume) { volume = newVolume; }
+		void SetPath(string newPath) { audioFilePath = newPath; }
 
-		static inline float volume;
-		static inline float minVolume;
-		static inline float maxVolume;
+		bool IsPlaying() const { return isPlaying; }
+		bool IsPaused() const { return isPaused; }
+		bool Is3D() const { return is3D; }
+		float GetVolume() const { return volume; }
+		float GetMinVolume() const { return minVolume; }
+		float GetMaxVolume() const { return maxVolume; }
+		string GetPath() const { return audioFilePath; }
 
-		static inline string audioFilePath;
-
-		/// <summary>
-		/// Import an audio file with a specific path.
-		/// </summary>
-		static bool Import(const string& path);
-
-		/// <summary>
-		/// Play an audio file with a specific path.
-		/// </summary>
-		static bool Play(const string& path);
-
-		/// <summary>
-		/// Remove an audio file from the project with a specific path.
-		/// </summary>
-		static void Delete(const string& path);
+		type_index GetType() const override { return typeid(AudioPlayerComponent); }
+	private:
+		bool isPlaying;
+		bool isPaused;
+		bool is3D;
+		float volume;
+		float minVolume;
+		float maxVolume;
+		string audioFilePath;
 	};
 }

@@ -343,7 +343,10 @@ namespace Graphics::GUI
 						&& extension != ".obj"
 						&& extension != ".png"
 						&& extension != ".jpg"
-						&& extension != ".jpeg")
+						&& extension != ".jpeg"
+						&& extension != ".mp3"
+						&& extension != ".flac"
+						&& extension != ".wav")
 					{
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,

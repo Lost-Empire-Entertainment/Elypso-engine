@@ -39,6 +39,7 @@
 #include "pointlight.hpp"
 #include "billboard.hpp"
 #include "audioplayercomponent.hpp"
+#include "audio.hpp"
 
 using std::cout;
 using std::endl;
@@ -73,6 +74,7 @@ using Graphics::Shape::DirectionalLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::Billboard;
+using Core::Audio;
 
 namespace Graphics::GUI
 {
@@ -122,7 +124,7 @@ namespace Graphics::GUI
 
 	void GUIInspector::AddComponent()
 	{
-		const char* items[] = { "Mesh", "Material", "Light" };
+		const char* items[] = { "Mesh", "Material", "Light", "Audio player"};
 		static int currentItem = -1;
 
 		const char* currentLabel = (currentItem >= 0) ? items[currentItem] : "Add component";
@@ -181,6 +183,18 @@ namespace Graphics::GUI
 								1.0f,
 								1.0f);
 						}
+					}
+					else if (strcmp(items[i], "Audio player") == 0)
+					{
+						auto existingAudioPlayer = Select::selectedObj->GetComponent<AudioPlayerComponent>();
+						if (existingAudioPlayer)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: " + Select::selectedObj->GetName() + " already has a audio player component!");
+						}
+						else Select::selectedObj->AddComponent<AudioPlayerComponent>();
 					}
 
 					currentItem = -1;
@@ -857,9 +871,9 @@ namespace Graphics::GUI
 					vec3 oldRot = Select::selectedObj->GetTransform()->GetRotation();
 					vec3 oldScale = Select::selectedObj->GetTransform()->GetScale();
 
-					auto obj = Select::selectedObj;
+					auto& obj = Select::selectedObj;
 					string oldTxtPath = obj->GetTxtFilePath();
-					auto oldBillboard = obj->GetChildBillboard();
+					auto& oldBillboard = obj->GetChildBillboard();
 					vec3 oldBillboardPos = obj->GetTransform()->GetPosition();
 					unsigned int oldBillboardID = Select::selectedObj->GetChildBillboard()->GetID();
 
@@ -1223,7 +1237,7 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto audioPlayer = obj->GetComponent<AudioPlayerComponent>();
 
-		float height = 50.0f;
+		float height = 300.0f;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -1241,33 +1255,109 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		bool isPlaying = audioPlayer->isPlaying;
-		if (ImGui::Checkbox("Enable gameobject", &isPlaying))
+		bool isPlaying = audioPlayer->IsPlaying();
+		string playButtonName = isPlaying ? "Stop" : "Play";
+		if (ImGui::Button(playButtonName.c_str()))
 		{
-			string fullAudioPath = audioPlayer->audioFilePath;
-			string audioFile = path(fullAudioPath).filename().string();
-			if (isPlaying)
+			string audioFile = audioPlayer->GetPath();
+			if (audioFile == "")
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::EXCEPTION,
+					"Error: Cannot play because no audio has been assigned!'\n");
+			}
+			else
+			{
+				audioPlayer->SetPlayState(!isPlaying);
+				if (isPlaying)
+				{
+					Audio::Play(audioFile);
+
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::INPUT,
+						ConsoleType::DEBUG,
+						"Playing audio file '" + audioFile + "'.\n");
+				}
+				else
+				{
+					Audio::Stop(audioFile);
+
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::INPUT,
+						ConsoleType::DEBUG,
+						"Stopped audio file '" + audioFile + "'.\n");
+				}
+			}
+		}
+
+		if (isPlaying)
+		{
+			bool isPaused = audioPlayer->IsPaused();
+			string pauseButtonName = isPaused ? "Continue" : "Pause";
+			if (ImGui::Button(pauseButtonName.c_str()))
+			{
+				audioPlayer->SetPauseState(!isPaused);
+
+				string audioFile = audioPlayer->GetPath();
+				if (isPaused)
+				{
+					Audio::Pause(audioFile);
+
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::INPUT,
+						ConsoleType::DEBUG,
+						"Paused audio file '" + audioFile + "'.\n");
+				}
+				else
+				{
+					Audio::Continue(audioFile);
+
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::INPUT,
+						ConsoleType::DEBUG,
+						"Continued audio file '" + audioFile + "'.\n");
+				}
+			}
+		}
+
+		bool is3D = audioPlayer->Is3D();
+		if (ImGui::Checkbox("Toggle 3D audio", &is3D))
+		{
+			audioPlayer->Set2DState(is3D);
+
+			string audioFile = path(audioPlayer->GetPath()).filename().string();
+			if (is3D)
 			{
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
 					ConsoleType::DEBUG,
-					"Playing audio file '" + audioFile + "'.\n");
+					"Set audio file '" + audioFile + " to 3D'.\n");
 			}
 			else
 			{
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
 					ConsoleType::DEBUG,
-					"No longer playing audio file '" + audioFile + "'.\n");
+					"Set audio file '" + audioFile + " to 2D'.\n");
 			}
 		}
 
 		if (ImGui::Button("Set path"))
 		{
-			ConsoleManager::WriteConsoleMessage(
-				ConsoleCaller::INPUT,
-				ConsoleType::DEBUG,
-				"assign path\n");
+			string audioFolder = (path(Engine::projectPath) / "audio").string();
+			if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
+
+			GUIProjectItemsList::obj = obj;
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::Audio;
+			GUIProjectItemsList::renderProjectItemsList = true;
+		}
+		if (ImGui::IsItemHovered())
+		{
+			string audioFileName = "Audio file: " + obj->GetComponent<AudioPlayerComponent>()->GetPath();
+			ImGui::BeginTooltip();
+			ImGui::Text(audioFileName.c_str());
+			ImGui::EndTooltip();
 		}
 
 		ImGui::EndChild();

@@ -24,7 +24,8 @@
 #include "gui_settings.hpp"
 #include "fileUtils.hpp"
 #include "importer.hpp"
-#include "gui_settings.hpp"
+#include "audioplayercomponent.hpp"
+#include "audio.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -44,6 +45,8 @@ using ConsoleType = Core::ConsoleManager::Type;
 using Utils::File;
 using Graphics::Shape::Importer;
 using Graphics::GUI::GUISettings;
+using Graphics::Components::AudioPlayerComponent;
+using Core::Audio;
 
 namespace Graphics::GUI
 {
@@ -74,6 +77,7 @@ namespace Graphics::GUI
 		else if (type == Type::GameobjectModel) listType = "Gameobject model";
 		else if (type == Type::GameobjectTexture) listType = "Gameobject texture";
 		else if (type == Type::Scene) listType = "Scene";
+		else if (type == Type::Audio) listType = "Audio";
 
 		if (renderProjectItemsList
 			&& ImGui::Begin(listType.c_str(), NULL, windowFlags))
@@ -153,6 +157,24 @@ namespace Graphics::GUI
 				}
 				break;
 			}
+			case Type::Audio:
+			{
+				string modelsFolder = (path(Engine::projectPath) / "audio").string();
+				for (const auto& entry : directory_iterator(modelsFolder))
+				{
+					if (is_regular_file(entry))
+					{
+						string extension = path(entry).extension().string();
+						if (extension == ".mp3"
+							|| extension == ".flac"
+							|| extension == ".wav")
+						{
+							content.push_back(entry.path().string());
+						}
+					}
+				}
+				break;
+			}
 			}
 
 			isContentVectorFilled = true;
@@ -191,6 +213,7 @@ namespace Graphics::GUI
 					case Type::SkyboxTexture_back:
 					case Type::GameobjectTexture:
 					case Type::GameobjectModel:
+					case Type::Audio:
 					{
 						selectedPath = entry;
 						break;
@@ -363,6 +386,15 @@ namespace Graphics::GUI
 				}
 
 				break;
+			}
+			case Type::Audio:
+			{
+				auto audioPlayerComponent = obj->GetComponent<AudioPlayerComponent>();
+				if (Audio::Import(selectedPath))
+				{
+					string audioFileName = path(selectedPath).filename().string();
+					audioPlayerComponent->SetPath(audioFileName);
+				}
 			}
 			}
 

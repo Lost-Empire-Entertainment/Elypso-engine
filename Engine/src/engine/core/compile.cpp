@@ -461,6 +461,7 @@ namespace Core
 					string stem = path(entry).stem().string();
 
 					if (stem != "models"
+						&& stem != "audio"
 						&& stem != "textures"
 						&& stem != "project")
 					{
