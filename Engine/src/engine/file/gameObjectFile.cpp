@@ -33,6 +33,7 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "audioplayercomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -77,6 +78,7 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::Texture;
 using Graphics::Shader;
 using Graphics::Shape::GameObject;
+using Graphics::Components::AudioPlayerComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -256,6 +258,20 @@ namespace EngineFile
 
 						data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
 					}
+				}
+
+				//
+				// AUDIO PLAYER DATA
+				//
+
+				auto apc = obj->GetComponent<AudioPlayerComponent>();
+				if (apc)
+				{
+					string audioFilePath = apc->GetPath();
+					float currVolume = apc->GetVolume();
+
+					data.push_back("audioFilePath= " + audioFilePath + "\n");
+					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
 				}
 
 				//
@@ -501,7 +517,9 @@ namespace EngineFile
 
 					|| key == "textures"
 					|| key == "model"
-					|| key == "shininess")
+					|| key == "shininess"
+					|| key == "audioFilePath"
+					|| key == "currentVolume")
 				{
 					data[key] = value;
 				}
@@ -525,6 +543,9 @@ namespace EngineFile
 		vector<string> textures{};
 		string model{};
 		float shininess{};
+
+		string audioFilePath{};
+		float currVolume{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -646,6 +667,14 @@ namespace EngineFile
 			{
 				shininess = stof(value);
 			}
+			else if (key == "audioFilePath")
+			{
+				audioFilePath = value;
+			}
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
 		}
 
 		//
@@ -743,6 +772,14 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, specularTexture, MaterialComponent::TextureType::specular, false);
 			Texture::LoadTexture(foundObj, normalTexture, MaterialComponent::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, MaterialComponent::TextureType::normal, false);
+
+			if (audioFilePath != ""
+				&& currVolume != 0.0f)
+			{
+				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
+				apc->SetPath(audioFilePath);
+				apc->SetVolume(currVolume);
+			}
 
 			/*
 			* 
