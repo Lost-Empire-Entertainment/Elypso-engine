@@ -1270,7 +1270,8 @@ namespace Graphics::GUI
 			else
 			{
 				audioPlayer->SetPlayState(!isPlaying);
-				if (isPlaying)
+				bool newPlayState = audioPlayer->IsPlaying();
+				if (newPlayState)
 				{
 					Audio::Play(audioFile);
 
@@ -1282,6 +1283,7 @@ namespace Graphics::GUI
 				else
 				{
 					Audio::Stop(audioFile);
+					audioPlayer->SetPauseState(false);
 
 					ConsoleManager::WriteConsoleMessage(
 						ConsoleCaller::INPUT,
@@ -1300,7 +1302,8 @@ namespace Graphics::GUI
 				audioPlayer->SetPauseState(!isPaused);
 
 				string audioFile = audioPlayer->GetPath();
-				if (isPaused)
+				bool newPauseState = audioPlayer->IsPaused();
+				if (newPauseState)
 				{
 					Audio::Pause(audioFile);
 

@@ -392,6 +392,11 @@ namespace Graphics::GUI
 				auto audioPlayerComponent = obj->GetComponent<AudioPlayerComponent>();
 				string audioFileName = path(selectedPath).filename().string();
 				audioPlayerComponent->SetPath(audioFileName);
+
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::INFO,
+					"Assigned audio file '" + audioFileName + "' to '" + obj->GetName() + "'.\n");
 			}
 			}
 

@@ -78,7 +78,7 @@ namespace Core
         }
 
         auto sound = make_unique<ma_sound>();
-        ma_result result = ma_sound_init_from_file(&engine, name.c_str(), 0, NULL, NULL, sound.get());
+        ma_result result = ma_sound_init_from_file(&engine, fullPath.c_str(), 0, NULL, NULL, sound.get());
         if (result != MA_SUCCESS)
         {
             ConsoleManager::WriteConsoleMessage(
@@ -92,7 +92,7 @@ namespace Core
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
-            Type::DEBUG,
+            Type::INFO,
             "Successfully imported audio file: " + name + "\n");
 
         return true;

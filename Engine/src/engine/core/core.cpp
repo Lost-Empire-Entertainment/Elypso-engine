@@ -486,8 +486,8 @@ namespace Core
 			{
 				string extension = path(audioFile).extension().string();
 				if (extension != ".mp3"
-					|| extension != ".flac"
-					|| extension != ".wav")
+					&& extension != ".flac"
+					&& extension != ".wav")
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
