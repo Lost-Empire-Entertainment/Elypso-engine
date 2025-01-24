@@ -390,11 +390,8 @@ namespace Graphics::GUI
 			case Type::Audio:
 			{
 				auto audioPlayerComponent = obj->GetComponent<AudioPlayerComponent>();
-				if (Audio::Import(selectedPath))
-				{
-					string audioFileName = path(selectedPath).filename().string();
-					audioPlayerComponent->SetPath(audioFileName);
-				}
+				string audioFileName = path(selectedPath).filename().string();
+				audioPlayerComponent->SetPath(audioFileName);
 			}
 			}
 

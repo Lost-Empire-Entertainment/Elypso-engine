@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <memory>
 #include <filesystem>
+#include <iostream>
 
 //external
 #define MINIAUDIO_IMPLEMENTATION
@@ -22,6 +23,7 @@ using std::make_unique;
 using std::move;
 using std::filesystem::exists;
 using std::filesystem::path;
+using std::cout;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -96,24 +98,27 @@ namespace Core
         return true;
     }
 
-    bool Audio::Play(const string& path)
+    bool Audio::Play(const string& name)
     {
-        if (!IsImported(path))
+        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        cout << "name: " << name << ", full path: " << fullPath << "\n";
+
+        if (!IsImported(name))
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot play audio file because it has not been imported: " + path + "\n");
+                "Error: Cannot play audio file because it has not been imported: " + fullPath + "\n");
             return false;
         }
 
-        auto it = soundMap.find(path);
+        auto it = soundMap.find(name);
         if (it == soundMap.end())
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Audio file not found in sound map: " + path + "\n");
+                "Error: Audio file not found in sound map: " + name + "\n");
             return false;
         }
 
@@ -124,7 +129,7 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Failed to reset audio playback position: " + path + "\n");
+                "Error: Failed to reset audio playback position: " + name + "\n");
             return false;
         }
 
@@ -134,35 +139,38 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Failed to play audio file: " + path + "\n");
+                "Error: Failed to play audio file: " + name + "\n");
             return false;
         }
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
             Type::DEBUG,
-            "Playing audio file from the beginning: " + path + "\n");
+            "Playing audio file from the beginning: " + name + "\n");
 
         return true;
     }
-    bool Audio::Stop(const string& path)
+    bool Audio::Stop(const string& name)
     {
-        if (!IsImported(path))
+        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        cout << "name: " << name << ", full path: " << fullPath << "\n";
+
+        if (!IsImported(name))
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot stop audio file because it has not been imported: " + path + "\n");
+                "Error: Cannot stop audio file because it has not been imported: " + fullPath + "\n");
             return false;
         }
 
-        auto it = soundMap.find(path);
+        auto it = soundMap.find(name);
         if (it == soundMap.end())
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Audio file not found in sound map: " + path + "\n");
+                "Error: Audio file not found in sound map: " + name + "\n");
             return false;
         }
 
@@ -172,7 +180,7 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Failed to stop audio file: " + path + "\n");
+                "Error: Failed to stop audio file: " + name + "\n");
             return false;
         }
 
@@ -183,36 +191,39 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Failed to reset audio playback position after stopping: " + path + "\n");
+                "Error: Failed to reset audio playback position after stopping: " + name + "\n");
             return false;
         }
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
             Type::DEBUG,
-            "Stopped audio file and reset position: " + path + "\n");
+            "Stopped audio file and reset position: " + name + "\n");
 
         return true;
     }
 
-    bool Audio::Pause(const string& path)
+    bool Audio::Pause(const string& name)
     {
-        if (!IsImported(path))
+        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        cout << "name: " << name << ", full path: " << fullPath << "\n";
+
+        if (!IsImported(name))
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot pause audio file because it has not been imported: " + path + "\n");
+                "Error: Cannot pause audio file because it has not been imported: " + fullPath + "\n");
             return false;
         }
 
-        auto it = soundMap.find(path);
+        auto it = soundMap.find(name);
         if (it == soundMap.end())
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Audio file not found in sound map: " + path + "\n");
+                "Error: Audio file not found in sound map: " + name + "\n");
             return false;
         }
 
@@ -222,29 +233,32 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Failed to pause audio file: " + path + "\n");
+                "Error: Failed to pause audio file: " + name + "\n");
             return false;
         }
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
             Type::DEBUG,
-            "Paused audio file: " + path + "\n");
+            "Paused audio file: " + name + "\n");
 
         return true;
     }
-    bool Audio::Continue(const string& path)
+    bool Audio::Continue(const string& name)
     {
-        if (!IsImported(path))
+        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        cout << "name: " << name << ", full path: " << fullPath << "\n";
+
+        if (!IsImported(name))
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot continue playing audio file because it has not been imported: " + path + "\n");
+                "Error: Cannot continue playing audio file because it has not been imported: " + fullPath + "\n");
             return false;
         }
 
-        auto it = soundMap.find(path);
+        auto it = soundMap.find(name);
 
         ma_result result = ma_sound_start(it->second.get());
         if (result != MA_SUCCESS)
@@ -252,30 +266,33 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Failed to continue playing audio file: " + path + "\n");
+                "Error: Failed to continue playing audio file: " + name + "\n");
             return false;
         }
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
             Type::DEBUG,
-            "Continuing playing audio file: " + path + "\n");
+            "Continuing playing audio file: " + name + "\n");
 
         return true;
     }
 
-    bool Audio::Delete(const string& path)
+    bool Audio::Delete(const string& name)
     {
-        if (!IsImported(path))
+        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        cout << "name: " << name << ", full path: " << fullPath << "\n";
+
+        if (!IsImported(name))
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot delete audio file because it has not been imported: " + path + "\n");
+                "Error: Cannot delete audio file because it has not been imported: " + name + "\n");
             return false;
         }
 
-        auto it = soundMap.find(path);
+        auto it = soundMap.find(name);
 
         ma_sound_uninit(it->second.get());
         soundMap.erase(it);
@@ -283,14 +300,17 @@ namespace Core
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
             Type::DEBUG,
-            "Successfully deleted audio file: " + path + "\n");
+            "Successfully deleted audio file: " + name + "\n");
 
         return true;
     }
 
-    bool Audio::IsImported(const string& path)
+    bool Audio::IsImported(const string& name)
     {
-        auto it = soundMap.find(path);
+        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        cout << "name: " << name << ", full path: " << fullPath << "\n";
+
+        auto it = soundMap.find(name);
         return it != soundMap.end();
     }
 

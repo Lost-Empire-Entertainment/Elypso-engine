@@ -477,6 +477,32 @@ namespace Core
 
 		Audio::Initialize();
 
+		//import all valid audio files
+		string audioFolder = (path(Engine::projectPath) / "audio").string();
+		if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
+		else
+		{
+			for (const auto& audioFile : directory_iterator(audioFolder))
+			{
+				string extension = path(audioFile).extension().string();
+				if (extension != ".mp3"
+					|| extension != ".flac"
+					|| extension != ".wav")
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Error: File '" + path(audioFile).string() + "' with extension '" + extension + "' was found in the audio folder and it is not an audio file! File will be deleted.\n");
+					File::DeleteFileOrfolder(path(audioFile).string());
+				}
+				else
+				{
+					string audioFileName = path(audioFile).filename().string();
+					Audio::Import(audioFileName);
+				}
+			}
+		}
+
 		string lastSavedScenePath = (path(Engine::docsPath) / "lastSavedScene.txt").string();
 		//attempt to load last saved scene
 		if (exists(lastSavedScenePath))
