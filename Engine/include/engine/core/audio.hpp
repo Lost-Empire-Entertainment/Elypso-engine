@@ -36,6 +36,8 @@ namespace Core
 		/// </summary>
 		static bool Continue(const string& path);
 
+		static void SetVolume(const string& path, float currVolume);
+
 		static bool Delete(const string& path);
 
 		static bool IsImported(const string& path);

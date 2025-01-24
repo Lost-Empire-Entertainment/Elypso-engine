@@ -21,29 +21,23 @@ namespace Graphics::Components
 			const bool& isPlaying = false,
 			const bool& isPaused = false,
 			const bool& is3D = false,
-			const float& volume = 50.0f,
-			const float& minVolume = 0.0f, 
-			const float& maxVolume = 100.0f) :
+			const float& volume = 50.0f) :
 			isPlaying(isPlaying),
 			isPaused(isPaused),
 			is3D(is3D),
-			volume(volume),
-			minVolume(minVolume),
-			maxVolume(maxVolume) {}
+			volume(volume) {}
 
 		void SetPlayState(bool state) { isPlaying = state; }
 		void SetPauseState(bool state) { isPaused = state; }
 		void Set2DState(bool state) { is3D = state; }
-		void SetVolume(float newVolume) { volume = newVolume; }
-		void SetPath(string newPath) { audioFilePath = newPath; }
+		void SetVolume(const string& name, float newVolume);
+		void SetName(string newName) { audioFileName = newName; }
 
 		bool IsPlaying() const { return isPlaying; }
 		bool IsPaused() const { return isPaused; }
 		bool Is3D() const { return is3D; }
 		float GetVolume() const { return volume; }
-		float GetMinVolume() const { return minVolume; }
-		float GetMaxVolume() const { return maxVolume; }
-		string GetPath() const { return audioFilePath; }
+		string GetName() const { return audioFileName; }
 
 		type_index GetType() const override { return typeid(AudioPlayerComponent); }
 	private:
@@ -51,8 +45,6 @@ namespace Graphics::Components
 		bool isPaused;
 		bool is3D;
 		float volume;
-		float minVolume;
-		float maxVolume;
-		string audioFilePath;
+		string audioFileName;
 	};
 }

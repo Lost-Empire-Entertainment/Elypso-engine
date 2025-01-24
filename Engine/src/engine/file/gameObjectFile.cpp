@@ -267,10 +267,10 @@ namespace EngineFile
 				auto apc = obj->GetComponent<AudioPlayerComponent>();
 				if (apc)
 				{
-					string audioFilePath = apc->GetPath();
+					string audioFileName = apc->GetName();
 					float currVolume = apc->GetVolume();
 
-					data.push_back("audioFilePath= " + audioFilePath + "\n");
+					data.push_back("audioFileName= " + audioFileName + "\n");
 					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
 				}
 
@@ -518,7 +518,7 @@ namespace EngineFile
 					|| key == "textures"
 					|| key == "model"
 					|| key == "shininess"
-					|| key == "audioFilePath"
+					|| key == "audioFileName"
 					|| key == "currentVolume")
 				{
 					data[key] = value;
@@ -544,7 +544,7 @@ namespace EngineFile
 		string model{};
 		float shininess{};
 
-		string audioFilePath{};
+		string audioFileName{};
 		float currVolume{};
 
 		for (const auto& [key, value] : data)
@@ -667,9 +667,9 @@ namespace EngineFile
 			{
 				shininess = stof(value);
 			}
-			else if (key == "audioFilePath")
+			else if (key == "audioFileName")
 			{
-				audioFilePath = value;
+				audioFileName = value;
 			}
 			else if (key == "currentVolume")
 			{
@@ -773,12 +773,11 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, normalTexture, MaterialComponent::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, MaterialComponent::TextureType::normal, false);
 
-			if (audioFilePath != ""
-				&& currVolume != 0.0f)
+			if (audioFileName != "")
 			{
 				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
-				apc->SetPath(audioFilePath);
-				apc->SetVolume(currVolume);
+				apc->SetName(audioFileName);
+				apc->SetVolume(audioFileName, currVolume);
 			}
 
 			/*

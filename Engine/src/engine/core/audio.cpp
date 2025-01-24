@@ -24,6 +24,7 @@ using std::move;
 using std::filesystem::exists;
 using std::filesystem::path;
 using std::cout;
+using std::to_string;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -276,6 +277,30 @@ namespace Core
             "Continuing playing audio file: " + name + "\n");
 
         return true;
+    }
+
+    void Audio::SetVolume(const string& name, float volume)
+    {
+        auto it = soundMap.find(name);
+        if (it == soundMap.end())
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot set volume because audio file has not been imported: " + name + "\n");
+            return;
+        }
+
+        //convert the volume from 0.0f - 100.0f range to 0.0f - 1.0f range
+        float scaledVolume = volume / 100.0f;
+
+        //set the volume using Miniaudio API
+        ma_sound_set_volume(it->second.get(), scaledVolume);
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::DEBUG,
+            "Volume set to " + to_string(volume) + "% for audio file: " + name + "\n");
     }
 
     bool Audio::Delete(const string& name)

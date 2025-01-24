@@ -1259,7 +1259,7 @@ namespace Graphics::GUI
 		string playButtonName = isPlaying ? "Stop" : "Play";
 		if (ImGui::Button(playButtonName.c_str()))
 		{
-			string audioFile = audioPlayer->GetPath();
+			string audioFile = audioPlayer->GetName();
 			if (audioFile == "")
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -1301,7 +1301,7 @@ namespace Graphics::GUI
 			{
 				audioPlayer->SetPauseState(!isPaused);
 
-				string audioFile = audioPlayer->GetPath();
+				string audioFile = audioPlayer->GetName();
 				bool newPauseState = audioPlayer->IsPaused();
 				if (newPauseState)
 				{
@@ -1329,7 +1329,7 @@ namespace Graphics::GUI
 		{
 			audioPlayer->Set2DState(is3D);
 
-			string audioFile = path(audioPlayer->GetPath()).filename().string();
+			string audioFile = path(audioPlayer->GetName()).filename().string();
 			if (is3D)
 			{
 				ConsoleManager::WriteConsoleMessage(
@@ -1344,6 +1344,16 @@ namespace Graphics::GUI
 					ConsoleType::DEBUG,
 					"Set audio file '" + audioFile + " to 2D'.\n");
 			}
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		float currVolume = audioPlayer->GetVolume();
+		if (ImGui::SliderFloat("Volume", &currVolume, 0.0f, 100.0f))
+		{
+			audioPlayer->SetVolume(audioPlayer->GetName(), currVolume);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		if (ImGui::Button("Set path"))
@@ -1354,10 +1364,12 @@ namespace Graphics::GUI
 			GUIProjectItemsList::obj = obj;
 			GUIProjectItemsList::type = GUIProjectItemsList::Type::Audio;
 			GUIProjectItemsList::renderProjectItemsList = true;
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		if (ImGui::IsItemHovered())
 		{
-			string audioFileName = "Audio file: " + obj->GetComponent<AudioPlayerComponent>()->GetPath();
+			string audioFileName = "Audio file: " + obj->GetComponent<AudioPlayerComponent>()->GetName();
 			ImGui::BeginTooltip();
 			ImGui::Text(audioFileName.c_str());
 			ImGui::EndTooltip();
