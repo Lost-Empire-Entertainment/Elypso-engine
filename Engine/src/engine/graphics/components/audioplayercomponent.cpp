@@ -15,9 +15,13 @@ using Core::Audio;
 
 namespace Graphics::Components
 {
-	void AudioPlayerComponent::SetVolume(const string& name, float newVolume)
+	void AudioPlayerComponent::SetVolume(float newVolume)
 	{
 		volume = newVolume;
-		Audio::SetVolume(name, volume);
+		Audio::SetVolume(audioFileName, volume);
+	}
+	void AudioPlayerComponent::Set3DState(bool newState)
+	{
+		is3D = newState;
 	}
 }

@@ -1327,22 +1327,24 @@ namespace Graphics::GUI
 		bool is3D = audioPlayer->Is3D();
 		if (ImGui::Checkbox("Toggle 3D audio", &is3D))
 		{
-			audioPlayer->Set2DState(is3D);
+			audioPlayer->Set3DState(is3D);
 
 			string audioFile = path(audioPlayer->GetName()).filename().string();
+
+			bool new3DState = audioPlayer->Is3D();
 			if (is3D)
 			{
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
 					ConsoleType::DEBUG,
-					"Set audio file '" + audioFile + " to 3D'.\n");
+					"Set audio file '" + audioFile + "' to 3D.\n");
 			}
 			else
 			{
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
 					ConsoleType::DEBUG,
-					"Set audio file '" + audioFile + " to 2D'.\n");
+					"Set audio file '" + audioFile + "' to 2D.\n");
 			}
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -1351,7 +1353,7 @@ namespace Graphics::GUI
 		float currVolume = audioPlayer->GetVolume();
 		if (ImGui::SliderFloat("Volume", &currVolume, 0.0f, 100.0f))
 		{
-			audioPlayer->SetVolume(audioPlayer->GetName(), currVolume);
+			audioPlayer->SetVolume(currVolume);
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}

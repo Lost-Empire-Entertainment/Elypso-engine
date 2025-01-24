@@ -303,6 +303,79 @@ namespace Core
             "Volume set to " + to_string(volume) + "% for audio file: " + name + "\n");
     }
 
+    bool Audio::Set3DState(const string& name, bool state)
+    {
+        auto it = soundMap.find(name);
+        if (it == soundMap.end())
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot set 2D state because audio file has not been imported: " + name + "\n");
+            return false;
+        }
+
+        if (!state)
+        {
+            //enable 2D sound (absolute positioning)
+            ma_sound_set_positioning(it->second.get(), ma_positioning_absolute);
+
+            UpdatePlayerPosition(name, vec3(0));
+        }
+        else
+        {
+            //enable 3D sound (relative positioning)
+            ma_sound_set_positioning(it->second.get(), ma_positioning_relative);
+        }
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::INFO,
+            "2D state set to " + string(state ? "enabled" : "disabled") + " for audio file: " + name + "\n");
+
+        return true;
+    }
+
+    void Audio::UpdateListenerPosition(const vec3& pos)
+    {
+        ma_engine_listener_set_position(&engine, 0, pos.x, pos.y, pos.z);
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::DEBUG,
+            "Updated listener position to (" +
+            std::to_string(pos.x) + ", " +
+            std::to_string(pos.y) + ", " +
+            std::to_string(pos.z) + ")\n");
+    }
+    bool Audio::UpdatePlayerPosition(const string& name, const vec3& pos)
+    {
+        auto it = soundMap.find(name);
+        if (it == soundMap.end())
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot update position because audio file has not been imported: " + name + "\n");
+            return false;
+        }
+
+        ma_sound* sound = it->second.get();
+
+        //update the position of the specific audio source
+        ma_sound_set_position(sound, pos.x, pos.y, pos.z);
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::DEBUG,
+            "Updated position of audio file '" + name + "' to (" +
+            std::to_string(pos.x) + ", " +
+            std::to_string(pos.y) + ", " +
+            std::to_string(pos.z) + ")\n");
+
+        return true;
+    }
+
     bool Audio::Delete(const string& name)
     {
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();

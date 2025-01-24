@@ -29,8 +29,8 @@ namespace Graphics::Components
 
 		void SetPlayState(bool state) { isPlaying = state; }
 		void SetPauseState(bool state) { isPaused = state; }
-		void Set2DState(bool state) { is3D = state; }
-		void SetVolume(const string& name, float newVolume);
+		void Set3DState(bool state);
+		void SetVolume(float newVolume);
 		void SetName(string newName) { audioFileName = newName; }
 
 		bool IsPlaying() const { return isPlaying; }

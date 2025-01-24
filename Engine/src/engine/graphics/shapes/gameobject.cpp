@@ -26,6 +26,8 @@
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
 #include "meshcomponent.hpp"
+#include "audio.hpp"
+#include "audioplayercomponent.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -54,6 +56,8 @@ using ConsoleType = Core::ConsoleManager::Type;
 using EngineFile::SceneFile;
 using Utils::String;
 using Utils::File;
+using Core::Audio;
+using Graphics::Components::AudioPlayerComponent;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -64,6 +68,8 @@ namespace Graphics::Shape
 {
 	void GameObjectManager::RenderAll(const mat4& view, const mat4& projection)
 	{
+		bool has3DAudio = false;
+
 		//opaque objects are rendered first
 		if (opaqueObjects.size() > 0)
 		{
@@ -77,8 +83,23 @@ namespace Graphics::Shape
 				switch (type)
 				{
 				case Type::model:
+				{
 					Model::Render(obj, view, projection);
+
+					auto apc = obj->GetComponent<AudioPlayerComponent>();
+					if (apc)
+					{
+						if (apc->Is3D())
+						{
+							has3DAudio = true;
+
+							string apcName = apc->GetName();
+							Audio::UpdatePlayerPosition(apcName, obj->GetTransform()->GetPosition());
+						}
+					}
+
 					break;
+				}
 				case Type::directional_light:
 					DirectionalLight::RenderDirectionalLight(obj, view, projection);
 					break;
@@ -90,6 +111,16 @@ namespace Graphics::Shape
 					break;
 				}
 			}
+		}
+
+		if (has3DAudio)
+		{
+			vec3 camPos = Render::camera.GetCameraPosition();
+			Audio::UpdateListenerPosition(camPos);
+		}
+		else
+		{
+			Audio::UpdateListenerPosition(vec3(0));
 		}
 
 #if ENGINE_MODE

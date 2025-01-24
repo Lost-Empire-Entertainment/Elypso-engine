@@ -268,9 +268,11 @@ namespace EngineFile
 				if (apc)
 				{
 					string audioFileName = apc->GetName();
+					bool is3D = apc->Is3D();
 					float currVolume = apc->GetVolume();
 
 					data.push_back("audioFileName= " + audioFileName + "\n");
+					data.push_back("is3D= " + to_string(is3D) + "\n");
 					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
 				}
 
@@ -519,6 +521,7 @@ namespace EngineFile
 					|| key == "model"
 					|| key == "shininess"
 					|| key == "audioFileName"
+					|| key == "is3D"
 					|| key == "currentVolume")
 				{
 					data[key] = value;
@@ -545,6 +548,7 @@ namespace EngineFile
 		float shininess{};
 
 		string audioFileName{};
+		bool is3D{};
 		float currVolume{};
 
 		for (const auto& [key, value] : data)
@@ -671,6 +675,10 @@ namespace EngineFile
 			{
 				audioFileName = value;
 			}
+			else if (key == "is3D")
+			{
+				is3D = stoi(value);
+			}
 			else if (key == "currentVolume")
 			{
 				currVolume = stof(value);
@@ -777,7 +785,8 @@ namespace EngineFile
 			{
 				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
 				apc->SetName(audioFileName);
-				apc->SetVolume(audioFileName, currVolume);
+				apc->Set3DState(is3D);
+				apc->SetVolume(currVolume);
 			}
 
 			/*
