@@ -334,15 +334,12 @@ namespace Core
 
     void Audio::UpdateListenerPosition(const vec3& pos)
     {
-        ma_engine_listener_set_position(&engine, 0, pos.x, pos.y, pos.z);
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Updated listener position to (" +
-            std::to_string(pos.x) + ", " +
-            std::to_string(pos.y) + ", " +
-            std::to_string(pos.z) + ")\n");
+        ma_vec3f tempPos = ma_engine_listener_get_position(&engine, 0);
+        vec3 currPos(tempPos.x, tempPos.y, tempPos.z);
+        if (pos != currPos)
+        {
+            ma_engine_listener_set_position(&engine, 0, pos.x, pos.y, pos.z);
+        }
     }
     bool Audio::UpdatePlayerPosition(const string& name, const vec3& pos)
     {
@@ -359,15 +356,12 @@ namespace Core
         ma_sound* sound = it->second.get();
 
         //update the position of the specific audio source
-        ma_sound_set_position(sound, pos.x, pos.y, pos.z);
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Updated position of audio file '" + name + "' to (" +
-            std::to_string(pos.x) + ", " +
-            std::to_string(pos.y) + ", " +
-            std::to_string(pos.z) + ")\n");
+        ma_vec3f tempPos = ma_sound_get_position(sound);
+        vec3 currPos(tempPos.x, tempPos.y, tempPos.z);
+        if (pos != currPos)
+        {
+            ma_sound_set_position(sound, pos.x, pos.y, pos.z);
+        }
 
         return true;
     }

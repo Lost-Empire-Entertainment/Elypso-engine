@@ -406,7 +406,7 @@ namespace Graphics::GUI
 
 					File::CreateNewFolder(targetPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Empty::InitializeEmpty(
 						newPos,
@@ -429,7 +429,7 @@ namespace Graphics::GUI
 					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
@@ -456,7 +456,7 @@ namespace Graphics::GUI
 					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
@@ -483,7 +483,7 @@ namespace Graphics::GUI
 					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
@@ -510,7 +510,7 @@ namespace Graphics::GUI
 					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
@@ -537,7 +537,7 @@ namespace Graphics::GUI
 					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
@@ -570,8 +570,8 @@ namespace Graphics::GUI
 					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 					string name = "Billboard";
-					unsigned int nextID = GameObject::nextID++;
-					unsigned int nextID2 = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
+					unsigned int nextID2 = ++GameObject::nextID;
 
 					shared_ptr<GameObject> obj = 
 						PointLight::InitializePointLight(
@@ -603,8 +603,8 @@ namespace Graphics::GUI
 					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 					string name = "Billboard";
-					unsigned int nextID = GameObject::nextID++;
-					unsigned int nextID2 = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
+					unsigned int nextID2 = ++GameObject::nextID;
 
 					shared_ptr<GameObject> obj = 
 						SpotLight::InitializeSpotLight(
@@ -647,8 +647,8 @@ namespace Graphics::GUI
 						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 						string name = "Billboard";
-						unsigned int nextID = GameObject::nextID++;
-						unsigned int nextID2 = GameObject::nextID++;
+						unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID2 = ++GameObject::nextID;
 
 						shared_ptr<GameObject> obj =
 							DirectionalLight::InitializeDirectionalLight(

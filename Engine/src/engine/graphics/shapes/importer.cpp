@@ -173,12 +173,23 @@ namespace Graphics::Shape
         }
 
         vec3 nodePosition, nodeRotation, nodeScale;
-        DecomposeTransform(globalTransformation, nodePosition, nodeRotation, nodeScale);
+        if (pos == vec3(0)
+            && rot == vec3(0)
+            && scale == vec3(1))
+        {
+            DecomposeTransform(globalTransformation, nodePosition, nodeRotation, nodeScale);
+        }
+        else
+        {
+            nodePosition = pos;
+            nodeRotation = rot;
+            nodeScale = scale;
+        }
 
         aiMesh* mesh = scene->mMeshes[0];
         AssimpMesh newMesh = ProcessMesh(mesh, scene);
 
-        if (id == tempID) id = GameObject::nextID++;
+        if (id == tempID) id = ++GameObject::nextID;
 
         string nameAndExtension = name + ".txt";
 

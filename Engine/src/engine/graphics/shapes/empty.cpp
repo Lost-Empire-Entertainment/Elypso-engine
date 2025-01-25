@@ -43,7 +43,7 @@ namespace Graphics::Shape
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;
 
-		if (obj->GetID() == tempID) obj->SetID(GameObject::nextID++);
+		if (obj->GetID() == tempID) obj->SetID(++GameObject::nextID);
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
