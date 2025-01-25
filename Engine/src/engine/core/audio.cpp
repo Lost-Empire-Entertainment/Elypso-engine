@@ -106,11 +106,7 @@ namespace Core
 
         if (!IsImported(name))
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot play audio file because it has not been imported: " + fullPath + "\n");
-            return false;
+            Import(name);
         }
 
         auto it = soundMap.find(name);
