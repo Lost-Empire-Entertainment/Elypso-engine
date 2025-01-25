@@ -91,8 +91,9 @@ namespace EngineFile
 		{
 			if (obj->GetParentBillboardHolder() == nullptr)
 			{
-				string objectTxtFilePath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
 				string objectName = obj->GetName();
+				string txtName = objectName + ".txt";
+				string objectTxtFilePath = (path(Engine::scenePath).parent_path() / "gameobjects" / objectName / txtName).string();
 
 				vector<string> data;
 
@@ -280,7 +281,7 @@ namespace EngineFile
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
-				string folderPath = (path(Engine::scenePath) / path(objectTxtFilePath).parent_path().string()).string();
+				string folderPath = (path(Engine::scenePath).parent_path() / objectName).string();
 				if (!exists(folderPath))
 				{
 					File::CreateNewFolder(folderPath);

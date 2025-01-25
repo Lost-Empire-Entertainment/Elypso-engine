@@ -102,7 +102,6 @@ namespace Core
     bool Audio::Play(const string& name)
     {
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
-        cout << "name: " << name << ", full path: " << fullPath << "\n";
 
         if (!IsImported(name))
         {
@@ -150,7 +149,6 @@ namespace Core
     bool Audio::Stop(const string& name)
     {
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
-        cout << "name: " << name << ", full path: " << fullPath << "\n";
 
         if (!IsImported(name))
         {
@@ -203,7 +201,6 @@ namespace Core
     bool Audio::Pause(const string& name)
     {
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
-        cout << "name: " << name << ", full path: " << fullPath << "\n";
 
         if (!IsImported(name))
         {
@@ -244,7 +241,6 @@ namespace Core
     bool Audio::Continue(const string& name)
     {
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
-        cout << "name: " << name << ", full path: " << fullPath << "\n";
 
         if (!IsImported(name))
         {
@@ -369,7 +365,6 @@ namespace Core
     bool Audio::Delete(const string& name)
     {
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
-        cout << "name: " << name << ", full path: " << fullPath << "\n";
 
         if (!IsImported(name))
         {
@@ -396,7 +391,6 @@ namespace Core
     bool Audio::IsImported(const string& name)
     {
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
-        cout << "name: " << name << ", full path: " << fullPath << "\n";
 
         auto it = soundMap.find(name);
         return it != soundMap.end();

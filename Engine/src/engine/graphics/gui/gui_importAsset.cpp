@@ -203,8 +203,6 @@ namespace Graphics::GUI
 					 || extension == ".flac"
 					 || extension == ".wav")
 			{
-				cout << "import audio file start...\n";
-
 				string audioFilename = newName + extension;
 				string audioFolder = (path(Engine::projectPath) / "audio").string();
 				if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
@@ -214,8 +212,6 @@ namespace Graphics::GUI
 				File::CopyFileOrFolder(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-				cout << "import audio file end...\n";
 			}
 
 			renderImportAsset = false;
