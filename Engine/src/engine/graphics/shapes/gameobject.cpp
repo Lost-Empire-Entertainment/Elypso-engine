@@ -87,17 +87,17 @@ namespace Graphics::Shape
 					Model::Render(obj, view, projection);
 
 					auto apc = obj->GetComponent<AudioPlayerComponent>();
-					if (apc)
+					if (apc
+						&& apc->Is3D())
 					{
-						if (apc->Is3D())
-						{
-							has3DAudio = true;
+						has3DAudio = true;
 
-							string apcName = apc->GetName();
+						string apcName = apc->GetName();
+						if (Audio::IsImported(apc->GetName()))
+						{
 							Audio::UpdatePlayerPosition(apcName, obj->GetTransform()->GetPosition());
 						}
 					}
-
 					break;
 				}
 				case Type::directional_light:
@@ -116,11 +116,15 @@ namespace Graphics::Shape
 		if (has3DAudio)
 		{
 			vec3 camPos = Render::camera.GetCameraPosition();
-			Audio::UpdateListenerPosition(camPos);
+			vec3 camFront = Render::camera.GetFront();
+			vec3 camUp = Render::camera.GetUp();
+			Audio::UpdateListenerPosition(camPos, camFront, camUp);
 		}
 		else
 		{
-			Audio::UpdateListenerPosition(vec3(0));
+			vec3 camFront = Render::camera.GetFront();
+			vec3 camUp = Render::camera.GetUp();
+			Audio::UpdateListenerPosition(vec3(0), camFront, camUp);
 		}
 
 #if ENGINE_MODE

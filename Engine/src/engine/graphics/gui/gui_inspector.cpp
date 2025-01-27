@@ -3,6 +3,7 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
+
 #include <iostream>
 #include <filesystem>
 
@@ -48,6 +49,7 @@ using std::filesystem::path;
 using std::filesystem::directory_iterator;
 using std::filesystem::is_regular_file;
 using std::filesystem::exists;
+using std::stof;
 
 using Graphics::Render;
 using Core::Select;
@@ -1362,7 +1364,7 @@ namespace Graphics::GUI
 		{
 			float currMinRange = audioPlayer->GetMinRange();
 			float maxMinRange = audioPlayer->GetMaxRange() - 0.1f;
-			if (ImGui::SliderFloat("Min range", &currMinRange, 0.01f, maxMinRange))
+			if (ImGui::DragFloat("Min range", &currMinRange, 0.1f, 0.01f, maxMinRange, "%.2f"))
 			{
 				audioPlayer->SetMinRange(currMinRange);
 
@@ -1371,7 +1373,7 @@ namespace Graphics::GUI
 
 			float currMaxRange = audioPlayer->GetMaxRange();
 			float minMaxRange = audioPlayer->GetMinRange() + 0.1f;
-			if (ImGui::SliderFloat("Max range", &currMaxRange, minMaxRange, 10000.0f))
+			if (ImGui::DragFloat("Max range", &currMaxRange, 0.1f, minMaxRange, 100.0f, "%.2f"))
 			{
 				audioPlayer->SetMaxRange(currMaxRange);
 

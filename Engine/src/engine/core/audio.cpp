@@ -346,17 +346,31 @@ namespace Core
             return false;
         }
 
-        if (!state)
+        if (state)
+        {
+            //enable 3D sound (relative positioning)
+            ma_sound_set_positioning(it->second.get(), ma_positioning_relative);
+
+            //set attenuation model to exponential for natural sound falloff
+            ma_sound_set_attenuation_model(it->second.get(), ma_attenuation_model_exponential);
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::DEBUG,
+                "Enabled 3D sound with exponential attenuation for audio file: " + name + "\n");
+        }
+        else
         {
             //enable 2D sound (absolute positioning)
             ma_sound_set_positioning(it->second.get(), ma_positioning_absolute);
 
+            //reset position to origin for non-3D audio
             UpdatePlayerPosition(name, vec3(0));
-        }
-        else
-        {
-            //enable 3D sound (relative positioning)
-            ma_sound_set_positioning(it->second.get(), ma_positioning_relative);
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::INFO,
+                "Disabled 3D sound for audio file: " + name + "\n");
         }
 
         ConsoleManager::WriteConsoleMessage(
@@ -367,13 +381,15 @@ namespace Core
         return true;
     }
 
-    void Audio::UpdateListenerPosition(const vec3& pos)
+    void Audio::UpdateListenerPosition(const vec3& pos, const vec3& front, const vec3& up)
     {
         ma_vec3f tempPos = ma_engine_listener_get_position(&engine, 0);
         vec3 currPos(tempPos.x, tempPos.y, tempPos.z);
         if (pos != currPos)
         {
             ma_engine_listener_set_position(&engine, 0, pos.x, pos.y, pos.z);
+            ma_engine_listener_set_direction(&engine, 0, front.x, front.y, front.z);
+            ma_engine_listener_set_world_up(&engine, 0, up.x, up.y, up.z);
         }
     }
     bool Audio::UpdatePlayerPosition(const string& name, const vec3& pos)

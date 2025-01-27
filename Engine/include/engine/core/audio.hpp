@@ -44,6 +44,10 @@ namespace Core
 		/// </summary>
 		static void SetVolume(const string& path, float currVolume);
 		/// <summary>
+		/// Set audio player min range if audio player is in 3D mode.
+		/// </summary>
+		static void SetMinRange(const string& path, float currMinRange);
+		/// <summary>
 		/// Set audio player max range if audio player is in 3D mode.
 		/// </summary>
 		static void SetMaxRange(const string& path, float currMaxRange);
@@ -55,7 +59,7 @@ namespace Core
 		/// <summary>
 		/// Update position where player hears audio.
 		/// </summary>
-		static void UpdateListenerPosition(const vec3& pos);
+		static void UpdateListenerPosition(const vec3& pos, const vec3& front, const vec3& up);
 		/// <summary>
 		/// Update position where audio player plays sound.
 		/// </summary>

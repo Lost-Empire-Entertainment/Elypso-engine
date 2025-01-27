@@ -13,7 +13,6 @@ namespace Graphics::GUI
 		static void RenderInspector();
 	private:
 		static constexpr int bufferSize = 32;
-
 		static inline char inputTextBuffer_objName[bufferSize];
 
 		static void AddComponent();
