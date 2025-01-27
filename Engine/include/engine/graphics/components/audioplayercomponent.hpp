@@ -21,22 +21,27 @@ namespace Graphics::Components
 			const bool& isPlaying = false,
 			const bool& isPaused = false,
 			const bool& is3D = false,
-			const float& volume = 50.0f) :
+			const float& volume = 50.0f,
+			const float& maxRange = 100.0f) :
 			isPlaying(isPlaying),
 			isPaused(isPaused),
 			is3D(is3D),
-			volume(volume) {}
+			volume(volume),
+			maxRange(maxRange){}
 
 		void SetPlayState(bool state) { isPlaying = state; }
 		void SetPauseState(bool state) { isPaused = state; }
 		void Set3DState(bool state);
 		void SetVolume(float newVolume);
+		void SetMinRange(float newMinRange);
+		void SetMaxRange(float newMaxRange);
 		void SetName(string newName) { audioFileName = newName; }
 
 		bool IsPlaying() const { return isPlaying; }
 		bool IsPaused() const { return isPaused; }
 		bool Is3D() const { return is3D; }
 		float GetVolume() const { return volume; }
+		float GetMaxRange() const { return maxRange; }
 		string GetName() const { return audioFileName; }
 
 		type_index GetType() const override { return typeid(AudioPlayerComponent); }
@@ -45,6 +50,7 @@ namespace Graphics::Components
 		bool isPaused;
 		bool is3D;
 		float volume;
+		float maxRange;
 		string audioFileName;
 	};
 }

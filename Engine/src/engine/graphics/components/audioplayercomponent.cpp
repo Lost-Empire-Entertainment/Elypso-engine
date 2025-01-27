@@ -20,6 +20,16 @@ namespace Graphics::Components
 		volume = newVolume;
 		Audio::SetVolume(audioFileName, volume);
 	}
+	void AudioPlayerComponent::SetMinRange(float newMinRange)
+	{
+		minRange = newMinRange;
+		Audio::SetMinRange(audioFileName, minRange);
+	}
+	void AudioPlayerComponent::SetMaxRange(float newMaxRange)
+	{
+		maxRange = newMaxRange;
+		Audio::SetMaxRange(audioFileName, maxRange);
+	}
 	void AudioPlayerComponent::Set3DState(bool newState)
 	{
 		is3D = newState;

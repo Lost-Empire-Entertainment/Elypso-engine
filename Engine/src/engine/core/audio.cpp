@@ -295,6 +295,45 @@ namespace Core
             "Volume set to " + to_string(volume) + "% for audio file: " + name + "\n");
     }
 
+    void Audio::SetMinRange(const string& name, float minRange)
+    {
+        auto it = soundMap.find(name);
+        if (it == soundMap.end())
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot set min range because audio file has not been imported: " + name + "\n");
+            return;
+        }
+
+        ma_sound_set_min_distance(it->second.get(), minRange);
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::DEBUG,
+            "Min range set to " + to_string(minRange) + "% for audio file: " + name + "\n");
+    }
+    void Audio::SetMaxRange(const string& name, float maxRange)
+    {
+        auto it = soundMap.find(name);
+        if (it == soundMap.end())
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot set max range because audio file has not been imported: " + name + "\n");
+            return;
+        }
+
+        ma_sound_set_max_distance(it->second.get(), maxRange);
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::DEBUG,
+            "Max range set to " + to_string(maxRange) + "% for audio file: " + name + "\n");
+    }
+
     bool Audio::Set3DState(const string& name, bool state)
     {
         auto it = soundMap.find(name);

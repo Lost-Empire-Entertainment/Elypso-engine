@@ -1358,6 +1358,17 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
+		if (audioPlayer->Is3D())
+		{
+			float currMaxRange = audioPlayer->GetMaxRange();
+			if (ImGui::SliderFloat("Max range", &currMaxRange, 0.1f, 10000.0f))
+			{
+				audioPlayer->SetMaxRange(currMaxRange);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+		}
+
 		if (ImGui::Button("Set path"))
 		{
 			string audioFolder = (path(Engine::projectPath) / "audio").string();

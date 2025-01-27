@@ -42,8 +42,11 @@ namespace Core
 		/// <summary>
 		/// Set audio player volume.
 		/// </summary>
-		/// <param name="path"></param>
 		static void SetVolume(const string& path, float currVolume);
+		/// <summary>
+		/// Set audio player max range if audio player is in 3D mode.
+		/// </summary>
+		static void SetMaxRange(const string& path, float currMaxRange);
 		/// <summary>
 		/// Toggle audio player positioning, 2D is absolute, 3D is relative.
 		/// </summary>
