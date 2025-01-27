@@ -1360,8 +1360,18 @@ namespace Graphics::GUI
 
 		if (audioPlayer->Is3D())
 		{
+			float currMinRange = audioPlayer->GetMinRange();
+			float maxMinRange = audioPlayer->GetMaxRange() - 0.1f;
+			if (ImGui::SliderFloat("Min range", &currMinRange, 0.01f, maxMinRange))
+			{
+				audioPlayer->SetMinRange(currMinRange);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			float currMaxRange = audioPlayer->GetMaxRange();
-			if (ImGui::SliderFloat("Max range", &currMaxRange, 0.1f, 10000.0f))
+			float minMaxRange = audioPlayer->GetMinRange() + 0.1f;
+			if (ImGui::SliderFloat("Max range", &currMaxRange, minMaxRange, 10000.0f))
 			{
 				audioPlayer->SetMaxRange(currMaxRange);
 
