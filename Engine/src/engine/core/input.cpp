@@ -47,6 +47,7 @@ using glm::lookAt;
 using glm::quat;
 using glm::rotate;
 using glm::mat4;
+using glm::length;
 using std::ostringstream;
 using std::fixed;
 using std::setprecision;
@@ -309,6 +310,8 @@ namespace Core
 
     void Input::Copy()
     {
+        copiedObject.clear();
+
         shared_ptr<GameObject> selectedObj = Select::selectedObj;
         copiedObject.clear();
         copiedObject["txtPath"] = selectedObj->GetTxtFilePath();
@@ -394,8 +397,6 @@ namespace Core
         }
 
         selectedObj = nullptr;
-        Select::selectedObj = nullptr;
-        Select::isObjectSelected = false;
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
@@ -410,11 +411,14 @@ namespace Core
         unsigned int nextID2 = ++GameObject::nextID;
 
         vector<string> posSplit = String::Split(copiedObject["pos"].c_str(), ',');
+        vec3 newPos = vec3(stof(posSplit[0]), stof(posSplit[1]), stof(posSplit[2]));
+        /*
         vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
         int resultX = static_cast<int>(newPos.x);
         int resultY = static_cast<int>(newPos.y);
         int resultZ = static_cast<int>(newPos.z);
         newPos = vec3(resultX, resultY, resultZ);
+        */
 
         vector<string> rotSplit = String::Split(copiedObject["rot"].c_str(), ',');
         vec3 rot = vec3(stof(rotSplit[0]), stof(rotSplit[1]), stof(rotSplit[2]));
@@ -616,11 +620,11 @@ namespace Core
         {
             glfwSetInputMode(Render::window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
-        if (glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT)) 
+        if (glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT))
         {
             glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
-        else 
+        else
         {
             glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
