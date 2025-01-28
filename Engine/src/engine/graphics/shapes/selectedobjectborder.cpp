@@ -168,52 +168,49 @@ namespace Graphics::Shape
 			shader.SetFloat("transparency", 0.5f);
 
 			auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
-			if (mesh)
+			if (mesh->GetMeshType() == MeshComponent::MeshType::model)
 			{
-				if (mesh->GetMeshType() == MeshComponent::MeshType::model)
-				{
-					//retrieve vertices and calculate bounding box
-					const vector<AssimpVertex>& vertices = mesh->GetVertices();
-					vec3 minBound, maxBound;
-					vec3 position = Select::selectedObj->GetTransform()->GetPosition();
-					vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
+				//retrieve vertices and calculate bounding box
+				const vector<AssimpVertex>& vertices = mesh->GetVertices();
+				vec3 minBound, maxBound;
+				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
+				vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
 
-					//calculate the bounding box based on vertices
-					Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale);
+				//calculate the bounding box based on vertices
+				Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale);
 
-					//compute the center and scale of the bounding box
-					vec3 boxCenter = (minBound + maxBound) * 0.5f;
-					vec3 boxScale = maxBound - minBound;
+				//compute the center and scale of the bounding box
+				vec3 boxCenter = (minBound + maxBound) * 0.5f;
+				vec3 boxScale = maxBound - minBound;
 
-					//add a margin to the scale
-					vec3 margin = vec3(0.1f);
-					boxScale += margin;
+				//add a margin to the scale
+				vec3 margin = vec3(0.1f);
+				boxScale += margin;
 
-					//translate to the center of the bounding box
-					model = translate(model, boxCenter);
+				//translate to the center of the bounding box
+				model = translate(model, boxCenter);
 
-					//apply rotation
-					quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
-					model *= mat4_cast(newRot);
+				//apply rotation
+				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
+				model *= mat4_cast(newRot);
 
-					//scale based on the bounding box size with the margin included
-					model = scale(model, boxScale);
-				}
-				else
-				{
-					//simple position and margin values
-					vec3 position = Select::selectedObj->GetTransform()->GetPosition();
+				//scale based on the bounding box size with the margin included
+				model = scale(model, boxScale);
+			}
+			else
+			{
+				//simple position and margin values
+				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
 
-					//simple bounding box
-					model = translate(model, position);
+				//simple bounding box
+				model = translate(model, position);
 
-					//apply rotation
-					quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
-					model *= mat4_cast(newRot);
+				//apply rotation
+				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
+				model *= mat4_cast(newRot);
 
-					//scale based on size, with a slight margin
-					model = scale(model, vec3(1) + vec3(0.1f));
-				}
+				//scale based on size, with a slight margin
+				model = scale(model, vec3(1) + vec3(0.1f));
 			}
 		}
 		else

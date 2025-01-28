@@ -193,8 +193,7 @@ namespace Graphics::Shape
 		if (obj->IsEnabled())
 		{
 			auto mat = obj->GetComponent<MaterialComponent>();
-			if (!mat) return;
-
+			
 			Shader shader = mat->GetShader();
 
 			shader.Use();

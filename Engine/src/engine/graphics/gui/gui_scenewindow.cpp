@@ -609,7 +609,7 @@ namespace Graphics::GUI
 			for (const shared_ptr<GameObject>& obj : GameObjectManager::GetObjects())
 			{
 				auto mesh = obj->GetComponent<MeshComponent>();
-				if (mesh) verticesCount += static_cast<int>(mesh->GetVertices().size());
+				verticesCount += static_cast<int>(mesh->GetVertices().size());
 			}
 		}
 	}

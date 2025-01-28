@@ -137,128 +137,125 @@ namespace EngineFile
 				data.push_back("\n");
 
 				auto mesh = obj->GetComponent<MeshComponent>();
-				if (mesh)
-				{
-					//
+				//
 					// MESH DATA
 					//
 
-					string type = string(magic_enum::enum_name(mesh->GetMeshType()));
-					data.push_back("type= " + type + "\n");
+				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
+				data.push_back("type= " + type + "\n");
 
-					//path to txt file of this gameobject
-					data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
+				//path to txt file of this gameobject
+				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
 
-					//
-					// MATERIAL DATA
-					//
+				//
+				// MATERIAL DATA
+				//
 
-					//object textures
-					MeshComponent::MeshType meshType = mesh->GetMeshType();
-					auto mat = obj->GetComponent<MaterialComponent>();
-					if (meshType == MeshComponent::MeshType::model)
+				//object textures
+				MeshComponent::MeshType meshType = mesh->GetMeshType();
+				auto mat = obj->GetComponent<MaterialComponent>();
+				if (meshType == MeshComponent::MeshType::model)
+				{
+					string diffuseTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
+					diffuseTexture = path(diffuseTexture).filename().string();
+					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
+
+					string specularTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
+					specularTexture = path(specularTexture).filename().string();
+					if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
+
+					string normalTexture = mat->GetTextureName(MaterialComponent::TextureType::normal);
+					normalTexture = path(normalTexture).filename().string();
+
+					string heightTexture = mat->GetTextureName(MaterialComponent::TextureType::height);
+					heightTexture = path(heightTexture).filename().string();
+
+					data.push_back(
+						+"textures= "
+						+ diffuseTexture + ", "
+						+ specularTexture + ", "
+						+ normalTexture + ", "
+						+ heightTexture + "\n");
+				}
+
+				if (meshType == MeshComponent::MeshType::model)
+				{
+					data.push_back("shininess= " + to_string(32) + "\n");
+				}
+
+				//
+				// LIGHT DATA
+				//
+
+				else if (meshType == MeshComponent::MeshType::point_light)
+				{
+					auto light = obj->GetComponent<LightComponent>();
+					if (light)
 					{
-						string diffuseTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
-						diffuseTexture = path(diffuseTexture).filename().string();
-						if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
-
-						string specularTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
-						specularTexture = path(specularTexture).filename().string();
-						if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
-
-						string normalTexture = mat->GetTextureName(MaterialComponent::TextureType::normal);
-						normalTexture = path(normalTexture).filename().string();
-
-						string heightTexture = mat->GetTextureName(MaterialComponent::TextureType::height);
-						heightTexture = path(heightTexture).filename().string();
-
+						float pointDiffuseX = light->GetDiffuse().x;
+						float pointDiffuseY = light->GetDiffuse().y;
+						float pointDiffuseZ = light->GetDiffuse().z;
 						data.push_back(
-							+"textures= "
-							+ diffuseTexture + ", "
-							+ specularTexture + ", "
-							+ normalTexture + ", "
-							+ heightTexture + "\n");
-					}
+							"diffuse= " + to_string(pointDiffuseX) + ", "
+							+ to_string(pointDiffuseY) + ", "
+							+ to_string(pointDiffuseZ) + "\n");
 
-					if (meshType == MeshComponent::MeshType::model)
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+
+						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+					}
+				}
+				else if (meshType == MeshComponent::MeshType::spot_light)
+				{
+					auto light = obj->GetComponent<LightComponent>();
+					if (light)
 					{
-						data.push_back("shininess= " + to_string(32) + "\n");
+						float spotDiffuseX = light->GetDiffuse().x;
+						float spotDiffuseY = light->GetDiffuse().y;
+						float spotDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(spotDiffuseX) + ", "
+							+ to_string(spotDiffuseY) + ", "
+							+ to_string(spotDiffuseZ) + "\n");
+
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+
+						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+
+						data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
+
+						data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
 					}
-
-					//
-					// LIGHT DATA
-					//
-
-					else if (meshType == MeshComponent::MeshType::point_light)
+				}
+				else if (meshType == MeshComponent::MeshType::directional_light)
+				{
+					auto light = obj->GetComponent<LightComponent>();
+					if (light)
 					{
-						auto light = obj->GetComponent<LightComponent>();
-						if (light)
-						{
-							float pointDiffuseX = light->GetDiffuse().x;
-							float pointDiffuseY = light->GetDiffuse().y;
-							float pointDiffuseZ = light->GetDiffuse().z;
-							data.push_back(
-								"diffuse= " + to_string(pointDiffuseX) + ", "
-								+ to_string(pointDiffuseY) + ", "
-								+ to_string(pointDiffuseZ) + "\n");
+						float dirDiffuseX = light->GetDiffuse().x;
+						float dirDiffuseY = light->GetDiffuse().y;
+						float dirDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(dirDiffuseX) + ", "
+							+ to_string(dirDiffuseY) + ", "
+							+ to_string(dirDiffuseZ) + "\n");
 
-							data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
-
-							data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
-						}
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 					}
-					else if (meshType == MeshComponent::MeshType::spot_light)
-					{
-						auto light = obj->GetComponent<LightComponent>();
-						if (light)
-						{
-							float spotDiffuseX = light->GetDiffuse().x;
-							float spotDiffuseY = light->GetDiffuse().y;
-							float spotDiffuseZ = light->GetDiffuse().z;
-							data.push_back(
-								"diffuse= " + to_string(spotDiffuseX) + ", "
-								+ to_string(spotDiffuseY) + ", "
-								+ to_string(spotDiffuseZ) + "\n");
+				}
 
-							data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+				//also save billboard data of each light source
+				if (meshType == MeshComponent::MeshType::point_light
+					|| meshType == MeshComponent::MeshType::spot_light
+					|| meshType == MeshComponent::MeshType::directional_light)
+				{
+					data.push_back("\n");
+					data.push_back("---attached billboard data---\n");
+					data.push_back("\n");
 
-							data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
 
-							data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
-
-							data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
-						}
-					}
-					else if (meshType == MeshComponent::MeshType::directional_light)
-					{
-						auto light = obj->GetComponent<LightComponent>();
-						if (light)
-						{
-							float dirDiffuseX = light->GetDiffuse().x;
-							float dirDiffuseY = light->GetDiffuse().y;
-							float dirDiffuseZ = light->GetDiffuse().z;
-							data.push_back(
-								"diffuse= " + to_string(dirDiffuseX) + ", "
-								+ to_string(dirDiffuseY) + ", "
-								+ to_string(dirDiffuseZ) + "\n");
-
-							data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
-						}
-					}
-
-					//also save billboard data of each light source
-					if (meshType == MeshComponent::MeshType::point_light
-						|| meshType == MeshComponent::MeshType::spot_light
-						|| meshType == MeshComponent::MeshType::directional_light)
-					{
-						data.push_back("\n");
-						data.push_back("---attached billboard data---\n");
-						data.push_back("\n");
-
-						data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
-
-						data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
-					}
+					data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
 				}
 
 				//

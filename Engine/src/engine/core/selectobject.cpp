@@ -66,7 +66,6 @@ namespace Core
 		for (int i = 0; i < objects.size(); i++)
 		{
 			auto mesh = objects[i]->GetComponent<MeshComponent>();
-			if (!mesh) continue;
 			Type objType = mesh->GetMeshType();
 			if (objType == Type::model
 				|| objType == Type::point_light

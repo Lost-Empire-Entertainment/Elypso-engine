@@ -180,8 +180,7 @@ namespace Graphics::Shape
 		if (obj->IsEnabled())
 		{
 			auto mat = obj->GetComponent<MaterialComponent>();
-			if (!mat) return;
-
+			
 			Shader shader = mat->GetShader();
 
 			shader.Use();
@@ -200,8 +199,7 @@ namespace Graphics::Shape
 			}
 
 			auto mesh = obj->GetComponent<MeshComponent>();
-			if (mesh
-				&& GameObjectManager::renderLightBorders)
+			if (GameObjectManager::renderLightBorders)
 			{
 				mat4 model = mat4(1.0f);
 				model = translate(model, obj->GetTransform()->GetPosition());

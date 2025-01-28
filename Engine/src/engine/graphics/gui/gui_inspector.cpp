@@ -269,8 +269,7 @@ namespace Graphics::GUI
 
 					//rename model file if gameobject mesh type is model
 					auto mesh = obj->GetComponent<MeshComponent>();
-					if (mesh
-						&& mesh->GetMeshType() == MeshComponent::MeshType::model)
+					if (mesh->GetMeshType() == MeshComponent::MeshType::model)
 					{
 						for (const auto& file : directory_iterator(newFolderPath))
 						{
@@ -413,14 +412,6 @@ namespace Graphics::GUI
 		
 		ImGui::Text("Mesh");
 
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-		if (ImGui::Button("X"))
-		{
-			Select::selectedObj->RemoveComponent<MeshComponent>();
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-
 		ImGui::Separator();
 
 		auto mat = obj->GetComponent<MaterialComponent>();
@@ -459,30 +450,172 @@ namespace Graphics::GUI
 		
 		ImGui::Text("Material");
 
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-		if (ImGui::Button("X"))
-		{
-			Select::selectedObj->RemoveComponent<MaterialComponent>();
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-
 		ImGui::Separator();
 
-		if (!mesh)
+		MeshComponent::MeshType objType = mesh->GetMeshType();
+
+		if (objType == MeshType::model)
 		{
-			ImGui::Text("Mesh is missing.");
+			const string& vertShader = mat->GetShaderName(0);
+			const string& fragShader = mat->GetShaderName(1);
+			const string& diffTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
+			const string& specTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
+
+			ImGui::Button("Vertex shader");
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(vertShader.c_str());
+				ImGui::EndTooltip();
+			}
+			ImGui::Button("Fragment shader");
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(fragShader.c_str());
+				ImGui::EndTooltip();
+			}
+
+			ImGui::Button("Diffuse texture");
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(diffTexture.c_str());
+				ImGui::EndTooltip();
+			}
+			ImGui::Button("Specular texture");
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(specTexture.c_str());
+				ImGui::EndTooltip();
+			}
+
+			/*
+			*
+			* SHININESS IS CURRENTLY DISABLED BECAUSE IT IS UNUSED
+			* IT WILL BE RE-ENABLED IN A FUTURE UPDATE
+			*
+			float modelShininess = obj->GetBasicShape()->GetShininess();
+			ImGui::Text("Shininess");
+
+			if (ImGui::DragFloat("##shininess", &modelShininess, 0.1f, 0.5f, 32.0f))
+			{
+				obj->GetBasicShape()->SetShininess(modelShininess);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##shininess"))
+			{
+				obj->GetBasicShape()->SetShininess(32.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Spacing();
+			*/
+
+			//assign diffuse texture
+			ImGui::Text("Diffuse texture");
+			ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
+			path diff_texturePath = path(
+				Engine::filesPath
+				+ mat->GetTextureName(MaterialComponent::TextureType::diffuse));
+			ImGui::PushItemWidth(200.0f);
+			string diff_assign = "Assign##diff_assign";
+			if (ImGui::Button(diff_assign.c_str()))
+			{
+				GUIProjectItemsList::obj = obj;
+				GUIProjectItemsList::textureType = MaterialComponent::TextureType::diffuse;
+				GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
+				GUIProjectItemsList::renderProjectItemsList = true;
+			}
+			ImGui::PopItemWidth();
+
+			//reset diffuse texture
+			ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+			path diff_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "diff_default.png");
+			string diff_reset = "Reset##diff_reset";
+			ImGui::PushItemWidth(200.0f);
+			if (ImGui::Button(diff_reset.c_str()))
+			{
+				string removedTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
+				if (removedTexture.find("diff_default.png") == string::npos)
+				{
+					Texture::LoadTexture(obj, diff_defaultTexturePath.string(), MaterialComponent::TextureType::diffuse, true);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+					if (removedTexture.find("diff_missing.png") == string::npos)
+					{
+						File::DeleteFileOrfolder(removedTexture);
+					}
+				}
+				else
+				{
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::FILE,
+						ConsoleType::INFO,
+						"Cannot reset texture on diffuse slot for " + obj->GetName() + " because the texture already is default.\n");
+				}
+			}
+			ImGui::PopItemWidth();
+
+			ImGui::Spacing();
+
+			//assign specular texture
+			ImGui::Text("Specular texture");
+			ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
+			path spec_texturePath = path(
+				Engine::filesPath
+				+ mat->GetTextureName(MaterialComponent::TextureType::specular));
+			string spec_assign = "Assign##spec_assign";
+			ImGui::PushItemWidth(200.0f);
+			if (ImGui::Button(spec_assign.c_str()))
+			{
+				GUIProjectItemsList::obj = obj;
+				GUIProjectItemsList::textureType = MaterialComponent::TextureType::specular;
+				GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
+				GUIProjectItemsList::renderProjectItemsList = true;
+			}
+			ImGui::PopItemWidth();
+
+			//reset specular texture
+			ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+			path spec_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "spec_default.png");
+			string spec_reset = "Reset##spec_reset";
+			ImGui::PushItemWidth(200.0f);
+			if (ImGui::Button(spec_reset.c_str()))
+			{
+				string removedTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
+				if (removedTexture.find("spec_default.png") == string::npos)
+				{
+					Texture::LoadTexture(obj, spec_defaultTexturePath.string(), MaterialComponent::TextureType::specular, true);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+					File::DeleteFileOrfolder(removedTexture);
+				}
+				else
+				{
+					ConsoleManager::WriteConsoleMessage(
+						ConsoleCaller::FILE,
+						ConsoleType::INFO,
+						"Cannot reset texture on specular slot for " + obj->GetName() + " because the texture already is default.\n");
+				}
+			}
+			ImGui::PopItemWidth();
 		}
 		else
 		{
-			MeshComponent::MeshType objType = mesh->GetMeshType();
-
-			if (objType == MeshType::model)
+			auto& childBillboard = obj->GetChildBillboard();
+			auto childMat = childBillboard->GetComponent<MaterialComponent>();
+			if (childMat)
 			{
 				const string& vertShader = mat->GetShaderName(0);
 				const string& fragShader = mat->GetShaderName(1);
-				const string& diffTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
-				const string& specTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
+
+				const string& childVertShader = childMat->GetShaderName(0);
+				const string& childFragShader = childMat->GetShaderName(1);
+
+				const string& diffTexture = childMat->GetTextureName(MaterialComponent::TextureType::diffuse);
 
 				ImGui::Button("Vertex shader");
 				if (ImGui::IsItemHovered())
@@ -499,184 +632,27 @@ namespace Graphics::GUI
 					ImGui::EndTooltip();
 				}
 
-				ImGui::Button("Diffuse texture");
+				ImGui::Button("Billboard vertex shader");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(childVertShader.c_str());
+					ImGui::EndTooltip();
+				}
+				ImGui::Button("Billboard fragment shader");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(childFragShader.c_str());
+					ImGui::EndTooltip();
+				}
+
+				ImGui::Button("Billboard diffuse texture");
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
 					ImGui::Text(diffTexture.c_str());
 					ImGui::EndTooltip();
-				}
-				ImGui::Button("Specular texture");
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(specTexture.c_str());
-					ImGui::EndTooltip();
-				}
-
-				/*
-				*
-				* SHININESS IS CURRENTLY DISABLED BECAUSE IT IS UNUSED
-				* IT WILL BE RE-ENABLED IN A FUTURE UPDATE
-				*
-				float modelShininess = obj->GetBasicShape()->GetShininess();
-				ImGui::Text("Shininess");
-
-				if (ImGui::DragFloat("##shininess", &modelShininess, 0.1f, 0.5f, 32.0f))
-				{
-					obj->GetBasicShape()->SetShininess(modelShininess);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##shininess"))
-				{
-					obj->GetBasicShape()->SetShininess(32.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				ImGui::Spacing();
-				*/
-
-				//assign diffuse texture
-				ImGui::Text("Diffuse texture");
-				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
-				path diff_texturePath = path(
-					Engine::filesPath
-					+ mat->GetTextureName(MaterialComponent::TextureType::diffuse));
-				ImGui::PushItemWidth(200.0f);
-				string diff_assign = "Assign##diff_assign";
-				if (ImGui::Button(diff_assign.c_str()))
-				{
-					GUIProjectItemsList::obj = obj;
-					GUIProjectItemsList::textureType = MaterialComponent::TextureType::diffuse;
-					GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
-					GUIProjectItemsList::renderProjectItemsList = true;
-				}
-				ImGui::PopItemWidth();
-
-				//reset diffuse texture
-				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
-				path diff_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "diff_default.png");
-				string diff_reset = "Reset##diff_reset";
-				ImGui::PushItemWidth(200.0f);
-				if (ImGui::Button(diff_reset.c_str()))
-				{
-					string removedTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
-					if (removedTexture.find("diff_default.png") == string::npos)
-					{
-						Texture::LoadTexture(obj, diff_defaultTexturePath.string(), MaterialComponent::TextureType::diffuse, true);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-						if (removedTexture.find("diff_missing.png") == string::npos)
-						{
-							File::DeleteFileOrfolder(removedTexture);
-						}
-					}
-					else
-					{
-						ConsoleManager::WriteConsoleMessage(
-							ConsoleCaller::FILE,
-							ConsoleType::INFO,
-							"Cannot reset texture on diffuse slot for " + obj->GetName() + " because the texture already is default.\n");
-					}
-				}
-				ImGui::PopItemWidth();
-
-				ImGui::Spacing();
-
-				//assign specular texture
-				ImGui::Text("Specular texture");
-				ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
-				path spec_texturePath = path(
-					Engine::filesPath
-					+ mat->GetTextureName(MaterialComponent::TextureType::specular));
-				string spec_assign = "Assign##spec_assign";
-				ImGui::PushItemWidth(200.0f);
-				if (ImGui::Button(spec_assign.c_str()))
-				{
-					GUIProjectItemsList::obj = obj;
-					GUIProjectItemsList::textureType = MaterialComponent::TextureType::specular;
-					GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
-					GUIProjectItemsList::renderProjectItemsList = true;
-				}
-				ImGui::PopItemWidth();
-
-				//reset specular texture
-				ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
-				path spec_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "spec_default.png");
-				string spec_reset = "Reset##spec_reset";
-				ImGui::PushItemWidth(200.0f);
-				if (ImGui::Button(spec_reset.c_str()))
-				{
-					string removedTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
-					if (removedTexture.find("spec_default.png") == string::npos)
-					{
-						Texture::LoadTexture(obj, spec_defaultTexturePath.string(), MaterialComponent::TextureType::specular, true);
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-
-						File::DeleteFileOrfolder(removedTexture);
-					}
-					else
-					{
-						ConsoleManager::WriteConsoleMessage(
-							ConsoleCaller::FILE,
-							ConsoleType::INFO,
-							"Cannot reset texture on specular slot for " + obj->GetName() + " because the texture already is default.\n");
-					}
-				}
-				ImGui::PopItemWidth();
-			}
-			else
-			{
-				auto& childBillboard = obj->GetChildBillboard();
-				auto childMat = childBillboard->GetComponent<MaterialComponent>();
-				if (childMat)
-				{
-					const string& vertShader = mat->GetShaderName(0);
-					const string& fragShader = mat->GetShaderName(1);
-
-					const string& childVertShader = childMat->GetShaderName(0);
-					const string& childFragShader = childMat->GetShaderName(1);
-
-					const string& diffTexture = childMat->GetTextureName(MaterialComponent::TextureType::diffuse);
-
-					ImGui::Button("Vertex shader");
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(vertShader.c_str());
-						ImGui::EndTooltip();
-					}
-					ImGui::Button("Fragment shader");
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(fragShader.c_str());
-						ImGui::EndTooltip();
-					}
-
-					ImGui::Button("Billboard vertex shader");
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(childVertShader.c_str());
-						ImGui::EndTooltip();
-					}
-					ImGui::Button("Billboard fragment shader");
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(childFragShader.c_str());
-						ImGui::EndTooltip();
-					}
-
-					ImGui::Button("Billboard diffuse texture");
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(diffTexture.c_str());
-						ImGui::EndTooltip();
-					}
 				}
 			}
 		}
@@ -691,9 +667,7 @@ namespace Graphics::GUI
 		auto mesh = obj->GetComponent<MeshComponent>();
 		auto light = obj->GetComponent<LightComponent>();
 
-		float height;
-		if (!mesh) height = 100;
-		else height = mesh->GetMeshType() == MeshType::spot_light ? 400 : 270;
+		float height = mesh->GetMeshType() == MeshType::spot_light ? 400 : 270;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -711,143 +685,136 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		if (!mesh)
+		ChangeLightType();
+
+		MeshComponent::MeshType objType = mesh->GetMeshType();
+		if (objType == MeshType::point_light)
 		{
-			ImGui::Text("Mesh is missing.");
+			vec3 pointDiffuse = light->GetDiffuse();
+			ImGui::Text("Point light diffuse");
+			if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
+			{
+				light->SetDiffuse(pointDiffuse);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			float pointIntensity = light->GetIntensity();
+			ImGui::Text("Point light intensity");
+			if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
+			{
+				light->SetIntensity(pointIntensity);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pointint"))
+			{
+				light->SetIntensity(1.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			float pointDistance = light->GetDistance();
+			ImGui::Text("Point light distance");
+			if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
+			{
+				light->SetDistance(pointDistance);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pointdist"))
+			{
+				light->SetDistance(1.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
 		}
-		else
+		else if (objType == MeshType::spot_light)
 		{
-			ChangeLightType();
-
-			MeshComponent::MeshType objType = mesh->GetMeshType();
-			if (objType == MeshType::point_light)
+			vec3 spotDiffuse = light->GetDiffuse();
+			ImGui::Text("Spotlight diffuse");
+			if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
 			{
-				vec3 pointDiffuse = light->GetDiffuse();
-				ImGui::Text("Point light diffuse");
-				if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
-				{
-					light->SetDiffuse(pointDiffuse);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				float pointIntensity = light->GetIntensity();
-				ImGui::Text("Point light intensity");
-				if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
-				{
-					light->SetIntensity(pointIntensity);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##pointint"))
-				{
-					light->SetIntensity(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				float pointDistance = light->GetDistance();
-				ImGui::Text("Point light distance");
-				if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
-				{
-					light->SetDistance(pointDistance);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##pointdist"))
-				{
-					light->SetDistance(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+				light->SetDiffuse(spotDiffuse);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
-			else if (objType == MeshType::spot_light)
+
+			float spotIntensity = light->GetIntensity();
+			ImGui::Text("Spotlight intensity");
+			if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
 			{
-				vec3 spotDiffuse = light->GetDiffuse();
-				ImGui::Text("Spotlight diffuse");
-				if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
-				{
-					light->SetDiffuse(spotDiffuse);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				float spotIntensity = light->GetIntensity();
-				ImGui::Text("Spotlight intensity");
-				if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
-				{
-					light->SetIntensity(spotIntensity);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotint"))
-				{
-					light->SetIntensity(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				float spotDistance = light->GetDistance();
-				ImGui::Text("Spotlight distance");
-				if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
-				{
-					light->SetDistance(spotDistance);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotdist"))
-				{
-					light->SetDistance(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				float spotInnerAngle = light->GetInnerAngle();
-				float spotOuterAngle = light->GetOuterAngle();
-
-				ImGui::Text("Spotlight inner angle");
-				if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
-				{
-					light->SetInnerAngle(spotInnerAngle);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotinnerangle"))
-				{
-					light->SetInnerAngle(15.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-
-				ImGui::Text("Spotlight outer angle");
-				if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
-				{
-					light->SetOuterAngle(spotOuterAngle);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##spotouterangle"))
-				{
-					light->SetOuterAngle(30.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+				light->SetIntensity(spotIntensity);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
-			else if (objType == MeshType::directional_light)
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##spotint"))
 			{
-				vec3 dirDiffuse = light->GetDiffuse();
-				ImGui::Text("Directional light diffuse");
-				if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
-				{
-					light->SetDiffuse(dirDiffuse);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+				light->SetIntensity(1.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
 
-				float dirIntensity = light->GetIntensity();
-				ImGui::Text("Directional light intensity");
-				if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
-				{
-					light->SetIntensity(dirIntensity);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##dirint"))
-				{
-					light->SetIntensity(1.0f);
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-				}
+			float spotDistance = light->GetDistance();
+			ImGui::Text("Spotlight distance");
+			if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
+			{
+				light->SetDistance(spotDistance);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##spotdist"))
+			{
+				light->SetDistance(1.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			float spotInnerAngle = light->GetInnerAngle();
+			float spotOuterAngle = light->GetOuterAngle();
+
+			ImGui::Text("Spotlight inner angle");
+			if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
+			{
+				light->SetInnerAngle(spotInnerAngle);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##spotinnerangle"))
+			{
+				light->SetInnerAngle(15.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Text("Spotlight outer angle");
+			if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
+			{
+				light->SetOuterAngle(spotOuterAngle);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##spotouterangle"))
+			{
+				light->SetOuterAngle(30.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+		}
+		else if (objType == MeshType::directional_light)
+		{
+			vec3 dirDiffuse = light->GetDiffuse();
+			ImGui::Text("Directional light diffuse");
+			if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
+			{
+				light->SetDiffuse(dirDiffuse);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			float dirIntensity = light->GetIntensity();
+			ImGui::Text("Directional light intensity");
+			if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
+			{
+				light->SetIntensity(dirIntensity);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##dirint"))
+			{
+				light->SetIntensity(1.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 		}
 
