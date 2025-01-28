@@ -564,6 +564,8 @@ namespace Core
             Caller::FILE,
             Type::INFO,
             "Successfully pasted gameobject '" + copiedObject["name"] + "'!\n");
+
+        copiedObject.clear();
     }
 
     void Input::SceneWindowInput()
