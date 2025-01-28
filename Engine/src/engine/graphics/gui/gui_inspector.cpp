@@ -180,10 +180,21 @@ namespace Graphics::GUI
 						}
 						else
 						{
-							auto pointLight = Select::selectedObj->AddComponent<LightComponent>(
-								vec3(1),
-								1.0f,
-								1.0f);
+							if (Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType()
+								== MeshComponent::MeshType::model)
+							{
+								ConsoleManager::WriteConsoleMessage(
+									ConsoleCaller::INPUT,
+									ConsoleType::EXCEPTION,
+									"Error: " + Select::selectedObj->GetName() + " cannot be given a light component because it is a model! Remove the model first and then attach the light component.");
+							}
+							else
+							{
+								auto pointLight = Select::selectedObj->AddComponent<LightComponent>(
+									vec3(1),
+									1.0f,
+									1.0f);
+							}
 						}
 					}
 					else if (strcmp(items[i], "Audio player") == 0)
@@ -414,23 +425,38 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		auto mat = obj->GetComponent<MaterialComponent>();
-
-		//assign model
-		ImGui::Text("Model");
-		ImGui::SameLine(ImGui::GetWindowWidth() - 300.0f);
-		ImGui::PushItemWidth(200.0f);
-		string model_assign = "Assign##model_assign";
-		if (ImGui::Button(model_assign.c_str()))
+		//cannot add meshes or remove them from light sources
+		if (mesh->GetMeshType() != MeshComponent::MeshType::point_light
+			&& mesh->GetMeshType() != MeshComponent::MeshType::spot_light
+			&& mesh->GetMeshType() != MeshComponent::MeshType::directional_light)
 		{
-			string modelsFolder = (path(Engine::projectPath) / "models").string();
-			if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
+			//assign model
+			ImGui::Text("Add model");
+			ImGui::SameLine(ImGui::GetWindowWidth() - 300.0f);
+			ImGui::PushItemWidth(200.0f);
+			string model_assign = "Assign##model_assign";
+			if (ImGui::Button(model_assign.c_str()))
+			{
+				string modelsFolder = (path(Engine::projectPath) / "models").string();
+				if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
 
-			GUIProjectItemsList::obj = obj;
-			GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectModel;
-			GUIProjectItemsList::renderProjectItemsList = true;
+				GUIProjectItemsList::obj = obj;
+				GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectModel;
+				GUIProjectItemsList::renderProjectItemsList = true;
+			}
+			ImGui::PopItemWidth();
+
+			//remove model
+			ImGui::Text("Remove model");
+			ImGui::SameLine(ImGui::GetWindowWidth() - 300.0f);
+			ImGui::PushItemWidth(200.0f);
+			string model_assign = "Remove##model_remove";
+			if (ImGui::Button(model_assign.c_str()))
+			{
+				cout << "removed model: " << mesh->GetMeshPath() << "\n";
+			}
+			ImGui::PopItemWidth();
 		}
-		ImGui::PopItemWidth();
 
 		ImGui::EndChild();
 	}
@@ -461,6 +487,11 @@ namespace Graphics::GUI
 			const string& diffTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
 			const string& specTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
 
+			/*
+			*
+			* I DONT KNOW IF I WANT TO DISPLAY SHADERS OR NOT ON MATERIAL COMPONENT,
+			* THIS IS PROBABLY USELESS BUT I WILL KEEP IT AROUND FOR NOW IN CASE I NEED IT
+			*
 			ImGui::Button("Vertex shader");
 			if (ImGui::IsItemHovered())
 			{
@@ -475,21 +506,7 @@ namespace Graphics::GUI
 				ImGui::Text(fragShader.c_str());
 				ImGui::EndTooltip();
 			}
-
-			ImGui::Button("Diffuse texture");
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text(diffTexture.c_str());
-				ImGui::EndTooltip();
-			}
-			ImGui::Button("Specular texture");
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text(specTexture.c_str());
-				ImGui::EndTooltip();
-			}
+			*/
 
 			/*
 			*

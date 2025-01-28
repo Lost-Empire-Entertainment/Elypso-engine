@@ -78,8 +78,8 @@ namespace Graphics::Components
             glDeleteBuffers(1, &EBO);
         }
 
-        void AddAssimpMesh(const AssimpMesh& newMesh) { assimpMeshes.push_back(newMesh); }
-        const vector<AssimpMesh>& GetAssimpMeshes() const { return assimpMeshes; }
+        void SetMeshPath(const string& newPath) { meshPath = newPath; }
+        const string& GetMeshPath() const { return meshPath; }
 
         void SetMeshType(const MeshType& newType) { type = newType; }
         void SetVAO(const GLuint& newVAO) { VAO = newVAO; }
@@ -106,7 +106,6 @@ namespace Graphics::Components
         GLuint EBO;
         vector<AssimpVertex> vertices;
         vector<unsigned int> indices;
-
-        vector<AssimpMesh> assimpMeshes;
+        string meshPath;
     };
 }
