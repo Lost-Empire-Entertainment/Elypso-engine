@@ -26,7 +26,7 @@ If this is your first time running the program then Windows may throw false posi
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
 
-[Official discord server](https://discord.gg/FqJgy2SvDs)
+[Official discord server](https://discord.gg/jkvasmTND5)
 
 [Official youtube channel](https://youtube.com/greenlaser)
 
