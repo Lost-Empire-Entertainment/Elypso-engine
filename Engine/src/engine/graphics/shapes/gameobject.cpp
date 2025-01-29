@@ -15,6 +15,7 @@
 #include "gameobject.hpp"
 #include "importer.hpp"
 #include "model.hpp"
+#include "empty.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
@@ -77,28 +78,29 @@ namespace Graphics::Shape
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
+				auto apc = obj->GetComponent<AudioPlayerComponent>();
+				if (apc
+					&& apc->Is3D())
+				{
+					has3DAudio = true;
+
+					string apcName = apc->GetName();
+					if (Audio::IsImported(apc->GetName()))
+					{
+						Audio::UpdatePlayerPosition(apcName, obj->GetTransform()->GetPosition());
+					}
+				}
+
 				auto mesh = obj->GetComponent<MeshComponent>();
 				Type type = mesh->GetMeshType();
 				switch (type)
 				{
 				case Type::model:
-				{
 					Model::Render(obj, view, projection);
-
-					auto apc = obj->GetComponent<AudioPlayerComponent>();
-					if (apc
-						&& apc->Is3D())
-					{
-						has3DAudio = true;
-
-						string apcName = apc->GetName();
-						if (Audio::IsImported(apc->GetName()))
-						{
-							Audio::UpdatePlayerPosition(apcName, obj->GetTransform()->GetPosition());
-						}
-					}
 					break;
-				}
+				case Type::empty:
+					Empty::RenderEmpty(obj, view, projection);
+					break;
 				case Type::directional_light:
 					DirectionalLight::RenderDirectionalLight(obj, view, projection);
 					break;

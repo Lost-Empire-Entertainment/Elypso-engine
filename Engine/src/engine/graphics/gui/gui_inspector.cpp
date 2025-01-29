@@ -442,54 +442,8 @@ namespace Graphics::GUI
 
 		if (objType == MeshType::model)
 		{
-			const string& vertShader = mat->GetShaderName(0);
-			const string& fragShader = mat->GetShaderName(1);
 			const string& diffTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
 			const string& specTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
-
-			/*
-			*
-			* I DONT KNOW IF I WANT TO DISPLAY SHADERS OR NOT ON MATERIAL COMPONENT,
-			* THIS IS PROBABLY USELESS BUT I WILL KEEP IT AROUND FOR NOW IN CASE I NEED IT
-			*
-			ImGui::Button("Vertex shader");
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text(vertShader.c_str());
-				ImGui::EndTooltip();
-			}
-			ImGui::Button("Fragment shader");
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text(fragShader.c_str());
-				ImGui::EndTooltip();
-			}
-			*/
-
-			/*
-			*
-			* SHININESS IS CURRENTLY DISABLED BECAUSE IT IS UNUSED
-			* IT WILL BE RE-ENABLED IN A FUTURE UPDATE
-			*
-			float modelShininess = obj->GetBasicShape()->GetShininess();
-			ImGui::Text("Shininess");
-
-			if (ImGui::DragFloat("##shininess", &modelShininess, 0.1f, 0.5f, 32.0f))
-			{
-				obj->GetBasicShape()->SetShininess(modelShininess);
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##shininess"))
-			{
-				obj->GetBasicShape()->SetShininess(32.0f);
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
-			ImGui::Spacing();
-			*/
 
 			//assign diffuse texture
 			ImGui::Text("Diffuse texture");
@@ -569,59 +523,6 @@ namespace Graphics::GUI
 						ConsoleCaller::FILE,
 						ConsoleType::INFO,
 						"Cannot reset texture on specular slot for " + obj->GetName() + " because the texture already is default.\n");
-				}
-			}
-		}
-		else
-		{
-			auto& childBillboard = obj->GetChildBillboard();
-			auto childMat = childBillboard->GetComponent<MaterialComponent>();
-			if (childMat)
-			{
-				const string& vertShader = mat->GetShaderName(0);
-				const string& fragShader = mat->GetShaderName(1);
-
-				const string& childVertShader = childMat->GetShaderName(0);
-				const string& childFragShader = childMat->GetShaderName(1);
-
-				const string& diffTexture = childMat->GetTextureName(MaterialComponent::TextureType::diffuse);
-
-				ImGui::Button("Vertex shader");
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(vertShader.c_str());
-					ImGui::EndTooltip();
-				}
-				ImGui::Button("Fragment shader");
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(fragShader.c_str());
-					ImGui::EndTooltip();
-				}
-
-				ImGui::Button("Billboard vertex shader");
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(childVertShader.c_str());
-					ImGui::EndTooltip();
-				}
-				ImGui::Button("Billboard fragment shader");
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(childFragShader.c_str());
-					ImGui::EndTooltip();
-				}
-
-				ImGui::Button("Billboard diffuse texture");
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(diffTexture.c_str());
-					ImGui::EndTooltip();
 				}
 			}
 		}

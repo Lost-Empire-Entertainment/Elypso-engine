@@ -19,6 +19,7 @@ namespace Graphics::Shape
 	using std::string;
 	using std::shared_ptr;
 	using glm::vec3;
+	using glm::mat4;
 
 	using Graphics::Shape::GameObject;
 
@@ -36,5 +37,10 @@ namespace Graphics::Shape
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
+
+		static void RenderEmpty(
+			const shared_ptr<GameObject>& obj,
+			const mat4& view,
+			const mat4& projection);
 	};
 }

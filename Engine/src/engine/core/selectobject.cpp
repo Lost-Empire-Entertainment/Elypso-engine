@@ -68,6 +68,7 @@ namespace Core
 			auto mesh = objects[i]->GetComponent<MeshComponent>();
 			Type objType = mesh->GetMeshType();
 			if (objType == Type::model
+				|| objType == Type::empty
 				|| objType == Type::point_light
 				|| objType == Type::spot_light
 				|| objType == Type::directional_light)
@@ -97,6 +98,7 @@ namespace Core
 		Type objType = mesh->GetMeshType();
 
 		if (objType == Type::model
+			|| objType == Type::empty
 			|| objType == Type::point_light
 			|| objType == Type::spot_light
 			|| objType == Type::directional_light)

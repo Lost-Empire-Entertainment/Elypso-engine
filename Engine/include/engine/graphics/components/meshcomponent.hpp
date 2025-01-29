@@ -54,6 +54,7 @@ namespace Graphics::Components
             border,
             actionTex,
             model,
+            empty,
             point_light,
             spot_light,
             directional_light,
