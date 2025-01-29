@@ -126,7 +126,7 @@ namespace Graphics::GUI
 
 	void GUIInspector::AddComponent()
 	{
-		const char* items[] = { "Mesh", "Material", "Light", "Audio player"};
+		const char* items[] = { "Light", "Audio player"};
 		static int currentItem = -1;
 
 		const char* currentLabel = (currentItem >= 0) ? items[currentItem] : "Add component";
@@ -138,37 +138,7 @@ namespace Graphics::GUI
 				if (ImGui::Selectable(items[i], currentItem == i))
 				{
 					currentItem = i;
-					if (strcmp(items[i], "Mesh") == 0)
-					{
-						auto existingMesh = Select::selectedObj->GetComponent<MeshComponent>();
-						if (existingMesh)
-						{
-							ConsoleManager::WriteConsoleMessage(
-								ConsoleCaller::INPUT,
-								ConsoleType::EXCEPTION,
-								"Error: " + Select::selectedObj->GetName() + " already has a mesh component!");
-						}
-						else
-						{
-
-						}
-					}
-					else if (strcmp(items[i], "Material") == 0)
-					{
-						auto existingMat = Select::selectedObj->GetComponent<MaterialComponent>();
-						if (existingMat)
-						{
-							ConsoleManager::WriteConsoleMessage(
-								ConsoleCaller::INPUT,
-								ConsoleType::EXCEPTION,
-								"Error: " + Select::selectedObj->GetName() + " already has a material component!");
-						}
-						else
-						{
-
-						}
-					}
-					else if (strcmp(items[i], "Light") == 0)
+					if (strcmp(items[i], "Light") == 0)
 					{
 						auto existingLight = Select::selectedObj->GetComponent<LightComponent>();
 						if (existingLight)
@@ -414,12 +384,9 @@ namespace Graphics::GUI
 
 		auto mesh = obj->GetComponent<MeshComponent>();
 
-		bool meshExists = mesh != nullptr;
-		float height = meshExists ? 150 : 100;
-
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+		ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, 125.0f), true, childWindowFlags);
 		
 		ImGui::Text("Mesh");
 
@@ -430,11 +397,10 @@ namespace Graphics::GUI
 			&& mesh->GetMeshType() != MeshComponent::MeshType::spot_light
 			&& mesh->GetMeshType() != MeshComponent::MeshType::directional_light)
 		{
+			ImGui::Text("Model");
+
 			//assign model
-			ImGui::Text("Add model");
-			ImGui::SameLine(ImGui::GetWindowWidth() - 300.0f);
-			ImGui::PushItemWidth(200.0f);
-			string model_assign = "Assign##model_assign";
+			string model_assign = "Add##model_assign";
 			if (ImGui::Button(model_assign.c_str()))
 			{
 				string modelsFolder = (path(Engine::projectPath) / "models").string();
@@ -444,18 +410,14 @@ namespace Graphics::GUI
 				GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectModel;
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}
-			ImGui::PopItemWidth();
 
 			//remove model
-			ImGui::Text("Remove model");
-			ImGui::SameLine(ImGui::GetWindowWidth() - 300.0f);
-			ImGui::PushItemWidth(200.0f);
-			string model_assign = "Remove##model_remove";
-			if (ImGui::Button(model_assign.c_str()))
+			string model_remove = "Remove##model_remove";
+			ImGui::SameLine();
+			if (ImGui::Button(model_remove.c_str()))
 			{
 				cout << "removed model: " << mesh->GetMeshPath() << "\n";
 			}
-			ImGui::PopItemWidth();
 		}
 
 		ImGui::EndChild();
@@ -468,11 +430,9 @@ namespace Graphics::GUI
 		auto mesh = obj->GetComponent<MeshComponent>();
 		auto mat = obj->GetComponent<MaterialComponent>();
 
-		float height = mesh ? 270 : 100;
-
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+		ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, 150.0f), true, childWindowFlags);
 		
 		ImGui::Text("Material");
 
@@ -537,8 +497,7 @@ namespace Graphics::GUI
 			path diff_texturePath = path(
 				Engine::filesPath
 				+ mat->GetTextureName(MaterialComponent::TextureType::diffuse));
-			ImGui::PushItemWidth(200.0f);
-			string diff_assign = "Assign##diff_assign";
+			string diff_assign = "Add##diff_assign";
 			if (ImGui::Button(diff_assign.c_str()))
 			{
 				GUIProjectItemsList::obj = obj;
@@ -546,13 +505,11 @@ namespace Graphics::GUI
 				GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}
-			ImGui::PopItemWidth();
 
 			//reset diffuse texture
-			ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+			ImGui::SameLine();
 			path diff_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "diff_default.png");
-			string diff_reset = "Reset##diff_reset";
-			ImGui::PushItemWidth(200.0f);
+			string diff_reset = "Remove##diff_reset";
 			if (ImGui::Button(diff_reset.c_str()))
 			{
 				string removedTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
@@ -574,7 +531,6 @@ namespace Graphics::GUI
 						"Cannot reset texture on diffuse slot for " + obj->GetName() + " because the texture already is default.\n");
 				}
 			}
-			ImGui::PopItemWidth();
 
 			ImGui::Spacing();
 
@@ -584,8 +540,7 @@ namespace Graphics::GUI
 			path spec_texturePath = path(
 				Engine::filesPath
 				+ mat->GetTextureName(MaterialComponent::TextureType::specular));
-			string spec_assign = "Assign##spec_assign";
-			ImGui::PushItemWidth(200.0f);
+			string spec_assign = "Add##spec_assign";
 			if (ImGui::Button(spec_assign.c_str()))
 			{
 				GUIProjectItemsList::obj = obj;
@@ -593,13 +548,11 @@ namespace Graphics::GUI
 				GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectTexture;
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}
-			ImGui::PopItemWidth();
 
 			//reset specular texture
-			ImGui::SameLine(ImGui::GetWindowWidth() - 150.0f);
+			ImGui::SameLine();
 			path spec_defaultTexturePath = path(path(Engine::filesPath) / "textures" / "spec_default.png");
-			string spec_reset = "Reset##spec_reset";
-			ImGui::PushItemWidth(200.0f);
+			string spec_reset = "Remove##spec_reset";
 			if (ImGui::Button(spec_reset.c_str()))
 			{
 				string removedTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
@@ -618,7 +571,6 @@ namespace Graphics::GUI
 						"Cannot reset texture on specular slot for " + obj->GetName() + " because the texture already is default.\n");
 				}
 			}
-			ImGui::PopItemWidth();
 		}
 		else
 		{

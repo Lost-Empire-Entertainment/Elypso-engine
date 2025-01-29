@@ -135,6 +135,9 @@ namespace Graphics::Shape
 			VBO, 
 			EBO);
 
+		mesh->SetMeshPath(modelPath);
+		cout << "!!!!!!!!!! '" << name << "' model path: " << mesh->GetMeshPath() << "\n";
+
 		string vert = (path(Engine::filesPath) / "shaders" / "GameObject.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string();
 
