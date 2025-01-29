@@ -50,7 +50,7 @@ By default **Elypso Engine** and its **Game Template** will not include **Discor
 
 [Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
 
-[Official discord server](https://discord.gg/FqJgy2SvDs)
+[Official discord server](https://discord.gg/jkvasmTND5)
 
 [Official youtube channel](https://youtube.com/greenlaser)
 
