@@ -27,6 +27,7 @@
 #include "sceneFile.hpp"
 #include "configFile.hpp"
 #include "importer.hpp"
+#include "empty.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "fileUtils.hpp"
@@ -67,6 +68,7 @@ using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
+using Graphics::Shape::Empty;
 using Utils::File;
 using Core::Input;
 using Utils::String;
@@ -384,6 +386,11 @@ namespace Core
             copiedObject["outerAngle"] = to_string(selectedObj->GetComponent<LightComponent>()->GetOuterAngle());
         }
 
+        else if (type == MeshComponent::MeshType::empty)
+        {
+            copiedObject["type"] = "empty";
+        }
+
         auto apc = selectedObj->GetComponent<AudioPlayerComponent>();
         if (apc)
         {
@@ -486,9 +493,9 @@ namespace Core
         {
             string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
             string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + ".txt";
             File::CreateNewFolder(targetPath);
 
-            string targetNameAndExtension = targetName + ".txt";
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 
             vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
@@ -538,6 +545,28 @@ namespace Core
                 nextID,
                 true,
                 nextID2,
+                true);
+
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+        }
+
+        //if an empty was copied
+        else if (copiedObject["type"] == "empty")
+        {
+            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + ".txt";
+            File::CreateNewFolder(targetPath);
+
+            string filePath = (path(targetPath) / targetNameAndExtension).string();
+
+            Empty::InitializeEmpty(
+                newPos,
+                rot,
+                scale,
+                filePath,
+                targetName,
+                nextID,
                 true);
 
             if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

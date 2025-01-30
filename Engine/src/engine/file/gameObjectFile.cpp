@@ -138,8 +138,8 @@ namespace EngineFile
 
 				auto mesh = obj->GetComponent<MeshComponent>();
 				//
-					// MESH DATA
-					//
+				// MESH DATA
+				//
 
 				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
 				data.push_back("type= " + type + "\n");
@@ -430,12 +430,18 @@ namespace EngineFile
 			}
 		}
 
-		//loads all light txt files
+		//loads all empty and light txt files
 		for (const auto& gameobjectPath : validGameobjectPaths)
 		{
 			string filePath = path(gameobjectPath).string();
 			string type = GetType(filePath);
-			if (type == "point_light")
+
+			if (type == "empty")
+			{
+				LoadEmpty(filePath);
+			}
+
+			else if (type == "point_light")
 			{
 				LoadPointLight(filePath);
 			}
@@ -447,6 +453,7 @@ namespace EngineFile
 			{
 				LoadDirectionalLight(filePath);
 			}
+
 		}
 #if ENGINE_MODE
 		GUISceneWindow::waitBeforeCountsUpdate = false;
@@ -779,7 +786,9 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, normalTexture, MaterialComponent::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, MaterialComponent::TextureType::normal, false);
 
-			if (audioFileName != "")
+			if (audioFileName != ""
+				|| data["is3D"] != ""
+				|| data["currentVolume"] != "")
 			{
 				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
 				apc->SetName(audioFileName);
@@ -797,6 +806,172 @@ namespace EngineFile
 
 			GameObject::nextID = ID + 1;
 		}
+	}
+
+	void GameObjectFile::LoadEmpty(const string& file)
+	{
+		//
+		// READ FROM EMPTY FILE
+		//
+
+		ifstream emptyFile(file);
+		if (!emptyFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to open empty file '" + file + "'!\n\n");
+			return;
+		}
+
+		unordered_map<string, string> data;
+		string line;
+		while (getline(emptyFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "enabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+					|| key == "txtFile"
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		emptyFile.close();
+
+		//
+		// ASSIGN EMPTY DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		MeshComponent::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+		string txtFile{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
+
+		for (const auto& [key, value] : data)
+		{
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
+			else if (key == "enabled")
+			{
+				isEnabled = stoi(value);
+			}
+			else if (key == "type")
+			{
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
+				if (typeAuto.has_value())
+				{
+					type = typeAuto.value();
+				}
+			}
+			else if (key == "position")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				pos = newPos;
+			}
+			else if (key == "rotation")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				rot = newRot;
+			}
+			else if (key == "scale")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				scale = newScale;
+			}
+			else if (key == "txtFile")
+			{
+				txtFile = value;
+			}
+
+			else if (key == "audioFileName")
+			{
+				audioFileName = value;
+			}
+			else if (key == "is3D")
+			{
+				is3D = stoi(value);
+			}
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
+		}
+
+		//
+		// LOAD EMPTY
+		//
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Loading empty '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+		auto empty = Empty::InitializeEmpty(
+			pos,
+			rot,
+			scale,
+			txtFile,
+			name,
+			ID,
+			isEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != "")
+		{
+			auto apc = empty->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+		}
+
+		GameObject::nextID = ID + 1;
 	}
 
 	void GameObjectFile::LoadPointLight(const string& file)
@@ -854,7 +1029,11 @@ namespace EngineFile
 					|| key == "distance"
 
 					|| key == "billboard id"
-					|| key == "billboard enabled")
+					|| key == "billboard enabled"
+					
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume")
 				{
 					data[key] = value;
 				}
@@ -883,6 +1062,10 @@ namespace EngineFile
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -947,6 +1130,19 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
+
+			else if (key == "audioFileName")
+			{
+				audioFileName = value;
+			}
+			else if (key == "is3D")
+			{
+				is3D = stoi(value);
+			}
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
 		}
 
 		//
@@ -958,7 +1154,7 @@ namespace EngineFile
 			Type::DEBUG,
 			"Loading point light '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		PointLight::InitializePointLight(
+		auto pl = PointLight::InitializePointLight(
 			pos,
 			rot,
 			scale,
@@ -971,6 +1167,16 @@ namespace EngineFile
 			isEnabled,
 			billboardID,
 			isBillboardEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != "")
+		{
+			auto apc = pl->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+		}
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1032,7 +1238,11 @@ namespace EngineFile
 					|| key == "outer angle"
 
 					|| key == "billboard id"
-					|| key == "billboard enabled")
+					|| key == "billboard enabled"
+
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume")
 				{
 					data[key] = value;
 				}
@@ -1063,6 +1273,10 @@ namespace EngineFile
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1129,6 +1343,19 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
+
+			else if (key == "audioFileName")
+			{
+				audioFileName = value;
+			}
+			else if (key == "is3D")
+			{
+				is3D = stoi(value);
+			}
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
 		}
 
 		//
@@ -1140,7 +1367,7 @@ namespace EngineFile
 			Type::DEBUG,
 			"Loading spotlight '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		SpotLight::InitializeSpotLight(
+		auto sl = SpotLight::InitializeSpotLight(
 			pos,
 			rot,
 			scale,
@@ -1155,6 +1382,16 @@ namespace EngineFile
 			isEnabled,
 			billboardID,
 			isBillboardEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != "")
+		{
+			auto apc = sl->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+		}
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1214,7 +1451,11 @@ namespace EngineFile
 					|| key == "distance"
 
 					|| key == "billboard id"
-					|| key == "billboard enabled")
+					|| key == "billboard enabled"
+
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume")
 				{
 					data[key] = value;
 				}
@@ -1242,6 +1483,10 @@ namespace EngineFile
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1305,6 +1550,19 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
+
+			else if (key == "audioFileName")
+			{
+				audioFileName = value;
+			}
+			else if (key == "is3D")
+			{
+				is3D = stoi(value);
+			}
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
 		}
 
 		//
@@ -1316,7 +1574,7 @@ namespace EngineFile
 			Type::DEBUG,
 			"Loading directional light '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		DirectionalLight::InitializeDirectionalLight(
+		auto dl = DirectionalLight::InitializeDirectionalLight(
 			pos,
 			rot,
 			scale,
@@ -1328,6 +1586,16 @@ namespace EngineFile
 			isEnabled,
 			billboardID,
 			isBillboardEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != "")
+		{
+			auto apc = dl->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+		}
 
 		GameObject::nextID = ID + 1;
 	}

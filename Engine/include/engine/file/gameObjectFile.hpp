@@ -28,6 +28,7 @@ namespace EngineFile
 	private:
 		static string GetType(const string& file);
 
+		static void LoadEmpty(const string& file);
 		static void LoadPointLight(const string& file);
 		static void LoadSpotlight(const string& file);
 		static void LoadDirectionalLight(const string& file);
