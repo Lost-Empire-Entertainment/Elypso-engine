@@ -41,6 +41,7 @@
 #include "billboard.hpp"
 #include "audioplayercomponent.hpp"
 #include "audio.hpp"
+#include "empty.hpp"
 
 using std::cout;
 using std::endl;
@@ -76,6 +77,7 @@ using Graphics::Shape::DirectionalLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::Billboard;
+using Graphics::Shape::Empty;
 using Core::Audio;
 
 namespace Graphics::GUI
@@ -312,7 +314,7 @@ namespace Graphics::GUI
 		ImGuiChildFlags childWindowFlags{};
 
 		ImGui::BeginChild("Transform", ImVec2(ImGui::GetWindowWidth() - 20, 240), true, childWindowFlags);
-		
+
 		ImGui::Text("Transform");
 		ImGui::Separator();
 
@@ -387,15 +389,14 @@ namespace Graphics::GUI
 		ImGuiChildFlags childWindowFlags{};
 
 		ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, 125.0f), true, childWindowFlags);
-		
+
 		ImGui::Text("Mesh");
 
 		ImGui::Separator();
 
 		//cannot add meshes or remove them from light sources
-		if (mesh->GetMeshType() != MeshComponent::MeshType::point_light
-			&& mesh->GetMeshType() != MeshComponent::MeshType::spot_light
-			&& mesh->GetMeshType() != MeshComponent::MeshType::directional_light)
+		if (mesh->GetMeshType() == MeshComponent::MeshType::empty
+			|| mesh->GetMeshType() == MeshComponent::MeshType::model)
 		{
 			ImGui::Text("Model");
 
@@ -411,12 +412,35 @@ namespace Graphics::GUI
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}
 
-			//remove model
-			string model_remove = "Remove##model_remove";
-			ImGui::SameLine();
-			if (ImGui::Button(model_remove.c_str()))
+			if (mesh->GetMeshType() != MeshComponent::MeshType::empty)
 			{
-				cout << "removed model: " << mesh->GetMeshPath() << "\n";
+				//remove model
+				string model_remove = "Remove##model_remove";
+				ImGui::SameLine();
+				if (ImGui::Button(model_remove.c_str()))
+				{
+					string txtFile = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
+					string txtFileParent = path(txtFile).parent_path().string();
+					if (exists(txtFile)) File::DeleteFileOrfolder(obj->GetTxtFilePath());
+
+					string name = obj->GetName();
+					unsigned int ID = obj->GetID();
+					vec3 pos = obj->GetTransform()->GetPosition();
+					vec3 rot = obj->GetTransform()->GetRotation();
+					vec3 scale = obj->GetTransform()->GetScale();
+
+					GameObjectManager::DestroyGameObject(obj, false);
+
+					File::CreateNewFolder(txtFileParent);
+					Empty::InitializeEmpty(
+						pos, 
+						rot, 
+						scale,
+						"",
+						name,
+						ID,
+						true);
+				}
 			}
 		}
 

@@ -26,6 +26,7 @@
 #include "importer.hpp"
 #include "audioplayercomponent.hpp"
 #include "audio.hpp"
+#include "meshcomponent.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -47,6 +48,7 @@ using Graphics::Shape::Importer;
 using Graphics::GUI::GUISettings;
 using Graphics::Components::AudioPlayerComponent;
 using Core::Audio;
+using Graphics::Components::MeshComponent;
 
 namespace Graphics::GUI
 {
@@ -347,6 +349,12 @@ namespace Graphics::GUI
 				vec3 objRot = obj->GetTransform()->GetRotation();
 				vec3 objScale = obj->GetTransform()->GetScale();
 				
+				auto mesh = obj->GetComponent<MeshComponent>();
+				if (mesh->GetMeshType() == MeshComponent::MeshType::empty)
+				{
+					string txtFile = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
+					if (exists(txtFile)) File::DeleteFileOrfolder(obj->GetTxtFilePath());
+				}
 				GameObjectManager::DestroyGameObject(obj, true);
 
 				Importer::Initialize(

@@ -208,6 +208,10 @@ namespace Graphics::Shape
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;
+		case Type::empty:
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			break;
 		case Type::point_light:
 		{
 			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
