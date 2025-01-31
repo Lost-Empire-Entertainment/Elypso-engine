@@ -105,45 +105,40 @@ namespace Core
 
         if (!IsImported(name))
         {
-            Import(name);
-        }
-
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Audio file not found in sound map: " + name + "\n");
             return false;
         }
-
-        //reset audio to the beginning
-        ma_result seekResult = ma_sound_seek_to_pcm_frame(it->second.get(), 0);
-        if (seekResult != MA_SUCCESS)
+        else
         {
+            auto it = soundMap.find(name);
+
+            //reset audio to the beginning
+            ma_result seekResult = ma_sound_seek_to_pcm_frame(it->second.get(), 0);
+            if (seekResult != MA_SUCCESS)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Error: Failed to reset audio playback position: " + name + "\n");
+                return false;
+            }
+
+            ma_result result = ma_sound_start(it->second.get());
+            if (result != MA_SUCCESS)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Error: Failed to play audio file: " + name + "\n");
+                return false;
+            }
+
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Failed to reset audio playback position: " + name + "\n");
-            return false;
+                Type::DEBUG,
+                "Playing audio file from the beginning: " + name + "\n");
+
+            return true;
         }
-
-        ma_result result = ma_sound_start(it->second.get());
-        if (result != MA_SUCCESS)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Failed to play audio file: " + name + "\n");
-            return false;
-        }
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Playing audio file from the beginning: " + name + "\n");
-
         return true;
     }
     bool Audio::Stop(const string& name)
@@ -152,49 +147,40 @@ namespace Core
 
         if (!IsImported(name))
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot stop audio file because it has not been imported: " + fullPath + "\n");
             return false;
         }
-
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
+        else
         {
+            auto it = soundMap.find(name);
+
+            ma_result result = ma_sound_stop(it->second.get());
+            if (result != MA_SUCCESS)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Error: Failed to stop audio file: " + name + "\n");
+                return false;
+            }
+
+            //reset the audio position to the start, so the next play starts fresh
+            ma_result seekResult = ma_sound_seek_to_pcm_frame(it->second.get(), 0);
+            if (seekResult != MA_SUCCESS)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Error: Failed to reset audio playback position after stopping: " + name + "\n");
+                return false;
+            }
+
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Audio file not found in sound map: " + name + "\n");
-            return false;
+                Type::DEBUG,
+                "Stopped audio file and reset position: " + name + "\n");
+
+            return true;
         }
-
-        ma_result result = ma_sound_stop(it->second.get());
-        if (result != MA_SUCCESS)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Failed to stop audio file: " + name + "\n");
-            return false;
-        }
-
-        //reset the audio position to the start, so the next play starts fresh
-        ma_result seekResult = ma_sound_seek_to_pcm_frame(it->second.get(), 0);
-        if (seekResult != MA_SUCCESS)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Failed to reset audio playback position after stopping: " + name + "\n");
-            return false;
-        }
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Stopped audio file and reset position: " + name + "\n");
-
         return true;
     }
 
@@ -204,38 +190,29 @@ namespace Core
 
         if (!IsImported(name))
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot pause audio file because it has not been imported: " + fullPath + "\n");
             return false;
         }
-
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
+        else
         {
+            auto it = soundMap.find(name);
+
+            ma_result result = ma_sound_stop(it->second.get());
+            if (result != MA_SUCCESS)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Error: Failed to pause audio file: " + name + "\n");
+                return false;
+            }
+
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Audio file not found in sound map: " + name + "\n");
-            return false;
+                Type::DEBUG,
+                "Paused audio file: " + name + "\n");
+
+            return true;
         }
-
-        ma_result result = ma_sound_stop(it->second.get());
-        if (result != MA_SUCCESS)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Failed to pause audio file: " + name + "\n");
-            return false;
-        }
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Paused audio file: " + name + "\n");
-
         return true;
     }
     bool Audio::Continue(const string& name)
@@ -244,140 +221,136 @@ namespace Core
 
         if (!IsImported(name))
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot continue playing audio file because it has not been imported: " + fullPath + "\n");
             return false;
         }
-
-        auto it = soundMap.find(name);
-
-        ma_result result = ma_sound_start(it->second.get());
-        if (result != MA_SUCCESS)
+        else
         {
+            auto it = soundMap.find(name);
+
+            ma_result result = ma_sound_start(it->second.get());
+            if (result != MA_SUCCESS)
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Error: Failed to continue playing audio file: " + name + "\n");
+                return false;
+            }
+
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Failed to continue playing audio file: " + name + "\n");
-            return false;
+                Type::DEBUG,
+                "Continuing playing audio file: " + name + "\n");
+
+            return true;
         }
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Continuing playing audio file: " + name + "\n");
-
         return true;
     }
 
     void Audio::SetVolume(const string& name, float volume)
     {
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
+        if (!IsImported(name))
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot set volume because audio file has not been imported: " + name + "\n");
-            return;
+            
         }
-
-        //convert the volume from 0.0f - 100.0f range to 0.0f - 1.0f range
-        float scaledVolume = volume / 100.0f;
-
-        //set the volume using Miniaudio API
-        ma_sound_set_volume(it->second.get(), scaledVolume);
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Volume set to " + to_string(volume) + "% for audio file: " + name + "\n");
-    }
-
-    void Audio::SetMinRange(const string& name, float minRange)
-    {
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
+        else
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot set min range because audio file has not been imported: " + name + "\n");
-            return;
-        }
+            auto it = soundMap.find(name);
 
-        ma_sound_set_min_distance(it->second.get(), minRange);
+            //convert the volume from 0.0f - 100.0f range to 0.0f - 1.0f range
+            float scaledVolume = volume / 100.0f;
 
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Min range set to " + to_string(minRange) + "% for audio file: " + name + "\n");
-    }
-    void Audio::SetMaxRange(const string& name, float maxRange)
-    {
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot set max range because audio file has not been imported: " + name + "\n");
-            return;
-        }
-
-        ma_sound_set_max_distance(it->second.get(), maxRange);
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Max range set to " + to_string(maxRange) + "% for audio file: " + name + "\n");
-    }
-
-    bool Audio::Set3DState(const string& name, bool state)
-    {
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot set 2D state because audio file has not been imported: " + name + "\n");
-            return false;
-        }
-
-        if (state)
-        {
-            //enable 3D sound (relative positioning)
-            ma_sound_set_positioning(it->second.get(), ma_positioning_relative);
-
-            //set attenuation model to exponential for natural sound falloff
-            ma_sound_set_attenuation_model(it->second.get(), ma_attenuation_model_exponential);
+            //set the volume using Miniaudio API
+            ma_sound_set_volume(it->second.get(), scaledVolume);
 
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
-                "Enabled 3D sound with exponential attenuation for audio file: " + name + "\n");
+                "Volume set to " + to_string(volume) + "% for audio file: " + name + "\n");
+        }
+    }
+
+    void Audio::SetMinRange(const string& name, float minRange)
+    {
+        if (!IsImported(name))
+        {
+            
         }
         else
         {
-            //enable 2D sound (absolute positioning)
-            ma_sound_set_positioning(it->second.get(), ma_positioning_absolute);
+            auto it = soundMap.find(name);
 
-            //reset position to origin for non-3D audio
-            UpdatePlayerPosition(name, vec3(0));
+            ma_sound_set_min_distance(it->second.get(), minRange);
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::DEBUG,
+                "Min range set to " + to_string(minRange) + "% for audio file: " + name + "\n");
+        }
+    }
+    void Audio::SetMaxRange(const string& name, float maxRange)
+    {
+        if (!IsImported(name))
+        {
+            
+        }
+        else
+        {
+            auto it = soundMap.find(name);
+
+            ma_sound_set_max_distance(it->second.get(), maxRange);
+
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::DEBUG,
+                "Max range set to " + to_string(maxRange) + "% for audio file: " + name + "\n");
+        }
+    }
+
+    bool Audio::Set3DState(const string& name, bool state)
+    {
+        if (!IsImported(name))
+        {
+            return false;
+        }
+        else
+        {
+            auto it = soundMap.find(name);
+
+            if (state)
+            {
+                //enable 3D sound (relative positioning)
+                ma_sound_set_positioning(it->second.get(), ma_positioning_relative);
+
+                //set attenuation model to exponential for natural sound falloff
+                ma_sound_set_attenuation_model(it->second.get(), ma_attenuation_model_exponential);
+
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::DEBUG,
+                    "Enabled 3D sound with exponential attenuation for audio file: " + name + "\n");
+            }
+            else
+            {
+                //enable 2D sound (absolute positioning)
+                ma_sound_set_positioning(it->second.get(), ma_positioning_absolute);
+
+                //reset position to origin for non-3D audio
+                UpdatePlayerPosition(name, vec3(0));
+
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::INFO,
+                    "Disabled 3D sound for audio file: " + name + "\n");
+            }
 
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::INFO,
-                "Disabled 3D sound for audio file: " + name + "\n");
+                "2D state set to " + string(state ? "enabled" : "disabled") + " for audio file: " + name + "\n");
+
+            return true;
         }
-
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::INFO,
-            "2D state set to " + string(state ? "enabled" : "disabled") + " for audio file: " + name + "\n");
-
         return true;
     }
 
@@ -394,26 +367,26 @@ namespace Core
     }
     bool Audio::UpdatePlayerPosition(const string& name, const vec3& pos)
     {
-        auto it = soundMap.find(name);
-        if (it == soundMap.end())
+        if (!IsImported(name))
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot update position because audio file has not been imported: " + name + "\n");
             return false;
         }
-
-        ma_sound* sound = it->second.get();
-
-        //update the position of the specific audio source
-        ma_vec3f tempPos = ma_sound_get_position(sound);
-        vec3 currPos(tempPos.x, tempPos.y, tempPos.z);
-        if (pos != currPos)
+        else
         {
-            ma_sound_set_position(sound, pos.x, pos.y, pos.z);
-        }
+            auto it = soundMap.find(name);
 
+            ma_sound* sound = it->second.get();
+
+            //update the position of the specific audio source
+            ma_vec3f tempPos = ma_sound_get_position(sound);
+            vec3 currPos(tempPos.x, tempPos.y, tempPos.z);
+            if (pos != currPos)
+            {
+                ma_sound_set_position(sound, pos.x, pos.y, pos.z);
+            }
+
+            return true;
+        }
         return true;
     }
 
@@ -423,23 +396,22 @@ namespace Core
 
         if (!IsImported(name))
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Error: Cannot delete audio file because it has not been imported: " + name + "\n");
             return false;
         }
+        else
+        {
+            auto it = soundMap.find(name);
 
-        auto it = soundMap.find(name);
+            ma_sound_uninit(it->second.get());
+            soundMap.erase(it);
 
-        ma_sound_uninit(it->second.get());
-        soundMap.erase(it);
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::DEBUG,
+                "Successfully deleted audio file: " + name + "\n");
 
-        ConsoleManager::WriteConsoleMessage(
-            Caller::FILE,
-            Type::DEBUG,
-            "Successfully deleted audio file: " + name + "\n");
-
+            return true;
+        }
         return true;
     }
 

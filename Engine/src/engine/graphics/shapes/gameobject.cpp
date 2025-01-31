@@ -183,9 +183,6 @@ namespace Graphics::Shape
 		auto mesh = obj->GetComponent<MeshComponent>();
 		Type type = mesh->GetMeshType();
 
-		Select::selectedObj = nullptr;
-		Select::isObjectSelected = false;
-
 		/*
 		//destroy all children if parent is destroyed
 		if (obj->GetChildren().size() > 0)
@@ -205,9 +202,6 @@ namespace Graphics::Shape
 		switch (type)
 		{
 		case Type::model:
-			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			break;
 		case Type::empty:
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
@@ -254,38 +248,20 @@ namespace Graphics::Shape
 
 		//also delete the externally saved folder of this gameobject
 		if (!localOnly
-			&& obj != nullptr)
+			&& Select::selectedObj != nullptr)
 		{
-			string txtFilePath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
-			if (exists(txtFilePath))
+			for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath))
 			{
-				auto mesh = obj->GetComponent<MeshComponent>();
-				string targetFolder;
-
-				if (mesh->GetMeshType() == MeshComponent::MeshType::model)
+				string pathName = path(entry).stem().string();
+				if (Select::selectedObj->GetName() == pathName)
 				{
-					targetFolder = path(txtFilePath).parent_path().string();
+					string entryString = path(entry).string();
+					File::DeleteFileOrfolder(entryString);
 				}
-				else if (mesh->GetMeshType() == MeshComponent::MeshType::point_light
-					|| mesh->GetMeshType() == MeshComponent::MeshType::spot_light
-					|| mesh->GetMeshType() == MeshComponent::MeshType::directional_light)
-				{
-					targetFolder = path(txtFilePath).parent_path().string();
-				}
-
-				if (!exists(targetFolder))
-				{
-					if (mesh->GetMeshType() != MeshComponent::MeshType::billboard)
-					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							ConsoleType::EXCEPTION,
-							"Error: Couldn't delete target folder at '" + targetFolder + "' for '" + obj->GetName() + "' because the folder was not found!\n");
-					}
-				}
-				else File::DeleteFileOrfolder(targetFolder);
 			}
 		}
+		Select::selectedObj = nullptr;
+		Select::isObjectSelected = false;
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif

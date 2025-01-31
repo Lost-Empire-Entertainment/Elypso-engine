@@ -97,7 +97,7 @@ namespace Graphics::GUI
 		if (renderInspector
 			&& ImGui::Begin("Inpsector", NULL, windowFlags))
 		{
-			if (Select::isObjectSelected) AddComponent();
+			if (Select::selectedObj) AddComponent();
 
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
@@ -108,7 +108,6 @@ namespace Graphics::GUI
 
 			if (Select::isObjectSelected)
 			{
-				auto& obj = Select::selectedObj;
 				auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
 				auto mat = Select::selectedObj->GetComponent<MaterialComponent>();
 				auto light = Select::selectedObj->GetComponent<LightComponent>();
@@ -421,7 +420,6 @@ namespace Graphics::GUI
 				{
 					string txtFile = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
 					string txtFileParent = path(txtFile).parent_path().string();
-					if (exists(txtFile)) File::DeleteFileOrfolder(obj->GetTxtFilePath());
 
 					string name = obj->GetName();
 					unsigned int ID = obj->GetID();
@@ -429,10 +427,25 @@ namespace Graphics::GUI
 					vec3 rot = obj->GetTransform()->GetRotation();
 					vec3 scale = obj->GetTransform()->GetScale();
 
+					bool is3D{};
+					float maxRange{};
+					float minRange{};
+					float volume{};
+					string audioFilePath{};
+					auto apc = obj->GetComponent<AudioPlayerComponent>();
+					if (apc)
+					{
+						is3D = apc->Is3D();
+						maxRange = apc->GetMaxRange();
+						minRange = apc->GetMinRange();
+						volume = apc->GetVolume();
+						audioFilePath = apc->GetName();
+					}
+
 					GameObjectManager::DestroyGameObject(obj, false);
 
 					File::CreateNewFolder(txtFileParent);
-					Empty::InitializeEmpty(
+					auto empty = Empty::InitializeEmpty(
 						pos, 
 						rot, 
 						scale,
@@ -440,6 +453,17 @@ namespace Graphics::GUI
 						name,
 						ID,
 						true);
+					if (audioFilePath != "")
+					{
+						empty->AddComponent<AudioPlayerComponent>();
+						auto emptyAPC = empty->GetComponent<AudioPlayerComponent>();
+						
+						emptyAPC->Set3DState(is3D);
+						emptyAPC->SetMaxRange(maxRange);
+						emptyAPC->SetMinRange(minRange);
+						emptyAPC->SetVolume(volume);
+						emptyAPC->SetName(audioFilePath);
+					}
 				}
 			}
 		}

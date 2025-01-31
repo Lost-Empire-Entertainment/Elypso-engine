@@ -268,10 +268,14 @@ namespace EngineFile
 					string audioFileName = apc->GetName();
 					bool is3D = apc->Is3D();
 					float currVolume = apc->GetVolume();
+					float minRange = apc->GetMinRange();
+					float maxRange = apc->GetMaxRange();
 
 					data.push_back("audioFileName= " + audioFileName + "\n");
 					data.push_back("is3D= " + to_string(is3D) + "\n");
 					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
+					data.push_back("minRange= " + to_string(minRange) + "\n");
+					data.push_back("maxRange= " + to_string(maxRange) + "\n");
 				}
 
 				//
@@ -527,7 +531,9 @@ namespace EngineFile
 					|| key == "shininess"
 					|| key == "audioFileName"
 					|| key == "is3D"
-					|| key == "currentVolume")
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -555,6 +561,8 @@ namespace EngineFile
 		string audioFileName{};
 		bool is3D{};
 		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -688,6 +696,14 @@ namespace EngineFile
 			{
 				currVolume = stof(value);
 			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -788,12 +804,16 @@ namespace EngineFile
 
 			if (audioFileName != ""
 				|| data["is3D"] != ""
-				|| data["currentVolume"] != "")
+				|| data["currentVolume"] != ""
+				|| data["minRange"] != ""
+				|| data["maxRange"] != "")
 			{
 				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
 				apc->SetName(audioFileName);
 				apc->Set3DState(is3D);
 				apc->SetVolume(currVolume);
+				apc->SetMinRange(minRange);
+				apc->SetMaxRange(maxRange);
 			}
 
 			/*
@@ -858,7 +878,9 @@ namespace EngineFile
 					|| key == "txtFile"
 					|| key == "audioFileName"
 					|| key == "is3D"
-					|| key == "currentVolume")
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -883,6 +905,8 @@ namespace EngineFile
 		string audioFileName{};
 		bool is3D{};
 		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -941,6 +965,14 @@ namespace EngineFile
 			{
 				currVolume = stof(value);
 			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -963,12 +995,16 @@ namespace EngineFile
 
 		if (audioFileName != ""
 			|| data["is3D"] != ""
-			|| data["currentVolume"] != "")
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
 		{
 			auto apc = empty->AddComponent<AudioPlayerComponent>();
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
 		}
 
 		GameObject::nextID = ID + 1;
@@ -1033,7 +1069,9 @@ namespace EngineFile
 					
 					|| key == "audioFileName"
 					|| key == "is3D"
-					|| key == "currentVolume")
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -1066,6 +1104,8 @@ namespace EngineFile
 		string audioFileName{};
 		bool is3D{};
 		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1143,6 +1183,14 @@ namespace EngineFile
 			{
 				currVolume = stof(value);
 			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -1170,12 +1218,16 @@ namespace EngineFile
 
 		if (audioFileName != ""
 			|| data["is3D"] != ""
-			|| data["currentVolume"] != "")
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
 		{
 			auto apc = pl->AddComponent<AudioPlayerComponent>();
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
 		}
 
 		GameObject::nextID = ID + 1;
@@ -1242,7 +1294,9 @@ namespace EngineFile
 
 					|| key == "audioFileName"
 					|| key == "is3D"
-					|| key == "currentVolume")
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -1277,6 +1331,8 @@ namespace EngineFile
 		string audioFileName{};
 		bool is3D{};
 		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1356,6 +1412,14 @@ namespace EngineFile
 			{
 				currVolume = stof(value);
 			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -1385,12 +1449,16 @@ namespace EngineFile
 
 		if (audioFileName != ""
 			|| data["is3D"] != ""
-			|| data["currentVolume"] != "")
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
 		{
 			auto apc = sl->AddComponent<AudioPlayerComponent>();
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
 		}
 
 		GameObject::nextID = ID + 1;
@@ -1455,7 +1523,9 @@ namespace EngineFile
 
 					|| key == "audioFileName"
 					|| key == "is3D"
-					|| key == "currentVolume")
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -1487,6 +1557,8 @@ namespace EngineFile
 		string audioFileName{};
 		bool is3D{};
 		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1563,6 +1635,14 @@ namespace EngineFile
 			{
 				currVolume = stof(value);
 			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -1589,12 +1669,16 @@ namespace EngineFile
 
 		if (audioFileName != ""
 			|| data["is3D"] != ""
-			|| data["currentVolume"] != "")
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
 		{
 			auto apc = dl->AddComponent<AudioPlayerComponent>();
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
 		}
 
 		GameObject::nextID = ID + 1;
