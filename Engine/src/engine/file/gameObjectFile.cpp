@@ -144,9 +144,6 @@ namespace EngineFile
 				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
 				data.push_back("type= " + type + "\n");
 
-				//path to txt file of this gameobject
-				data.push_back("txtFile= " + obj->GetTxtFilePath() + "\n");
-
 				//
 				// MATERIAL DATA
 				//
@@ -875,7 +872,6 @@ namespace EngineFile
 					|| key == "position"
 					|| key == "rotation"
 					|| key == "scale"
-					|| key == "txtFile"
 					|| key == "audioFileName"
 					|| key == "is3D"
 					|| key == "currentVolume"
@@ -900,7 +896,6 @@ namespace EngineFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-		string txtFile{};
 
 		string audioFileName{};
 		bool is3D{};
@@ -948,10 +943,6 @@ namespace EngineFile
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
 
 			else if (key == "audioFileName")
 			{
@@ -988,7 +979,7 @@ namespace EngineFile
 			pos,
 			rot,
 			scale,
-			txtFile,
+			file,
 			name,
 			ID,
 			isEnabled);
@@ -1058,8 +1049,6 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "txtFile"
-
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
@@ -1091,8 +1080,6 @@ namespace EngineFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-
-		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
@@ -1148,11 +1135,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
-
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1206,7 +1188,7 @@ namespace EngineFile
 			pos,
 			rot,
 			scale,
-			txtFile,
+			file,
 			diffuse,
 			intensity,
 			distance,
@@ -1281,8 +1263,6 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "txtFile"
-
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
@@ -1316,8 +1296,6 @@ namespace EngineFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-
-		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
@@ -1375,11 +1353,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
-
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1435,7 +1408,7 @@ namespace EngineFile
 			pos,
 			rot,
 			scale,
-			txtFile,
+			file,
 			diffuse,
 			intensity,
 			distance,
@@ -1512,8 +1485,6 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "txtFile"
-
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
@@ -1545,8 +1516,6 @@ namespace EngineFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-
-		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
@@ -1601,11 +1570,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
-
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1658,7 +1622,7 @@ namespace EngineFile
 			pos,
 			rot,
 			scale,
-			txtFile,
+			file,
 			diffuse,
 			intensity,
 			name,

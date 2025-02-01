@@ -183,10 +183,6 @@ namespace Graphics::Shape
 				vec3 boxCenter = (minBound + maxBound) * 0.5f;
 				vec3 boxScale = maxBound - minBound;
 
-				//add a margin to the scale
-				vec3 margin = vec3(0.1f);
-				boxScale += margin;
-
 				//translate to the center of the bounding box
 				model = translate(model, boxCenter);
 
@@ -199,18 +195,11 @@ namespace Graphics::Shape
 			}
 			else
 			{
-				//simple position and margin values
-				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
+				shader.SetFloat("transparency", 0.0f);
 
-				//simple bounding box
-				model = translate(model, position);
-
-				//apply rotation
-				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
-				model *= mat4_cast(newRot);
-
-				//scale based on size, with a slight margin
-				model = scale(model, vec3(1) + vec3(0.1f));
+				//move the border out of view when no object is selected
+				model = translate(model, vec3(0.0f, -100.0f, 0.0f));
+				model = scale(model, vec3(0.01f));
 			}
 		}
 		else
@@ -222,16 +211,12 @@ namespace Graphics::Shape
 			model = scale(model, vec3(0.01f));
 		}
 
-		glLineWidth(5.0f);
-
 		shader.SetMat4("model", model);
 
 		auto thisMesh = obj->GetComponent<MeshComponent>();
 		GLuint VAO = thisMesh->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
-
-		glLineWidth(1.0f);
 	}
 }
 #endif
