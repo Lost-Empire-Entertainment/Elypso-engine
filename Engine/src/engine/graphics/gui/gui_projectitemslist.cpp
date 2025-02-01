@@ -312,62 +312,90 @@ namespace Graphics::GUI
 			}
 			case Type::GameobjectModel:
 			{
-				string parentFolder = path(obj->GetTxtFilePath()).parent_path().string();
-				string modelFileName = obj->GetName();
-
-				string finalPath;
-
-				string modelFBX = modelFileName + ".fbx";
-				string fbxPath = (path(Engine::projectPath) / parentFolder / modelFBX).string();
-
-				string modelOBJ = modelFileName + ".obj";
-				string objPath = (path(Engine::projectPath) / parentFolder / modelOBJ).string();
-
-				string modelGLTF = modelFileName + ".gltf";
-				string gltfPath = (path(Engine::projectPath) / parentFolder / modelGLTF).string();
-
-				if (exists(fbxPath)) finalPath = fbxPath;
-				else if (exists(objPath)) finalPath = objPath;
-				else if (exists(gltfPath)) finalPath = gltfPath;
-				if (!finalPath.empty()) File::DeleteFileOrfolder(finalPath);
-
-				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
-
-				string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
-				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().string() / fileAndExtension).string();
-
-				File::CopyFileOrFolder(originPath, targetPath);
-
-				string nameAndExtension = modelFileName + (path(targetPath).extension()).string();
-				string newTargetPath = (path(targetPath).parent_path() / nameAndExtension).string();
-				File::MoveOrRenameFileOrFolder(targetPath, newTargetPath, true);
-
+				//store old gameobject data
 				string objName = obj->GetName();
 				unsigned int objID = obj->GetID();
-				string objTxtPath = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
 				vec3 objPos = obj->GetTransform()->GetPosition();
 				vec3 objRot = obj->GetTransform()->GetRotation();
 				vec3 objScale = obj->GetTransform()->GetScale();
-				
-				auto mesh = obj->GetComponent<MeshComponent>();
-				if (mesh->GetMeshType() == MeshComponent::MeshType::empty)
-				{
-					string txtFile = (path(Engine::projectPath) / obj->GetTxtFilePath()).string();
-					if (exists(txtFile)) File::DeleteFileOrfolder(obj->GetTxtFilePath());
-				}
-				GameObjectManager::DestroyGameObject(obj, true);
 
+				//store model origin and target path
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
+				string targetFolderName{};
+				for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath))
+				{
+					string pathName = path(entry).stem().string();
+					if (obj->GetName() == pathName)
+					{
+						targetFolderName = path(entry).stem().string();
+						break;
+					}
+				}
+				string targetPath = (path(Engine::currentGameobjectsPath) / targetFolderName / fileAndExtension).string();
+
+				//store audio player component data if it exists
+				bool is3D{};
+				float maxRange{};
+				float minRange{};
+				float volume{};
+				string audioFilePath{};
+				auto apc = obj->GetComponent<AudioPlayerComponent>();
+				if (apc)
+				{
+					is3D = apc->Is3D();
+					maxRange = apc->GetMaxRange();
+					minRange = apc->GetMinRange();
+					volume = apc->GetVolume();
+					audioFilePath = apc->GetName();
+				}
+
+				//delete old gameobject and its model file
+				GameObjectManager::DestroyGameObject(obj, false);
+				//then create new folder
+				File::CreateNewFolder(path(targetPath).parent_path().string());
+				//then copy model from origin to target path
+				File::CopyFileOrFolder(originPath, targetPath);
+				
+				//and finally rename model to correct name
+				string newCorrectFolder = path(targetPath).parent_path().string();
+				string nameAndExtension = targetFolderName + path(targetPath).extension().string();
+				string newCorrectPath = (path(newCorrectFolder) / nameAndExtension).string();
+				File::MoveOrRenameFileOrFolder(targetPath, newCorrectPath, true);
+
+				//then initialize in scene
 				Importer::Initialize(
 					objPos,
 					objRot,
 					objScale,
-					newTargetPath,
+					newCorrectPath,
 					"DEFAULTDIFF",
 					"DEFAULTSPEC",
 					"EMPTY",
 					"EMPTY",
 					objName,
 					objID);
+				//and apply audio player component data
+				if (audioFilePath != "")
+				{
+					for (const auto& obj : GameObjectManager::GetObjects())
+					{
+						if (obj->GetName() == targetFolderName)
+						{
+							shared_ptr<GameObject> initializedObj = obj;
+							auto emptyAPC = initializedObj->AddComponent<AudioPlayerComponent>();
+
+							emptyAPC->Set3DState(is3D);
+							emptyAPC->SetMaxRange(maxRange);
+							emptyAPC->SetMinRange(minRange);
+							emptyAPC->SetVolume(volume);
+							emptyAPC->SetName(audioFilePath);
+
+							break;
+						}
+					}
+				}
+
 				break;
 			}
 			case Type::Scene:

@@ -455,8 +455,7 @@ namespace Graphics::GUI
 						true);
 					if (audioFilePath != "")
 					{
-						empty->AddComponent<AudioPlayerComponent>();
-						auto emptyAPC = empty->GetComponent<AudioPlayerComponent>();
+						auto emptyAPC = empty->AddComponent<AudioPlayerComponent>();
 						
 						emptyAPC->Set3DState(is3D);
 						emptyAPC->SetMaxRange(maxRange);

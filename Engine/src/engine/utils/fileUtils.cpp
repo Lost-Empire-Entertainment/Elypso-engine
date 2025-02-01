@@ -241,8 +241,8 @@ namespace Utils
         }
         if (exists(destinationPath))
         {
-            string outputType = isRenaming ? "Cannot rename source " : "Cannot move source ";
-            output = outputType + sourcePath.string() + " to destination " + destinationPath.string() + " because destination already exists!\n\n";
+            string outputType = isRenaming ? "Cannot rename source '" : "Cannot move source '";
+            output = outputType + sourcePath.string() + "' to destination '" + destinationPath.string() + "' because destination already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
@@ -254,8 +254,8 @@ namespace Utils
         {
             rename(sourcePath, destinationPath);
 
-            string outputType = isRenaming ? "Renamed " : "Moved ";
-            output = outputType + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
+            string outputType = isRenaming ? "Renamed '" : "Moved '";
+            output = outputType + sourcePath.string() + "' to '" + destinationPath.string() + "'.\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
@@ -280,7 +280,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
+                "Error: Source path '" + sourcePath.string() + "' does not exist!\n\n");
             return;
         }
 
@@ -290,7 +290,7 @@ namespace Utils
             {
                 copy(sourcePath, destinationPath, copy_options::recursive | copy_options::overwrite_existing);
 
-                output = "Copied folder " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
+                output = "Copied folder '" + sourcePath.string() + "' to '" + destinationPath.string() + "'.\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::DEBUG,
@@ -300,7 +300,7 @@ namespace Utils
             {
                 copy_file(sourcePath, destinationPath, copy_options::overwrite_existing);
 
-                output = "Copied file " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
+                output = "Copied file '" + sourcePath.string() + "' to '" + destinationPath.string() + "'.\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::DEBUG,
@@ -325,7 +325,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot delete file or folder " + sourcePath.string() + " because it does not exist!\n\n");
+                "Error: Cannot delete file or folder '" + sourcePath.string() + "' because it does not exist!\n\n");
             return;
         }
 
@@ -337,7 +337,7 @@ namespace Utils
                 remove_all(sourcePath);
             }
 
-            output = "Deleted " + sourcePath.string() + ".\n\n";
+            output = "Deleted '" + sourcePath.string() + "'.\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
@@ -382,7 +382,7 @@ namespace Utils
         {
             create_directory(folderPath);
 
-            output = "Created new folder at " + folderPath.string() + ".\n\n";
+            output = "Created new folder at '" + folderPath.string() + "'.\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,

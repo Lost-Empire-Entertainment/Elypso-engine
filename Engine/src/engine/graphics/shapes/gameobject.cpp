@@ -257,6 +257,7 @@ namespace Graphics::Shape
 				{
 					string entryString = path(entry).string();
 					File::DeleteFileOrfolder(entryString);
+					break;
 				}
 			}
 		}
