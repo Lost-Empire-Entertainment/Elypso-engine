@@ -73,6 +73,8 @@ in vec3 FragPos;
 in vec3 Normal;  
 in vec2 TexCoords;
   
+uniform bool isTransparent;
+uniform float transparency;
 uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform SpotLight spotLight;
@@ -128,7 +130,14 @@ void main()
 
 float GetAlpha(sampler2D tex, vec2 coords)
 {
-    return texture(tex, coords).a;
+	if (isTransparent)
+	{
+		return texture(tex, coords).a * transparency;
+	}
+	else
+	{
+		return texture(tex, coords).a;
+	}
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

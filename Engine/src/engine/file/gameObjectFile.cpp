@@ -173,6 +173,12 @@ namespace EngineFile
 						+ specularTexture + ", "
 						+ normalTexture + ", "
 						+ heightTexture + "\n");
+
+					string isTransparent = to_string(mat->IsTransparent());
+					string transparencyValue = to_string(mat->GetTransparentValue());
+
+					data.push_back("isTransparent= " + isTransparent + "\n");
+					data.push_back("transparencyValue= " + transparencyValue + "\n");
 				}
 
 				if (meshType == MeshComponent::MeshType::model)
@@ -426,6 +432,8 @@ namespace EngineFile
 					"DEFAULTSPEC",
 					"EMPTY",
 					"EMPTY",
+					false,
+					0.0f,
 					fileName,
 					Importer::tempID);
 			}
@@ -524,6 +532,8 @@ namespace EngineFile
 					|| key == "scale"
 
 					|| key == "textures"
+					|| key == "isTransparent"
+					|| key == "transparencyValue"
 					|| key == "model"
 					|| key == "shininess"
 					|| key == "audioFileName"
@@ -552,6 +562,8 @@ namespace EngineFile
 		vec3 scale{};
 
 		vector<string> textures{};
+		bool isTransparent{};
+		float transparencyValue{};
 		string model{};
 		float shininess{};
 
@@ -672,6 +684,14 @@ namespace EngineFile
 					textures.push_back("EMPTY");
 				}
 				else textures.push_back(fullTex3Path);
+			}
+			else if (key == "isTransparent")
+			{
+				isTransparent = stoi(value);
+			}
+			else if (key == "transparencyValue")
+			{
+				transparencyValue = stof(value);
 			}
 			else if (key == "model")
 			{
@@ -798,6 +818,23 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, specularTexture, MaterialComponent::TextureType::specular, false);
 			Texture::LoadTexture(foundObj, normalTexture, MaterialComponent::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, MaterialComponent::TextureType::normal, false);
+
+			mat->SetTransparent(isTransparent);
+			mat->SetTransparentValue(transparencyValue);
+
+			if (mat->IsTransparent())
+			{
+				vector<shared_ptr<GameObject>>& opaqueObjects = GameObjectManager::GetOpaqueObjects();
+				vector<shared_ptr<GameObject>>& transparentObjects = GameObjectManager::GetTransparentObjects();
+
+				auto it = find(opaqueObjects.begin(), opaqueObjects.end(), foundObj);
+
+				if (it != opaqueObjects.end())
+				{
+					transparentObjects.push_back(*it);
+					opaqueObjects.erase(it);
+				}
+			}
 
 			if (audioFileName != ""
 				|| data["is3D"] != ""

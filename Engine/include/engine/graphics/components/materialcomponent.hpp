@@ -131,9 +131,17 @@ namespace Graphics::Components
 
         type_index GetType() const override { return typeid(MaterialComponent); }
 
+        void SetTransparent(bool newTransparent) { isTransparent = newTransparent; }
+        void SetTransparentValue(float newTransparentValue) { transparentValue = newTransparentValue; }
+
+        const bool& IsTransparent() const { return isTransparent; }
+        const float& GetTransparentValue() const { return transparentValue; }
+
         void Update(float deltaTime) override {}
 
     private:
+        bool isTransparent;
+        float transparentValue;
         map<TextureType, map<string, unsigned int>> textures;
         vector<string> shaderNames;
         Shader shader;

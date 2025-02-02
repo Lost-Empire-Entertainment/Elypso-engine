@@ -373,6 +373,8 @@ namespace Graphics::GUI
 					"DEFAULTSPEC",
 					"EMPTY",
 					"EMPTY",
+					false,
+					1.0f,
 					objName,
 					objID);
 				//and apply audio player component data

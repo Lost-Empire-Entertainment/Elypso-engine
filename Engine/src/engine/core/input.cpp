@@ -357,6 +357,9 @@ namespace Core
             copiedObject["normalTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::normal);
             copiedObject["heightTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::height);
 
+            copiedObject["isTransparent"] = to_string(selectedObj->GetComponent<MaterialComponent>()->IsTransparent());
+            copiedObject["transaprentValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetTransparentValue());
+
             copiedObject["shininess"] = "32";
         }
 
@@ -472,6 +475,9 @@ namespace Core
                 File::CopyFileOrFolder(specTexturePath, specDestinationPath);
             }
 
+            bool isTransparent = stoi(copiedObject["isTransparent"]);
+            float transparentValue = stof(copiedObject["transparentValue"]);
+
             Importer::Initialize(
                 newPos,
                 rot,
@@ -481,6 +487,8 @@ namespace Core
                 specTexturePath,
                 copiedObject["normalTexture"],
                 copiedObject["heightTexture"],
+                isTransparent,
+                transparentValue,
                 targetName,
                 nextID,
                 true);

@@ -476,16 +476,17 @@ namespace Graphics::GUI
 
 		auto mesh = obj->GetComponent<MeshComponent>();
 		auto mat = obj->GetComponent<MaterialComponent>();
+		MeshComponent::MeshType objType = mesh->GetMeshType();
+
+		float height = objType == MeshComponent::MeshType::model ? 250.0f : 150.0f;
 
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, 150.0f), true, childWindowFlags);
+		ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
 		
 		ImGui::Text("Material");
 
 		ImGui::Separator();
-
-		MeshComponent::MeshType objType = mesh->GetMeshType();
 
 		if (objType == MeshType::model)
 		{
@@ -571,6 +572,45 @@ namespace Graphics::GUI
 						ConsoleType::INFO,
 						"Cannot reset texture on specular slot for " + obj->GetName() + " because the texture already is default.\n");
 				}
+			}
+
+			ImGui::Text("Toggle transparency");
+			bool isTransparent = mat->IsTransparent();
+			string transparentButtonName = isTransparent ? "Disable" : "Enable";
+			if (ImGui::Button(transparentButtonName.c_str()))
+			{
+				mat->SetTransparent(!isTransparent);
+
+				vector<shared_ptr<GameObject>>& opaqueObjects = GameObjectManager::GetOpaqueObjects();
+				vector<shared_ptr<GameObject>>& transparentObjects = GameObjectManager::GetTransparentObjects();
+				if (mat->IsTransparent())
+				{
+					auto it = find(opaqueObjects.begin(), opaqueObjects.end(), obj);
+
+					if (it != opaqueObjects.end())
+					{
+						transparentObjects.push_back(*it);
+						opaqueObjects.erase(it);
+					}
+				}
+				else
+				{
+					auto it = find(transparentObjects.begin(), transparentObjects.end(), obj);
+
+					if (it != transparentObjects.end())
+					{
+						opaqueObjects.push_back(*it);
+						transparentObjects.erase(it);
+					}
+				}
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::Text("Set transparency strength");
+			float transparencyValue = mat->GetTransparentValue();
+			if (ImGui::DragFloat("##transparencyValue", &transparencyValue, 0.001f, 0.0f, 1.0f))
+			{
+				mat->SetTransparentValue(transparencyValue);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 		}
 

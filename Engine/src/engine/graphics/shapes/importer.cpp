@@ -86,6 +86,8 @@ namespace Graphics::Shape
         const string& specTexture,
         const string& normalTexture,
         const string& heightTexture,
+        const bool& isTransparent,
+        const float& transparentValue,
         string& name,
         unsigned int& id,
         const bool& isEnabled)
@@ -127,6 +129,8 @@ namespace Graphics::Shape
             specTexture,
             normalTexture,
             heightTexture,
+            isTransparent,
+            transparentValue,
             topLevelNode,
             scene);
     }
@@ -143,6 +147,8 @@ namespace Graphics::Shape
         const string& specTexture,
         const string& normalTexture,
         const string& heightTexture,
+        const bool& isTransparent,
+        const float& transparentValue,
         aiNode* node,
         const aiScene* scene)
     {
@@ -207,6 +213,8 @@ namespace Graphics::Shape
             specTexture,
             normalTexture,
             heightTexture,
+            isTransparent,
+            transparentValue,
             newMesh.vertices,
             newMesh.indices,
             name,

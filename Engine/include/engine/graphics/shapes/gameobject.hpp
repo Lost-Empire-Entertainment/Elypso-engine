@@ -305,6 +305,14 @@ namespace Graphics::Shape
 		{
 			return objects;
 		}
+		static vector<shared_ptr<GameObject>>& GetOpaqueObjects()
+		{
+			return opaqueObjects;
+		}
+		static vector<shared_ptr<GameObject>>& GetTransparentObjects()
+		{
+			return transparentObjects;
+		}
 		static const vector<shared_ptr<GameObject>> GetPointLights()
 		{
 			return pointLights;

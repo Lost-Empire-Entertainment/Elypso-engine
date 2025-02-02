@@ -78,6 +78,8 @@ namespace Graphics::Shape
 		const string& specTexture,
 		const string& normalTexture,
 		const string& heightTexture,
+		const bool& isTransparent,
+		const float& transparentValue,
 		const vector<AssimpVertex> vertices,
 		const vector<unsigned int> indices,
 		string& name,
@@ -159,6 +161,9 @@ namespace Graphics::Shape
 		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::height, false);
 		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::normal, false);
 
+		mat->SetTransparent(isTransparent);
+		mat->SetTransparentValue(transparentValue);
+
 		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
@@ -167,7 +172,8 @@ namespace Graphics::Shape
 		obj->SetTxtFilePath(txtFilePath);
 
 		GameObjectManager::AddGameObject(obj);
-		GameObjectManager::AddOpaqueObject(obj);
+		if (!isTransparent) GameObjectManager::AddOpaqueObject(obj);
+		else GameObjectManager::AddTransparentObject(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
@@ -325,6 +331,8 @@ namespace Graphics::Shape
 
 			shader.SetMat4("projection", projection);
 			shader.SetMat4("view", view);
+			shader.SetBool("isTransparent", mat->IsTransparent());
+			shader.SetFloat("transparency", mat->GetTransparentValue());
 
 			mat4 model = mat4(1.0f);
 

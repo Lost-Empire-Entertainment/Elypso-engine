@@ -46,6 +46,8 @@ namespace Graphics::Shape
 			const string& specTexture = "DEFAULTSPEC",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
+			const bool& isTransparent = false,
+			const float& transparentValue = 1.0f,
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
@@ -62,6 +64,8 @@ namespace Graphics::Shape
 			const string& specTexture,
 			const string& normalTexture,
 			const string& heightTexture,
+			const bool& isTransparent,
+			const float& transparentValue,
 			aiNode* node,
 			const aiScene* scene);
 

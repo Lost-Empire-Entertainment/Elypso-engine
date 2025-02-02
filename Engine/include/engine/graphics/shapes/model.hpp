@@ -45,6 +45,8 @@ namespace Graphics::Shape
 			const string& specTexture = "DEFAULTSPEC",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
+			const bool& isTransparent = false,
+			const float& transparentValue = 1.0f,
 			const vector<AssimpVertex> vertices = {},
 			const vector<unsigned int> indices = {},
 			string& name = tempName,

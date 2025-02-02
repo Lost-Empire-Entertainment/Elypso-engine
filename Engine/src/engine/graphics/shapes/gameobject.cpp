@@ -29,6 +29,7 @@
 #include "meshcomponent.hpp"
 #include "audio.hpp"
 #include "audioplayercomponent.hpp"
+#include "materialcomponent.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -59,6 +60,7 @@ using Utils::String;
 using Utils::File;
 using Core::Audio;
 using Graphics::Components::AudioPlayerComponent;
+using Graphics::Components::MaterialComponent;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -96,7 +98,10 @@ namespace Graphics::Shape
 				switch (type)
 				{
 				case Type::model:
-					Model::Render(obj, view, projection);
+					if (!obj->GetComponent<MaterialComponent>()->IsTransparent())
+					{
+						Model::Render(obj, view, projection);
+					}
 					break;
 				case Type::empty:
 					Empty::RenderEmpty(obj, view, projection);
@@ -134,22 +139,19 @@ namespace Graphics::Shape
 		//transparent objects are rendered last
 		if (transparentObjects.size() > 0)
 		{
+			vec3 camPos = Render::camera.GetCameraPosition();
 			sort(transparentObjects.begin(), transparentObjects.end(),
-				[&view](const auto& a, const auto& b)
+				[&camPos, &view](const auto& a, const auto& b)
 				{
-					//calculate the distance along the viewing direction vector from the camera
-					vec3 cameraPosition = vec3(view[3]);
 					vec3 objectPositionA = a->GetTransform()->GetPosition();
 					vec3 objectPositionB = b->GetTransform()->GetPosition();
-
-					//project object positions onto the viewing direction vector
-					float distanceA = dot(objectPositionA - cameraPosition, vec3(view[2]));
-					float distanceB = dot(objectPositionB - cameraPosition, vec3(view[2]));
-
-					//sort based on the projected distances
-					return distanceA > distanceB; //render from back to front
+					
+					float distanceA = length(objectPositionA - camPos);
+					float distanceB = length(objectPositionB - camPos);
+					return distanceA > distanceB;
 				});
 
+			glDepthFunc(GL_ALWAYS);
 			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
 #if ENGINE_MODE
@@ -166,9 +168,16 @@ namespace Graphics::Shape
 				case Type::billboard:
 					Billboard::RenderBillboard(obj, view, projection);
 					break;
+				case Type::model:
+					if (obj->GetComponent<MaterialComponent>()->IsTransparent())
+					{
+						Model::Render(obj, view, projection);
+					}
+					break;
 				}
 			}
 
+			glDepthFunc(GL_LESS);
 			glDepthMask(GL_TRUE);
 			glEnable(GL_CULL_FACE);
 		}
@@ -202,6 +211,16 @@ namespace Graphics::Shape
 		switch (type)
 		{
 		case Type::model:
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			if (!obj->GetComponent<MaterialComponent>()->IsTransparent())
+			{
+				opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			}
+			else
+			{
+				transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
+			}
+			break;
 		case Type::empty:
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());

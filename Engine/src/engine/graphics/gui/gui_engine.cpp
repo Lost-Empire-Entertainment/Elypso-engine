@@ -440,6 +440,8 @@ namespace Graphics::GUI
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
@@ -467,6 +469,8 @@ namespace Graphics::GUI
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
@@ -494,6 +498,8 @@ namespace Graphics::GUI
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
@@ -521,6 +527,8 @@ namespace Graphics::GUI
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
@@ -548,6 +556,8 @@ namespace Graphics::GUI
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
