@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <filesystem>
+#include <unordered_map>
 
 //external
 #include "glm.hpp"
@@ -26,6 +27,7 @@ namespace Graphics::Shape
 	using glm::vec3;
 	using glm::mat4;
 	using std::filesystem::path;
+	using std::unordered_map;
 
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
@@ -75,6 +77,7 @@ namespace Graphics::Shape
 
 		static void DecomposeTransform(const aiMatrix4x4& transform, vec3& outPosition, vec3& outRotation, vec3& outScale);
 	private:
+		static inline string validateSceneError;
 		static bool ValidateScene(const aiScene* scene);
 
 		//check mesh data
@@ -92,5 +95,10 @@ namespace Graphics::Shape
 		static int MeshCount(const aiScene* scene);
 		static int SkeletonCount(const aiScene* scene);
 		static int TextureCount(const aiScene* scene);
+
+		//failed to import
+
+		static inline unordered_map<string, string> failedModelData;
+		static void ImportFailed(const string& reason);
 	};
 }

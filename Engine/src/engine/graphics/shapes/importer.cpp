@@ -8,6 +8,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <vector>
 
 //external
 #include "glad.h"
@@ -32,6 +33,7 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "stringUtils.hpp"
 
 using std::cout;
 using std::endl;
@@ -57,6 +59,7 @@ using std::chrono::system_clock;
 using std::filesystem::directory_iterator;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
+using std::vector;
 
 using Graphics::Render;
 using Graphics::Shader;
@@ -74,6 +77,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Select;
 using Utils::File;
+using Utils::String;
 
 namespace Graphics::Shape
 {
@@ -92,6 +96,25 @@ namespace Graphics::Shape
         unsigned int& id,
         const bool& isEnabled)
     {
+        failedModelData.clear();
+
+        failedModelData["name"] = name;
+        failedModelData["destinationPath"] = modelPath;
+
+        cout << "!!!! attempting to load model: " << name << "\n";
+        failedModelData["pos"] = 
+            to_string(pos.x) + "," +
+            to_string(pos.y) + "," + 
+            to_string(pos.z);
+        failedModelData["rot"] =
+            to_string(rot.x) + "," +
+            to_string(rot.y) + "," +
+            to_string(rot.z);
+        failedModelData["scale"] =
+            to_string(scale.x) + "," +
+            to_string(scale.y) + "," +
+            to_string(scale.z);
+
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
             modelPath,
@@ -100,20 +123,39 @@ namespace Graphics::Shape
             | aiProcess_FlipUVs
             | aiProcess_CalcTangentSpace);
 
-        //check for errors
-        if (!scene
-            || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
+        if (!scene 
             || !scene->mRootNode)
         {
             string errorString = importer.GetErrorString();
+            string importFailedOutput = errorString.empty()
+                ? "Assimp failed, but no error message was provided."
+                : errorString;
+
+            ImportFailed(importFailedOutput);
+            return;
+        }
+
+        if (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
+        {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Assimp error: " + errorString + "\n");
+                "Loaded incomplete model!");
+            return;
+        }
+
+        if (!scene->mMeshes
+            || scene->mNumMeshes == 0)
+        {
+            ImportFailed("Model has no meshes!");
             return;
         }
         
-        if (!ValidateScene(scene)) return;
+        if (!ValidateScene(scene))
+        {
+            ImportFailed(validateSceneError);
+            return;
+        }
 
         aiNode* topLevelNode = scene->mRootNode->mChildren[0];
 
@@ -194,6 +236,12 @@ namespace Graphics::Shape
 
         aiMesh* mesh = scene->mMeshes[0];
         AssimpMesh newMesh = ProcessMesh(mesh, scene);
+        if (newMesh.vertices.empty()
+            || newMesh.indices.empty())
+        {
+            ImportFailed("Model has no vertices or indices!");
+            return;
+        }
 
         if (id == tempID) id = ++GameObject::nextID;
 
@@ -226,8 +274,19 @@ namespace Graphics::Shape
         aiMesh* mesh,
         const aiScene* scene)
     {
-        vector<AssimpVertex> vertices;
-        vector<unsigned int> indices;
+        vector<AssimpVertex> vertices{};
+        vector<unsigned int> indices{};
+
+        if (mesh->mNumVertices == 0)
+        {
+            ImportFailed("Mesh has no vertices!");
+            return AssimpMesh(vertices, indices);
+        }
+        if (mesh->mNumFaces == 0)
+        {
+            ImportFailed("Mesh has no faces!");
+            return AssimpMesh(vertices, indices);
+        }
 
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
@@ -269,7 +328,14 @@ namespace Graphics::Shape
                 vector.z = mesh->mBitangents[i].z;
                 vertex.bitangent = vector;
             }
-            else vertex.texCoords = vec2(0);
+            else
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::DEBUG,
+                    "Mesh has no texture coordinates! Defaulting to (0,0).\n");
+                vertex.texCoords = vec2(0);
+            }
 
             vertices.push_back(vertex);
         }
@@ -313,107 +379,30 @@ namespace Graphics::Shape
 
     bool Importer::ValidateScene(const aiScene* scene)
     {
+        string errorLog = "";
+
         if (MeshCount(scene) == 1)
         {
             aiMesh* mesh = scene->mMeshes[0];
-            if (AnimMeshCount(mesh) > 0)
-            {
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::FILE,
-                    Type::EXCEPTION,
-                    "Assimp error: Cannot import models with animated meshes! This feature is not yet supported.\n");
-                return false;
-            }
-            if (BoneCount(mesh) > 0)
-            {
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::FILE,
-                    Type::EXCEPTION,
-                    "Assimp error: Cannot import models with bones! This feature is not yet supported.\n");
-                return false;
-            }
-            if (VerticeCount(mesh) == 0)
-            {
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::FILE,
-                    Type::EXCEPTION,
-                    "Assimp error: Cannot import models with no vertices!\n");
-                return false;
-            }
+            if (AnimMeshCount(mesh) > 0) errorLog += "Cannot import models with animated meshes!\n";
+            if (BoneCount(mesh) > 0) errorLog += "Cannot import models with bones!\n";
+            if (VerticeCount(mesh) == 0) errorLog += "Model has no vertices!\n";
         }
+        else if (MeshCount(scene) == 0) errorLog += "Model has no meshes!\n";
+        else if (MeshCount(scene) > 1) errorLog += "Model has more than one mesh (unsupported)!\n";
 
-        else if (MeshCount(scene) == 0)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import empty model file!\n");
-            return false;
-        }
-        else if (MeshCount(scene) > 1)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with more than one mesh! This feature is not yet supported.\n");
-            return false;
-        }
+        if (MaterialCount(scene) == 0) errorLog += "Model has no materials!\n";
+        else if (MaterialCount(scene) > 1) errorLog += "Model has more than one material (unsupported)!\n";
 
-        if (MaterialCount(scene) == 0)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with no materials! This feature is not yet supported.\n");
-            return false;
-        }
-        else if (MaterialCount(scene) > 1)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with more than one material! This feature is not yet supported.\n");
-            return false;
-        }
+        if (AnimationCount(scene) > 0) errorLog += "Model has animations (unsupported)!\n";
+        if (CameraCount(scene) > 0) errorLog += "Model has cameras (unsupported)!\n";
+        if (LightCount(scene) > 0) errorLog += "Model has lights (unsupported)!\n";
+        if (SkeletonCount(scene) > 0) errorLog += "Model has skeletons (unsupported)!\n";
+        if (TextureCount(scene) > 0) errorLog += "Model has embedded textures (unsupported)!\n";
 
-        if (AnimationCount(scene) > 0)
+        if (!errorLog.empty())
         {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with animations! This feature is not yet supported.\n");
-            return false;
-        }
-        if (CameraCount(scene) > 0)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with cameras! This feature is not yet supported.\n");
-            return false;
-        }
-        if (LightCount(scene) > 0)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with lights! This feature is not yet supported.\n");
-            return false;
-        }
-        if (SkeletonCount(scene) > 0)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with skeletons! This feature is not yet supported.\n");
-            return false;
-        }
-        if (TextureCount(scene) > 0)
-        {
-            ConsoleManager::WriteConsoleMessage(
-                Caller::FILE,
-                Type::EXCEPTION,
-                "Assimp error: Cannot import models with textures! This feature is not yet supported. Please import textures separately.\n");
+            validateSceneError = errorLog;
             return false;
         }
 
@@ -468,5 +457,60 @@ namespace Graphics::Shape
     int Importer::TextureCount(const aiScene* scene)
     {
         return scene->mNumTextures;
+    }
+
+    //
+    // IMPORT FAILED
+    //
+
+    void Importer::ImportFailed(
+        const string& reason)
+    {
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::EXCEPTION,
+            "Assimp error: " + reason + "\n");
+
+        string name = failedModelData["name"];
+        unsigned int ID = ++GameObject::nextID;
+
+        string errorModelName = "error.fbx";
+        string destinationPath = (path(Engine::filesPath) / "models" / errorModelName).string();
+
+        vec3 pos = vec3(0.0f);
+        vec3 rot = vec3(0.0f);
+        vec3 scale = vec3(1.0f);
+        for (const auto& [key, value] : failedModelData)
+        {
+            if (key == "pos"
+                || key == "rot"
+                || key == "scale")
+            {
+                vector<string> stringData = String::Split(value, ',');
+                vec3 data = vec3(
+                    stof(stringData[0]),
+                    stof(stringData[1]),
+                    stof(stringData[2]));
+
+                if (key == "pos") pos = data;
+                else if (key == "rot") rot = data;
+                else if (key == "scale") scale = data;
+            }
+        }
+
+        //loads the error model for the failed model
+        Importer::Initialize(
+            pos,
+            rot,
+            scale,
+            destinationPath,
+            "ERRORTEX",
+            "DEFAULTSPEC",
+            "EMPTY",
+            "EMPTY",
+            false,
+            1.0f,
+            name,
+            ID);
     }
 }

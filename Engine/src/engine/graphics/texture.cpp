@@ -50,6 +50,7 @@ namespace Graphics
 		if (mat->TextureExists(texturePath)
 			&& texturePath != "DEFAULTDIFF"
 			&& texturePath != "DEFAULTSPEC"
+			&& texturePath != "ERRORTEX"
 			&& texturePath != "EMPTY")
 		{
 			return;
@@ -71,6 +72,18 @@ namespace Graphics
 		if (texturePath == "DEFAULTSPEC")
 		{
 			string defaultTexturePath = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
+			auto it = textures.find(defaultTexturePath);
+			if (it != textures.end())
+			{
+				mat->AddTexture(defaultTexturePath, it->second, type);
+				return;
+			}
+		}
+
+		//the texture is an error texture that uses the red texture for the error model
+		if (texturePath == "ERRORTEX")
+		{
+			string defaultTexturePath = (path(Engine::filesPath) / "textures" / "diff_error.png").string();
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
@@ -107,6 +120,11 @@ namespace Graphics
 		else if (texturePath == "DEFAULTSPEC")
 		{
 			finalTexturePath = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
+		}
+		//error texture was assigned
+		else if (texturePath == "ERRORTEX")
+		{
+			finalTexturePath = (path(Engine::filesPath) / "textures" / "diff_error.png").string();
 		}
 		//the texture path is assigned but doesnt exist, assigning missing texture
 		else if (mesh->GetMeshType() != MeshComponent::MeshType::model
@@ -186,7 +204,8 @@ namespace Graphics
 				&& textureName.find("rotate.png") == string::npos
 				&& textureName.find("scale.png") == string::npos
 				&& textureName.find("DEFAULTDIFF") == string::npos
-				&& textureName.find("DEFAULTSPEC") == string::npos)
+				&& textureName.find("DEFAULTSPEC") == string::npos
+				&& textureName.find("ERRORTEX") == string::npos)
 			{
 				string objFolder = path(obj->GetTxtFilePath()).parent_path().string();
 				string originPath = (path(Engine::texturesPath) / textureName).string();

@@ -357,6 +357,7 @@ namespace Graphics::GUI
 					ConsoleCaller::INPUT,
 					ConsoleType::INFO,
 					"Assigned audio file '" + audioFileName + "' to '" + obj->GetName() + "'.\n");
+				break;
 			}
 			}
 
@@ -452,21 +453,14 @@ namespace Graphics::GUI
 
 	void GUIProjectItemsList::ModelImportCheck()
 	{
-		bool confirmInitialize = false;
-		size_t originalSize = file_size(selectedPath);
 		name = path(selectedPath).stem().string();
+
+		size_t originalSize = file_size(selectedPath);
 		size = static_cast<double>(originalSize) / (1024 * 1024);
 		double fileSizeLimit = 100; //100MB to trigger file size warning
-		if (size > fileSizeLimit)
-		{
-			cout << "!!!! dont initialize, size is " + to_string(size) + "MB...\n";
-			renderLargeImportConfirm = true;
-		}
-		else
-		{
-			cout << "!!!! initialize, size is " + to_string(size) + "MB...\n";
-			Initialize();
-		}
+
+		if (size > fileSizeLimit) renderLargeImportConfirm = true;
+		else Initialize();
 	}
 
 	void GUIProjectItemsList::Initialize()
