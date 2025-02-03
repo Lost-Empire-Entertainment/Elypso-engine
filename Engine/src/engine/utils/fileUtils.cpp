@@ -399,117 +399,71 @@ namespace Utils
     }
 
     string File::AddIndex(
-        const path& parentFolderPath, 
-        const string& fileName, 
-        const string& extension,
-        const bool& bypassParenthesesCheck)
+        const path& parentFolderPath,
+        const string& fileName,
+        const string& extension)
     {
         string newFilePath = (path(parentFolderPath) / (fileName + extension)).string();
 
         if (exists(newFilePath))
         {
-            //simply add (1) after file/folder if it doesnt already have parentheses
-            if (!bypassParenthesesCheck
-                && fileName.find('(') == string::npos 
-                && fileName.find(')') == string::npos)
+            //extract the actual base name (before the last '(')
+            string baseName = fileName;
+            size_t openParentPos = fileName.find_last_of('(');
+            if (openParentPos != string::npos)
             {
-                string newName = fileName + " (1)" + extension;
-                newFilePath = (path(parentFolderPath.string()) / newName).string();
-
-                return newFilePath;
+                baseName = fileName.substr(0, openParentPos - 1);
             }
-            //try to create new file/folder with first highest available number
-            else
+
+            //find highest available index for this exact base name
+            int highestNumber = 1;
+            for (const auto& entry : directory_iterator(parentFolderPath))
             {
-                string value = bypassParenthesesCheck ? "1" : GetValueBetweenParentheses(fileName);
-                if (value == "")
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::EXCEPTION,
-                        "Error: Value between parentheses for '" + fileName + "' was empty so an index couldn't be added!\n");
+                string entryName = path(entry).stem().string();
 
-                    return newFilePath;
+                //extract the base name of the existing entry
+                string entryBaseName = entryName;
+                size_t entryOpenParentPos = entryName.find_last_of('(');
+                if (entryOpenParentPos != string::npos)
+                {
+                    entryBaseName = entryName.substr(0, entryOpenParentPos - 1);
                 }
 
-                int convertedValue = -1;
-                try
+                //only compare entries with the exact same base name
+                if (entryBaseName == baseName)
                 {
-                    convertedValue = stoi(value);
-                }
-                catch (const exception& e) 
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::EXCEPTION,
-                        "Error: Exception occurred while processing value '" + value + "' for '" + fileName + "': " + e.what() + "\n");
-                    
-                    return newFilePath;
-                }
-                catch (...) 
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::EXCEPTION,
-                        "Error: An unknown exception occurred while processing value '" + value + "' for '" + fileName + "'\n");
-                    
-                    return newFilePath;
-                }
-
-                //return highest number compared to all existing gameobject folders
-                int highestNumber = 1;
-                for (const auto& entry : directory_iterator(parentFolderPath))
-                {
-                    string entryName = path(entry).stem().string();
-
-                    if (is_directory(entry)
-                        && GetValueBetweenParentheses(entryName) != "")
+                    string entryValue = GetValueBetweenParentheses(entryName);
+                    if (!entryValue.empty() && all_of(entryValue.begin(), entryValue.end(), ::isdigit))
                     {
-                        string entryValue = GetValueBetweenParentheses(entryName);
-                        int entryConvertedValue = -1;
-
-                        try
-                        {
-                            entryConvertedValue = stoi(entryValue);
-                        }
-                        catch (...)
-                        {
-                            ConsoleManager::WriteConsoleMessage(
-                                Caller::FILE,
-                                Type::DEBUG,
-                                "Value between parentheses '" + entryValue + "' for '" + entryName + "' was not an integer so it was ignored.\n");
-                            continue;
-                        }
-
-                        if (entryConvertedValue != -1
-                            && entryConvertedValue >= highestNumber)
+                        int entryConvertedValue = stoi(entryValue);
+                        if (entryConvertedValue >= highestNumber)
                         {
                             highestNumber = entryConvertedValue + 1;
                         }
                     }
                 }
-
-                string cleanedFileName = fileName;
-                size_t openParentPos = fileName.find_last_of('(');
-                size_t closeParentPos = fileName.find_last_of(')');
-
-                if (openParentPos != string::npos
-                    && closeParentPos != string::npos
-                    && closeParentPos > openParentPos)
-                {
-                    string potentialNumber = fileName.substr(openParentPos + 1, closeParentPos - openParentPos - 1);
-                    if (all_of(potentialNumber.begin(), potentialNumber.end(), ::isdigit))
-                    {
-                        cleanedFileName = fileName.substr(0, openParentPos - 1);
-                    }
-                    else cleanedFileName = fileName;
-                }
-                else cleanedFileName = fileName;
-
-                cleanedFileName = cleanedFileName.empty() ? fileName : cleanedFileName;
-                string newFileName = cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;
-                newFilePath = (path(parentFolderPath) / newFileName).string();
             }
+
+            //remove existing index (if any) before appending new one
+            string cleanedFileName = fileName;
+            size_t cleanOpenParentPos = fileName.find_last_of('(');
+            size_t cleanCloseParentPos = fileName.find_last_of(')');
+
+            if (cleanOpenParentPos != string::npos && cleanCloseParentPos != string::npos && cleanCloseParentPos > cleanOpenParentPos)
+            {
+                string potentialNumber = fileName.substr(cleanOpenParentPos + 1, cleanCloseParentPos - cleanOpenParentPos - 1);
+                if (all_of(potentialNumber.begin(), potentialNumber.end(), ::isdigit))
+                {
+                    cleanedFileName = fileName.substr(0, cleanOpenParentPos - 1);
+                }
+            }
+
+            //ensure cleaned filename is not empty
+            if (cleanedFileName.empty()) cleanedFileName = fileName;
+
+            //create new indexed filename
+            string newFileName = cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;
+            newFilePath = (path(parentFolderPath) / newFileName).string();
         }
 
         return newFilePath;

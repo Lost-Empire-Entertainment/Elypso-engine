@@ -77,12 +77,10 @@ namespace Utils
 		/// </summary>
 		/// <param name="folderPath">Parent folder of this file</param>
 		/// <param name="fileName">Name of the file the index will be added after</param>
-		/// <param name="bypassParenthesesCheck">We need this bool to skip adding the default (1) to all template gameobjects because 'Import Asset' always uses default placeholder name with no index</param>
 		static string AddIndex(
 			const path& folderPath, 
 			const string& fileName, 
-			const string& extension = "",
-			const bool& bypassParenthesesCheck = false);
+			const string& extension = "");
 	private:
 		static string GetValueBetweenParentheses(const string& input);
 	};
