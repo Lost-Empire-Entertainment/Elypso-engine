@@ -141,7 +141,6 @@ namespace Graphics::Shape
                 Caller::FILE,
                 Type::EXCEPTION,
                 "Loaded incomplete model!");
-            return;
         }
 
         if (!scene->mMeshes
