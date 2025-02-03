@@ -319,61 +319,61 @@ namespace Graphics::GUI
 
 		auto& obj = Select::selectedObj;
 
-		vec3 pos = obj->GetTransform()->GetPosition();
+		vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
 		ImGui::Text("Position");
 		if (ImGui::DragFloat3("##objPos", value_ptr(pos), 0.01f))
 		{
-			obj->GetTransform()->SetPosition(pos);
+			obj->GetComponent<TransformComponent>()->SetPosition(pos);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
-		vec3 rot = obj->GetTransform()->GetRotation();
+		vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
 		ImGui::Text("Rotation");
 		if (ImGui::DragFloat3("##objRot", value_ptr(rot), 0.1f))
 		{
-			obj->GetTransform()->SetRotation(rot);
+			obj->GetComponent<TransformComponent>()->SetRotation(rot);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		if (rot.x > 359.99f
 			|| rot.x < -359.99f)
 		{
 			rot.x = 0.0f;
-			obj->GetTransform()->SetRotation(rot);
+			obj->GetComponent<TransformComponent>()->SetRotation(rot);
 		}
 		if (rot.y > 359.99f
 			|| rot.y < -359.99f)
 		{
 			rot.y = 0.0f;
-			obj->GetTransform()->SetRotation(rot);
+			obj->GetComponent<TransformComponent>()->SetRotation(rot);
 		}
 		if (rot.z > 359.99f
 			|| rot.z < -359.99f)
 		{
 			rot.z = 0.0f;
-			obj->GetTransform()->SetRotation(rot);
+			obj->GetComponent<TransformComponent>()->SetRotation(rot);
 		}
 
-		vec3 scale = obj->GetTransform()->GetScale();
+		vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
 		ImGui::Text("Scale");
 		if (ImGui::DragFloat3("##objScale", value_ptr(scale), 0.01f))
 		{
-			obj->GetTransform()->SetScale(scale);
+			obj->GetComponent<TransformComponent>()->SetScale(scale);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		if (scale.x < 0.0f)
 		{
 			scale.x = 0.0f;
-			obj->GetTransform()->SetScale(scale);
+			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
 		if (scale.y < 0.0f)
 		{
 			scale.y = 0.0f;
-			obj->GetTransform()->SetScale(scale);
+			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
 		if (scale.z < 0.0f)
 		{
 			scale.z = 0.0f;
-			obj->GetTransform()->SetScale(scale);
+			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
 
 		ImGui::EndChild();
@@ -423,9 +423,9 @@ namespace Graphics::GUI
 
 					string name = obj->GetName();
 					unsigned int ID = obj->GetID();
-					vec3 pos = obj->GetTransform()->GetPosition();
-					vec3 rot = obj->GetTransform()->GetRotation();
-					vec3 scale = obj->GetTransform()->GetScale();
+					vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+					vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+					vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
 
 					bool is3D{};
 					float maxRange{};
@@ -793,14 +793,14 @@ namespace Graphics::GUI
 					string value = lightTypes[i];
 					
 					MeshType type = Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType();
-					vec3 oldPos = Select::selectedObj->GetTransform()->GetPosition();
-					vec3 oldRot = Select::selectedObj->GetTransform()->GetRotation();
-					vec3 oldScale = Select::selectedObj->GetTransform()->GetScale();
+					vec3 oldPos = Select::selectedObj->GetComponent<TransformComponent>()->GetPosition();
+					vec3 oldRot = Select::selectedObj->GetComponent<TransformComponent>()->GetRotation();
+					vec3 oldScale = Select::selectedObj->GetComponent<TransformComponent>()->GetScale();
 
 					auto& obj = Select::selectedObj;
 					string oldTxtPath = obj->GetTxtFilePath();
 					auto& oldBillboard = obj->GetChildBillboard();
-					vec3 oldBillboardPos = obj->GetTransform()->GetPosition();
+					vec3 oldBillboardPos = obj->GetComponent<TransformComponent>()->GetPosition();
 					unsigned int oldBillboardID = Select::selectedObj->GetChildBillboard()->GetID();
 
 					if (value == "Point light")

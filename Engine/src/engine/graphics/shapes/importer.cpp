@@ -99,9 +99,8 @@ namespace Graphics::Shape
         failedModelData.clear();
 
         failedModelData["name"] = name;
-        failedModelData["destinationPath"] = modelPath;
+        failedModelData["originalDestPath"] = modelPath;
 
-        cout << "!!!! attempting to load model: " << name << "\n";
         failedModelData["pos"] = 
             to_string(pos.x) + "," +
             to_string(pos.y) + "," + 
@@ -474,7 +473,8 @@ namespace Graphics::Shape
         unsigned int ID = ++GameObject::nextID;
 
         string errorModelName = "error.fbx";
-        string destinationPath = (path(Engine::filesPath) / "models" / errorModelName).string();
+        string originalDestinationPath = failedModelData["originalDestPath"];
+        string originPath = (path(Engine::filesPath) / "models" / errorModelName).string();
 
         vec3 pos = vec3(0.0f);
         vec3 rot = vec3(0.0f);
@@ -497,12 +497,22 @@ namespace Graphics::Shape
             }
         }
 
-        //loads the error model for the failed model
+        //delete original folder and make a new one with the same name
+        string parentFolder = path(originalDestinationPath).parent_path().string();
+        File::DeleteFileOrfolder(parentFolder);
+        File::CreateNewFolder(parentFolder);
+
+        //copy error model
+        string targetName = name + ".fbx";
+        string targetPath = (path(parentFolder) / targetName).string();
+        File::CopyFileOrFolder(originPath, targetPath);
+
+        //load the error model for the failed model
         Importer::Initialize(
             pos,
             rot,
             scale,
-            destinationPath,
+            targetPath,
             "ERRORTEX",
             "DEFAULTSPEC",
             "EMPTY",

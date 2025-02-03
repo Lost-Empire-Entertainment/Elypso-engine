@@ -33,6 +33,7 @@
 #include "fileUtils.hpp"
 #include "camera.hpp"
 #include "gui_console.hpp"
+#include "transformcomponent.hpp"
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
@@ -75,6 +76,7 @@ using Utils::String;
 using Core::TimeManager;
 using Graphics::Camera;
 using Graphics::GUI::GUIConsole;
+using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
 using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
@@ -106,31 +108,31 @@ namespace Core
                 {
                     if (objectAction == ObjectAction::move)
                     {
-                        vec3 pos = Select::selectedObj->GetTransform()->GetPosition();
+                        vec3 pos = Select::selectedObj->GetComponent<TransformComponent>()->GetPosition();
                         if (axis == "X") pos = vec3(pos.x + combinedOffset, pos.y, pos.z);
                         else if (axis == "Y") pos = vec3(pos.x, pos.y + combinedOffset, pos.z);
                         else if (axis == "Z") pos = vec3(pos.x, pos.y, pos.z + combinedOffset);
 
-                        Select::selectedObj->GetTransform()->SetPosition(pos);
+                        Select::selectedObj->GetComponent<TransformComponent>()->SetPosition(pos);
                         if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
                     }
                     else if (objectAction == ObjectAction::rotate)
                     {
-                        vec3 rot = Select::selectedObj->GetTransform()->GetRotation();
+                        vec3 rot = Select::selectedObj->GetComponent<TransformComponent>()->GetRotation();
                         if (axis == "X") rot = vec3(rot.x + combinedOffset * 10, rot.y, rot.z);
                         else if (axis == "Y") rot = vec3(rot.x, rot.y + combinedOffset * 10, rot.z);
                         else if (axis == "Z") rot = vec3(rot.x, rot.y, rot.z + combinedOffset * 10);
-                        Select::selectedObj->GetTransform()->SetRotation(rot);
+                        Select::selectedObj->GetComponent<TransformComponent>()->SetRotation(rot);
                         if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
                     }
                     else if (objectAction == ObjectAction::scale)
                     {
-                        vec3 scale = Select::selectedObj->GetTransform()->GetScale();
+                        vec3 scale = Select::selectedObj->GetComponent<TransformComponent>()->GetScale();
                         if (axis == "X") scale = vec3(scale.x + combinedOffset, scale.y, scale.z);
                         else if (axis == "Y") scale = vec3(scale.x, scale.y + combinedOffset, scale.z);
                         else if (axis == "Z") scale = vec3(scale.x, scale.y, scale.z + combinedOffset);
 
-                        Select::selectedObj->GetTransform()->SetScale(scale);
+                        Select::selectedObj->GetComponent<TransformComponent>()->SetScale(scale);
                         if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
                     }
                 }
@@ -320,17 +322,17 @@ namespace Core
         copiedObject["name"] = selectedObj->GetName();
         copiedObject["id"] = to_string(selectedObj->GetID());
         copiedObject["pos"] =
-            to_string(selectedObj->GetTransform()->GetPosition().x) + ","
-            + to_string(selectedObj->GetTransform()->GetPosition().y) + ","
-            + to_string(selectedObj->GetTransform()->GetPosition().z);
+            to_string(selectedObj->GetComponent<TransformComponent>()->GetPosition().x) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetPosition().y) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetPosition().z);
         copiedObject["rot"] =
-            to_string(selectedObj->GetTransform()->GetRotation().x) + ","
-            + to_string(selectedObj->GetTransform()->GetRotation().y) + ","
-            + to_string(selectedObj->GetTransform()->GetRotation().z);
+            to_string(selectedObj->GetComponent<TransformComponent>()->GetRotation().x) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetRotation().y) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetRotation().z);
         copiedObject["scale"] =
-            to_string(selectedObj->GetTransform()->GetScale().x) + ","
-            + to_string(selectedObj->GetTransform()->GetScale().y) + ","
-            + to_string(selectedObj->GetTransform()->GetScale().z);
+            to_string(selectedObj->GetComponent<TransformComponent>()->GetScale().x) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetScale().y) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetScale().z);
 
         MeshComponent::MeshType type = selectedObj->GetComponent<MeshComponent>()->GetMeshType();
         if (type == MeshComponent::MeshType::model)
@@ -338,7 +340,16 @@ namespace Core
             copiedObject["type"] = "model";
 
             string modelPath{};
-            string modelFolder = (path(Engine::projectPath) / path(selectedObj->GetTxtFilePath()).parent_path().string()).string();
+            string modelFolder{};
+            for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
+            {
+                string folderName = path(folder).stem().string();
+                if (folderName == selectedObj->GetName())
+                {
+                    modelFolder = path(folder).string();
+                    break;
+                }
+            }
             for (const auto& file : directory_iterator(modelFolder))
             {
                 string extension = path(file).extension().string();
@@ -358,7 +369,7 @@ namespace Core
             copiedObject["heightTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::height);
 
             copiedObject["isTransparent"] = to_string(selectedObj->GetComponent<MaterialComponent>()->IsTransparent());
-            copiedObject["transaprentValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetTransparentValue());
+            copiedObject["transparentValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetTransparentValue());
 
             copiedObject["shininess"] = "32";
         }

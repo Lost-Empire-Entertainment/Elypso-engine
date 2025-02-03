@@ -108,27 +108,27 @@ namespace EngineFile
 				//
 
 				//position
-				float posX = obj->GetTransform()->GetPosition().x;
-				float posY = obj->GetTransform()->GetPosition().y;
-				float posZ = obj->GetTransform()->GetPosition().z;
+				float posX = obj->GetComponent<TransformComponent>()->GetPosition().x;
+				float posY = obj->GetComponent<TransformComponent>()->GetPosition().y;
+				float posZ = obj->GetComponent<TransformComponent>()->GetPosition().z;
 				data.push_back(
 					"position= " + to_string(posX) + ", "
 					+ to_string(posY) + ", "
 					+ to_string(posZ) + "\n");
 
 				//rotation
-				float rotX = obj->GetTransform()->GetRotation().x;
-				float rotY = obj->GetTransform()->GetRotation().y;
-				float rotZ = obj->GetTransform()->GetRotation().z;
+				float rotX = obj->GetComponent<TransformComponent>()->GetRotation().x;
+				float rotY = obj->GetComponent<TransformComponent>()->GetRotation().y;
+				float rotZ = obj->GetComponent<TransformComponent>()->GetRotation().z;
 				data.push_back(
 					"rotation= " + to_string(rotX) + ", "
 					+ to_string(rotY) + ", "
 					+ to_string(rotZ) + "\n");
 
 				//scale
-				float scaleX = obj->GetTransform()->GetScale().x;
-				float scaleY = obj->GetTransform()->GetScale().y;
-				float scaleZ = obj->GetTransform()->GetScale().z;
+				float scaleX = obj->GetComponent<TransformComponent>()->GetScale().x;
+				float scaleY = obj->GetComponent<TransformComponent>()->GetScale().y;
+				float scaleZ = obj->GetComponent<TransformComponent>()->GetScale().z;
 				data.push_back(
 					"scale= " + to_string(scaleX) + ", "
 					+ to_string(scaleY) + ", "
@@ -156,6 +156,7 @@ namespace EngineFile
 					string diffuseTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
 					diffuseTexture = path(diffuseTexture).filename().string();
 					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
+					else if (diffuseTexture == "diff_error.png") diffuseTexture = "ERRORTEX";
 
 					string specularTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
 					specularTexture = path(specularTexture).filename().string();
@@ -323,14 +324,7 @@ namespace EngineFile
 	{
 		ifstream objFile(file);
 
-		if (!objFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Error: Couldn't read from object file '" + file + "'!\n");
-			return "";
-		}
+		if (!objFile.is_open()) return "";
 
 		string target = "type= ";
 		string line;
@@ -412,31 +406,25 @@ namespace EngineFile
 			string type = GetType(txtPath);
 			if (type == "")
 			{
-				Empty::InitializeEmpty(
-					vec3(0),
-					vec3(0),
-					vec3(1),
-					modelPath,
-					fileName,
-					Empty::tempID,
-					true);
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Error: Model file '" + txtPath + "' does not exist or couldn't be read! Loading model with default values.\n");
 			}
-			else
-			{
-				Importer::Initialize(
-					vec3(0),
-					vec3(0),
-					vec3(1),
-					modelPath,
-					"DEFAULTDIFF",
-					"DEFAULTSPEC",
-					"EMPTY",
-					"EMPTY",
-					false,
-					0.0f,
-					fileName,
-					Importer::tempID);
-			}
+			
+			Importer::Initialize(
+				vec3(0),
+				vec3(0),
+				vec3(1),
+				modelPath,
+				"DEFAULTDIFF",
+				"DEFAULTSPEC",
+				"EMPTY",
+				"EMPTY",
+				false,
+				0.0f,
+				fileName,
+				Importer::tempID);
 		}
 
 		//loads all empty and light txt files
@@ -444,6 +432,14 @@ namespace EngineFile
 		{
 			string filePath = path(gameobjectPath).string();
 			string type = GetType(filePath);
+
+			if (type == "")
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Error: Couldn't read from object file '" + filePath + "'!\n");
+			}
 
 			if (type == "empty")
 			{
@@ -462,7 +458,6 @@ namespace EngineFile
 			{
 				LoadDirectionalLight(filePath);
 			}
-
 		}
 #if ENGINE_MODE
 		GUISceneWindow::waitBeforeCountsUpdate = false;
@@ -618,16 +613,26 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullTex0Path = split[0] == "DEFAULTDIFF"
-					? "DEFAULTDIFF"
-					: (path(fullTxtFilePath).parent_path() / split[0]).string();
+				string fullTex0Path{};
+				if (split[0] == "DEFAULTDIFF"
+					|| split[0] == "ERRORTEX")
+				{
+					fullTex0Path = split[0];
+				}
+				else fullTex0Path = (path(fullTxtFilePath).parent_path() / split[0]).string();
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
 					fullTex0Path = (path(Engine::filesPath) / "textures" / "diff_default.png").string();
 					textures.push_back(fullTex0Path);
 				}
+				else if (fullTex0Path == "ERRORTEX")
+				{
+					fullTex0Path = (path(Engine::filesPath) / "textures" / "diff_error.png").string();
+					textures.push_back(fullTex0Path);
+				}
 				else if (fullTex0Path != "DEFAULTDIFF"
+						 && fullTex0Path != "ERRORTEX"
 						 && !exists(fullTex0Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
@@ -804,9 +809,9 @@ namespace EngineFile
 			foundObj->SetID(ID);
 			foundObj->SetEnableState(isEnabled);
 
-			foundObj->GetTransform()->SetPosition(pos);
-			foundObj->GetTransform()->SetRotation(rot);
-			foundObj->GetTransform()->SetScale(scale);
+			foundObj->GetComponent<TransformComponent>()->SetPosition(pos);
+			foundObj->GetComponent<TransformComponent>()->SetRotation(rot);
+			foundObj->GetComponent<TransformComponent>()->SetScale(scale);
 
 			string vert = (path(Engine::filesPath) / "shaders" / "Gameobject.vert").string();
 			string frag = (path(Engine::filesPath) / "shaders" / "Gameobject.frag").string();

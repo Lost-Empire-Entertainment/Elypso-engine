@@ -54,6 +54,8 @@ namespace Graphics::Shape
 
 	using Graphics::Shader;
 	using Graphics::Components::TransformComponent;
+	using Graphics::Components::MeshComponent;
+	using Graphics::Components::MaterialComponent;
 	using Graphics::Components::Component;
 
 	class GameObject : public enable_shared_from_this<GameObject>
@@ -63,17 +65,11 @@ namespace Graphics::Shape
 
 		GameObject(
 			const string& name, 
-			const unsigned int& ID,
-			const string& txtFilePath) : 
+			const unsigned int& ID) : 
 			name(name),
 			ID(ID),
 			isInitialized(false),
-			isEnabled(true),
-			txtFilePath(txtFilePath),
-			transform(make_shared<TransformComponent>())
-		{
-			components[typeid(TransformComponent)] = transform;
-		}
+			isEnabled(isEnabled) {}
 
 		/*
 		*
@@ -207,26 +203,12 @@ namespace Graphics::Shape
 
 		void Initialize() { isInitialized = true; }
 		bool IsInitialized() const { return isInitialized; }
-
-		const shared_ptr<TransformComponent>& GetTransform() const { return transform; }
-		void SetTransform(const shared_ptr<TransformComponent>& newTransform)
-		{
-			if (!newTransform)
-			{
-				throw invalid_argument("TransformComponent cannot be null.");
-			}
-
-			transform = newTransform;
-			components[typeid(TransformComponent)] = newTransform;
-		}
 	private:
 		string name;
 		unsigned int ID;
 		bool isInitialized;
 		bool isEnabled;
 		string txtFilePath;
-
-		shared_ptr<TransformComponent> transform;
 
 		unordered_map<type_index, shared_ptr<Component>> components;
 

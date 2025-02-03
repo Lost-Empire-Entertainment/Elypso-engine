@@ -53,8 +53,8 @@ namespace Graphics::Shape
 		const vec3& rot, 
 		const vec3& scale)
 	{
-		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000001, "");
-		auto& transform = obj->GetTransform();
+		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000001);
+		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -173,8 +173,8 @@ namespace Graphics::Shape
 				//retrieve vertices and calculate bounding box
 				const vector<AssimpVertex>& vertices = mesh->GetVertices();
 				vec3 minBound, maxBound;
-				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
-				vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
+				vec3 position = Select::selectedObj->GetComponent<TransformComponent>()->GetPosition();
+				vec3 initialScale = Select::selectedObj->GetComponent<TransformComponent>()->GetScale();
 
 				//calculate the bounding box based on vertices
 				Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale);
@@ -187,7 +187,7 @@ namespace Graphics::Shape
 				model = translate(model, boxCenter);
 
 				//apply rotation
-				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
+				quat newRot = quat(radians(Select::selectedObj->GetComponent<TransformComponent>()->GetRotation()));
 				model *= mat4_cast(newRot);
 
 				//scale based on the bounding box size with the margin included

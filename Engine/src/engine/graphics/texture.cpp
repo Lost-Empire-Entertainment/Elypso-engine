@@ -129,6 +129,7 @@ namespace Graphics
 		//the texture path is assigned but doesnt exist, assigning missing texture
 		else if (mesh->GetMeshType() != MeshComponent::MeshType::model
 				 || texturePath.find("diff_default.png") != string::npos
+				 || texturePath.find("diff_error.png") != string::npos
 				 || texturePath.find("spec_default.png") != string::npos
 				 || texturePath.find("diff_missing.png") != string::npos)
 		{
@@ -195,6 +196,7 @@ namespace Graphics
 			string textureName = path(texturePath).filename().string();
 
 			if (textureName.find("diff_default.png") == string::npos
+				&& textureName.find("diff_error.png") == string::npos
 				&& textureName.find("diff_missing.png") == string::npos
 				&& textureName.find("pointLight.png") == string::npos
 				&& textureName.find("spotLight.png") == string::npos

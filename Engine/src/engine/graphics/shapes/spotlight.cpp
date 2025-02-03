@@ -60,8 +60,8 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		auto obj = make_shared<GameObject>(name, id, txtFilePath);
-		auto& transform = obj->GetTransform();
+		auto obj = make_shared<GameObject>(name, id);
+		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -202,10 +202,10 @@ namespace Graphics::Shape
 			if (GameObjectManager::renderLightBorders)
 			{
 				mat4 model = mat4(1.0f);
-				model = translate(model, obj->GetTransform()->GetPosition());
-				quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+				model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());
+				quat newRot = quat(radians(obj->GetComponent<TransformComponent>()->GetRotation()));
 				model *= mat4_cast(newRot);
-				model = scale(model, obj->GetTransform()->GetScale());
+				model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 				shader.SetMat4("model", model);
 				GLuint VAO = mesh->GetVAO();

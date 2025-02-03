@@ -56,8 +56,8 @@ namespace Graphics::Shape
 		const vec3& rot, 
 		const vec3& scale)
 	{
-		auto obj = make_shared<GameObject>("SelectedObjectAction", 10000002, "");
-		auto& transform = obj->GetTransform();
+		auto obj = make_shared<GameObject>("SelectedObjectAction", 10000002);
+		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -158,7 +158,7 @@ namespace Graphics::Shape
 		mat4 model = mat4(1.0f);
 		if (Select::isObjectSelected)
 		{
-			auto& selectedObjTransform = Select::selectedObj->GetTransform();
+			auto selectedObjTransform = Select::selectedObj->GetComponent<TransformComponent>();
 
 			shader.SetFloat("transparency", 1.0f);
 

@@ -58,8 +58,8 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-		auto obj = make_shared<GameObject>("Billboard", id, "");
-		auto &transform = obj->GetTransform();
+		auto obj = make_shared<GameObject>("Billboard", id);
+		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -159,10 +159,10 @@ namespace Graphics::Shape
 
 			mat4 model = mat4(1.0f);
 
-			vec3 pos = parent->GetTransform()->GetPosition();
-			obj->GetTransform()->SetPosition(pos);
+			vec3 pos = parent->GetComponent<TransformComponent>()->GetPosition();
+			obj->GetComponent<TransformComponent>()->SetPosition(pos);
 
-			vec3 objectPos = obj->GetTransform()->GetPosition();
+			vec3 objectPos = obj->GetComponent<TransformComponent>()->GetPosition();
 			vec3 cameraPos = Render::camera.GetCameraPosition();
 			model = translate(model, objectPos);
 
@@ -170,7 +170,7 @@ namespace Graphics::Shape
 			rotationMatrix = inverse(rotationMatrix);
 			model = rotationMatrix;
 
-			model = scale(model, obj->GetTransform()->GetScale());
+			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 			//bind diffuse map
 			glActiveTexture(GL_TEXTURE0);

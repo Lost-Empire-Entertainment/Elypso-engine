@@ -43,6 +43,7 @@ using glm::scale;
 using std::ofstream;
 using std::ifstream;
 using std::filesystem::exists;
+using std::filesystem::is_regular_file;
 using std::stoul;
 using std::stof;
 
@@ -86,8 +87,8 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-		auto obj = make_shared<GameObject>(name, id, txtFilePath);
-		auto& transform = obj->GetTransform();
+		auto obj = make_shared<GameObject>(name, id);
+		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -178,7 +179,12 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
-		GameObjectFile::LoadModel(txtFilePath);
+		if (txtFilePath != ""
+			&& is_regular_file(txtFilePath)
+			&& path(txtFilePath).extension().string() == ".txt")
+		{
+			GameObjectFile::LoadModel(txtFilePath);
+		}
 
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;
@@ -216,7 +222,7 @@ namespace Graphics::Shape
 				int count = dirLight->IsEnabled() ? 1 : 0;
 				shader.SetInt("dirLightCount", count);
 				
-				auto& transform = dirLight->GetTransform();
+				auto transform = dirLight->GetComponent<TransformComponent>();
 				auto light = dirLight->GetComponent<LightComponent>();
 				if (light)
 				{
@@ -255,7 +261,7 @@ namespace Graphics::Shape
 			{
 				for (int i = 0; i < pointLightCount; i++)
 				{
-					auto& transform = pointLights[i]->GetTransform();
+					auto transform = pointLights[i]->GetComponent<TransformComponent>();
 					auto light = pointLights[i]->GetComponent<LightComponent>();
 					if (light)
 					{
@@ -290,7 +296,7 @@ namespace Graphics::Shape
 			{
 				for (int i = 0; i < spotLightCount; i++)
 				{
-					auto& transform = spotLights[i]->GetTransform();
+					auto transform = spotLights[i]->GetComponent<TransformComponent>();
 					auto light = spotLights[i]->GetComponent<LightComponent>();
 					if (light)
 					{
@@ -336,12 +342,12 @@ namespace Graphics::Shape
 
 			mat4 model = mat4(1.0f);
 
-			model = translate(model, obj->GetTransform()->GetPosition());
+			model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());
 
-			quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+			quat newRot = quat(radians(obj->GetComponent<TransformComponent>()->GetRotation()));
 			model *= mat4_cast(newRot);
 
-			model = scale(model, obj->GetTransform()->GetScale());
+			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 			//bind diffuse texture
 			unsigned int diffuseTextureID = mat->GetTextureID(MaterialComponent::TextureType::diffuse);

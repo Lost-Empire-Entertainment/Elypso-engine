@@ -26,6 +26,7 @@
 #include "importer.hpp"
 #include "audioplayercomponent.hpp"
 #include "audio.hpp"
+#include "transformcomponent.hpp"
 #include "meshcomponent.hpp"
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
@@ -52,6 +53,7 @@ using Graphics::Shape::Importer;
 using Graphics::GUI::GUISettings;
 using Graphics::Components::AudioPlayerComponent;
 using Core::Audio;
+using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
 using Utils::String;
 using Core::Select;
@@ -468,9 +470,9 @@ namespace Graphics::GUI
 		obj = Select::selectedObj;
 
 		//general data
-		vec3 pos = obj->GetTransform()->GetPosition();
-		vec3 rot = obj->GetTransform()->GetRotation();
-		vec3 scale = obj->GetTransform()->GetScale();
+		vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+		vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+		vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
 		string name = obj->GetName();
 		unsigned int ID = obj->GetID();
 

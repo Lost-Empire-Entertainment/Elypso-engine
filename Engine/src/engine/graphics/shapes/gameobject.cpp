@@ -89,7 +89,7 @@ namespace Graphics::Shape
 					string apcName = apc->GetName();
 					if (Audio::IsImported(apc->GetName()))
 					{
-						Audio::UpdatePlayerPosition(apcName, obj->GetTransform()->GetPosition());
+						Audio::UpdatePlayerPosition(apcName, obj->GetComponent<TransformComponent>()->GetPosition());
 					}
 				}
 
@@ -143,8 +143,8 @@ namespace Graphics::Shape
 			sort(transparentObjects.begin(), transparentObjects.end(),
 				[&camPos, &view](const auto& a, const auto& b)
 				{
-					vec3 objectPositionA = a->GetTransform()->GetPosition();
-					vec3 objectPositionB = b->GetTransform()->GetPosition();
+					vec3 objectPositionA = a->GetComponent<TransformComponent>()->GetPosition();
+					vec3 objectPositionB = b->GetComponent<TransformComponent>()->GetPosition();
 					
 					float distanceA = length(objectPositionA - camPos);
 					float distanceB = length(objectPositionB - camPos);
