@@ -256,17 +256,6 @@ endif()
 	# $<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
 # )
 
-set(COPY_TARGETS README.md LIBRARIES.md)
-foreach(FILE ${COPY_TARGETS})
-  add_custom_command(TARGET Game POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E remove
-	$<TARGET_FILE_DIR:Game>/${FILE}
-	COMMAND ${CMAKE_COMMAND} -E copy
-	${PARENT_DIR_PATH}/${FILE}
-	$<TARGET_FILE_DIR:Game>/${FILE}
-  )
-endforeach()
-
 # Copy the MIT license from this folder, not parent folder
 add_custom_command(TARGET Game POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove

@@ -35,7 +35,7 @@ namespace Core
 		/// <summary>
 		/// Compiles the game from source.
 		/// </summary>
-		static void RunInstaller();
+		static bool RunInstaller();
 
 		/// <summary>
 		/// Draws the ImGui compilation window

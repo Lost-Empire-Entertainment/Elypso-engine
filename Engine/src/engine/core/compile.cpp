@@ -92,87 +92,89 @@ namespace Core
 				//
 				// START BUILDING GAME FROM SOURCE CODE
 				//
-				RunInstaller();
-
-				string gameStem = path(Engine::gameExePath).stem().string();
-				if (gameStem != "Game")
+				if (RunInstaller())
 				{
-					File::MoveOrRenameFileOrFolder(
-						path(Engine::gameParentPath) / "Game.exe",
-						Engine::gameExePath,
-						true);
-				}
-
-				//
-				// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
-				//
-
-				string targetFolder = (path(Engine::gameParentPath) / "project").string();
-				if (exists(targetFolder)) File::DeleteFileOrfolder(targetFolder);
-				File::CreateNewFolder(targetFolder);
-
-				string projectFileOriginPath = (path(Engine::docsPath) / "project.txt").string();
-				string projectFileTargetPath = (path(targetFolder) / "project.txt").string();
-				if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
-				File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
-
-				//
-				// COPY SCENE FILES TO GAME EXE FOLDER
-				//
-
-				string scenePath = path(Engine::projectPath).string();
-
-				for (const auto& entry : directory_iterator(path(scenePath)))
-				{
-					string stem = path(entry).stem().string();
-
-					if (is_directory(entry))
+					string gameStem = path(Engine::gameExePath).stem().string();
+					if (gameStem != "Game")
 					{
-						string origin = path(entry).string();
-						string originFileName = path(entry).filename().string();
-						string target = (path(targetFolder) / originFileName).string();
-
-						File::CopyFileOrFolder(origin, target);
+						File::MoveOrRenameFileOrFolder(
+							path(Engine::gameParentPath) / "Game.exe",
+							Engine::gameExePath,
+							true);
 					}
-				}
 
-				//
-				// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
-				//
+					//
+					// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
+					//
 
-				string firstSceneFilePath = (path(targetFolder) / "firstScene.txt").string();
-				if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
+					string targetFolder = (path(Engine::gameParentPath) / "project").string();
+					if (exists(targetFolder)) File::DeleteFileOrfolder(targetFolder);
+					File::CreateNewFolder(targetFolder);
 
-				ofstream firstSceneFile(firstSceneFilePath);
-				if (!firstSceneFile.is_open())
-				{
+					string projectFileOriginPath = (path(Engine::docsPath) / "project.txt").string();
+					string projectFileTargetPath = (path(targetFolder) / "project.txt").string();
+					if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
+					File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
+
+					//
+					// COPY SCENE FILES TO GAME EXE FOLDER
+					//
+
+					string scenePath = path(Engine::projectPath).string();
+
+					for (const auto& entry : directory_iterator(path(scenePath)))
+					{
+						string stem = path(entry).stem().string();
+
+						if (is_directory(entry))
+						{
+							string origin = path(entry).string();
+							string originFileName = path(entry).filename().string();
+							string target = (path(targetFolder) / originFileName).string();
+
+							File::CopyFileOrFolder(origin, target);
+						}
+					}
+
+					//
+					// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
+					//
+
+					string firstSceneFilePath = (path(targetFolder) / "firstScene.txt").string();
+					if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
+
+					ofstream firstSceneFile(firstSceneFilePath);
+					if (!firstSceneFile.is_open())
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							"Error: Compilation failed because first scene file couldnt be created!\n");
+
+						renderBuildingWindow = false;
+
+						return;
+					}
+
+					firstSceneFile << "project= " << path(Engine::projectPath).stem().string() << "\n";
+					firstSceneFile << "scene= " << Engine::gameFirstScene;
+
+					firstSceneFile.close();
+
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Compilation failed because first scene file couldnt be created!\n");
+						Type::INFO,
+						"Compilation succeeded!\n");
 
-					renderBuildingWindow = false;
-
-					return;
+					finishedBuild = true;
 				}
-
-				firstSceneFile << "project= " << path(Engine::projectPath).stem().string() << "\n";
-				firstSceneFile << "scene= " << Engine::gameFirstScene;
-
-				firstSceneFile.close();
-
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::INFO,
-					"Compilation succeeded!\n");
-
 				finishedBuild = true;
 			});
 
 		CompileThread.detach();
 	}
 	
-	void Compilation::RunInstaller()
+	bool Compilation::RunInstaller()
 	{
 		string engineRootFolder = "";
 		string gameRootFolder = "";
@@ -190,14 +192,19 @@ namespace Core
 		}
 		else if (parentFolder == "Engine")
 		{
-			engineRootFolder = (current_path().parent_path()).string();
-			gameRootFolder = (current_path().parent_path().parent_path() / "Game").string();
+			engineRootFolder = current_path().string();
+			gameRootFolder = (current_path().parent_path() / "Game").string();
 		}
 
 		if (gameRootFolder == ""
 			|| !exists(gameRootFolder))
 		{
-			Engine::CreateErrorPopup("Failed to assign path to game builder!");
+			string output = "Game root folder '" + gameRootFolder + "' is empty or does not exist!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				output);
+			return false;
 		}
 
 #ifdef _WIN32
@@ -269,6 +276,7 @@ namespace Core
 		if (!pipe)
 		{
 			throw runtime_error("_popen() failed!");
+			return false;
 		}
 
 		//read the output line by line and add to the provided vector
@@ -301,6 +309,7 @@ namespace Core
 			cout << buffer.data() << "\n";
 		}
 #endif
+		return true;
 	}
 
 	void Compilation::RenderBuildingWindow()
