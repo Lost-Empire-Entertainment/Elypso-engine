@@ -490,11 +490,21 @@ namespace Utils
                 }
 
                 string cleanedFileName = fileName;
-                size_t pos = fileName.find('(');
-                if (pos != string::npos)
+                size_t openParentPos = fileName.find_last_of('(');
+                size_t closeParentPos = fileName.find_last_of(')');
+
+                if (openParentPos != string::npos
+                    && closeParentPos != string::npos
+                    && closeParentPos > openParentPos)
                 {
-                    cleanedFileName = fileName.substr(0, pos);
+                    string potentialNumber = fileName.substr(openParentPos + 1, closeParentPos - openParentPos - 1);
+                    if (all_of(potentialNumber.begin(), potentialNumber.end(), ::isdigit))
+                    {
+                        cleanedFileName = fileName.substr(0, openParentPos - 1);
+                    }
+                    else cleanedFileName = fileName;
                 }
+                else cleanedFileName = fileName;
 
                 cleanedFileName = cleanedFileName.empty() ? fileName : cleanedFileName;
                 string newFileName = cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;

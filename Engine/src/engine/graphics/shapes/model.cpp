@@ -170,7 +170,8 @@ namespace Graphics::Shape
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
 
-		obj->SetTxtFilePath(txtFilePath);
+		string trueTxtFilePath = (path(Engine::projectPath) / txtFilePath).string();
+		obj->SetTxtFilePath(trueTxtFilePath);
 
 		GameObjectManager::AddGameObject(obj);
 		if (!isTransparent) GameObjectManager::AddOpaqueObject(obj);
@@ -179,11 +180,12 @@ namespace Graphics::Shape
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
-		if (txtFilePath != ""
-			&& is_regular_file(txtFilePath)
-			&& path(txtFilePath).extension().string() == ".txt")
+
+		if (is_regular_file(trueTxtFilePath)
+			&& path(trueTxtFilePath).extension().string() == ".txt")
 		{
-			GameObjectFile::LoadModel(txtFilePath);
+			cout << "!!!! load model '" << name << "' txt file: " << trueTxtFilePath << "\n";
+			GameObjectFile::LoadModel(trueTxtFilePath);
 		}
 
 		Select::selectedObj = obj;
