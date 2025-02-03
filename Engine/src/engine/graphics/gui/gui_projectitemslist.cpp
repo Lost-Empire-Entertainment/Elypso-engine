@@ -28,6 +28,7 @@
 #include "audio.hpp"
 #include "meshcomponent.hpp"
 #include "stringUtils.hpp"
+#include "selectobject.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -53,6 +54,7 @@ using Graphics::Components::AudioPlayerComponent;
 using Core::Audio;
 using Graphics::Components::MeshComponent;
 using Utils::String;
+using Core::Select;
 
 namespace Graphics::GUI
 {
@@ -389,14 +391,13 @@ namespace Graphics::GUI
 			ImGuiWindowFlags_NoResize
 			| ImGuiWindowFlags_NoDocking
 			| ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoSavedSettings
-			| ImGuiWindowFlags_NoTitleBar;
+			| ImGuiWindowFlags_NoSavedSettings;
 
 
-		string title = "##import_size_warning";
+		string title = "WARNING: LARGE MODEL";
 		ImGui::Begin(title.c_str(), nullptr, flags);
 
-		string description = "Selected model '" + name + "' size is over " + to_string(static_cast<int>(size)) + "MB! Proceed with import?";
+		string description = "Selected model '" + name + "' size is over " + to_string(static_cast<int>(size)) + "MB! Elypso engine may freeze or fail to import the model - proceed with import? The scene will be automatically saved before importing starts.";
 		//text padding on both sides
 		float sidePadding = 20.0f;
 		//calculate available width for text after padding
@@ -417,10 +418,10 @@ namespace Graphics::GUI
 
 		ImVec2 button1Pos(
 			windowSize.x * 0.4f - buttonSize.x,
-			(ImGui::GetWindowHeight() / 2) - (buttonSize.y / 2));
+			(ImGui::GetWindowHeight() / 1.5f) - (buttonSize.y / 2));
 		ImVec2 button2Pos(
 			windowSize.x * 0.6f,
-			(ImGui::GetWindowHeight() / 2) - (buttonSize.y / 2));
+			(ImGui::GetWindowHeight() / 1.5f) - (buttonSize.y / 2));
 
 		ImGui::SetCursorPos(button1Pos);
 		if (ImGui::Button("Import", buttonSize))
@@ -429,6 +430,9 @@ namespace Graphics::GUI
 				ConsoleCaller::INPUT,
 				ConsoleType::INFO,
 				"Confirmed large model '" + name + "' import.\n");
+
+			SceneFile::SaveScene();
+
 			Initialize();
 			renderLargeImportConfirm = false;
 		}
@@ -467,6 +471,31 @@ namespace Graphics::GUI
 
 	void GUIProjectItemsList::Initialize()
 	{
+		obj = Select::selectedObj;
+
+		//general data
+		vec3 pos = obj->GetTransform()->GetPosition();
+		vec3 rot = obj->GetTransform()->GetRotation();
+		vec3 scale = obj->GetTransform()->GetScale();
+		string name = obj->GetName();
+		unsigned int ID = obj->GetID();
+
+		//audio data
+		bool is3D{};
+		float maxRange{};
+		float minRange{};
+		float volume{};
+		string audioFilePath{};
+		auto apc = obj->GetComponent<AudioPlayerComponent>();
+		if (apc)
+		{
+			is3D = apc->Is3D();
+			maxRange = apc->GetMaxRange();
+			minRange = apc->GetMinRange();
+			volume = apc->GetVolume();
+			audioFilePath = apc->GetName();
+		}
+
 		//store model origin and target path
 		string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
 		string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
@@ -494,29 +523,6 @@ namespace Graphics::GUI
 		string nameAndExtension = targetFolderName + path(targetPath).extension().string();
 		string newCorrectPath = (path(newCorrectFolder) / nameAndExtension).string();
 		File::MoveOrRenameFileOrFolder(targetPath, newCorrectPath, true);
-
-		//general data
-		vec3 pos = obj->GetTransform()->GetPosition();
-		vec3 rot = obj->GetTransform()->GetRotation();
-		vec3 scale = obj->GetTransform()->GetScale();
-		string name = obj->GetName();
-		unsigned int ID = obj->GetID();
-
-		//audio data
-		bool is3D{};
-		float maxRange{};
-		float minRange{};
-		float volume{};
-		string audioFilePath{};
-		auto apc = obj->GetComponent<AudioPlayerComponent>();
-		if (apc)
-		{
-			is3D = apc->Is3D();
-			maxRange = apc->GetMaxRange();
-			minRange = apc->GetMinRange();
-			volume = apc->GetVolume();
-			audioFilePath = apc->GetName();
-		}
 
 		Importer::Initialize(
 			pos,
