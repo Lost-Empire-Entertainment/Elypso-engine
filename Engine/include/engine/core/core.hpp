@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -33,7 +33,7 @@ namespace Core
 #endif
 		static inline bool isEngineRunning;
 #if ENGINE_MODE
-		static void InitializeEngine(const string& version = "0.1.1");
+		static void InitializeEngine(const string& version = "0.1.2");
 
 		static void CheckForMissingCompilerFiles();
 #else

@@ -1,27 +1,32 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
 #include <chrono>
+#include <iomanip>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <filesystem>
 
 //external
+#include "glad.h"
 #include "magic_enum.hpp"
 #include "glfw3.h"
 #include "glm.hpp"
-#include "glad.h"
 
 //engine
 #include "console.hpp"
 #include "core.hpp"
 #include "render.hpp"
-#include "stringutils.hpp"
+#include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "gui_console.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #endif
@@ -38,14 +43,17 @@ using std::error_code;
 using std::errc;
 using std::cout;
 using glm::vec3;
+using std::filesystem::path;
+using std::filesystem::current_path;
 
 using Core::Engine;
 using Graphics::Render;
 using Utils::String;
 using Core::Select;
 using Graphics::Shape::GameObject;
-using Graphics::Shape::Mesh;
-using Graphics::Shape::Material;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
 using Graphics::GUI::GUIConsole;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
@@ -64,7 +72,11 @@ namespace Core
         auto ms = duration_cast<milliseconds>(now_ms.time_since_epoch()) % 1000;
 
         tm tm;
+#ifdef _WIN32
         localtime_s(&tm, &now_c);
+#elif __linux__
+        localtime_r(&now_c, &tm);
+#endif
 
         stringstream ss{};
         ss
@@ -80,9 +92,10 @@ namespace Core
     void ConsoleManager::InitializeLogger()
     {
 #if ENGINE_MODE
-        logFile.open(Engine::docsPath + "/engine_log.txt");
+        logFile.open((path(Engine::docsPath) / "engine_log.txt").string());
 #else
-        logFile.open(Engine::docsPath + "/game_log.txt");
+        path currentPath = current_path();
+        logFile.open((currentPath / "game_log.txt").string());
 #endif
         if (!logFile.is_open())
         {
@@ -206,10 +219,9 @@ namespace Core
                 << "qqq - quits the engine\n"
                 << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
                 << "rc - resets the camera back to its original position and rotation\n"
-                << "dbg - prints debug info about selected gameobject (click on object before using this command)"
 #if ENGINE_MODE
 #else
-                << "toggle - enables or disables selected gameobject based on its enabled state (click on object before using this command)"
+                << "toggle - enables or disables selected gameobject based on its enabled state (click on object before using this command)\n"
 #endif
                 ;
 
@@ -239,21 +251,6 @@ namespace Core
                 Caller::INPUT,
                 Type::INFO,
                 "Reset camera position and rotation.\n");
-        }
-        else if (cleanedCommands[0] == "dbg"
-                 && cleanedCommands.size() == 1)
-        {
-            if (Select::selectedObj == nullptr)
-            {
-                WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::EXCEPTION,
-                    "Error: Please select a gameobject first before using the 'dbg' command.\n");
-            }
-            else
-            {
-                PrintSelectObjectData();
-            }
         }
 #if ENGINE_MODE
 #else
@@ -300,79 +297,5 @@ namespace Core
                 Type::EXCEPTION,
                 "Error: '" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
         }
-    }
-
-    void ConsoleManager::PrintSelectObjectData()
-    {
-        shared_ptr<GameObject> obj = Select::selectedObj;
-
-        stringstream ss;
-
-        ss << "\n--------------------\n"
-            << "name: " << obj->GetName() << "\n"
-            << "id: " << obj->GetID() << "\n"
-            << "is enabled: " << obj->IsEnabled() << "\n"
-
-            << "position: " << obj->GetTransform()->GetPosition().x << ", "
-            << obj->GetTransform()->GetPosition().y << ", "
-            << obj->GetTransform()->GetPosition().z << "\n"
-
-            << "rotation: " << obj->GetTransform()->GetRotation().x << ", "
-            << obj->GetTransform()->GetRotation().y << ", "
-            << obj->GetTransform()->GetRotation().z << "\n"
-
-            << "scale: " << obj->GetTransform()->GetScale().x << ", "
-            << obj->GetTransform()->GetScale().y << ", "
-            << obj->GetTransform()->GetScale().z << "\n"
-
-            << "mesh type: " << magic_enum::enum_name(obj->GetMesh()->GetMeshType()) << "\n"
-            << "--------------------\n";
-
-        if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model) 
-        {
-            ss << "model shininess: " << obj->GetBasicShape()->GetShininess() << "\n";
-        }
-        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light)
-        {
-            ss << "point light diffuse: "
-                << obj->GetPointLight()->GetDiffuse().x << ", "
-                << obj->GetPointLight()->GetDiffuse().y << ", "
-                << obj->GetPointLight()->GetDiffuse().z << "\n"
-
-                << "point light intensity: " << obj->GetPointLight()->GetIntensity() << "\n"
-
-                << "point light distance: " << obj->GetPointLight()->GetDistance() << "\n";
-        }
-        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light)
-        {
-            ss << "spotlight diffuse: "
-                << obj->GetSpotLight()->GetDiffuse().x << ", "
-                << obj->GetSpotLight()->GetDiffuse().y << ", "
-                << obj->GetSpotLight()->GetDiffuse().z << "\n"
-
-                << "spotlight intensity: " << obj->GetSpotLight()->GetIntensity() << "\n"
-
-                << "spotlight distance: " << obj->GetSpotLight()->GetDistance() << "\n"
-
-                << "spotlight outer angle: " << obj->GetSpotLight()->GetOuterAngle() << "\n"
-
-                << "spotlight inner angle: " << obj->GetSpotLight()->GetInnerAngle() << "\n";
-        }
-        else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light) 
-        {
-            ss << "directional light diffuse: "
-                << obj->GetDirectionalLight()->GetDiffuse().x << ", "
-                << obj->GetDirectionalLight()->GetDiffuse().y << ", "
-                << obj->GetDirectionalLight()->GetDiffuse().z << "\n"
-
-                << "directional light intensity: " << obj->GetDirectionalLight()->GetIntensity() << "\n";
-        }
-
-        ss << "--------------------\n";
-
-        WriteConsoleMessage(
-            Caller::INPUT,
-            Type::INFO,
-            ss.str());
     }
 }

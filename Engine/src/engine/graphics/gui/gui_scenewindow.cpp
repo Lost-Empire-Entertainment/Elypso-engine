@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -6,13 +6,14 @@
 #if ENGINE_MODE
 #include <memory>
 #include <vector>
+#include <iostream>
 
 //external
-#include "glad.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "glad.h"
 #include "type_ptr.hpp"
 
 //engine
@@ -27,9 +28,11 @@
 #include "gameobject.hpp"
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
+#include "meshcomponent.hpp"
 
 using std::shared_ptr;
 using std::vector;
+using std::cout;
 
 using Graphics::Camera;
 using Core::Input;
@@ -40,6 +43,7 @@ using Core::Select;
 using EngineFile::SceneFile;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
+using Graphics::Components::MeshComponent;
 using Utils::String;
 using Core::TimeManager;
 
@@ -276,9 +280,9 @@ namespace Graphics::GUI
 			ImGui::Text("FPS: %.2f", TimeManager::displayedFPS);
 
 			string strObjectsCount = "Objects: " + to_string(objectsCount);
-			ImGui::Text(strObjectsCount.c_str());
+			ImGui::Text("%s", strObjectsCount.c_str());
 			string strVerticesCount = "Vertices: " + to_string(verticesCount);
-			ImGui::Text(strVerticesCount.c_str());
+			ImGui::Text("%s", strVerticesCount.c_str());
 
 			ImGui::Text(
 				"Position: %.2f, %.2f, %.2f",
@@ -604,7 +608,8 @@ namespace Graphics::GUI
 			verticesCount = 0;
 			for (const shared_ptr<GameObject>& obj : GameObjectManager::GetObjects())
 			{
-				verticesCount += static_cast<int>(obj->GetMesh()->GetVertices().size());
+				auto mesh = obj->GetComponent<MeshComponent>();
+				verticesCount += static_cast<int>(mesh->GetVertices().size());
 			}
 		}
 	}

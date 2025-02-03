@@ -1,73 +1,62 @@
 Elypso Engine Proprietary License
-
-Version 1.5
-
-Note: The main and indev branch licenses apply only to their respective branches and cannot be mixed. The indev license may change during development, while the main branch updates with major releases.
+Version 1.8
 
 1. Definitions
 
-   - "Engine" refers to Elypso Engine, the main program used for creating Games.
-   - "Hub" refers to the program that is used to launch the Engine.
-   - "Game" refers to the Game that is compiled by the Engine and is provided by Lost Empire Entertainment in its original form.
-   - "Compiler" refers to the UI-based compiler used for compiling the Hub, Engine and Engine library from source code and CMakeLists.txt files.
-   - "Engine library" refers to the .lib file used for the Game to avoid rewriting engine code.
-   - "External Content" refers to any content not created and owned by Lost Empire Entertainment or the End User.
-   - "End User" refers to the individual or entity using the Engine, Hub, Compiler, Engine library, Game, Content and External Content.
-   - "Lost Empire Entertainment" refers to the entity distributing the Engine, Hub, Game, Compiler, Engine library, Content and External Content under this license.
-   - "Jurisdiction" refers to the legal jurisdiction in which Lost Empire Entertainment operates.
+   - "Licensor": Lost Empire Entertainment, the entity distributing Elypso Engine.
+   - "Elypso Engine": The software used for creating Games.
+   - "Engine library": The `.lib` file used to avoid rewriting Elypso Engine code.
+   - "Game": A collection of files and source code provided by the Licensor, with some components licensed under the MIT license and others subject to third-party licenses.
+   - "End User": Any individual or entity using Elypso Engine, the Engine library, or the Game.
+   - "Third-party Content": Content subject to separate licenses, as listed in `LIBRARIES.md` for files within `_external_shared/`.
 
 2. Grant of License
 
-   Subject to the terms and conditions of this license, Lost Empire Entertainment hereby grants you a worldwide, royalty-free, non-exclusive, non-transferable license to use, reproduce, modify, and distribute the Engine, Hub, Compiler, Engine library and External Content for any lawful purpose, provided that such uses, modifications, and distributions follow their respective licenses and do not violate any applicable laws or regulations.
+   The Licensor grants you a worldwide, royalty-free, non-exclusive, non-transferable license to use, modify, and distribute Elypso Engine and the Engine library, subject to the terms of this license and compliance with all applicable laws and regulations. The Game is distributed under separate licensing terms and is not bound by the restrictions of this license, except where explicitly stated.
 
 3. Scope of License
 
-   This License applies to all content found in this repository, with the following exceptions
-
-   - The Game and External Content are excluded from this License.
-   
-   - The Engine library located in the Game exe folder and in the Engine library build folder is excluded from this license.
-
-   - Externally imported libraries located in the "_external_shared" folder are subject to their own respective licenses. Links to each library's source can be found in the "LIBRARIES.md" file.
+   This license applies to all content in this repository, with the following exclusions:
+   - Third-party libraries in `_external_shared/`, subject to their respective licenses listed in `LIBRARIES.md`.
+   - Fonts located in `Engine/files/fonts/` and `Game/files/fonts/`, subject to their original licenses.
+   - DLL files located in `Engine/files/external dlls/` and `Game/files/external dlls/`.
+   - The setup archive `Windows_prerequisites.7z`, which contains additional dependencies with their respective licenses.
+   - The Game, which is provided under separate licensing terms and not governed by this license.
 
 4. Restrictions
 
-   - You may not sublicense, sell, rent or lease the Engine, Hub or Compiler to any third party without the prior written consent of Lost Empire Entertainment.
-   - You may not remove or alter any licenses, copyright notices, trademarks, or other proprietary rights notices contained in the Engine, Hub or Compiler.
-   - You may not use the name, logo, or trademarks of Lost Empire Entertainment to endorse or promote products derived from the Engine, Hub or Compiler without prior written permission.
-   - The use of the Engine, Hub and Compiler in violation of applicable laws or regulations, including but not limited to unauthorized copying, distribution, modification if it goes against its license, or any other illegal activities, is strictly prohibited.
+   You may not:
+   - Sublicense, sell, rent, or lease Elypso Engine or the Engine library without prior written consent from the Licensor.
+   - Remove or alter licenses, copyright notices, trademarks, or other proprietary rights notices contained within Elypso Engine or the Engine library.
+   - Use the Licensor’s name, logo, or trademarks to endorse or promote products derived from Elypso Engine without prior written permission.
+   - Use Elypso Engine or the Engine library in violation of applicable laws or regulations, including but not limited to unauthorized distribution, reverse engineering, or modification beyond the scope permitted by this license.
 
-6. Proprietary Rights
+5. Proprietary Rights
 
-   The Engine, Hub, Compiler and all worldwide copyrights, trade secrets, and other intellectual property rights therein are the exclusive property of Lost Empire Entertainment. All rights not expressly granted herein are reserved by Lost Empire Entertainment.
+   Elypso Engine, the Engine library, and all associated intellectual property rights remain the exclusive property of the Licensor. The Game is provided under its own licensing terms, with third-party components retaining their original ownership and licensing conditions. All rights not expressly granted are reserved.
 
-7. External Content Rights
+6. Third-party Content
 
-   The use of the following files and folders in violation of applicable laws or regulations, including but not limited to unauthorized copying, distribution, modification if it goes against its license, or any other illegal activities, is strictly prohibited.
+   Elypso Engine, the Engine library, and the Game template utilize third-party libraries listed in `LIBRARIES.md`. Each library's license and details can be found in its respective `_external_shared/` folder. Lost Empire Entertainment does not own or contribute to these libraries, and all rights belong to their respective developers.
 
-   Lost Empire Entertainment hereby disclaims all responsibility and liability for any direct, indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, or use, incurred by any party as a result of such illegal use. By accessing or using these files and folders, you agree to indemnify and hold harmless Lost Empire Entertainment from any claims, damages, or liabilities arising from your unauthorized or illegal use of the files and folders.
+   For a complete list of third-party libraries and their license terms, refer to `LIBRARIES.md`. The Licensor disclaims responsibility for unauthorized or illegal use of these libraries, and you agree to indemnify the Licensor against any claims arising from such use.
 
-   Files and Folders Covered:
-   - all libraries found at 'Elypso-engine\_external_shared'
-   - all fonts at 'Elypso-engine\Engine\files\fonts', 'Elypso-engine\Hub\files\fonts', 'Elypso-engine\Game\files\fonts' and 'Elypso-engine\Compiler\files\fonts'
-   - all DLL files at 'Elypso-engine\Engine\files\external dlls' and 'Elypso-engine\Game\files\external dlls'
+7. Disclaimer of Warranty
 
-8. Disclaimer of Warranty
+   Elypso Engine and the Engine library are provided "AS IS," without any warranties, express or implied, including but not limited to merchantability, fitness for a particular purpose, and non-infringement. The Licensor does not guarantee uninterrupted or error-free operation. The Game is provided under its own licensing terms, which include separate warranty disclaimers.
 
-   THE ENGINE, HUB, COMPILER, ENGINE LIBRARY AND GAME TEMPLATE ARE PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, LOST EMPIRE ENTERTAINMENT DISCLAIMS ALL WARRANTIES, WHETHER EXPRESS, IMPLIED, OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. LOST EMPIRE ENTERTAINMENT DOES NOT WARRANT THAT THE ENGINE, HUB, COMPILER, ENGINE LIBRARY OR GAME TEMPLATE WILL BE ERROR-FREE OR UNINTERRUPTED.
+8. Termination
 
-9. Termination
+   This license will terminate automatically if you fail to comply with any of its terms. Upon termination, you must cease all use of Elypso Engine and the Engine library and destroy all copies in your possession. The Game remains unaffected by the termination of this license and continues to be governed by its separate license.
 
-   This license is effective until terminated. Your rights under this license will terminate automatically without notice by Lost Empire Entertainment if you fail to comply with any term(s) of this license. Upon termination of this license, you shall cease all use of the Engine, Hub and Compiler and destroy all copies, full or partial, in your possession or control.
+9. Governing Law
 
-10. Governing Law
+   This license is governed by the laws of the Licensor’s jurisdiction, without regard to conflict of law provisions.
 
-   This license shall be governed by and construed in accordance with the laws of the jurisdiction in which Lost Empire Entertainment operates, without regard to its conflict of law provisions.
+10. Entire Agreement
 
-11. Entire Agreement
-
-   This license constitutes the entire agreement between you and Lost Empire Entertainment concerning the Engine, Hub and Compiler and supersedes all prior or contemporaneous agreements, representations, and understandings, whether oral or written.
+   This license constitutes the entire agreement between you and the Licensor concerning Elypso Engine and the Engine library, superseding any prior agreements. The Game remains governed by its separate license and is not subject to the terms outlined herein.
 
 11. Modifications to this License
 
-   Lost Empire Entertainment reserves the right to modify this license at any time. Any such modifications will be effective immediately upon posting on Lost Empire Entertainment's website or other designated location. You are responsible for regularly reviewing the license for updates. Your continued use of the Engine, Hub or Compiler after the posting of any modifications constitutes acceptance of the modified license terms.
+   The Licensor reserves the right to modify this license. Changes take effect upon publication on the Licensor's official website or other designated channels. Continued use of Elypso Engine after modifications constitutes acceptance of the updated terms.

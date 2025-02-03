@@ -1,8 +1,11 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
+
+#include <filesystem>
+
 //external
 #include "glad.h"
 #include "quaternion.hpp"
@@ -14,27 +17,48 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "console.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 
 using glm::translate;
 using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using std::filesystem::path;
+using std::filesystem::exists;
 
 using Graphics::Shader;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using Graphics::Components::AssimpVertex;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
 using Core::Select;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> Border::InitializeBorder(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> Border::InitializeBorder(
+		const vec3& pos, 
+		const vec3& rot, 
+		const vec3& scale)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000001);
+		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetPosition(pos);
+		transform->SetRotation(rot);
+		transform->SetScale(scale);
+		obj->SetEnableState(false);
 
 		float vertices[] =
 		{
@@ -90,34 +114,46 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::border, vao, vbo, ebo);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			MeshType::border, 
+			vao, 
+			vbo, 
+			ebo);
 
-		Shader borderShader = Shader::LoadShader(
-			Engine::filesPath + "\\shaders\\Basic_model.vert",
-			Engine::filesPath + "\\shaders\\Basic.frag");
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
 
-		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader("shaders\\Basic_model.vert", "shaders\\Basic.frag", borderShader);
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for selected object border is invalid!");
+		}
 
-		float shininess = 32;
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+		Shader borderShader = Shader::LoadShader(vert, frag);
 
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false,
-			"Border",
-			id,
-			true,
-			transform,
-			mesh,
-			mat,
-			basicShape);
+		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->AddShader(vert, frag, borderShader);
+
+		GameObjectManager::SetBorder(obj);
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			ConsoleType::DEBUG,
+			"Successfully initialized selected object border gameobject!\n");
 
 		return obj;
 	}
 
-	void Border::RenderBorder(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void Border::RenderBorder(
+		const shared_ptr<GameObject>& obj, 
+		const mat4& view, 
+		const mat4& projection)
 	{
-		Shader shader = obj->GetMaterial()->GetShader();
+		if (obj == nullptr) Engine::CreateErrorPopup("Selected object border gameobject is invalid.");
+
+		auto mat = obj->GetComponent<MaterialComponent>();
+
+		Shader shader = mat->GetShader();
 
 		shader.Use();
 		shader.SetMat4("projection", projection);
@@ -131,13 +167,14 @@ namespace Graphics::Shape
 		{
 			shader.SetFloat("transparency", 0.5f);
 
-			if (Select::selectedObj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+			auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
+			if (mesh->GetMeshType() == MeshComponent::MeshType::model)
 			{
 				//retrieve vertices and calculate bounding box
-				const vector<AssimpVertex>& vertices = Select::selectedObj->GetMesh()->GetVertices();
+				const vector<AssimpVertex>& vertices = mesh->GetVertices();
 				vec3 minBound, maxBound;
-				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
-				vec3 initialScale = Select::selectedObj->GetTransform()->GetScale();
+				vec3 position = Select::selectedObj->GetComponent<TransformComponent>()->GetPosition();
+				vec3 initialScale = Select::selectedObj->GetComponent<TransformComponent>()->GetScale();
 
 				//calculate the bounding box based on vertices
 				Select::CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, position, initialScale);
@@ -146,14 +183,11 @@ namespace Graphics::Shape
 				vec3 boxCenter = (minBound + maxBound) * 0.5f;
 				vec3 boxScale = maxBound - minBound;
 
-				//add a margin to the scale
-				vec3 margin = vec3(0.1f);
-				boxScale += margin;
-
-				model = translate(model, boxCenter); // Translate to the center of the bounding box
+				//translate to the center of the bounding box
+				model = translate(model, boxCenter);
 
 				//apply rotation
-				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
+				quat newRot = quat(radians(Select::selectedObj->GetComponent<TransformComponent>()->GetRotation()));
 				model *= mat4_cast(newRot);
 
 				//scale based on the bounding box size with the margin included
@@ -161,18 +195,11 @@ namespace Graphics::Shape
 			}
 			else
 			{
-				//simple position and margin values
-				vec3 position = Select::selectedObj->GetTransform()->GetPosition();
+				shader.SetFloat("transparency", 0.0f);
 
-				//simple bounding box
-				model = translate(model, position);
-
-				//apply rotation
-				quat newRot = quat(radians(Select::selectedObj->GetTransform()->GetRotation()));
-				model *= mat4_cast(newRot);
-
-				//scale based on size, with a slight margin
-				model = scale(model, vec3(1) + vec3(0.1f));
+				//move the border out of view when no object is selected
+				model = translate(model, vec3(0.0f, -100.0f, 0.0f));
+				model = scale(model, vec3(0.01f));
 			}
 		}
 		else
@@ -184,15 +211,12 @@ namespace Graphics::Shape
 			model = scale(model, vec3(0.01f));
 		}
 
-		glLineWidth(5.0f);
-
 		shader.SetMat4("model", model);
 
-		GLuint VAO = obj->GetMesh()->GetVAO();
+		auto thisMesh = obj->GetComponent<MeshComponent>();
+		GLuint VAO = thisMesh->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
-
-		glLineWidth(1.0f);
 	}
 }
 #endif

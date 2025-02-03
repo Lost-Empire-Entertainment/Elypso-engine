@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <filesystem>
 
 //external
 #include "glm.hpp"
@@ -14,6 +15,7 @@
 //engine
 #include "gameobject.hpp"
 #include "core.hpp"
+#include "meshcomponent.hpp"
 
 namespace Graphics::Shape
 {
@@ -21,9 +23,11 @@ namespace Graphics::Shape
 	using std::string;
 	using glm::vec3;
 	using glm::mat4;
+	using std::filesystem::path;
 
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
+	using Graphics::Components::AssimpVertex;
 
 	class Model
 	{
@@ -37,19 +41,17 @@ namespace Graphics::Shape
 			const vec3& scale = vec3(1),
 			const string& txtFilePath = "",
 			const string& modelPath = "",
-			const string& vertShader = Engine::filesPath + "\\shaders\\GameObject.vert",
-			const string& fragShader = Engine::filesPath + "\\shaders\\GameObject.frag",
 			const string& diffTexture = "DEFAULTDIFF",
 			const string& specTexture = "DEFAULTSPEC",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
+			const bool& isTransparent = false,
+			const float& transparentValue = 1.0f,
 			const vector<AssimpVertex> vertices = {},
 			const vector<unsigned int> indices = {},
-			const float& shininess = 32,
 			string& name = tempName,
 			unsigned int& id = tempID,
-			const bool& isEnabled = true,
-			const bool& isMeshEnabled = true);
+			const bool& isEnabled = true);
 
 		static void Render(
 			const shared_ptr<GameObject>& obj,

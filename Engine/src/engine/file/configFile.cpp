@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -28,6 +28,8 @@ using std::ifstream;
 using std::filesystem::exists;
 using glm::vec3;
 using std::ios;
+using std::filesystem::path;
+using std::filesystem::current_path;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -44,7 +46,12 @@ namespace EngineFile
 {
 	void ConfigFile::LoadConfigFile()
 	{
-		if (configFilePath == "") configFilePath = Engine::docsPath + "\\config.txt";
+#if ENGINE_MODE
+		if (configFilePath == "") configFilePath = (path(Engine::docsPath) / "config.txt").string();
+#else
+		path currentPath = current_path();
+		if (configFilePath == "") configFilePath = (currentPath / "config.txt").string();
+#endif
 
 		if (!exists(configFilePath)) CreateNewConfigFile();
 		else 
@@ -213,7 +220,12 @@ namespace EngineFile
 
 	void ConfigFile::CreateNewConfigFile()
 	{
-		if (configFilePath == "") configFilePath = Engine::docsPath + "\\config.txt";
+#if ENGINE_MODE
+		if (configFilePath == "") configFilePath = (path(Engine::docsPath) / "config.txt").string();
+#else
+		path currentPath = current_path();
+		if (configFilePath == "") configFilePath = (currentPath / "config.txt").string();
+#endif
 
 		keys.clear();
 		values.clear();
@@ -264,11 +276,11 @@ namespace EngineFile
 			values.push_back("1");
 		keys.push_back("gui_projectHierarchy");
 			values.push_back("1");
-		keys.push_back("gui_console");
-			values.push_back("1");
 		keys.push_back("gui_firstTime");
 			values.push_back("0");
 #endif
+		keys.push_back("gui_console");
+			values.push_back("1");
 
 
 		ofstream configFile(configFilePath);

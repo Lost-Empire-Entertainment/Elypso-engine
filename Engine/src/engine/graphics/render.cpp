@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -133,8 +133,8 @@ namespace Graphics
 
 		//create a window object holding all the windowing data
 		window = glfwCreateWindow(
-			1280,
-			720,
+			1024,
+			768,
 			(Engine::name + " " + Engine::version).c_str(),
 			NULL,
 			NULL);
@@ -150,11 +150,11 @@ namespace Graphics
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
-		glfwSetWindowSizeLimits(window, 1280, 720, 7680, 4320);
+		glfwSetWindowSizeLimits(window, 800, 600, 7680, 4320);
 		glfwSwapInterval(stoi(ConfigFile::GetValue("window_vsync")));
 
 		int width, height, channels;
-		string iconpath = Engine::filesPath + "\\icon.png";
+		string iconpath = (path(Engine::filesPath) / "icon.png").string();
 		unsigned char* iconData = stbi_load(iconpath.c_str(), &width, &height, &channels, 4);
 
 		GLFWimage icon{};
@@ -214,8 +214,8 @@ namespace Graphics
 			GL_TEXTURE_2D, 
 			0, 
 			GL_RGB, 
-			1280, 
-			720, 
+			1024, 
+			768, 
 			0, 
 			GL_RGB, 
 			GL_UNSIGNED_BYTE, 
@@ -236,8 +236,8 @@ namespace Graphics
 		glRenderbufferStorage(
 			GL_RENDERBUFFER, 
 			GL_DEPTH24_STENCIL8, 
-			1280, 
-			720);
+			1024, 
+			768);
 		glFramebufferRenderbuffer(
 			GL_FRAMEBUFFER, 
 			GL_DEPTH_STENCIL_ATTACHMENT, 
@@ -272,35 +272,12 @@ namespace Graphics
 		Grid::InitializeGrid();
 
 		shared_ptr<GameObject> border = Border::InitializeBorder();
-		GameObjectManager::SetBorder(border);
-		GameObjectManager::AddOpaqueObject(border);
 
 		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
-		GameObjectManager::SetActionTex(actionTex);
-		GameObjectManager::AddTransparentObject(actionTex);
 #endif
-		SkyboxSetup();
+		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox();
 
 		glfwMaximizeWindow(window);
-	}
-
-	void Render::SkyboxSetup()
-	{
-		vec3 pos = camera.GetCameraPosition();
-		vec3 rot = vec3(0);
-		vec3 scale = vec3(1);
-
-		string skyboxVert = Engine::filesPath + "\\shaders\\Skybox.vert";
-		string skyboxFrag = Engine::filesPath + "\\shaders\\Skybox.frag";
-
-		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox(
-			pos,
-			rot,
-			scale,
-			skyboxVert,
-			skyboxFrag);
-
-		GameObjectManager::SetSkybox(skybox);
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)

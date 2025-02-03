@@ -1,9 +1,10 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
 #include <filesystem>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -29,6 +30,7 @@ using std::filesystem::exists;
 using std::filesystem::path;
 using std::exception;
 using std::filesystem::directory_iterator;
+using std::cout;
 
 using Graphics::Shape::Importer;
 using EngineFile::SceneFile;
@@ -87,11 +89,19 @@ namespace Graphics::GUI
 			if (assetNameLength > 16) assetName = assetName.substr(0, 15);
 			newName = assetName;
 
+#ifdef _WIN32
 			strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+			strncpy(name, newName.c_str(), bufferSize);
+#endif
 			assignedName = true;
 		}
 
+#ifdef _WIN32
 		strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+		strncpy(name, newName.c_str(), bufferSize);
+#endif
 		if (ImGui::InputText("##setSceneName", name, bufferSize))
 		{
 			newName = name;
@@ -129,9 +139,12 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Error: Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
+#ifdef _WIN32
 				strcpy_s(name, bufferSize, path(assetPath).filename().string().c_str());
+#elif __linux__
+				strncpy(name, path(assetPath).filename().string().c_str(), bufferSize);
+#endif
 				newName = path(assetPath).filename().string();
-
 				renderImportAsset = false;
 
 				return;
@@ -145,32 +158,23 @@ namespace Graphics::GUI
 				|| extension == ".gltf"
 				|| extension == ".obj")
 			{
-				string assetName = path(assetPath).stem().string();
-				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, assetName, "");
-				string targetName = path(targetPath).stem().string();
+				string targetFolder = (path(Engine::projectPath) / "models").string();
+				if (!exists(targetFolder)) File::CreateNewFolder(targetFolder);
+				string assetName = path(assetPath).filename().string();
+				string targetPath = (path(targetFolder) / assetName).string();
 
-				File::CreateNewFolder(targetPath);
-				string destinationPath = targetPath + "\\" + assetName + extension;
-				File::CopyFileOrFolder(assetPath, destinationPath);
-
-				unsigned int nextID = GameObject::nextID++;
-
-				Importer::Initialize(
-					vec3(0),
-					vec3(0),
-					vec3(1),
-					destinationPath,
-					Engine::filesPath + "\\shaders\\GameObject.vert",
-					Engine::filesPath + "\\shaders\\GameObject.frag",
-					"DEFAULTDIFF",
-					"DEFAULTSPEC",
-					"EMPTY",
-					"EMPTY",
-					32,
-					targetName,
-					nextID);
-
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				if (exists(targetPath))
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Error: Model '" + assetName + "' already exists in this project!\n");
+				}
+				else 
+				{
+					File::CopyFileOrFolder(assetPath, targetPath);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
 			}
 
 			//
@@ -185,7 +189,26 @@ namespace Graphics::GUI
 				string texturesFolder = Engine::texturesPath;
 
 				string newFilePath = 
-					texturesFolder + "\\" + textureFilename;
+					(path(texturesFolder) / textureFilename).string();
+				File::CopyFileOrFolder(assetPath, newFilePath);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			//
+			// IMPORT AUDIO FILE
+			//
+
+			else if (extension == ".mp3"
+					 || extension == ".flac"
+					 || extension == ".wav")
+			{
+				string audioFilename = newName + extension;
+				string audioFolder = (path(Engine::projectPath) / "audio").string();
+				if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
+
+				string newFilePath =
+					(path(audioFolder) / audioFilename).string();
 				File::CopyFileOrFolder(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

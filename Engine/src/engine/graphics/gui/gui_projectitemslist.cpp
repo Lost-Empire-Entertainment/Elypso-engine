@@ -1,9 +1,10 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
 #include <filesystem>
+#include <iostream>
 
 //external
 #include "imgui.h"
@@ -21,6 +22,14 @@
 #include "console.hpp"
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
+#include "fileUtils.hpp"
+#include "importer.hpp"
+#include "audioplayercomponent.hpp"
+#include "audio.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "stringUtils.hpp"
+#include "selectobject.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -28,6 +37,9 @@ using std::filesystem::directory_iterator;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::exception;
+using std::cout;
+using std::filesystem::file_size;
+using std::to_string;
 
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
@@ -36,6 +48,15 @@ using Graphics::Texture;
 using Core::ConsoleManager;
 using ConsoleCaller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
+using Utils::File;
+using Graphics::Shape::Importer;
+using Graphics::GUI::GUISettings;
+using Graphics::Components::AudioPlayerComponent;
+using Core::Audio;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Utils::String;
+using Core::Select;
 
 namespace Graphics::GUI
 {
@@ -63,16 +84,19 @@ namespace Graphics::GUI
 		{
 			listType = "Skybox texture";
 		}
-		if (type == Type::GameobjectTexture) listType = "Gameobject texture";
-		if (type == Type::Scene) listType = "Scene";
+		else if (type == Type::GameobjectModel) listType = "Gameobject model";
+		else if (type == Type::GameobjectTexture) listType = "Gameobject texture";
+		else if (type == Type::Scene) listType = "Scene";
+		else if (type == Type::Audio) listType = "Audio";
 
 		if (renderProjectItemsList
 			&& ImGui::Begin(listType.c_str(), NULL, windowFlags))
 		{
 			RenderProjectItemsListContent();
-
 			ImGui::End();
 		}
+
+		if (renderLargeImportConfirm) RenderLargeInitializeConfirm();
 	}
 
 	void GUIProjectItemsList::RenderProjectItemsListContent()
@@ -107,6 +131,24 @@ namespace Graphics::GUI
 				}
 				break;
 			}
+			case Type::GameobjectModel:
+			{
+				string modelsFolder = (path(Engine::projectPath) / "models").string();
+				for (const auto& entry : directory_iterator(modelsFolder))
+				{
+					if (is_regular_file(entry))
+					{
+						string extension = path(entry).extension().string();
+						if (extension == ".fbx"
+							|| extension == ".obj"
+							|| extension == ".gltf")
+						{
+							content.push_back(entry.path().string());
+						}
+					}
+				}
+				break;
+			}
 			case Type::Scene:
 			{
 				for (const auto& entry : directory_iterator(path(Engine::scenePath).parent_path().parent_path().string()))
@@ -121,6 +163,24 @@ namespace Graphics::GUI
 								content.push_back(entry.path().string());
 								break;
 							}
+						}
+					}
+				}
+				break;
+			}
+			case Type::Audio:
+			{
+				string modelsFolder = (path(Engine::projectPath) / "audio").string();
+				for (const auto& entry : directory_iterator(modelsFolder))
+				{
+					if (is_regular_file(entry))
+					{
+						string extension = path(entry).extension().string();
+						if (extension == ".mp3"
+							|| extension == ".flac"
+							|| extension == ".wav")
+						{
+							content.push_back(entry.path().string());
 						}
 					}
 				}
@@ -163,6 +223,8 @@ namespace Graphics::GUI
 					case Type::SkyboxTexture_front:
 					case Type::SkyboxTexture_back:
 					case Type::GameobjectTexture:
+					case Type::GameobjectModel:
+					case Type::Audio:
 					{
 						selectedPath = entry;
 						break;
@@ -204,37 +266,62 @@ namespace Graphics::GUI
 			{
 			case Type::SkyboxTexture_right:
 			{
-				SceneFile::skyboxTexturesMap["right"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+
+				GUISettings::skyboxTextures["right"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_left:
 			{
-				SceneFile::skyboxTexturesMap["left"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				GUISettings::skyboxTextures["left"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_top:
 			{
-				SceneFile::skyboxTexturesMap["top"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				GUISettings::skyboxTextures["top"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_bottom:
 			{
-				SceneFile::skyboxTexturesMap["bottom"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				GUISettings::skyboxTextures["bottom"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_front:
 			{
-				SceneFile::skyboxTexturesMap["front"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				GUISettings::skyboxTextures["front"] = texPath;
 				break;
 			}
 			case Type::SkyboxTexture_back:
 			{
-				SceneFile::skyboxTexturesMap["back"] = selectedPath;
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+				string texPath = (path("textures") / fileAndExtension).string();
+				GUISettings::skyboxTextures["back"] = texPath;
 				break;
 			}
 			case Type::GameobjectTexture:
 			{
-				Texture::LoadTexture(obj, selectedPath, textureType, true);
+				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+
+				string originPath = (path(Engine::projectPath) / "textures" / fileAndExtension).string();
+				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().string() / fileAndExtension).string();
+				
+				File::CopyFileOrFolder(originPath, targetPath);
+
+				Texture::LoadTexture(obj, targetPath, textureType, true);
+				break;
+			}
+			case Type::GameobjectModel:
+			{
+				ModelImportCheck();
 				break;
 			}
 			case Type::Scene:
@@ -262,6 +349,18 @@ namespace Graphics::GUI
 
 				break;
 			}
+			case Type::Audio:
+			{
+				auto audioPlayerComponent = obj->GetComponent<AudioPlayerComponent>();
+				string audioFileName = path(selectedPath).filename().string();
+				audioPlayerComponent->SetName(audioFileName);
+
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::INFO,
+					"Assigned audio file '" + audioFileName + "' to '" + obj->GetName() + "'.\n");
+				break;
+			}
 			}
 
 			obj = nullptr;
@@ -280,6 +379,179 @@ namespace Graphics::GUI
 
 			isContentVectorFilled = false;
 			renderProjectItemsList = false;
+		}
+	}
+
+	void GUIProjectItemsList::RenderLargeInitializeConfirm()
+	{
+		ImVec2 windowSize = ImVec2(500.0f, 300.0f);
+		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
+
+		ImVec2 windowPos = EngineGUI::CenterWindow(windowSize);
+		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Appearing);
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoDocking
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoSavedSettings;
+
+
+		string title = "WARNING: LARGE MODEL";
+		ImGui::Begin(title.c_str(), nullptr, flags);
+
+		string description = "Selected model '" + name + "' size is over " + to_string(static_cast<int>(size)) + "MB! Elypso engine may freeze or fail to import the model - proceed with import? The scene will be automatically saved before importing starts.";
+		//text padding on both sides
+		float sidePadding = 20.0f;
+		//calculate available width for text after padding
+		float textWidth = windowSize.x - (sidePadding * 2);
+
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + sidePadding);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + textWidth);
+		ImGui::TextWrapped("%s", description.c_str());
+		ImGui::PopTextWrapPos();
+
+		ImVec2 currentWindowPos = ImGui::GetWindowPos();
+
+		ImVec2 windowCenter(
+			currentWindowPos.x + windowSize.x * 0.5f,
+			currentWindowPos.y + windowSize.y * 0.5f);
+
+		ImVec2 buttonSize(120, 50);
+
+		ImVec2 button1Pos(
+			windowSize.x * 0.4f - buttonSize.x,
+			(ImGui::GetWindowHeight() / 1.5f) - (buttonSize.y / 2));
+		ImVec2 button2Pos(
+			windowSize.x * 0.6f,
+			(ImGui::GetWindowHeight() / 1.5f) - (buttonSize.y / 2));
+
+		ImGui::SetCursorPos(button1Pos);
+		if (ImGui::Button("Import", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleCaller::INPUT,
+				ConsoleType::INFO,
+				"Confirmed large model '" + name + "' import.\n");
+
+			SceneFile::SaveScene();
+
+			Initialize();
+			renderLargeImportConfirm = false;
+		}
+
+		ImGui::SetCursorPos(button2Pos);
+		if (ImGui::Button("Cancel", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleCaller::INPUT,
+				ConsoleType::INFO,
+				"Cancelled large model '" + name + "' import.\n");
+			renderLargeImportConfirm = false;
+		}
+
+		ImGui::End();
+	}
+
+	void GUIProjectItemsList::ModelImportCheck()
+	{
+		name = path(selectedPath).stem().string();
+
+		size_t originalSize = file_size(selectedPath);
+		size = static_cast<double>(originalSize) / (1024 * 1024);
+		double fileSizeLimit = 100; //100MB to trigger file size warning
+
+		if (size > fileSizeLimit) renderLargeImportConfirm = true;
+		else Initialize();
+	}
+
+	void GUIProjectItemsList::Initialize()
+	{
+		obj = Select::selectedObj;
+
+		//general data
+		vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+		vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+		vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
+		string name = obj->GetName();
+		unsigned int ID = obj->GetID();
+
+		//audio data
+		bool is3D{};
+		float maxRange{};
+		float minRange{};
+		float volume{};
+		string audioFilePath{};
+		auto apc = obj->GetComponent<AudioPlayerComponent>();
+		if (apc)
+		{
+			is3D = apc->Is3D();
+			maxRange = apc->GetMaxRange();
+			minRange = apc->GetMinRange();
+			volume = apc->GetVolume();
+			audioFilePath = apc->GetName();
+		}
+
+		//store model origin and target path
+		string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+		string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
+		string targetFolderName{};
+		for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath))
+		{
+			string pathName = path(entry).stem().string();
+			if (name == pathName)
+			{
+				targetFolderName = path(entry).stem().string();
+				break;
+			}
+		}
+		string targetPath = (path(Engine::currentGameobjectsPath) / targetFolderName / fileAndExtension).string();
+
+		//delete old gameobject and its model file
+		GameObjectManager::DestroyGameObject(obj, false);
+		//then create new folder
+		File::CreateNewFolder(path(targetPath).parent_path().string());
+		//then copy model from origin to target path
+		File::CopyFileOrFolder(originPath, targetPath);
+
+		//and finally rename model to correct name
+		string newCorrectFolder = path(targetPath).parent_path().string();
+		string nameAndExtension = targetFolderName + path(targetPath).extension().string();
+		string newCorrectPath = (path(newCorrectFolder) / nameAndExtension).string();
+		File::MoveOrRenameFileOrFolder(targetPath, newCorrectPath, true);
+
+		Importer::Initialize(
+			pos,
+			rot,
+			scale,
+			newCorrectPath,
+			"DEFAULTDIFF",
+			"DEFAULTSPEC",
+			"EMPTY",
+			"EMPTY",
+			false,
+			1.0f,
+			name,
+			ID);
+
+		if (audioFilePath != "")
+		{
+			for (const auto& obj : GameObjectManager::GetObjects())
+			{
+				if (obj->GetName() == name)
+				{
+					shared_ptr<GameObject> initializedObj = obj;
+					auto apc = initializedObj->AddComponent<AudioPlayerComponent>();
+
+					apc->Set3DState(is3D);
+					apc->SetMaxRange(maxRange);
+					apc->SetMinRange(minRange);
+					apc->SetVolume(volume);
+					apc->SetName(audioFilePath);
+
+					break;
+				}
+			}
 		}
 	}
 }

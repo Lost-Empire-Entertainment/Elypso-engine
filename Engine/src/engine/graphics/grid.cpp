@@ -1,10 +1,11 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
 #include <vector>
 #include <algorithm>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -20,6 +21,7 @@
 using glm::mat4;
 using std::vector;
 using std::clamp;
+using std::filesystem::path;
 
 using Graphics::Shader;
 using Core::Engine;
@@ -59,8 +61,8 @@ namespace Graphics
 		}
 
 		shader = Shader::LoadShader(
-			Engine::filesPath + "\\shaders\\Grid.vert",
-			Engine::filesPath + "\\shaders\\Grid.frag");
+			(path(Engine::filesPath) / "shaders" / "Grid.vert").string(),
+			(path(Engine::filesPath) / "shaders" / "Grid.frag").string());
 
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);

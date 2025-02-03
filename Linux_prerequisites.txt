@@ -1,0 +1,28 @@
+----------------------------------------------------------------------
+HOW TO SET UP NECESSARY DEPENDENCIES TO RUN THE ENGINE ON LINUX
+----------------------------------------------------------------------
+
+# install essential build tools (GCC, G++, make)
+sudo apt install build-essential -y
+
+# install GNU debugger
+sudo apt install gdb -y
+
+# install CMake for project configuration
+sudo apt install cmake -y
+
+# install GUI tools for dialogs and file handling
+sudo apt install zenity -y
+sudo apt install xdg-utils -y
+
+# install Mesa utilities for OpenGL support
+sudo apt install mesa-utils -y
+
+# install X11 libraries for window management
+sudo apt install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev -y
+
+# install GLFW3 for window and context management
+sudo apt install libglfw3-dev -y
+
+# install Assimp for model importing
+sudo apt install libassimp-dev -y

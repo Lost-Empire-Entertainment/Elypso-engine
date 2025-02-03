@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -7,15 +7,18 @@
 
 #include <memory>
 #include <string>
+#include <filesystem>
+#include <unordered_map>
 
 //external
 #include "glm.hpp"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
+#include "Importer.hpp"
+#include "scene.h"
 #include "core.hpp"
 
 //engine
 #include "gameobject.hpp"
+#include "meshcomponent.hpp"
 
 namespace Graphics::Shape
 {
@@ -23,9 +26,12 @@ namespace Graphics::Shape
 	using std::string;
 	using glm::vec3;
 	using glm::mat4;
+	using std::filesystem::path;
+	using std::unordered_map;
 
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
+	using Graphics::Components::AssimpMesh;
 
 	class Importer
 	{
@@ -38,13 +44,12 @@ namespace Graphics::Shape
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
 			const string& modelPath = "",
-			const string& vertShader = Engine::filesPath + "\\shaders\\GameObject.vert",
-			const string& fragShader = Engine::filesPath + "\\shaders\\GameObject.frag",
 			const string& diffTexture = "DEFAULTDIFF",
 			const string& specTexture = "DEFAULTSPEC",
 			const string& normalTexture = "EMPTY",
 			const string& heightTexture = "EMPTY",
-			const float& shininess = 32,
+			const bool& isTransparent = false,
+			const float& transparentValue = 1.0f,
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
@@ -57,13 +62,12 @@ namespace Graphics::Shape
 			const vec3& rot,
 			const vec3& scale,
 			const string& modelPath,
-			const string& vertShader,
-			const string& fragShader,
 			const string& diffTexture,
 			const string& specTexture,
 			const string& normalTexture,
 			const string& heightTexture,
-			const float& shininess,
+			const bool& isTransparent,
+			const float& transparentValue,
 			aiNode* node,
 			const aiScene* scene);
 
@@ -73,6 +77,7 @@ namespace Graphics::Shape
 
 		static void DecomposeTransform(const aiMatrix4x4& transform, vec3& outPosition, vec3& outRotation, vec3& outScale);
 	private:
+		static inline string validateSceneError;
 		static bool ValidateScene(const aiScene* scene);
 
 		//check mesh data
@@ -90,5 +95,10 @@ namespace Graphics::Shape
 		static int MeshCount(const aiScene* scene);
 		static int SkeletonCount(const aiScene* scene);
 		static int TextureCount(const aiScene* scene);
+
+		//failed to import
+
+		static inline unordered_map<string, string> failedModelData;
+		static void ImportFailed(const string& reason);
 	};
 }

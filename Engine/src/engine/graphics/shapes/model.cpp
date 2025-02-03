@@ -1,11 +1,10 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
 #include <iostream>
 #include <map>
-#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -24,6 +23,10 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameObjectFile.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -37,19 +40,22 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
-using std::filesystem::path;
 using std::ofstream;
 using std::ifstream;
 using std::filesystem::exists;
+using std::filesystem::is_regular_file;
 using std::stoul;
 using std::stof;
 
 using Graphics::Render;
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using MeshType = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using Graphics::Components::AssimpVertex;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -69,21 +75,24 @@ namespace Graphics::Shape
 		const vec3& scale,
 		const string& txtFilePath,
 		const string& modelPath,
-		const string& vertShader,
-		const string& fragShader,
 		const string& diffTexture,
 		const string& specTexture,
 		const string& normalTexture,
 		const string& heightTexture,
+		const bool& isTransparent,
+		const float& transparentValue,
 		const vector<AssimpVertex> vertices,
 		const vector<unsigned int> indices,
-		const float& shininess,
 		string& name,
 		unsigned int& id,
-		const bool& isEnabled,
-		const bool& isMeshEnabled)
+		const bool& isEnabled)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>(name, id);
+		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetPosition(pos);
+		transform->SetRotation(rot);
+		transform->SetScale(scale);
+		obj->SetEnableState(isEnabled);
 
 		GLuint VAO, VBO, EBO;
 
@@ -123,47 +132,61 @@ namespace Graphics::Shape
 		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(AssimpVertex), (void*)offsetof(AssimpVertex, weights));
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(isMeshEnabled, MeshType::model, VAO, VBO, EBO);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			MeshType::model,
+			VAO, 
+			VBO, 
+			EBO);
 
-		Shader modelShader = Shader::LoadShader(vertShader, fragShader);
+		mesh->SetMeshPath(modelPath);
 
-		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(vertShader, fragShader, modelShader);
+		string vert = (path(Engine::filesPath) / "shaders" / "GameObject.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string();
 
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for model is invalid!");
+		}
 
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
-			name,
-			id,
-			isEnabled,
-			transform,
-			mesh,
-			mat,
-			basicShape);
+		Shader modelShader = Shader::LoadShader(vert, frag);
 
-		obj->GetMesh()->SetVertices(vertices);
-		obj->GetMesh()->SetIndices(indices);
+		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->AddShader(vert, frag, modelShader);
 
-		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, false);
-		Texture::LoadTexture(obj, specTexture, Material::TextureType::specular, false);
-		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::height, false);
-		Texture::LoadTexture(obj, "EMPTY", Material::TextureType::normal, false);
+		mesh->SetVertices(vertices);
+		mesh->SetIndices(indices);
 
-		Shader assignedShader = obj->GetMaterial()->GetShader();
+		Texture::LoadTexture(obj, diffTexture, MaterialComponent::TextureType::diffuse, false);
+		Texture::LoadTexture(obj, specTexture, MaterialComponent::TextureType::specular, false);
+		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::height, false);
+		Texture::LoadTexture(obj, "EMPTY", MaterialComponent::TextureType::normal, false);
+
+		mat->SetTransparent(isTransparent);
+		mat->SetTransparentValue(transparentValue);
+
+		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
 		assignedShader.SetInt("material.specular", 1);
 
-		obj->SetTxtFilePath(txtFilePath);
+		string trueTxtFilePath = (path(Engine::projectPath) / txtFilePath).string();
+		obj->SetTxtFilePath(trueTxtFilePath);
 
 		GameObjectManager::AddGameObject(obj);
-		GameObjectManager::AddOpaqueObject(obj);
+		if (!isTransparent) GameObjectManager::AddOpaqueObject(obj);
+		else GameObjectManager::AddTransparentObject(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
-		GameObjectFile::LoadModel(txtFilePath);
+
+		if (is_regular_file(trueTxtFilePath)
+			&& path(trueTxtFilePath).extension().string() == ".txt")
+		{
+			cout << "!!!! load model '" << name << "' txt file: " << trueTxtFilePath << "\n";
+			GameObjectFile::LoadModel(trueTxtFilePath);
+		}
 
 		Select::selectedObj = obj;
 		Select::isObjectSelected = true;
@@ -171,7 +194,7 @@ namespace Graphics::Shape
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
-			"Successfully initialized " + obj->GetName() + " with ID " + to_string(obj->GetID()) + "\n");
+			"Successfully initialized Model with name " + obj->GetName() + " and ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}
@@ -181,13 +204,17 @@ namespace Graphics::Shape
 		const mat4& view,
 		const mat4& projection)
 	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Model gameobject is invalid.");
+
 		if (obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto mat = obj->GetComponent<MaterialComponent>();
+			
+			Shader shader = mat->GetShader();
 
 			shader.Use();
 			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
-			shader.SetFloat("material.shininess", obj->GetBasicShape()->GetShininess());
+			shader.SetFloat("material.shininess", 2);
 
 			//directional light
 			if (GameObjectManager::GetDirectionalLight() != nullptr)
@@ -197,25 +224,31 @@ namespace Graphics::Shape
 				int count = dirLight->IsEnabled() ? 1 : 0;
 				shader.SetInt("dirLightCount", count);
 				
-				shared_ptr<Transform> transform = dirLight->GetTransform();
-				shared_ptr<Directional_light_Variables> dirVar = dirLight->GetDirectionalLight();
+				auto transform = dirLight->GetComponent<TransformComponent>();
+				auto light = dirLight->GetComponent<LightComponent>();
+				if (light)
+				{
+					vec3 dirRot = transform->GetRotation();
+					quat dirQuat = quat(radians(dirRot));
+					//assuming the initial direction is along the negative Y-axis
+					vec3 initialDir = vec3(0.0f, -1.0f, 0.0f);
+					//rotate the initial direction using the quaternion
+					vec3 rotatedDir = dirQuat * initialDir;
+					rotatedDir = normalize(rotatedDir);
 
-				vec3 dirRot = transform->GetRotation();
-				quat dirQuat = quat(radians(dirRot));
-				//assuming the initial direction is along the negative Y-axis
-				vec3 initialDir = vec3(0.0f, -1.0f, 0.0f);
-				//rotate the initial direction using the quaternion
-				vec3 rotatedDir = dirQuat * initialDir;
-				rotatedDir = normalize(rotatedDir);
+					shader.SetBool("dirLight.enabled", dirLight->IsEnabled());
 
-				shader.SetBool("dirLight.enabled", dirLight->IsEnabled());
+					shader.SetVec3("dirLight.direction", rotatedDir);
 
-				shader.SetVec3("dirLight.direction", rotatedDir);
-
-				shader.SetFloat("dirLight.intensity", dirVar->GetIntensity());
-				shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-				shader.SetVec3("dirLight.diffuse", dirVar->GetDiffuse());
-				shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+					shader.SetFloat("dirLight.intensity", light->GetIntensity());
+					shader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+					shader.SetVec3("dirLight.diffuse", light->GetDiffuse());
+					shader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+				}
+				else
+				{
+					shader.SetBool("dirLight.enabled", false);
+				}
 			}
 			else 
 			{
@@ -230,21 +263,30 @@ namespace Graphics::Shape
 			{
 				for (int i = 0; i < pointLightCount; i++)
 				{
-					shared_ptr<Transform> transform = pointLights[i]->GetTransform();
-					shared_ptr<PointLight_Variables> pointLight = pointLights[i]->GetPointLight();
-					string lightPrefix = "pointLights[" + to_string(i) + "].";
+					auto transform = pointLights[i]->GetComponent<TransformComponent>();
+					auto light = pointLights[i]->GetComponent<LightComponent>();
+					if (light)
+					{
+						string lightPrefix = "pointLights[" + to_string(i) + "].";
 
-					shader.SetBool(lightPrefix + "enabled", pointLights[i]->IsEnabled());
+						shader.SetBool(lightPrefix + "enabled", pointLights[i]->IsEnabled());
 
-					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
-					shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
-					shader.SetVec3(lightPrefix + "diffuse", pointLight->GetDiffuse());
-					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
-					shader.SetFloat(lightPrefix + "constant", 1.0f);
-					shader.SetFloat(lightPrefix + "linear", 0.09f);
-					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-					shader.SetFloat(lightPrefix + "intensity", pointLight->GetIntensity());
-					shader.SetFloat(lightPrefix + "distance", pointLight->GetDistance());
+						shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+						shader.SetVec3(lightPrefix + "ambient", 0.05f, 0.05f, 0.05f);
+						shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
+						shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+						shader.SetFloat(lightPrefix + "constant", 1.0f);
+						shader.SetFloat(lightPrefix + "linear", 0.09f);
+						shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+						shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
+						shader.SetFloat(lightPrefix + "distance", light->GetDistance());
+					}
+					else
+					{
+						string lightPrefix = "pointLights[" + to_string(i) + "].";
+
+						shader.SetBool(lightPrefix + "enabled", false);
+					}
 				}
 			}
 
@@ -256,51 +298,61 @@ namespace Graphics::Shape
 			{
 				for (int i = 0; i < spotLightCount; i++)
 				{
-					shared_ptr<Transform> transform = spotLights[i]->GetTransform();
-					shared_ptr<SpotLight_Variables> spotLight = spotLights[i]->GetSpotLight();
-					string lightPrefix = "spotLights[" + to_string(i) + "].";
-					shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+					auto transform = spotLights[i]->GetComponent<TransformComponent>();
+					auto light = spotLights[i]->GetComponent<LightComponent>();
+					if (light)
+					{
+						string lightPrefix = "spotLights[" + to_string(i) + "].";
+						shader.SetVec3(lightPrefix + "position", transform->GetPosition());
 
-					shader.SetBool(lightPrefix + "enabled", spotLights[i]->IsEnabled());
+						shader.SetBool(lightPrefix + "enabled", spotLights[i]->IsEnabled());
 
-					vec3 rotationAngles = transform->GetRotation();
-					quat rotationQuat = quat(radians(rotationAngles));
-					//assuming the initial direction is along the negative Y-axis
-					vec3 initialDirection = vec3(0.0f, -1.0f, 0.0f);
-					//rotate the initial direction using the quaternion
-					vec3 rotatedDirection = rotationQuat * initialDirection;
-					//set the rotated direction in the shader
-					shader.SetVec3(lightPrefix + "direction", rotatedDirection);
+						vec3 rotationAngles = transform->GetRotation();
+						quat rotationQuat = quat(radians(rotationAngles));
+						//assuming the initial direction is along the negative Y-axis
+						vec3 initialDirection = vec3(0.0f, -1.0f, 0.0f);
+						//rotate the initial direction using the quaternion
+						vec3 rotatedDirection = rotationQuat * initialDirection;
+						//set the rotated direction in the shader
+						shader.SetVec3(lightPrefix + "direction", rotatedDirection);
 
-					shader.SetFloat(lightPrefix + "intensity", spotLight->GetIntensity());
-					shader.SetFloat(lightPrefix + "distance", spotLight->GetDistance());
-					shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
-					shader.SetVec3(lightPrefix + "diffuse", spotLight->GetDiffuse());
-					shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
-					shader.SetFloat(lightPrefix + "constant", 1.0f);
-					shader.SetFloat(lightPrefix + "linear", 0.09f);
-					shader.SetFloat(lightPrefix + "quadratic", 0.032f);
-					shader.SetFloat(lightPrefix + "cutOff", cos(radians(spotLight->GetInnerAngle())));
-					shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(spotLight->GetOuterAngle())));
+						shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
+						shader.SetFloat(lightPrefix + "distance", light->GetDistance());
+						shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
+						shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
+						shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);
+						shader.SetFloat(lightPrefix + "constant", 1.0f);
+						shader.SetFloat(lightPrefix + "linear", 0.09f);
+						shader.SetFloat(lightPrefix + "quadratic", 0.032f);
+						shader.SetFloat(lightPrefix + "cutOff", cos(radians(light->GetInnerAngle())));
+						shader.SetFloat(lightPrefix + "outerCutOff", cos(radians(light->GetOuterAngle())));
+					}
+					else 
+					{
+						string lightPrefix = "spotLights[" + to_string(i) + "].";
+						shader.SetVec3(lightPrefix + "position", transform->GetPosition());
+
+						shader.SetBool(lightPrefix + "enabled", false);
+					}
 				}
 			}
 
 			shader.SetMat4("projection", projection);
 			shader.SetMat4("view", view);
+			shader.SetBool("isTransparent", mat->IsTransparent());
+			shader.SetFloat("transparency", mat->GetTransparentValue());
 
 			mat4 model = mat4(1.0f);
 
-			model = translate(model, obj->GetTransform()->GetPosition());
+			model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());
 
-			quat newRot = quat(radians(obj->GetTransform()->GetRotation()));
+			quat newRot = quat(radians(obj->GetComponent<TransformComponent>()->GetRotation()));
 			model *= mat4_cast(newRot);
 
-			model = scale(model, obj->GetTransform()->GetScale());
-
-			shared_ptr<Material> mat = obj->GetMaterial();
+			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 			//bind diffuse texture
-			unsigned int diffuseTextureID = mat->GetTextureID(Material::TextureType::diffuse);
+			unsigned int diffuseTextureID = mat->GetTextureID(MaterialComponent::TextureType::diffuse);
 			if (diffuseTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -308,7 +360,7 @@ namespace Graphics::Shape
 			}
 
 			//bind specular texture
-			unsigned int specularTextureID = mat->GetTextureID(Material::TextureType::specular);
+			unsigned int specularTextureID = mat->GetTextureID(MaterialComponent::TextureType::specular);
 			if (specularTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE1);
@@ -317,11 +369,12 @@ namespace Graphics::Shape
 
 			shader.SetMat4("model", model);
 
-			GLuint VAO = obj->GetMesh()->GetVAO();
+			auto mesh = obj->GetComponent<MeshComponent>();
+			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawElements(
 				GL_TRIANGLES,
-				static_cast<unsigned int>(obj->GetMesh()->GetIndices().size()),
+				static_cast<unsigned int>(mesh->GetIndices().size()),
 				GL_UNSIGNED_INT,
 				0);
 

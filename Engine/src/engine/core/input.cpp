@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -9,8 +9,7 @@
 
 //external
 #include "glad.h"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtx/quaternion.hpp"
+#include "quaternion.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -28,12 +27,17 @@
 #include "sceneFile.hpp"
 #include "configFile.hpp"
 #include "importer.hpp"
+#include "empty.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "fileUtils.hpp"
-#include "StringUtils.h"
 #include "camera.hpp"
 #include "gui_console.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
+#include "audioplayercomponent.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #endif
@@ -45,6 +49,7 @@ using glm::lookAt;
 using glm::quat;
 using glm::rotate;
 using glm::mat4;
+using glm::length;
 using std::ostringstream;
 using std::fixed;
 using std::setprecision;
@@ -62,15 +67,20 @@ using Graphics::Shape::GameObjectManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::Importer;
-using Graphics::Shape::Material;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
+using Graphics::Shape::Empty;
 using Utils::File;
 using Core::Input;
 using Utils::String;
 using Core::TimeManager;
 using Graphics::Camera;
 using Graphics::GUI::GUIConsole;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using Graphics::Components::AudioPlayerComponent;
 #if ENGINE_MODE
 using Core::Compilation;
 #endif
@@ -98,31 +108,31 @@ namespace Core
                 {
                     if (objectAction == ObjectAction::move)
                     {
-                        vec3 pos = Select::selectedObj->GetTransform()->GetPosition();
+                        vec3 pos = Select::selectedObj->GetComponent<TransformComponent>()->GetPosition();
                         if (axis == "X") pos = vec3(pos.x + combinedOffset, pos.y, pos.z);
                         else if (axis == "Y") pos = vec3(pos.x, pos.y + combinedOffset, pos.z);
                         else if (axis == "Z") pos = vec3(pos.x, pos.y, pos.z + combinedOffset);
 
-                        Select::selectedObj->GetTransform()->SetPosition(pos);
+                        Select::selectedObj->GetComponent<TransformComponent>()->SetPosition(pos);
                         if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
                     }
                     else if (objectAction == ObjectAction::rotate)
                     {
-                        vec3 rot = Select::selectedObj->GetTransform()->GetRotation();
+                        vec3 rot = Select::selectedObj->GetComponent<TransformComponent>()->GetRotation();
                         if (axis == "X") rot = vec3(rot.x + combinedOffset * 10, rot.y, rot.z);
                         else if (axis == "Y") rot = vec3(rot.x, rot.y + combinedOffset * 10, rot.z);
                         else if (axis == "Z") rot = vec3(rot.x, rot.y, rot.z + combinedOffset * 10);
-                        Select::selectedObj->GetTransform()->SetRotation(rot);
+                        Select::selectedObj->GetComponent<TransformComponent>()->SetRotation(rot);
                         if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
                     }
                     else if (objectAction == ObjectAction::scale)
                     {
-                        vec3 scale = Select::selectedObj->GetTransform()->GetScale();
+                        vec3 scale = Select::selectedObj->GetComponent<TransformComponent>()->GetScale();
                         if (axis == "X") scale = vec3(scale.x + combinedOffset, scale.y, scale.z);
                         else if (axis == "Y") scale = vec3(scale.x, scale.y + combinedOffset, scale.z);
                         else if (axis == "Z") scale = vec3(scale.x, scale.y, scale.z + combinedOffset);
 
-                        Select::selectedObj->GetTransform()->SetScale(scale);
+                        Select::selectedObj->GetComponent<TransformComponent>()->SetScale(scale);
                         if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
                     }
                 }
@@ -139,82 +149,15 @@ namespace Core
         {
             if (!ImGui::GetIO().WantCaptureMouse)
             {
-                /*
-                * 
-                * TEMPORARILY DISABLED
-                * WILL BE FIXED IN A FUTURE VERSION
-                * 
                 //copy selected object
                 if (key == GLFW_KEY_C
                     && mods == GLFW_MOD_CONTROL
                     && action == GLFW_PRESS
                     && Select::selectedObj != nullptr
-                    && Select::selectedObj->GetDirectionalLight() == nullptr) //cannot copy or paste directional light
+                    && Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType()
+                    != MeshComponent::MeshType::directional_light) //cannot copy directional light
                 {
-                    shared_ptr<GameObject> selectedObj = Select::selectedObj;
-                    copiedObject.clear();
-                    copiedObject["name"] = selectedObj->GetName();
-                    copiedObject["id"] = to_string(selectedObj->GetID());
-                    copiedObject["pos"] =
-                        to_string(selectedObj->GetTransform()->GetPosition().x) + ","
-                        + to_string(selectedObj->GetTransform()->GetPosition().y) + ","
-                        + to_string(selectedObj->GetTransform()->GetPosition().z);
-                    copiedObject["rot"] =
-                        to_string(selectedObj->GetTransform()->GetRotation().x) + ","
-                        + to_string(selectedObj->GetTransform()->GetRotation().y) + ","
-                        + to_string(selectedObj->GetTransform()->GetRotation().z);
-                    copiedObject["scale"] =
-                        to_string(selectedObj->GetTransform()->GetScale().x) + ","
-                        + to_string(selectedObj->GetTransform()->GetScale().y) + ","
-                        + to_string(selectedObj->GetTransform()->GetScale().z);
-                    copiedObject["vertexShader"] = selectedObj->GetMaterial()->GetShaderName(0);
-                    copiedObject["fragmentShader"] = selectedObj->GetMaterial()->GetShaderName(1);
-
-                    if (selectedObj->GetBasicShape() != nullptr)
-                    {
-                        copiedObject["type"] = "model";
-
-                        copiedObject["diffuseTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
-                        copiedObject["specularTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::specular);
-                        copiedObject["normalTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::normal);
-                        copiedObject["heightTexture"] = selectedObj->GetMaterial()->GetTextureName(Material::TextureType::height);
-
-                        copiedObject["shininess"] = to_string(selectedObj->GetBasicShape()->GetShininess());
-                    }
-
-                    else if (selectedObj->GetPointLight() != nullptr)
-                    {
-                        copiedObject["type"] = "point";
-
-                        copiedObject["diffuse"] =
-                            to_string(selectedObj->GetPointLight()->GetDiffuse().x) + ","
-                            + to_string(selectedObj->GetPointLight()->GetDiffuse().y) + ","
-                            + to_string(selectedObj->GetPointLight()->GetDiffuse().z);
-                        copiedObject["intensity"] = to_string(selectedObj->GetPointLight()->GetIntensity());
-                        copiedObject["distance"] = to_string(selectedObj->GetPointLight()->GetDistance());
-                    }
-
-                    else if (selectedObj->GetSpotLight() != nullptr)
-                    {
-                        copiedObject["type"] = "spot";
-
-                        copiedObject["diffuse"] =
-                            to_string(selectedObj->GetSpotLight()->GetDiffuse().x) + ","
-                            + to_string(selectedObj->GetSpotLight()->GetDiffuse().y) + ","
-                            + to_string(selectedObj->GetSpotLight()->GetDiffuse().z);
-                        copiedObject["intensity"] = to_string(selectedObj->GetSpotLight()->GetIntensity());
-                        copiedObject["distance"] = to_string(selectedObj->GetSpotLight()->GetDistance());
-                        copiedObject["innerAngle"] = to_string(selectedObj->GetSpotLight()->GetInnerAngle());
-                        copiedObject["outerAngle"] = to_string(selectedObj->GetSpotLight()->GetOuterAngle());
-                    }
-
-                    selectedObj = nullptr;
-
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::DEBUG,
-                        "Copied file '" + copiedObject["name"]
-                        + "_" + copiedObject["id"] + "'\n");
+                    Copy();
                 }
 
                 //paste selected object
@@ -223,142 +166,8 @@ namespace Core
                     && action == GLFW_PRESS
                     && copiedObject.size() != 0)
                 {
-                    string name = copiedObject["name"];
-                    unsigned int nextID = GameObject::nextID++;
-
-                    vector<string> posSplit = String::Split(copiedObject["pos"].c_str(), ',');
-                    vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
-                    int resultX = static_cast<int>(newPos.x);
-                    int resultY = static_cast<int>(newPos.y);
-                    int resultZ = static_cast<int>(newPos.z);
-                    newPos = vec3(resultX, resultY, resultZ);
-
-                    vector<string> rotSplit = String::Split(copiedObject["rot"].c_str(), ',');
-                    vec3 rot = vec3(stof(rotSplit[0]), stof(rotSplit[1]), stof(rotSplit[2]));
-
-                    vector<string> scaleSplit = String::Split(copiedObject["scale"].c_str(), ',');
-                    vec3 scale = vec3(stof(scaleSplit[0]), stof(scaleSplit[1]), stof(scaleSplit[2]));
-
-                    //if a regular model was pasted
-                    if (copiedObject["type"] == "model")
-                    {
-                        string extension;
-                        string originPath = Engine::currentGameobjectsPath + "\\" + name;
-
-                        for (const auto& entry : directory_iterator(originPath))
-                        {
-                            extension = path(entry).extension().string();
-                            if (extension == ".fbx"
-                                || extension == ".obj"
-                                || extension == ".glfw")
-                            {
-                                originPath += "\\" + name + extension;
-                                break;
-                            }
-                        }
-                        string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
-                        string targetName = path(targetPath).stem().string();
-
-                        File::CreateNewFolder(targetPath);
-                        string destinationPath = targetPath + "\\" + targetName + extension;
-                        File::CopyFileOrFolder(originPath, destinationPath);
-
-                        string diffTexturePath = copiedObject["diffuseTexture"];
-                        if (diffTexturePath != "DEFAULTDIFF")
-                        {
-                            string diffTextureFile = path(diffTexturePath).filename().string();
-                            string diffDestinationPath = targetPath + "\\" + diffTextureFile;
-
-                            File::CopyFileOrFolder(diffTexturePath, diffDestinationPath);
-                        }
-
-                        string specTexturePath = copiedObject["specularTexture"];
-                        if (specTexturePath != "DEFAULTSPEC")
-                        {
-                            string specTextureFile = path(specTexturePath).filename().string();
-                            string specDestinationPath = targetPath + "\\" + specTextureFile;
-
-                            File::CopyFileOrFolder(specTexturePath, specDestinationPath);
-                        }
-
-                        Importer::Initialize(
-                            newPos,
-                            rot,
-                            scale,
-                            copiedObject["model"],
-                            copiedObject["vertexShader"],
-                            copiedObject["fragmentShader"],
-                            diffTexturePath,
-                            specTexturePath,
-                            copiedObject["normalTexture"],
-                            copiedObject["heightTexture"],
-                            stof(copiedObject["shininess"]),
-                            targetName,
-                            nextID);
-                    }
-
-                    //if a point light was copied
-                    else if (copiedObject["type"] == "point")
-                    {
-                        string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
-                        string targetName = path(targetPath).stem().string();
-                        File::CreateNewFolder(targetPath);
-
-                        string filePath = targetPath + "\\" + targetName + ".txt";
-
-                        vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
-                        vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
-
-                        shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
-                            newPos,
-                            rot,
-                            scale,
-                            filePath,
-                            copiedObject["vertexShader"],
-                            copiedObject["fragmentShader"],
-                            diff,
-                            stof(copiedObject["intensity"]),
-                            stof(copiedObject["distance"]),
-                            targetName,
-                            nextID);
-                    }
-
-                    //if a spotlight was copied
-                    else if (copiedObject["type"] == "spot")
-                    {
-                        string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name, "");
-                        string targetName = path(targetPath).stem().string();
-                        File::CreateNewFolder(targetPath);
-
-                        string filePath = targetPath + "\\" + targetName + ".txt";
-
-                        vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
-                        vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
-
-                        shared_ptr<GameObject> newPointLight = SpotLight::InitializeSpotLight(
-                            newPos,
-                            rot,
-                            scale,
-                            filePath,
-                            copiedObject["vertexShader"],
-                            copiedObject["fragmentShader"],
-                            diff,
-                            stof(copiedObject["intensity"]),
-                            stof(copiedObject["distance"]),
-                            stof(copiedObject["innerAngle"]),
-                            stof(copiedObject["outerAngle"]),
-                            targetName,
-                            nextID);
-							
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-                    }
-
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::INFO,
-                        "Pasted file " + copiedObject["name"] + "\n");
+                    Paste();
                 }
-                */
 
                 //delete selected gameobject
                 if (key == GLFW_KEY_DELETE
@@ -423,6 +232,15 @@ namespace Core
                 && action == GLFW_PRESS)
             {
                 Compilation::installerType = Compilation::InstallerType::compile;
+                Compilation::Compile();
+            }
+
+            //clean rebuild
+            if (key == GLFW_KEY_B
+                && (mods == (GLFW_MOD_CONTROL | GLFW_MOD_SHIFT))
+                && action == GLFW_PRESS)
+            {
+                Compilation::installerType = Compilation::InstallerType::reset;
                 Compilation::Compile();
             }
 
@@ -494,6 +312,304 @@ namespace Core
     void Input::MouseMovementCallback(GLFWwindow* window, double xpos, double ypos)
     {}
 
+    void Input::Copy()
+    {
+        copiedObject.clear();
+
+        shared_ptr<GameObject> selectedObj = Select::selectedObj;
+        copiedObject.clear();
+        copiedObject["txtPath"] = selectedObj->GetTxtFilePath();
+        copiedObject["name"] = selectedObj->GetName();
+        copiedObject["id"] = to_string(selectedObj->GetID());
+        copiedObject["pos"] =
+            to_string(selectedObj->GetComponent<TransformComponent>()->GetPosition().x) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetPosition().y) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetPosition().z);
+        copiedObject["rot"] =
+            to_string(selectedObj->GetComponent<TransformComponent>()->GetRotation().x) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetRotation().y) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetRotation().z);
+        copiedObject["scale"] =
+            to_string(selectedObj->GetComponent<TransformComponent>()->GetScale().x) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetScale().y) + ","
+            + to_string(selectedObj->GetComponent<TransformComponent>()->GetScale().z);
+
+        MeshComponent::MeshType type = selectedObj->GetComponent<MeshComponent>()->GetMeshType();
+        if (type == MeshComponent::MeshType::model)
+        {
+            copiedObject["type"] = "model";
+
+            string modelPath{};
+            string modelFolder{};
+            for (const auto& folder : directory_iterator(Engine::currentGameobjectsPath))
+            {
+                string folderName = path(folder).stem().string();
+                if (folderName == selectedObj->GetName())
+                {
+                    modelFolder = path(folder).string();
+                    break;
+                }
+            }
+            for (const auto& file : directory_iterator(modelFolder))
+            {
+                string extension = path(file).extension().string();
+                if (extension == ".fbx"
+                    || extension == ".obj"
+                    || extension == ".gltf")
+                {
+                    modelPath = path(file).string();
+                    break;
+                }
+            }
+            copiedObject["model"] = modelPath;
+
+            copiedObject["diffuseTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::diffuse);
+            copiedObject["specularTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::specular);
+            copiedObject["normalTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::normal);
+            copiedObject["heightTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::height);
+
+            copiedObject["isTransparent"] = to_string(selectedObj->GetComponent<MaterialComponent>()->IsTransparent());
+            copiedObject["transparentValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetTransparentValue());
+
+            copiedObject["shininess"] = "32";
+        }
+
+        else if (type == MeshComponent::MeshType::point_light)
+        {
+            copiedObject["type"] = "point";
+
+            copiedObject["diffuse"] =
+                to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().x) + ","
+                + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().y) + ","
+                + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().z);
+            copiedObject["intensity"] = to_string(selectedObj->GetComponent<LightComponent>()->GetIntensity());
+            copiedObject["distance"] = to_string(selectedObj->GetComponent<LightComponent>()->GetDistance());
+        }
+
+        else if (type == MeshComponent::MeshType::spot_light)
+        {
+            copiedObject["type"] = "spot";
+
+            copiedObject["diffuse"] =
+                to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().x) + ","
+                + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().y) + ","
+                + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().z);
+            copiedObject["intensity"] = to_string(selectedObj->GetComponent<LightComponent>()->GetIntensity());
+            copiedObject["distance"] = to_string(selectedObj->GetComponent<LightComponent>()->GetDistance());
+            copiedObject["innerAngle"] = to_string(selectedObj->GetComponent<LightComponent>()->GetInnerAngle());
+            copiedObject["outerAngle"] = to_string(selectedObj->GetComponent<LightComponent>()->GetOuterAngle());
+        }
+
+        else if (type == MeshComponent::MeshType::empty)
+        {
+            copiedObject["type"] = "empty";
+        }
+
+        auto apc = selectedObj->GetComponent<AudioPlayerComponent>();
+        if (apc)
+        {
+            string audioFileName = apc->GetName();
+            bool is3D = apc->Is3D();
+            float currVolume = apc->GetVolume();
+
+            copiedObject["audioFileName"] = audioFileName;
+            copiedObject["is3D"] = to_string(is3D);
+            copiedObject["currentVolume"] = to_string(currVolume);
+        }
+
+        selectedObj = nullptr;
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::INFO,
+            "Successfully copied gameobject '" + copiedObject["name"] + "'!\n");
+    }
+
+    void Input::Paste()
+    {
+        string name = copiedObject["name"];
+        unsigned int nextID = ++GameObject::nextID;
+        unsigned int nextID2 = ++GameObject::nextID;
+
+        vector<string> posSplit = String::Split(copiedObject["pos"].c_str(), ',');
+        vec3 newPos = vec3(
+            stof(posSplit[0]) + 1.0f, 
+            stof(posSplit[1]), 
+            stof(posSplit[2]));
+
+        vector<string> rotSplit = String::Split(copiedObject["rot"].c_str(), ',');
+        vec3 rot = vec3(stof(rotSplit[0]), stof(rotSplit[1]), stof(rotSplit[2]));
+
+        vector<string> scaleSplit = String::Split(copiedObject["scale"].c_str(), ',');
+        vec3 scale = vec3(stof(scaleSplit[0]), stof(scaleSplit[1]), stof(scaleSplit[2]));
+
+        //if a regular model was pasted
+        if (copiedObject["type"] == "model")
+        {
+            string extension;
+            string originPath = (path(Engine::currentGameobjectsPath) / name).string();
+
+            for (const auto& entry : directory_iterator(originPath))
+            {
+                extension = path(entry).extension().string();
+                if (extension == ".fbx"
+                    || extension == ".obj"
+                    || extension == ".glfw")
+                {
+                    originPath += "\\" + name + extension;
+                    break;
+                }
+            }
+            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + extension;
+
+            File::CreateNewFolder(targetPath);
+            string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+            File::CopyFileOrFolder(originPath, destinationPath);
+            
+            string diffTexturePath = copiedObject["diffuseTexture"];
+            if (diffTexturePath != "DEFAULTDIFF")
+            {
+                string diffTextureFile = path(diffTexturePath).filename().string();
+                string diffDestinationPath = (path(targetPath) / diffTextureFile).string();
+
+                File::CopyFileOrFolder(diffTexturePath, diffDestinationPath);
+            }
+
+            string specTexturePath = copiedObject["specularTexture"];
+            if (specTexturePath != "DEFAULTSPEC")
+            {
+                string specTextureFile = path(specTexturePath).filename().string();
+                string specDestinationPath = (path(targetPath) / specTextureFile).string();
+
+                File::CopyFileOrFolder(specTexturePath, specDestinationPath);
+            }
+
+            bool isTransparent = stoi(copiedObject["isTransparent"]);
+            float transparentValue = stof(copiedObject["transparentValue"]);
+
+            Importer::Initialize(
+                newPos,
+                rot,
+                scale,
+                copiedObject["model"],
+                diffTexturePath,
+                specTexturePath,
+                copiedObject["normalTexture"],
+                copiedObject["heightTexture"],
+                isTransparent,
+                transparentValue,
+                targetName,
+                nextID,
+                true);
+
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+        }
+
+        //if a point light was copied
+        else if (copiedObject["type"] == "point")
+        {
+            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + ".txt";
+            File::CreateNewFolder(targetPath);
+
+            string filePath = (path(targetPath) / targetNameAndExtension).string();
+
+            vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
+            vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
+
+            shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
+                newPos,
+                rot,
+                scale,
+                filePath,
+                diff,
+                stof(copiedObject["intensity"]),
+                stof(copiedObject["distance"]),
+                targetName,
+                nextID,
+                true,
+                nextID2,
+                true);
+
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+        }
+
+        //if a spotlight was copied
+        else if (copiedObject["type"] == "spot")
+        {
+            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + ".txt";
+            File::CreateNewFolder(targetPath);
+
+            string filePath = (path(targetPath) / targetNameAndExtension).string();
+
+            vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
+            vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
+
+            shared_ptr<GameObject> newSpotlight = SpotLight::InitializeSpotLight(
+                newPos,
+                rot,
+                scale,
+                filePath,
+                diff,
+                stof(copiedObject["intensity"]),
+                stof(copiedObject["distance"]),
+                stof(copiedObject["innerAngle"]),
+                stof(copiedObject["outerAngle"]),
+                targetName,
+                nextID,
+                true,
+                nextID2,
+                true);
+
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+        }
+
+        //if an empty was copied
+        else if (copiedObject["type"] == "empty")
+        {
+            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + ".txt";
+            File::CreateNewFolder(targetPath);
+
+            string filePath = (path(targetPath) / targetNameAndExtension).string();
+
+            Empty::InitializeEmpty(
+                newPos,
+                rot,
+                scale,
+                filePath,
+                targetName,
+                nextID,
+                true);
+
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+        }
+
+        if (copiedObject.find("audioFileName") != copiedObject.end())
+        {
+            string audioFileName = copiedObject["audioFileName"];
+            bool is3D = stoi(copiedObject["is3D"]);
+            float currentVolume = stof(copiedObject["currentVolume"]);
+
+            Select::selectedObj->AddComponent<AudioPlayerComponent>();
+            auto apc = Select::selectedObj->GetComponent<AudioPlayerComponent>();
+            apc->SetName(audioFileName);
+            apc->Set3DState(is3D);
+            apc->SetVolume(currentVolume);
+        }
+
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::INFO,
+            "Successfully pasted gameobject '" + copiedObject["name"] + "'!\n");
+    }
+
     void Input::SceneWindowInput()
     {
         DragCamera();
@@ -506,7 +622,6 @@ namespace Core
 #if ENGINE_MODE
         if (!Compilation::renderBuildingWindow
             && !Render::camera.cameraEnabled)
-
         {
             Select::Ray ray = Select::RayFromMouse(
                 width,
@@ -545,6 +660,19 @@ namespace Core
 
     void Input::DragCamera()
     {
+        if (glfwRawMouseMotionSupported())
+        {
+            glfwSetInputMode(Render::window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
+        if (glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        else
+        {
+            glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+
 #if ENGINE_MODE
         Render::camera.cameraEnabled = ImGui::IsMouseDown(ImGuiMouseButton_Right);
 

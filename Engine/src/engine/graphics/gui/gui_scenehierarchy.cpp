@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -24,6 +24,7 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "input.hpp"
+#include "meshcomponent.hpp"
 
 using std::shared_ptr;
 using std::filesystem::directory_iterator;
@@ -42,7 +43,7 @@ using Utils::File;
 using Utils::String;
 using Core::Select;
 using Core::Input;
-using Graphics::Shape::Mesh;
+using Graphics::Components::MeshComponent;
 
 namespace Graphics::GUI
 {
@@ -79,10 +80,13 @@ namespace Graphics::GUI
 		{
 			if (obj == nullptr) return;
 
-			if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model
-				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
-				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
-				|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
+			auto mesh = obj->GetComponent<MeshComponent>();
+			if (!mesh
+				|| (mesh
+				&& mesh->GetMeshType() != MeshComponent::MeshType::actionTex
+				&& mesh->GetMeshType() != MeshComponent::MeshType::border
+				&& mesh->GetMeshType() != MeshComponent::MeshType::billboard
+				&& mesh->GetMeshType() != MeshComponent::MeshType::skybox))
 			{
 				string name = obj->GetName();
 				string label = name + "##" + to_string(obj->GetID());

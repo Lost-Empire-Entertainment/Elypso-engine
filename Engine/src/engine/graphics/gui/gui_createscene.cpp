@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -27,6 +27,7 @@ using std::cout;
 using std::ofstream;
 using std::filesystem::exists;
 using std::filesystem::directory_iterator;
+using std::filesystem::path;
 
 using EngineFile::SceneFile;
 using Graphics::Render;
@@ -71,13 +72,24 @@ namespace Graphics::GUI
 
 		ImGui::SetCursorPos(textfieldPos);
 
+#ifdef _WIN32
 		strcpy_s(sceneName, bufferSize, assignedSceneName.c_str());
+#elif __linux__
+		strncpy(sceneName, assignedSceneName.c_str(), bufferSize);
+#endif
 		if (ImGui::InputText("##setSceneName", sceneName, bufferSize))
 		{
 			assignedSceneName = sceneName;
 		}
 
-		if (strlen(sceneName) == 0) strcpy_s(sceneName, bufferSize, "Scene");
+		if (strlen(sceneName) == 0)
+		{
+#ifdef _WIN32
+			strcpy_s(sceneName, bufferSize, "Scene");
+#elif __linux__
+			strncpy(sceneName, "Scene", bufferSize);
+#endif
+		}
 		if (assignedSceneName == "") assignedSceneName = "Scene";
 
 		ImVec2 buttonSize = ImVec2(100, 30);
@@ -112,7 +124,12 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Error: Invalid character '" + str + "' detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!");
 
+#ifdef _WIN32
 				strcpy_s(sceneName, bufferSize, "Scene");
+#elif __linux__
+				strncpy(sceneName,"Scene", bufferSize);
+#endif
+				
 				assignedSceneName = "Scene";
 
 				renderCreateSceneWindow = false;
@@ -137,7 +154,11 @@ namespace Graphics::GUI
 
 			if (foundExistingScene)
 			{
+#ifdef _WIN32
 				strcpy_s(sceneName, bufferSize, "Scene");
+#elif __linux__
+				strncpy(sceneName, "Scene", bufferSize);
+#endif
 				assignedSceneName = "Scene";
 
 				ConsoleManager::WriteConsoleMessage(
@@ -154,11 +175,11 @@ namespace Graphics::GUI
 			// CREATE NEW SCENE
 			//
 
-			string newSceneFolder = Engine::scenesPath + "\\" + assignedSceneName;
+			string newSceneFolder = (path(Engine::scenesPath) / assignedSceneName).string();
 			File::CreateNewFolder(newSceneFolder);
-			File::CreateNewFolder(newSceneFolder + "\\gameobjects");
+			File::CreateNewFolder((path(newSceneFolder) / "gameobjects").string());
 
-			string newSceneFile = newSceneFolder + "\\scene.txt";
+			string newSceneFile = (path(newSceneFolder) / "scene.txt").string();
 
 			ofstream sceneFile(newSceneFile);
 			sceneFile.close();

@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -15,6 +15,7 @@
 #include "gameobject.hpp"
 #include "importer.hpp"
 #include "model.hpp"
+#include "empty.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
@@ -25,6 +26,10 @@
 #include "sceneFile.hpp"
 #include "stringUtils.hpp"
 #include "fileUtils.hpp"
+#include "meshcomponent.hpp"
+#include "audio.hpp"
+#include "audioplayercomponent.hpp"
+#include "materialcomponent.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -44,7 +49,8 @@ using std::ifstream;
 using std::filesystem::exists;
 
 using Core::Select;
-using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::MeshComponent;
+using Type = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Render;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -52,6 +58,9 @@ using ConsoleType = Core::ConsoleManager::Type;
 using EngineFile::SceneFile;
 using Utils::String;
 using Utils::File;
+using Core::Audio;
+using Graphics::Components::AudioPlayerComponent;
+using Graphics::Components::MaterialComponent;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -62,6 +71,8 @@ namespace Graphics::Shape
 {
 	void GameObjectManager::RenderAll(const mat4& view, const mat4& projection)
 	{
+		bool has3DAudio = false;
+
 		//opaque objects are rendered first
 		if (opaqueObjects.size() > 0)
 		{
@@ -69,11 +80,31 @@ namespace Graphics::Shape
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetMesh()->GetMeshType();
+				auto apc = obj->GetComponent<AudioPlayerComponent>();
+				if (apc
+					&& apc->Is3D())
+				{
+					has3DAudio = true;
+
+					string apcName = apc->GetName();
+					if (Audio::IsImported(apc->GetName()))
+					{
+						Audio::UpdatePlayerPosition(apcName, obj->GetComponent<TransformComponent>()->GetPosition());
+					}
+				}
+
+				auto mesh = obj->GetComponent<MeshComponent>();
+				Type type = mesh->GetMeshType();
 				switch (type)
 				{
 				case Type::model:
-					Model::Render(obj, view, projection);
+					if (!obj->GetComponent<MaterialComponent>()->IsTransparent())
+					{
+						Model::Render(obj, view, projection);
+					}
+					break;
+				case Type::empty:
+					Empty::RenderEmpty(obj, view, projection);
 					break;
 				case Type::directional_light:
 					DirectionalLight::RenderDirectionalLight(obj, view, projection);
@@ -88,28 +119,39 @@ namespace Graphics::Shape
 			}
 		}
 
+		if (has3DAudio)
+		{
+			vec3 camPos = Render::camera.GetCameraPosition();
+			vec3 camFront = Render::camera.GetFront();
+			vec3 camUp = Render::camera.GetUp();
+			Audio::UpdateListenerPosition(camPos, camFront, camUp);
+		}
+		else
+		{
+			vec3 camFront = Render::camera.GetFront();
+			vec3 camUp = Render::camera.GetUp();
+			Audio::UpdateListenerPosition(vec3(0), camFront, camUp);
+		}
+
 #if ENGINE_MODE
 		Border::RenderBorder(border, view, projection);
 #endif
 		//transparent objects are rendered last
 		if (transparentObjects.size() > 0)
 		{
+			vec3 camPos = Render::camera.GetCameraPosition();
 			sort(transparentObjects.begin(), transparentObjects.end(),
-				[&view](const auto& a, const auto& b)
+				[&camPos, &view](const auto& a, const auto& b)
 				{
-					//calculate the distance along the viewing direction vector from the camera
-					vec3 cameraPosition = vec3(view[3]);
-					vec3 objectPositionA = a->GetTransform()->GetPosition();
-					vec3 objectPositionB = b->GetTransform()->GetPosition();
-
-					//project object positions onto the viewing direction vector
-					float distanceA = dot(objectPositionA - cameraPosition, vec3(view[2]));
-					float distanceB = dot(objectPositionB - cameraPosition, vec3(view[2]));
-
-					//sort based on the projected distances
-					return distanceA > distanceB; //render from back to front
+					vec3 objectPositionA = a->GetComponent<TransformComponent>()->GetPosition();
+					vec3 objectPositionB = b->GetComponent<TransformComponent>()->GetPosition();
+					
+					float distanceA = length(objectPositionA - camPos);
+					float distanceB = length(objectPositionB - camPos);
+					return distanceA > distanceB;
 				});
 
+			glDepthFunc(GL_ALWAYS);
 			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
 #if ENGINE_MODE
@@ -119,15 +161,23 @@ namespace Graphics::Shape
 			{
 				if (obj->GetName() == "") obj->SetName(".");
 
-				Type type = obj->GetMesh()->GetMeshType();
+				auto mesh = obj->GetComponent<MeshComponent>();
+				Type type = mesh->GetMeshType();
 				switch (type)
 				{
 				case Type::billboard:
 					Billboard::RenderBillboard(obj, view, projection);
 					break;
+				case Type::model:
+					if (obj->GetComponent<MaterialComponent>()->IsTransparent())
+					{
+						Model::Render(obj, view, projection);
+					}
+					break;
 				}
 			}
 
+			glDepthFunc(GL_LESS);
 			glDepthMask(GL_TRUE);
 			glEnable(GL_CULL_FACE);
 		}
@@ -135,21 +185,20 @@ namespace Graphics::Shape
 
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly)
 	{
+		if (obj == nullptr) return;
+
 		string thisName = obj->GetName();
 
-		Type type = obj->GetMesh()->GetMeshType();
+		auto mesh = obj->GetComponent<MeshComponent>();
+		Type type = mesh->GetMeshType();
 
-		Select::selectedObj = nullptr;
-		Select::isObjectSelected = false;
-
-		string txtFilePath = obj->GetTxtFilePath();
-
+		/*
 		//destroy all children if parent is destroyed
 		if (obj->GetChildren().size() > 0)
 		{
 			for (const auto& child : obj->GetChildren())
 			{
-				GameObjectManager::DestroyGameObject(child);
+				GameObjectManager::DestroyGameObject(child, true);
 			}
 		}
 		//remove object from parent children vector
@@ -157,65 +206,82 @@ namespace Graphics::Shape
 		{
 			obj->GetParent()->RemoveChild(obj);
 		}
+		*/
 
 		switch (type)
 		{
 		case Type::model:
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			if (!obj->GetComponent<MaterialComponent>()->IsTransparent())
+			{
+				opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			}
+			else
+			{
+				transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
+			}
+			break;
+		case Type::empty:
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;
 		case Type::point_light:
-			DestroyGameObject(obj->GetChildBillboard());
-			obj->SetChildBillboard(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			pointLights.erase(remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
+		{
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+			obj->RemoveChildBillboard();
+			DestroyGameObject(childBillboard, false);
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			pointLights.erase(std::remove(pointLights.begin(), pointLights.end(), obj), pointLights.end());
 			break;
+		}
 		case Type::spot_light:
-			DestroyGameObject(obj->GetChildBillboard());
-			obj->SetChildBillboard(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
-			spotLights.erase(remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
+		{
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+			obj->RemoveChildBillboard();
+			DestroyGameObject(childBillboard, false);
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			spotLights.erase(std::remove(spotLights.begin(), spotLights.end(), obj), spotLights.end());
 			break;
+		}
 		case Type::directional_light:
-			DestroyGameObject(obj->GetChildBillboard());
-			obj->SetChildBillboard(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			opaqueObjects.erase(remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+		{
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+			obj->RemoveChildBillboard();
+			DestroyGameObject(childBillboard, false);
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			directionalLight = nullptr;
 			break;
+		}
 		case Type::billboard:
+		{
 			obj->SetParentBillboardHolder(nullptr);
-			objects.erase(remove(objects.begin(), objects.end(), obj), objects.end());
-			transparentObjects.erase(remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
-			billboards.erase(remove(billboards.begin(), billboards.end(), obj), billboards.end());
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			transparentObjects.erase(std::remove(transparentObjects.begin(), transparentObjects.end(), obj), transparentObjects.end());
+			billboards.erase(std::remove(billboards.begin(), billboards.end(), obj), billboards.end());
 			break;
+		}
 		}
 
 		//also delete the externally saved folder of this gameobject
-		if (!localOnly)
+		if (!localOnly
+			&& Select::selectedObj != nullptr)
 		{
-			string txtFilePath = obj->GetTxtFilePath();
-			if (exists(txtFilePath))
+			for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath))
 			{
-				string targetFolder;
-				if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::model)
+				string pathName = path(entry).stem().string();
+				if (Select::selectedObj->GetName() == pathName)
 				{
-					targetFolder = path(txtFilePath).parent_path().parent_path().string();
-				}
-				else if (obj->GetMesh()->GetMeshType() == Mesh::MeshType::point_light
-					|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::spot_light
-					|| obj->GetMesh()->GetMeshType() == Mesh::MeshType::directional_light)
-				{
-					targetFolder = path(txtFilePath).parent_path().string();
-				}
-				if (exists(targetFolder))
-				{
-					File::DeleteFileOrfolder(targetFolder);
+					string entryString = path(entry).string();
+					File::DeleteFileOrfolder(entryString);
+					break;
 				}
 			}
 		}
+		Select::selectedObj = nullptr;
+		Select::isObjectSelected = false;
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
@@ -273,7 +339,7 @@ namespace Graphics::Shape
 			if (name == objName
 				&& ID == objID)
 			{
-				GameObjectManager::DestroyGameObject(obj);
+				GameObjectManager::DestroyGameObject(obj, true);
 
 				break;
 			}

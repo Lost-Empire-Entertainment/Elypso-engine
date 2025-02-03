@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -15,16 +15,16 @@
 #include "glm.hpp"
 
 //engine
-#include "scenefile.hpp"
+#include "sceneFile.hpp"
 #include "core.hpp"
 #include "gameobject.hpp"
 #include "selectobject.hpp"
-#include "stringutils.hpp"
+#include "stringUtils.hpp"
 #include "render.hpp"
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
-#include "fileutils.hpp"
+#include "fileUtils.hpp"
 #include "console.hpp"
 #include "gameObjectFile.hpp"
 #include "skybox.hpp"
@@ -48,12 +48,10 @@ using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Utils::String;
 using Graphics::Render;
-using Graphics::Shape::Mesh;
 using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Utils::File;
-using Graphics::Shape::Material;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -66,7 +64,7 @@ namespace EngineFile
 	{
 		if (!exists(scenePath))
 		{
-			if (scenePath != Engine::scenesPath + "\\Scene1\\scene.txt")
+			if (scenePath != (path(Engine::scenesPath) / "Scene1" / "scene.txt").string())
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
@@ -75,14 +73,14 @@ namespace EngineFile
 			}
 
 			//create new default scene folder if it doesnt exist
-			string defaultSceneFolder = Engine::scenesPath + "\\Scene1";
+			string defaultSceneFolder = (path(Engine::scenesPath) / "Scene1").string();
 			if (!exists(defaultSceneFolder))
 			{
 				File::CreateNewFolder(defaultSceneFolder);
-				File::CreateNewFolder(defaultSceneFolder + "\\gameobjects");
+				File::CreateNewFolder((path(defaultSceneFolder) / "gameobjects").string());
 
 				//create new default scene file
-				string defaultScenePath = defaultSceneFolder + "\\scene.txt";
+				string defaultScenePath = (path(defaultSceneFolder) / "scene.txt").string();
 				ofstream defaultSceneFile(defaultScenePath);
 				if (!defaultSceneFile.is_open())
 				{
@@ -97,7 +95,7 @@ namespace EngineFile
 			}
 
 			//create new default scene file if it doesnt exist
-			string defaultScenePath = defaultSceneFolder + "\\scene.txt";
+			string defaultScenePath = (path(defaultSceneFolder) / "scene.txt").string();
 			if (!exists(defaultScenePath))
 			{
 				ofstream defaultSceneFile(defaultScenePath);
@@ -114,14 +112,14 @@ namespace EngineFile
 		else 
 		{
 			Engine::scenePath = scenePath;
-			Engine::currentGameobjectsPath = path(Engine::scenePath).parent_path().string() + "\\gameobjects";
+			Engine::currentGameobjectsPath = (path(Engine::scenePath).parent_path() / "gameobjects").string();
 
 			vector<shared_ptr<GameObject>> objects = GameObjectManager::GetObjects();
 			if (objects.size() != 0)
 			{
 				for (const auto& obj : objects)
 				{
-					GameObjectManager::DestroyGameObject(obj);
+					GameObjectManager::DestroyGameObject(obj, false);
 				}
 			}
 
@@ -135,8 +133,8 @@ namespace EngineFile
 				return;
 			}
 
-			string texturesFolder = Engine::filesPath + "\\textures";
-			string skyboxDefault = texturesFolder + "\\skybox_default.png";
+			string texturesFolder = (path(Engine::filesPath) / "textures").string();
+			string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
 			vector<string> skyboxTextures;
 
 			string line;
@@ -278,7 +276,7 @@ namespace EngineFile
 
 			//update project file originating from hub 
 			//to ensure currently opened scene is always opened when hub opens engine
-			string projectFilePath = Engine::docsPath + "\\project.txt";
+			string projectFilePath = (path(Engine::docsPath) / "project.txt").string();
 			File::DeleteFileOrfolder(projectFilePath);
 			ofstream projFile(projectFilePath);
 
@@ -311,7 +309,7 @@ namespace EngineFile
 		Select::isObjectSelected = false;
 	}
 
-	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel)
+	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel, bool sendSuccessMessage)
 	{
 		GameObjectFile::SaveGameObjects();
 
@@ -353,12 +351,15 @@ namespace EngineFile
 
 		Render::SetWindowNameAsUnsaved(false);
 
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::INFO,
-			"\nSuccessfully saved scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+		if (sendSuccessMessage)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::INFO,
+				"\nSuccessfully saved scene file '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+		}
 
-		string lastSavedScenePath = Engine::docsPath + "\\lastSavedScene.txt";
+		string lastSavedScenePath = (path(Engine::docsPath) / "lastSavedScene.txt").string();
 		if (exists(lastSavedScenePath)) File::DeleteFileOrfolder(lastSavedScenePath);
 		ofstream lastSavedSceneFile(lastSavedScenePath);
 		if (!lastSavedSceneFile.is_open())

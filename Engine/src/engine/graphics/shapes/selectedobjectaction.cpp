@@ -1,8 +1,11 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 #if ENGINE_MODE
+
+#include <filesystem>
+
 //external
 #include "glad.h"
 #include "quaternion.hpp"
@@ -16,29 +19,49 @@
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "input.hpp"
+#include "console.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
 
 using glm::translate;
 using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using std::filesystem::path;
+using std::filesystem::exists;
 
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
 using Core::Select;
 using Core::Input;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using ConsoleType = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> ActionTex::InitializeActionTex(const vec3& pos, const vec3& rot, const vec3& scale)
+	shared_ptr<GameObject> ActionTex::InitializeActionTex(
+		const vec3& pos, 
+		const vec3& rot, 
+		const vec3& scale)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>("SelectedObjectAction", 10000002);
+		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetPosition(pos);
+		transform->SetRotation(rot);
+		transform->SetScale(scale);
+		obj->SetEnableState(false);
 
 		float vertices[] =
 		{
@@ -71,43 +94,60 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::actionTex, vao, vbo, ebo);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			MeshType::actionTex, 
+			vao, 
+			vbo, 
+			ebo);
 
-		Shader borderShader = Shader::LoadShader(
-			Engine::filesPath + "\\shaders\\Basic_texture.vert",
-			Engine::filesPath + "\\shaders\\Basic_texture.frag");
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string();
 
-		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader("shaders\\Basic_texture.vert", "shaders\\Basic_texture.frag", borderShader);
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for selected object action is invalid!");
+		}
 
-		float shininess = 32;
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+		Shader borderShader = Shader::LoadShader(vert, frag);
 
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			false,
-			"ActionTex",
-			id,
-			true,
-			transform,
-			mesh,
-			mat,
-			basicShape);
+		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->AddShader(vert, frag ,borderShader);
 
-		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\blank.png", Material::TextureType::misc_icon_blank, true);
-		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\move.png", Material::TextureType::misc_icon_move, true);
-		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\rotate.png", Material::TextureType::misc_icon_rotate, true);
-		Texture::LoadTexture(obj, Engine::filesPath + "\\icons\\scale.png", Material::TextureType::misc_icon_scale, true);
+		string blankTex = (path(Engine::filesPath) / "icons" / "blank.png").string();
+		string moveTex = (path(Engine::filesPath) / "icons" / "move.png").string();
+		string rotateTex = (path(Engine::filesPath) / "icons" / "rotate.png").string();
+		string scaleTex = (path(Engine::filesPath) / "icons" / "scale.png").string();
 
-		Shader assignedShader = obj->GetMaterial()->GetShader();
+		Texture::LoadTexture(obj, blankTex, MaterialComponent::TextureType::misc_icon_blank, true);
+		Texture::LoadTexture(obj, moveTex, MaterialComponent::TextureType::misc_icon_move, true);
+		Texture::LoadTexture(obj, rotateTex, MaterialComponent::TextureType::misc_icon_rotate, true);
+		Texture::LoadTexture(obj, scaleTex, MaterialComponent::TextureType::misc_icon_scale, true);
+
+		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
+
+		GameObjectManager::SetActionTex(obj);
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			ConsoleType::DEBUG,
+			"Successfully initialized selected object action gameobject!\n");
 
 		return obj;
 	}
 
-	void ActionTex::RenderActionTex(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void ActionTex::RenderActionTex(
+		const shared_ptr<GameObject>& obj, 
+		const mat4& view, 
+		const mat4& projection)
 	{
-		Shader shader = obj->GetMaterial()->GetShader();
+		if (obj == nullptr) Engine::CreateErrorPopup("Action texture gameobject is invalid.");
+
+		auto mat = obj->GetComponent<MaterialComponent>();
+
+		Shader shader = mat->GetShader();
 
 		shader.Use();
 		shader.SetMat4("projection", projection);
@@ -118,6 +158,8 @@ namespace Graphics::Shape
 		mat4 model = mat4(1.0f);
 		if (Select::isObjectSelected)
 		{
+			auto selectedObjTransform = Select::selectedObj->GetComponent<TransformComponent>();
+
 			shader.SetFloat("transparency", 1.0f);
 
 			if (Input::axis == "X")
@@ -125,13 +167,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, 1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 0.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(-1.5f, 0.0f, 0.0f));
 					quat newRot = quat(radians(vec3(90.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -141,13 +183,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -157,13 +199,13 @@ namespace Graphics::Shape
 				if (Input::objectAction == Input::ObjectAction::move
 					|| Input::objectAction == Input::ObjectAction::scale)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, -1.5f, 0.0f));
 					quat newRot = quat(radians(vec3(0.0f, 90.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
 				else if (Input::objectAction == Input::ObjectAction::rotate)
 				{
-					model = translate(model, Select::selectedObj->GetTransform()->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
+					model = translate(model, selectedObjTransform->GetPosition() - vec3(0.0f, 0.0f, -1.5f));
 					quat newRot = quat(radians(vec3(0.0f, 0.0f, 90.0f)));
 					model *= mat4_cast(newRot);
 				}
@@ -185,23 +227,24 @@ namespace Graphics::Shape
 		glActiveTexture(GL_TEXTURE0);
 		if (Input::objectAction == Input::ObjectAction::none)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_blank));
+			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_blank));
 		}
 		else if (Input::objectAction == Input::ObjectAction::move)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_move));
+			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_move));
 		}
 		else if (Input::objectAction == Input::ObjectAction::rotate)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_rotate));
+			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_rotate));
 		}
 		else if (Input::objectAction == Input::ObjectAction::scale)
 		{
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::misc_icon_scale));
+			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_scale));
 		}
 
 		shader.SetMat4("model", model);
-		GLuint VAO = obj->GetMesh()->GetVAO();
+		auto mesh = obj->GetComponent<MeshComponent>();
+		GLuint VAO = mesh->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

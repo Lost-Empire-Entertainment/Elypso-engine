@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -30,6 +30,7 @@ using std::filesystem::exists;
 using std::filesystem::directory_iterator;
 using std::getline;
 using std::stringstream;
+using std::filesystem::path;
 
 using EngineFile::SceneFile;
 using Graphics::Render;
@@ -73,14 +74,24 @@ namespace Graphics::GUI
 			windowSize.y / 2 - 50);
 
 		ImGui::SetCursorPos(textfieldPos);
-
+#ifdef _WIN32
 		strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+		strncpy(name, newName.c_str(), bufferSize);
+#endif
 		if (ImGui::InputText("##setSceneName", name, bufferSize))
 		{
 			newName = name;
 		}
 
-		if (strlen(name) == 0) strcpy_s(name, bufferSize, "_");
+		if (strlen(name) == 0)
+		{
+#ifdef _WIN32
+			strcpy_s(name, bufferSize, "_");
+#elif __linux__
+			strncpy(name, "_", bufferSize);
+#endif
+		}
 		if (newName == "") newName = "_";
 
 		ImVec2 buttonSize = ImVec2(100, 30);
@@ -111,7 +122,11 @@ namespace Graphics::GUI
 					Type::EXCEPTION,
 					"Error: Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
 
+#ifdef _WIN32
 				strcpy_s(name, bufferSize, "Name");
+#elif __linux__
+				strncpy(name, "Name", bufferSize);
+#endif
 				newName = "Name";
 
 				extension = "";
@@ -140,7 +155,11 @@ namespace Graphics::GUI
 
 			if (foundExistingFile)
 			{
+#ifdef _WIN32
 				strcpy_s(name, bufferSize, newName.c_str());
+#elif __linux__
+				strncpy(name, newName.c_str(), bufferSize);
+#endif
 				newName = newName;
 
 				ConsoleManager::WriteConsoleMessage(
@@ -161,8 +180,10 @@ namespace Graphics::GUI
 			// FIND OLD MODEL PATH FROM SCENE FILE AND WRITE WITH NEW PATH INTO BUFFER
 			//
 
-			string originalPath = parentFolder + "\\" + originalName + extension;
-			string newPath = parentFolder + "\\" + newName + extension;
+			string originalNameAndExtension = originalName + extension;
+			string originalPath = (path(parentFolder) / originalNameAndExtension).string();
+			string newNameAndExtension = newName + extension;
+			string newPath = (path(parentFolder) / newNameAndExtension).string();
 
 			stringstream buffer;
 

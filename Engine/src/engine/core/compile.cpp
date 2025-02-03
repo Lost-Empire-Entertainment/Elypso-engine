@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -6,7 +6,6 @@
 #include <iostream>
 #include <filesystem>
 #include <thread>
-#include <iostream>
 #include <fstream>
 #include <cstdio>
 #include <memory>
@@ -42,6 +41,8 @@ using std::ofstream;
 using std::runtime_error;
 using std::array;
 using std::unique_ptr;
+using std::filesystem::current_path;
+using std::filesystem::is_directory;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -51,7 +52,6 @@ using Utils::String;
 using Utils::File;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
-using Graphics::Shape::Mesh;
 using Graphics::Render;
 using EngineFile::SceneFile;
 using Graphics::GUI::EngineGUI;
@@ -92,139 +92,176 @@ namespace Core
 				//
 				// START BUILDING GAME FROM SOURCE CODE
 				//
-				RunInstaller();
-
-				string gameStem = path(Engine::gameExePath).stem().string();
-				if (gameStem != "Game")
+				if (RunInstaller())
 				{
-					File::MoveOrRenameFileOrFolder(
-						Engine::gameParentPath + "\\Game.exe",
-						Engine::gameExePath,
-						true);
-				}
-
-				//
-				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES TO IT
-				//
-
-				string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
-				if (!exists(myGamesFolder)) File::CreateNewFolder(myGamesFolder);
-
-				string gameName = ConfigFile::GetValue("gameName");
-
-				string gameDocsFolder = myGamesFolder + "\\" + gameName;
-				if (exists(gameDocsFolder)) File::DeleteFileOrfolder(gameDocsFolder);
-
-				File::CreateNewFolder(gameDocsFolder);
-
-				//
-				// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
-				//
-
-				string projectFileOriginPath = Engine::docsPath + "\\project.txt";
-				string projectFileTargetPath = gameDocsFolder + "\\project.txt";
-				if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
-				File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
-
-				//
-				// COPY SCENE FILES TO GAME DOCUMENTS FOLDER
-				//
-
-				string scenePath = path(Engine::projectPath).parent_path().string();
-				for (const auto& entry : directory_iterator(path(scenePath)))
-				{
-					string stem = path(entry).stem().string();
-
-					if (stem != "models"
-						&& stem != "textures"
-						&& stem != "project")
+					string gameStem = path(Engine::gameExePath).stem().string();
+					if (gameStem != "Game")
 					{
-						string origin = path(entry).string();
-						string originFileName = path(entry).filename().string();
-						string target = gameDocsFolder + "\\" + originFileName;
-
-						File::CopyFileOrFolder(origin, target);
+						File::MoveOrRenameFileOrFolder(
+							path(Engine::gameParentPath) / "Game.exe",
+							Engine::gameExePath,
+							true);
 					}
-				}
 
-				//
-				// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
-				//
+					//
+					// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
+					//
 
-				string firstSceneFilePath = gameDocsFolder + "\\firstScene.txt";
-				if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
+					string targetFolder = (path(Engine::gameParentPath) / "project").string();
+					if (exists(targetFolder)) File::DeleteFileOrfolder(targetFolder);
+					File::CreateNewFolder(targetFolder);
 
-				ofstream firstSceneFile(firstSceneFilePath);
-				if (!firstSceneFile.is_open())
-				{
+					string projectFileOriginPath = (path(Engine::docsPath) / "project.txt").string();
+					string projectFileTargetPath = (path(targetFolder) / "project.txt").string();
+					if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
+					File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
+
+					//
+					// COPY SCENE FILES TO GAME EXE FOLDER
+					//
+
+					string scenePath = path(Engine::projectPath).string();
+
+					for (const auto& entry : directory_iterator(path(scenePath)))
+					{
+						string stem = path(entry).stem().string();
+
+						if (is_directory(entry))
+						{
+							string origin = path(entry).string();
+							string originFileName = path(entry).filename().string();
+							string target = (path(targetFolder) / originFileName).string();
+
+							File::CopyFileOrFolder(origin, target);
+						}
+					}
+
+					//
+					// CREATE FIRST SCENE FILE WHICH GAME LOADS FROM WHEN GAME EXE IS RAN
+					//
+
+					string firstSceneFilePath = (path(targetFolder) / "firstScene.txt").string();
+					if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
+
+					ofstream firstSceneFile(firstSceneFilePath);
+					if (!firstSceneFile.is_open())
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							"Error: Compilation failed because first scene file couldnt be created!\n");
+
+						renderBuildingWindow = false;
+
+						return;
+					}
+
+					firstSceneFile << "project= " << path(Engine::projectPath).stem().string() << "\n";
+					firstSceneFile << "scene= " << Engine::gameFirstScene;
+
+					firstSceneFile.close();
+
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Compilation failed because first scene file couldnt be created!\n");
+						Type::INFO,
+						"Compilation succeeded!\n");
 
-					renderBuildingWindow = false;
-
-					return;
+					finishedBuild = true;
 				}
-
-				firstSceneFile << "project= " << path(Engine::projectPath).stem().string() << "\n";
-				firstSceneFile << "scene= " << Engine::gameFirstScene;
-
-				firstSceneFile.close();
-
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::INFO,
-					"Compilation succeeded!\n");
-
 				finishedBuild = true;
 			});
 
 		CompileThread.detach();
 	}
 	
-	void Compilation::RunInstaller()
+	bool Compilation::RunInstaller()
 	{
-		string buildFolder = path(Engine::gameParentPath).parent_path().parent_path().string() + "\\build";
+		string engineRootFolder = "";
+		string gameRootFolder = "";
+
+		string parentFolder = current_path().stem().string();
+		//if engine is ran from repository or visual studio folder
+		string msvcRelease = "x64-release";
+		string msvcDebug = "x64-debug";
+
+		if (parentFolder == msvcRelease
+			|| parentFolder == msvcDebug)
+		{
+			engineRootFolder = (current_path().parent_path().parent_path().parent_path()).string();
+			gameRootFolder = (current_path().parent_path().parent_path().parent_path().parent_path() / "Game").string();
+		}
+		else if (parentFolder == "Engine")
+		{
+			engineRootFolder = current_path().string();
+			gameRootFolder = (current_path().parent_path() / "Game").string();
+		}
+
+		if (gameRootFolder == ""
+			|| !exists(gameRootFolder))
+		{
+			string output = "Game root folder '" + gameRootFolder + "' is empty or does not exist!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				output);
+			return false;
+		}
+
+#ifdef _WIN32
+		string originLib{};
+		string targetLib{};
+		string releaseType{};
+
+#ifdef NDEBUG
+		releaseType = "release";
+		originLib = (path(engineRootFolder) / "Elypso engine.lib").string();
+		targetLib = (path(gameRootFolder) / "Elypso engine.lib").string();
+#else
+		releaseType = "debug";
+		originLib = (path(engineRootFolder) / "Elypso engineD.lib").string();
+		targetLib = (path(gameRootFolder) / "Elypso engineD.lib").string();
+#endif
+
+		File::CopyFileOrFolder(originLib, targetLib);
+
+		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
+#elif __linux__
+		string originLib{};
+		string targetLib{};
+
+#ifdef NDEBUG
+		originLib = (path(engineRootFolder) / "libElypso engine.a").string();
+		targetLib = (path(gameRootFolder) / "libElypso engine.a").string();
+#else
+		originLib = (path(engineRootFolder) / "libElypso engineD.a").string();
+		targetLib = (path(gameRootFolder) / "libElypso engineD.a").string();
+#endif
+
+		File::CopyFileOrFolder(originLib, targetLib);
+
+		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
+#endif
+
 		string command = "";
 
 		switch (installerType)
 		{
 		case InstallerType::reset:
 		{
-			if (exists(buildFolder))
-			{
-				File::DeleteFileOrfolder(buildFolder);
-			}
-			File::CreateNewFolder(buildFolder);
-
-			command =
-				"cd " + buildFolder +
-				+" && cmake -A x64 .." +
-				+" && cmake --build . --config Release -- /m";
-
-			command = "cmd /c \"" + command + "\"";
+#ifdef _WIN32
+			command = "cmd /c \"" + gameBuilder + "\" cmake " + releaseType + " skipwait";
+#elif __linux__
+			command = "bash \"" + gameBuilder + "\" cmake skipwait";
+#endif
 			break;
 		}
 		case InstallerType::compile:
 		{
-			if (exists(buildFolder))
-			{
-				command =
-					"cd " + buildFolder +
-					+" && cmake --build . --config Release -- /m";
-			}
-			else
-			{
-				File::CreateNewFolder(buildFolder);
-
-				command =
-					"cd " + buildFolder +
-					+" && cmake -A x64 .." +
-					+" && cmake --build . --config Release -- /m";
-			}
-
-			command = "cmd /c \"" + command + "\"";
+#ifdef _WIN32
+			command = "cmd /c \"" + gameBuilder + "\" build " + releaseType + " skipwait";
+#elif __linux__
+			command = "bash \"" + gameBuilder + "\" build skipwait";
+#endif
 			break;
 		}
 		}
@@ -233,22 +270,46 @@ namespace Core
 		string fullCommand = command + " 2>&1"; //redirect stderr to stdout
 
 		array<char, 128> buffer{};
+#ifdef _WIN32
 		unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(fullCommand.c_str(), "r"), _pclose);
 
 		if (!pipe)
 		{
 			throw runtime_error("_popen() failed!");
+			return false;
 		}
 
 		//read the output line by line and add to the provided vector
 		while (fgets(
-			buffer.data(), 
-			static_cast<int>(buffer.size()), 
+			buffer.data(),
+			static_cast<int>(buffer.size()),
 			pipe.get()) != nullptr)
 		{
 			output.emplace_back(buffer.data());
 			cout << buffer.data() << "\n";
 		}
+#elif __linux__
+		auto pipe = unique_ptr<FILE, void(*)(FILE*)>(
+			popen(fullCommand.c_str(), "r"),
+			[](FILE* file) { if (file) pclose(file); }
+		);
+
+		if (!pipe)
+		{
+			throw runtime_error("popen() failed!");
+		}
+
+		//read the output line by line and add to the provided vector
+		while (fgets(
+			buffer.data(),
+			static_cast<int>(buffer.size()),
+			pipe.get()) != nullptr)
+		{
+			output.emplace_back(buffer.data());
+			cout << buffer.data() << "\n";
+		}
+#endif
+		return true;
 	}
 
 	void Compilation::RenderBuildingWindow()
@@ -274,7 +335,7 @@ namespace Core
 			string text = !finishedBuild 
 				? "Building " + gameName
 				: "Finished building " + gameName;
-			ImGui::Text(text.c_str());
+			ImGui::Text("%s", text.c_str());
 
 			ImVec2 scrollingRegionSize(
 				ImGui::GetContentRegionAvail().x,
@@ -289,6 +350,13 @@ namespace Core
 				{
 					ImGui::TextWrapped("%s", message.c_str());
 
+					/*
+					* 
+					* DISABLED COPYING BUILD WINDOW TEXT
+					* UNTIL I BOTHER TO FIX THE ODD CRASH
+					* THAT THIS CAUSES IN VS2022 IN DEBUG MODE
+					* WHEN I BUILD A GAME
+					* 
 					if (ImGui::IsItemClicked()
 						&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 					{
@@ -298,6 +366,7 @@ namespace Core
 							"Added '" + message + "' to clipboard.\n");
 						ImGui::SetClipboardText(message.c_str());
 					}
+					*/
 				}
 
 				ImGui::PopTextWrapPos();
@@ -343,22 +412,16 @@ namespace Core
 				{
 					renderBuildingWindow = false;
 
-					if (!exists(Engine::gameExePath)
-						|| !exists(Engine::gameParentPath))
+					if (GamePathCheck())
 					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							"Error: Failed to find game template folder or game exe!\n");
+						File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 					}
-					else File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 				}
 
 				ImGui::SetCursorPos(button3Pos);
 				if (ImGui::Button("Clean rebuild", buttonSize))
 				{
-					string gameBatPath = Engine::gamePath + "\\quickBuild.bat";
-					gameBatPath = String::CharReplace(gameBatPath, '/', '\\');
+					string gameBatPath = (path(Engine::gamePath) / "quickBuild.bat").string();
 
 					installerType = InstallerType::reset;
 					Compile();
@@ -372,15 +435,15 @@ namespace Core
 	void Compilation::Run()
 	{
 		string gameName = path(Engine::gameExePath).stem().string();
-		string myGamesFolder = path(Engine::docsPath).parent_path().string() + "\\My Games";
-		string gameProjectFolder = myGamesFolder + "\\" + gameName + "\\" + path(Engine::projectPath).stem().string();
 
-		if (!exists(path(gameProjectFolder).parent_path()))
+		string projectFolder = (path(Engine::gameParentPath) / "project").string();
+
+		if (!exists(projectFolder))
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Game documents folder doesn't exist! Did you forget to compile?\n");
+				"Error: Game root folder doesn't exist! Did you forget to compile?\n");
 		}
 		else
 		{
@@ -399,7 +462,7 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES AND THEIR CONTENT TO IT
 				//
 
-				if (exists(gameProjectFolder)) File::DeleteFileOrfolder(gameProjectFolder + "\\scenes");
+				if (exists(projectFolder)) File::DeleteFileOrfolder(path(projectFolder) / "scenes");
 
 				string engineProjectFolder = path(Engine::projectPath).string();
 				for (const auto& entry : directory_iterator(path(engineProjectFolder)))
@@ -407,12 +470,13 @@ namespace Core
 					string stem = path(entry).stem().string();
 
 					if (stem != "models"
+						&& stem != "audio"
 						&& stem != "textures"
 						&& stem != "project")
 					{
 						string origin = path(entry).string();
 						string originFileName = path(entry).filename().string();
-						string target = gameProjectFolder + "\\" + originFileName;
+						string target = (path(projectFolder) / originFileName).string();
 
 						File::CopyFileOrFolder(origin, target);
 					}
@@ -421,6 +485,30 @@ namespace Core
 				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
 		}
+	}
+
+	bool Compilation::GamePathCheck()
+	{
+		string output = "Checking if game exe path '" + Engine::gameExePath + "' is valid.\n";
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			output);
+
+		//first check if msvc is valid
+		if (!exists(Engine::gameExePath))
+		{
+			string parentFolder = path(Engine::gameExePath).parent_path().parent_path().string();
+			string gameName = path(Engine::gameExePath).filename().string();
+			string newPath = (path(parentFolder) / "msvc" / gameName).string();
+
+			output = "Failed to find game exe at '" + Engine::gameExePath + "'. Trying another compiler folder path.\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				output);
+		}
+		return true;
 	}
 }
 #endif

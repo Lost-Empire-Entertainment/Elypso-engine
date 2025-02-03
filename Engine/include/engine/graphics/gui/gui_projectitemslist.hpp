@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -8,17 +8,20 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 //engine
 #include "gameobject.hpp"
+#include "materialcomponent.hpp"
 
 namespace Graphics::GUI
 {
 	using std::string;
 	using std::vector;
 	using std::shared_ptr;
+	using std::unordered_map;
 
-	using Graphics::Shape::Material;
+	using Graphics::Components::MaterialComponent;
 	using Graphics::Shape::GameObject;
 
 	class GUIProjectItemsList
@@ -33,7 +36,9 @@ namespace Graphics::GUI
 			SkyboxTexture_front,
 			SkyboxTexture_back,
 			GameobjectTexture,
-			Scene
+			GameobjectModel,
+			Scene,
+			Audio
 		};
 
 		static inline bool renderProjectItemsList;
@@ -50,15 +55,23 @@ namespace Graphics::GUI
 		
 		//for assigning texture to gameobjects
 		
-		static inline Material::TextureType textureType;
+		static inline MaterialComponent::TextureType textureType;
 		static inline shared_ptr<GameObject> obj;
 
 		static void RenderProjectItemsList();
 	private:
+		static inline bool renderLargeImportConfirm;
 		static inline bool isContentVectorFilled;
 		static inline vector<string> content;
 
+		static inline string name;
+		static inline double size;
+
 		static void RenderProjectItemsListContent();
+
+		static void RenderLargeInitializeConfirm();
+		static void ModelImportCheck();
+		static void Initialize();
 	};
 }
 #endif

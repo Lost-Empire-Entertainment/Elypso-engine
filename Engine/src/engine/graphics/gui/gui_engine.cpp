@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -36,6 +36,7 @@
 #include "gameobject.hpp"
 #include "timeManager.hpp"
 #include "importer.hpp"
+#include "empty.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
@@ -44,7 +45,6 @@
 #include "configFile.hpp"
 #include "fileexplorer.hpp"
 #include "compile.hpp"
-#include "configFile.hpp"
 
 using std::cout;
 using std::endl;
@@ -67,6 +67,7 @@ using Utils::File;
 using Utils::Browser;
 using Utils::String;
 using Graphics::Shape::Importer;
+using Graphics::Shape::Empty;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
@@ -88,8 +89,8 @@ namespace Graphics::GUI
 	void EngineGUI::Initialize()
 	{
 		//copies template file to documents folder if imgui file does not exist
-		string imguiConfigFile = Engine::docsPath + "\\imgui.ini";
-		string imguiTemplateFile = Engine::filesPath + "\\imgui.ini";
+		string imguiConfigFile = (path(Engine::docsPath) / "imgui.ini").string();
+		string imguiTemplateFile = (path(Engine::filesPath) / "imgui.ini").string();
 		if (!exists(imguiConfigFile))
 		{
 			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
@@ -108,7 +109,7 @@ namespace Graphics::GUI
 
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-		static string tempString = Engine::docsPath + "\\imgui.ini";
+		static string tempString = (path(Engine::docsPath) / "imgui.ini").string();
 		const char* customConfigPath = tempString.c_str();
 		io.IniFilename = customConfigPath;
 
@@ -116,7 +117,7 @@ namespace Graphics::GUI
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		io.Fonts->Clear();
-		io.Fonts->AddFontFromFileTTF((Engine::filesPath + "\\fonts\\coda\\Coda-Regular.ttf").c_str(), 16.0f);
+		io.Fonts->AddFontFromFileTTF(((path(Engine::filesPath) / "fonts" / "coda" / "Coda-Regular.ttf").string()).c_str(), 16.0f);
 
 		SetStyle();
 
@@ -335,8 +336,6 @@ namespace Graphics::GUI
 				string assetPath = FileExplorer::Select(FileExplorer::SearchType::asset);
 				if (assetPath != "")
 				{
-					assetPath = String::CharReplace(assetPath, '/', '\\');
-
 					string name = path(assetPath).stem().string();
 					string extension = path(assetPath).extension().string();
 					if (extension != ".fbx"
@@ -344,7 +343,10 @@ namespace Graphics::GUI
 						&& extension != ".obj"
 						&& extension != ".png"
 						&& extension != ".jpg"
-						&& extension != ".jpeg")
+						&& extension != ".jpeg"
+						&& extension != ".mp3"
+						&& extension != ".flac"
+						&& extension != ".wav")
 					{
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
@@ -392,152 +394,174 @@ namespace Graphics::GUI
 			int resultZ = static_cast<int>(newPos.z);
 			newPos = vec3(resultX, resultY, resultZ);
 
-			if (ImGui::BeginMenu("Shape"))
+			if (ImGui::BeginMenu("Model"))
 			{
-				if (ImGui::MenuItem("Cube"))
+				if (ImGui::MenuItem("Empty"))
 				{
-					string originPath = Engine::filesPath + "\\models\\cube.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "", true);
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Empty", "");
 					string targetName = path(targetPath).stem().string();
 
+					string targetNameAndExtension = targetName + ".txt";
+					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\" + targetName + ".fbx";
+
+					unsigned int nextID = ++GameObject::nextID;
+
+					Empty::InitializeEmpty(
+						newPos,
+						vec3(0),
+						vec3(1),
+						destinationPath,
+						targetName,
+						nextID);
+
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+				}
+				else if (ImGui::MenuItem("Cube"))
+				{
+					string originPath = (path(Engine::filesPath) / "models" / "cube.fbx").string();
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
+					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".fbx";
+
+					File::CreateNewFolder(targetPath);
+					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
-						Engine::filesPath + "\\shaders\\GameObject.vert",
-						Engine::filesPath + "\\shaders\\GameObject.frag",
 						"DEFAULTDIFF",
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
-						32,
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
-					string originPath = Engine::filesPath + "\\models\\sphere.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "", true);
+					string originPath = (path(Engine::filesPath) / "models" / "sphere.fbx").string();
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
 					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".fbx";
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\" + targetName + ".fbx";
+					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
-						Engine::filesPath + "\\shaders\\GameObject.vert",
-						Engine::filesPath + "\\shaders\\GameObject.frag",
 						"DEFAULTDIFF",
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
-						32,
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
-					string originPath = Engine::filesPath + "\\models\\cylinder.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "", true);
+					string originPath = (path(Engine::filesPath) / "models" / "cylinder.fbx").string();
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
 					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".fbx";
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\" + targetName + ".fbx";
+					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
-						Engine::filesPath + "\\shaders\\GameObject.vert",
-						Engine::filesPath + "\\shaders\\GameObject.frag",
 						"DEFAULTDIFF",
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
-						32,
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
-					string originPath = Engine::filesPath + "\\models\\cone.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "", true);
+					string originPath = (path(Engine::filesPath) / "models" / "cone.fbx").string();
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
 					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".fbx";
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\" + targetName + ".fbx";
+					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
-						Engine::filesPath + "\\shaders\\GameObject.vert",
-						Engine::filesPath + "\\shaders\\GameObject.frag",
 						"DEFAULTDIFF",
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
-						32,
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
-					string originPath = Engine::filesPath + "\\models\\pyramid.fbx";
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "", true);
+					string originPath = (path(Engine::filesPath) / "models" / "pyramid.fbx").string();
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
 					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".fbx";
 
 					File::CreateNewFolder(targetPath);
-					string destinationPath = targetPath + "\\" + targetName + ".fbx";
+					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 					File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
 
 					Importer::Initialize(
 						newPos,
 						vec3(0),
 						vec3(1),
 						destinationPath,
-						Engine::filesPath + "\\shaders\\GameObject.vert",
-						Engine::filesPath + "\\shaders\\GameObject.frag",
 						"DEFAULTDIFF",
 						"DEFAULTSPEC",
 						"EMPTY",
 						"EMPTY",
-						32,
+						false,
+						1.0f,
 						targetName,
 						nextID);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 
 				ImGui::EndMenu();
@@ -547,63 +571,57 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "", true);
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
 					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".txt";
 					File::CreateNewFolder(targetPath);
 
-					string filePath = targetPath + "\\" + targetName + ".txt";
+					string scenePath = path(Engine::scenePath).parent_path().filename().string();
+					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 					string name = "Billboard";
-					unsigned int nextID = GameObject::nextID++;
-					unsigned int nextID2 = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
+					unsigned int nextID2 = ++GameObject::nextID;
 
 					shared_ptr<GameObject> obj = 
 						PointLight::InitializePointLight(
 							newPos,
 							vec3(0),
 							vec3(1),
-							filePath,
-							Engine::filesPath + "\\shaders\\Basic_model.vert",
-							Engine::filesPath + "\\shaders\\Basic.frag",
+							finalTxtPath,
 							vec3(1),
 							1.0f,
 							1.0f,
 							targetName,
 							nextID,
 							true,
-							true,
 
 							//billboard values
-							Engine::filesPath + "\\shaders\\Basic_texture.vert",
-							Engine::filesPath + "\\shaders\\Basic_texture.frag",
-							Engine::filesPath + "\\icons\\pointLight.png",
-							32,
-							name,
 							nextID2,
 							true);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				if (ImGui::MenuItem("Spotlight"))
 				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "", true);
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
 					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".txt";
 					File::CreateNewFolder(targetPath);
 
-					string filePath = targetPath + "\\" + targetName + ".txt";
+					string scenePath = path(Engine::scenePath).parent_path().filename().string();
+					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 					string name = "Billboard";
-					unsigned int nextID = GameObject::nextID++;
-					unsigned int nextID2 = GameObject::nextID++;
+					unsigned int nextID = ++GameObject::nextID;
+					unsigned int nextID2 = ++GameObject::nextID;
 
 					shared_ptr<GameObject> obj = 
 						SpotLight::InitializeSpotLight(
 							newPos,
 							vec3(0),
 							vec3(1),
-							filePath,
-							Engine::filesPath + "\\shaders\\Basic_model.vert",
-							Engine::filesPath + "\\shaders\\Basic.frag",
+							finalTxtPath,
 							vec3(1),
 							1.0f,
 							1.0f,
@@ -612,18 +630,12 @@ namespace Graphics::GUI
 							targetName,
 							nextID,
 							true,
-							true,
 
 							//billboard values
-							Engine::filesPath + "\\shaders\\Basic_texture.vert",
-							Engine::filesPath + "\\shaders\\Basic_texture.frag",
-							Engine::filesPath + "\\icons\\spotLight.png",
-							32,
-							name,
 							nextID2,
 							true);
 
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 				}
 				if (ImGui::MenuItem("Directional light"))
 				{
@@ -636,41 +648,35 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Directional light", "", true);
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Directional light", "");
 						string targetName = path(targetPath).stem().string();
+						string targetNameAndExtension = targetName + ".txt";
 						File::CreateNewFolder(targetPath);
 
-						string filePath = targetPath + "\\" + targetName + ".txt";
+						string scenePath = path(Engine::scenePath).parent_path().filename().string();
+						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
 						string name = "Billboard";
-						unsigned int nextID = GameObject::nextID++;
-						unsigned int nextID2 = GameObject::nextID++;
+						unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID2 = ++GameObject::nextID;
 
 						shared_ptr<GameObject> obj =
 							DirectionalLight::InitializeDirectionalLight(
 								newPos,
 								vec3(0),
 								vec3(1),
-								filePath,
-								Engine::filesPath + "\\shaders\\Basic_model.vert",
-								Engine::filesPath + "\\shaders\\Basic.frag",
+								finalTxtPath,
 								vec3(1),
 								1.0f,
 								targetName,
 								nextID,
 								true,
-								true,
 
 								//billboard values
-								Engine::filesPath + "\\shaders\\Basic_texture.vert",
-								Engine::filesPath + "\\shaders\\Basic_texture.frag",
-								Engine::filesPath + "\\icons\\directionalLight.png",
-								32,
-								name,
 								nextID2,
 								true);
 
-						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 					}
 				}
 
@@ -738,28 +744,43 @@ namespace Graphics::GUI
 				GUISettings::renderSettings = true;
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		ImGui::SameLine(240 * fontScale * 0.75f);
 
 		if (ImGui::BeginMenu("Compile"))
 		{
-			if (ImGui::IsItemClicked())
+			if (ImGui::MenuItem("Compile"))
 			{
 				Compilation::installerType = Compilation::InstallerType::compile;
 				Compilation::Compile();
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::Text("Shortcut: Ctrl + B");
-			ImGui::EndTooltip();
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("Ctrl + B");
+				ImGui::EndTooltip();
+			}
+
+			if (ImGui::MenuItem("Clean rebuild"))
+			{
+				Compilation::installerType = Compilation::InstallerType::reset;
+				Compilation::Compile();
+
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text("Ctrl + Shift + B");
+				ImGui::EndTooltip();
+			}
+
+			ImGui::EndMenu();
 		}
 
 		ImGui::SameLine(310 * fontScale * 0.75f);
@@ -771,8 +792,8 @@ namespace Graphics::GUI
 				Compilation::Run();
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 		if (ImGui::IsItemHovered())
 		{
@@ -791,8 +812,8 @@ namespace Graphics::GUI
 				GUILinks::renderLinksWindow = true;
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		//on the right side
@@ -805,8 +826,8 @@ namespace Graphics::GUI
 				GUICredits::renderCreditsWindow = true;
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		//on the right side
@@ -833,8 +854,8 @@ namespace Graphics::GUI
 				}
 
 				ImGui::CloseCurrentPopup();
-				ImGui::EndMenu();
 			}
+			ImGui::EndMenu();
 		}
 
 		ImGui::EndMainMenuBar();
@@ -941,11 +962,14 @@ namespace Graphics::GUI
 
 	void EngineGUI::Shutdown()
 	{
-		isImguiInitialized = false;
+		if (isImguiInitialized)
+		{
+			isImguiInitialized = false;
 
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+			ImGui::DestroyContext();
+		}
 	}
 }
 #endif

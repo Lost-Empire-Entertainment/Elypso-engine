@@ -1,19 +1,24 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
 #define NOMINMAX
+#ifdef _WIN32
 #include <Windows.h>
 #include <ShlObj.h>
-#include <filesystem>
-#include <fstream>
 #include <TlHelp32.h>
 #include <tchar.h>
+#elif __linux__
+#include <unistd.h>
+#endif
+#include <filesystem>
+#include <fstream>
 #include <cstdlib>
 #include <memory>
 
 //external
+#include "glfw3.h"
 #if DISCORD_MODE
 #include "discord.h"
 #endif
@@ -28,6 +33,7 @@
 #include "fileUtils.hpp"
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
+#include "audio.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
@@ -47,10 +53,10 @@ using std::filesystem::current_path;
 using std::filesystem::create_directory;
 using std::system;
 using std::unique_ptr;
+using std::to_string;
 
 using Utils::String;
 using Utils::File;
-
 using Graphics::Render;
 using EngineFile::SceneFile;
 using EngineFile::ConfigFile;
@@ -84,18 +90,38 @@ namespace Core
 
 		for (const auto& file : directory_iterator(gameFolder))
 		{
-			string extension = path(file).extension().string();
-			if (extension == ".exe")
+			if (is_regular_file(file))
 			{
-				name = path(file).stem().string();
-				break;
+				string extension = path(file).extension().string();
+#ifdef _WIN32
+				if (extension == ".exe")
+				{
+					name = path(file).stem().string();
+					break;
+				}
+#elif __linux__
+				if (path(file).extension().empty())
+				{
+					name = path(file).stem().string();
+					break;
+				}
+#endif	
 			}
 		}
 #endif
-		if (IsThisProcessAlreadyRunning(name + ".exe"))
+
+#ifdef _WIN32
+		string nameAndExe = name + ".exe";
+		if (IsThisProcessAlreadyRunning(nameAndExe))
 		{
 			CreateErrorPopup((name + " is already running!").c_str());
 		}
+#elif __linux__
+		if (IsThisProcessAlreadyRunning(name))
+		{
+			CreateErrorPopup((name + " is already running!").c_str());
+		}
+#endif
 
 #if ENGINE_MODE
 #else
@@ -122,14 +148,14 @@ namespace Core
 			Caller::INPUT,
 			Type::INFO,
 			name + " " + version + "\n" +
-			"Copyright (C) Lost Empire Entertainment 2024\n\n",
+			"Copyright (C) Lost Empire Entertainment 2025\n\n",
 			true);
 
 		//
 		// SET FILES PATH
 		//
 
-		filesPath = current_path().generic_string() + "\\files";
+		filesPath = (current_path() / "files").string();
 		if (!exists(filesPath))
 		{
 			CreateErrorPopup("Couldn't find files folder!");
@@ -146,6 +172,8 @@ namespace Core
 		// SET DOCUMENTS PATH
 		//
 
+
+#ifdef _WIN32
 		PWSTR docsFolderWidePath;
 		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &docsFolderWidePath);
 		if (SUCCEEDED(result))
@@ -164,6 +192,7 @@ namespace Core
 				NULL,
 				NULL);
 
+
 			//convert wide string to utf-8 encoded narrow string
 			string narrowPath(size_needed, 0);
 			WideCharToMultiByte(
@@ -175,11 +204,8 @@ namespace Core
 				size_needed,
 				NULL,
 				NULL);
-
 #if ENGINE_MODE
-			docsPath = String::CharReplace(
-				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\" + name;
+			docsPath = (path(narrowPath) / name).string();
 
 			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 
@@ -189,34 +215,53 @@ namespace Core
 				Type::DEBUG,
 				output);
 #else
-			docsPath = String::CharReplace(
-				string(narrowPath.begin(), narrowPath.end()), '/', '\\') +
-				"\\My Games";
+			/*
+			docsPath = (path(narrowPath) / "My Games").string();
 
 			if (!exists(docsPath))
 			{
 				File::CreateNewFolder(docsPath);
 			}
 
-			docsPath = docsPath + "\\" + name;
+			docsPath = (path(docsPath) / name).string();
+			*/
 #endif
-	}
+		}
 		else
 		{
 			CreateErrorPopup("Couldn't find documents folder!");
 		}
+#elif __linux__
+		const char* homeDir = getenv("HOME");
+		if (!homeDir) 
+		{
+			CreateErrorPopup("HOME environment is not set!");
+		}
+
+		string documentsFolder = (path(homeDir) / "Documents").string();
+		if (!exists(documentsFolder)) File::CreateNewFolder(documentsFolder);
+
+#if ENGINE_MODE
+		docsPath = (path(documentsFolder) / name).string();
+#else
+		docsPath = (path(documentsFolder) / "My Games" / name).string();
+#endif
+
+#endif
+
 #if ENGINE_MODE
 		//
 		// SET PROJECT FILE PATH
 		//
 
-		ifstream projectFile(docsPath + "\\project.txt");
+		path projectFilePath = path(docsPath) / "project.txt";
+		ifstream projectFile(projectFilePath);
 		if (!projectFile.is_open())
 		{
 			CreateErrorPopup("Failed to open project file! Did you forget to create a project in Elypso hub?");
 		}
 
-		output = "Project file path: " + docsPath + "\\project.txt" + "\n\n";
+		output = "Project file path: " + projectFilePath.string() + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
@@ -243,19 +288,23 @@ namespace Core
 			Caller::FILE,
 			Type::DEBUG,
 			output);
+#else
+		projectPath = (current_path() / "project").string();
 #endif
 		//
 		// SET SCENES AND TEXTURES PATHS
 		//
 
 #if ENGINE_MODE
-		scenesPath = path(projectPath).string() + "\\scenes";
-		texturesPath = path(projectPath).string() + "\\textures";
+		scenesPath = (path(projectPath) / "scenes").string();
+		texturesPath = (path(projectPath) / "textures").string();
+
 #else
 		string projectName = path(projectPath).stem().string();
 
-		scenesPath = docsPath + "\\Project\\scenes";
-		texturesPath = docsPath + "\\Project\\textures";
+		path currentPath = current_path();
+		scenesPath = (currentPath / "project" / "scenes").string();
+		texturesPath = (currentPath / "project" / "textures").string();
 #endif
 
 		output = "Scenes path: " + scenesPath + "\n\n";
@@ -274,7 +323,7 @@ namespace Core
 		// SET FIRST SCENE PATH
 		//
 
-		string firstSceneFile = docsPath + "\\" + path(docsPath).stem().string() + "\\firstScene.txt";
+		string firstSceneFile = (docsPath / path(docsPath).stem() / "firstScene.txt").string();
 		if (exists(firstSceneFile))
 		{
 			ifstream fsFile(firstSceneFile);
@@ -309,10 +358,10 @@ namespace Core
 					if (type == "scene")
 					{
 						string parentPath = 
-							path(firstSceneFile).parent_path().string() + "\\" 
-							+ path(projectPath).stem().string() + "\\scenes";
+							(path(firstSceneFile).parent_path() / 
+							path(projectPath).stem() / "scenes").string();
 
-						gameFirstScene = parentPath + "\\" + value + "\\scene.txt";
+						gameFirstScene = (path(parentPath) / value / "scene.txt").string();
 					}
 				}
 			}
@@ -362,41 +411,37 @@ namespace Core
 #if ENGINE_MODE
 		string gameName = ConfigFile::GetValue("gameName");
 
-		//if engine is ran from repository structure
 		string parentFolder = current_path().stem().string();
-		if (parentFolder == "Release"
-			|| parentFolder == "Debug")
+		//if engine is ran from repository or visual studio folder
+		string msvcRelease = "x64-release";
+		string msvcDebug = "x64-debug";
+
+		if (parentFolder == msvcRelease
+			|| parentFolder == msvcDebug)
 		{
-			gamePath = current_path()
+			gamePath = (current_path()
 				.parent_path()
 				.parent_path()
 				.parent_path()
-				.generic_string() + "\\Game";
-			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
-			gameParentPath = gamePath + "\\build\\Release";
+				.parent_path() / "Game").string();
+			gameExePath = (path(gamePath) / "out" / "build" / parentFolder / gameName).string();
+			gameParentPath = path(gameExePath).parent_path().string();
+
+#ifdef _WIN32
+			gameExePath = gameExePath + ".exe";
+#endif
 		}
-		//if engine is ran from visual studio folder
-		else if (parentFolder == "x64-release"
-			|| parentFolder == "x64-debug")
-		{
-			gamePath = current_path()
-				.parent_path()
-				.parent_path()
-				.parent_path()
-				.parent_path()
-				.generic_string() + "\\Game";
-			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
-			gameParentPath = gamePath + "\\build\\Release";
-		}
-		//if engine is not ran from repository structure
+		//if engine is ran from public release configuration or something else
 		else
 		{
-			gamePath = current_path().parent_path().generic_string() + "\\Game";
-			gamePath = String::CharReplace(gamePath, '/', '\\');
-			gameExePath = gamePath + "\\build\\Release\\" + gameName + ".exe";
-			gameParentPath = gamePath + "\\build\\Release";
+			gamePath = (current_path().parent_path() / "Game").string();
+			gameExePath = (path(gamePath) / "out" / "build" / msvcRelease / gameName).string();
+
+			gameParentPath = path(gameExePath).parent_path().string();
+
+#ifdef _WIN32
+			gameExePath = gameExePath + ".exe";
+#endif
 		}
 
 		output = "Game path: " + gamePath + "\n\n";
@@ -430,7 +475,35 @@ namespace Core
 
 		Render::RenderSetup();
 
-		string lastSavedScenePath = Engine::docsPath + "\\lastSavedScene.txt";
+		Audio::Initialize();
+
+		//import all valid audio files
+		string audioFolder = (path(Engine::projectPath) / "audio").string();
+		if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
+		else
+		{
+			for (const auto& audioFile : directory_iterator(audioFolder))
+			{
+				string extension = path(audioFile).extension().string();
+				if (extension != ".mp3"
+					&& extension != ".flac"
+					&& extension != ".wav")
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						"Error: File '" + path(audioFile).string() + "' with extension '" + extension + "' was found in the audio folder and it is not an audio file! File will be deleted.\n");
+					File::DeleteFileOrfolder(path(audioFile).string());
+				}
+				else
+				{
+					string audioFileName = path(audioFile).filename().string();
+					Audio::Import(audioFileName);
+				}
+			}
+		}
+
+		string lastSavedScenePath = (path(Engine::docsPath) / "lastSavedScene.txt").string();
 		//attempt to load last saved scene
 		if (exists(lastSavedScenePath))
 		{
@@ -441,7 +514,7 @@ namespace Core
 					Caller::FILE,
 					Type::EXCEPTION,
 					"Error: Couldn't open scene file '" + lastSavedScenePath + "'! Opening default scene.\n");
-				SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+				SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 			}
 			else 
 			{
@@ -467,12 +540,12 @@ namespace Core
 							Type::EXCEPTION,
 							"Error: Couldn't load scene file '" + foundScenePath + "' because it doesn't exist! Opening default scene.\n");
 					}
-					SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+					SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 				}
 			}
 		}
 		//otherwise load first scene
-		else SceneFile::LoadScene(scenesPath + "\\Scene1\\scene.txt");
+		else SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 
 #if ENGINE_MODE
 #if DISCORD_MODE
@@ -484,6 +557,8 @@ namespace Core
 		}
 #endif
 #endif
+
+		SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 	}
 
 #if DISCORD_MODE
@@ -530,16 +605,25 @@ namespace Core
 			<< "===================="
 			<< "\n";
 
+#ifdef _WIN32
 		int result = MessageBoxA(nullptr, errorMessage, title.c_str(), MB_ICONERROR | MB_OK);
 
 		if (result == IDOK) Shutdown(true);
+#elif __linux__
+		string command = "zenity --error --text=\"" + (string)errorMessage + "\" --title=\"" + title + "\"";
+		int result = system(command.c_str());
+		(void)result;
+		Shutdown(true);
+#endif
 	}
 
 	bool Engine::IsThisProcessAlreadyRunning(const string& processName)
 	{
+#ifdef _WIN32
+		bool processFound = false;
 		HANDLE hProcessSnap;
 		PROCESSENTRY32 pe32{};
-		bool processFound = false;
+		
 		DWORD currentProcessId = GetCurrentProcessId();
 
 		//take a snapshot of all processes
@@ -575,6 +659,17 @@ namespace Core
 
 		CloseHandle(hProcessSnap);
 		return processFound;
+#elif __linux__
+		//get the process id
+		pid_t currentPID = getpid();
+
+		//construct the command to find processes by name, excluding the currend PID
+		string command = "pgrep -x \"" + processName + "\" | grep -v " + to_string(currentPID) + " > /dev/null";
+
+		//execute the command and return the result
+		return (system(command.c_str()) == 0);
+#endif
+		return false;
 	}
 
 	void Engine::RunEngine()
@@ -667,6 +762,7 @@ namespace Core
 #if ENGINE_MODE
 	void Engine::CheckForMissingCompilerFiles()
 	{
+#ifdef _WIN32
 		string msvcCommand = "call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x64 >nul 2>&1 && cl >nul 2>&1";
 
 		int msvcResult = system(msvcCommand.c_str());
@@ -684,6 +780,7 @@ namespace Core
 		{
 			CreateErrorPopup("Couldn't run engine because of missing CMAKE installer! Please install CMake and add it to environment path.");
 		}
+#endif
 	}
 #endif
 
@@ -750,6 +847,7 @@ namespace Core
 					Type::INFO,
 					"Cleaning up resources...\n");
 
+				Audio::Shutdown();
 #if ENGINE_MODE
 				EngineGUI::Shutdown();
 #else

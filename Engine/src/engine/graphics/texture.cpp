@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -17,6 +17,8 @@
 #include "console.hpp"
 #include "core.hpp"
 #include "fileUtils.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
 
 using std::cout;
 using std::endl;
@@ -31,20 +33,24 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Engine;
 using Utils::File;
-using Graphics::Shape::Mesh;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::MeshComponent;
 
 namespace Graphics
 {
 	void Texture::LoadTexture(
 		const shared_ptr<GameObject>& obj,
 		const string& texturePath,
-		const Material::TextureType type,
+		const MaterialComponent::TextureType type,
 		bool flipTexture)
 	{
+		auto mat = obj->GetComponent<MaterialComponent>();
+
 		//the texture already exists and has already been assigned to this model once
-		if (obj->GetMaterial()->TextureExists(texturePath)
+		if (mat->TextureExists(texturePath)
 			&& texturePath != "DEFAULTDIFF"
 			&& texturePath != "DEFAULTSPEC"
+			&& texturePath != "ERRORTEX"
 			&& texturePath != "EMPTY")
 		{
 			return;
@@ -53,11 +59,11 @@ namespace Graphics
 		//the texture is a default diffuse texture and uses the placeholder diffuse texture
 		if (texturePath == "DEFAULTDIFF")
 		{
-			string defaultTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			string defaultTexturePath = (path(Engine::filesPath) / "textures" / "diff_default.png").string();
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
-				obj->GetMaterial()->AddTexture(defaultTexturePath, it->second, type);
+				mat->AddTexture(defaultTexturePath, it->second, type);
 				return;
 			}
 		}
@@ -65,11 +71,23 @@ namespace Graphics
 		//the texture is a default specular texture and uses the placeholder specular texture
 		if (texturePath == "DEFAULTSPEC")
 		{
-			string defaultTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
+			string defaultTexturePath = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
 			auto it = textures.find(defaultTexturePath);
 			if (it != textures.end())
 			{
-				obj->GetMaterial()->AddTexture(defaultTexturePath, it->second, type);
+				mat->AddTexture(defaultTexturePath, it->second, type);
+				return;
+			}
+		}
+
+		//the texture is an error texture that uses the red texture for the error model
+		if (texturePath == "ERRORTEX")
+		{
+			string defaultTexturePath = (path(Engine::filesPath) / "textures" / "diff_error.png").string();
+			auto it = textures.find(defaultTexturePath);
+			if (it != textures.end())
+			{
+				mat->AddTexture(defaultTexturePath, it->second, type);
 				return;
 			}
 		}
@@ -77,7 +95,7 @@ namespace Graphics
 		//the texture is EMPTY and is just a placeholder
 		if (texturePath == "EMPTY")
 		{
-			obj->GetMaterial()->AddTexture(texturePath, 0, type);
+			mat->AddTexture(texturePath, 0, type);
 			return;
 		}
 
@@ -85,26 +103,33 @@ namespace Graphics
 		auto it = textures.find(texturePath);
 		if (it != textures.end())
 		{
-			obj->GetMaterial()->AddTexture(texturePath, it->second, type);
+			mat->AddTexture(texturePath, it->second, type);
 
 			return;
 		}
 
 		string finalTexturePath;
 
+		auto mesh = obj->GetComponent<MeshComponent>();
 		//default diff texture was assigned
 		if (texturePath == "DEFAULTDIFF")
 		{
-			finalTexturePath = Engine::filesPath + "\\textures\\diff_default.png";
+			finalTexturePath = (path(Engine::filesPath) / "textures" / "diff_default.png").string();
 		}
 		//default spec texture was assigned
 		else if (texturePath == "DEFAULTSPEC")
 		{
-			finalTexturePath = Engine::filesPath + "\\textures\\spec_default.png";
+			finalTexturePath = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
+		}
+		//error texture was assigned
+		else if (texturePath == "ERRORTEX")
+		{
+			finalTexturePath = (path(Engine::filesPath) / "textures" / "diff_error.png").string();
 		}
 		//the texture path is assigned but doesnt exist, assigning missing texture
-		else if (obj->GetMesh()->GetMeshType() != Mesh::MeshType::model
+		else if (mesh->GetMeshType() != MeshComponent::MeshType::model
 				 || texturePath.find("diff_default.png") != string::npos
+				 || texturePath.find("diff_error.png") != string::npos
 				 || texturePath.find("spec_default.png") != string::npos
 				 || texturePath.find("diff_missing.png") != string::npos)
 		{
@@ -171,6 +196,7 @@ namespace Graphics
 			string textureName = path(texturePath).filename().string();
 
 			if (textureName.find("diff_default.png") == string::npos
+				&& textureName.find("diff_error.png") == string::npos
 				&& textureName.find("diff_missing.png") == string::npos
 				&& textureName.find("pointLight.png") == string::npos
 				&& textureName.find("spotLight.png") == string::npos
@@ -180,11 +206,12 @@ namespace Graphics
 				&& textureName.find("rotate.png") == string::npos
 				&& textureName.find("scale.png") == string::npos
 				&& textureName.find("DEFAULTDIFF") == string::npos
-				&& textureName.find("DEFAULTSPEC") == string::npos)
+				&& textureName.find("DEFAULTSPEC") == string::npos
+				&& textureName.find("ERRORTEX") == string::npos)
 			{
 				string objFolder = path(obj->GetTxtFilePath()).parent_path().string();
-				string originPath = Engine::texturesPath + "\\" + textureName;
-				string targetPath = objFolder + "\\" + textureName;
+				string originPath = (path(Engine::texturesPath) / textureName).string();
+				string targetPath = (path(Engine::projectPath) / textureName).string();
 
 				if (!exists(targetPath))
 				{
@@ -192,7 +219,7 @@ namespace Graphics
 				}
 			}
 
-			obj->GetMaterial()->AddTexture(finalTexturePath, texture, type);
+			mat->AddTexture(finalTexturePath, texture, type);
 
 			textures[finalTexturePath] = texture;
 		}

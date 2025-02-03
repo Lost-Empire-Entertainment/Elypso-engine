@@ -5,8 +5,6 @@
             "name": "windows-base",
             "hidden": true,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe"
@@ -19,8 +17,9 @@
         },
         {
             "name": "x64-debug",
-            "displayName": "x64 Debug",
+            "displayName": "X64 Debug",
             "inherits": "windows-base",
+			"binaryDir": "${sourceDir}/out/build/x64-debug",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -31,28 +30,40 @@
         },
         {
             "name": "x64-release",
-            "displayName": "x64 Release",
-            "inherits": "x64-debug",
+            "displayName": "X64 Release",
+            "inherits": "windows-base",
+			"binaryDir": "${sourceDir}/out/build/x64-release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
         {
-            "name": "x86-debug",
-            "displayName": "x86 Debug",
-            "inherits": "windows-base",
-            "architecture": {
-                "value": "x86",
-                "strategy": "external"
+            "name": "linux-base",
+            "hidden": true,
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "/usr/bin/gcc",
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++"
             },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "linux-debug",
+            "displayName": "Linux Debug",
+            "inherits": "linux-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
-            "name": "x86-release",
-            "displayName": "x86 Release",
-            "inherits": "x86-debug",
+            "name": "linux-release",
+            "displayName": "Linux Release",
+            "inherits": "linux-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }

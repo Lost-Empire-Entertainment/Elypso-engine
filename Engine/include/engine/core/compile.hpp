@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -35,7 +35,7 @@ namespace Core
 		/// <summary>
 		/// Compiles the game from source.
 		/// </summary>
-		static void RunInstaller();
+		static bool RunInstaller();
 
 		/// <summary>
 		/// Draws the ImGui compilation window
@@ -46,6 +46,11 @@ namespace Core
 		/// Run the game exe.
 		/// </summary>
 		static void Run();
+
+		/// <summary>
+		/// Ensure the path to game exe and game parent are valid before using them to run game or compile it.
+		/// </summary>
+		static bool GamePathCheck();
 	private:
 		static inline bool finishedBuild;
 		static inline bool firstScrollToBottom;

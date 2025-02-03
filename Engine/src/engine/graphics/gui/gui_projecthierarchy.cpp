@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -115,11 +115,12 @@ namespace Graphics::GUI
 
                 if (isSelected) ImGui::PopStyleColor();
 
-                string thisParentFolder = path(entry).parent_path().string();
-                if (path(thisParentFolder).stem().string() == "scenes"
-                    || path(thisParentFolder).stem().string() == "gameobjects")
+                if (ImGui::BeginPopupContextItem(fullPath.c_str()))
                 {
-                    if (ImGui::BeginPopupContextItem())
+                    string thisParentFolder = path(entry).parent_path().string();
+                    if (path(thisParentFolder).stem().string() == "scenes"
+                        || path(thisParentFolder).stem().string() == "gameobjects"
+                        || path(thisParentFolder).stem().string() == "models")
                     {
                         if (path(thisParentFolder).stem().string() == "scenes")
                         {
@@ -140,10 +141,10 @@ namespace Graphics::GUI
                                     {
                                         if (SceneFile::unsavedChanges)
                                         {
-                                            EngineGUI::targetScene = path(entry).string() + "\\scene.txt";
+                                            EngineGUI::targetScene = (path(entry) / "scene.txt").string();
                                             EngineGUI::renderUnsavedSceneSwitchWindow = true;
                                         }
-                                        else SceneFile::LoadScene(path(entry).string() + "\\scene.txt");
+                                        else SceneFile::LoadScene((path(entry) / "scene.txt").string());
                                     }
                                 }
                                 else if (ImGui::MenuItem("Delete scene"))
@@ -175,7 +176,7 @@ namespace Graphics::GUI
                                         && path(child).extension().string() == ".txt")
                                     {
                                         string lightTxtFile = path(child).string();
-                                        GameObjectManager::FindAndDestroyGameObject(lightTxtFile);
+                                        GameObjectManager::FindAndDestroyGameObject(lightTxtFile, false);
 
                                         break;
                                     }
@@ -187,7 +188,7 @@ namespace Graphics::GUI
                                                 && path(secondChild).extension().string() == ".txt")
                                             {
                                                 string modelTxtFile = path(secondChild).string();
-                                                GameObjectManager::FindAndDestroyGameObject(modelTxtFile);
+                                                GameObjectManager::FindAndDestroyGameObject(modelTxtFile, false);
 
                                                 break;
                                             }
@@ -198,8 +199,9 @@ namespace Graphics::GUI
                                 File::DeleteFileOrfolder(entry);
                             }
                         }
-                        ImGui::EndPopup();
                     }
+
+                    ImGui::EndPopup();
                 }
 
                 if (nodeOpen)
@@ -217,19 +219,19 @@ namespace Graphics::GUI
 
                 if (isSelected) ImGui::PopStyleColor();
 
-                string thisParentFolder = path(entry).parent_path().string();
-                string thisExtension = path(entry).extension().string();
-                if (path(entry).extension().string() == ".png"
-                    || path(entry).extension().string() == ".jpg"
-                    || path(entry).extension().string() == ".jpeg")
+                if (ImGui::BeginPopupContextItem())
                 {
-                    if (ImGui::BeginPopupContextItem())
+                    string thisParentFolder = path(entry).parent_path().string();
+                    string thisExtension = path(entry).extension().string();
+                    if (path(entry).extension().string() == ".png"
+                        || path(entry).extension().string() == ".jpg"
+                        || path(entry).extension().string() == ".jpeg")
                     {
                         string gameobjectsFolder = Engine::currentGameobjectsPath;
-                        //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
+                        //can delete png, jpg and jpeg files as textures inside textures folder
                         if (path(thisParentFolder).stem().string() == "textures")
                         {
-                            string texturesFolder = path(Engine::scenePath).parent_path().parent_path().parent_path().string() + "\\" + "textures";
+                            string texturesFolder = (path(Engine::scenePath).parent_path().parent_path().parent_path() / "textures").string();
                             if (thisParentFolder == texturesFolder
                                 && ImGui::MenuItem("Delete texture"))
                             {
@@ -238,12 +240,23 @@ namespace Graphics::GUI
                         }
                         //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
                         else if (path(thisParentFolder).parent_path().parent_path().stem().string() == "gameobjects"
-                                 && ImGui::MenuItem("Delete texture"))
+                            && ImGui::MenuItem("Delete texture"))
                         {
                             File::DeleteFileOrfolder(entry);
                         }
-                        ImGui::EndPopup();
                     }
+                    else if (path(entry).extension().string() == ".fbx"
+                             || path(entry).extension().string() == ".obj"
+                             || path(entry).extension().string() == ".gltf")
+                    {
+                        if (path(thisParentFolder).stem().string() == "models"
+                            && ImGui::MenuItem("Delete model"))
+                        {
+                            File::DeleteFileOrfolder(entry);
+                        }
+                    }
+
+                    ImGui::EndPopup();
                 }
             }
         }

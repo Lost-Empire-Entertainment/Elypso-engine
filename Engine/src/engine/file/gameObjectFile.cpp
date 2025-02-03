@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -24,11 +24,16 @@
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
+#include "empty.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "texture.hpp"
-#include "gameobject.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
+#include "audioplayercomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -42,6 +47,7 @@ using glm::vec3;
 using std::filesystem::is_empty;
 using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
+using std::filesystem::current_path;
 using std::make_shared;
 using std::cout;
 using std::to_string;
@@ -54,13 +60,17 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::File;
-using Graphics::Shape::Mesh;
 using Utils::String;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
+using Graphics::Shape::Empty;
 using Core::Select;
 using Graphics::Render;
 using Graphics::Shape::GameObject;
@@ -68,6 +78,7 @@ using Graphics::Shape::GameObjectManager;
 using Graphics::Texture;
 using Graphics::Shader;
 using Graphics::Shape::GameObject;
+using Graphics::Components::AudioPlayerComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -80,14 +91,11 @@ namespace EngineFile
 		{
 			if (obj->GetParentBillboardHolder() == nullptr)
 			{
-				string objectTxtFilePath = obj->GetTxtFilePath();
 				string objectName = obj->GetName();
+				string txtName = objectName + ".txt";
+				string objectTxtFilePath = (path(Engine::scenePath).parent_path() / "gameobjects" / objectName / txtName).string();
 
 				vector<string> data;
-
-				//
-				// SAVE SCENE OBJECT DATA INTO VECTOR
-				//
 
 				data.push_back("name= " + obj->GetName() + "\n");
 
@@ -95,33 +103,32 @@ namespace EngineFile
 
 				data.push_back("enabled= " + to_string(obj->IsEnabled()) + "\n");
 
-				data.push_back("mesh enabled= " + to_string(obj->GetMesh()->IsEnabled()) + "\n");
-
-				string type = string(magic_enum::enum_name(obj->GetMesh()->GetMeshType()));
-				data.push_back("type= " + type + "\n");
+				//
+				// TRANSFORM DATA
+				//
 
 				//position
-				float posX = obj->GetTransform()->GetPosition().x;
-				float posY = obj->GetTransform()->GetPosition().y;
-				float posZ = obj->GetTransform()->GetPosition().z;
+				float posX = obj->GetComponent<TransformComponent>()->GetPosition().x;
+				float posY = obj->GetComponent<TransformComponent>()->GetPosition().y;
+				float posZ = obj->GetComponent<TransformComponent>()->GetPosition().z;
 				data.push_back(
 					"position= " + to_string(posX) + ", "
 					+ to_string(posY) + ", "
 					+ to_string(posZ) + "\n");
 
 				//rotation
-				float rotX = obj->GetTransform()->GetRotation().x;
-				float rotY = obj->GetTransform()->GetRotation().y;
-				float rotZ = obj->GetTransform()->GetRotation().z;
+				float rotX = obj->GetComponent<TransformComponent>()->GetRotation().x;
+				float rotY = obj->GetComponent<TransformComponent>()->GetRotation().y;
+				float rotZ = obj->GetComponent<TransformComponent>()->GetRotation().z;
 				data.push_back(
 					"rotation= " + to_string(rotX) + ", "
 					+ to_string(rotY) + ", "
 					+ to_string(rotZ) + "\n");
 
 				//scale
-				float scaleX = obj->GetTransform()->GetScale().x;
-				float scaleY = obj->GetTransform()->GetScale().y;
-				float scaleZ = obj->GetTransform()->GetScale().z;
+				float scaleX = obj->GetComponent<TransformComponent>()->GetScale().x;
+				float scaleY = obj->GetComponent<TransformComponent>()->GetScale().y;
+				float scaleZ = obj->GetComponent<TransformComponent>()->GetScale().z;
 				data.push_back(
 					"scale= " + to_string(scaleX) + ", "
 					+ to_string(scaleY) + ", "
@@ -129,22 +136,36 @@ namespace EngineFile
 
 				data.push_back("\n");
 
+				auto mesh = obj->GetComponent<MeshComponent>();
+				//
+				// MESH DATA
+				//
+
+				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
+				data.push_back("type= " + type + "\n");
+
+				//
+				// MATERIAL DATA
+				//
+
 				//object textures
-				Mesh::MeshType meshType = obj->GetMesh()->GetMeshType();
-				if (meshType == Mesh::MeshType::model)
+				MeshComponent::MeshType meshType = mesh->GetMeshType();
+				auto mat = obj->GetComponent<MaterialComponent>();
+				if (meshType == MeshComponent::MeshType::model)
 				{
-					string diffuseTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
+					string diffuseTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
 					diffuseTexture = path(diffuseTexture).filename().string();
 					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
+					else if (diffuseTexture == "diff_error.png") diffuseTexture = "ERRORTEX";
 
-					string specularTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::specular);
+					string specularTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
 					specularTexture = path(specularTexture).filename().string();
 					if (specularTexture == "spec_default.png") specularTexture = "DEFAULTSPEC";
 
-					string normalTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::normal);
+					string normalTexture = mat->GetTextureName(MaterialComponent::TextureType::normal);
 					normalTexture = path(normalTexture).filename().string();
 
-					string heightTexture = obj->GetMaterial()->GetTextureName(Material::TextureType::height);
+					string heightTexture = mat->GetTextureName(MaterialComponent::TextureType::height);
 					heightTexture = path(heightTexture).filename().string();
 
 					data.push_back(
@@ -153,102 +174,119 @@ namespace EngineFile
 						+ specularTexture + ", "
 						+ normalTexture + ", "
 						+ heightTexture + "\n");
+
+					string isTransparent = to_string(mat->IsTransparent());
+					string transparencyValue = to_string(mat->GetTransparentValue());
+
+					data.push_back("isTransparent= " + isTransparent + "\n");
+					data.push_back("transparencyValue= " + transparencyValue + "\n");
 				}
 
-				//shaders
-				string vertexShader = obj->GetMaterial()->GetShaderName(0);
-				vertexShader = path(vertexShader).filename().string();
-				string fragmentShader = obj->GetMaterial()->GetShaderName(1);
-				fragmentShader = path(fragmentShader).filename().string();
-				data.push_back("shaders= " + vertexShader + ", " + fragmentShader + "\n");
-
-				//path to txt file of this gameobject
-				string txtFilePath = String::CharReplace(obj->GetTxtFilePath(), '/', '\\');
-				data.push_back("txtFile= " + txtFilePath + "\n");
-
-				//material variables
-				if (meshType == Mesh::MeshType::model)
+				if (meshType == MeshComponent::MeshType::model)
 				{
-					data.push_back("shininess= " + to_string(obj->GetBasicShape()->GetShininess()) + "\n");
+					data.push_back("shininess= " + to_string(32) + "\n");
 				}
-				else if (meshType == Mesh::MeshType::point_light)
+
+				//
+				// LIGHT DATA
+				//
+
+				else if (meshType == MeshComponent::MeshType::point_light)
 				{
-					float pointDiffuseX = obj->GetPointLight()->GetDiffuse().x;
-					float pointDiffuseY = obj->GetPointLight()->GetDiffuse().y;
-					float pointDiffuseZ = obj->GetPointLight()->GetDiffuse().z;
-					data.push_back(
-						"diffuse= " + to_string(pointDiffuseX) + ", "
-						+ to_string(pointDiffuseY) + ", "
-						+ to_string(pointDiffuseZ) + "\n");
+					auto light = obj->GetComponent<LightComponent>();
+					if (light)
+					{
+						float pointDiffuseX = light->GetDiffuse().x;
+						float pointDiffuseY = light->GetDiffuse().y;
+						float pointDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(pointDiffuseX) + ", "
+							+ to_string(pointDiffuseY) + ", "
+							+ to_string(pointDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetPointLight()->GetIntensity()) + "\n");
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(obj->GetPointLight()->GetDistance()) + "\n");
+						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+					}
 				}
-				else if (meshType == Mesh::MeshType::spot_light)
+				else if (meshType == MeshComponent::MeshType::spot_light)
 				{
-					float spotDiffuseX = obj->GetSpotLight()->GetDiffuse().x;
-					float spotDiffuseY = obj->GetSpotLight()->GetDiffuse().y;
-					float spotDiffuseZ = obj->GetSpotLight()->GetDiffuse().z;
-					data.push_back(
-						"diffuse= " + to_string(spotDiffuseX) + ", "
-						+ to_string(spotDiffuseY) + ", "
-						+ to_string(spotDiffuseZ) + "\n");
+					auto light = obj->GetComponent<LightComponent>();
+					if (light)
+					{
+						float spotDiffuseX = light->GetDiffuse().x;
+						float spotDiffuseY = light->GetDiffuse().y;
+						float spotDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(spotDiffuseX) + ", "
+							+ to_string(spotDiffuseY) + ", "
+							+ to_string(spotDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetSpotLight()->GetIntensity()) + "\n");
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(obj->GetSpotLight()->GetDistance()) + "\n");
+						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
 
-					data.push_back("inner angle= " + to_string(obj->GetSpotLight()->GetInnerAngle()) + "\n");
+						data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
 
-					data.push_back("outer angle= " + to_string(obj->GetSpotLight()->GetOuterAngle()) + "\n");
+						data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
+					}
 				}
-				else if (meshType == Mesh::MeshType::directional_light)
+				else if (meshType == MeshComponent::MeshType::directional_light)
 				{
-					float dirDiffuseX = obj->GetDirectionalLight()->GetDiffuse().x;
-					float dirDiffuseY = obj->GetDirectionalLight()->GetDiffuse().y;
-					float dirDiffuseZ = obj->GetDirectionalLight()->GetDiffuse().z;
-					data.push_back(
-						"diffuse= " + to_string(dirDiffuseX) + ", "
-						+ to_string(dirDiffuseY) + ", "
-						+ to_string(dirDiffuseZ) + "\n");
+					auto light = obj->GetComponent<LightComponent>();
+					if (light)
+					{
+						float dirDiffuseX = light->GetDiffuse().x;
+						float dirDiffuseY = light->GetDiffuse().y;
+						float dirDiffuseZ = light->GetDiffuse().z;
+						data.push_back(
+							"diffuse= " + to_string(dirDiffuseX) + ", "
+							+ to_string(dirDiffuseY) + ", "
+							+ to_string(dirDiffuseZ) + "\n");
 
-					data.push_back("intensity= " + to_string(obj->GetDirectionalLight()->GetIntensity()) + "\n");
+						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+					}
 				}
 
 				//also save billboard data of each light source
-				if (meshType == Mesh::MeshType::point_light
-					|| meshType == Mesh::MeshType::spot_light
-					|| meshType == Mesh::MeshType::directional_light)
+				if (meshType == MeshComponent::MeshType::point_light
+					|| meshType == MeshComponent::MeshType::spot_light
+					|| meshType == MeshComponent::MeshType::directional_light)
 				{
 					data.push_back("\n");
 					data.push_back("---attached billboard data---\n");
 					data.push_back("\n");
 
-					data.push_back("billboard name= " + obj->GetChildBillboard()->GetName() + "\n");
-
 					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
 
 					data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
+				}
 
-					string billboardVertShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(0);
-					billboardVertShader = path(billboardVertShader).filename().string();
-					string billboardFragShader = obj->GetChildBillboard()->GetMaterial()->GetShaderName(1);
-					billboardFragShader = path(billboardFragShader).filename().string();
-					data.push_back("billboard shaders= " + billboardVertShader + ", " + billboardFragShader + "\n");
+				//
+				// AUDIO PLAYER DATA
+				//
 
-					string billboardTexture = obj->GetChildBillboard()->GetMaterial()->GetTextureName(Material::TextureType::diffuse);
-					billboardTexture = path(billboardTexture).filename().string();
-					data.push_back("billboard texture= " + billboardTexture + "\n");
+				auto apc = obj->GetComponent<AudioPlayerComponent>();
+				if (apc)
+				{
+					string audioFileName = apc->GetName();
+					bool is3D = apc->Is3D();
+					float currVolume = apc->GetVolume();
+					float minRange = apc->GetMinRange();
+					float maxRange = apc->GetMaxRange();
 
-					data.push_back("billboard shininess= " + to_string(obj->GetChildBillboard()->GetBasicShape()->GetShininess()) + "\n");
+					data.push_back("audioFileName= " + audioFileName + "\n");
+					data.push_back("is3D= " + to_string(is3D) + "\n");
+					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
+					data.push_back("minRange= " + to_string(minRange) + "\n");
+					data.push_back("maxRange= " + to_string(maxRange) + "\n");
 				}
 
 				//
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
-				string folderPath = path(objectTxtFilePath).parent_path().string();
+				string folderPath = (path(Engine::scenePath).parent_path() / "gameobjects" / objectName).string();
 				if (!exists(folderPath))
 				{
 					File::CreateNewFolder(folderPath);
@@ -286,14 +324,7 @@ namespace EngineFile
 	{
 		ifstream objFile(file);
 
-		if (!objFile.is_open())
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Error: Couldn't read from object file '" + file + "'!\n");
-			return "";
-		}
+		if (!objFile.is_open()) return "";
 
 		string target = "type= ";
 		string line;
@@ -367,36 +398,63 @@ namespace EngineFile
 			string fileName = path(assimpPath).stem().string();
 			string modelPath = path(assimpPath).string();
 
+			string sceneName = path(Engine::scenePath).parent_path().stem().string();
+			string parentFolderName = path(modelPath).parent_path().stem().string();
+			string txtFile = parentFolderName + ".txt";
+
+			string txtPath = (path(Engine::projectPath) / "scenes" / sceneName / "gameobjects" / parentFolderName / txtFile).string();
+			string type = GetType(txtPath);
+			if (type == "")
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Error: Model file '" + txtPath + "' does not exist or couldn't be read! Loading model with default values.\n");
+			}
+			
 			Importer::Initialize(
 				vec3(0),
 				vec3(0),
 				vec3(1),
 				modelPath,
-				Engine::filesPath + "\\shaders\\GameObject.vert",
-				Engine::filesPath + "\\shaders\\GameObject.frag",
 				"DEFAULTDIFF",
 				"DEFAULTSPEC",
 				"EMPTY",
 				"EMPTY",
-				32,
+				false,
+				0.0f,
 				fileName,
 				Importer::tempID);
 		}
 
-		//loads all light txt files
+		//loads all empty and light txt files
 		for (const auto& gameobjectPath : validGameobjectPaths)
 		{
 			string filePath = path(gameobjectPath).string();
+			string type = GetType(filePath);
 
-			if (GetType(filePath) == "point_light")
+			if (type == "")
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::FILE,
+					Type::EXCEPTION,
+					"Error: Couldn't read from object file '" + filePath + "'!\n");
+			}
+
+			if (type == "empty")
+			{
+				LoadEmpty(filePath);
+			}
+
+			else if (type == "point_light")
 			{
 				LoadPointLight(filePath);
 			}
-			else if (GetType(filePath) == "spot_light")
+			else if (type == "spot_light")
 			{
 				LoadSpotlight(filePath);
 			}
-			else if (GetType(filePath) == "directional_light")
+			else if (type == "directional_light")
 			{
 				LoadDirectionalLight(filePath);
 			}
@@ -413,21 +471,26 @@ namespace EngineFile
 
 	void GameObjectFile::LoadModel(const string& txtFilePath)
 	{
+#if ENGINE_MODE
+		string fullTxtFilePath = (path(Engine::projectPath) / txtFilePath).string();
+#else
+		string fullTxtFilePath = (current_path() / "project" / txtFilePath).string();
+#endif
 		//skip running this function for newly imported models that dont actually
 		//have a txt file yet even though their txt file path was assigned
-		if (!exists(txtFilePath)) return;
+		if (!exists(fullTxtFilePath)) return;
 
 		//
 		// READ FROM MODEL FILE
 		//
 
-		ifstream txtFile(txtFilePath);
+		ifstream txtFile(fullTxtFilePath);
 		if (!txtFile.is_open())
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Failed to open model txt file '" + txtFilePath + "'!\n\n");
+				"Error: Failed to open model txt file '" + fullTxtFilePath + "'!\n\n");
 			return;
 		}
 
@@ -458,16 +521,21 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
 					|| key == "scale"
 
 					|| key == "textures"
-					|| key == "shaders"
+					|| key == "isTransparent"
+					|| key == "transparencyValue"
 					|| key == "model"
-					|| key == "shininess")
+					|| key == "shininess"
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -483,16 +551,22 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
 
 		vector<string> textures{};
-		vector<string> shaders{};
+		bool isTransparent{};
+		float transparencyValue{};
 		string model{};
 		float shininess{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -508,13 +582,9 @@ namespace EngineFile
 			{
 				isEnabled = stoi(value);
 			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
-			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();
@@ -543,32 +613,42 @@ namespace EngineFile
 			{
 				vector<string> split = String::Split(value, ',');
 
-				string fullTex0Path = split[0] == "DEFAULTDIFF"
-					? "DEFAULTDIFF"
-					: path(txtFilePath).parent_path().string() + "\\" + split[0];
+				string fullTex0Path{};
+				if (split[0] == "DEFAULTDIFF"
+					|| split[0] == "ERRORTEX")
+				{
+					fullTex0Path = split[0];
+				}
+				else fullTex0Path = (path(fullTxtFilePath).parent_path() / split[0]).string();
 
 				if (fullTex0Path == "DEFAULTDIFF")
 				{
-					fullTex0Path = Engine::filesPath + "\\textures\\diff_default.png";
+					fullTex0Path = (path(Engine::filesPath) / "textures" / "diff_default.png").string();
+					textures.push_back(fullTex0Path);
+				}
+				else if (fullTex0Path == "ERRORTEX")
+				{
+					fullTex0Path = (path(Engine::filesPath) / "textures" / "diff_error.png").string();
 					textures.push_back(fullTex0Path);
 				}
 				else if (fullTex0Path != "DEFAULTDIFF"
+						 && fullTex0Path != "ERRORTEX"
 						 && !exists(fullTex0Path))
 				{
 					ConsoleManager::WriteConsoleMessage(
 						Caller::FILE,
 						Type::EXCEPTION,
 						"Error: Texture at slot 0 for " + name + " at " + fullTex0Path + " does not exist!\n");
-					textures.push_back(Engine::filesPath + "\\textures\\diff_missing.png");
+					textures.push_back((path(Engine::filesPath) / "textures" / "diff_missing.png").string());
 				}
 				else textures.push_back(fullTex0Path);
 
 				string fullTex1Path = split[1] == "DEFAULTSPEC"
 					? "DEFAULTSPEC"
-					: path(txtFilePath).parent_path().string() + "\\" + split[1];
+					: (path(fullTxtFilePath).parent_path() / split[1]).string();
 				if (fullTex1Path == "DEFAULTSPEC")
 				{
-					fullTex1Path = Engine::filesPath + "\\textures\\spec_default.png";
+					fullTex1Path = (path(Engine::filesPath) / "textures" / "spec_default.png").string();
 					textures.push_back(fullTex1Path);
 				}
 				else if (fullTex1Path != "DEFAULTSPEC"
@@ -584,7 +664,7 @@ namespace EngineFile
 
 				string fullTex2Path = split[2] == "EMPTY"
 					? "EMPTY"
-					: path(txtFilePath).parent_path().string() + "\\" + split[2];
+					: (path(fullTxtFilePath).parent_path() / split[2]).string();
 				if (fullTex2Path != "EMPTY"
 					&& !exists(fullTex2Path))
 				{
@@ -598,7 +678,7 @@ namespace EngineFile
 
 				string fullTex3Path = split[3] == "EMPTY"
 					? "EMPTY"
-					: path(txtFilePath).parent_path().string() + "\\" + split[3];
+					: (path(fullTxtFilePath).parent_path() / split[3]).string();
 				if (fullTex3Path != "EMPTY"
 					&& !exists(fullTex3Path))
 				{
@@ -610,27 +690,13 @@ namespace EngineFile
 				}
 				else textures.push_back(fullTex3Path);
 			}
-			else if (key == "shaders")
+			else if (key == "isTransparent")
 			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
+				isTransparent = stoi(value);
+			}
+			else if (key == "transparencyValue")
+			{
+				transparencyValue = stof(value);
 			}
 			else if (key == "model")
 			{
@@ -640,13 +706,33 @@ namespace EngineFile
 			{
 				shininess = stof(value);
 			}
+			else if (key == "audioFileName")
+			{
+				audioFileName = value;
+			}
+			else if (key == "is3D")
+			{
+				is3D = stoi(value);
+			}
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
 		// SET UP TEXTURES FOR MODEL
 		//
 
-		string diff_missing = Engine::filesPath + "\\textures\\diff_missing.png";
+		string diff_missing = (path(Engine::filesPath) / "textures" / "diff_missing.png").string();
 		string diffuseTexture = textures[0];
 		if (diffuseTexture != "EMPTY"
 			&& !exists(diffuseTexture))
@@ -723,23 +809,238 @@ namespace EngineFile
 			foundObj->SetID(ID);
 			foundObj->SetEnableState(isEnabled);
 
-			foundObj->GetTransform()->SetPosition(pos);
-			foundObj->GetTransform()->SetRotation(rot);
-			foundObj->GetTransform()->SetScale(scale);
+			foundObj->GetComponent<TransformComponent>()->SetPosition(pos);
+			foundObj->GetComponent<TransformComponent>()->SetRotation(rot);
+			foundObj->GetComponent<TransformComponent>()->SetScale(scale);
 
-			Shader modelShader = Shader::LoadShader(shaders[0], shaders[1]);
-			shared_ptr<Material> mat = make_shared<Material>();
-			mat->AddShader(shaders[0], shaders[1], modelShader);
+			string vert = (path(Engine::filesPath) / "shaders" / "Gameobject.vert").string();
+			string frag = (path(Engine::filesPath) / "shaders" / "Gameobject.frag").string();
+			Shader modelShader = Shader::LoadShader(vert, frag);
+			auto mat = foundObj->AddComponent<MaterialComponent>();
+			mat->AddShader(vert, frag, modelShader);
 
-			Texture::LoadTexture(foundObj, diffuseTexture, Material::TextureType::diffuse, false);
-			Texture::LoadTexture(foundObj, specularTexture, Material::TextureType::specular, false);
-			Texture::LoadTexture(foundObj, normalTexture, Material::TextureType::height, false);
-			Texture::LoadTexture(foundObj, heightTexture, Material::TextureType::normal, false);
+			Texture::LoadTexture(foundObj, diffuseTexture, MaterialComponent::TextureType::diffuse, false);
+			Texture::LoadTexture(foundObj, specularTexture, MaterialComponent::TextureType::specular, false);
+			Texture::LoadTexture(foundObj, normalTexture, MaterialComponent::TextureType::height, false);
+			Texture::LoadTexture(foundObj, heightTexture, MaterialComponent::TextureType::normal, false);
 
+			mat->SetTransparent(isTransparent);
+			mat->SetTransparentValue(transparencyValue);
+
+			if (mat->IsTransparent())
+			{
+				vector<shared_ptr<GameObject>>& opaqueObjects = GameObjectManager::GetOpaqueObjects();
+				vector<shared_ptr<GameObject>>& transparentObjects = GameObjectManager::GetTransparentObjects();
+
+				auto it = find(opaqueObjects.begin(), opaqueObjects.end(), foundObj);
+
+				if (it != opaqueObjects.end())
+				{
+					transparentObjects.push_back(*it);
+					opaqueObjects.erase(it);
+				}
+			}
+
+			if (audioFileName != ""
+				|| data["is3D"] != ""
+				|| data["currentVolume"] != ""
+				|| data["minRange"] != ""
+				|| data["maxRange"] != "")
+			{
+				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
+				apc->SetName(audioFileName);
+				apc->Set3DState(is3D);
+				apc->SetVolume(currVolume);
+				apc->SetMinRange(minRange);
+				apc->SetMaxRange(maxRange);
+			}
+
+			/*
+			* 
+			* SHININESS VARIABLE IS CURRENTLY UNUSED
+			* IT WILL BE RE-ENABLED IN THE FUTURE
+			* 
 			foundObj->GetBasicShape()->SetShininess(shininess);
+			*/
 
 			GameObject::nextID = ID + 1;
 		}
+	}
+
+	void GameObjectFile::LoadEmpty(const string& file)
+	{
+		//
+		// READ FROM EMPTY FILE
+		//
+
+		ifstream emptyFile(file);
+		if (!emptyFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to open empty file '" + file + "'!\n\n");
+			return;
+		}
+
+		unordered_map<string, string> data;
+		string line;
+		while (getline(emptyFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "enabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		emptyFile.close();
+
+		//
+		// ASSIGN EMPTY DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		MeshComponent::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
+		float minRange{};
+		float maxRange{};
+
+		for (const auto& [key, value] : data)
+		{
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
+			else if (key == "enabled")
+			{
+				isEnabled = stoi(value);
+			}
+			else if (key == "type")
+			{
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
+				if (typeAuto.has_value())
+				{
+					type = typeAuto.value();
+				}
+			}
+			else if (key == "position")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				pos = newPos;
+			}
+			else if (key == "rotation")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				rot = newRot;
+			}
+			else if (key == "scale")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				scale = newScale;
+			}
+
+			else if (key == "audioFileName")
+			{
+				audioFileName = value;
+			}
+			else if (key == "is3D")
+			{
+				is3D = stoi(value);
+			}
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
+		}
+
+		//
+		// LOAD EMPTY
+		//
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Loading empty '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+		auto empty = Empty::InitializeEmpty(
+			pos,
+			rot,
+			scale,
+			file,
+			name,
+			ID,
+			isEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
+		{
+			auto apc = empty->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
+		}
+
+		GameObject::nextID = ID + 1;
 	}
 
 	void GameObjectFile::LoadPointLight(const string& file)
@@ -785,25 +1086,23 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "shaders"
-					|| key == "txtFile"
-
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
 
-					|| key == "billboard name"
 					|| key == "billboard id"
 					|| key == "billboard enabled"
-					|| key == "billboard shaders"
-					|| key == "billboard texture"
-					|| key == "billboard shininess")
+					
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -819,25 +1118,23 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-
-		vector<string> shaders{};
-		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
 		float distance{};
 
-		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		vector<string> billboardShaders{};
-		string billboardTexture{};
-		float billboardShininess{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -853,13 +1150,9 @@ namespace EngineFile
 			{
 				isEnabled = stoi(value);
 			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
-			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();
@@ -884,33 +1177,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
-			}
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
-
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -920,10 +1186,6 @@ namespace EngineFile
 			else if (key == "intensity") intensity = stof(value);
 			else if (key == "distance") distance = stof(value);
 
-			else if (key == "billboard name")
-			{
-				billboardName = value;
-			}
 			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
@@ -932,43 +1194,27 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-			else if (key == "billboard texture")
+
+			else if (key == "audioFileName")
 			{
-				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
-
-				if (!exists(fullTexPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
-					return;
-				}
-				else billboardTexture = fullTexPath;
+				audioFileName = value;
 			}
-			else if (key == "billboard shaders")
+			else if (key == "is3D")
 			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
-					return;
-				}
-				else
-				{
-					billboardShaders.push_back(fullShader0Path);
-					billboardShaders.push_back(fullShader1Path);
-				}
+				is3D = stoi(value);
 			}
-			else if (key == "billboard shininess") billboardShininess = stof(value);
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -980,27 +1226,33 @@ namespace EngineFile
 			Type::DEBUG,
 			"Loading point light '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		PointLight::InitializePointLight(
+		auto pl = PointLight::InitializePointLight(
 			pos,
 			rot,
 			scale,
-			txtFile,
-			shaders[0],
-			shaders[1],
+			file,
 			diffuse,
 			intensity,
 			distance,
 			name,
 			ID,
 			isEnabled,
-			isMeshEnabled,
-			billboardShaders[0],
-			billboardShaders[1],
-			billboardTexture,
-			billboardShininess,
-			billboardName,
 			billboardID,
 			isBillboardEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
+		{
+			auto apc = pl->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
+		}
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1048,14 +1300,10 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
 					|| key == "scale"
-
-					|| key == "shaders"
-					|| key == "txtFile"
 
 					|| key == "diffuse"
 					|| key == "intensity"
@@ -1063,12 +1311,14 @@ namespace EngineFile
 					|| key == "inner angle"
 					|| key == "outer angle"
 
-					|| key == "billboard name"
 					|| key == "billboard id"
 					|| key == "billboard enabled"
-					|| key == "billboard shaders"
-					|| key == "billboard texture"
-					|| key == "billboard shininess")
+
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -1084,14 +1334,10 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
-
-		vector<string> shaders{};
-		string txtFile{};
 
 		vec3 diffuse{};
 		float intensity{};
@@ -1099,12 +1345,14 @@ namespace EngineFile
 		float innerAngle{};
 		float outerAngle{};
 
-		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		vector<string> billboardShaders{};
-		string billboardTexture{};
-		float billboardShininess{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1120,13 +1368,9 @@ namespace EngineFile
 			{
 				isEnabled = stoi(value);
 			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
-			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();
@@ -1151,33 +1395,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
-			}
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
-
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1189,10 +1406,6 @@ namespace EngineFile
 			else if (key == "inner angle") innerAngle = stof(value);
 			else if (key == "outer angle") outerAngle = stof(value);
 
-			else if (key == "billboard name")
-			{
-				billboardName = value;
-			}
 			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
@@ -1201,43 +1414,27 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-			else if (key == "billboard texture")
+
+			else if (key == "audioFileName")
 			{
-				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
-
-				if (!exists(fullTexPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
-					return;
-				}
-				else billboardTexture = fullTexPath;
+				audioFileName = value;
 			}
-			else if (key == "billboard shaders")
+			else if (key == "is3D")
 			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
-					return;
-				}
-				else
-				{
-					billboardShaders.push_back(fullShader0Path);
-					billboardShaders.push_back(fullShader1Path);
-				}
+				is3D = stoi(value);
 			}
-			else if (key == "billboard shininess") billboardShininess = stof(value);
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -1249,13 +1446,11 @@ namespace EngineFile
 			Type::DEBUG,
 			"Loading spotlight '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		SpotLight::InitializeSpotLight(
+		auto sl = SpotLight::InitializeSpotLight(
 			pos,
 			rot,
 			scale,
-			txtFile,
-			shaders[0],
-			shaders[1],
+			file,
 			diffuse,
 			intensity,
 			distance,
@@ -1264,14 +1459,22 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
-			isMeshEnabled,
-			billboardShaders[0],
-			billboardShaders[1],
-			billboardTexture,
-			billboardShininess,
-			billboardName,
 			billboardID,
 			isBillboardEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
+		{
+			auto apc = sl->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
+		}
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1319,25 +1522,23 @@ namespace EngineFile
 				if (key == "name"
 					|| key == "id"
 					|| key == "enabled"
-					|| key == "mesh enabled"
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
 					|| key == "scale"
 
-					|| key == "shaders"
-					|| key == "txtFile"
-
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
 
-					|| key == "billboard name"
 					|| key == "billboard id"
 					|| key == "billboard enabled"
-					|| key == "billboard shaders"
-					|| key == "billboard texture"
-					|| key == "billboard shininess")
+
+					|| key == "audioFileName"
+					|| key == "is3D"
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
 				{
 					data[key] = value;
 				}
@@ -1353,24 +1554,22 @@ namespace EngineFile
 		string name{};
 		unsigned int ID{};
 		bool isEnabled{};
-		bool isMeshEnabled{};
-		Mesh::MeshType type{};
+		MeshComponent::MeshType type{};
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
 
-		vector<string> shaders{};
-		string txtFile{};
-
 		vec3 diffuse{};
 		float intensity{};
 
-		string billboardName{};
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-		vector<string> billboardShaders{};
-		string billboardTexture{};
-		float billboardShininess{};
+
+		string audioFileName{};
+		bool is3D{};
+		float currVolume{};
+		float minRange{};
+		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1386,13 +1585,9 @@ namespace EngineFile
 			{
 				isEnabled = stoi(value);
 			}
-			else if (key == "mesh enabled")
-			{
-				isMeshEnabled = stoi(value);
-			}
 			else if (key == "type")
 			{
-				auto typeAuto = magic_enum::enum_cast<Mesh::MeshType>(value);
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
 				if (typeAuto.has_value())
 				{
 					type = typeAuto.value();
@@ -1417,33 +1612,6 @@ namespace EngineFile
 				scale = newScale;
 			}
 
-			else if (key == "shaders")
-			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading gameobject.\n");
-					return;
-				}
-				else
-				{
-					shaders.push_back(fullShader0Path);
-					shaders.push_back(fullShader1Path);
-				}
-			}
-			else if (key == "txtFile")
-			{
-				txtFile = value;
-			}
-
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1452,10 +1620,6 @@ namespace EngineFile
 			}
 			else if (key == "intensity") intensity = stof(value);
 
-			else if (key == "billboard name")
-			{
-				billboardName = value;
-			}
 			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
@@ -1464,43 +1628,27 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-			else if (key == "billboard texture")
+
+			else if (key == "audioFileName")
 			{
-				string fullTexPath = Engine::filesPath + "\\icons\\" + value;
-
-				if (!exists(fullTexPath))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: Texture is missing for " + name + " at " + fullTexPath + "! Skipped loading billboard.\n");
-					return;
-				}
-				else billboardTexture = fullTexPath;
+				audioFileName = value;
 			}
-			else if (key == "billboard shaders")
+			else if (key == "is3D")
 			{
-				vector<string> split = String::Split(value, ',');
-
-				string fullShader0Path = Engine::filesPath + "\\shaders\\" + split[0];
-				string fullShader1Path = Engine::filesPath + "\\shaders\\" + split[1];
-
-				if (!exists(fullShader0Path)
-					|| !exists(fullShader1Path))
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						"Error: One or more shaders are missing for " + name + " at " + value + "! Skipped loading billboard.\n");
-					return;
-				}
-				else
-				{
-					billboardShaders.push_back(fullShader0Path);
-					billboardShaders.push_back(fullShader1Path);
-				}
+				is3D = stoi(value);
 			}
-			else if (key == "billboard shininess") billboardShininess = stof(value);
+			else if (key == "currentVolume")
+			{
+				currVolume = stof(value);
+			}
+			else if (key == "minRange")
+			{
+				minRange = stof(value);
+			}
+			else if (key == "maxRange")
+			{
+				maxRange = stof(value);
+			}
 		}
 
 		//
@@ -1512,26 +1660,32 @@ namespace EngineFile
 			Type::DEBUG,
 			"Loading directional light '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		DirectionalLight::InitializeDirectionalLight(
+		auto dl = DirectionalLight::InitializeDirectionalLight(
 			pos,
 			rot,
 			scale,
-			txtFile,
-			shaders[0],
-			shaders[1],
+			file,
 			diffuse,
 			intensity,
 			name,
 			ID,
 			isEnabled,
-			isMeshEnabled,
-			billboardShaders[0],
-			billboardShaders[1],
-			billboardTexture,
-			billboardShininess,
-			billboardName,
 			billboardID,
 			isBillboardEnabled);
+
+		if (audioFileName != ""
+			|| data["is3D"] != ""
+			|| data["currentVolume"] != ""
+			|| data["minRange"] != ""
+			|| data["maxRange"] != "")
+		{
+			auto apc = dl->AddComponent<AudioPlayerComponent>();
+			apc->SetName(audioFileName);
+			apc->Set3DState(is3D);
+			apc->SetVolume(currVolume);
+			apc->SetMinRange(minRange);
+			apc->SetMaxRange(maxRange);
+		}
 
 		GameObject::nextID = ID + 1;
 	}

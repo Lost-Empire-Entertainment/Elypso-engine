@@ -1,5 +1,7 @@
 Original repository link:
 https://github.com/assimp/assimp
-		
+
 Changes:
-- moved all files and folders out of include/assimp into this folders and deleted all other files and folders
+- used build_release.bat to make assimp-vc143-mt.lib and zlibstatic.lib into new empty folder release
+- used build_debug.bat to make assimp-vc143-mtd.lib and zlibstaticd.lib into new empty folder debug
+- copied header files and Compiler folder to assimp root folder

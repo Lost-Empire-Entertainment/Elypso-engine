@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -30,11 +30,7 @@ namespace Graphics::Shape
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
-			const string& vertShader = "",
-			const string& fragShader = "",
 			const string& diffTexture = "",
-			const float& shininess = 32,
-			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
 

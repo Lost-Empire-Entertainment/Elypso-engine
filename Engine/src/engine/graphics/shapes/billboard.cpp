@@ -1,9 +1,10 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
 #include <iostream>
+#include <filesystem>
 
 //external
 #include "glad.h"
@@ -17,6 +18,11 @@
 #include "core.hpp"
 #include "render.hpp"
 #include "selectobject.hpp"
+#include "transformcomponent.hpp"
+#include "meshcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "lightcomponent.hpp"
+#include "console.hpp"
 
 using std::cout;
 using glm::translate;
@@ -24,16 +30,23 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using std::filesystem::path;
+using std::filesystem::exists;
 
 using Graphics::Shader;
 using Graphics::Texture;
-using Graphics::Shape::Mesh;
-using Type = Graphics::Shape::Mesh::MeshType;
-using Graphics::Shape::Material;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Components::LightComponent;
+using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
 using Graphics::Render;
 using Core::Select;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::Shape
 {
@@ -41,15 +54,16 @@ namespace Graphics::Shape
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale,
-		const string& vertShader,
-		const string& fragShader,
 		const string& diffTexture,
-		const float& shininess,
-		string& name,
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-		shared_ptr<Transform> transform = make_shared<Transform>(pos, rot, scale);
+		auto obj = make_shared<GameObject>("Billboard", id);
+		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetPosition(pos);
+		transform->SetRotation(rot);
+		transform->SetScale(scale);
+		obj->SetEnableState(isEnabled);
 
 		float vertices[] =
 		{
@@ -82,28 +96,29 @@ namespace Graphics::Shape
 
 		glBindVertexArray(0);
 
-		shared_ptr<Mesh> mesh = make_shared<Mesh>(true, Type::billboard, vao, vbo, ebo);
+		auto mesh = obj->AddComponent<MeshComponent>(
+			MeshType::billboard, 
+			vao, 
+			vbo, 
+			ebo);
 
-		Shader billboardShader = Shader::LoadShader(vertShader, fragShader);
+		string vert = (path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string();
 
-		shared_ptr<Material> mat = make_shared<Material>();
-		mat->AddShader(vertShader, fragShader, billboardShader);
+		if (!exists(vert)
+			|| !exists(frag))
+		{
+			Engine::CreateErrorPopup("One of the shader paths for selected object border is invalid!");
+		}
 
-		shared_ptr<BasicShape_Variables> basicShape = make_shared<BasicShape_Variables>(shininess);
+		Shader billboardShader = Shader::LoadShader(vert, frag);
 
-		shared_ptr<GameObject> obj = make_shared<GameObject>(
-			true,
-			name,
-			id,
-			isEnabled,
-			transform,
-			mesh,
-			mat,
-			basicShape);
+		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->AddShader(vert, frag, billboardShader);
 
-		Texture::LoadTexture(obj, diffTexture, Material::TextureType::diffuse, true);
+		Texture::LoadTexture(obj, diffTexture, MaterialComponent::TextureType::diffuse, true);
 
-		Shader assignedShader = obj->GetMaterial()->GetShader();
+		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
 		assignedShader.SetInt("material.diffuse", 0);
 
@@ -111,15 +126,29 @@ namespace Graphics::Shape
 		GameObjectManager::AddTransparentObject(obj);
 		GameObjectManager::AddBillboard(obj);
 
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Successfully initialized Billboard with name " + obj->GetName() + " and ID " + to_string(obj->GetID()) + "\n");
+
 		return obj;
 	}
 
-	void Billboard::RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection)
+	void Billboard::RenderBillboard(
+		const shared_ptr<GameObject>& obj, 
+		const mat4& view, 
+		const mat4& projection)
 	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Billboard gameobject is invalid.");
+		if (obj->GetParentBillboardHolder() == nullptr) Engine::CreateErrorPopup("Billboard parent gameobject is invalid.");
+		shared_ptr<GameObject> parent = obj->GetParentBillboardHolder();
+
 		if (GameObjectManager::renderBillboards
 			&& obj->IsEnabled())
 		{
-			Shader shader = obj->GetMaterial()->GetShader();
+			auto mat = obj->GetComponent<MaterialComponent>();
+
+			Shader shader = mat->GetShader();
 
 			shader.Use();
 			shader.SetMat4("projection", projection);
@@ -130,10 +159,10 @@ namespace Graphics::Shape
 
 			mat4 model = mat4(1.0f);
 
-			vec3 pos = obj->GetParentBillboardHolder()->GetTransform()->GetPosition();
-			obj->GetTransform()->SetPosition(pos);
+			vec3 pos = parent->GetComponent<TransformComponent>()->GetPosition();
+			obj->GetComponent<TransformComponent>()->SetPosition(pos);
 
-			vec3 objectPos = obj->GetTransform()->GetPosition();
+			vec3 objectPos = obj->GetComponent<TransformComponent>()->GetPosition();
 			vec3 cameraPos = Render::camera.GetCameraPosition();
 			model = translate(model, objectPos);
 
@@ -141,14 +170,15 @@ namespace Graphics::Shape
 			rotationMatrix = inverse(rotationMatrix);
 			model = rotationMatrix;
 
-			model = scale(model, obj->GetTransform()->GetScale());
+			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 			//bind diffuse map
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, obj->GetMaterial()->GetTextureID(Material::TextureType::diffuse));
+			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::diffuse));
 
 			shader.SetMat4("model", model);
-			GLuint VAO = obj->GetMesh()->GetVAO();
+			auto mesh = obj->GetComponent<MeshComponent>();
+			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}

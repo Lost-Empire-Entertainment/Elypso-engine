@@ -1,10 +1,16 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
 #define NOMINMAX
+#ifdef _WIN32
 #include <Windows.h>
+#elif __linux__
+#include <unistd.h>
+#include <sys/wait.h>
+#include <cstring>
+#endif
 #include <iostream>
 #include <memory>
 #include <string>
@@ -16,6 +22,7 @@
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
 
+using std::cout;
 using std::exception;
 using std::runtime_error;
 using std::wstring;
@@ -45,6 +52,7 @@ namespace Utils
 {
     string File::GetOutputFromBatFile(const char* file)
     {
+#ifdef _WIN32
         char buffer[128];
         string result = "";
         string command = "\"" + string(file) + "\"";
@@ -68,6 +76,31 @@ namespace Utils
         _pclose(pipe);
 
         return result;
+#elif __linux__
+        char buffer[128];
+        string result = "";
+        string command = "\"" + string(file) + "\"";
+        FILE* pipe = popen(command.c_str(), "r");
+
+        if (!pipe) throw runtime_error("popen() failed!");
+
+        try
+        {
+            while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+            {
+                result += buffer;
+            }
+        }
+        catch (...)
+        {
+            pclose(pipe);
+            throw;
+        }
+
+        pclose(pipe);
+
+        return result;
+#endif
     }
 
     int File::RunBatFile(const string& file, bool runSeparate, BatType type)
@@ -88,6 +121,7 @@ namespace Utils
 
     void File::RunApplication(const string& parentFolderPath, const string& exePath, const string& commands)
     {
+#ifdef _WIN32
         wstring wParentFolderPath(parentFolderPath.begin(), parentFolderPath.end());
         wstring wExePath(exePath.begin(), exePath.end());
         wstring wCommands(commands.begin(), commands.end());
@@ -129,9 +163,68 @@ namespace Utils
             LocalFree(lpMsgBuf);
         }
 
-        // Close process and thread handles
+        //close process and thread handles
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
+#elif __linux__
+        //change working directory to parentFolderPath
+        if (chdir(parentFolderPath.c_str()) != 0)
+        {
+            perror("Error changing directory");
+            return;
+        }
+
+        //parse the commands into arguments
+        vector<string> args;
+        size_t pos = 0, found;
+        while ((found = commands.find(' ', pos)) != string::npos)
+        {
+            args.push_back(commands.substr(pos, found - pos));
+            pos = found + 1;
+        }
+        args.push_back(commands.substr(pos));
+
+        //prepare arguments for execvp
+        vector<char*> execArgs;
+        execArgs.push_back(const_cast<char*>(exePath.c_str()));
+        for (auto& arg : args)
+        {
+            execArgs.push_back(const_cast<char*>(arg.c_str()));
+        }
+        execArgs.push_back(nullptr);
+
+        pid_t pid = fork();
+        if (pid == -1)
+        {
+            perror("Error during fork");
+            return;
+        }
+
+        if (pid == 0)
+        {
+            //child process: execute the program
+            execvp(execArgs[0], execArgs.data());
+            perror("Error during execvp");
+            exit(EXIT_FAILURE); //exit if execvp fails
+        }
+        else
+        {
+            //parent process: wait for the child to finish
+            int status;
+            if (waitpid(pid, &status, 0) == -1)
+            {
+                perror("Error during waitpid");
+            }
+            else if (WIFEXITED(status))
+            {
+                cout << "Child exited with status: " << WEXITSTATUS(status) << "\n";
+            }
+            else
+            {
+                cout << "Child did not exit normally\n";
+            }
+        }
+#endif
     }
 
     void File::MoveOrRenameFileOrFolder(const path& sourcePath, const path& destinationPath, const bool isRenaming)
@@ -148,8 +241,8 @@ namespace Utils
         }
         if (exists(destinationPath))
         {
-            string outputType = isRenaming ? "Cannot rename source " : "Cannot move source ";
-            output = outputType + sourcePath.string() + " to destination " + destinationPath.string() + " because destination already exists!\n\n";
+            string outputType = isRenaming ? "Cannot rename source '" : "Cannot move source '";
+            output = outputType + sourcePath.string() + "' to destination '" + destinationPath.string() + "' because destination already exists!\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
@@ -161,8 +254,8 @@ namespace Utils
         {
             rename(sourcePath, destinationPath);
 
-            string outputType = isRenaming ? "Renamed " : "Moved ";
-            output = outputType + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
+            string outputType = isRenaming ? "Renamed '" : "Moved '";
+            output = outputType + sourcePath.string() + "' to '" + destinationPath.string() + "'.\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
@@ -187,7 +280,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Source path " + sourcePath.string() + " does not exist!\n\n");
+                "Error: Source path '" + sourcePath.string() + "' does not exist!\n\n");
             return;
         }
 
@@ -197,7 +290,7 @@ namespace Utils
             {
                 copy(sourcePath, destinationPath, copy_options::recursive | copy_options::overwrite_existing);
 
-                output = "Copied folder " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
+                output = "Copied folder '" + sourcePath.string() + "' to '" + destinationPath.string() + "'.\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::DEBUG,
@@ -207,7 +300,7 @@ namespace Utils
             {
                 copy_file(sourcePath, destinationPath, copy_options::overwrite_existing);
 
-                output = "Copied file " + sourcePath.string() + " to " + destinationPath.string() + ".\n\n";
+                output = "Copied file '" + sourcePath.string() + "' to '" + destinationPath.string() + "'.\n\n";
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
                     Type::DEBUG,
@@ -232,7 +325,7 @@ namespace Utils
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Error: Cannot delete file or folder " + sourcePath.string() + " because it does not exist!\n\n");
+                "Error: Cannot delete file or folder '" + sourcePath.string() + "' because it does not exist!\n\n");
             return;
         }
 
@@ -244,7 +337,7 @@ namespace Utils
                 remove_all(sourcePath);
             }
 
-            output = "Deleted " + sourcePath.string() + ".\n\n";
+            output = "Deleted '" + sourcePath.string() + "'.\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
@@ -289,7 +382,7 @@ namespace Utils
         {
             create_directory(folderPath);
 
-            output = "Created new folder at " + folderPath.string() + ".\n\n";
+            output = "Created new folder at '" + folderPath.string() + "'.\n\n";
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
@@ -306,105 +399,71 @@ namespace Utils
     }
 
     string File::AddIndex(
-        const path& parentFolderPath, 
-        const string& fileName, 
-        const string& extension,
-        const bool& bypassParenthesesCheck)
+        const path& parentFolderPath,
+        const string& fileName,
+        const string& extension)
     {
-        string newFilePath = parentFolderPath.string() + "/" + fileName + extension;
+        string newFilePath = (path(parentFolderPath) / (fileName + extension)).string();
 
         if (exists(newFilePath))
         {
-            //simply add (1) after file/folder if it doesnt already have parentheses
-            if (!bypassParenthesesCheck
-                && fileName.find('(') == string::npos 
-                && fileName.find(')') == string::npos)
+            //extract the actual base name (before the last '(')
+            string baseName = fileName;
+            size_t openParentPos = fileName.find_last_of('(');
+            if (openParentPos != string::npos)
             {
-                newFilePath = parentFolderPath.string() + "/" + fileName + " (1)" + extension;
-
-                return newFilePath;
+                baseName = fileName.substr(0, openParentPos - 1);
             }
-            //try to create new file/folder with first highest available number
-            else
+
+            //find highest available index for this exact base name
+            int highestNumber = 1;
+            for (const auto& entry : directory_iterator(parentFolderPath))
             {
-                string value = bypassParenthesesCheck ? "1" : GetValueBetweenParentheses(fileName);
-                if (value == "")
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::EXCEPTION,
-                        "Error: Value between parentheses for '" + fileName + "' was empty so an index couldn't be added!\n");
+                string entryName = path(entry).stem().string();
 
-                    return newFilePath;
+                //extract the base name of the existing entry
+                string entryBaseName = entryName;
+                size_t entryOpenParentPos = entryName.find_last_of('(');
+                if (entryOpenParentPos != string::npos)
+                {
+                    entryBaseName = entryName.substr(0, entryOpenParentPos - 1);
                 }
 
-                int convertedValue = -1;
-                try
+                //only compare entries with the exact same base name
+                if (entryBaseName == baseName)
                 {
-                    convertedValue = stoi(value);
-                }
-                catch (const exception& e) 
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::EXCEPTION,
-                        "Error: Exception occurred while processing value '" + value + "' for '" + fileName + "': " + e.what() + "\n");
-                    
-                    return newFilePath;
-                }
-                catch (...) 
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::EXCEPTION,
-                        "Error: An unknown exception occurred while processing value '" + value + "' for '" + fileName + "'\n");
-                    
-                    return newFilePath;
-                }
-
-                //return highest number compared to all existing gameobject folders
-                int highestNumber = 1;
-                for (const auto& entry : directory_iterator(parentFolderPath))
-                {
-                    string entryName = path(entry).stem().string();
-
-                    if (is_directory(entry)
-                        && GetValueBetweenParentheses(entryName) != "")
+                    string entryValue = GetValueBetweenParentheses(entryName);
+                    if (!entryValue.empty() && all_of(entryValue.begin(), entryValue.end(), ::isdigit))
                     {
-                        string entryValue = GetValueBetweenParentheses(entryName);
-                        int entryConvertedValue = -1;
-
-                        try
-                        {
-                            entryConvertedValue = stoi(entryValue);
-                        }
-                        catch (...)
-                        {
-                            ConsoleManager::WriteConsoleMessage(
-                                Caller::FILE,
-                                Type::DEBUG,
-                                "Value between parentheses '" + entryValue + "' for '" + entryName + "' was not an integer so it was ignored.\n");
-                            continue;
-                        }
-
-                        if (entryConvertedValue != -1
-                            && entryConvertedValue >= highestNumber)
+                        int entryConvertedValue = stoi(entryValue);
+                        if (entryConvertedValue >= highestNumber)
                         {
                             highestNumber = entryConvertedValue + 1;
                         }
                     }
                 }
-
-                string cleanedFileName = fileName;
-                size_t pos = fileName.find('(');
-                if (pos != string::npos
-                    && pos > 0)
-                {
-                    cleanedFileName = fileName.substr(0, pos - 1);
-                }
-
-                newFilePath = parentFolderPath.string() + "\\" + cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;
             }
+
+            //remove existing index (if any) before appending new one
+            string cleanedFileName = fileName;
+            size_t cleanOpenParentPos = fileName.find_last_of('(');
+            size_t cleanCloseParentPos = fileName.find_last_of(')');
+
+            if (cleanOpenParentPos != string::npos && cleanCloseParentPos != string::npos && cleanCloseParentPos > cleanOpenParentPos)
+            {
+                string potentialNumber = fileName.substr(cleanOpenParentPos + 1, cleanCloseParentPos - cleanOpenParentPos - 1);
+                if (all_of(potentialNumber.begin(), potentialNumber.end(), ::isdigit))
+                {
+                    cleanedFileName = fileName.substr(0, cleanOpenParentPos - 1);
+                }
+            }
+
+            //ensure cleaned filename is not empty
+            if (cleanedFileName.empty()) cleanedFileName = fileName;
+
+            //create new indexed filename
+            string newFileName = cleanedFileName + " (" + to_string(highestNumber) + ")" + extension;
+            newFilePath = (path(parentFolderPath) / newFileName).string();
         }
 
         return newFilePath;

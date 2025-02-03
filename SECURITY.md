@@ -1,3 +1,3 @@
-# Security Policy
+### Reporting a security vulnerability
 
-Please send an email to sanderveski@gmail.com if you have discovered a security vulnerability, do not post it as an Issue as this may show others how to abuse it and cause more harm to everyone else.
+Lost Empire Entertainment accepts all security vulnerability concerns or discovered security bugs at [our email](mailto:sanderveski@gmail.com), do not post them as Issues.

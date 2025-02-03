@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -20,7 +20,7 @@ namespace Graphics::GUI
 		static void RenderImportAsset();
 	private:
 		static inline string newName = "";
-		static constexpr int bufferSize = 16;
+		static constexpr int bufferSize = 64;
 
 		static inline char name[bufferSize];
 

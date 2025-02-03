@@ -1,32 +1,46 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
+
+#include <algorithm>
 
 //external
 #include "imgui.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
+#include "glm.hpp"
 
 //engine
 #include "selectobject.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+#include "meshcomponent.hpp"
+#include "transformcomponent.hpp"
+
 using glm::inverse;
 using glm::normalize;
-using std::min;
-using std::max;
 using glm::vec4;
 using std::numeric_limits;
 using glm::quat;
 using glm::scale;
+using std::ranges::max;
+using std::ranges::min;
 
 using Graphics::Render;
-using Type = Graphics::Shape::Mesh::MeshType;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::TransformComponent;
+using Type = Graphics::Components::MeshComponent::MeshType;
 
 namespace Core
 {
-	Select::Ray Select::RayFromMouse(float width, float height, double mouseX, double mouseY, const mat4& viewMatrix, const mat4& projectionMatrix)
+	Select::Ray Select::RayFromMouse(
+		float width, 
+		float height, 
+		double mouseX, 
+		double mouseY, 
+		const mat4& viewMatrix, 
+		const mat4& projectionMatrix)
 	{
 		float x = (2.0f * static_cast<float>(mouseX)) / width - 1.0f;
 		float y = 1.0f - (2.0f * static_cast<float>(mouseY)) / height;
@@ -41,7 +55,9 @@ namespace Core
 		return Ray(Render::camera.GetCameraPosition(), rayDirection);
 	}
 
-	int Select::CheckRayObjectIntersections(const Ray& ray, const vector<shared_ptr<GameObject>>& objects)
+	int Select::CheckRayObjectIntersections(
+		const Ray& ray, 
+		const vector<shared_ptr<GameObject>>& objects)
 	{
 		float maxRange = 1000.0f;
 		float closestDistance = maxRange;
@@ -49,8 +65,10 @@ namespace Core
 
 		for (int i = 0; i < objects.size(); i++)
 		{
-			Type objType = objects[i]->GetMesh()->GetMeshType();
+			auto mesh = objects[i]->GetComponent<MeshComponent>();
+			Type objType = mesh->GetMeshType();
 			if (objType == Type::model
+				|| objType == Type::empty
 				|| objType == Type::point_light
 				|| objType == Type::spot_light
 				|| objType == Type::directional_light)
@@ -76,21 +94,24 @@ namespace Core
 		const shared_ptr<GameObject>& shape,
 		float* distance)
 	{
-		Type objType = shape->GetMesh()->GetMeshType();
+		auto mesh = shape->GetComponent<MeshComponent>();
+		Type objType = mesh->GetMeshType();
 
 		if (objType == Type::model
+			|| objType == Type::empty
 			|| objType == Type::point_light
 			|| objType == Type::spot_light
 			|| objType == Type::directional_light)
 		{
 			vec3 minBound, maxBound;
-			vec3 pos = shape->GetTransform()->GetPosition();
-			vec3 objectScale = shape->GetTransform()->GetScale();
-			quat rotation = quat(radians(shape->GetTransform()->GetRotation()));
+			auto transform = shape->GetComponent<TransformComponent>();
+			vec3 pos = transform->GetPosition();
+			vec3 objectScale = transform->GetScale();
+			quat rotation = quat(radians(transform->GetRotation()));
 
 			if (objType == Type::model)
 			{
-				const vector<AssimpVertex>& vertices = shape->GetMesh()->GetVertices();
+				const vector<AssimpVertex>& vertices = mesh->GetVertices();
 
 				//complex bounding box for models
 				CalculateInteractionBoxFromVertices(vertices, minBound, maxBound, vec3(0.0f), vec3(1.0f));
@@ -173,13 +194,13 @@ namespace Core
 		{
 			vec3 transformedPos = position + vertex.pos * scale;
 
-			minBound.x = std::min(minBound.x, transformedPos.x);
-			minBound.y = std::min(minBound.y, transformedPos.y);
-			minBound.z = std::min(minBound.z, transformedPos.z);
+			minBound.x = min(minBound.x, transformedPos.x);
+			minBound.y = min(minBound.y, transformedPos.y);
+			minBound.z = min(minBound.z, transformedPos.z);
 
-			maxBound.x = std::max(maxBound.x, transformedPos.x);
-			maxBound.y = std::max(maxBound.y, transformedPos.y);
-			maxBound.z = std::max(maxBound.z, transformedPos.z);
+			maxBound.x = max(maxBound.x, transformedPos.x);
+			maxBound.y = max(maxBound.y, transformedPos.y);
+			maxBound.z = max(maxBound.z, transformedPos.z);
 		}
 	}
 }

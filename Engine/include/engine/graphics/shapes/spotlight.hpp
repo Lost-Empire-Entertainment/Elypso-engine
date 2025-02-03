@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <filesystem>
 
 //external
 #include "glm.hpp"
@@ -22,6 +23,7 @@ namespace Graphics::Shape
 	using glm::mat4;
 	using std::shared_ptr;
 	using std::string;
+	using std::filesystem::path;
 
 	using Core::Engine;
 
@@ -36,8 +38,6 @@ namespace Graphics::Shape
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
 			const string& txtFilePath = "",
-			const string& vertShader = Engine::filesPath + "\\shaders\\Basic_model.vert",
-			const string& fragShader = Engine::filesPath + "\\shaders\\Basic.frag",
 			const vec3& diffuse = vec3(1),
 			const float& intensity = 1.0f,
 			const float& distance = 1.0f,
@@ -46,20 +46,17 @@ namespace Graphics::Shape
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true,
-			const bool& isMeshEnabled = true,
 
 			//
 			// BILLBOARD VALUES
 			//
 
-			const string& billboardVertShader = Engine::filesPath + "\\shaders\\Basic_texture.vert",
-			const string& billboardFragShader = Engine::filesPath + "\\shaders\\Basic_texture.frag",
-			const string& billboardDiffTexture = Engine::filesPath + "\\icons\\spotLight.png",
-			const float& billboardShininess = 32,
-			string& billboardName = tempName,
 			unsigned int& billboardID = tempID,
 			const bool& isBillboardEnabled = true);
 
-		static void RenderSpotLight(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
+		static void RenderSpotLight(
+			const shared_ptr<GameObject>& obj, 
+			const mat4& view, 
+			const mat4& projection);
 	};
 }

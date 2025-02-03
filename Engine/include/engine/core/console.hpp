@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -48,8 +48,6 @@ namespace Core
 		static void CloseLogger();
 
 		static void ParseConsoleCommand(const string& message);
-
-		static void PrintSelectObjectData();
 
 		/// <summary>
 		/// Print selected message to in-game console.

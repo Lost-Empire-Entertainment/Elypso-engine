@@ -1,4 +1,4 @@
-//Copyright(C) 2024 Lost Empire Entertainment
+//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -26,7 +26,7 @@ namespace Graphics::GUI
 		static void RenderConsole();
 		static void AddTextToConsole(const string& message);
 	private:
-		static inline char inputTextBuffer[128];
+		static inline char inputTextBuffer[1024];
 		static constexpr int maxConsoleMessages = 1000;
 	};
 }
