@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 //engine
 #include "gameobject.hpp"
@@ -18,6 +19,7 @@ namespace Graphics::GUI
 	using std::string;
 	using std::vector;
 	using std::shared_ptr;
+	using std::unordered_map;
 
 	using Graphics::Components::MaterialComponent;
 	using Graphics::Shape::GameObject;
@@ -58,10 +60,18 @@ namespace Graphics::GUI
 
 		static void RenderProjectItemsList();
 	private:
+		static inline bool renderLargeImportConfirm;
 		static inline bool isContentVectorFilled;
 		static inline vector<string> content;
 
+		static inline string name;
+		static inline double size;
+
 		static void RenderProjectItemsListContent();
+
+		static void RenderLargeInitializeConfirm();
+		static void ModelImportCheck();
+		static void Initialize();
 	};
 }
 #endif

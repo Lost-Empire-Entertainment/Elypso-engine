@@ -27,6 +27,7 @@
 #include "audioplayercomponent.hpp"
 #include "audio.hpp"
 #include "meshcomponent.hpp"
+#include "stringUtils.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -35,6 +36,8 @@ using std::filesystem::is_directory;
 using std::filesystem::is_regular_file;
 using std::exception;
 using std::cout;
+using std::filesystem::file_size;
+using std::to_string;
 
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
@@ -49,6 +52,7 @@ using Graphics::GUI::GUISettings;
 using Graphics::Components::AudioPlayerComponent;
 using Core::Audio;
 using Graphics::Components::MeshComponent;
+using Utils::String;
 
 namespace Graphics::GUI
 {
@@ -85,9 +89,10 @@ namespace Graphics::GUI
 			&& ImGui::Begin(listType.c_str(), NULL, windowFlags))
 		{
 			RenderProjectItemsListContent();
-
 			ImGui::End();
 		}
+
+		if (renderLargeImportConfirm) RenderLargeInitializeConfirm();
 	}
 
 	void GUIProjectItemsList::RenderProjectItemsListContent()
@@ -312,92 +317,7 @@ namespace Graphics::GUI
 			}
 			case Type::GameobjectModel:
 			{
-				//store old gameobject data
-				string objName = obj->GetName();
-				unsigned int objID = obj->GetID();
-				vec3 objPos = obj->GetTransform()->GetPosition();
-				vec3 objRot = obj->GetTransform()->GetRotation();
-				vec3 objScale = obj->GetTransform()->GetScale();
-
-				//store model origin and target path
-				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
-				string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
-				string targetFolderName{};
-				for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath))
-				{
-					string pathName = path(entry).stem().string();
-					if (obj->GetName() == pathName)
-					{
-						targetFolderName = path(entry).stem().string();
-						break;
-					}
-				}
-				string targetPath = (path(Engine::currentGameobjectsPath) / targetFolderName / fileAndExtension).string();
-
-				//store audio player component data if it exists
-				bool is3D{};
-				float maxRange{};
-				float minRange{};
-				float volume{};
-				string audioFilePath{};
-				auto apc = obj->GetComponent<AudioPlayerComponent>();
-				if (apc)
-				{
-					is3D = apc->Is3D();
-					maxRange = apc->GetMaxRange();
-					minRange = apc->GetMinRange();
-					volume = apc->GetVolume();
-					audioFilePath = apc->GetName();
-				}
-
-				//delete old gameobject and its model file
-				GameObjectManager::DestroyGameObject(obj, false);
-				//then create new folder
-				File::CreateNewFolder(path(targetPath).parent_path().string());
-				//then copy model from origin to target path
-				File::CopyFileOrFolder(originPath, targetPath);
-				
-				//and finally rename model to correct name
-				string newCorrectFolder = path(targetPath).parent_path().string();
-				string nameAndExtension = targetFolderName + path(targetPath).extension().string();
-				string newCorrectPath = (path(newCorrectFolder) / nameAndExtension).string();
-				File::MoveOrRenameFileOrFolder(targetPath, newCorrectPath, true);
-
-				//then initialize in scene
-				Importer::Initialize(
-					objPos,
-					objRot,
-					objScale,
-					newCorrectPath,
-					"DEFAULTDIFF",
-					"DEFAULTSPEC",
-					"EMPTY",
-					"EMPTY",
-					false,
-					1.0f,
-					objName,
-					objID);
-				//and apply audio player component data
-				if (audioFilePath != "")
-				{
-					for (const auto& obj : GameObjectManager::GetObjects())
-					{
-						if (obj->GetName() == targetFolderName)
-						{
-							shared_ptr<GameObject> initializedObj = obj;
-							auto emptyAPC = initializedObj->AddComponent<AudioPlayerComponent>();
-
-							emptyAPC->Set3DState(is3D);
-							emptyAPC->SetMaxRange(maxRange);
-							emptyAPC->SetMinRange(minRange);
-							emptyAPC->SetVolume(volume);
-							emptyAPC->SetName(audioFilePath);
-
-							break;
-						}
-					}
-				}
-
+				ModelImportCheck();
 				break;
 			}
 			case Type::Scene:
@@ -454,6 +374,182 @@ namespace Graphics::GUI
 
 			isContentVectorFilled = false;
 			renderProjectItemsList = false;
+		}
+	}
+
+	void GUIProjectItemsList::RenderLargeInitializeConfirm()
+	{
+		ImVec2 windowSize = ImVec2(500.0f, 300.0f);
+		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
+
+		ImVec2 windowPos = EngineGUI::CenterWindow(windowSize);
+		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Appearing);
+
+		ImGuiWindowFlags flags =
+			ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoDocking
+			| ImGuiWindowFlags_NoCollapse
+			| ImGuiWindowFlags_NoSavedSettings
+			| ImGuiWindowFlags_NoTitleBar;
+
+
+		string title = "##import_size_warning";
+		ImGui::Begin(title.c_str(), nullptr, flags);
+
+		string description = "Selected model '" + name + "' size is over " + to_string(static_cast<int>(size)) + "MB! Proceed with import?";
+		//text padding on both sides
+		float sidePadding = 20.0f;
+		//calculate available width for text after padding
+		float textWidth = windowSize.x - (sidePadding * 2);
+
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + sidePadding);
+		ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + textWidth);
+		ImGui::TextWrapped("%s", description.c_str());
+		ImGui::PopTextWrapPos();
+
+		ImVec2 currentWindowPos = ImGui::GetWindowPos();
+
+		ImVec2 windowCenter(
+			currentWindowPos.x + windowSize.x * 0.5f,
+			currentWindowPos.y + windowSize.y * 0.5f);
+
+		ImVec2 buttonSize(120, 50);
+
+		ImVec2 button1Pos(
+			windowSize.x * 0.4f - buttonSize.x,
+			(ImGui::GetWindowHeight() / 2) - (buttonSize.y / 2));
+		ImVec2 button2Pos(
+			windowSize.x * 0.6f,
+			(ImGui::GetWindowHeight() / 2) - (buttonSize.y / 2));
+
+		ImGui::SetCursorPos(button1Pos);
+		if (ImGui::Button("Import", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleCaller::INPUT,
+				ConsoleType::INFO,
+				"Confirmed large model '" + name + "' import.\n");
+			Initialize();
+			renderLargeImportConfirm = false;
+		}
+
+		ImGui::SetCursorPos(button2Pos);
+		if (ImGui::Button("Cancel", buttonSize))
+		{
+			ConsoleManager::WriteConsoleMessage(
+				ConsoleCaller::INPUT,
+				ConsoleType::INFO,
+				"Cancelled large model '" + name + "' import.\n");
+			renderLargeImportConfirm = false;
+		}
+
+		ImGui::End();
+	}
+
+	void GUIProjectItemsList::ModelImportCheck()
+	{
+		bool confirmInitialize = false;
+		size_t originalSize = file_size(selectedPath);
+		name = path(selectedPath).stem().string();
+		size = static_cast<double>(originalSize) / (1024 * 1024);
+		double fileSizeLimit = 100; //100MB to trigger file size warning
+		if (size > fileSizeLimit)
+		{
+			cout << "!!!! dont initialize, size is " + to_string(size) + "MB...\n";
+			renderLargeImportConfirm = true;
+		}
+		else
+		{
+			cout << "!!!! initialize, size is " + to_string(size) + "MB...\n";
+			Initialize();
+		}
+	}
+
+	void GUIProjectItemsList::Initialize()
+	{
+		//store model origin and target path
+		string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
+		string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
+		string targetFolderName{};
+		for (const auto& entry : directory_iterator(Engine::currentGameobjectsPath))
+		{
+			string pathName = path(entry).stem().string();
+			if (name == pathName)
+			{
+				targetFolderName = path(entry).stem().string();
+				break;
+			}
+		}
+		string targetPath = (path(Engine::currentGameobjectsPath) / targetFolderName / fileAndExtension).string();
+
+		//delete old gameobject and its model file
+		GameObjectManager::DestroyGameObject(obj, false);
+		//then create new folder
+		File::CreateNewFolder(path(targetPath).parent_path().string());
+		//then copy model from origin to target path
+		File::CopyFileOrFolder(originPath, targetPath);
+
+		//and finally rename model to correct name
+		string newCorrectFolder = path(targetPath).parent_path().string();
+		string nameAndExtension = targetFolderName + path(targetPath).extension().string();
+		string newCorrectPath = (path(newCorrectFolder) / nameAndExtension).string();
+		File::MoveOrRenameFileOrFolder(targetPath, newCorrectPath, true);
+
+		//general data
+		vec3 pos = obj->GetTransform()->GetPosition();
+		vec3 rot = obj->GetTransform()->GetRotation();
+		vec3 scale = obj->GetTransform()->GetScale();
+		string name = obj->GetName();
+		unsigned int ID = obj->GetID();
+
+		//audio data
+		bool is3D{};
+		float maxRange{};
+		float minRange{};
+		float volume{};
+		string audioFilePath{};
+		auto apc = obj->GetComponent<AudioPlayerComponent>();
+		if (apc)
+		{
+			is3D = apc->Is3D();
+			maxRange = apc->GetMaxRange();
+			minRange = apc->GetMinRange();
+			volume = apc->GetVolume();
+			audioFilePath = apc->GetName();
+		}
+
+		Importer::Initialize(
+			pos,
+			rot,
+			scale,
+			newCorrectPath,
+			"DEFAULTDIFF",
+			"DEFAULTSPEC",
+			"EMPTY",
+			"EMPTY",
+			false,
+			1.0f,
+			name,
+			ID);
+
+		if (audioFilePath != "")
+		{
+			for (const auto& obj : GameObjectManager::GetObjects())
+			{
+				if (obj->GetName() == name)
+				{
+					shared_ptr<GameObject> initializedObj = obj;
+					auto apc = initializedObj->AddComponent<AudioPlayerComponent>();
+
+					apc->Set3DState(is3D);
+					apc->SetMaxRange(maxRange);
+					apc->SetMinRange(minRange);
+					apc->SetVolume(volume);
+					apc->SetName(audioFilePath);
+
+					break;
+				}
+			}
 		}
 	}
 }
