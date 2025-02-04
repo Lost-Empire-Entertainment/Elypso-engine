@@ -143,8 +143,8 @@ namespace Graphics::Shape
 			sort(transparentObjects.begin(), transparentObjects.end(),
 				[&camPos, &view](const auto& a, const auto& b)
 				{
-					vec3 objectPositionA = a->GetComponent<TransformComponent>()->GetPosition();
-					vec3 objectPositionB = b->GetComponent<TransformComponent>()->GetPosition();
+					vec3 objectPositionA = a->template GetComponent<TransformComponent>()->GetPosition();
+					vec3 objectPositionB = b->template GetComponent<TransformComponent>()->GetPosition();
 					
 					float distanceA = length(objectPositionA - camPos);
 					float distanceB = length(objectPositionB - camPos);
