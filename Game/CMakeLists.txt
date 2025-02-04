@@ -31,6 +31,11 @@ remove_definitions(-DDISCORD_MODE)
 
 project("Game")
 
+if (MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY 
+        "$<IF:$<CONFIG:Debug>,MultiThreadedDebug,MultiThreaded>")
+endif()
+
 # Set parent path
 get_filename_component(PARENT_DIR "${CMAKE_SOURCE_DIR}" DIRECTORY)
 set(PARENT_DIR_PATH "${PARENT_DIR}")
