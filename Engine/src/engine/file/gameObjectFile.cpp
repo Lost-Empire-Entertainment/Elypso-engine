@@ -813,8 +813,8 @@ namespace EngineFile
 			foundObj->GetComponent<TransformComponent>()->SetRotation(rot);
 			foundObj->GetComponent<TransformComponent>()->SetScale(scale);
 
-			string vert = (path(Engine::filesPath) / "shaders" / "Gameobject.vert").string();
-			string frag = (path(Engine::filesPath) / "shaders" / "Gameobject.frag").string();
+			string vert = (path(Engine::filesPath) / "shaders" / "GameObject.vert").string();
+			string frag = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string();
 			Shader modelShader = Shader::LoadShader(vert, frag);
 			auto mat = foundObj->AddComponent<MaterialComponent>();
 			mat->AddShader(vert, frag, modelShader);
