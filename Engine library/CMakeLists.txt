@@ -181,7 +181,13 @@ target_include_directories(Elypso_engine PRIVATE
 if (WIN32)
 	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
 else()
-	target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+	find_package(Wayland QUIET)
+	find_package(X11 QUIET)
+	if (Wayland_FOUND)
+		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp Wayland::Client)
+	elseif (X11_FOUND)
+		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+	endif()
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK
