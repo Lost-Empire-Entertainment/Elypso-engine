@@ -1,4 +1,4 @@
-# Elypso Engine Perpetual Free License (Condensed)
+# Elypso Engine Perpetual Free License
 
 **Version 2.0**
 
