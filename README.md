@@ -8,8 +8,8 @@
 
 The documentation for **Elypso engine** will be found at the [website](https://elypsoengine.com)  in the near future so please look there for information, this README file will not cover how to install or use this program.
 
-If you intend to download the source code and compile from source then please also download (Elypso hub)[https://github.com/Lost-Empire-Entertainment/Elypso-hub]
- and (Elypso compiler)[https://github.com/Lost-Empire-Entertainment/Elypso-compiler] and place all three repository folders in the same folder, they are not included in this repository. Once they are downloaded make sure they are all under the same parent folder or else they may not compile correctly.
+If you intend to download the source code and compile from source then please also download [Elypso hub](https://github.com/Lost-Empire-Entertainment/Elypso-hub)
+ and [Elypso compiler](https://github.com/Lost-Empire-Entertainment/Elypso-compiler) and place all three repository folders in the same folder, they are not included in this repository. Once they are downloaded make sure they are all under the same parent folder or else they may not compile correctly.
 
 The release version already has Hub, Engine and Game folders, you do not need to download Hub or Compiler, the Compiler is only used for compiling Hub, Engine and Engine library from source and the Release version already provides functional 0.1.2 and previous versions of the Hub, Engine and Game that are ready for use out of the box with all the required prerequisite information. 
  
