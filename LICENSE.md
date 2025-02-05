@@ -15,6 +15,9 @@
 - **Compiled Output** of the Engine or Library (the **“Compiled Output”**) remains covered by this License.  
 - **User-Created Files** (e.g., your own game projects, assets) belong to you and are **not** governed by this License.
 
+### 1.3 Release Mode Hub Inclusion
+- If this version includes the **Hub** folder and its compiled content (the **Hub**), it falls under the same terms as the **Engine** and **Library** in this License.
+
 ---
 
 ## 2. Limitations on Commercial Transfer
