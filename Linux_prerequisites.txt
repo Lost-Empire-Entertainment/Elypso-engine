@@ -1,28 +1,47 @@
-----------------------------------------------------------------------
-HOW TO SET UP NECESSARY DEPENDENCIES TO RUN THE ENGINE ON LINUX
-----------------------------------------------------------------------
+===========================================================================
+THESE COMMANDS SHOULD ALWAYS BE RAN BEFORE RUNNING 
+ANY OF THE ELYPSO PROGRAMS FOR THE FIRST TIME
+===========================================================================
 
-# install essential build tools (GCC, G++, make)
-sudo apt install build-essential -y
+--- SYSTEM SETUP ---
+sudo apt update                         # Update the package list
+sudo apt upgrade -y                     # Upgrade all installed packages
+sudo apt install -y build-essential     # Essential build tools (compilers, linkers, etc.)
+sudo apt install -y gdb                 # GNU Debugger (GDB) for debugging applications
+sudo apt install -y cmake               # CMake, a build system and project management tool
 
-# install GNU debugger
-sudo apt install gdb -y
+--- ASSET HANDLING AND GUI UTILITIES ---
+sudo apt install -y libassimp-dev       # Assimp (Open Asset Import Library for 3D model loading)
+sudo apt install -y zenity              # Zenity (for GUI dialogs in shell scripts)
 
-# install CMake for project configuration
-sudo apt install cmake -y
+===========================================================================
+IF NONE OF THE ELYPSO PROGRAMS DONT RUN, TRY THESE COMMANDS
+===========================================================================
 
-# install GUI tools for dialogs and file handling
-sudo apt install zenity -y
-sudo apt install xdg-utils -y
+--- GRAPHICS DRIVERS (Choose based on your GPU) ---
+### Check GPU Vendor (Run this command to identify your GPU)
+lspci | grep -E "VGA|3D"
 
-# install Mesa utilities for OpenGL support
-sudo apt install mesa-utils -y
+### NVIDIA Drivers (For GeForce, RTX, GTX GPUs)
+sudo apt install -y nvidia-driver-535   # Install NVIDIA driver (replace 535 with the latest available version)
+sudo apt install -y nvidia-utils-535    # NVIDIA utilities (for GPU management)
+sudo apt install -y libnvidia-egl-wayland1  # NVIDIA Wayland support (required for Wayland sessions)
 
-# install X11 libraries for window management
-sudo apt install libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev -y
+### AMD/Intel Drivers (For Radeon GPUs/Intel Integrated Graphics - Mesa)
+sudo apt install -y libgl1-mesa-dev     # Mesa OpenGL development libraries
+sudo apt install -y libglu1-mesa-dev    # Mesa GLU development libraries (for higher-level OpenGL utilities)
 
-# install GLFW3 for window and context management
-sudo apt install libglfw3-dev -y
+--- X11 AND WAYLAND WINDOW MANAGEMENT LIBRARIES ---
+### X11 Libraries (For Traditional Xorg Support - Only Needed for X11)
+sudo apt install -y libx11-dev          # X11 core development libraries (basic windowing)
+sudo apt install -y libxrandr-dev       # XRandR (for screen resolution and refresh rate control)
 
-# install Assimp for model importing
-sudo apt install libassimp-dev -y
+### Wayland Libraries (For Modern Display Protocols - Only Needed for Wayland)
+sudo apt install -y libwayland-dev      # Wayland core development library
+sudo apt install -y libegl1-mesa-dev    # EGL library (Required for both X11 and Wayland OpenGL rendering)
+sudo apt install -y libgles2-mesa-dev   # OpenGL ES 2.0 development libraries (Required for both X11 and Wayland)
+sudo apt install -y libwayland-egl1     # Wayland EGL integration (Required if running OpenGL apps on Wayland)
+sudo apt install -y xwayland            # For running X11 applications on Wayland
+
+--- GRAPHICS LIBRARIES (For OpenGL and Rendering) ---
+sudo apt install -y libglfw3-dev        # GLFW (an OpenGL windowing library, works on both X11 and Wayland)

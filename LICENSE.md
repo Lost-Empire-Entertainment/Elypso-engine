@@ -1,62 +1,91 @@
-Elypso Engine Proprietary License
-Version 1.8
+# Elypso Engine Perpetual Free License
 
-1. Definitions
+**Version 2.0**
 
-   - "Licensor": Lost Empire Entertainment, the entity distributing Elypso Engine.
-   - "Elypso Engine": The software used for creating Games.
-   - "Engine library": The `.lib` file used to avoid rewriting Elypso Engine code.
-   - "Game": A collection of files and source code provided by the Licensor, with some components licensed under the MIT license and others subject to third-party licenses.
-   - "End User": Any individual or entity using Elypso Engine, the Engine library, or the Game.
-   - "Third-party Content": Content subject to separate licenses, as listed in `LIBRARIES.md` for files within `_external_shared/`.
+---
 
-2. Grant of License
+## 1. License Grant
 
-   The Licensor grants you a worldwide, royalty-free, non-exclusive, non-transferable license to use, modify, and distribute Elypso Engine and the Engine library, subject to the terms of this license and compliance with all applicable laws and regulations. The Game is distributed under separate licensing terms and is not bound by the restrictions of this license, except where explicitly stated.
+### 1.1 Free Use
+- The Engine folder and its content (the **“Engine”**), the Elypso library and its content (the **“Library”**), and the Game folder and its content (the **“Game”**) are provided **free of charge**.  
+- Anyone, worldwide, may use them for **any project, forever**, under the conditions of this License.
 
-3. Scope of License
+### 1.2 Scope & Ownership
+- This License applies **only** to files **owned or distributed** by **Lost Empire Entertainment** (the **“Licensor”**) within the Engine, Library, and Game folders.  
+- **Compiled Output** of the Engine or Library (the **“Compiled Output”**) remains covered by this License.  
+- **User-Created Files** (e.g., your own game projects, assets) belong to you and are **not** governed by this License.
 
-   This license applies to all content in this repository, with the following exclusions:
-   - Third-party libraries in `_external_shared/`, subject to their respective licenses listed in `LIBRARIES.md`.
-   - Fonts located in `Engine/files/fonts/` and `Game/files/fonts/`, subject to their original licenses.
-   - DLL files located in `Engine/files/external dlls/` and `Game/files/external dlls/`.
-   - The setup archive `Windows_prerequisites.7z`, which contains additional dependencies with their respective licenses.
-   - The Game, which is provided under separate licensing terms and not governed by this license.
+### 1.3 Release Mode Hub Inclusion
+- If this version includes the **Hub** folder and its compiled content (the **Hub**), it falls under the same terms as the **Engine** and **Library** in this License.
 
-4. Restrictions
+---
 
-   You may not:
-   - Sublicense, sell, rent, or lease Elypso Engine or the Engine library without prior written consent from the Licensor.
-   - Remove or alter licenses, copyright notices, trademarks, or other proprietary rights notices contained within Elypso Engine or the Engine library.
-   - Use the Licensor’s name, logo, or trademarks to endorse or promote products derived from Elypso Engine without prior written permission.
-   - Use Elypso Engine or the Engine library in violation of applicable laws or regulations, including but not limited to unauthorized distribution, reverse engineering, or modification beyond the scope permitted by this license.
+## 2. Limitations on Commercial Transfer
+- You may **not** sell, rent, lease, or otherwise trade the Engine or Library, or any part thereof, for monetary value or other consideration.  
+- The Game content (found in the Game folder) is subject to separate rules in **Section 4**.
 
-5. Proprietary Rights
+---
 
-   Elypso Engine, the Engine library, and all associated intellectual property rights remain the exclusive property of the Licensor. The Game is provided under its own licensing terms, with third-party components retaining their original ownership and licensing conditions. All rights not expressly granted are reserved.
+## 3. Retention of Notices
+- You may **not** remove, modify, or obscure any copyright notices, tags, attributions, or proprietary notices within the Engine, Library, or their source files.  
+- The Game folder has separate rules under **Section 4**.
 
-6. Third-party Content
+---
 
-   Elypso Engine, the Engine library, and the Game template utilize third-party libraries listed in `LIBRARIES.md`. Each library's license and details can be found in its respective `_external_shared/` folder. Lost Empire Entertainment does not own or contribute to these libraries, and all rights belong to their respective developers.
+## 4. Game Content: Ownership and Transfer
 
-   For a complete list of third-party libraries and their license terms, refer to `LIBRARIES.md`. The Licensor disclaims responsibility for unauthorized or illegal use of these libraries, and you agree to indemnify the Licensor against any claims arising from such use.
+### 4.1 Ownership
+- Content in the Game folder belongs to you (except any third-party libraries noted in **Section 6**).
 
-7. Disclaimer of Warranty
+### 4.2 Modification and Redistribution
+- You **may** modify, distribute, sell, rent, lease, or otherwise trade the Game or any part of it, provided:
+  - You comply with all relevant third-party licenses for any libraries you do **not** remove.
+  - You retain any necessary copyright or proprietary notices required by those third-party libraries.
 
-   Elypso Engine and the Engine library are provided "AS IS," without any warranties, express or implied, including but not limited to merchantability, fitness for a particular purpose, and non-infringement. The Licensor does not guarantee uninterrupted or error-free operation. The Game is provided under its own licensing terms, which include separate warranty disclaimers.
+---
 
-8. Termination
+## 5. Modification and Redistribution of Engine/Library
+- You **may** modify and redistribute the Engine and Library (including the Compiled Output) as long as:
+  - All original notices remain intact.
+  - You continue to comply with this License.
 
-   This license will terminate automatically if you fail to comply with any of its terms. Upon termination, you must cease all use of Elypso Engine and the Engine library and destroy all copies in your possession. The Game remains unaffected by the termination of this license and continues to be governed by its separate license.
+---
 
-9. Governing Law
+## 6. Exclusions
+- This License does **not** apply to any **third-party libraries**, including (but not limited to) those located in `_external_shared/`.  
+- It also does **not** apply to any **files created by or generated from** those third-party libraries, including any third-party output produced during compilation of the Engine, Library, or Game.
 
-   This license is governed by the laws of the Licensor’s jurisdiction, without regard to conflict of law provisions.
+---
 
-10. Entire Agreement
+## 7. Disclaimer of Warranty & Assumption of Risk
 
-   This license constitutes the entire agreement between you and the Licensor concerning Elypso Engine and the Engine library, superseding any prior agreements. The Game remains governed by its separate license and is not subject to the terms outlined herein.
+### 7.1 Disclaimer of Warranty
+- The Engine, Library, and Game are provided **“AS IS”** without any warranties, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
 
-11. Modifications to this License
+### 7.2 Assumption of Risk
+- You acknowledge that using the Engine, Library, and Game is **at your own risk**.
+- The Licensor does not guarantee uninterrupted or error-free operation, nor is it responsible for any defects, vulnerabilities, or losses arising from use or misuse.
 
-   The Licensor reserves the right to modify this license. Changes take effect upon publication on the Licensor's official website or other designated channels. Continued use of Elypso Engine after modifications constitutes acceptance of the updated terms.
+---
+
+## 8. Unlawful or Unauthorized Use
+- The Licensor is **not liable** for any unlawful or unauthorized use of the Engine, Library, or Game.
+- You agree to comply with all **applicable laws** and to indemnify the Licensor against claims arising from such misuse.
+
+---
+
+## 9. Termination
+- This License **terminates automatically** if you breach any of its terms.  
+- Upon termination, you must **stop using** and **destroy all copies** of the Engine, Library, and Game in your possession.
+
+---
+
+## 10. Governing Law
+- This License is governed by the laws of the **Licensor’s jurisdiction**, without regard to conflict of law provisions.
+
+---
+
+## 11. License Updates and Effectiveness
+- The Licensor may **update this License at any time**.
+- Updates **only apply** if you choose to **download** or otherwise **acquire** a newer release or repository version.
+- If you do **not** update, **this version** governs your use **indefinitely**.

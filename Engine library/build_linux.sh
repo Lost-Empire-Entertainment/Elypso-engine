@@ -53,7 +53,6 @@ function build() {
     else
         echo "$cmsuc Build succeeded!"
         pause "$1" "$2"
-        copy_to_game_template
         exit 0
     fi
 }

@@ -84,11 +84,6 @@ else()
 	find_package(glfw3 REQUIRED)
 endif()
 
-# Add x11 (linux only)
-if (UNIX)
-	find_package(X11 REQUIRED)
-endif()
-
 # Add Assimp
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -191,7 +186,13 @@ target_include_directories(Elypso_engine PRIVATE ${ENGINE_INCLUDE_DIRS})
 if (WIN32)
 	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
 else()
-	target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+	find_package(Wayland QUIET)
+	find_package(X11 QUIET)
+	if (Wayland_FOUND)
+		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp Wayland::Client)
+	elseif (X11_FOUND)
+		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+	endif()
 endif()
 
 # UNCOMMENT TO USE DISCORD GAME SDK

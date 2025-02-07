@@ -79,11 +79,6 @@ else()
 	find_package(glfw3 REQUIRED)
 endif()
 
-# Add x11 (linux only)
-if (UNIX)
-	find_package(X11 REQUIRED)
-endif()
-
 # Add Assimp
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -181,15 +176,25 @@ target_include_directories(Game PRIVATE
 
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
-		target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+		target_link_libraries(Game PRIVATE external_libs "${CMAKE_SOURCE_DIR}/Elypso engine.lib" ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_link_libraries(Game PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} "${CMAKE_SOURCE_DIR}/Elypso engineD.lib")
+		target_link_libraries(Game PRIVATE external_libs "${CMAKE_SOURCE_DIR}/Elypso engineD.lib" ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
 	endif()
 else()
+	find_package(Wayland QUIET)
+	find_package(X11 QUIET)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
-		target_link_libraries(Game PRIVATE external_libs glfw assimp ${X11_LIBRARIES} "${CMAKE_SOURCE_DIR}/libElypso engine.a")
+		if (Wayland_FOUND)
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engine.a" external_libs glfw assimp Wayland::Client)
+		elseif (X11_FOUND)
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engine.a" external_libs glfw assimp ${X11_LIBRARIES})
+		endif()
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_link_libraries(Game PRIVATE external_libs glfw assimp ${X11_LIBRARIES} "${CMAKE_SOURCE_DIR}/libElypso engineD.a")
+		if (Wayland_FOUND)
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engineD.a" external_libs glfw assimp Wayland::Client)
+		elseif (X11_FOUND)
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engineD.a" external_libs glfw assimp ${X11_LIBRARIES})
+		endif()
 	endif()
 endif()
 
@@ -260,15 +265,6 @@ endif()
 	# ${CMAKE_SOURCE_DIR}/files/external\ dlls/discord_game_sdk.dll
 	# $<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
 # )
-
-# Copy the MIT license from this folder, not parent folder
-add_custom_command(TARGET Game POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove
-    $<TARGET_FILE_DIR:Game>/LICENSE.md
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/LICENSE.md
-    $<TARGET_FILE_DIR:Game>/LICENSE.md
-)
 
 # Include CPack to enable packaging
 include(CPack)
