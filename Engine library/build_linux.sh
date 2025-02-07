@@ -62,11 +62,13 @@ if ! command -v g++ &> /dev/null; then
     exit 1
 fi
 
+# Function to copy the built library to the Game directory
 function copy_to_game_template() {
+    local buildType="$1"
     local dest="$sourcePath/../Game/"
 
     # Determine which file to copy based on build type
-    if [ "$2" = "debug" ]; then
+    if [ "$buildType" = "debug" ]; then
         local src="$buildPath/libElypso engineD.a"
     else
         local src="$buildPath/libElypso engine.a"
@@ -87,6 +89,9 @@ function copy_to_game_template() {
 
 # Build the project
 function build() {
+    # Copy engine library file before building game
+    copy_to_game_template "$2"
+
     cd "$buildPath" || exit
     echo "$cminf Started build generation using $numCores cores."
     make -j"$numCores"
@@ -103,6 +108,9 @@ function build() {
 
 # Configure CMake
 function cmake_configure() {
+    local buildType="$2"  # Get build type from function parameter
+
+    # Ensure build directory exists
     if [ -d "$buildPath" ]; then
         echo "$prcln Removing existing build directory."
         rm -rf "$buildPath"
@@ -111,13 +119,14 @@ function cmake_configure() {
     cd "$buildPath" || exit
 
     echo "$cminf Configuring the project with CMake..."
-    cmake_build_type=$(echo "$2" | awk '{print toupper(substr($0,1,1))tolower(substr($0,2))}')
+    cmake_build_type=$(echo "$buildType" | awk '{print toupper(substr($0,1,1))tolower(substr($0,2))}')
 
     cmake -DCMAKE_C_COMPILER=gcc \
           -DCMAKE_CXX_COMPILER=g++ \
           -DCMAKE_BUILD_TYPE=$cmake_build_type \
           -G "Unix Makefiles" \
           "$sourcePath"
+
     if [ $? -ne 0 ]; then
         echo "$cmexc Configuration failed."
         pause "$1" "$2" "$3"
@@ -128,7 +137,6 @@ function cmake_configure() {
 }
 
 # Main logic
-copy_to_game_template
 case "$1" in
     build)
         if [ ! -d "$buildPath" ]; then
