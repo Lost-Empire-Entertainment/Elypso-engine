@@ -184,7 +184,6 @@ namespace Graphics::Shape
 		if (is_regular_file(trueTxtFilePath)
 			&& path(trueTxtFilePath).extension().string() == ".txt")
 		{
-			cout << "!!!! load model '" << name << "' txt file: " << trueTxtFilePath << "\n";
 			GameObjectFile::LoadModel(trueTxtFilePath);
 		}
 

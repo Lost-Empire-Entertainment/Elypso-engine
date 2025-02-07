@@ -207,10 +207,11 @@ namespace Core
 			return false;
 		}
 
-#ifdef _WIN32
 		string originLib{};
 		string targetLib{};
 		string releaseType{};
+
+#ifdef _WIN32
 
 #ifdef NDEBUG
 		releaseType = "release";
@@ -226,13 +227,13 @@ namespace Core
 
 		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
-		string originLib{};
-		string targetLib{};
 
 #ifdef NDEBUG
+		releaseType = "release";
 		originLib = (path(engineRootFolder) / "libElypso engine.a").string();
 		targetLib = (path(gameRootFolder) / "libElypso engine.a").string();
 #else
+		releaseType = "debug";
 		originLib = (path(engineRootFolder) / "libElypso engineD.a").string();
 		targetLib = (path(gameRootFolder) / "libElypso engineD.a").string();
 #endif
@@ -251,7 +252,7 @@ namespace Core
 #ifdef _WIN32
 			command = "cmd /c \"" + gameBuilder + "\" cmake " + releaseType + " skipwait";
 #elif __linux__
-			command = "bash \"" + gameBuilder + "\" cmake skipwait";
+			command = "bash \"" + gameBuilder + "\" cmake " + releaseType + " skipwait";
 #endif
 			break;
 		}
@@ -260,7 +261,7 @@ namespace Core
 #ifdef _WIN32
 			command = "cmd /c \"" + gameBuilder + "\" build " + releaseType + " skipwait";
 #elif __linux__
-			command = "bash \"" + gameBuilder + "\" build skipwait";
+			command = "bash \"" + gameBuilder + "\" build " + releaseType + " skipwait";
 #endif
 			break;
 		}
@@ -268,6 +269,8 @@ namespace Core
 
 		//command to run the batch file and capture errors
 		string fullCommand = command + " 2>&1"; //redirect stderr to stdout
+		cout << "!!!! release type: " << releaseType << "\n";
+		cout << "!!!! COMMAND: " << command << "\n";
 
 		array<char, 128> buffer{};
 #ifdef _WIN32

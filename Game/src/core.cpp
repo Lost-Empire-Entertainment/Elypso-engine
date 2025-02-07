@@ -22,8 +22,7 @@ namespace GameCore
 {
 	void GameTemplate::InitializeGame()
 	{
-		string version = "0.1";
-		Game::Initialize(version);
+		Game::Initialize();
 		GUI::AddWindowsToList();
 	}
 
