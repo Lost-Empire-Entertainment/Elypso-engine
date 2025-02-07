@@ -16,6 +16,7 @@ namespace Core
 	public:
 		static inline string name;
 		static inline string version;
+
 		static inline string gameFirstScene;
 
 		static inline string docsPath;

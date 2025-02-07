@@ -131,13 +131,8 @@ namespace Graphics
 			Type::DEBUG,
 			"Creating window...\n");
 
-#ifdef NDEBUG
-		string windowName = Engine::name + " " + Engine::version;
-#else
-		string windowName = Engine::name + " " + Engine::version + " [DEBUG]";
-#endif
-
 		//create a window object holding all the windowing data
+		string windowName = Engine::name + " " + Engine::version;
 		window = glfwCreateWindow(
 			1024,
 			768,

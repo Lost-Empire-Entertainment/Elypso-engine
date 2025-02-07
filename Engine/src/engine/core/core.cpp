@@ -79,15 +79,18 @@ namespace Core
 #endif
 	void Engine::InitializeEngine()
 	{
-		string assignedVersion{};
+#ifdef NDEBUG
+		version = "Pre-release 0.1.3.0001";
+#else
+		version = "Pre-release 0.1.3.0001 [DEBUG]";
+#endif
 
 #if ENGINE_MODE
 		name = "Elypso engine";
-		assignedVersion = "0.1.2";
-
+		
 		CheckForMissingCompilerFiles();
 #else
-		assignedVersion = "1.0.0";
+		version = "1.0.0";
 		string gameFolder = path(current_path()).string();
 
 		for (const auto& file : directory_iterator(gameFolder))
