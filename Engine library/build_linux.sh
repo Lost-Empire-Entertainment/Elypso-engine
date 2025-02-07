@@ -7,40 +7,82 @@ prcln="[PROGRAM_CLEANUP]"
 cminf="[CMAKE_INFO]"
 cmexc="[CMAKE_EXCEPTION]"
 cmsuc="[CMAKE_SUCCESS]"
-cpinf="[CPACK_INFO]"
-cpexc="[CPACK_EXCEPTION]"
-cpsuc="[CPACK_SUCCESS]"
 
 # Define paths
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-buildPath="$script_dir/out/build/x64-release"
 sourcePath="$script_dir"
 
 # Initialize number of cores
 numCores=$(nproc)
 
+# Validate input parameters
+if [ -z "$1" ]; then
+    echo "$prexc Empty first parameter detected! Use 'build' or 'cmake'."
+    exit 1
+fi
+
+if [ "$1" != "build" ] && [ "$1" != "cmake" ]; then
+    echo "$prexc Invalid first parameter! Use 'build' or 'cmake'."
+    exit 1
+fi
+
+if [ -z "$2" ]; then
+    echo "$prexc Empty second parameter detected! Use 'release' or 'debug'."
+    exit 1
+fi
+
+if [ "$2" != "release" ] && [ "$2" != "debug" ]; then
+    echo "$prexc Invalid second parameter! Use 'release' or 'debug'."
+    exit 1
+fi
+
+if [ -n "$3" ] && [ "$3" != "skipwait" ]; then
+    echo "$prexc Invalid third parameter! Leave empty or use 'skipwait'."
+    exit 1
+fi
+
+# Set build path dynamically
+if [ "$2" = "debug" ]; then
+    buildPath="$script_dir/out/build/x64-debug"
+else
+    buildPath="$script_dir/out/build/x64-release"
+fi
+
 # Function to pause
 function pause() {
-    if [ "$2" != "skipwait" ]; 
-	then
+    if [ "$3" != "skipwait" ]; then
         read -p "Press Enter to exit..."
     fi
 }
 
-# Initialize the environment
-echo "$cminf Initializing environment for g++ build..."
-if ! command -v g++ &> /dev/null; 
-then
+# Check if g++ is installed
+if ! command -v g++ &> /dev/null; then
     echo "$prexc g++ is not installed or not in PATH. Please install g++."
-    pause "$1" "$2"
+    pause "$1" "$2" "$3"
     exit 1
 fi
 
 function copy_to_game_template() {
-   if [ -d "$sourcePath/../Game/" ];
-   then
-      cp "$buildPath/libElypso engine.a" "$sourcePath/../Game/"
-   fi
+    local dest="$sourcePath/../Game/"
+
+    # Determine which file to copy based on build type
+    if [ "$2" = "debug" ]; then
+        local src="$buildPath/libElypso engineD.a"
+    else
+        local src="$buildPath/libElypso engine.a"
+    fi
+
+    if [ ! -f "$src" ]; then
+        echo "$prexc Source file '$src' not found. Build may have failed. Skipping copy."
+        return
+    fi
+
+    if [ -d "$dest" ]; then
+        echo "$prinf Copying '$src' to '$dest'"
+        cp "$src" "$dest"
+    else
+        echo "$prexc Destination directory '$dest' does not exist. Skipping copy."
+    fi
 }
 
 # Build the project
@@ -48,22 +90,20 @@ function build() {
     cd "$buildPath" || exit
     echo "$cminf Started build generation using $numCores cores."
     make -j"$numCores"
-    if [ $? -ne 0 ]; 
-	then
+    if [ $? -ne 0 ]; then
         echo "$cmexc Build failed."
-        pause "$1" "$2"
-        exit 0
+        pause "$1" "$2" "$3"
+        exit 1
     else
         echo "$cmsuc Build succeeded!"
-        pause "$1" "$2"
+        pause "$1" "$2" "$3"
         exit 0
     fi
 }
 
 # Configure CMake
 function cmake_configure() {
-    if [ -d "$buildPath" ]; 
-	then
+    if [ -d "$buildPath" ]; then
         echo "$prcln Removing existing build directory."
         rm -rf "$buildPath"
     fi
@@ -71,40 +111,40 @@ function cmake_configure() {
     cd "$buildPath" || exit
 
     echo "$cminf Configuring the project with CMake..."
-    cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" "$sourcePath"
-    if [ $? -ne 0 ]; 
-	then
+    cmake_build_type=$(echo "$2" | awk '{print toupper(substr($0,1,1))tolower(substr($0,2))}')
+
+    cmake -DCMAKE_C_COMPILER=gcc \
+          -DCMAKE_CXX_COMPILER=g++ \
+          -DCMAKE_BUILD_TYPE=$cmake_build_type \
+          -G "Unix Makefiles" \
+          "$sourcePath"
+    if [ $? -ne 0 ]; then
         echo "$cmexc Configuration failed."
-        pause "$1" "$2"
+        pause "$1" "$2" "$3"
         exit 1
     fi
 
-    build "$1" "$2"
+    build "$1" "$2" "$3"
 }
 
 # Main logic
-if [ -z "$1" ]; 
-then
-    set -- build "$2"
-fi
-
+copy_to_game_template
 case "$1" in
     build)
-        if [ ! -d "$buildPath" ]; 
-		then
+        if [ ! -d "$buildPath" ]; then
             echo "$prexc Did not find build folder. Running 'Reconfigure CMake'."
-            cmake_configure "$1" "$2"
+            cmake_configure "$1" "$2" "$3"
         else
-            build "$1" "$2"
+            build "$1" "$2" "$3"
         fi
         ;;
     cmake)
-        cmake_configure "$1" "$2"
+        cmake_configure "$1" "$2" "$3"
         ;;
     *)
         echo "$prexc Unknown command. Defaulting to 'cmake'."
-        cmake_configure "$1" "$2"
+        cmake_configure "$1" "$2" "$3"
         ;;
 esac
 
-pause "$1" "$2"
+pause "$1" "$2" "$3"

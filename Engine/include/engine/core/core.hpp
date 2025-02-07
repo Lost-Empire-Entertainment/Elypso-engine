@@ -33,11 +33,11 @@ namespace Core
 #endif
 		static inline bool isEngineRunning;
 #if ENGINE_MODE
-		static void InitializeEngine(const string& version = "0.1.2");
+		static void InitializeEngine();
 
 		static void CheckForMissingCompilerFiles();
 #else
-		static void InitializeEngine(const string& version = "1.0");
+		static void InitializeEngine();
 #endif
 
 		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");

@@ -17,9 +17,9 @@ using Core::Engine;
 
 namespace Core
 {
-	void Game::Initialize(const string& version)
+	void Game::Initialize()
 	{
-		Engine::InitializeEngine(version);
+		Engine::InitializeEngine();
 	}
 
 	void Game::Run()

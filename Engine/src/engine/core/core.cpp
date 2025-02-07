@@ -77,15 +77,17 @@ namespace Core
 #if DISCORD_MODE
 	unique_ptr<discord::Core> core{};
 #endif
-	void Engine::InitializeEngine(const string& assignedVersion)
+	void Engine::InitializeEngine()
 	{
-		version = assignedVersion;
+		string assignedVersion{};
 
 #if ENGINE_MODE
 		name = "Elypso engine";
+		assignedVersion = "0.1.2";
 
 		CheckForMissingCompilerFiles();
 #else
+		assignedVersion = "1.0.0";
 		string gameFolder = path(current_path()).string();
 
 		for (const auto& file : directory_iterator(gameFolder))
