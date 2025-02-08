@@ -1,0 +1,4 @@
+0.1.3.0001
+
+- fixed engine and game not correctly compiling to debug mode
+- added DEBUG window title tag to engine and game if it compiled in debug mode
