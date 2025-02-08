@@ -1,4 +1,5 @@
-0.1.3.0001
+Elypso engine 0.1.3.0001
 
-- fixed engine and game not correctly compiling to debug mode
-- added DEBUG window title tag to engine and game if it compiled in debug mode
+CHANGES:
+- fixed compiler, engine, hub and game not correctly compiling to debug mode
+- added DEBUG window title tag to compiler, engine, hub and game if it compiled in debug mode
