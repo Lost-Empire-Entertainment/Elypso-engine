@@ -66,6 +66,7 @@ set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
+set(EXT_JOLT_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/jolt")
 # UNCOMMENT TO USE DISCORD GAME SDK
 # set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Discord")
 
@@ -95,6 +96,21 @@ if (WIN32)
 	endif()
 else()
 	find_package(assimp REQUIRED)
+endif()
+
+# Add Jolt
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/Jolt.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/Jolt.lib")
+	endif()
+else()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/Jolt.so")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/Jolt.so")
+	endif()
 endif()
 
 # Add magic_enum
@@ -174,19 +190,20 @@ target_include_directories(Elypso_engine PRIVATE
 		${EXT_IMGUI_DIR}
 		${EXT_STB_IMAGE_DIR}
 		${EXT_MINIAUDIO_DIR}
+		${EXT_JOLT_DIR}
 		# UNCOMMENT TO USE DISCORD GAME SDK
 		# ${EXT_DISCORD_DIR}/include
 )
 
 if (WIN32)
-	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
+	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} ${JOLT_LIBRARY_PATH})
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)
 	if (Wayland_FOUND)
-		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp Wayland::Client)
+		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp Wayland::Client ${JOLT_LIBRARY_PATH})
 	elseif (X11_FOUND)
-		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES})
+		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES} ${JOLT_LIBRARY_PATH})
 	endif()
 endif()
 

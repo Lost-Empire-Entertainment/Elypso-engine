@@ -61,6 +61,7 @@ set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
+set(EXT_JOLT_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/jolt")
 # UNCOMMENT TO USE DISCORD GAME SDK
 # set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Discord")
 
@@ -90,6 +91,21 @@ if (WIN32)
 	endif()
 else()
 	find_package(assimp REQUIRED)
+endif()
+
+# Add Jolt
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/Jolt.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/Jolt.lib")
+	endif()
+else()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/Jolt.so")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/Jolt.so")
+	endif()
 endif()
 
 # Add magic_enum
@@ -170,30 +186,31 @@ target_include_directories(Game PRIVATE
 	${EXT_IMGUI_DIR}
 	${EXT_STB_IMAGE_DIR}
 	${EXT_MINIAUDIO_DIR}
+	${EXT_JOLT_DIR}
 	# UNCOMMENT TO USE DISCORD GAME SDK
 	# ${EXT_DISCORD_DIR}/include
 )
 
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
-		target_link_libraries(Game PRIVATE external_libs "${CMAKE_SOURCE_DIR}/Elypso engine.lib" ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
+		target_link_libraries(Game PRIVATE external_libs "${CMAKE_SOURCE_DIR}/Elypso engine.lib" ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2}  ${JOLT_LIBRARY_PATH})
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_link_libraries(Game PRIVATE external_libs "${CMAKE_SOURCE_DIR}/Elypso engineD.lib" ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2})
+		target_link_libraries(Game PRIVATE external_libs "${CMAKE_SOURCE_DIR}/Elypso engineD.lib" ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} ${JOLT_LIBRARY_PATH})
 	endif()
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
 		if (Wayland_FOUND)
-			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engine.a" external_libs glfw assimp Wayland::Client)
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engine.a" external_libs glfw assimp Wayland::Client  ${JOLT_LIBRARY_PATH})
 		elseif (X11_FOUND)
-			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engine.a" external_libs glfw assimp ${X11_LIBRARIES})
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engine.a" external_libs glfw assimp ${X11_LIBRARIES}  ${JOLT_LIBRARY_PATH})
 		endif()
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		if (Wayland_FOUND)
-			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engineD.a" external_libs glfw assimp Wayland::Client)
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engineD.a" external_libs glfw assimp Wayland::Client  ${JOLT_LIBRARY_PATH})
 		elseif (X11_FOUND)
-			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engineD.a" external_libs glfw assimp ${X11_LIBRARIES})
+			target_link_libraries(Game PRIVATE "${CMAKE_SOURCE_DIR}/libElypso engineD.a" external_libs glfw assimp ${X11_LIBRARIES}  ${JOLT_LIBRARY_PATH})
 		endif()
 	endif()
 endif()
@@ -254,6 +271,24 @@ if (WIN32)
 		${GLFW_DLL_ORIGIN}
 		${GLFW_DLL_TARGET}
     )
+endif()
+
+# Copy jolt DLL to the install directory after build
+set(JOLT_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+if (WIN32)
+	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/Jolt.dll")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/release/Jolt.dll")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/debug/Jolt.dll")
+    endif()
+else()
+	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/Jolt.a")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/release/Jolt.a")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/debug/Jolt.a")
+    endif()
 endif()
 
 # Copy discord dll to the install directory after build
