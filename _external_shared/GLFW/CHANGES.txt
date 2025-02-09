@@ -2,6 +2,6 @@ Original repository link:
 https://github.com/glfw/glfw
 
 Changes:
-- used build_release.bat to make glfw3.lib and copied it into new empty folder release
-- used build_debug.bat to make glfw3.lib and copied it into new empty folder debug
+- used build_release.bat to make glfw3dll.lib and glfw3.lib and copied them into new empty folder release
+- used build_debug.bat to make glfw3dll.lib and glfw3.lib and copied them into new empty folder debug
 - copied glfw3native.h and glfw3.h to glfw root folder

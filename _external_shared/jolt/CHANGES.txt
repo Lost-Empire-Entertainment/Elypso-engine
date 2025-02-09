@@ -1,7 +1,9 @@
 Original repository link:
-https://github.com/glfw/glfw
+https://github.com/jrouwe/JoltPhysics
 
 Changes:
-- used build_release.bat to make glfw3.lib and copied it into new empty folder release
-- used build_debug.bat to make glfw3.lib and copied it into new empty folder debug
-- copied glfw3native.h and glfw3.h to glfw root folder
+- used build_release_windows.bat to make Jolt.lib and Jolt.dll and copied them into new empty folder release
+- used build_debug_windows.bat to make Jolt.lib and Jolt.dll and copied them into new empty folder debug
+- used build_release_linux.sh to make Jolt.so and Jolt.a and copied them into release folder
+- used build_debug_linux.sh to make Jolt.so and Jolt.a and copied them into debug folder
+- copied header files, AABBTree, Core, Geometry, Math, ObjectStream, Physics, Renderer, Skeleton, TriangleGrouper and TriangleSplitter folders to root folder
