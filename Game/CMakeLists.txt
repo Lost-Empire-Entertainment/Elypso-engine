@@ -102,9 +102,9 @@ if (WIN32)
 	endif()
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
-		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/Jolt.so")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/libJolt.so")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/Jolt.so")
+		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/libJolt.so")
 	endif()
 endif()
 
@@ -276,19 +276,27 @@ endif()
 # Copy jolt DLL to the install directory after build
 set(JOLT_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
 if (WIN32)
-	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/Jolt.dll")
+	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Game>/Jolt.dll")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/release/Jolt.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/debug/Jolt.dll")
     endif()
 else()
-	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/Jolt.a")
+	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Game>/libJolt.so")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/release/Jolt.a")
+        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/release/libJolt.so")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/debug/Jolt.a")
+        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/debug/libJolt.so")
     endif()
+
+	add_custom_command(TARGET Game POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove
+		${JOLT_DLL_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E copy
+		${JOLT_DLL_ORIGIN}
+		${JOLT_DLL_TARGET}
+    )
 endif()
 
 # Copy discord dll to the install directory after build
