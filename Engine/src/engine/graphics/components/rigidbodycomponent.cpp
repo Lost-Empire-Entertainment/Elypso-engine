@@ -87,39 +87,23 @@ namespace Graphics::Components
 				gravityFactor,
 				useGravity);
 
-			if (handle.index == 0
-				&& handle.generation == 0)
+			RigidBody* rb = physicsWorld.GetRigidBody(handle);
+
+			if (rb == nullptr)
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Failed to assign handle!\n");
+					"Error: Failed to initialize rigidbody!\n");
 			}
 			else
 			{
+				SetHandle(handle);
+
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::INFO,
-					"Successfully assigned handle!\n");
-
-				RigidBody* rb = physicsWorld.GetRigidBody(handle);
-
-				if (rb == nullptr)
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::INPUT,
-						Type::EXCEPTION,
-						"Error: Failed to initialize rigidbody!\n");
-				}
-				else
-				{
-					SetHandle(handle);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::INPUT,
-						Type::INFO,
-						"Successfully initialized rigidbody!\n");
-				}
+					"Successfully initialized rigidbody!\n");
 			}
 		}
 	}

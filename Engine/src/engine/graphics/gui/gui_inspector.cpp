@@ -204,8 +204,19 @@ namespace Graphics::GUI
 						}
 						else
 						{
-							auto rb = Select::selectedObj->AddComponent<RigidBodyComponent>(Select::selectedObj);
-							if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+							if (Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType()
+								!= MeshComponent::MeshType::model)
+							{
+								ConsoleManager::WriteConsoleMessage(
+									ConsoleCaller::INPUT,
+									ConsoleType::EXCEPTION,
+									"Error: " + Select::selectedObj->GetName() + " cannot be given a rigidbody component! Only models are supported.");
+							}
+							else
+							{
+								auto rb = Select::selectedObj->AddComponent<RigidBodyComponent>(Select::selectedObj);
+								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+							}
 						}
 					}
 

@@ -707,6 +707,7 @@ namespace Core
 		{
 			TimeManager::UpdateDeltaTime();
 			Render::WindowLoop();
+			Physics::Update(TimeManager::deltaTime);
 #if DISCORD_MODE
 			RunDiscordRichPresence();
 #endif
@@ -857,6 +858,8 @@ namespace Core
 					"Cleaning up resources...\n");
 
 				Audio::Shutdown();
+
+				Physics::Shutdown();
 #if ENGINE_MODE
 				EngineGUI::Shutdown();
 #else

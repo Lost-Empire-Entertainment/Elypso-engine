@@ -32,11 +32,11 @@ namespace Core
 
 	void Physics::Update(float deltaTime)
 	{
-
+		physicsWorld->StepSimulation(deltaTime);
 	}
 
 	void Physics::Shutdown()
 	{
-
+		physicsWorld->ShutdownPhysics();
 	}
 }
