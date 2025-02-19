@@ -40,16 +40,22 @@ namespace Graphics::Components
 			float dynamicFriction = 0.3f);
 
 		void SetHandle(const GameObjectHandle& newHandle) { handle = newHandle; }
+		void SetPosition(const vec3& newPos);
+		void SetRotation(const vec3& newRot);
+		void SetScale(const vec3& newScale);
 		void SetColliderType(const string& newColliderType);
-		void SetDynamic(bool newIsDynamic) { isDynamic = newIsDynamic; }
-		void EnableGravity(bool newUseGravity) { useGravity = newUseGravity; }
-		void SetGravityFactor(float newGravityFactor) { gravityFactor = newGravityFactor; }
-		void SetMass(float newMass) { mass = newMass; }
-		void SetRestitution(float newRestitution) { restitution = newRestitution; }
-		void SetStaticFriction(float newStaticFriction) { staticFriction = newStaticFriction; }
-		void SetDynamicFriction(float newDynamicFriction) { dynamicFriction = newDynamicFriction; }
+		void SetDynamic(bool newIsDynamic);
+		void EnableGravity(bool newUseGravity);
+		void SetGravityFactor(float newGravityFactor);
+		void SetMass(float newMass);
+		void SetRestitution(float newRestitution);
+		void SetStaticFriction(float newStaticFriction);
+		void SetDynamicFriction(float newDynamicFriction);
 
 		const GameObjectHandle& GetHandle() const { return handle; }
+		const vec3& GetPosition();
+		const vec3& GetRotation();
+		const vec3& GetScale();
 		const string& GetColliderType() const { return colliderType; }
 		bool IsDynamic() const { return isDynamic; }
 		bool UseGravity() const { return useGravity; }

@@ -13,15 +13,9 @@ using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
-	PhysicsWorld& Physics::GetPhysicsWorld()
-	{
-		if (!physicsWorld) physicsWorld = &PhysicsWorld::GetInstance();
-		return *physicsWorld;
-	}
-
 	void Physics::Initialize(const vec3& gravity)
 	{
-		if (!physicsWorld) GetPhysicsWorld();
+		if (!physicsWorld) physicsWorld = &PhysicsWorld::GetInstance();
 		physicsWorld->InitializePhysics(gravity);
 
 		ConsoleManager::WriteConsoleMessage(

@@ -12,6 +12,10 @@
 #include "glad.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
+#include "rigidbody.hpp"
+#include "gameobjecthandle.hpp"
+#include "physicsworld.hpp"
+#include "collider.hpp"
 
 //engine
 #include "render.hpp"
@@ -27,6 +31,8 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "rigidbodycomponent.hpp"
+#include "physics.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -40,6 +46,7 @@ using glm::rotate;
 using glm::radians;
 using glm::quat;
 using glm::scale;
+using glm::eulerAngles;
 using std::ofstream;
 using std::ifstream;
 using std::filesystem::exists;
@@ -63,6 +70,12 @@ using Type = Core::ConsoleManager::Type;
 using Utils::String;
 using Core::Select;
 using EngineFile::GameObjectFile;
+using Graphics::Components::RigidBodyComponent;
+using ElypsoPhysics::RigidBody;
+using ElypsoPhysics::GameObjectHandle;
+using ElypsoPhysics::PhysicsWorld;
+using ElypsoPhysics::Collider;
+using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -346,10 +359,54 @@ namespace Graphics::Shape
 
 			mat4 model = mat4(1.0f);
 
-			model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());
+			static bool regularMovement = true;
+			auto rbComp = obj->GetComponent<RigidBodyComponent>();
+			if (rbComp)
+			{
+				auto transform = obj->GetComponent<TransformComponent>();
 
-			quat newRot = quat(radians(obj->GetComponent<TransformComponent>()->GetRotation()));
-			model *= mat4_cast(newRot);
+				GameObjectHandle handle = rbComp->GetHandle();
+				PhysicsWorld* physicsWorld = Physics::physicsWorld;
+				RigidBody* rb = physicsWorld->GetRigidBody(handle);
+
+				if (rb->isDynamic
+					&& rb->useGravity)
+				{
+					if (regularMovement) regularMovement = false;
+
+					transform->SetPosition(rbComp->GetPosition());
+					transform->SetRotation(rbComp->GetRotation());
+				}
+				else
+				{
+					if (!regularMovement) regularMovement = true;
+				}
+			}
+			if (regularMovement)
+			{
+				auto transform = obj->GetComponent<TransformComponent>();
+
+				model = translate(model, transform->GetPosition());
+
+				quat newRot = quat(radians(transform->GetRotation()));
+				model *= mat4_cast(newRot);
+
+				if (rbComp)
+				{
+					if (rbComp->GetPosition() != transform->GetPosition())
+					{
+						rbComp->SetPosition(transform->GetPosition());
+					}
+					if (rbComp->GetRotation() != transform->GetRotation())
+					{
+						rbComp->SetRotation(transform->GetRotation());
+					}
+					if (rbComp->GetScale() != transform->GetScale())
+					{
+						rbComp->SetScale(transform->GetScale());
+					}
+				}
+			}
 
 			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 

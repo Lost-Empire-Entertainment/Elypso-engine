@@ -1403,7 +1403,7 @@ namespace Graphics::GUI
 		ImGui::Text("Is dynamic");
 		ImGui::SameLine();
 		bool isDynamic = rigidbody->IsDynamic();
-		string dynamicButtonName = isDynamic ? "False##rb_dynamic" : "True##rb_dynamic";
+		string dynamicButtonName = isDynamic ? "True##rb_dynamic" : "False##rb_dynamic";
 		if (ImGui::Button(dynamicButtonName.c_str()))
 		{
 			rigidbody->SetDynamic(!isDynamic);
@@ -1429,7 +1429,7 @@ namespace Graphics::GUI
 		ImGui::Text("Use gravity");
 		ImGui::SameLine();
 		bool useGravity = rigidbody->UseGravity();
-		string useGravityButtonText = useGravity ? "False##rb_gravity" : "True##rb_gravity";
+		string useGravityButtonText = useGravity ? "True##rb_gravity" : "False##rb_gravity";
 		if (ImGui::Button(useGravityButtonText.c_str()))
 		{
 			rigidbody->EnableGravity(!useGravity);
