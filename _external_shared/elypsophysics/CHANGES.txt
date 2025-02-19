@@ -1,0 +1,7 @@
+Original repository link:
+https://github.com/Lost-Empire-Entertainment/Elypso-physics
+
+Changes:
+- used build_windows_release.bat to make ElypsoPhysics.dll and ElypsoPhysics_Static.lib and copied them into new empty folder release
+- used build_debug.bat to make ElypsoPhysicsD.dll and ElypsoPhysics_StaticD.lib and copied them into new empty folder debug
+- copied main.hpp to elypsophysics root folder

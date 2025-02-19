@@ -66,7 +66,7 @@ set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
-set(EXT_JOLT_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/jolt")
+set(EXT_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/elypsophysics")
 # UNCOMMENT TO USE DISCORD GAME SDK
 # set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Discord")
 
@@ -98,18 +98,18 @@ else()
 	find_package(assimp REQUIRED)
 endif()
 
-# Add Jolt
+# Add Elypso physics
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
-		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/Jolt.lib")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/ElypsoPhysics.lib")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/Jolt.lib")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/ElypsoPhysicsD.lib")
 	endif()
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
-		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/release/libJolt.so")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/libElypsoPhysics.a")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(JOLT_LIBRARY_PATH "${EXT_JOLT_DIR}/debug/libJolt.so")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/libElypsoPhysicsD.a")
 	endif()
 endif()
 
@@ -192,7 +192,7 @@ target_include_directories(Elypso_engine PRIVATE
     ${EXT_IMGUI_DIR}
     ${EXT_STB_IMAGE_DIR}
 	${EXT_MINIAUDIO_DIR}
-	${EXT_JOLT_DIR}
+	${EXT_PHYSICS_DIR}
     # UNCOMMENT TO USE DISCORD GAME SDK
     # ${EXT_DISCORD_DIR}/include
 )
@@ -201,14 +201,29 @@ target_include_directories(Elypso_engine PRIVATE
 target_include_directories(Elypso_engine PRIVATE ${ENGINE_INCLUDE_DIRS})
 
 if (WIN32)
-	target_link_libraries(Elypso_engine PRIVATE external_libs ${GLFW_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH} ${ASSIMP_LIBRARY_PATH2} ${JOLT_LIBRARY_PATH})
+	target_link_libraries(Elypso_engine PRIVATE 
+		external_libs 
+		${GLFW_LIBRARY_PATH} 
+		${ASSIMP_LIBRARY_PATH} 
+		${ASSIMP_LIBRARY_PATH2}
+		${PHYSICS_LIBRARY_PATH})
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)
 	if (Wayland_FOUND)
-		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp Wayland::Client ${JOLT_LIBRARY_PATH})
+		target_link_libraries(Elypso_engine PRIVATE 
+			external_libs 
+			glfw 
+			assimp 
+			Wayland::Client 
+			${PHYSICS_LIBRARY_PATH})
 	elseif (X11_FOUND)
-		target_link_libraries(Elypso_engine PRIVATE external_libs glfw assimp ${X11_LIBRARIES} ${JOLT_LIBRARY_PATH})
+		target_link_libraries(Elypso_engine PRIVATE 
+			external_libs 
+			glfw 
+			assimp 
+			${X11_LIBRARIES} 
+			${PHYSICS_LIBRARY_PATH})
 	endif()
 endif()
 
@@ -282,30 +297,32 @@ if (WIN32)
     )
 endif()
 
-# Copy jolt DLL to the install directory after build
-set(JOLT_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
+# Copy Elypso Physics DLL to the install directory after build
+set(PHYSICS_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
 if (WIN32)
-	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/Jolt.dll")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/release/Jolt.dll")
+        set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/release/ElypsoPhysics.dll")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/ElypsoPhysics.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/debug/Jolt.dll")
+        set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/debug/ElypsoPhysicsD.dll")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/ElypsoPhysicsD.dll")
     endif()
 else()
-	set(JOLT_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/libJolt.so")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/release/libJolt.so")
+        set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/release/libElypsoPhysics.so")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/libElypsoPhysics.so")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(JOLT_DLL_ORIGIN "${JOLT_DLL_ORIGIN_BASE}/debug/libJolt.so")
+        set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/debug/libElypsoPhysicsD.so")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/libElypsoPhysicsD.so")
     endif()
 endif()
 
 add_custom_command(TARGET Elypso_engine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove 
-	${JOLT_DLL_TARGET}
+	${PHYSICS_DLL_TARGET}
     COMMAND ${CMAKE_COMMAND} -E copy 
-	${JOLT_DLL_ORIGIN}
-	${JOLT_DLL_TARGET}
+	${PHYSICS_DLL_ORIGIN}
+	${PHYSICS_DLL_TARGET}
 )
 
 # Copy discord dll to the install directory after build
