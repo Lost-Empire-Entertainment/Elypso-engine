@@ -376,6 +376,11 @@ namespace Graphics::Shape
 
 					transform->SetPosition(rbComp->GetPosition());
 					transform->SetRotation(rbComp->GetRotation());
+
+					model = translate(model, transform->GetPosition());
+
+					quat newRot = quat(radians(rbComp->GetRotation()));
+					model *= mat4_cast(newRot);
 				}
 				else
 				{
@@ -390,6 +395,8 @@ namespace Graphics::Shape
 
 				quat newRot = quat(radians(transform->GetRotation()));
 				model *= mat4_cast(newRot);
+
+				model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 				if (rbComp)
 				{
@@ -407,8 +414,6 @@ namespace Graphics::Shape
 					}
 				}
 			}
-
-			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 			//bind diffuse texture
 			unsigned int diffuseTextureID = mat->GetTextureID(MaterialComponent::TextureType::diffuse);

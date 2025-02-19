@@ -123,21 +123,21 @@ namespace Graphics::Components
 		}
 	}
 
-	void RigidBodyComponent::SetPosition(const vec3& newPos)
+	void RigidBodyComponent::SetPosition(const vec3& newPos) const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
 		rb->position = newPos;
 	}
-	void RigidBodyComponent::SetRotation(const vec3& newRot)
+	void RigidBodyComponent::SetRotation(const vec3& newRot) const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
 		rb->rotation = quat(radians(newRot));
 	}
-	void RigidBodyComponent::SetScale(const vec3& newScale)
+	void RigidBodyComponent::SetScale(const vec3& newScale) const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
@@ -161,14 +161,14 @@ namespace Graphics::Components
 		}
 	}
 
-	const vec3& RigidBodyComponent::GetPosition()
+	const vec3& RigidBodyComponent::GetPosition() const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
 		return rb->position;
 	}
-	const vec3& RigidBodyComponent::GetRotation()
+	const vec3& RigidBodyComponent::GetRotation() const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
@@ -176,7 +176,7 @@ namespace Graphics::Components
 		vec3 newRot = degrees(eulerAngles(rb->rotation));
 		return newRot;
 	}
-	const vec3& RigidBodyComponent::GetScale()
+	const vec3& RigidBodyComponent::GetScale() const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
