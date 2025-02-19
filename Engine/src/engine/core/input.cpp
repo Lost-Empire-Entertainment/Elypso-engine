@@ -597,8 +597,8 @@ namespace Core
             bool is3D = stoi(copiedObject["is3D"]);
             float currentVolume = stof(copiedObject["currentVolume"]);
 
-            Select::selectedObj->AddComponent<AudioPlayerComponent>();
-            auto apc = Select::selectedObj->GetComponent<AudioPlayerComponent>();
+            auto apc = Select::selectedObj->AddComponent<AudioPlayerComponent>();
+            apc->SetOwner(Select::selectedObj);
             apc->SetName(audioFileName);
             apc->Set3DState(is3D);
             apc->SetVolume(currentVolume);

@@ -60,6 +60,7 @@ namespace Graphics::Shape
 	{
 		auto obj = make_shared<GameObject>("Billboard", id);
 		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -101,6 +102,7 @@ namespace Graphics::Shape
 			vao, 
 			vbo, 
 			ebo);
+		mesh->SetOwner(obj);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_texture.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic_texture.frag").string();
@@ -114,6 +116,7 @@ namespace Graphics::Shape
 		Shader billboardShader = Shader::LoadShader(vert, frag);
 
 		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->SetOwner(obj);
 		mat->AddShader(vert, frag, billboardShader);
 
 		Texture::LoadTexture(obj, diffTexture, MaterialComponent::TextureType::diffuse, true);

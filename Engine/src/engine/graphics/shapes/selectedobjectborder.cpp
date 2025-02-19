@@ -55,6 +55,7 @@ namespace Graphics::Shape
 	{
 		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000001);
 		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -119,6 +120,7 @@ namespace Graphics::Shape
 			vao, 
 			vbo, 
 			ebo);
+		mesh->SetOwner(obj);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -132,6 +134,7 @@ namespace Graphics::Shape
 		Shader borderShader = Shader::LoadShader(vert, frag);
 
 		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->SetOwner(obj);
 		mat->AddShader(vert, frag, borderShader);
 
 		GameObjectManager::SetBorder(obj);

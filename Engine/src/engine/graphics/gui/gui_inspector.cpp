@@ -40,6 +40,7 @@
 #include "pointlight.hpp"
 #include "billboard.hpp"
 #include "audioplayercomponent.hpp"
+#include "rigidbodycomponent.hpp"
 #include "audio.hpp"
 #include "empty.hpp"
 
@@ -61,6 +62,7 @@ using Graphics::Components::MeshComponent;
 using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
 using Graphics::Components::AudioPlayerComponent;
+using Graphics::Components::RigidBodyComponent;
 using MeshType = Graphics::Components::MeshComponent::MeshType;
 using EngineFile::SceneFile;
 using Core::Input;
@@ -112,6 +114,7 @@ namespace Graphics::GUI
 				auto mat = Select::selectedObj->GetComponent<MaterialComponent>();
 				auto light = Select::selectedObj->GetComponent<LightComponent>();
 				auto audioPlayer = Select::selectedObj->GetComponent<AudioPlayerComponent>();
+				auto rigidbodycomponent = Select::selectedObj->GetComponent<RigidBodyComponent>();
 
 				Component_GameObject();
 				Component_Transform();
@@ -119,6 +122,7 @@ namespace Graphics::GUI
 				if (mat) Component_Material();
 				if (light) Component_Light();
 				if (audioPlayer) Component_AudioPlayer();
+				if (rigidbodycomponent) Component_RigidBody();
 			}
 
 			ImGui::End();
@@ -127,7 +131,7 @@ namespace Graphics::GUI
 
 	void GUIInspector::AddComponent()
 	{
-		const char* items[] = { "Light", "Audio player"};
+		const char* items[] = { "Light", "Audio player", "Rigidbody"};
 		static int currentItem = -1;
 
 		const char* currentLabel = (currentItem >= 0) ? items[currentItem] : "Add component";
@@ -165,6 +169,9 @@ namespace Graphics::GUI
 									vec3(1),
 									1.0f,
 									1.0f);
+
+								pointLight->SetOwner(Select::selectedObj);
+								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 							}
 						}
 					}
@@ -178,7 +185,28 @@ namespace Graphics::GUI
 								ConsoleType::EXCEPTION,
 								"Error: " + Select::selectedObj->GetName() + " already has a audio player component!");
 						}
-						else Select::selectedObj->AddComponent<AudioPlayerComponent>();
+						else
+						{
+							auto apc = Select::selectedObj->AddComponent<AudioPlayerComponent>();
+							apc->SetOwner(Select::selectedObj);
+							if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						}
+					}
+					else if (strcmp(items[i], "Rigidbody") == 0)
+					{
+						auto existingRigidBody = Select::selectedObj->GetComponent<RigidBodyComponent>();
+						if (existingRigidBody)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: " + Select::selectedObj->GetName() + " already has a rigidbody component!");
+						}
+						else
+						{
+							auto rb = Select::selectedObj->AddComponent<RigidBodyComponent>(Select::selectedObj);
+							if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						}
 					}
 
 					currentItem = -1;
@@ -456,6 +484,7 @@ namespace Graphics::GUI
 					if (audioFilePath != "")
 					{
 						auto emptyAPC = empty->AddComponent<AudioPlayerComponent>();
+						emptyAPC->SetOwner(empty);
 						
 						emptyAPC->Set3DState(is3D);
 						emptyAPC->SetMaxRange(maxRange);
@@ -883,6 +912,8 @@ namespace Graphics::GUI
 								vbo,
 								ebo);
 
+							mesh->SetOwner(Select::selectedObj);
+
 							string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 							string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
 
@@ -895,12 +926,14 @@ namespace Graphics::GUI
 							Shader pointLightShader = Shader::LoadShader(vert, frag);
 
 							auto mat = Select::selectedObj->AddComponent<MaterialComponent>();
+							mat->SetOwner(Select::selectedObj);
 							mat->AddShader(vert, frag, pointLightShader);
 
 							auto pointLight = Select::selectedObj->AddComponent<LightComponent>(
 								vec3(1),
 								1.0f,
 								1.0f);
+							pointLight->SetOwner(Select::selectedObj);
 
 							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();
 							auto billboard = Billboard::InitializeBillboard(
@@ -988,6 +1021,7 @@ namespace Graphics::GUI
 								vao,
 								vbo,
 								ebo);
+							mesh->SetOwner(obj);
 
 							string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 							string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -1003,6 +1037,7 @@ namespace Graphics::GUI
 								(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
 
 							auto mat = obj->AddComponent<MaterialComponent>();
+							mat->SetOwner(obj);
 							mat->AddShader(
 								(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
 								(path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
@@ -1014,6 +1049,7 @@ namespace Graphics::GUI
 								1.0f,
 								12.5f,
 								17.5f);
+							spotlight->SetOwner(obj);
 
 							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();
 							shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
@@ -1110,6 +1146,7 @@ namespace Graphics::GUI
 									vao,
 									vbo,
 									ebo);
+								mesh->SetOwner(obj);
 
 								string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 								string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -1123,11 +1160,13 @@ namespace Graphics::GUI
 								Shader directionalLightShader = Shader::LoadShader(vert, frag);
 
 								auto mat = obj->AddComponent<MaterialComponent>();
+								mat->SetOwner(obj);
 								mat->AddShader(vert, frag, directionalLightShader);
 
 								auto dirlight = obj->AddComponent<LightComponent>(
 									vec3(1),
 									1.0f);
+								dirlight->SetOwner(obj);
 
 								string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "directionalLight.png").string();
 								shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
@@ -1175,7 +1214,7 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 		if (ImGui::Button("X"))
 		{
-			obj->RemoveComponent<LightComponent>();
+			obj->RemoveComponent<AudioPlayerComponent>();
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
@@ -1322,6 +1361,124 @@ namespace Graphics::GUI
 			ImGui::BeginTooltip();
 			ImGui::Text(audioFileName.c_str());
 			ImGui::EndTooltip();
+		}
+
+		ImGui::EndChild();
+	}
+
+	void GUIInspector::Component_RigidBody()
+	{
+		auto& obj = Select::selectedObj;
+		auto rigidbody = obj->GetComponent<RigidBodyComponent>();
+
+		float height = 300.0f;
+
+		ImGuiChildFlags childWindowFlags{};
+
+		ImGui::BeginChild("Rigidbody", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+
+		ImGui::Text("Rigidbody");
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+		if (ImGui::Button("X"))
+		{
+			obj->RemoveComponent<RigidBodyComponent>();
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Is dynamic");
+		ImGui::SameLine();
+		bool isDynamic = rigidbody->IsDynamic();
+		string dynamicButtonName = isDynamic ? "False" : "True";
+		if (ImGui::Button(dynamicButtonName.c_str()))
+		{
+			rigidbody->SetDynamic(!isDynamic);
+			bool newDynamicState = rigidbody->IsDynamic();
+			if (newDynamicState)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::DEBUG,
+					"Set dynamic state to true.\n");
+			}
+			else
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::DEBUG,
+					"Set dynamic state to false.\n");
+			}
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Use gravity");
+		ImGui::SameLine();
+		bool useGravity = rigidbody->UseGravity();
+		string gravityButtonName = useGravity ? "False" : "True";
+		if (ImGui::Button(gravityButtonName.c_str()))
+		{
+			rigidbody->SetDynamic(!useGravity);
+			bool newGravityState = rigidbody->UseGravity();
+			if (newGravityState)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::DEBUG,
+					"Set gravity to true.\n");
+			}
+			else
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::DEBUG,
+					"Set gravity to false.\n");
+			}
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		float gravityFactor = rigidbody->GetGravityFactor();
+		if (ImGui::SliderFloat("Gravity factor", &gravityFactor, 0.0f, 10.0f))
+		{
+			rigidbody->SetGravityFactor(gravityFactor);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		float mass = rigidbody->GetMass();
+		if (ImGui::SliderFloat("Mass", &mass, 0.0f, 10000.0f))
+		{
+			rigidbody->SetMass(mass);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		float restitution = rigidbody->GetRestitution();
+		if (ImGui::SliderFloat("Restitution", &restitution, 0.0f, 1.0f))
+		{
+			rigidbody->SetRestitution(restitution);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		float staticFriction = rigidbody->GetStaticFriction();
+		if (ImGui::SliderFloat("Static friction", &staticFriction, 0.0f, 1.0f))
+		{
+			rigidbody->SetStaticFriction(staticFriction);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		float dynamicFriction = rigidbody->GetDynamicFriction();
+		if (ImGui::SliderFloat("Dynamic friction", &dynamicFriction, 0.0f, 1.0f))
+		{
+			rigidbody->SetDynamicFriction(dynamicFriction);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		ImGui::EndChild();

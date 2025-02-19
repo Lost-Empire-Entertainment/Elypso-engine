@@ -43,6 +43,7 @@ namespace Graphics::Shape
 	{
         auto obj = make_shared<GameObject>("Skybox", 10000003);
         auto transform = obj->AddComponent<TransformComponent>();
+        transform->SetOwner(obj);
         transform->SetPosition(vec3(0));
         transform->SetRotation(vec3(0));
         transform->SetScale(vec3(1));
@@ -117,6 +118,7 @@ namespace Graphics::Shape
             VAO, 
             VBO, 
             0);
+        mesh->SetOwner(obj);
 
         string vert = (path(Engine::filesPath) / "shaders" / "Skybox.vert").string();
         string frag = (path(Engine::filesPath) / "shaders" / "Skybox.frag").string();
@@ -133,6 +135,7 @@ namespace Graphics::Shape
         skyboxShader.SetInt("skybox", 0);
 
         auto mat = obj->AddComponent<MaterialComponent>();
+        mat->SetOwner(obj);
         mat->AddShader(vert, frag, skyboxShader);
 
         GameObjectManager::SetSkybox(obj);

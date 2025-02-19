@@ -89,6 +89,7 @@ namespace Graphics::Shape
 	{
 		auto obj = make_shared<GameObject>(name, id);
 		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -137,6 +138,7 @@ namespace Graphics::Shape
 			VAO, 
 			VBO, 
 			EBO);
+		mesh->SetOwner(obj);
 
 		mesh->SetMeshPath(modelPath);
 
@@ -152,6 +154,7 @@ namespace Graphics::Shape
 		Shader modelShader = Shader::LoadShader(vert, frag);
 
 		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->SetOwner(obj);
 		mat->AddShader(vert, frag, modelShader);
 
 		mesh->SetVertices(vertices);

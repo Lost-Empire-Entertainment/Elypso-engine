@@ -24,6 +24,7 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "rigidbodycomponent.hpp"
 
 namespace Graphics::Components
 {

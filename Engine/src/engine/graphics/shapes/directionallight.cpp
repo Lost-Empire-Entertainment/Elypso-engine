@@ -59,6 +59,7 @@ namespace Graphics::Shape
 	{
 		auto obj = make_shared<GameObject>(name, id);
 		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -111,6 +112,7 @@ namespace Graphics::Shape
 			vao, 
 			vbo, 
 			ebo);
+		mesh->SetOwner(obj);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -124,11 +126,13 @@ namespace Graphics::Shape
 		Shader directionalLightShader = Shader::LoadShader(vert, frag);
 
 		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->SetOwner(obj);
 		mat->AddShader(vert, frag, directionalLightShader);
 
 		auto dirlight = obj->AddComponent<LightComponent>(
 				diffuse,
 				intensity);
+		dirlight->SetOwner(obj);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "directionalLight.png").string();
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(

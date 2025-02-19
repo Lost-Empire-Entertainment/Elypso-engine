@@ -34,6 +34,7 @@
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
 #include "audioplayercomponent.hpp"
+#include "rigidbodycomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -79,6 +80,7 @@ using Graphics::Texture;
 using Graphics::Shader;
 using Graphics::Shape::GameObject;
 using Graphics::Components::AudioPlayerComponent;
+using Graphics::Components::RigidBodyComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -280,6 +282,30 @@ namespace EngineFile
 					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
 					data.push_back("minRange= " + to_string(minRange) + "\n");
 					data.push_back("maxRange= " + to_string(maxRange) + "\n");
+				}
+
+				//
+				// RIGIDBODY DATA
+				//
+
+				auto rigidbody = obj->GetComponent<RigidBodyComponent>();
+				if (rigidbody)
+				{
+					bool isDynamic = rigidbody->IsDynamic();
+					bool useGravity = rigidbody->UseGravity();
+					float gravityFactor = rigidbody->GetGravityFactor();
+					float mass = rigidbody->GetMass();
+					float restitution = rigidbody->GetRestitution();
+					float staticFriction = rigidbody->GetStaticFriction();
+					float dynamicFriction = rigidbody->GetDynamicFriction();
+
+					data.push_back("isDynamic= " + to_string(isDynamic) + "\n");
+					data.push_back("useGravity= " + to_string(useGravity) + "\n");
+					data.push_back("gravityFactor= " + to_string(gravityFactor) + "\n");
+					data.push_back("mass= " + to_string(mass) + "\n");
+					data.push_back("restitution= " + to_string(restitution) + "\n");
+					data.push_back("staticFriction= " + to_string(staticFriction) + "\n");
+					data.push_back("dynamicFriction= " + to_string(dynamicFriction) + "\n");
 				}
 
 				//
@@ -535,7 +561,14 @@ namespace EngineFile
 					|| key == "is3D"
 					|| key == "currentVolume"
 					|| key == "minRange"
-					|| key == "maxRange")
+					|| key == "maxRange"
+					|| key == "isDynamic"
+					|| key == "useGravity"
+					|| key == "gravityFactor"
+					|| key == "mass"
+					|| key == "restitution"
+					|| key == "staticFriction"
+					|| key == "dynamicFriction")
 				{
 					data[key] = value;
 				}
@@ -567,6 +600,14 @@ namespace EngineFile
 		float currVolume{};
 		float minRange{};
 		float maxRange{};
+
+		bool isDynamic{};
+		bool useGravity{};
+		float gravityFactor{};
+		float mass{};
+		float restitution{};
+		float staticFriction{};
+		float dynamicFriction{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -726,6 +767,35 @@ namespace EngineFile
 			{
 				maxRange = stof(value);
 			}
+
+			else if (key == "isDynamic")
+			{
+				isDynamic = stoi(value);
+			}
+			else if (key == "useGravity")
+			{
+				useGravity = stoi(value);
+			}
+			else if (key == "gravityFactor")
+			{
+				gravityFactor = stof(value);
+			}
+			else if (key == "mass")
+			{
+				mass = stof(value);
+			}
+			else if (key == "restitution")
+			{
+				restitution = stof(value);
+			}
+			else if (key == "staticFriction")
+			{
+				staticFriction = stof(value);
+			}
+			else if (key == "dynamicFriction")
+			{
+				dynamicFriction = stof(value);
+			}
 		}
 
 		//
@@ -817,6 +887,7 @@ namespace EngineFile
 			string frag = (path(Engine::filesPath) / "shaders" / "GameObject.frag").string();
 			Shader modelShader = Shader::LoadShader(vert, frag);
 			auto mat = foundObj->AddComponent<MaterialComponent>();
+			mat->SetOwner(foundObj);
 			mat->AddShader(vert, frag, modelShader);
 
 			Texture::LoadTexture(foundObj, diffuseTexture, MaterialComponent::TextureType::diffuse, false);
@@ -848,11 +919,31 @@ namespace EngineFile
 				|| data["maxRange"] != "")
 			{
 				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
+				apc->SetOwner(foundObj);
 				apc->SetName(audioFileName);
 				apc->Set3DState(is3D);
 				apc->SetVolume(currVolume);
 				apc->SetMinRange(minRange);
 				apc->SetMaxRange(maxRange);
+			}
+
+			if (data["isDynamic"] != ""
+				|| data["useGravity"] != ""
+				|| data["gravityFactor"] != ""
+				|| data["mass"] != ""
+				|| data["restitution"] != ""
+				|| data["staticFriction"] != ""
+				|| data["dynamicFriction"] != "")
+			{
+				auto rb = foundObj->AddComponent<RigidBodyComponent>(foundObj);
+
+				rb->SetDynamic(isDynamic);
+				rb->EnableGravity(useGravity);
+				rb->SetGravityFactor(gravityFactor);
+				rb->SetMass(mass);
+				rb->SetRestitution(restitution);
+				rb->SetStaticFriction(staticFriction);
+				rb->SetDynamicFriction(dynamicFriction);
 			}
 
 			/*
@@ -1033,6 +1124,7 @@ namespace EngineFile
 			|| data["maxRange"] != "")
 		{
 			auto apc = empty->AddComponent<AudioPlayerComponent>();
+			apc->SetOwner(empty);
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
@@ -1247,6 +1339,7 @@ namespace EngineFile
 			|| data["maxRange"] != "")
 		{
 			auto apc = pl->AddComponent<AudioPlayerComponent>();
+			apc->SetOwner(pl);
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
@@ -1469,6 +1562,7 @@ namespace EngineFile
 			|| data["maxRange"] != "")
 		{
 			auto apc = sl->AddComponent<AudioPlayerComponent>();
+			apc->SetOwner(sl);
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
@@ -1680,6 +1774,7 @@ namespace EngineFile
 			|| data["maxRange"] != "")
 		{
 			auto apc = dl->AddComponent<AudioPlayerComponent>();
+			apc->SetOwner(dl);
 			apc->SetName(audioFileName);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);

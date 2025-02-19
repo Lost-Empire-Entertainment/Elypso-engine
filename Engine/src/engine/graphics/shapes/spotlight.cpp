@@ -62,6 +62,7 @@ namespace Graphics::Shape
 	{
 		auto obj = make_shared<GameObject>(name, id);
 		auto transform = obj->AddComponent<TransformComponent>();
+		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
@@ -114,6 +115,7 @@ namespace Graphics::Shape
 			vao, 
 			vbo, 
 			ebo);
+		mesh->SetOwner(obj);
 
 		string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
@@ -129,6 +131,7 @@ namespace Graphics::Shape
 			(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
 
 		auto mat = obj->AddComponent<MaterialComponent>();
+		mat->SetOwner(obj);
 		mat->AddShader(
 			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic.frag").string(), 
@@ -140,6 +143,7 @@ namespace Graphics::Shape
 				distance,
 				innerAngle,
 				outerAngle);
+		spotlight->SetOwner(obj);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(

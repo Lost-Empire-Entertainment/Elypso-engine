@@ -542,6 +542,7 @@ namespace Graphics::GUI
 				{
 					shared_ptr<GameObject> initializedObj = obj;
 					auto apc = initializedObj->AddComponent<AudioPlayerComponent>();
+					apc->SetOwner(initializedObj);
 
 					apc->Set3DState(is3D);
 					apc->SetMaxRange(maxRange);
