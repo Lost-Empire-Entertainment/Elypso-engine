@@ -5,15 +5,26 @@
 
 #pragma once
 
+//external
+#include "physicsworld.hpp"
+#include "glm.hpp"
+
 namespace Core
 {
+	using ElypsoPhysics::PhysicsWorld;
+	using glm::vec3;
+
 	class Physics
 	{
 	public:
-		static void Initialize();
+		static PhysicsWorld& GetPhysicsWorld();
 
-		static void Update();
+		static void Initialize(const vec3& gravity = vec3(0.0f, 9.81f, 0.0f));
+
+		static void Update(float deltaTime);
 
 		static void Shutdown();
+	private:
+		static inline PhysicsWorld* physicsWorld = nullptr;
 	};
 }

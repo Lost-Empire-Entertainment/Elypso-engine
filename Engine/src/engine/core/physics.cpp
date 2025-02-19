@@ -3,22 +3,34 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-//external
-//#include "main.hpp"
-
 //engine
 #include "physics.hpp"
+#include "console.hpp"
 
-//using PhsyicsCore = ElypsoPhysics::Core;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
-	void Physics::Initialize()
+	PhysicsWorld& Physics::GetPhysicsWorld()
 	{
-		//ElypsoPhysics::Core::Test1();
+		if (!physicsWorld) physicsWorld = &PhysicsWorld::GetInstance();
+		return *physicsWorld;
 	}
 
-	void Physics::Update()
+	void Physics::Initialize(const vec3& gravity)
+	{
+		if (!physicsWorld) GetPhysicsWorld();
+		physicsWorld->InitializePhysics(gravity);
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::INITIALIZE,
+			Type::INFO,
+			"Successfully initialized Elypso Physics!\n");
+	}
+
+	void Physics::Update(float deltaTime)
 	{
 
 	}

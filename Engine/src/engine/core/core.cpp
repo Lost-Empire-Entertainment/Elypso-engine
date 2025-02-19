@@ -34,6 +34,7 @@
 #include "stringUtils.hpp"
 #include "gameobject.hpp"
 #include "audio.hpp"
+#include "physics.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
@@ -64,6 +65,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
+using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
@@ -481,6 +483,8 @@ namespace Core
 		Render::RenderSetup();
 
 		Audio::Initialize();
+
+		Physics::Initialize();
 
 		//import all valid audio files
 		string audioFolder = (path(Engine::projectPath) / "audio").string();
