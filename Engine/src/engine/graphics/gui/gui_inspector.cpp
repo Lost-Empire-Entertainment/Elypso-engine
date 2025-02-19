@@ -1232,7 +1232,7 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		bool isPlaying = audioPlayer->IsPlaying();
-		string playButtonName = isPlaying ? "Stop" : "Play";
+		string playButtonName = isPlaying ? "Stop##apc" : "Play##apc";
 		if (ImGui::Button(playButtonName.c_str()))
 		{
 			string audioFile = audioPlayer->GetName();
@@ -1272,7 +1272,7 @@ namespace Graphics::GUI
 		if (isPlaying)
 		{
 			bool isPaused = audioPlayer->IsPaused();
-			string pauseButtonName = isPaused ? "Continue" : "Pause";
+			string pauseButtonName = isPaused ? "Continue##apc" : "Pause##apc";
 			if (ImGui::Button(pauseButtonName.c_str()))
 			{
 				audioPlayer->SetPauseState(!isPaused);
@@ -1301,7 +1301,7 @@ namespace Graphics::GUI
 		}
 
 		bool is3D = audioPlayer->Is3D();
-		if (ImGui::Checkbox("Toggle 3D audio", &is3D))
+		if (ImGui::Checkbox("Toggle 3D audio##apc", &is3D))
 		{
 			audioPlayer->Set3DState(is3D);
 
@@ -1327,7 +1327,7 @@ namespace Graphics::GUI
 		}
 
 		float currVolume = audioPlayer->GetVolume();
-		if (ImGui::SliderFloat("Volume", &currVolume, 0.0f, 100.0f))
+		if (ImGui::SliderFloat("Volume##apc", &currVolume, 0.0f, 100.0f))
 		{
 			audioPlayer->SetVolume(currVolume);
 
@@ -1338,7 +1338,7 @@ namespace Graphics::GUI
 		{
 			float currMinRange = audioPlayer->GetMinRange();
 			float maxMinRange = audioPlayer->GetMaxRange() - 0.1f;
-			if (ImGui::DragFloat("Min range", &currMinRange, 0.1f, 0.01f, maxMinRange, "%.2f"))
+			if (ImGui::DragFloat("Min range##apc", &currMinRange, 0.1f, 0.01f, maxMinRange, "%.2f"))
 			{
 				audioPlayer->SetMinRange(currMinRange);
 
@@ -1347,7 +1347,7 @@ namespace Graphics::GUI
 
 			float currMaxRange = audioPlayer->GetMaxRange();
 			float minMaxRange = audioPlayer->GetMinRange() + 0.1f;
-			if (ImGui::DragFloat("Max range", &currMaxRange, 0.1f, minMaxRange, 100.0f, "%.2f"))
+			if (ImGui::DragFloat("Max range##apc", &currMaxRange, 0.1f, minMaxRange, 100.0f, "%.2f"))
 			{
 				audioPlayer->SetMaxRange(currMaxRange);
 
@@ -1403,7 +1403,7 @@ namespace Graphics::GUI
 		ImGui::Text("Is dynamic");
 		ImGui::SameLine();
 		bool isDynamic = rigidbody->IsDynamic();
-		string dynamicButtonName = isDynamic ? "False" : "True";
+		string dynamicButtonName = isDynamic ? "False##rb_dynamic" : "True##rb_dynamic";
 		if (ImGui::Button(dynamicButtonName.c_str()))
 		{
 			rigidbody->SetDynamic(!isDynamic);
@@ -1429,10 +1429,10 @@ namespace Graphics::GUI
 		ImGui::Text("Use gravity");
 		ImGui::SameLine();
 		bool useGravity = rigidbody->UseGravity();
-		string gravityButtonName = useGravity ? "False" : "True";
-		if (ImGui::Button(gravityButtonName.c_str()))
+		string useGravityButtonText = useGravity ? "False##rb_gravity" : "True##rb_gravity";
+		if (ImGui::Button(useGravityButtonText.c_str()))
 		{
-			rigidbody->SetDynamic(!useGravity);
+			rigidbody->EnableGravity(!useGravity);
 			bool newGravityState = rigidbody->UseGravity();
 			if (newGravityState)
 			{
@@ -1448,12 +1448,10 @@ namespace Graphics::GUI
 					ConsoleType::DEBUG,
 					"Set gravity to false.\n");
 			}
-
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		float gravityFactor = rigidbody->GetGravityFactor();
-		if (ImGui::SliderFloat("Gravity factor", &gravityFactor, 0.0f, 10.0f))
+		if (ImGui::SliderFloat("Gravity factor##rb_gravityFactor", &gravityFactor, 0.0f, 10.0f))
 		{
 			rigidbody->SetGravityFactor(gravityFactor);
 
@@ -1461,7 +1459,7 @@ namespace Graphics::GUI
 		}
 
 		float mass = rigidbody->GetMass();
-		if (ImGui::SliderFloat("Mass", &mass, 0.0f, 10000.0f))
+		if (ImGui::SliderFloat("Mass##rb_mass", &mass, 0.0f, 10000.0f))
 		{
 			rigidbody->SetMass(mass);
 
@@ -1469,7 +1467,7 @@ namespace Graphics::GUI
 		}
 
 		float restitution = rigidbody->GetRestitution();
-		if (ImGui::SliderFloat("Restitution", &restitution, 0.0f, 1.0f))
+		if (ImGui::SliderFloat("Restitution##rb_rest", &restitution, 0.0f, 1.0f))
 		{
 			rigidbody->SetRestitution(restitution);
 
@@ -1477,7 +1475,7 @@ namespace Graphics::GUI
 		}
 
 		float staticFriction = rigidbody->GetStaticFriction();
-		if (ImGui::SliderFloat("Static friction", &staticFriction, 0.0f, 1.0f))
+		if (ImGui::SliderFloat("Static friction##rb_statFirc", &staticFriction, 0.0f, 1.0f))
 		{
 			rigidbody->SetStaticFriction(staticFriction);
 
@@ -1485,7 +1483,7 @@ namespace Graphics::GUI
 		}
 
 		float dynamicFriction = rigidbody->GetDynamicFriction();
-		if (ImGui::SliderFloat("Dynamic friction", &dynamicFriction, 0.0f, 1.0f))
+		if (ImGui::SliderFloat("Dynamic friction##rb_dynFric", &dynamicFriction, 0.0f, 1.0f))
 		{
 			rigidbody->SetDynamicFriction(dynamicFriction);
 
