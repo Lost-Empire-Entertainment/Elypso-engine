@@ -15,8 +15,6 @@
 	#define PHYSICS_API
 #endif
 
-#include <memory>
-
 //external
 #include "glm.hpp"
 #include "gtc/quaternion.hpp"
@@ -29,30 +27,29 @@ namespace ElypsoPhysics
 {
 	using glm::vec3;
 	using glm::quat;
-	using std::unique_ptr;
 
 	class PHYSICS_API RigidBody
 	{
 	public:
-		GameObjectHandle handle;       //Reference to the gameobject
-		vec3 position;                 //Object position
-		quat rotation;                 //Object rotation
+		GameObjectHandle handle;       //Reference to the associated game object
+		vec3 position;                 //Current world position
+		quat rotation;                 //Current world rotation
 		vec3 velocity;                 //Linear velocity
-		vec3 angularVelocity;          //Angular velocity
-		float mass;                    //Object mass
-		bool isDynamic;                //Determines if the object moves
-		unique_ptr<Collider> collider; //Smart pointer to the collider
-		vec3 inertiaTensor;            //Store precomputed inertia tensor
+		vec3 angularVelocity;          //Angular velocity (rotation speed)
+		float mass;                    //Object's mass affecting inertia
+		bool isDynamic;                //True if the object responds to forces
+		Collider* collider;            //Pointer to the object's collider
+		vec3 inertiaTensor;            //Precomputed inertia tensor for rotations
 
-		float restitution;             //Bounciness factor
-		float staticFriction;          //Prevents movement when still
-		float dynamicFriction;         //Slows down moving objects
-		float gravityFactor;           //Custom gravity multiplier (1.0 = normal gravity)
-		bool useGravity;               //Controls if this object is affected by gravity
+		float restitution;             //Bounciness factor after collisions
+		float staticFriction;          //Resists initial movement when at rest
+		float dynamicFriction;         //Slows down sliding objects
+		float gravityFactor;           //Gravity multiplier (1.0 = normal gravity)
+		bool useGravity;               //True if affected by global gravity
 
-		bool isSleeping = false;       //Track whether object is sleeping
-		float sleepThreshold = 0.01f;  //Velocity below this is considered "at rest"
-		float sleepTimer = 0.0f;       //Time the body has been inactive
+		bool isSleeping = false;       //True if the object is inactive
+		float sleepThreshold = 0.01f;  //Velocity below this puts object to sleep
+		float sleepTimer = 0.0f;       //Time spent inactive before sleeping
 
 		RigidBody(
 			GameObjectHandle h,

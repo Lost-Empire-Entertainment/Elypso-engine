@@ -18,7 +18,6 @@
 #include <vector>
 #include <unordered_map>
 #include <cstdint>
-#include <memory>
 
 //external
 #include "glm.hpp"
@@ -33,18 +32,23 @@ namespace ElypsoPhysics
 	using glm::vec3;
 	using glm::quat;
 	using std::hash;
-	using std::unique_ptr;
 
 	class PHYSICS_API PhysicsWorld
 	{
 	public:
 		static PhysicsWorld& GetInstance();
 
+		/// <summary>
+		/// Initializes the physics engine with the specified gravity vector
+		/// </summary>
 		void InitializePhysics(const vec3& gravity = vec3(0.0f, -9.81f, 0.0f));
+		/// <summary>
+		/// Shuts down the physics engine and cleans up all allocated resources
+		/// </summary>
 		void ShutdownPhysics();
 
 		/// <summary>
-		/// Create a RigidBody and return its handle.
+		/// Create a RigidBody and return its handle
 		/// </summary>
 		GameObjectHandle CreateRigidBody(
 			const vec3& pos, 
@@ -59,7 +63,7 @@ namespace ElypsoPhysics
 			bool useGravity = true);
 
 		/// <summary>
-		/// Get a RigidBody by handle.
+		/// Get a RigidBody by handle
 		/// </summary>
 		RigidBody* GetRigidBody(const GameObjectHandle& handle);
 
@@ -73,12 +77,18 @@ namespace ElypsoPhysics
 		/// </summary>
 		void StepSimulation(float deltaTime);
 
+		/// <summary>
+		/// Resolves a collision by applying impulse forces to separate the bodies and simulate realistic response
+		/// </summary>
 		void ResolveCollision(
 			RigidBody& bodyA, 
 			RigidBody& bodyB, 
 			const vec3& collisionNormal,
 			const vec3& contactPoint);
 
+		/// <summary>
+		/// Applies frictional forces to reduce sliding and simulate surface resistance after a collision
+		/// </summary>
 		void ApplyFriction(RigidBody& bodyA, RigidBody& bodyB, const vec3& collisionNormal);
 
 		const vec3& GetGravity() const { return gravity; }
@@ -91,10 +101,14 @@ namespace ElypsoPhysics
 
 		bool isInitialized = false;
 
-		vector<unique_ptr<RigidBody>> bodies;                        //Array of all rigidbodies
-		unordered_map<GameObjectHandle, size_t, hash<GameObjectHandle>> bodyMap; //Map for quick lookup
-		vector<uint32_t> generations;                    //Tracks generation of each index
+		//Array of all active RigidBody instances managed by the physics world
+		vector<RigidBody*> bodies;
+		//Maps GameObjectHandle to its corresponding index in the 'bodies' array
+		unordered_map<GameObjectHandle, size_t, hash<GameObjectHandle>> bodyMap;
+		//Tracks the generation count for each index in the 'bodies' array
+		vector<uint32_t> generations;
 
+		//Global gravity
 		vec3 gravity;
 	};
 }

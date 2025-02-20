@@ -157,7 +157,7 @@ namespace Graphics::Components
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
-		Collider* coll = rb->collider.get();
+		Collider* coll = rb->collider;
 
 		if (coll->type == ColliderType::BOX)
 		{
@@ -224,7 +224,7 @@ namespace Graphics::Components
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
-		Collider* coll = rb->collider.get();
+		Collider* coll = rb->collider;
 
 		if (coll->type == ColliderType::BOX)
 		{
