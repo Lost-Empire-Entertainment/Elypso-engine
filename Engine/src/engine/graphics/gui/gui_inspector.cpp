@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <sstream>
 
 //external
 #include "imgui.h"
@@ -52,6 +53,9 @@ using std::filesystem::directory_iterator;
 using std::filesystem::is_regular_file;
 using std::filesystem::exists;
 using std::stof;
+using std::ostringstream;
+using std::fixed;
+using std::setprecision;
 
 using Graphics::Render;
 using Core::Select;
@@ -1382,7 +1386,7 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 
-		float height = 300.0f;
+		float height = 375.0f;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -1450,8 +1454,43 @@ namespace Graphics::GUI
 			}
 		}
 
+		vec3 velocity = rigidbody->GetVelocity();
+		ostringstream velocityOss;
+		velocityOss 
+			<< fixed 
+			<< setprecision(2)
+			<< "Velocity: "
+			<< velocity.x << ", "
+			<< velocity.y << ", "
+			<< velocity.z;
+		ImGui::Text("%s", velocityOss.str().c_str());
+
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##rb_resetVelocity"))
+		{
+			rigidbody->ResetVelocity();
+		}
+
+		vec3 angularVelocity = rigidbody->GetAngularVelocity();
+		ostringstream angularVelocityOss;
+		angularVelocityOss
+			<< fixed
+			<< setprecision(2)
+			<< "Angular velocity: "
+			<< angularVelocity.x << ", "
+			<< angularVelocity.y << ", "
+			<< angularVelocity.z;
+		ImGui::Text("%s", angularVelocityOss.str().c_str());
+
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##rb_resetangvelocity"))
+		{
+			rigidbody->ResetAngularVelocity();
+		}
+
+		ImGui::PushItemWidth(150.0f);
 		float gravityFactor = rigidbody->GetGravityFactor();
-		if (ImGui::SliderFloat("Gravity factor##rb_gravityFactor", &gravityFactor, 0.0f, 10.0f))
+		if (ImGui::DragFloat("Gravity factor##rb_gravityFactor", &gravityFactor, 0.01f, 0.0f, 10.0f))
 		{
 			rigidbody->SetGravityFactor(gravityFactor);
 
@@ -1459,7 +1498,7 @@ namespace Graphics::GUI
 		}
 
 		float mass = rigidbody->GetMass();
-		if (ImGui::SliderFloat("Mass##rb_mass", &mass, 0.0f, 10000.0f))
+		if (ImGui::DragFloat("Mass##rb_mass", &mass, 10.0f, 0.0f, 10000.0f))
 		{
 			rigidbody->SetMass(mass);
 
@@ -1467,7 +1506,7 @@ namespace Graphics::GUI
 		}
 
 		float restitution = rigidbody->GetRestitution();
-		if (ImGui::SliderFloat("Restitution##rb_rest", &restitution, 0.0f, 1.0f))
+		if (ImGui::DragFloat("Restitution##rb_rest", &restitution, 0.001f, 0.0f, 1.0f))
 		{
 			rigidbody->SetRestitution(restitution);
 
@@ -1475,7 +1514,7 @@ namespace Graphics::GUI
 		}
 
 		float staticFriction = rigidbody->GetStaticFriction();
-		if (ImGui::SliderFloat("Static friction##rb_statFirc", &staticFriction, 0.0f, 1.0f))
+		if (ImGui::DragFloat("Static friction##rb_statFirc", &staticFriction, 0.001f, 0.0f, 1.0f))
 		{
 			rigidbody->SetStaticFriction(staticFriction);
 
@@ -1483,12 +1522,13 @@ namespace Graphics::GUI
 		}
 
 		float dynamicFriction = rigidbody->GetDynamicFriction();
-		if (ImGui::SliderFloat("Dynamic friction##rb_dynFric", &dynamicFriction, 0.0f, 1.0f))
+		if (ImGui::DragFloat("Dynamic friction##rb_dynFric", &dynamicFriction, 0.001f, 0.0f, 1.0f))
 		{
 			rigidbody->SetDynamicFriction(dynamicFriction);
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
+		ImGui::PopItemWidth();
 
 		ImGui::EndChild();
 	}

@@ -128,14 +128,31 @@ namespace Graphics::Components
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
-		rb->position = newPos;
+		if (rb->position != newPos)
+		{
+			rb->position = newPos;
+
+			cout << "new box position: "
+				<< to_string(newPos.x) << ", "
+				<< to_string(newPos.y) << ", "
+				<< to_string(newPos.z) << "\n";
+		}
 	}
 	void RigidBodyComponent::SetRotation(const vec3& newRot) const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		quat newQuat = quat(radians(newRot));
 
-		rb->rotation = quat(radians(newRot));
+		if (rb->rotation != newQuat)
+		{
+			rb->rotation = quat(radians(newRot));
+
+			cout << "new box rotation: "
+				<< to_string(newRot.x) << ", "
+				<< to_string(newRot.y) << ", "
+				<< to_string(newRot.z) << "\n";
+		}
 	}
 	void RigidBodyComponent::SetScale(const vec3& newScale) const
 	{
@@ -148,7 +165,15 @@ namespace Graphics::Components
 			BoxCollider* box = dynamic_cast<BoxCollider*>(coll);
 			if (box)
 			{
-				box->halfExtents = newScale * 0.5f;
+				vec3 newHalfExtents = newScale * 0.5f;
+				if (box->halfExtents != newHalfExtents)
+				{
+					box->halfExtents = newScale * 0.5f;
+					cout << "new box size: "
+						<< to_string(newScale.x) << ", "
+						<< to_string(newScale.y) << ", "
+						<< to_string(newScale.z) << "\n";
+				}
 			}
 		}
 		else if (coll->type == ColliderType::SPHERE)
@@ -156,19 +181,39 @@ namespace Graphics::Components
 			SphereCollider* sphere = dynamic_cast<SphereCollider*>(coll);
 			if (sphere)
 			{
-				sphere->radius = newScale.x;
+				float newRadius = newScale.x;
+				if (sphere->radius != newRadius)
+				{
+					sphere->radius = newScale.x;
+					cout << "new sphere radius: "
+						<< to_string(newScale.x) << "\n";
+				}
 			}
 		}
 	}
+	void RigidBodyComponent::ResetVelocity() const
+	{
+		PhysicsWorld* physicsWorld = Physics::physicsWorld;
+		RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
-	const vec3& RigidBodyComponent::GetPosition() const
+		rb->velocity = vec3(0);
+	}
+	void RigidBodyComponent::ResetAngularVelocity() const
+	{
+		PhysicsWorld* physicsWorld = Physics::physicsWorld;
+		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+
+		rb->angularVelocity = vec3(0);
+	}
+
+	vec3 RigidBodyComponent::GetPosition() const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
 		return rb->position;
 	}
-	const vec3& RigidBodyComponent::GetRotation() const
+	vec3 RigidBodyComponent::GetRotation() const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
@@ -176,7 +221,7 @@ namespace Graphics::Components
 		vec3 newRot = degrees(eulerAngles(rb->rotation));
 		return newRot;
 	}
-	const vec3& RigidBodyComponent::GetScale() const
+	vec3 RigidBodyComponent::GetScale() const
 	{
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 		RigidBody* rb = physicsWorld->GetRigidBody(handle);
@@ -198,6 +243,22 @@ namespace Graphics::Components
 				return vec3(sphere->radius, 0.0f, 0.0f);
 			}
 		}
+
+		return vec3(0);
+	}
+	vec3 RigidBodyComponent::GetVelocity() const
+	{
+		PhysicsWorld* physicsWorld = Physics::physicsWorld;
+		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+
+		return rb->velocity;
+	}
+	vec3 RigidBodyComponent::GetAngularVelocity() const
+	{
+		PhysicsWorld* physicsWorld = Physics::physicsWorld;
+		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+
+		return rb->angularVelocity;
 	}
 
 	void RigidBodyComponent::SetDynamic(bool newIsDynamic)

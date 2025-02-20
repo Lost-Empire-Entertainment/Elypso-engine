@@ -36,14 +36,13 @@ namespace ElypsoPhysics
 	public:
 		ColliderType type;
 		GameObjectHandle handle;
+		float boundingRadius = 0.0f;
 
-		explicit Collider(
-			ColliderType type,
-			GameObjectHandle h) :
-			type(type),
-			handle(h) {}
+		explicit Collider(ColliderType type, const GameObjectHandle& h);
 		
 		virtual ~Collider() = default;
+
+		virtual void CalculateBoundingRadius() = 0;
 
 		Collider(const Collider&) = delete;
 		Collider& operator=(const Collider&) = delete;
@@ -52,7 +51,11 @@ namespace ElypsoPhysics
 	class PHYSICS_API BoxCollider : public Collider
 	{
 	public:
-		BoxCollider(GameObjectHandle h, const vec3& size);
+		BoxCollider(const GameObjectHandle& h, const vec3& size);
+		void CalculateBoundingRadius() override
+		{
+			boundingRadius = length(halfExtents) * 2.0f * 0.5f; //half diagonal
+		}
 
 		//half size of box in each axis
 		vec3 halfExtents;
@@ -61,7 +64,12 @@ namespace ElypsoPhysics
 	class PHYSICS_API SphereCollider : public Collider
 	{
 	public:
-		SphereCollider(GameObjectHandle h, float r);
+		SphereCollider(const GameObjectHandle& h, float r);
+
+		void CalculateBoundingRadius() override
+		{
+			boundingRadius = radius;
+		}
 
 		float radius;
 	};

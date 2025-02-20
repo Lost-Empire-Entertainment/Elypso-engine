@@ -40,9 +40,13 @@ namespace Graphics::Components
 			float dynamicFriction = 0.3f);
 
 		void SetHandle(const GameObjectHandle& newHandle) { handle = newHandle; }
+
 		void SetPosition(const vec3& newPos) const;
 		void SetRotation(const vec3& newRot) const;
 		void SetScale(const vec3& newScale) const;
+		void ResetVelocity() const;
+		void ResetAngularVelocity() const;
+
 		void SetColliderType(const string& newColliderType);
 		void SetDynamic(bool newIsDynamic);
 		void EnableGravity(bool newUseGravity);
@@ -53,9 +57,13 @@ namespace Graphics::Components
 		void SetDynamicFriction(float newDynamicFriction);
 
 		const GameObjectHandle& GetHandle() const { return handle; }
-		const vec3& GetPosition() const;
-		const vec3& GetRotation() const;
-		const vec3& GetScale() const;
+
+		vec3 GetPosition() const;
+		vec3 GetRotation() const;
+		vec3 GetScale() const;
+		vec3 GetVelocity() const;
+		vec3 GetAngularVelocity() const;
+
 		const string& GetColliderType() const { return colliderType; }
 		bool IsDynamic() const { return isDynamic; }
 		bool UseGravity() const { return useGravity; }

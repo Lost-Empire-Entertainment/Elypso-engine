@@ -95,6 +95,6 @@ namespace ElypsoPhysics
 		unordered_map<GameObjectHandle, size_t, hash<GameObjectHandle>> bodyMap; //Map for quick lookup
 		vector<uint32_t> generations;                    //Tracks generation of each index
 
-		vec3 gravity = vec3(0.0f, -9.81f, 0.0f);
+		vec3 gravity;
 	};
 }
