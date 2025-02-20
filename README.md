@@ -1,12 +1,16 @@
 # Elypso engine
 
+[![License](https://img.shields.io/badge/license-Proprietary-blue)](LICENSE.md)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-brightgreen)
+![Development Stage](https://img.shields.io/badge/development-Alpha-yellow)
+
 ![Engine screenshot](image.png)
 
 **Elypso engine** is an OpenGL C++ 20 game development engine. It runs natively on Windows and Linux (tested on Ubuntu-based distros and Arch) and it uses several libraries listed in [the library file](LIBRARIES.md).
 
 **Elypso engine** is in early alpha development and will be heavily modified during alpha development. Beta is aimed for winter 2025, full release is aimed for winter 2026.
 
-The documentation for **Elypso engine** will be found at the [website](https://elypsoengine.com)  in the near future so please look there for information, this README file will not cover how to install or use this program.
+The documentation for **Elypso engine** will be found at the [official website](https://elypsoengine.com)  in the near future so please look there for information, this README file will not cover how to install or use this program.
 
 If you intend to download the source code and compile from source then please also download [Elypso hub](https://github.com/Lost-Empire-Entertainment/Elypso-hub)
  and [Elypso compiler](https://github.com/Lost-Empire-Entertainment/Elypso-compiler), they are not included in this repository. Once they are downloaded make sure they are all under the same parent folder or else they may not compile correctly.
@@ -29,15 +33,15 @@ If this is your first time running the program then Windows may throw false posi
 
 ### Links
 
-[Support development on paypal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
+[Donate on PayPal](https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6)
 
-[Official discord server](https://discord.gg/jkvasmTND5)
+[Official Discord server](https://discord.gg/jkvasmTND5)
 
-[Official youtube channel](https://youtube.com/greenlaser)
+[Official Youtube channel](https://youtube.com/greenlaser)
 
-[Official twitch channel](https://www.twitch.tv/greenlaseer)
+[Official Twitch channel](https://www.twitch.tv/greenlaseer)
 
-[Official website (documentation coming soon)](https://elypsoengine.com)
+[Official website](https://elypsoengine.com)
 
 [Track development on the Trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
 
@@ -48,9 +52,3 @@ If this is your first time running the program then Windows may throw false posi
 * [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
 
 * [tkpmonke](https://github.com/tkpmonke) - *Tester, Linux maintainer*
-
----
-
-### Licenses
-
-* [Elypso engine propietary license](LICENSE.md)
