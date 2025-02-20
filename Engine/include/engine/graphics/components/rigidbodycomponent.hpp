@@ -31,13 +31,13 @@ namespace Graphics::Components
 		RigidBodyComponent(
 			shared_ptr<GameObject> owner,
 			string colliderType = "BOX",
-			bool isDynamic = true,
-			bool useGravity = true,
+			bool isDynamic = false,
+			bool useGravity = false,
 			float gravityFactor = 1.0f,
 			float mass = 1.0f,
-			float restitution = 0.5f,
-			float staticFriction = 0.5f,
-			float dynamicFriction = 0.3f);
+			float restitution = 0.0f,
+			float staticFriction = 0.9f,
+			float dynamicFriction = 0.7f);
 
 		void SetHandle(const GameObjectHandle& newHandle) { handle = newHandle; }
 

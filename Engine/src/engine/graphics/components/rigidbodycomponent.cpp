@@ -90,8 +90,7 @@ namespace Graphics::Components
 				restitution,
 				staticFriction,
 				dynamicFriction,
-				gravityFactor,
-				useGravity);
+				gravityFactor);
 
 			RigidBody* rb = physicsWorld->GetRigidBody(handle);
 

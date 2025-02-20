@@ -31,6 +31,8 @@ namespace ElypsoPhysics
 	public:
 		static bool CheckAABBCollision(const RigidBody& a, const RigidBody& b);
 
+		static bool CheckAABBCollisionAt(const RigidBody& movingBody, const vec3& futurePosition, const RigidBody& otherBody);
+
 		static bool CheckBoxBoxCollision(
 			const BoxCollider& boxA,
 			const vec3& posA,

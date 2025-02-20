@@ -381,6 +381,8 @@ namespace Graphics::Shape
 
 					quat newRot = quat(radians(rbComp->GetRotation()));
 					model *= mat4_cast(newRot);
+
+					model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 				}
 				else
 				{
