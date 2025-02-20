@@ -35,6 +35,8 @@ If this is your first time running the program then Windows may throw false posi
 
 [Official youtube channel](https://youtube.com/greenlaser)
 
+[Official twitch channel](https://www.twitch.tv/greenlaseer)
+
 [Official website (documentation coming soon)](https://elypsoengine.com)
 
 [Track development on the Trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
