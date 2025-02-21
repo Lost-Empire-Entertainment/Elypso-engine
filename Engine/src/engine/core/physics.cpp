@@ -5,11 +5,6 @@
 
 //engine
 #include "physics.hpp"
-#include "console.hpp"
-
-using Core::ConsoleManager;
-using Caller = Core::ConsoleManager::Caller;
-using Type = Core::ConsoleManager::Type;
 
 namespace Core
 {
@@ -17,11 +12,6 @@ namespace Core
 	{
 		if (!physicsWorld) physicsWorld = &PhysicsWorld::GetInstance();
 		physicsWorld->InitializePhysics(gravity);
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::INITIALIZE,
-			Type::INFO,
-			"Successfully initialized Elypso Physics!\n");
 	}
 
 	void Physics::Update(float deltaTime)

@@ -124,8 +124,7 @@ namespace Graphics::Components
 
 	void RigidBodyComponent::SetPosition(const vec3& newPos) const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 		if (rb->position != newPos)
 		{
@@ -139,8 +138,7 @@ namespace Graphics::Components
 	}
 	void RigidBodyComponent::SetRotation(const vec3& newRot) const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb =  Physics::physicsWorld->GetRigidBody(handle);
 		quat newQuat = quat(radians(newRot));
 
 		if (rb->rotation != newQuat)
@@ -155,8 +153,7 @@ namespace Graphics::Components
 	}
 	void RigidBodyComponent::SetScale(const vec3& newScale) const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		Collider* coll = rb->collider;
 
 		if (coll->type == ColliderType::BOX)
@@ -192,38 +189,33 @@ namespace Graphics::Components
 	}
 	void RigidBodyComponent::ResetVelocity() const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 		rb->velocity = vec3(0);
 	}
 	void RigidBodyComponent::ResetAngularVelocity() const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 		rb->angularVelocity = vec3(0);
 	}
 
 	vec3 RigidBodyComponent::GetPosition() const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 		return rb->position;
 	}
 	vec3 RigidBodyComponent::GetRotation() const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 		vec3 newRot = degrees(eulerAngles(rb->rotation));
 		return newRot;
 	}
 	vec3 RigidBodyComponent::GetScale() const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		Collider* coll = rb->collider;
 
 		if (coll->type == ColliderType::BOX)
@@ -247,15 +239,13 @@ namespace Graphics::Components
 	}
 	vec3 RigidBodyComponent::GetVelocity() const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 		return rb->velocity;
 	}
 	vec3 RigidBodyComponent::GetAngularVelocity() const
 	{
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 		return rb->angularVelocity;
 	}
@@ -264,56 +254,49 @@ namespace Graphics::Components
 	{
 		isDynamic = newIsDynamic;
 
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		rb->isDynamic = isDynamic;
 	}
 	void RigidBodyComponent::EnableGravity(bool newUseGravity)
 	{
 		useGravity = newUseGravity;
 
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		rb->useGravity = useGravity;
 	}
 	void RigidBodyComponent::SetGravityFactor(float newGravityFactor)
 	{
 		gravityFactor = newGravityFactor;
 
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		rb->gravityFactor = gravityFactor;
 	}
 	void RigidBodyComponent::SetMass(float newMass)
 	{
 		mass = newMass;
 
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		rb->mass = mass;
 	}
 	void RigidBodyComponent::SetRestitution(float newRestitution)
 	{
 		restitution = newRestitution;
 
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		rb->restitution = restitution;
 	}
 	void RigidBodyComponent::SetStaticFriction(float newStaticFriction)
 	{
 		staticFriction = newStaticFriction;
 
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		rb->staticFriction = staticFriction;
 	}
 	void RigidBodyComponent::SetDynamicFriction(float newDynamicFriction)
 	{
 		dynamicFriction = newDynamicFriction;
 
-		PhysicsWorld* physicsWorld = Physics::physicsWorld;
-		RigidBody* rb = physicsWorld->GetRigidBody(handle);
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		rb->dynamicFriction = dynamicFriction;
 	}
 }

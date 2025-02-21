@@ -70,7 +70,7 @@ namespace ElypsoPhysics
 		/// <summary>
 		/// Remove a RigidBody
 		/// </summary>
-		void RemoveRigidBody(GameObjectHandle handle);
+		void RemoveRigidBody(GameObjectHandle handle, bool calledFromDestructor = false);
 
 		/// <summary>
 		/// Update physics simulation

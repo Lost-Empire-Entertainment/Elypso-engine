@@ -59,24 +59,8 @@ namespace ElypsoPhysics
 			float rest = 0.0f,
 			float staticFrict = 0.9f,
 			float dynamicFrict = 0.7f,
-			float gFactor = 1.0f) :
-			handle(h),
-			position(pos),
-			rotation(rot),
-			velocity(0.0f),
-			angularVelocity(0.0f),
-			mass(m),
-			isDynamic(false),
-			collider(nullptr),
-			restitution(rest),
-			staticFriction(staticFrict),
-			dynamicFriction(dynamicFrict),
-			gravityFactor(gFactor),
-			useGravity(false),
-			inertiaTensor(vec3(1.0f))
-		{
-			ComputeInertiaTensor();
-		}
+			float gFactor = 1.0f);
+		~RigidBody();
 
 		/// <summary>
 		/// Apply linear force

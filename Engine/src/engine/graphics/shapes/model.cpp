@@ -366,8 +366,7 @@ namespace Graphics::Shape
 				auto transform = obj->GetComponent<TransformComponent>();
 
 				GameObjectHandle handle = rbComp->GetHandle();
-				PhysicsWorld* physicsWorld = Physics::physicsWorld;
-				RigidBody* rb = physicsWorld->GetRigidBody(handle);
+				RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
 				if (rb->isDynamic
 					&& rb->useGravity)
