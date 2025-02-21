@@ -53,7 +53,7 @@ namespace Graphics::Shape
 		const vec3& rot, 
 		const vec3& scale)
 	{
-		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000001, false, false);
+		auto obj = make_shared<GameObject>("SelectedObjectBorder", 10000001);
 		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetOwner(obj);
 		transform->SetPosition(pos);

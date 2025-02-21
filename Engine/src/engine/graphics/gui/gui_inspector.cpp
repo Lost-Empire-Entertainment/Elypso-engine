@@ -177,10 +177,7 @@ namespace Graphics::GUI
 							}
 							else
 							{
-								auto pointLight = Select::selectedObj->AddComponent<LightComponent>(
-									vec3(1),
-									1.0f,
-									1.0f);
+								auto pointLight = Select::selectedObj->AddComponent<LightComponent>(LightComponent::LightType::Point);
 
 								pointLight->SetOwner(Select::selectedObj);
 								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -952,10 +949,7 @@ namespace Graphics::GUI
 							mat->SetOwner(Select::selectedObj);
 							mat->AddShader(vert, frag, pointLightShader);
 
-							auto pointLight = Select::selectedObj->AddComponent<LightComponent>(
-								vec3(1),
-								1.0f,
-								1.0f);
+							auto pointLight = Select::selectedObj->AddComponent<LightComponent>(LightComponent::LightType::Point);
 							pointLight->SetOwner(Select::selectedObj);
 
 							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();
@@ -1066,12 +1060,7 @@ namespace Graphics::GUI
 								(path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
 								spotlightShader);
 
-							auto spotlight = obj->AddComponent<LightComponent>(
-								vec3(1),
-								1.0f,
-								1.0f,
-								12.5f,
-								17.5f);
+							auto spotlight = obj->AddComponent<LightComponent>(LightComponent::LightType::Spot);
 							spotlight->SetOwner(obj);
 
 							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();
@@ -1186,9 +1175,7 @@ namespace Graphics::GUI
 								mat->SetOwner(obj);
 								mat->AddShader(vert, frag, directionalLightShader);
 
-								auto dirlight = obj->AddComponent<LightComponent>(
-									vec3(1),
-									1.0f);
+								auto dirlight = obj->AddComponent<LightComponent>(LightComponent::LightType::Directional);
 								dirlight->SetOwner(obj);
 
 								string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "directionalLight.png").string();
@@ -1394,7 +1381,7 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 
-		float height = 425.0f;
+		float height = 750.0f;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -1549,6 +1536,34 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		ImGui::PopItemWidth();
+
+		ImGui::Separator();
+		ImGui::Text("Debugging");
+		ImGui::Separator();
+
+		ImGui::Text("Apply force");
+		static vec3 force = vec3(0);
+		ImGui::DragFloat3("##objForce", value_ptr(force), 0.01f);
+		if (ImGui::Button("Apply force"))
+		{
+			rigidbody->ApplyForce(force);
+		}
+
+		ImGui::Text("Apply impulse");
+		static vec3 impulse = vec3(0);
+		ImGui::DragFloat3("##objImpulse", value_ptr(impulse), 0.01f);
+		if (ImGui::Button("Apply impulse"))
+		{
+			rigidbody->ApplyImpulse(impulse);
+		}
+
+		ImGui::Text("Apply torque");
+		static vec3 torque = vec3(0);
+		ImGui::DragFloat3("##objTorque", value_ptr(torque), 0.01f);
+		if (ImGui::Button("Apply torque"))
+		{
+			rigidbody->ApplyTorque(torque);
+		}
 
 		ImGui::EndChild();
 	}

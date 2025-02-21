@@ -60,7 +60,7 @@ namespace Graphics::Shape
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
 	{
-		auto obj = make_shared<GameObject>(name, id, isEnabled, false);
+		auto obj = make_shared<GameObject>(name, id, isEnabled);
 		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetOwner(obj);
 		transform->SetPosition(pos);
@@ -138,11 +138,12 @@ namespace Graphics::Shape
 			spotlightShader);
 
 		auto spotlight = obj->AddComponent<LightComponent>(
-				diffuse,
-				intensity,
-				distance,
-				innerAngle,
-				outerAngle);
+			LightComponent::LightType::Spot,
+			diffuse,
+			intensity,
+			distance,
+			innerAngle,
+			outerAngle);
 		spotlight->SetOwner(obj);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();

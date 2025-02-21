@@ -47,6 +47,19 @@ namespace Graphics::Components
 		void ResetVelocity() const;
 		void ResetAngularVelocity() const;
 
+		/// <summary>
+		/// Apply linear force
+		/// </summary>
+		void ApplyForce(const vec3& force) const;
+		/// <summary>
+		/// Apply an instant impulse (collision effects)
+		/// </summary>
+		void ApplyImpulse(const vec3& impulse) const;
+		/// <summary>
+		/// Apply rotational force
+		/// </summary>
+		void ApplyTorque(const vec3& torque) const;
+
 		void SetColliderType(const string& newColliderType);
 		void SetDynamic(bool newIsDynamic);
 		void EnableGravity(bool newUseGravity);

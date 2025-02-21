@@ -124,6 +124,24 @@ namespace Graphics::Components
 		}
 	}
 
+	void RigidBodyComponent::ApplyForce(const vec3& force) const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		rb->ApplyForce(force);
+	}
+
+	void RigidBodyComponent::ApplyImpulse(const vec3& impulse) const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		rb->ApplyImpulse(impulse);
+	}
+
+	void RigidBodyComponent::ApplyTorque(const vec3& torque) const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		rb->ApplyTorque(torque);
+	}
+
 	void RigidBodyComponent::SetColliderType(const string& newColliderType)
 	{
 		optional<ColliderType> opt = magic_enum::enum_cast<ColliderType>(newColliderType);

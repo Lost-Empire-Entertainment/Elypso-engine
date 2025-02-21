@@ -41,7 +41,7 @@ namespace Graphics::Shape
 {
 	shared_ptr<GameObject> Skybox::InitializeSkybox()
 	{
-        auto obj = make_shared<GameObject>("Skybox", 10000003, true, false);
+        auto obj = make_shared<GameObject>("Skybox", 10000003, true);
         auto transform = obj->AddComponent<TransformComponent>();
         transform->SetOwner(obj);
         transform->SetPosition(vec3(0));

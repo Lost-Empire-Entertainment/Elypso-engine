@@ -28,40 +28,20 @@ namespace Graphics::Components
             Directional
         };
 
-        //point light
-        LightComponent(
-            const vec3& diffuse, 
-            float intensity, 
-            float distance) : 
-            lightType(LightType::Point), 
-            diffuse(diffuse), 
-            intensity(intensity), 
-            distance(distance) {}
-
         //spotlight
         LightComponent(
-            const vec3& diffuse, 
-            float intensity, 
-            float distance, 
-            float innerAngle, 
-            float outerAngle) : 
-            lightType(LightType::Spot), 
+            LightType type,
+            const vec3& diffuse = vec3(1.0f),
+            float intensity = 1.0f, 
+            float distance = 1.0f, 
+            float innerAngle = 12.5f, 
+            float outerAngle = 37.5f) : 
+            lightType(type),
             diffuse(diffuse), 
             intensity(intensity), 
             distance(distance), 
             innerAngle(innerAngle), 
             outerAngle(outerAngle) {}
-
-        //directional light
-        LightComponent(
-            const vec3& diffuse, 
-            float intensity) : 
-            lightType(LightType::Directional), 
-            diffuse(diffuse), 
-            intensity(intensity),
-            distance(0.0f), 
-            innerAngle(0.0f), 
-            outerAngle(0.0f) {}
 
         void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
         void SetIntensity(float newIntensity) { intensity = newIntensity; }

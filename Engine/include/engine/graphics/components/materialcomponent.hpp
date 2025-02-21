@@ -36,7 +36,11 @@ namespace Graphics::Components
             misc_icon_scale
         };
 
-        MaterialComponent() = default;
+        MaterialComponent(
+            bool isTransparent = false,
+            float transparentValue = 1.0f) :
+            isTransparent(isTransparent),
+            transparentValue(transparentValue) {}
 
         void AddTexture(
             const string& textureName, 

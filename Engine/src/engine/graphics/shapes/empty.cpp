@@ -55,7 +55,7 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-		auto obj = make_shared<GameObject>(name, id, isEnabled, false);
+		auto obj = make_shared<GameObject>(name, id, isEnabled);
 		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetOwner(obj);
 		transform->SetPosition(pos);
