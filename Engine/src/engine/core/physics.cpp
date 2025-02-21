@@ -18,9 +18,4 @@ namespace Core
 	{
 		physicsWorld->StepSimulation(deltaTime);
 	}
-
-	void Physics::Shutdown()
-	{
-		physicsWorld->ShutdownPhysics();
-	}
 }

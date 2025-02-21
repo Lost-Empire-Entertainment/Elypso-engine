@@ -56,13 +56,12 @@ namespace Graphics::Shape
 		const vec3& rot, 
 		const vec3& scale)
 	{
-		auto obj = make_shared<GameObject>("SelectedObjectAction", 10000002);
+		auto obj = make_shared<GameObject>("SelectedObjectAction", 10000002, false, false);
 		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
-		obj->SetEnableState(false);
 
 		float vertices[] =
 		{

@@ -92,23 +92,34 @@ namespace Graphics::Components
 				dynamicFriction,
 				gravityFactor);
 
-			RigidBody* rb = physicsWorld->GetRigidBody(handle);
-
-			if (rb == nullptr)
+			if (handle.index == UINT32_MAX
+				&& handle.generation == UINT32_MAX)
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Failed to initialize rigidbody!\n");
+					"Error: Failed to initialize rigidbody! Did you forget to initialize Elypso Physics?\n");
 			}
 			else
 			{
-				SetHandle(handle);
+				RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					Type::INFO,
-					"Successfully initialized rigidbody!\n");
+				if (rb == nullptr)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::EXCEPTION,
+						"Error: Failed to initialize rigidbody!\n");
+				}
+				else
+				{
+					SetHandle(handle);
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::INFO,
+						"Successfully initialized rigidbody!\n");
+				}
 			}
 		}
 	}
@@ -240,14 +251,14 @@ namespace Graphics::Components
 	vec3 RigidBodyComponent::GetVelocity() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-
-		return rb->velocity;
+		if (rb != nullptr) return rb->velocity;
+		else return vec3(0);
 	}
 	vec3 RigidBodyComponent::GetAngularVelocity() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-
-		return rb->angularVelocity;
+		if (rb != nullptr) return rb->angularVelocity;
+		else return vec3(0);
 	}
 
 	void RigidBodyComponent::SetDynamic(bool newIsDynamic)
@@ -255,48 +266,48 @@ namespace Graphics::Components
 		isDynamic = newIsDynamic;
 
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		rb->isDynamic = isDynamic;
+		if (rb != nullptr) rb->isDynamic = isDynamic;
 	}
 	void RigidBodyComponent::EnableGravity(bool newUseGravity)
 	{
 		useGravity = newUseGravity;
 
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		rb->useGravity = useGravity;
+		if (rb != nullptr) rb->useGravity = useGravity;
 	}
 	void RigidBodyComponent::SetGravityFactor(float newGravityFactor)
 	{
 		gravityFactor = newGravityFactor;
 
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		rb->gravityFactor = gravityFactor;
+		if (rb != nullptr) rb->gravityFactor = gravityFactor;
 	}
 	void RigidBodyComponent::SetMass(float newMass)
 	{
 		mass = newMass;
 
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		rb->mass = mass;
+		if (rb != nullptr) rb->mass = mass;
 	}
 	void RigidBodyComponent::SetRestitution(float newRestitution)
 	{
 		restitution = newRestitution;
 
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		rb->restitution = restitution;
+		if (rb != nullptr) rb->restitution = restitution;
 	}
 	void RigidBodyComponent::SetStaticFriction(float newStaticFriction)
 	{
 		staticFriction = newStaticFriction;
 
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		rb->staticFriction = staticFriction;
+		if (rb != nullptr) rb->staticFriction = staticFriction;
 	}
 	void RigidBodyComponent::SetDynamicFriction(float newDynamicFriction)
 	{
 		dynamicFriction = newDynamicFriction;
 
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		rb->dynamicFriction = dynamicFriction;
+		if (rb != nullptr) rb->dynamicFriction = dynamicFriction;
 	}
 }

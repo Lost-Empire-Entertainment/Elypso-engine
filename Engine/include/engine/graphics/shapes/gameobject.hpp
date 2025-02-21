@@ -66,10 +66,12 @@ namespace Graphics::Shape
 
 		GameObject(
 			const string& name, 
-			const unsigned int& ID) : 
+			const unsigned int& ID,
+			bool isEnabled,
+			bool isInitialized) :
 			name(name),
 			ID(ID),
-			isInitialized(false),
+			isInitialized(isInitialized),
 			isEnabled(isEnabled) {}
 
 		/*

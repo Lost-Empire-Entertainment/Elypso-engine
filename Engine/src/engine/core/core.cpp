@@ -858,8 +858,6 @@ namespace Core
 					"Cleaning up resources...\n");
 
 				Audio::Shutdown();
-
-				Physics::Shutdown();
 #if ENGINE_MODE
 				EngineGUI::Shutdown();
 #else

@@ -22,8 +22,6 @@ namespace Core
 		static void Initialize(const vec3& gravity = vec3(0.0f, -9.81f, 0.0f));
 
 		static void Update(float deltaTime);
-
-		static void Shutdown();
 	private:
 		
 	};

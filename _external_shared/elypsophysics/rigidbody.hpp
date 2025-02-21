@@ -60,7 +60,6 @@ namespace ElypsoPhysics
 			float staticFrict = 0.9f,
 			float dynamicFrict = 0.7f,
 			float gFactor = 1.0f);
-		~RigidBody();
 
 		/// <summary>
 		/// Apply linear force

@@ -17,6 +17,7 @@
 #include "magic_enum.hpp"
 #include "physicsworld.hpp"
 #include "gameobjecthandle.hpp"
+#include "rigidbody.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -91,6 +92,7 @@ using Core::Audio;
 using ElypsoPhysics::PhysicsWorld;
 using ElypsoPhysics::GameObjectHandle;
 using Core::Physics;
+using ElypsoPhysics::RigidBody;
 
 namespace Graphics::GUI
 {
@@ -1392,7 +1394,7 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 
-		float height = 375.0f;
+		float height = 425.0f;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -1411,6 +1413,14 @@ namespace Graphics::GUI
 			obj->RemoveComponent<RigidBodyComponent>();
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
+		ImGui::Separator();
+
+		PhysicsWorld& pw = PhysicsWorld::GetInstance();
+		RigidBody* rb = pw.GetRigidBody(rigidbody->GetHandle());
+		string index = "Index: " + to_string(rb->handle.index);
+		string generation = "Generation: " + to_string(rb->handle.generation);
+		ImGui::Text(index.c_str());
+		ImGui::Text(generation.c_str());
 
 		ImGui::Separator();
 

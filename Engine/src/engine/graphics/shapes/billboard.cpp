@@ -58,13 +58,12 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled)
 	{
-		auto obj = make_shared<GameObject>("Billboard", id);
+		auto obj = make_shared<GameObject>("Billboard", id, isEnabled, false);
 		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
-		obj->SetEnableState(isEnabled);
 
 		float vertices[] =
 		{
