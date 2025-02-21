@@ -60,7 +60,7 @@ namespace Graphics::Components
 		/// </summary>
 		void ApplyTorque(const vec3& torque) const;
 
-		void SetColliderType(const string& newColliderType);
+		void SetColliderType(const string& newColliderType) const;
 		void SetDynamic(bool newIsDynamic);
 		void EnableGravity(bool newUseGravity);
 		void SetGravityFactor(float newGravityFactor);
@@ -77,7 +77,7 @@ namespace Graphics::Components
 		vec3 GetVelocity() const;
 		vec3 GetAngularVelocity() const;
 
-		const string& GetColliderType() const { return colliderType; }
+		string GetColliderType() const;
 		bool IsDynamic() const { return isDynamic; }
 		bool UseGravity() const { return useGravity; }
 		float GetGravityFactor() const { return gravityFactor; }
@@ -92,7 +92,6 @@ namespace Graphics::Components
 
 	private:
 		GameObjectHandle handle;
-		string colliderType;
 		bool isDynamic;
 		bool useGravity;
 		float gravityFactor;

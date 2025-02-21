@@ -142,13 +142,14 @@ namespace Graphics::Components
 		rb->ApplyTorque(torque);
 	}
 
-	void RigidBodyComponent::SetColliderType(const string& newColliderType)
+	void RigidBodyComponent::SetColliderType(const string& newColliderType) const
 	{
-		optional<ColliderType> opt = magic_enum::enum_cast<ColliderType>(newColliderType);
-		if (opt.has_value())
-		{
-			colliderType = string(magic_enum::enum_name(opt.value()));
-		}
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		ElypsoPhysics::ColliderType colliderType = newColliderType == "BOX"
+			? ElypsoPhysics::ColliderType::BOX
+			: ElypsoPhysics::ColliderType::SPHERE;
+		vec3 scale = GetOwner()->GetComponent<TransformComponent>()->GetScale();
+		rb->SetCollider(colliderType, scale);
 	}
 
 	void RigidBodyComponent::SetPosition(const vec3& newPos) const
@@ -277,6 +278,16 @@ namespace Graphics::Components
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		if (rb != nullptr) return rb->angularVelocity;
 		else return vec3(0);
+	}
+
+	string RigidBodyComponent::GetColliderType() const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		if (rb != nullptr)
+		{
+			return rb->GetColliderType() == ElypsoPhysics::ColliderType::BOX ? "BOX" : "SPHERE";
+		}
+		else return "";
 	}
 
 	void RigidBodyComponent::SetDynamic(bool newIsDynamic)

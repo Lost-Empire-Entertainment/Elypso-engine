@@ -1381,7 +1381,7 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 
-		float height = 750.0f;
+		float height = 675.0f;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -1410,6 +1410,38 @@ namespace Graphics::GUI
 		ImGui::Text(generation.c_str());
 
 		ImGui::Separator();
+
+		const char* items[] = { "Box", "Sphere" };
+		int selectedItem = rigidbody->GetColliderType() == "BOX" ? 0 : 1;
+		ImGui::PushItemWidth(150.0f);
+		ImGui::Text("Collider type");
+		ImGui::SameLine();
+		if (ImGui::Combo("##Collider type", &selectedItem, items, IM_ARRAYSIZE(items)))
+		{
+			if ((selectedItem == 0
+				&& rigidbody->GetColliderType() == "BOX")
+				|| (selectedItem == 1
+				&& rigidbody->GetColliderType() == "SPHERE"))
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::EXCEPTION,
+					"Error: Cannot set collider to same type as it already is!\n");
+			}
+			else
+			{
+				if (selectedItem == 0)
+				{
+					rigidbody->SetColliderType("BOX");
+				}
+				else if (selectedItem == 1)
+				{
+					rigidbody->SetColliderType("SPHERE");
+				}
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+		}
+		ImGui::PopItemWidth();
 
 		ImGui::Text("Is dynamic");
 		ImGui::SameLine();
@@ -1459,40 +1491,8 @@ namespace Graphics::GUI
 					ConsoleType::DEBUG,
 					"Set gravity to false.\n");
 			}
-		}
 
-		vec3 velocity = rigidbody->GetVelocity();
-		ostringstream velocityOss;
-		velocityOss 
-			<< fixed 
-			<< setprecision(2)
-			<< "Velocity: "
-			<< velocity.x << ", "
-			<< velocity.y << ", "
-			<< velocity.z;
-		ImGui::Text("%s", velocityOss.str().c_str());
-
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##rb_resetVelocity"))
-		{
-			rigidbody->ResetVelocity();
-		}
-
-		vec3 angularVelocity = rigidbody->GetAngularVelocity();
-		ostringstream angularVelocityOss;
-		angularVelocityOss
-			<< fixed
-			<< setprecision(2)
-			<< "Angular velocity: "
-			<< angularVelocity.x << ", "
-			<< angularVelocity.y << ", "
-			<< angularVelocity.z;
-		ImGui::Text("%s", angularVelocityOss.str().c_str());
-
-		ImGui::SameLine();
-		if (ImGui::Button("Reset##rb_resetangvelocity"))
-		{
-			rigidbody->ResetAngularVelocity();
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		ImGui::PushItemWidth(150.0f);
@@ -1541,26 +1541,63 @@ namespace Graphics::GUI
 		ImGui::Text("Debugging");
 		ImGui::Separator();
 
-		ImGui::Text("Apply force");
+		vec3 velocity = rigidbody->GetVelocity();
+		ostringstream velocityOss;
+		velocityOss
+			<< fixed
+			<< setprecision(2)
+			<< "Velocity: "
+			<< velocity.x << ", "
+			<< velocity.y << ", "
+			<< velocity.z;
+		ImGui::Text("%s", velocityOss.str().c_str());
+
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##rb_resetVelocity"))
+		{
+			rigidbody->ResetVelocity();
+		}
+
+		vec3 angularVelocity = rigidbody->GetAngularVelocity();
+		ostringstream angularVelocityOss;
+		angularVelocityOss
+			<< fixed
+			<< setprecision(2)
+			<< "Angular velocity: "
+			<< angularVelocity.x << ", "
+			<< angularVelocity.y << ", "
+			<< angularVelocity.z;
+		ImGui::Text("%s", angularVelocityOss.str().c_str());
+
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##rb_resetangvelocity"))
+		{
+			rigidbody->ResetAngularVelocity();
+		}
+
+		ImGui::Text("Force");
 		static vec3 force = vec3(0);
 		ImGui::DragFloat3("##objForce", value_ptr(force), 0.01f);
-		if (ImGui::Button("Apply force"))
+		ImGui::SameLine();
+		if (ImGui::Button("Apply"))
 		{
 			rigidbody->ApplyForce(force);
 		}
 
-		ImGui::Text("Apply impulse");
+		ImGui::Text("Impulse");
 		static vec3 impulse = vec3(0);
 		ImGui::DragFloat3("##objImpulse", value_ptr(impulse), 0.01f);
-		if (ImGui::Button("Apply impulse"))
+		ImGui::SameLine();
+		if (ImGui::Button("Apply"))
 		{
 			rigidbody->ApplyImpulse(impulse);
 		}
 
-		ImGui::Text("Apply torque");
+		ImGui::Text("Torque");
 		static vec3 torque = vec3(0);
 		ImGui::DragFloat3("##objTorque", value_ptr(torque), 0.01f);
-		if (ImGui::Button("Apply torque"))
+		ImGui::SameLine();
+		if (ImGui::Button("Apply"))
 		{
 			rigidbody->ApplyTorque(torque);
 		}

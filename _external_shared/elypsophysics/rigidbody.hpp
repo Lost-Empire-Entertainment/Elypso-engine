@@ -74,9 +74,20 @@ namespace ElypsoPhysics
 		/// </summary>
 		void ApplyTorque(const vec3& torque);
 		/// <summary>
-		/// Precompute inertia tensor
+		/// Precompute inertia tensor based off of collider scale
 		/// </summary>
-		void ComputeInertiaTensor();
+		void ComputeInertiaTensor(const vec3& scale = vec3(1.0f));
+
+		/// <summary>
+		/// Assign a new collider or change the existing collider of the rigidbody
+		/// </summary>
+		void SetCollider(ColliderType type, const vec3& size);
+
+		/// <summary>
+		/// Return the collider type of the rigidbody
+		/// </summary>
+		/// <returns></returns>
+		ColliderType GetColliderType();
 
 		/// <summary>
 		/// Wake up the body
