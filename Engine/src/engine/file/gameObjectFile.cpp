@@ -13,6 +13,7 @@
 //external
 #include "magic_enum.hpp"
 #include "glm.hpp"
+#include "collider.hpp"
 
 //engine
 #include "gameObjectFile.hpp"
@@ -35,6 +36,7 @@
 #include "lightcomponent.hpp"
 #include "audioplayercomponent.hpp"
 #include "rigidbodycomponent.hpp"
+#include "physics.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -82,6 +84,8 @@ using Graphics::Shape::GameObject;
 using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::RigidBodyComponent;
 using ElypsoPhysics::ColliderType;
+using ElypsoPhysics::Collider;
+using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -958,6 +962,9 @@ namespace EngineFile
 				rb->SetRestitution(restitution);
 				rb->SetStaticFriction(staticFriction);
 				rb->SetDynamicFriction(dynamicFriction);
+
+				Collider* collider = rb->GetCollider();
+				collider->UpdateScale(scale);
 			}
 
 			/*

@@ -11,6 +11,7 @@
 //external
 #include "physicsworld.hpp"
 #include "gameobjecthandle.hpp"
+#include "collider.hpp"
 
 //engine
 #include "component.hpp"
@@ -21,6 +22,7 @@ namespace Graphics::Components
 	using ElypsoPhysics::PhysicsWorld;
 	using ElypsoPhysics::GameObjectHandle;
 	using ElypsoPhysics::ColliderType;
+	using ElypsoPhysics::Collider;
 	using Graphics::Shape::GameObject;
 
 	using std::string;
@@ -79,6 +81,7 @@ namespace Graphics::Components
 		vec3 GetAngularVelocity() const;
 
 		ColliderType GetColliderType() const;
+		Collider* GetCollider() const;
 		bool IsDynamic() const { return isDynamic; }
 		bool UseGravity() const { return useGravity; }
 		float GetGravityFactor() const { return gravityFactor; }

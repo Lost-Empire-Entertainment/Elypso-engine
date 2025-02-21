@@ -63,15 +63,6 @@ namespace ElypsoPhysics
 		{
 			halfExtents = scale * 0.5f;
 			CalculateBoundingRadius();
-
-#ifdef NDEBUG
-#else
-			uint32_t index = handle.index;
-			uint32_t gen = handle.generation;
-			string sizeString = to_string(scale.x) + ", " + to_string(scale.y) + ", " + to_string(scale.z);
-			string message = "[ELYPSO-PHYSICS | SUCCESS] Updated box scale to '" + sizeString + "' for rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
-			cout << message;
-#endif
 		}
 		void CalculateBoundingRadius() override
 		{
@@ -87,17 +78,8 @@ namespace ElypsoPhysics
 		SphereCollider(const GameObjectHandle& h, float r);
 		void UpdateScale(const vec3& scale) override
 		{
-			radius = scale.x;
+			radius = scale.x * 0.5f;
 			CalculateBoundingRadius();
-
-#ifdef NDEBUG
-#else
-			uint32_t index = handle.index;
-			uint32_t gen = handle.generation;
-			string radius = to_string(scale.x);
-			string message = "[ELYPSO-PHYSICS | SUCCESS] Updated sphere radius to '" + radius + "' for rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
-			cout << message;
-#endif
 		}
 		void CalculateBoundingRadius() override
 		{

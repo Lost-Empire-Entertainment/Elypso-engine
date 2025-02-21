@@ -228,9 +228,15 @@ namespace Graphics::Components
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		if (rb != nullptr)
 		{
-			return rb->GetColliderType();
+			return rb->collider->type;
 		}
 		else return ColliderType::BOX;
+	}
+
+	Collider* RigidBodyComponent::GetCollider() const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		return rb->collider;
 	}
 
 	void RigidBodyComponent::SetDynamic(bool newIsDynamic)

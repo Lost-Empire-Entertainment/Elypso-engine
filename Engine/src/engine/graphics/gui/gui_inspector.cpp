@@ -413,8 +413,7 @@ namespace Graphics::GUI
 			auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 			if (rigidbody)
 			{
-				RigidBody* rb = Physics::physicsWorld->GetRigidBody(rigidbody->GetHandle());
-				Collider* collider = rb->collider;
+				Collider* collider = rigidbody->GetCollider();
 				collider->UpdateScale(scale);
 			}
 
