@@ -2,3 +2,13 @@
 
 - fixed compiler, engine, hub and game not correctly compiling to debug mode
 - added DEBUG window title tag to compiler, engine, hub and game if it compiled in debug mode
+
+0.1.3.0002:
+
+- added brand new completely separate physics library made by me
+- rigidbody component
+- box and sphere collider attached to rigidbody
+- change mass, restitution, static friction, dynamic friction, gravity factor, gravity toggle, dynamic toggle in rigidbody component in inspector
+- any gameobject with rigidbody collides with any gameobject with rigidbody component and they dont go through each other
+- rigidbody gameobjects have linear and angular velocity
+- rigidbody gameobjects have friction when colliding with other rigidbody gameobjects

@@ -15,6 +15,8 @@
 #include "imgui_internal.h"
 #include "type_ptr.hpp"
 #include "magic_enum.hpp"
+#include "physicsworld.hpp"
+#include "gameobjecthandle.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -44,6 +46,7 @@
 #include "rigidbodycomponent.hpp"
 #include "audio.hpp"
 #include "empty.hpp"
+#include "physics.hpp"
 
 using std::cout;
 using std::endl;
@@ -85,6 +88,9 @@ using Graphics::Shape::PointLight;
 using Graphics::Shape::Billboard;
 using Graphics::Shape::Empty;
 using Core::Audio;
+using ElypsoPhysics::PhysicsWorld;
+using ElypsoPhysics::GameObjectHandle;
+using Core::Physics;
 
 namespace Graphics::GUI
 {
@@ -1398,6 +1404,10 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 		if (ImGui::Button("X"))
 		{
+			GameObjectHandle handle = obj->GetComponent<RigidBodyComponent>()->GetHandle();
+			PhysicsWorld* physicsWorld = Physics::physicsWorld;
+			physicsWorld->RemoveRigidBody(handle);
+
 			obj->RemoveComponent<RigidBodyComponent>();
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
