@@ -18,6 +18,7 @@
 #include "physicsworld.hpp"
 #include "gameobjecthandle.hpp"
 #include "rigidbody.hpp"
+#include "collider.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -93,6 +94,8 @@ using ElypsoPhysics::PhysicsWorld;
 using ElypsoPhysics::GameObjectHandle;
 using Core::Physics;
 using ElypsoPhysics::RigidBody;
+using ElypsoPhysics::ColliderType;
+using ElypsoPhysics::Collider;
 
 namespace Graphics::GUI
 {
@@ -406,6 +409,15 @@ namespace Graphics::GUI
 		if (ImGui::DragFloat3("##objScale", value_ptr(scale), 0.01f))
 		{
 			obj->GetComponent<TransformComponent>()->SetScale(scale);
+
+			auto rigidbody = obj->GetComponent<RigidBodyComponent>();
+			if (rigidbody)
+			{
+				RigidBody* rb = Physics::physicsWorld->GetRigidBody(rigidbody->GetHandle());
+				Collider* collider = rb->collider;
+				collider->UpdateScale(scale);
+			}
+
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		if (scale.x < 0.0f)
@@ -1412,16 +1424,16 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		const char* items[] = { "Box", "Sphere" };
-		int selectedItem = rigidbody->GetColliderType() == "BOX" ? 0 : 1;
+		int selectedItem = rigidbody->GetColliderType() == ColliderType::BOX ? 0 : 1;
 		ImGui::PushItemWidth(150.0f);
 		ImGui::Text("Collider type");
 		ImGui::SameLine();
 		if (ImGui::Combo("##Collider type", &selectedItem, items, IM_ARRAYSIZE(items)))
 		{
 			if ((selectedItem == 0
-				&& rigidbody->GetColliderType() == "BOX")
+				&& rigidbody->GetColliderType() == ColliderType::BOX)
 				|| (selectedItem == 1
-				&& rigidbody->GetColliderType() == "SPHERE"))
+				&& rigidbody->GetColliderType() == ColliderType::SPHERE))
 			{
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
@@ -1432,11 +1444,11 @@ namespace Graphics::GUI
 			{
 				if (selectedItem == 0)
 				{
-					rigidbody->SetColliderType("BOX");
+					rigidbody->SetColliderType(ColliderType::BOX);
 				}
 				else if (selectedItem == 1)
 				{
-					rigidbody->SetColliderType("SPHERE");
+					rigidbody->SetColliderType(ColliderType::SPHERE);
 				}
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

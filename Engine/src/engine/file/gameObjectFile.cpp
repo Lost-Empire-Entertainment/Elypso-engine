@@ -81,6 +81,7 @@ using Graphics::Shader;
 using Graphics::Shape::GameObject;
 using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::RigidBodyComponent;
+using ElypsoPhysics::ColliderType;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -293,6 +294,8 @@ namespace EngineFile
 				{
 					bool isDynamic = rigidbody->IsDynamic();
 					bool useGravity = rigidbody->UseGravity();
+					ColliderType type = rigidbody->GetColliderType();
+					string colliderType = type == ElypsoPhysics::ColliderType::BOX ? "BOX" : "SPHERE";
 					float gravityFactor = rigidbody->GetGravityFactor();
 					float mass = rigidbody->GetMass();
 					float restitution = rigidbody->GetRestitution();
@@ -301,6 +304,7 @@ namespace EngineFile
 
 					data.push_back("isDynamic= " + to_string(isDynamic) + "\n");
 					data.push_back("useGravity= " + to_string(useGravity) + "\n");
+					data.push_back("colliderType= " + colliderType + "\n");
 					data.push_back("gravityFactor= " + to_string(gravityFactor) + "\n");
 					data.push_back("mass= " + to_string(mass) + "\n");
 					data.push_back("restitution= " + to_string(restitution) + "\n");
@@ -557,13 +561,16 @@ namespace EngineFile
 					|| key == "transparencyValue"
 					|| key == "model"
 					|| key == "shininess"
+
 					|| key == "audioFileName"
 					|| key == "is3D"
 					|| key == "currentVolume"
 					|| key == "minRange"
 					|| key == "maxRange"
+
 					|| key == "isDynamic"
 					|| key == "useGravity"
+					|| key == "colliderType"
 					|| key == "gravityFactor"
 					|| key == "mass"
 					|| key == "restitution"
@@ -603,6 +610,7 @@ namespace EngineFile
 
 		bool isDynamic{};
 		bool useGravity{};
+		ColliderType colliderType{};
 		float gravityFactor{};
 		float mass{};
 		float restitution{};
@@ -776,6 +784,10 @@ namespace EngineFile
 			{
 				useGravity = stoi(value);
 			}
+			else if (key == "colliderType")
+			{
+				colliderType = value == "BOX" ? ColliderType::BOX : ColliderType::SPHERE;
+			}
 			else if (key == "gravityFactor")
 			{
 				gravityFactor = stof(value);
@@ -929,6 +941,7 @@ namespace EngineFile
 
 			if (data["isDynamic"] != ""
 				|| data["useGravity"] != ""
+				|| data["colliderType"] != ""
 				|| data["gravityFactor"] != ""
 				|| data["mass"] != ""
 				|| data["restitution"] != ""
@@ -939,6 +952,7 @@ namespace EngineFile
 
 				rb->SetDynamic(isDynamic);
 				rb->EnableGravity(useGravity);
+				rb->SetColliderType(colliderType);
 				rb->SetGravityFactor(gravityFactor);
 				rb->SetMass(mass);
 				rb->SetRestitution(restitution);

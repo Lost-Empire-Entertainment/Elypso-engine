@@ -20,6 +20,7 @@ namespace Graphics::Components
 {
 	using ElypsoPhysics::PhysicsWorld;
 	using ElypsoPhysics::GameObjectHandle;
+	using ElypsoPhysics::ColliderType;
 	using Graphics::Shape::GameObject;
 
 	using std::string;
@@ -30,7 +31,7 @@ namespace Graphics::Components
 	public:
 		RigidBodyComponent(
 			shared_ptr<GameObject> owner,
-			string colliderType = "BOX",
+			ColliderType colliderType = ColliderType::BOX,
 			bool isDynamic = false,
 			bool useGravity = false,
 			float gravityFactor = 1.0f,
@@ -60,7 +61,7 @@ namespace Graphics::Components
 		/// </summary>
 		void ApplyTorque(const vec3& torque) const;
 
-		void SetColliderType(const string& newColliderType) const;
+		void SetColliderType(ColliderType newColliderType) const;
 		void SetDynamic(bool newIsDynamic);
 		void EnableGravity(bool newUseGravity);
 		void SetGravityFactor(float newGravityFactor);
@@ -77,7 +78,7 @@ namespace Graphics::Components
 		vec3 GetVelocity() const;
 		vec3 GetAngularVelocity() const;
 
-		string GetColliderType() const;
+		ColliderType GetColliderType() const;
 		bool IsDynamic() const { return isDynamic; }
 		bool UseGravity() const { return useGravity; }
 		float GetGravityFactor() const { return gravityFactor; }

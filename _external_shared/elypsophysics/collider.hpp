@@ -15,6 +15,9 @@
 	#define PHYSICS_API
 #endif
 
+#include <string>
+#include <iostream>
+
 //external
 #include "glm.hpp"
 
@@ -24,6 +27,9 @@
 namespace ElypsoPhysics
 {
 	using glm::vec3;
+	using std::string;
+	using std::to_string;
+	using std::cout;
 
 	enum class ColliderType
 	{
@@ -57,6 +63,15 @@ namespace ElypsoPhysics
 		{
 			halfExtents = scale * 0.5f;
 			CalculateBoundingRadius();
+
+#ifdef NDEBUG
+#else
+			uint32_t index = handle.index;
+			uint32_t gen = handle.generation;
+			string sizeString = to_string(scale.x) + ", " + to_string(scale.y) + ", " + to_string(scale.z);
+			string message = "[ELYPSO-PHYSICS | SUCCESS] Updated box scale to '" + sizeString + "' for rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
+			cout << message;
+#endif
 		}
 		void CalculateBoundingRadius() override
 		{
@@ -74,6 +89,15 @@ namespace ElypsoPhysics
 		{
 			radius = scale.x;
 			CalculateBoundingRadius();
+
+#ifdef NDEBUG
+#else
+			uint32_t index = handle.index;
+			uint32_t gen = handle.generation;
+			string radius = to_string(scale.x);
+			string message = "[ELYPSO-PHYSICS | SUCCESS] Updated sphere radius to '" + radius + "' for rigidbody (" + to_string(index) + ", " + to_string(gen) + ")!\n";
+			cout << message;
+#endif
 		}
 		void CalculateBoundingRadius() override
 		{

@@ -38,7 +38,7 @@ namespace Graphics::Components
 {
 	RigidBodyComponent::RigidBodyComponent(
 		shared_ptr<GameObject> owner,
-		string colliderType,
+		ColliderType colliderType,
 		bool isDynamic,
 		bool useGravity,
 		float gravityFactor,
@@ -54,72 +54,58 @@ namespace Graphics::Components
 		staticFriction(staticFriction),
 		dynamicFriction(dynamicFriction) 
 	{
-		ColliderType validType;
-		auto type = magic_enum::enum_cast<ColliderType>(colliderType);
-		if (!type.has_value())
+		SetOwner(owner);
+
+		auto transform = owner->GetComponent<TransformComponent>();
+		vec3 pos = transform->GetPosition();
+
+		vec3 eulerAngles = transform->GetRotation();
+		eulerAngles = radians(eulerAngles);
+		quat rot = quat(eulerAngles);
+
+		vec3 scale = transform->GetScale();
+
+		GameObjectHandle handle{};
+		PhysicsWorld* physicsWorld = Physics::physicsWorld;
+
+		handle = physicsWorld->CreateRigidBody(
+			pos,
+			rot,
+			colliderType,
+			scale,
+			mass,
+			restitution,
+			staticFriction,
+			dynamicFriction,
+			gravityFactor);
+
+		if (handle.index == UINT32_MAX
+			&& handle.generation == UINT32_MAX)
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::INPUT,
 				Type::EXCEPTION,
-				"Error: Failed to initialize rigidbody because the colliderType '" + colliderType + "' is not a valid shape!\n");
+				"Error: Failed to initialize rigidbody! Did you forget to initialize Elypso Physics?\n");
 		}
 		else
 		{
-			SetOwner(owner);
+			RigidBody* rb = physicsWorld->GetRigidBody(handle);
 
-			validType = type.value();
-			
-			auto transform = owner->GetComponent<TransformComponent>();
-			vec3 pos = transform->GetPosition();
-
-			vec3 eulerAngles = transform->GetRotation();
-			eulerAngles = radians(eulerAngles);
-			quat rot = quat(eulerAngles);
-
-			vec3 scale = transform->GetScale();
-
-			GameObjectHandle handle{};
-			PhysicsWorld* physicsWorld = Physics::physicsWorld;
-			
-			handle = physicsWorld->CreateRigidBody(
-				pos,
-				rot,
-				validType,
-				scale,
-				mass,
-				restitution,
-				staticFriction,
-				dynamicFriction,
-				gravityFactor);
-
-			if (handle.index == UINT32_MAX
-				&& handle.generation == UINT32_MAX)
+			if (rb == nullptr)
 			{
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Failed to initialize rigidbody! Did you forget to initialize Elypso Physics?\n");
+					"Error: Failed to initialize rigidbody!\n");
 			}
 			else
 			{
-				RigidBody* rb = physicsWorld->GetRigidBody(handle);
+				SetHandle(handle);
 
-				if (rb == nullptr)
-				{
-					ConsoleManager::WriteConsoleMessage(
-						Caller::INPUT,
-						Type::EXCEPTION,
-						"Error: Failed to initialize rigidbody!\n");
-				}
-				else
-				{
-					SetHandle(handle);
-
-					ConsoleManager::WriteConsoleMessage(
-						Caller::INPUT,
-						Type::INFO,
-						"Successfully initialized rigidbody!\n");
-				}
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::INFO,
+					"Successfully initialized rigidbody!\n");
 			}
 		}
 	}
@@ -142,12 +128,9 @@ namespace Graphics::Components
 		rb->ApplyTorque(torque);
 	}
 
-	void RigidBodyComponent::SetColliderType(const string& newColliderType) const
+	void RigidBodyComponent::SetColliderType(ColliderType colliderType) const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		ElypsoPhysics::ColliderType colliderType = newColliderType == "BOX"
-			? ElypsoPhysics::ColliderType::BOX
-			: ElypsoPhysics::ColliderType::SPHERE;
 		vec3 scale = GetOwner()->GetComponent<TransformComponent>()->GetScale();
 		rb->SetCollider(colliderType, scale);
 	}
@@ -159,11 +142,6 @@ namespace Graphics::Components
 		if (rb->position != newPos)
 		{
 			rb->position = newPos;
-
-			cout << "new box position: "
-				<< to_string(newPos.x) << ", "
-				<< to_string(newPos.y) << ", "
-				<< to_string(newPos.z) << "\n";
 		}
 	}
 	void RigidBodyComponent::SetRotation(const vec3& newRot) const
@@ -174,48 +152,13 @@ namespace Graphics::Components
 		if (rb->rotation != newQuat)
 		{
 			rb->rotation = quat(radians(newRot));
-
-			cout << "new box rotation: "
-				<< to_string(newRot.x) << ", "
-				<< to_string(newRot.y) << ", "
-				<< to_string(newRot.z) << "\n";
 		}
 	}
 	void RigidBodyComponent::SetScale(const vec3& newScale) const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		Collider* coll = rb->collider;
-
-		if (coll->type == ColliderType::BOX)
-		{
-			BoxCollider* box = dynamic_cast<BoxCollider*>(coll);
-			if (box)
-			{
-				vec3 newHalfExtents = newScale * 0.5f;
-				if (box->halfExtents != newHalfExtents)
-				{
-					box->halfExtents = newScale * 0.5f;
-					cout << "new box size: "
-						<< to_string(newScale.x) << ", "
-						<< to_string(newScale.y) << ", "
-						<< to_string(newScale.z) << "\n";
-				}
-			}
-		}
-		else if (coll->type == ColliderType::SPHERE)
-		{
-			SphereCollider* sphere = dynamic_cast<SphereCollider*>(coll);
-			if (sphere)
-			{
-				float newRadius = newScale.x;
-				if (sphere->radius != newRadius)
-				{
-					sphere->radius = newScale.x;
-					cout << "new sphere radius: "
-						<< to_string(newScale.x) << "\n";
-				}
-			}
-		}
+		coll->UpdateScale(newScale);
 	}
 	void RigidBodyComponent::ResetVelocity() const
 	{
@@ -280,14 +223,14 @@ namespace Graphics::Components
 		else return vec3(0);
 	}
 
-	string RigidBodyComponent::GetColliderType() const
+	ColliderType RigidBodyComponent::GetColliderType() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		if (rb != nullptr)
 		{
-			return rb->GetColliderType() == ElypsoPhysics::ColliderType::BOX ? "BOX" : "SPHERE";
+			return rb->GetColliderType();
 		}
-		else return "";
+		else return ColliderType::BOX;
 	}
 
 	void RigidBodyComponent::SetDynamic(bool newIsDynamic)
