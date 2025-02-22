@@ -12,3 +12,6 @@
 - any gameobject with rigidbody collides with any gameobject with rigidbody component and they dont go through each other
 - rigidbody gameobjects have linear and angular velocity
 - rigidbody gameobjects have friction when colliding with other rigidbody gameobjects
+- audio "stops playing" when its audio file has reached the end
+- audio no longer "continues playing" if it has reached its end
+- when assigning scene, texture, audio file or model the file hierarchy list now also shows file extension
