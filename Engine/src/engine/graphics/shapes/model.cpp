@@ -373,12 +373,12 @@ namespace Graphics::Shape
 				{
 					if (regularMovement) regularMovement = false;
 
-					transform->SetPosition(rbComp->GetPosition());
-					transform->SetRotation(rbComp->GetRotation());
+					transform->SetPosition(rbComp->GetOffsetPosition());
+					transform->SetRotation(rbComp->GetOffsetRotation());
 
 					model = translate(model, transform->GetPosition());
 
-					quat newRot = quat(radians(rbComp->GetRotation()));
+					quat newRot = quat(radians(rbComp->GetOffsetRotation()));
 					model *= mat4_cast(newRot);
 
 					model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
@@ -401,17 +401,17 @@ namespace Graphics::Shape
 
 				if (rbComp)
 				{
-					if (rbComp->GetPosition() != transform->GetPosition())
+					if (rbComp->GetOffsetPosition() != transform->GetPosition())
 					{
-						rbComp->SetPosition(transform->GetPosition());
+						rbComp->SetOffsetPosition(transform->GetPosition());
 					}
-					if (rbComp->GetRotation() != transform->GetRotation())
+					if (rbComp->GetOffsetRotation() != transform->GetRotation())
 					{
-						rbComp->SetRotation(transform->GetRotation());
+						rbComp->SetOffsetRotation(transform->GetRotation());
 					}
-					if (rbComp->GetScale() != transform->GetScale())
+					if (rbComp->GetOffsetScale() != transform->GetScale())
 					{
-						rbComp->SetScale(transform->GetScale());
+						rbComp->SetOffsetScale(transform->GetScale());
 					}
 				}
 			}

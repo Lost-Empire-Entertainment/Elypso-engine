@@ -1392,7 +1392,7 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 
-		float height = 675.0f;
+		float height = 875.0f;
 
 		ImGuiChildFlags childWindowFlags{};
 
@@ -1547,6 +1547,30 @@ namespace Graphics::GUI
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 		ImGui::PopItemWidth();
+
+		vec3 offsetPos = rigidbody->GetOffsetPosition();
+		ImGui::Text("Offset position");
+		if (ImGui::DragFloat3("##objOffsetPos", value_ptr(offsetPos), 0.01f))
+		{
+			rigidbody->SetOffsetPosition(offsetPos);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		vec3 offsetRot = rigidbody->GetOffsetRotation();
+		ImGui::Text("Offset rotation");
+		if (ImGui::DragFloat3("##objOffsetRot", value_ptr(offsetRot), 0.01f))
+		{
+			rigidbody->SetOffsetRotation(offsetRot);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		vec3 offsetScale = rigidbody->GetOffsetScale();
+		ImGui::Text("Offset scale");
+		if (ImGui::DragFloat3("##objOffsetScale", value_ptr(offsetScale), 0.01f))
+		{
+			rigidbody->SetOffsetScale(offsetScale);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		ImGui::Separator();
 		ImGui::Text("Debugging");

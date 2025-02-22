@@ -44,9 +44,13 @@ namespace Graphics::Components
 
 		void SetHandle(const GameObjectHandle& newHandle) { handle = newHandle; }
 
-		void SetPosition(const vec3& newPos) const;
-		void SetRotation(const vec3& newRot) const;
-		void SetScale(const vec3& newScale) const;
+		void SetOffsetPosition(const vec3& newPos) const;
+		void SetCombinedPosition(const vec3& newPos) const;
+		void SetOffsetRotation(const vec3& newRot) const;
+		void SetCombinedRotation(const vec3& newRot) const;
+		void SetOffsetScale(const vec3& newScale) const;
+		void SetCombinedScale(const vec3& newScale) const;
+
 		void ResetVelocity() const;
 		void ResetAngularVelocity() const;
 
@@ -74,9 +78,12 @@ namespace Graphics::Components
 
 		const GameObjectHandle& GetHandle() const { return handle; }
 
-		vec3 GetPosition() const;
-		vec3 GetRotation() const;
-		vec3 GetScale() const;
+		vec3 GetOffsetPosition() const;
+		vec3 GetCombinedPosition() const;
+		vec3 GetOffsetRotation() const;
+		vec3 GetCombinedRotation() const;
+		vec3 GetOffsetScale() const;
+		vec3 GetCombinedScale() const;
 		vec3 GetVelocity() const;
 		vec3 GetAngularVelocity() const;
 

@@ -69,7 +69,9 @@ namespace Graphics::Components
 		PhysicsWorld* physicsWorld = Physics::physicsWorld;
 
 		handle = physicsWorld->CreateRigidBody(
+			vec3(0.0f),
 			pos,
+			vec3(0.0f),
 			rot,
 			colliderType,
 			scale,
@@ -132,34 +134,71 @@ namespace Graphics::Components
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		vec3 scale = GetOwner()->GetComponent<TransformComponent>()->GetScale();
-		rb->SetCollider(colliderType, scale);
+		rb->SetCollider(vec3(0.0f), scale, colliderType);
 	}
 
-	void RigidBodyComponent::SetPosition(const vec3& newPos) const
+	void RigidBodyComponent::SetOffsetPosition(const vec3& newPos) const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
-		if (rb->position != newPos)
+		if (rb->offsetPosition != newPos)
 		{
-			rb->position = newPos;
+			rb->offsetPosition = newPos;
 		}
 	}
-	void RigidBodyComponent::SetRotation(const vec3& newRot) const
+	void RigidBodyComponent::SetCombinedPosition(const vec3& newPos) const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+
+		if (rb->combinedPosition != newPos)
+		{
+			rb->combinedPosition = newPos;
+		}
+	}
+
+	void RigidBodyComponent::SetOffsetRotation(const vec3& newRot) const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		quat newQuat = quat(radians(newRot));
+
+		if (rb->offsetRotation != newQuat)
+		{
+			rb->offsetRotation = quat(radians(newRot));
+		}
+	}
+	void RigidBodyComponent::SetCombinedRotation(const vec3& newRot) const
 	{
 		RigidBody* rb =  Physics::physicsWorld->GetRigidBody(handle);
 		quat newQuat = quat(radians(newRot));
 
-		if (rb->rotation != newQuat)
+		if (rb->combinedRotation != newQuat)
 		{
-			rb->rotation = quat(radians(newRot));
+			rb->combinedRotation = quat(radians(newRot));
 		}
 	}
-	void RigidBodyComponent::SetScale(const vec3& newScale) const
+
+	void RigidBodyComponent::SetOffsetScale(const vec3& newScale) const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		Collider* coll = rb->collider;
-		coll->UpdateScale(newScale);
+		Collider* collider = rb->collider;
+
+		if (collider->offsetScale != newScale)
+		{
+			collider->offsetScale = newScale;
+		}
 	}
+	void RigidBodyComponent::SetCombinedScale(const vec3& newScale) const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		Collider* collider = rb->collider;
+
+		if (collider->combinedScale != newScale)
+		{
+			collider->combinedScale = newScale;
+			collider->UpdateScale(newScale);
+		}
+	}
+
 	void RigidBodyComponent::ResetVelocity() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
@@ -173,43 +212,45 @@ namespace Graphics::Components
 		rb->angularVelocity = vec3(0);
 	}
 
-	vec3 RigidBodyComponent::GetPosition() const
+	vec3 RigidBodyComponent::GetOffsetPosition() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-
-		return rb->position;
+		return rb->offsetPosition;
 	}
-	vec3 RigidBodyComponent::GetRotation() const
+	vec3 RigidBodyComponent::GetCombinedPosition() const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		return rb->combinedPosition;
+	}
+
+	vec3 RigidBodyComponent::GetOffsetRotation() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
-		vec3 newRot = degrees(eulerAngles(rb->rotation));
+		vec3 newRot = degrees(eulerAngles(rb->offsetRotation));
 		return newRot;
 	}
-	vec3 RigidBodyComponent::GetScale() const
+	vec3 RigidBodyComponent::GetCombinedRotation() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
-		Collider* coll = rb->collider;
 
-		if (coll->type == ColliderType::BOX)
-		{
-			BoxCollider* box = dynamic_cast<BoxCollider*>(coll);
-			if (box)
-			{
-				return box->halfExtents * 2.0f;
-			}
-		}
-		else if (coll->type == ColliderType::SPHERE)
-		{
-			SphereCollider* sphere = dynamic_cast<SphereCollider*>(coll);
-			if (sphere)
-			{
-				return vec3(sphere->radius, 0.0f, 0.0f);
-			}
-		}
-
-		return vec3(0);
+		vec3 newRot = degrees(eulerAngles(rb->combinedRotation));
+		return newRot;
 	}
+
+	vec3 RigidBodyComponent::GetOffsetScale() const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		Collider* collider = rb->collider;
+		return collider->offsetScale;
+	}
+	vec3 RigidBodyComponent::GetCombinedScale() const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		Collider* collider = rb->collider;
+		return collider->combinedScale;
+	}
+
 	vec3 RigidBodyComponent::GetVelocity() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
