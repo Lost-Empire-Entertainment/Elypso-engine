@@ -269,8 +269,6 @@ namespace Core
 
 		//command to run the batch file and capture errors
 		string fullCommand = command + " 2>&1"; //redirect stderr to stdout
-		cout << "!!!! release type: " << releaseType << "\n";
-		cout << "!!!! COMMAND: " << command << "\n";
 
 		array<char, 128> buffer{};
 #ifdef _WIN32

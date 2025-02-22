@@ -309,25 +309,33 @@ if (WIN32)
     )
 endif()
 
-# Copy Elypso Physics DLL to the install directory after build
+# Copy Elypso DLL to the install directory after build
 set(PHYSICS_DLL_ORIGIN_BASE "${CMAKE_SOURCE_DIR}/files/external dlls")
 if (WIN32)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Game>/ElypsoPhysics.dll")
         set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/release/ElypsoPhysics.dll")
-		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/ElypsoPhysics.dll")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Game>/ElypsoPhysicsD.dll")
         set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/debug/ElypsoPhysicsD.dll")
-		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/ElypsoPhysicsD.dll")
     endif()
 else()
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/release/libElypsoPhysics.so")
-		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/libElypsoPhysics.so")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Game>/libElypsoPhysics.so")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(PHYSICS_DLL_ORIGIN "${PHYSICS_DLL_ORIGIN_BASE}/debug/libElypsoPhysicsD.so")
-		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Elypso_engine>/libElypsoPhysicsD.so")
+		set(PHYSICS_DLL_TARGET "$<TARGET_FILE_DIR:Game>/libElypsoPhysicsD.so")
     endif()
 endif()
+
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove 
+	${PHYSICS_DLL_TARGET}
+    COMMAND ${CMAKE_COMMAND} -E copy 
+	${PHYSICS_DLL_ORIGIN}
+	${PHYSICS_DLL_TARGET}
+)
 
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK
