@@ -1558,7 +1558,7 @@ namespace Graphics::GUI
 
 		vec3 offsetRot = rigidbody->GetOffsetRotation();
 		ImGui::Text("Offset rotation");
-		if (ImGui::DragFloat3("##objOffsetRot", value_ptr(offsetRot), 0.01f))
+		if (ImGui::DragFloat3("##objOffsetRot", value_ptr(offsetRot), 0.1f))
 		{
 			rigidbody->SetOffsetRotation(offsetRot);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

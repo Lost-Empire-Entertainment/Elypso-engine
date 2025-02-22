@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+﻿//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -373,15 +373,25 @@ namespace Graphics::Shape
 				{
 					if (regularMovement) regularMovement = false;
 
-					transform->SetPosition(rbComp->GetCombinedPosition());
-					transform->SetRotation(rbComp->GetCombinedRotation());
+					vec3 combinedPos = rbComp->GetCombinedPosition() + rbComp->GetOffsetPosition();
+					vec3 combinedRot = rbComp->GetCombinedRotation() + rbComp->GetOffsetRotation();
 
-					model = translate(model, transform->GetPosition());
+					vec3 offsetScale = rbComp->GetOffsetScale();
+					offsetScale.x = (offsetScale.x == 0.0f) ? 1.0f : offsetScale.x;
+					offsetScale.y = (offsetScale.y == 0.0f) ? 1.0f : offsetScale.y;
+					offsetScale.z = (offsetScale.z == 0.0f) ? 1.0f : offsetScale.z;
 
-					quat newRot = quat(radians(rbComp->GetCombinedRotation()));
+					rbComp->SetCombinedScale(transform->GetScale() * offsetScale);
+
+					transform->SetPosition(combinedPos);
+					transform->SetRotation(combinedRot);
+
+					model = translate(mat4(1.0f), transform->GetPosition());
+
+					quat newRot = quat(radians(transform->GetRotation()));
 					model *= mat4_cast(newRot);
 
-					model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
+					model = scale(model, transform->GetScale());
 				}
 				else
 				{
