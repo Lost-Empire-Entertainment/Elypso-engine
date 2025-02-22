@@ -106,7 +106,7 @@ namespace Graphics::Components
 
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
-					Type::INFO,
+					Type::DEBUG,
 					"Successfully initialized rigidbody!\n");
 			}
 		}

@@ -10,6 +10,7 @@
 
 //external
 #include "glm.hpp"
+#include "miniaudio.h"
 
 //engine
 #include "gameobject.hpp"
@@ -81,15 +82,23 @@ namespace Graphics::Shape
 				if (obj->GetName() == "") obj->SetName(".");
 
 				auto apc = obj->GetComponent<AudioPlayerComponent>();
-				if (apc
-					&& apc->Is3D())
+				if (apc)
 				{
-					has3DAudio = true;
-
-					string apcName = apc->GetName();
-					if (Audio::IsImported(apc->GetName()))
+					if (apc->IsPlaying()
+						&& Audio::HasReachedEnd(apc->GetName()))
 					{
-						Audio::UpdatePlayerPosition(apcName, obj->GetComponent<TransformComponent>()->GetPosition());
+						apc->SetPlayState(false);
+					}
+
+					if (apc->Is3D())
+					{
+						has3DAudio = true;
+
+						string apcName = apc->GetName();
+						if (Audio::IsImported(apc->GetName()))
+						{
+							Audio::UpdatePlayerPosition(apcName, obj->GetComponent<TransformComponent>()->GetPosition());
+						}
 					}
 				}
 

@@ -170,8 +170,8 @@ namespace Graphics::GUI
 			}
 			case Type::Audio:
 			{
-				string modelsFolder = (path(Engine::projectPath) / "audio").string();
-				for (const auto& entry : directory_iterator(modelsFolder))
+				string audioFolder = (path(Engine::projectPath) / "audio").string();
+				for (const auto& entry : directory_iterator(audioFolder))
 				{
 					if (is_regular_file(entry))
 					{
@@ -200,7 +200,7 @@ namespace Graphics::GUI
 
 			for (const auto& entry : content)
 			{
-				string name = path(entry).stem().string();
+				string name = path(entry).filename().string();
 
 				bool isChosen = (chosenEntry == name);
 

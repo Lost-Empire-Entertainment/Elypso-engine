@@ -85,8 +85,9 @@ namespace Graphics::GUI
 		if (!assignedName)
 		{
 			string assetName = path(assetPath).stem().string();
+			string assetExtension = path(assetName).extension().string();
 			int assetNameLength = static_cast<int>(assetName.size());
-			if (assetNameLength > 16) assetName = assetName.substr(0, 15);
+			if (assetNameLength > 64) assetName = assetName.substr(0, 63);
 			newName = assetName;
 
 #ifdef _WIN32

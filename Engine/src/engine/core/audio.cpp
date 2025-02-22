@@ -93,7 +93,7 @@ namespace Core
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
-            Type::INFO,
+            Type::DEBUG,
             "Successfully imported audio file: " + name + "\n");
 
         return true;
@@ -413,6 +413,23 @@ namespace Core
             return true;
         }
         return true;
+    }
+
+    bool Audio::HasReachedEnd(const string& name)
+    {
+        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+
+        auto it = soundMap.find(name);
+
+        if (!IsImported(name))
+        {
+            return false;
+        }
+        else
+        {
+            ma_sound* sound = it->second.get();
+            return ma_sound_at_end(sound);
+        }
     }
 
     bool Audio::IsImported(const string& name)

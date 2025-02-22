@@ -68,8 +68,13 @@ namespace Core
 		/// <summary>
 		/// Delete this audio player from memory.
 		/// </summary>
-		/// <param name="path"></param>
 		static bool Delete(const string& path);
+
+		/// <summary>
+		/// Check if this audio file has reached its end
+		/// </summary>
+		/// <param name="path"></param>
+		static bool HasReachedEnd(const string& path);
 
 		/// <summary>
 		/// Check if this audio file is imported to memory or not.
