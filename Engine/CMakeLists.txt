@@ -107,9 +107,9 @@ if (WIN32)
 	endif()
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Release")
-		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/libElypsoPhysics.a")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/libElypsoPhysics.so")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/libElypsoPhysicsD.a")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/libElypsoPhysicsD.so")
 	endif()
 endif()
 
@@ -215,14 +215,14 @@ else()
 			external_libs 
 			glfw 
 			assimp 
-			Wayland::Client 
+			Wayland::Client
 			${PHYSICS_LIBRARY_PATH})
 	elseif (X11_FOUND)
 		target_link_libraries(Elypso_engine PRIVATE 
 			external_libs 
 			glfw 
 			assimp 
-			${X11_LIBRARIES} 
+			${X11_LIBRARIES}
 			${PHYSICS_LIBRARY_PATH})
 	endif()
 endif()
