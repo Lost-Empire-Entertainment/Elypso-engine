@@ -38,6 +38,7 @@
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
 #include "audioplayercomponent.hpp"
+#include "core.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #endif
@@ -81,6 +82,7 @@ using Graphics::Components::MeshComponent;
 using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
 using Graphics::Components::AudioPlayerComponent;
+using Core::Engine;
 #if ENGINE_MODE
 using Core::Compilation;
 #endif
@@ -231,8 +233,11 @@ namespace Core
                 && mods == GLFW_MOD_CONTROL
                 && action == GLFW_PRESS)
             {
-                Compilation::installerType = Compilation::InstallerType::compile;
-                Compilation::Compile();
+                if (Engine::CheckForMissingCompilerFiles())
+                {
+                    Compilation::installerType = Compilation::InstallerType::compile;
+                    Compilation::Compile();
+                }
             }
 
             //clean rebuild
@@ -240,8 +245,11 @@ namespace Core
                 && (mods == (GLFW_MOD_CONTROL | GLFW_MOD_SHIFT))
                 && action == GLFW_PRESS)
             {
-                Compilation::installerType = Compilation::InstallerType::reset;
-                Compilation::Compile();
+                if (Engine::CheckForMissingCompilerFiles())
+                {
+                    Compilation::installerType = Compilation::InstallerType::reset;
+                    Compilation::Compile();
+                }
             }
 
             //run game

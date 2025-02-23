@@ -36,12 +36,13 @@ namespace Core
 #if ENGINE_MODE
 		static void InitializeEngine();
 
-		static void CheckForMissingCompilerFiles();
+		static bool CheckForMissingCompilerFiles();
 #else
 		static void InitializeEngine();
 #endif
 
 		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
+		static void CreateWarningPopup(const char* warningMessage = "MISSING WARNING MESSAGE");
 		static bool IsThisProcessAlreadyRunning(const string& processName);
 
 #if DISCORD_MODE

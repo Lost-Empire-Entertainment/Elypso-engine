@@ -754,8 +754,11 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Compile"))
 			{
-				Compilation::installerType = Compilation::InstallerType::compile;
-				Compilation::Compile();
+				if (Engine::CheckForMissingCompilerFiles())
+				{
+					Compilation::installerType = Compilation::InstallerType::compile;
+					Compilation::Compile();
+				}
 
 				ImGui::CloseCurrentPopup();
 			}
@@ -768,8 +771,11 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Clean rebuild"))
 			{
-				Compilation::installerType = Compilation::InstallerType::reset;
-				Compilation::Compile();
+				if (Engine::CheckForMissingCompilerFiles())
+				{
+					Compilation::installerType = Compilation::InstallerType::reset;
+					Compilation::Compile();
+				}
 
 				ImGui::CloseCurrentPopup();
 			}

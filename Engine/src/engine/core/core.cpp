@@ -626,6 +626,29 @@ namespace Core
 #endif
 	}
 
+	void Engine::CreateWarningPopup(const char* warningMessage)
+	{
+		string title = "Elypso Engine Warning";
+
+		cout << "\n"
+			<< "===================="
+			<< "\n"
+			<< "ENGINE WARNING"
+			<< "\n\n"
+			<< warningMessage
+			<< "\n"
+			<< "===================="
+			<< "\n";
+
+#ifdef _WIN32
+		MessageBoxA(nullptr, warningMessage, title.c_str(), MB_ICONWARNING | MB_OK);
+#elif __linux__
+		string command = "zenity --warning --text=\"" + (string)warningMessage + "\" --title=\"" + title + "\"";
+		int result = system(command.c_str());
+		(void)result;
+#endif
+	}
+
 	bool Engine::IsThisProcessAlreadyRunning(const string& processName)
 	{
 #ifdef _WIN32
@@ -770,7 +793,7 @@ namespace Core
 #endif
 
 #if ENGINE_MODE
-	void Engine::CheckForMissingCompilerFiles()
+	bool Engine::CheckForMissingCompilerFiles()
 	{
 #ifdef _WIN32
 		string msvcCommand = "call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x64 >nul 2>&1 && cl >nul 2>&1";
@@ -779,7 +802,8 @@ namespace Core
 
 		if (msvcResult != 0)
 		{
-			CreateErrorPopup("Couldn't run engine because of missing MSVC or C++ components! Please set up MSVC and C++ components for desktop and game development.");
+			CreateWarningPopup("Couldn't compile game because of missing MSVC or C++ components! Please install Visual Studio build tools or Visual Studio 2022 with C++ desktop development tools.");
+			return false;
 		}
 
 		string cmakeCommand = "cmake --version >nul 2>&1";
@@ -788,8 +812,23 @@ namespace Core
 
 		if (cmakeResult != 0)
 		{
-			CreateErrorPopup("Couldn't run engine because of missing CMAKE installer! Please install CMake and add it to environment path.");
+			CreateWarningPopup("Couldn't compile game because of missing CMAKE installer! Please run the windows prerequisites build.bat file or install CMake separately and add to System/User environemtn path!");
+			return false;
 		}
+
+		string ninjaCommand = "ninja --version >nul 2>&1";
+
+		int ninjaResult = system(ninjaCommand.c_str());
+
+		if (ninjaResult != 0)
+		{
+			CreateWarningPopup("Couldn't compile game because of missing Ninja build system! Please run the windows prerequisites build.bat file or install Ninja separately and add to System/User environemtn path!");
+			return false;
+		}
+
+		return true;
+#else
+		return true;
 #endif
 	}
 #endif
