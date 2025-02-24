@@ -90,7 +90,6 @@ namespace Core
 #if ENGINE_MODE
 		name = "Elypso engine";
 		
-		CheckForMissingCompilerFiles();
 #else
 		version = "1.0.0";
 		string gameFolder = path(current_path()).string();
