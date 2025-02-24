@@ -107,7 +107,7 @@ namespace Graphics::GUI
 
 		ImGuiWindowFlags windowFlags =
 			ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_AlwaysVerticalScrollbar;;
+			| ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 		bool renderInspector = stoi(ConfigFile::GetValue("gui_inspector"));
 
@@ -131,13 +131,26 @@ namespace Graphics::GUI
 				auto audioPlayer = Select::selectedObj->GetComponent<AudioPlayerComponent>();
 				auto rigidbodycomponent = Select::selectedObj->GetComponent<RigidBodyComponent>();
 
-				Component_GameObject();
-				Component_Transform();
-				if (mesh) Component_Mesh();
-				if (mat) Component_Material();
-				if (light) Component_Light();
-				if (audioPlayer) Component_AudioPlayer();
-				if (rigidbodycomponent) Component_RigidBody();
+				if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) Component_GameObject();
+				if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) Component_Transform();
+				if (ImGui::CollapsingHeader("Mesh")) Component_Mesh();
+				if (ImGui::CollapsingHeader("Material")) Component_Material();
+
+				if (light
+					&& ImGui::CollapsingHeader("Light"))
+				{
+					Component_Light();
+				}
+				if (audioPlayer
+					&& ImGui::CollapsingHeader("Audio"))
+				{
+					Component_AudioPlayer();
+				}
+				if (rigidbodycomponent
+					&& ImGui::CollapsingHeader("RigidBody"))
+				{
+					Component_RigidBody();
+				}
 			}
 
 			ImGui::End();
@@ -246,7 +259,9 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("GameObject", ImVec2(ImGui::GetWindowWidth() - 20, 180), true, childWindowFlags);
+		int numLines = 5;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("GameObject", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 		
 		ImGui::Text("GameObject");
 		ImGui::Separator();
@@ -363,7 +378,9 @@ namespace Graphics::GUI
 	{
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Transform", ImVec2(ImGui::GetWindowWidth() - 20, 240), true, childWindowFlags);
+		int numLines = 7;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("Transform", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
 		ImGui::Text("Transform");
 		ImGui::Separator();
@@ -446,7 +463,9 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, 125.0f), true, childWindowFlags);
+		int numLines = mesh->GetMeshType() == MeshComponent::MeshType::model ? 3 : 1;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
 		ImGui::Text("Mesh");
 
@@ -538,11 +557,11 @@ namespace Graphics::GUI
 		auto mat = obj->GetComponent<MaterialComponent>();
 		MeshComponent::MeshType objType = mesh->GetMeshType();
 
-		float height = objType == MeshComponent::MeshType::model ? 250.0f : 150.0f;
-
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+		int numLines = mesh->GetMeshType() == MeshComponent::MeshType::model ? 8 : 1;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 		
 		ImGui::Text("Material");
 
@@ -684,11 +703,11 @@ namespace Graphics::GUI
 		auto mesh = obj->GetComponent<MeshComponent>();
 		auto light = obj->GetComponent<LightComponent>();
 
-		float height = mesh->GetMeshType() == MeshType::spot_light ? 400 : 270;
-
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+		int numLines = 5;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 		
 		ImGui::Text("Light");
 
@@ -1223,11 +1242,11 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto audioPlayer = obj->GetComponent<AudioPlayerComponent>();
 
-		float height = 300.0f;
-
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Audio player", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+		int numLines = 5;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("Audio player", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
 		ImGui::Text("Audio player");
 
@@ -1392,11 +1411,11 @@ namespace Graphics::GUI
 		auto& obj = Select::selectedObj;
 		auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 
-		float height = 875.0f;
-
 		ImGuiChildFlags childWindowFlags{};
 
-		ImGui::BeginChild("Rigidbody", ImVec2(ImGui::GetWindowWidth() - 20, height), true, childWindowFlags);
+		int numLines = 30;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("Rigidbody", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
 		ImGui::Text("Rigidbody");
 
