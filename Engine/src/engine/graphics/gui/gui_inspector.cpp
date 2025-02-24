@@ -1614,7 +1614,7 @@ namespace Graphics::GUI
 		static vec3 force = vec3(0);
 		ImGui::DragFloat3("##objForce", value_ptr(force), 0.01f);
 		ImGui::SameLine();
-		if (ImGui::Button("Apply"))
+		if (ImGui::Button("Apply##btnForce"))
 		{
 			rigidbody->ApplyForce(force);
 		}
@@ -1623,7 +1623,7 @@ namespace Graphics::GUI
 		static vec3 impulse = vec3(0);
 		ImGui::DragFloat3("##objImpulse", value_ptr(impulse), 0.01f);
 		ImGui::SameLine();
-		if (ImGui::Button("Apply"))
+		if (ImGui::Button("Apply##btnImpulse"))
 		{
 			rigidbody->ApplyImpulse(impulse);
 		}
@@ -1632,7 +1632,7 @@ namespace Graphics::GUI
 		static vec3 torque = vec3(0);
 		ImGui::DragFloat3("##objTorque", value_ptr(torque), 0.01f);
 		ImGui::SameLine();
-		if (ImGui::Button("Apply"))
+		if (ImGui::Button("Apply##btnTorque"))
 		{
 			rigidbody->ApplyTorque(torque);
 		}
