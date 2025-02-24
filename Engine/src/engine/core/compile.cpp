@@ -413,10 +413,7 @@ namespace Core
 				{
 					renderBuildingWindow = false;
 
-					if (GamePathCheck())
-					{
-						File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
-					}
+					Run();
 				}
 
 				ImGui::SetCursorPos(button3Pos);
@@ -480,30 +477,6 @@ namespace Core
 				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
 		}
-	}
-
-	bool Compilation::GamePathCheck()
-	{
-		string output = "Checking if game exe path '" + Engine::gameExePath + "' is valid.\n";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::DEBUG,
-			output);
-
-		//first check if msvc is valid
-		if (!exists(Engine::gameExePath))
-		{
-			string parentFolder = path(Engine::gameExePath).parent_path().parent_path().string();
-			string gameName = path(Engine::gameExePath).filename().string();
-			string newPath = (path(parentFolder) / "msvc" / gameName).string();
-
-			output = "Failed to find game exe at '" + Engine::gameExePath + "'. Trying another compiler folder path.\n";
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::DEBUG,
-				output);
-		}
-		return true;
 	}
 }
 #endif

@@ -46,11 +46,6 @@ namespace Core
 		/// Run the game exe.
 		/// </summary>
 		static void Run();
-
-		/// <summary>
-		/// Ensure the path to game exe and game parent are valid before using them to run game or compile it.
-		/// </summary>
-		static bool GamePathCheck();
 	private:
 		static inline bool finishedBuild;
 		static inline bool firstScrollToBottom;

@@ -19,4 +19,5 @@
 - no longer forced to have CMake, Ninja and Visual Studio installed to open the engine
 - a warning popup is created if user tries to compile or clean rebuild game if CMake, Ninja and Visual Studio are not installed and added to USER/SYSTEM path on windows
 - a warning popup is created if user tries to run game which has not been created properly yet, removed the console error message for it
+- reusing the Run function in compile.cpp to check for invalid paths after game is compiled
 - fixed a bug that affected other non-rigidbodies if a rigidbody gameobject had its usegravity and isdynamic set to true

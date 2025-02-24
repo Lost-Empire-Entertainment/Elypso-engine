@@ -361,10 +361,9 @@ namespace Graphics::Shape
 
 			static bool regularMovement = true;
 			auto rbComp = obj->GetComponent<RigidBodyComponent>();
+			auto transform = obj->GetComponent<TransformComponent>();
 			if (rbComp)
 			{
-				auto transform = obj->GetComponent<TransformComponent>();
-
 				GameObjectHandle handle = rbComp->GetHandle();
 				RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
@@ -406,8 +405,6 @@ namespace Graphics::Shape
 
 			if (regularMovement)
 			{
-				auto transform = obj->GetComponent<TransformComponent>();
-
 				model = translate(model, transform->GetPosition());
 
 				quat newRot = quat(radians(transform->GetRotation()));
