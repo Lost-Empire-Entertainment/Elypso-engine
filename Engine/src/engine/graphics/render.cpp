@@ -151,7 +151,7 @@ namespace Graphics
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
-		glfwSetWindowSizeLimits(window, 800, 600, 7680, 4320);
+		glfwSetWindowSizeLimits(window, 1024, 768, 7680, 4320);
 		glfwSwapInterval(stoi(ConfigFile::GetValue("window_vsync")));
 
 		int width, height, channels;

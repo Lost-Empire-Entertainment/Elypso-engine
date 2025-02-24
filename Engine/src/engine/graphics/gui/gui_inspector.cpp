@@ -705,7 +705,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = 5;
+		int numLines = 9;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 		

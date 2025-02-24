@@ -20,6 +20,8 @@ namespace Graphics::GUI
 {
 	void GUIFirstTime::RenderFirstTime()
 	{
+		ImGui::SetNextWindowSizeConstraints(ImVec2(500.0f, 500.0f), ImVec2(5000.0f, 5000.0f));
+
 		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
 
@@ -52,19 +54,54 @@ namespace Graphics::GUI
 	{
 		ImVec2 windowSize = ImGui::GetWindowSize();
 
-		const char* text = "Centered Text";
+		const char* text1 = "Welcome! If this is your first time using the engine then this window will give a brief introduction of what exists in this engine. So far the engine is in an early alpha state so things may change a lot so please be sure to delete the document folders for engine and hub and the project folder every time you run a new version of the engine.";
 
-		ImVec2 textSize = ImGui::CalcTextSize(text);
+		// Padding from edges
+		float padding = 25.0f;
 
-		float posX = (windowSize.x - textSize.x) * 0.5f;
-		float posY = (windowSize.y - textSize.y) * 0.5f;
+		// Calculate wrapping position based on cursor + window size
+		float wrapPos = windowSize.x - padding;
 
-		posX = ImClamp(posX, 50.0f, windowSize.x - textSize.x - 50.0f);
-		posY = ImClamp(posY, 50.0f, windowSize.y - textSize.y - 50.0f);
+		// Set cursor with padding for left side
+		int currentHeight = 100.0f;
+		ImGui::SetCursorPosY(currentHeight);
 
-		ImGui::SetCursorPos(ImVec2(posX, posY));
+		// Apply text wrapping relative to the cursor
+		ImGui::PushTextWrapPos(wrapPos);
+		ImGui::Text("%s", text1);
+		ImGui::PopTextWrapPos();
 
-		ImGui::Text("%s", text);
+		const char* text2 = "Welcome! If this is your first time using the engine then this window will give a brief introduction of what exists in this engine. So far the engine is in an early alpha state so things may change a lot so please be sure to delete the document folders for engine and hub and the project folder every time you run a new version of the engine.";
+		currentHeight += 150.0f;
+		ImGui::SetCursorPosY(currentHeight);
+
+		ImGui::PushTextWrapPos(wrapPos);
+		ImGui::Text("%s", text2);
+		ImGui::PopTextWrapPos();
+
+		const char* text3 = "Welcome! If this is your first time using the engine then this window will give a brief introduction of what exists in this engine. So far the engine is in an early alpha state so things may change a lot so please be sure to delete the document folders for engine and hub and the project folder every time you run a new version of the engine.";
+		currentHeight += 150.0f;
+		ImGui::SetCursorPosY(currentHeight);
+
+		ImGui::PushTextWrapPos(wrapPos);
+		ImGui::Text("%s", text3);
+		ImGui::PopTextWrapPos();
+
+		const char* text4 = "Welcome! If this is your first time using the engine then this window will give a brief introduction of what exists in this engine. So far the engine is in an early alpha state so things may change a lot so please be sure to delete the document folders for engine and hub and the project folder every time you run a new version of the engine.";
+		currentHeight += 150.0f;
+		ImGui::SetCursorPosY(currentHeight);
+
+		ImGui::PushTextWrapPos(wrapPos);
+		ImGui::Text("%s", text4);
+		ImGui::PopTextWrapPos();
+
+		const char* text5 = "Welcome! If this is your first time using the engine then this window will give a brief introduction of what exists in this engine. So far the engine is in an early alpha state so things may change a lot so please be sure to delete the document folders for engine and hub and the project folder every time you run a new version of the engine.";
+		currentHeight += 150.0f;
+		ImGui::SetCursorPosY(currentHeight);
+
+		ImGui::PushTextWrapPos(wrapPos);
+		ImGui::Text("%s", text5);
+		ImGui::PopTextWrapPos();
 	}
 }
 #endif

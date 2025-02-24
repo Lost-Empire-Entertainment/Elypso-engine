@@ -45,6 +45,7 @@
 #include "configFile.hpp"
 #include "fileexplorer.hpp"
 #include "compile.hpp"
+#include "physics.hpp"
 
 using std::cout;
 using std::endl;
@@ -79,6 +80,7 @@ using EngineFile::FileExplorer;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Compilation;
+using Core::Physics;
 
 namespace Graphics::GUI
 {
@@ -794,6 +796,27 @@ namespace Graphics::GUI
 			ImGui::BeginTooltip();
 			ImGui::Text("Shortcut: F5");
 			ImGui::EndTooltip();
+		}
+
+		//in the middle
+		ImGui::SameLine(0.0f, ImGui::GetStyle().ItemSpacing.x);
+
+		std::string physicsText = Physics::simulatePhysics ? "Disable physics" : "Enable physics";
+
+		//calculate window and button sizes and positions
+		float windowWidth = ImGui::GetWindowSize().x;
+		ImVec2 buttonSize = ImGui::CalcTextSize(physicsText.c_str());
+		float buttonX = (windowWidth - buttonSize.x) * 0.5f;
+		ImGui::SetCursorPosX(buttonX);
+
+		if (ImGui::BeginMenu(physicsText.c_str()))
+		{
+			if (ImGui::IsItemClicked())
+			{
+				Physics::simulatePhysics = !Physics::simulatePhysics;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndMenu();
 		}
 
 		//on the right side

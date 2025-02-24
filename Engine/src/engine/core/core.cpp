@@ -728,8 +728,10 @@ namespace Core
 		while (isEngineRunning)
 		{
 			TimeManager::UpdateDeltaTime();
+
+			if (Physics::simulatePhysics) Physics::Update(TimeManager::deltaTime);
+
 			Render::WindowLoop();
-			Physics::Update(TimeManager::deltaTime);
 #if DISCORD_MODE
 			RunDiscordRichPresence();
 #endif
