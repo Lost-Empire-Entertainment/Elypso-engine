@@ -231,14 +231,8 @@ namespace EngineFile
 		values.clear();
 
 #if ENGINE_MODE
-		/*
-		* 
-		* DISABLED FOR NOW
-		* WILL BE UPDATED IN A FUTURE VERSION
-		* 
 		keys.push_back("firstUse");
 			values.push_back("1");
-		*/
 
 		keys.push_back("gameName");
 			values.push_back("Game");

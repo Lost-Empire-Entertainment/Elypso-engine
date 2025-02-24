@@ -272,18 +272,12 @@ namespace Graphics::GUI
 				if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
 				if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
 
-				/*
-				* 
-				* DISABLED FOR NOW
-				* WILL BE UPDATED IN A FUTURE VERSION
-				* 
 				bool firstUse = stoi(ConfigFile::GetValue("firstUse"));
 				if (firstUse)
 				{
 					ConfigFile::SetValue("gui_firstTime", "1");
 					ConfigFile::SetValue("firstUse", "0");
 				}
-				*/
 
 				ImGui::Render();
 			}
@@ -720,17 +714,11 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			/*
-			* 
-			* DISABLED FOR NOW
-			* WILL BE UPDATED IN A FUTURE VERSION
-			* 
 			if (ImGui::MenuItem("Welcome"))
 			{
 				ConfigFile::SetValue("gui_firstTime", "1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
-			*/
 
 			ImGui::EndMenu();
 		}

@@ -20,11 +20,6 @@ namespace Graphics::GUI
 {
 	void GUIFirstTime::RenderFirstTime()
 	{
-		/*
-		* 
-		* DISABLED FOR NOW
-		* WILL BE UPDATED IN A FUTURE VERSION
-		* 
 		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
 
@@ -51,12 +46,25 @@ namespace Graphics::GUI
 
 			ImGui::End();
 		}
-		*/
 	}
 
 	void GUIFirstTime::RenderFirstTimeContent()
 	{
-		ImGui::Text("1234");
+		ImVec2 windowSize = ImGui::GetWindowSize();
+
+		const char* text = "Centered Text";
+
+		ImVec2 textSize = ImGui::CalcTextSize(text);
+
+		float posX = (windowSize.x - textSize.x) * 0.5f;
+		float posY = (windowSize.y - textSize.y) * 0.5f;
+
+		posX = ImClamp(posX, 50.0f, windowSize.x - textSize.x - 50.0f);
+		posY = ImClamp(posY, 50.0f, windowSize.y - textSize.y - 50.0f);
+
+		ImGui::SetCursorPos(ImVec2(posX, posY));
+
+		ImGui::Text("%s", text);
 	}
 }
 #endif
