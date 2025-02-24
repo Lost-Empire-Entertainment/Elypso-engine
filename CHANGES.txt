@@ -14,3 +14,9 @@
 - rigidbody gameobjects have friction when colliding with other rigidbody gameobjects
 - audio no longer "continues playing" if it has reached its end
 - when assigning scene, texture, audio file or model the file hierarchy list now also shows file extension
+
+0.1.3.0003:
+- no longer forced to have CMake, Ninja and Visual Studio installed to open the engine
+- a warning popup is created if user tries to compile or clean rebuild game if CMake, Ninja and Visual Studio are not installed and added to USER/SYSTEM path on windows
+- a warning popup is created if user tries to run game which has not been created properly yet, removed the console error message for it
+- fixed a bug that affected other non-rigidbodies if a rigidbody gameobject had its usegravity and isdynamic set to true

@@ -441,19 +441,13 @@ namespace Core
 
 		if (!exists(projectFolder))
 		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Error: Game root folder doesn't exist! Did you forget to compile?\n");
+			Engine::CreateWarningPopup("Game root folder doesn't exist! Did you forget to compile?");
 		}
 		else
 		{
 			if (!exists(Engine::gameExePath))
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::EXCEPTION,
-					"Error: Game exe does not exist! Did you forget to compile?\n");
+				Engine::CreateWarningPopup("Game exe does not exist! Did you forget to compile?");
 			}
 			else
 			{

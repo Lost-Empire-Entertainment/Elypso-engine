@@ -368,7 +368,8 @@ namespace Graphics::Shape
 				GameObjectHandle handle = rbComp->GetHandle();
 				RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
-				if (rb->isDynamic
+				if (rb
+					&& rb->isDynamic
 					&& rb->useGravity)
 				{
 					if (regularMovement) regularMovement = false;
@@ -398,6 +399,11 @@ namespace Graphics::Shape
 					if (!regularMovement) regularMovement = true;
 				}
 			}
+			else
+			{
+				if (!regularMovement) regularMovement = true;
+			}
+
 			if (regularMovement)
 			{
 				auto transform = obj->GetComponent<TransformComponent>();

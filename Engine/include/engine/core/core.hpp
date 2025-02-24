@@ -41,8 +41,8 @@ namespace Core
 		static void InitializeEngine();
 #endif
 
-		static void CreateErrorPopup(const char* errorMessage = "MISSING ERROR MESSAGE");
-		static void CreateWarningPopup(const char* warningMessage = "MISSING WARNING MESSAGE");
+		static void CreateErrorPopup(const char* errorMessage);
+		static void CreateWarningPopup(const char* warningMessage);
 		static bool IsThisProcessAlreadyRunning(const string& processName);
 
 #if DISCORD_MODE
