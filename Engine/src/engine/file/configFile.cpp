@@ -231,9 +231,6 @@ namespace EngineFile
 		values.clear();
 
 #if ENGINE_MODE
-		keys.push_back("firstUse");
-			values.push_back("1");
-
 		keys.push_back("gameName");
 			values.push_back("Game");
 #endif
@@ -270,8 +267,6 @@ namespace EngineFile
 			values.push_back("1");
 		keys.push_back("gui_projectHierarchy");
 			values.push_back("1");
-		keys.push_back("gui_firstTime");
-			values.push_back("0");
 #endif
 		keys.push_back("gui_console");
 			values.push_back("1");

@@ -26,7 +26,6 @@
 #include "gui_credits.hpp"
 #include "gui_links.hpp"
 #include "gui_projectitemslist.hpp"
-#include "gui_firstTime.hpp"
 #include "gui_scenewindow.hpp"
 #include "input.hpp"
 #include "render.hpp"
@@ -263,7 +262,6 @@ namespace Graphics::GUI
 					GUICredits::RenderCreditsWindow();
 					GUILinks::RenderLinksWindow();
 					GUIProjectItemsList::RenderProjectItemsList();
-					GUIFirstTime::RenderFirstTime();
 				}
 
 				bool renderSceneWindow = stoi(ConfigFile::GetValue("gui_sceneWindow"));
@@ -273,13 +271,6 @@ namespace Graphics::GUI
 
 				if (renderUnsavedShutdownWindow) SaveBefore(SaveBeforeState::shutdown);
 				if (renderUnsavedSceneSwitchWindow) SaveBefore(SaveBeforeState::sceneSwitch);
-
-				bool firstUse = stoi(ConfigFile::GetValue("firstUse"));
-				if (firstUse)
-				{
-					ConfigFile::SetValue("gui_firstTime", "1");
-					ConfigFile::SetValue("firstUse", "0");
-				}
 
 				ImGui::Render();
 			}
@@ -713,12 +704,6 @@ namespace Graphics::GUI
 			if (ImGui::MenuItem("Console"))
 			{
 				ConfigFile::SetValue("gui_console", "1");
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
-			if (ImGui::MenuItem("Welcome"))
-			{
-				ConfigFile::SetValue("gui_firstTime", "1");
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
