@@ -16,7 +16,6 @@
 - when assigning scene, texture, audio file or model the file hierarchy list now also shows file extension
 
 0.1.3.0003:
-- re-enabled and added content to the welcome screen
 - added collapsible headers to inspector
 - added Enable/Disable physics button to the center of the top menu bar
 - no longer forced to have CMake, Ninja and Visual Studio installed to open the engine
