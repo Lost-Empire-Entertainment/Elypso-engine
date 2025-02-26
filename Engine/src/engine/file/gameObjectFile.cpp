@@ -320,15 +320,15 @@ namespace EngineFile
 					data.push_back("offsetPosition= "
 						+ to_string(offsetPosition.x) + ", "
 						+ to_string(offsetPosition.y) + ", "
-						+ to_string(offsetPosition.z));
+						+ to_string(offsetPosition.z) + "\n");
 					data.push_back("offsetRotation= "
 						+ to_string(offsetRotation.x) + ", "
 						+ to_string(offsetRotation.y) + ", "
-						+ to_string(offsetRotation.z));
+						+ to_string(offsetRotation.z) + "\n");
 					data.push_back("offsetScale= "
 						+ to_string(offsetScale.x) + ", "
 						+ to_string(offsetScale.y) + ", "
-						+ to_string(offsetScale.z));
+						+ to_string(offsetScale.z) + "\n");
 				}
 
 				//

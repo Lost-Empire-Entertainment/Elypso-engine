@@ -729,7 +729,11 @@ namespace Core
 		{
 			TimeManager::UpdateDeltaTime();
 
+#if ENGINE_MODE
 			if (Physics::simulatePhysics) Physics::Update(TimeManager::deltaTime);
+#else
+			Physics::Update(TimeManager::deltaTime);
+#endif
 
 			Render::WindowLoop();
 #if DISCORD_MODE
