@@ -178,7 +178,6 @@ namespace Core
 		// SET DOCUMENTS PATH
 		//
 
-
 #ifdef _WIN32
 		PWSTR docsFolderWidePath;
 		HRESULT result = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &docsFolderWidePath);
@@ -632,7 +631,11 @@ namespace Core
 		cout << "\n"
 			<< "===================="
 			<< "\n"
-			<< "ENGINE WARNING"
+#if ENGINE_MODE
+			<< "ENGINE SHUTDOWN\n"
+#else
+			<< "GAME SHUTDOWN\n"
+#endif
 			<< "\n\n"
 			<< warningMessage
 			<< "\n"

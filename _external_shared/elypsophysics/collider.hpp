@@ -20,6 +20,7 @@
 
 //external
 #include "glm.hpp"
+#include "gtc/quaternion.hpp"
 
 //physics
 #include "gameobjecthandle.hpp"
@@ -27,6 +28,9 @@
 namespace ElypsoPhysics
 {
 	using glm::vec3;
+	using glm::mat3;
+	using glm::mat3_cast;
+	using glm::quat;
 	using std::string;
 	using std::to_string;
 	using std::cout;
@@ -77,6 +81,7 @@ namespace ElypsoPhysics
 		{
 			boundingRadius = length(halfExtents) * 2.0f * 0.5f; //half diagonal
 		}
+
 		//half size of box in each axis
 		vec3 halfExtents;
 	};

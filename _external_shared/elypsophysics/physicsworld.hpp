@@ -75,6 +75,8 @@ namespace ElypsoPhysics
 		/// </summary>
 		void StepSimulation(float deltaTime);
 
+		void ApplyPhysicsIntegration(float deltaTime);
+
 		/// <summary>
 		/// Resolves a collision by applying impulse forces to separate the bodies and simulate realistic response
 		/// </summary>
@@ -82,16 +84,32 @@ namespace ElypsoPhysics
 			RigidBody& bodyA, 
 			RigidBody& bodyB, 
 			const vec3& collisionNormal,
-			const vec3& contactPoint);
+			const vec3& contactPoint,
+			float penetration);
 
 		/// <summary>
 		/// Applies frictional forces to reduce sliding and simulate surface resistance after a collision
 		/// </summary>
-		void ApplyFriction(RigidBody& bodyA, RigidBody& bodyB, const vec3& collisionNormal);
+		void ApplyFriction(
+			RigidBody& bodyA, 
+			RigidBody& bodyB, 
+			const vec3& collisionNormal,
+			const vec3& contactPoint) const;
 
 		void SetGravity(const vec3& newGravity) { gravity = newGravity; }
+		void SetAngularDamping(float value) { angularDamping = value; }
+		void SetLowAngularVelocityFactor(float value) { lowAngularVelocityFactor = value; }
+		void SetFrictionMultiplier(float value) { frictionMultiplier = value; }
+		void SetCorrectionFactor(float value) { correctionFactor = value; }
+		void SetMinPenetrationThreshold(float value) { minPenetrationThreshold = value; }
+
 		const vec3& GetGravity() const { return gravity; }
-		
+		float GetAngularDamping() const { return angularDamping; }
+		float GetLowAngularVelocityFactor(float value) const { return lowAngularVelocityFactor; }
+		float GetFrictionMultiplier() const { return frictionMultiplier; }
+		float GetCorrectionFactor() const { return correctionFactor; }
+		float GetMinPenetrationThreshold() const { return minPenetrationThreshold; }
+
 		const vector<RigidBody*>& GetBodies() const { return bodies; }
 		const unordered_map<GameObjectHandle, size_t, hash<GameObjectHandle>>& GetBodyMap() const { return bodyMap; }
 		const vector<uint32_t>& GetGenerations() const { return generations; }
@@ -111,7 +129,11 @@ namespace ElypsoPhysics
 		//Tracks the generation count for each index in the 'bodies' array
 		vector<uint32_t> generations;
 
-		//Global gravity
-		vec3 gravity;
+		vec3 gravity;                          //Global gravity
+		float angularDamping = 0.998f;         //Controls how quickly rotation slows down
+		float lowAngularVelocityFactor = 0.5f; //How much to slow rotation when velocity is very low
+		float frictionMultiplier = 0.1f;       //Global friction multiplier
+		float correctionFactor = 0.2f;         //Strength of positional correction
+		float minPenetrationThreshold = 0.01f; //Minimum penetration depth to trigger correction
 	};
 }

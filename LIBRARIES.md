@@ -13,4 +13,11 @@ Full list of libraries:
 - [ImGui - Handles all the engine GUI](https://github.com/ocornut/imgui)
 - [stb_image - Imports images](https://github.com/nothings/stb/blob/master/stb_image.h)
 - [magic_enum - Simplifies enum-string operations](https://github.com/Neargye/magic_enum)
+
+==================================================
+Libraries created by Lost Empire Entertainment
+==================================================
+
+The following libraries are exceptions and are made by Lost Empire Entertainment.
+
 - [Elypso Physics - Handles physics in Elypso engine and game template](https://github.com/Lost-Empire-Entertainment/Elypso-physics)

@@ -1,20 +1,13 @@
 ----------------------------------------------------------------------
-HOW TO SET UP NECESSARY THINGS TO RUN ENGINE NATIVELY ON WINDOWS
-----------------------------------------------------------------------
+HOW TO SET UP NECESSARY THINGS TO COMPILE ENGINE, ENGINE LIBRARY, GAME TEMPLATE
+---------------------------------------------------------------------
 
-first unpack prerequisites.7z
+Download Visual Studio 2022 Installer from here:
+https://visualstudio.microsoft.com/vs/
 
-Visual studio 2022 itself is not 100% needed but it is HIGHLY recommended because it makes the setup much easier
-
-if you DONT want visual studio 2022 then:
-- download visual studio build tools
-- select c++ build tools
-- windows 10/11 sdk
-- c++ cmake tools for windows
-
-if you DO want or already have visual studio 2022 then make sure:
--  desktop development with c++ is enabled
+once its installed make sure these are enabled when installing Visual Studio 2022:
+- desktop development with c++ is enabled
 - it has c++ cmake tools enabled
 - it has windows 10/11 sdk enabled
 
-And finally once you have those done then run setup.bat
+And finally unpack prerequisites.7z and then run setup.bat to install cmake and ninja
