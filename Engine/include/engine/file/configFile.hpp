@@ -52,5 +52,10 @@ namespace EngineFile
 		/// Creates a brand new config file with default values.
 		/// </summary>
 		static void CreateNewConfigFile();
+
+		/// <summary>
+		/// Assigns data to the physics world component of Elypso Physics library
+		/// </summary>
+		static void SetGlobalPhysicsData();
 	};
 }

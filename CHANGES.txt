@@ -24,3 +24,6 @@
 - reusing the Run function in compile.cpp to check for invalid paths after game is compiled
 - fixed impulse and torque debug buttons
 - fixed a bug that affected other non-rigidbodies if a rigidbody gameobject had its usegravity and isdynamic set to true
+
+0.1.3.0004:
+- added modifyable gravity, angular damping, low angular velocity factor, friction multiplier, correction factor and minimum penetration factor to scene window right menu and to config file

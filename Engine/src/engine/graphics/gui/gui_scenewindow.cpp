@@ -15,6 +15,7 @@
 #include "imgui_internal.h"
 #include "glad.h"
 #include "type_ptr.hpp"
+#include "physicsworld.hpp"
 
 //engine
 #include "gui_scenewindow.hpp"
@@ -29,6 +30,7 @@
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
 #include "meshcomponent.hpp"
+#include "physics.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -46,6 +48,8 @@ using Graphics::Shape::GameObject;
 using Graphics::Components::MeshComponent;
 using Utils::String;
 using Core::TimeManager;
+using Core::Physics;
+using ElypsoPhysics::PhysicsWorld;
 
 namespace Graphics::GUI
 {
@@ -479,6 +483,63 @@ namespace Graphics::GUI
 				if (gridMaxDistance < 10.0f) gridMaxDistance = 10.0f;
 
 				ConfigFile::SetValue("grid_maxDistance", to_string(gridMaxDistance));
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			//
+			// PHYSICS SETTINGS
+			//
+
+			ImGui::Text("Global gravity");
+			vector<string> split = String::Split(ConfigFile::GetValue("gravity"), ',');
+			vec3 gravity = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+			if (ImGui::DragFloat3("##globalGravity", value_ptr(gravity), 0.01f, 0.0f, 100.00f))
+			{
+				string newGravity = 
+					to_string(gravity.x) + ", " 
+					+ to_string(gravity.y) + ", " 
+					+ to_string(gravity.z);
+				ConfigFile::SetValue("gravity", newGravity);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Text("Angular damping");
+			float angularDamping = stof(ConfigFile::GetValue("angularDamping"));
+			if (ImGui::DragFloat("##angularDamping", &angularDamping, 0.001f, 0.0f, 1.0f))
+			{
+				ConfigFile::SetValue("angularDamping", to_string(angularDamping));
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Text("Low angular velocity factor");
+			float lowAngularVelocityFactor = stof(ConfigFile::GetValue("lowAngularVelocityFactor"));
+			if (ImGui::DragFloat("##lowAngularVelocityFactor", &lowAngularVelocityFactor, 0.001f, 0.0f, 1.0f))
+			{
+				ConfigFile::SetValue("lowAngularVelocityFactor", to_string(lowAngularVelocityFactor));
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Text("Friction multiplier");
+			float frictionMultiplier = stof(ConfigFile::GetValue("frictionMultiplier"));
+			if (ImGui::DragFloat("##frictionMultiplier", &frictionMultiplier, 0.001f, 0.0f, 1.0f))
+			{
+				ConfigFile::SetValue("frictionMultiplier", to_string(frictionMultiplier));
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Text("Correction factor");
+			float correctionFactor = stof(ConfigFile::GetValue("correctionFactor"));
+			if (ImGui::DragFloat("##correctionFactor", &correctionFactor, 0.001f, 0.0f, 1.0f))
+			{
+				ConfigFile::SetValue("correctionFactor", to_string(correctionFactor));
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			ImGui::Text("Minimum penetration threshold");
+			float minPenetrationThreshold = stof(ConfigFile::GetValue("minPenetrationThreshold"));
+			if (ImGui::DragFloat("##minPenetrationThreshold", &minPenetrationThreshold, 0.0001f, 0.001f, 0.2f))
+			{
+				ConfigFile::SetValue("minPenetrationThreshold", to_string(minPenetrationThreshold));
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 

@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.29.5)
+cmake_minimum_required (VERSION 3.30.5)
 
 if (WIN32)
 	# Enable hot reload for MSVC
@@ -276,14 +276,6 @@ foreach(DLL_FILE ${DLL_FILES})
             ${DLL_TARGET_DIR}/${DLL_NAME}
     )
 endforeach()
-
-add_custom_command(TARGET Elypso_engine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove 
-	${PHYSICS_DLL_TARGET}
-    COMMAND ${CMAKE_COMMAND} -E copy 
-	${PHYSICS_DLL_ORIGIN}
-	${PHYSICS_DLL_TARGET}
-)
 
 # Copy discord dll to the install directory after build
 # UNCOMMENT TO USE DISCORD GAME SDK

@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <filesystem>
+#include <iostream>
 
 //external
 #include "glm.hpp"
@@ -19,6 +20,7 @@
 #include "sceneFile.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
+#include "physics.hpp"
 #if ENGINE_MODE
 #include "gui_settings.hpp"
 #endif
@@ -30,6 +32,8 @@ using glm::vec3;
 using std::ios;
 using std::filesystem::path;
 using std::filesystem::current_path;
+using std::cout;
+using std::to_string;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -38,6 +42,7 @@ using Type = Core::ConsoleManager::Type;
 using Utils::File;
 using Graphics::Render;
 using Utils::String;
+using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::GUISettings;
 #endif
@@ -116,6 +121,8 @@ namespace EngineFile
 
 			configFile.close();
 
+			SetGlobalPhysicsData();
+
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
@@ -150,6 +157,8 @@ namespace EngineFile
 		}
 
 		configFile.close();
+
+		SetGlobalPhysicsData();
 
 		Render::SetWindowNameAsUnsaved(false);
 
@@ -251,6 +260,19 @@ namespace EngineFile
 			values.push_back("0.001");
 		keys.push_back("camera_farClip");
 			values.push_back("200.0");
+
+		keys.push_back("gravity");
+			values.push_back("0.0, -9.81, 0.0");
+		keys.push_back("angularDamping");
+			values.push_back("0.998");
+		keys.push_back("lowAngularVelocityFactor");
+			values.push_back("0.5");
+		keys.push_back("frictionMultiplier");
+			values.push_back("0.1");
+		keys.push_back("correctionFactor");
+			values.push_back("0.2");
+		keys.push_back("minPenetrationThreshold");
+			values.push_back("0.01");
 #if ENGINE_MODE
 		keys.push_back("grid_color");
 			values.push_back("0.4, 0.4, 0.4");
@@ -270,7 +292,6 @@ namespace EngineFile
 #endif
 		keys.push_back("gui_console");
 			values.push_back("1");
-
 
 		ofstream configFile(configFilePath);
 
@@ -294,5 +315,31 @@ namespace EngineFile
 		configFile.close();
 
 		LoadConfigFile();
+	}
+
+	void ConfigFile::SetGlobalPhysicsData()
+	{
+		if (Physics::physicsWorld != nullptr)
+		{
+			string gravityString = GetValue("gravity");
+			vector<string> split = String::Split(gravityString, ',');
+			vec3 gravity = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+			Physics::physicsWorld->SetGravity(gravity);
+
+			float angularDamping = stof(GetValue("angularDamping"));
+			Physics::physicsWorld->SetAngularDamping(angularDamping);
+
+			float lowAngularVelocityFactor = stof(GetValue("lowAngularVelocityFactor"));
+			Physics::physicsWorld->SetLowAngularVelocityFactor(lowAngularVelocityFactor);
+
+			float frictionMultiplier = stof(GetValue("frictionMultiplier"));
+			Physics::physicsWorld->SetFrictionMultiplier(frictionMultiplier);
+
+			float correctionFactor = stof(GetValue("correctionFactor"));
+			Physics::physicsWorld->SetCorrectionFactor(correctionFactor);
+
+			float minPenetrationThreshold = stof(GetValue("minPenetrationThreshold"));
+			Physics::physicsWorld->SetMinPenetrationThreshold(minPenetrationThreshold);
+		}
 	}
 }

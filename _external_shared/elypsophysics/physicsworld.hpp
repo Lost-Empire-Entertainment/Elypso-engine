@@ -105,7 +105,7 @@ namespace ElypsoPhysics
 
 		const vec3& GetGravity() const { return gravity; }
 		float GetAngularDamping() const { return angularDamping; }
-		float GetLowAngularVelocityFactor(float value) const { return lowAngularVelocityFactor; }
+		float GetLowAngularVelocityFactor() const { return lowAngularVelocityFactor; }
 		float GetFrictionMultiplier() const { return frictionMultiplier; }
 		float GetCorrectionFactor() const { return correctionFactor; }
 		float GetMinPenetrationThreshold() const { return minPenetrationThreshold; }
@@ -130,7 +130,7 @@ namespace ElypsoPhysics
 		vector<uint32_t> generations;
 
 		vec3 gravity;                          //Global gravity
-		float angularDamping = 0.998f;         //Controls how quickly rotation slows down
+		float angularDamping = 0.5f;           //Controls how quickly rotation slows down
 		float lowAngularVelocityFactor = 0.5f; //How much to slow rotation when velocity is very low
 		float frictionMultiplier = 0.1f;       //Global friction multiplier
 		float correctionFactor = 0.2f;         //Strength of positional correction

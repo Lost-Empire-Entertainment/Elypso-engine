@@ -82,9 +82,9 @@ namespace Core
 	void Engine::InitializeEngine()
 	{
 #ifdef NDEBUG
-		version = "Pre-release 0.1.3.0003";
+		version = "Pre-release 0.1.3.0004";
 #else
-		version = "Pre-release 0.1.3.0003 [DEBUG]";
+		version = "Pre-release 0.1.3.0004 [DEBUG]";
 #endif
 
 #if ENGINE_MODE
