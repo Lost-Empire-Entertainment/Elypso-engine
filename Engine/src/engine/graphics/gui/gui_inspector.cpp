@@ -1413,7 +1413,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = 30;
+		int numLines = 31;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Rigidbody", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
@@ -1594,6 +1594,17 @@ namespace Graphics::GUI
 		ImGui::Separator();
 		ImGui::Text("Debugging");
 		ImGui::Separator();
+
+		vec3 centerOfGravity = rigidbody->GetCenterOfGravity();
+		ostringstream cogOss;
+		cogOss
+			<< fixed
+			<< setprecision(2)
+			<< "Center of gravity: "
+			<< centerOfGravity.x << ", "
+			<< centerOfGravity.y << ", "
+			<< centerOfGravity.z;
+		ImGui::Text("%s", cogOss.str().c_str());
 
 		vec3 velocity = rigidbody->GetVelocity();
 		ostringstream velocityOss;

@@ -492,54 +492,86 @@ namespace Graphics::GUI
 
 			ImGui::Text("Global gravity");
 			vector<string> split = String::Split(ConfigFile::GetValue("gravity"), ',');
-			vec3 gravity = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
-			if (ImGui::DragFloat3("##globalGravity", value_ptr(gravity), 0.01f, 0.0f, 100.00f))
+			vec3 gravity = Physics::physicsWorld->GetGravity();
+			if (ImGui::DragFloat3("##globalGravity", value_ptr(gravity), 0.01f, 100.00f, 100.00f))
 			{
-				string newGravity = 
-					to_string(gravity.x) + ", " 
-					+ to_string(gravity.y) + ", " 
-					+ to_string(gravity.z);
-				ConfigFile::SetValue("gravity", newGravity);
+				Physics::physicsWorld->SetGravity(gravity);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pw_resetG"))
+			{
+				Physics::physicsWorld->SetGravity(vec3(0.0f, -9.81f, 0.0f));
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::Text("Angular damping");
-			float angularDamping = stof(ConfigFile::GetValue("angularDamping"));
+			float angularDamping = Physics::physicsWorld->GetAngularDamping();
 			if (ImGui::DragFloat("##angularDamping", &angularDamping, 0.001f, 0.0f, 1.0f))
 			{
-				ConfigFile::SetValue("angularDamping", to_string(angularDamping));
+				Physics::physicsWorld->SetAngularDamping(angularDamping);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pw_resetAD"))
+			{
+				Physics::physicsWorld->SetAngularDamping(0.5f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::Text("Low angular velocity factor");
-			float lowAngularVelocityFactor = stof(ConfigFile::GetValue("lowAngularVelocityFactor"));
+			float lowAngularVelocityFactor = Physics::physicsWorld->GetLowAngularVelocityFactor();
 			if (ImGui::DragFloat("##lowAngularVelocityFactor", &lowAngularVelocityFactor, 0.001f, 0.0f, 1.0f))
 			{
-				ConfigFile::SetValue("lowAngularVelocityFactor", to_string(lowAngularVelocityFactor));
+				Physics::physicsWorld->SetLowAngularVelocityFactor(lowAngularVelocityFactor);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pw_resetLAVF"))
+			{
+				Physics::physicsWorld->SetLowAngularVelocityFactor(0.5f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::Text("Friction multiplier");
-			float frictionMultiplier = stof(ConfigFile::GetValue("frictionMultiplier"));
+			float frictionMultiplier = Physics::physicsWorld->GetFrictionMultiplier();
 			if (ImGui::DragFloat("##frictionMultiplier", &frictionMultiplier, 0.001f, 0.0f, 1.0f))
 			{
-				ConfigFile::SetValue("frictionMultiplier", to_string(frictionMultiplier));
+				Physics::physicsWorld->SetFrictionMultiplier(frictionMultiplier);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pw_resetFM"))
+			{
+				Physics::physicsWorld->SetFrictionMultiplier(0.1f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::Text("Correction factor");
-			float correctionFactor = stof(ConfigFile::GetValue("correctionFactor"));
+			float correctionFactor = Physics::physicsWorld->GetCorrectionFactor();
 			if (ImGui::DragFloat("##correctionFactor", &correctionFactor, 0.001f, 0.0f, 1.0f))
 			{
-				ConfigFile::SetValue("correctionFactor", to_string(correctionFactor));
+				Physics::physicsWorld->SetCorrectionFactor(correctionFactor);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pw_resetCF"))
+			{
+				Physics::physicsWorld->SetCorrectionFactor(0.2f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
 			ImGui::Text("Minimum penetration threshold");
-			float minPenetrationThreshold = stof(ConfigFile::GetValue("minPenetrationThreshold"));
+			float minPenetrationThreshold = Physics::physicsWorld->GetMinPenetrationThreshold();
 			if (ImGui::DragFloat("##minPenetrationThreshold", &minPenetrationThreshold, 0.0001f, 0.001f, 0.2f))
 			{
-				ConfigFile::SetValue("minPenetrationThreshold", to_string(minPenetrationThreshold));
+				Physics::physicsWorld->SetMinPenetrationThreshold(minPenetrationThreshold);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pw_resetMPT"))
+			{
+				Physics::physicsWorld->SetMinPenetrationThreshold(0.01f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 

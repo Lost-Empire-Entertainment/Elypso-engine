@@ -367,7 +367,8 @@ namespace Graphics::Shape
 				GameObjectHandle handle = rbComp->GetHandle();
 				RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 
-				if (rb
+				if (Physics::simulatePhysics
+					&& rb
 					&& rb->isDynamic
 					&& rb->useGravity)
 				{

@@ -39,6 +39,15 @@ namespace EngineFile
 		/// <param name="key">The name of the key in the map we need to set a value for</param>
 		/// <param name="value">The value the key will be set to</param>
 		static void SetValue(const string& key, const string& value);
+
+		/// <summary>
+		/// Saves global physics data from Elypso library to the config file
+		/// </summary>
+		static void SaveGlobalPhysicsData();
+		/// <summary>
+		/// Loads global physics data from the config file to Elypso Library
+		/// </summary>
+		static void LoadGlobalPhysicsData();
 	private:
 		static inline string configFilePath;
 
@@ -52,10 +61,5 @@ namespace EngineFile
 		/// Creates a brand new config file with default values.
 		/// </summary>
 		static void CreateNewConfigFile();
-
-		/// <summary>
-		/// Assigns data to the physics world component of Elypso Physics library
-		/// </summary>
-		static void SetGlobalPhysicsData();
 	};
 }

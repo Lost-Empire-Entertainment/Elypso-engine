@@ -135,6 +135,7 @@ namespace Graphics::Components
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		vec3 scale = GetOwner()->GetComponent<TransformComponent>()->GetScale();
 		rb->SetCollider(vec3(0.0f), scale, colliderType);
+		rb->UpdateCenterOfGravity();
 	}
 
 	void RigidBodyComponent::SetOffsetPosition(const vec3& newPos) const
@@ -185,6 +186,7 @@ namespace Graphics::Components
 		if (collider->offsetScale != newScale)
 		{
 			collider->offsetScale = newScale;
+			rb->UpdateCenterOfGravity();
 		}
 	}
 	void RigidBodyComponent::SetCombinedScale(const vec3& newScale) const
@@ -196,6 +198,7 @@ namespace Graphics::Components
 		{
 			collider->combinedScale = newScale;
 			collider->UpdateScale(newScale);
+			rb->UpdateCenterOfGravity();
 		}
 	}
 
@@ -261,6 +264,13 @@ namespace Graphics::Components
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
 		if (rb != nullptr) return rb->angularVelocity;
+		else return vec3(0);
+	}
+
+	vec3 RigidBodyComponent::GetCenterOfGravity() const
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+		if (rb != nullptr) return rb->centerOfGravity;
 		else return vec3(0);
 	}
 

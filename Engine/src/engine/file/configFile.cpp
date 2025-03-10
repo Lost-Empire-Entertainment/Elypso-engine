@@ -121,7 +121,7 @@ namespace EngineFile
 
 			configFile.close();
 
-			SetGlobalPhysicsData();
+			LoadGlobalPhysicsData();
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
@@ -136,6 +136,8 @@ namespace EngineFile
 		{
 			File::DeleteFileOrfolder(configFilePath);
 		}
+
+		SaveGlobalPhysicsData();
 
 		ofstream configFile(configFilePath);
 
@@ -157,8 +159,6 @@ namespace EngineFile
 		}
 
 		configFile.close();
-
-		SetGlobalPhysicsData();
 
 		Render::SetWindowNameAsUnsaved(false);
 
@@ -317,7 +317,39 @@ namespace EngineFile
 		LoadConfigFile();
 	}
 
-	void ConfigFile::SetGlobalPhysicsData()
+	void ConfigFile::SaveGlobalPhysicsData()
+	{
+		if (Physics::physicsWorld != nullptr)
+		{
+			vec3 gravity = Physics::physicsWorld->GetGravity();
+			string gravityString =
+				to_string(gravity.x) + ", " +
+				to_string(gravity.y) + ", " +
+				to_string(gravity.z);
+			SetValue("gravity", gravityString);
+
+			string angularDamping = 
+				to_string(Physics::physicsWorld->GetAngularDamping());
+			SetValue("angularDamping", angularDamping);
+
+			string lowAngularVelocityFactor = 
+				to_string(Physics::physicsWorld->GetLowAngularVelocityFactor());
+			SetValue("lowAngularVelocityFactor", lowAngularVelocityFactor);
+
+			string frictionMultiplier =
+				to_string(Physics::physicsWorld->GetFrictionMultiplier());
+			SetValue("frictionMultiplier", frictionMultiplier);
+
+			string correctionFactor =
+				to_string(Physics::physicsWorld->GetCorrectionFactor());
+			SetValue("correctionFactor", correctionFactor);
+
+			string minPenetrationThreshold =
+				to_string(Physics::physicsWorld->GetMinPenetrationThreshold());
+			SetValue("minPenetrationThreshold", minPenetrationThreshold);
+		}
+	}
+	void ConfigFile::LoadGlobalPhysicsData()
 	{
 		if (Physics::physicsWorld != nullptr)
 		{

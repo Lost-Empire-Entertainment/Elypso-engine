@@ -51,24 +51,10 @@ namespace ElypsoPhysics
 
 		static bool CheckOBBCollision(const RigidBody& a, const RigidBody& b);
 
-		static bool CheckOBBCollisionAt(const RigidBody& movingBody, const vec3& futurePosition, const RigidBody& otherBody);
-
-		static vec3 ComputeAABBFromOBB(const RigidBody& body);
-
-		static bool CheckAABBCollision(const RigidBody& a, const RigidBody& b);
-
-		static bool CheckAABBCollisionAt(const RigidBody& movingBody, const vec3& futurePosition, const RigidBody& otherBody);
-
-		static bool CheckBoxBoxCollision(
-			const BoxCollider& boxA,
-			const vec3& posA,
-			const BoxCollider& boxB,
-			const vec3& posB);
-
-		static bool CheckSphereSphereCollision(
-			const SphereCollider& sphereA,
-			const vec3& posA,
-			const SphereCollider& sphereB,
-			const vec3& posB);
+		static bool CheckOBBCollisionAt(
+			const RigidBody& movingBody, 
+			const vec3& futurePosition, 
+			const RigidBody& otherBody,
+			float deltaTime);
 	};
 }

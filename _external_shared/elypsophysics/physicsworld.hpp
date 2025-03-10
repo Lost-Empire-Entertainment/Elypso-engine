@@ -41,7 +41,7 @@ namespace ElypsoPhysics
 		/// <summary>
 		/// Initializes the physics engine with the specified gravity vector
 		/// </summary>
-		void InitializePhysics(const vec3& gravity = vec3(0.0f, -9.81f, 0.0f));
+		void InitializePhysics(const vec3& gravity);
 
 		/// <summary>
 		/// Create a RigidBody and return its handle
@@ -96,6 +96,9 @@ namespace ElypsoPhysics
 			const vec3& collisionNormal,
 			const vec3& contactPoint) const;
 
+		bool CanTilt(RigidBody& body);
+		void TiltBody(RigidBody& body);
+
 		void SetGravity(const vec3& newGravity) { gravity = newGravity; }
 		void SetAngularDamping(float value) { angularDamping = value; }
 		void SetLowAngularVelocityFactor(float value) { lowAngularVelocityFactor = value; }
@@ -129,11 +132,11 @@ namespace ElypsoPhysics
 		//Tracks the generation count for each index in the 'bodies' array
 		vector<uint32_t> generations;
 
-		vec3 gravity;                          //Global gravity
-		float angularDamping = 0.5f;           //Controls how quickly rotation slows down
-		float lowAngularVelocityFactor = 0.5f; //How much to slow rotation when velocity is very low
-		float frictionMultiplier = 0.1f;       //Global friction multiplier
-		float correctionFactor = 0.2f;         //Strength of positional correction
-		float minPenetrationThreshold = 0.01f; //Minimum penetration depth to trigger correction
+		vec3 gravity = vec3(0.0f, -9.81f, 0.0f); //Global gravity
+		float angularDamping = 0.5f;             //Controls how quickly rotation slows down
+		float lowAngularVelocityFactor = 0.5f;   //How much to slow rotation when velocity is very low
+		float frictionMultiplier = 0.1f;         //Global friction multiplier
+		float correctionFactor = 0.2f;           //Strength of positional correction
+		float minPenetrationThreshold = 0.01f;   //Minimum penetration depth to trigger correction
 	};
 }

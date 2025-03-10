@@ -482,7 +482,7 @@ namespace Core
 
 		Audio::Initialize();
 
-		Physics::Initialize();
+		Physics::Initialize(vec3(0.0f, -9.81f, 0.0f));
 
 		//import all valid audio files
 		string audioFolder = (path(Engine::projectPath) / "audio").string();

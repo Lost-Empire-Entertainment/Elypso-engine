@@ -87,6 +87,8 @@ namespace Graphics::Components
 		vec3 GetVelocity() const;
 		vec3 GetAngularVelocity() const;
 
+		vec3 GetCenterOfGravity() const;
+
 		ColliderType GetColliderType() const;
 		Collider* GetCollider() const;
 		bool IsDynamic() const { return isDynamic; }
