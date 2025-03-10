@@ -2,10 +2,10 @@
 
 ## 1. Free Use
 - You may **use, modify, and distribute** Elypso Engine **for free, forever**.
-- You **own your own game projects** and assets.  
+- You **own any content** and assets.  
   - Any content you create, modify, or add while using Elypso Engine **belongs entirely to you**.  
   - This includes all game code, assets, levels, and any other content **you create**.  
-  - The only exception is content created by **third-party libraries**, which remain subject to their respective licenses.  
+  - The only exception is engine code or content created by **third-party libraries**, which remain subject to their respective licenses.  
 - The creator of Elypso Engine **does not claim any rights** to revenue from games made with it. You **owe no royalties, fees, or payments** of any kind.
 
 ## 2. No Commercial Transfer
