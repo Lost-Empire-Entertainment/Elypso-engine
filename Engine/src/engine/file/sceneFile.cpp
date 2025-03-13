@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 //external
 #include "magic_enum.hpp"

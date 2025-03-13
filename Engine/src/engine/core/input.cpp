@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <algorithm>
 
 //external
 #include "glad.h"
@@ -14,6 +15,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "magic_enum.hpp"
+#include "collider.hpp"
 
 //engine
 #include "console.hpp"
@@ -39,6 +41,7 @@
 #include "lightcomponent.hpp"
 #include "audioplayercomponent.hpp"
 #include "core.hpp"
+#include "rigidbodycomponent.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #endif
@@ -83,6 +86,8 @@ using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
 using Graphics::Components::AudioPlayerComponent;
 using Core::Engine;
+using Graphics::Components::RigidBodyComponent;
+using ElypsoPhysics::ColliderType;
 #if ENGINE_MODE
 using Core::Compilation;
 #endif
@@ -380,6 +385,32 @@ namespace Core
             copiedObject["transparentValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetTransparentValue());
 
             copiedObject["shininessValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetShininessValue());
+
+            if (selectedObj->GetComponent<RigidBodyComponent>() != nullptr)
+            {
+                auto rb = selectedObj->GetComponent<RigidBodyComponent>();
+
+                copiedObject["colliderType"] = rb->GetColliderType() == ColliderType::BOX ? "Box" : "Sphere";
+                copiedObject["isDynamic"] = to_string(rb->IsDynamic());
+                copiedObject["useGravity"] = to_string(rb->UseGravity());
+                copiedObject["gravityFactor"] = to_string(rb->GetGravityFactor());
+                copiedObject["mass"] = to_string(rb->GetMass());
+                copiedObject["restitution"] = to_string(rb->GetRestitution());
+                copiedObject["staticFriction"] = to_string(rb->GetStaticFriction());
+                copiedObject["dynamicFriction"] = to_string(rb->GetDynamicFriction());
+                copiedObject["offsetPos"] =
+                    to_string(rb->GetOffsetPosition().x) + ", " +
+                    to_string(rb->GetOffsetPosition().y) + ", " + 
+                    to_string(rb->GetOffsetPosition().z);
+                copiedObject["offsetRot"] =
+                    to_string(rb->GetOffsetRotation().x) + ", " +
+                    to_string(rb->GetOffsetRotation().y) + ", " +
+                    to_string(rb->GetOffsetRotation().z);
+                copiedObject["offsetScale"] =
+                    to_string(rb->GetOffsetScale().x) + ", " +
+                    to_string(rb->GetOffsetScale().y) + ", " +
+                    to_string(rb->GetOffsetScale().z);
+            } 
         }
 
         else if (type == MeshComponent::MeshType::point_light)
@@ -514,6 +545,42 @@ namespace Core
                 targetName,
                 nextID,
                 true);
+
+            if (copiedObject.find("colliderType") != copiedObject.end())
+            {
+                auto newObj = GameObjectManager::GetGameObjectByID(nextID);
+                auto rb = newObj->AddComponent<RigidBodyComponent>(newObj);
+
+                rb->SetColliderType(copiedObject["colliderType"] == "Box" ? ColliderType::BOX : ColliderType::SPHERE);
+                rb->SetDynamic(stof(copiedObject["isDynamic"]));
+                rb->EnableGravity(stof(copiedObject["useGravity"]));
+                rb->SetGravityFactor(stof(copiedObject["gravityFactor"]));
+                rb->SetMass(stof(copiedObject["mass"]));
+                rb->SetRestitution(stof(copiedObject["restitution"]));
+                rb->SetStaticFriction(stof(copiedObject["staticFriction"]));
+                rb->SetDynamicFriction(stof(copiedObject["dynamicFriction"]));
+
+                vector<string> offsetPosSplit = String::Split(copiedObject["offsetPos"], ',');
+                vec3 offsetPosVector = vec3(
+                    stof(offsetPosSplit[0]),
+                    stof(offsetPosSplit[1]),
+                    stof(offsetPosSplit[2]));
+                rb->SetOffsetPosition(offsetPosVector);
+
+                vector<string> offsetRotplit = String::Split(copiedObject["offsetRot"], ',');
+                vec3 offsetRotVector = vec3(
+                    stof(offsetRotplit[0]),
+                    stof(offsetRotplit[1]),
+                    stof(offsetRotplit[2]));
+                rb->SetOffsetRotation(offsetRotVector);
+
+                vector<string> offsetScaleSplit = String::Split(copiedObject["offsetScale"], ',');
+                vec3 offsetScaleVector = vec3(
+                    stof(offsetScaleSplit[0]),
+                    stof(offsetScaleSplit[1]),
+                    stof(offsetScaleSplit[2]));
+                rb->SetOffsetScale(offsetScaleVector);
+            }
 
             if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
         }

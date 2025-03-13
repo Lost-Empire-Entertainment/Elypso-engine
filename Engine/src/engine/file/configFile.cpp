@@ -6,6 +6,7 @@
 #include <fstream>
 #include <filesystem>
 #include <iostream>
+#include <algorithm>
 
 //external
 #include "glm.hpp"

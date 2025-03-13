@@ -286,6 +286,28 @@ namespace Graphics::Shape
 		/// </summary>
 		static void FindAndDestroyGameObject(const string& objTxtFile, bool localOnly = true);
 
+		static shared_ptr<GameObject> GetGameObjectByName(const string& name)
+		{
+			auto it = find_if(objects.begin(), objects.end(),
+				[&name](const shared_ptr<GameObject>& obj) 
+				{
+					return obj->GetName() == name;
+				});
+
+			return (it != objects.end()) ? *it : nullptr;
+		}
+
+		static shared_ptr<GameObject> GetGameObjectByID(const unsigned int& ID)
+		{
+			auto it = find_if(objects.begin(), objects.end(),
+				[&ID](const shared_ptr<GameObject>& obj)
+				{
+					return obj->GetID() == ID;
+				});
+
+			return (it != objects.end()) ? *it : nullptr;
+		}
+
 		static const vector<shared_ptr<GameObject>>& GetObjects()
 		{
 			return objects;
