@@ -64,8 +64,6 @@ namespace EngineFile
 {
 	void SceneFile::LoadScene(const string& scenePath)
 	{
-		cout << "!!!! load scene\n";
-
 		if (!exists(scenePath))
 		{
 			if (scenePath != (path(Engine::scenesPath) / "Scene1" / "scene.txt").string())
@@ -190,8 +188,6 @@ namespace EngineFile
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel, bool sendSuccessMessage)
 	{
-		cout << "!!!! save scene\n";
-
 		if (exists(sceneFilePath))
 		{
 			File::DeleteFileOrfolder(sceneFilePath);
@@ -304,8 +300,6 @@ namespace EngineFile
 
 	void SceneFile::CreateNewSceneFile(const string& newPath)
 	{
-		cout << "!!!! create new scene file\n";
-
 		if (sceneFilePath == "") sceneFilePath = newPath;
 
 		keys.clear();
@@ -339,8 +333,6 @@ namespace EngineFile
 
 	void SceneFile::SetDefaultData()
 	{
-		cout << "!!!! set default data\n";
-
 		//
 		// GLOBAL GRAPHICS DATA
 		//
@@ -377,7 +369,7 @@ namespace EngineFile
 			values.push_back(skyboxDefault);
 
 		keys.push_back("globalAmbientColor");
-			values.push_back("0.3, 0.4, 0.5");
+			values.push_back("0.775, 0.775, 0.555");
 		keys.push_back("globalAmbientIntensity");
 			values.push_back("0.5");
 
@@ -401,8 +393,6 @@ namespace EngineFile
 
 	void SceneFile::SaveGlobalPhysicsData()
 	{
-		cout << "!!!! save global physics data\n";
-
 		if (Physics::physicsWorld != nullptr)
 		{
 			vec3 gravity = Physics::physicsWorld->GetGravity();
@@ -435,8 +425,6 @@ namespace EngineFile
 	}
 	void SceneFile::LoadGlobalPhysicsData()
 	{
-		cout << "!!!! load global physics data\n";
-
 		if (Physics::physicsWorld == nullptr)
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -469,8 +457,6 @@ namespace EngineFile
 
 	void SceneFile::SaveGlobalGraphicsData()
 	{
-		cout << "!!!! save global graphics data\n";
-
 		vec3 pos = Render::camera.GetCameraPosition();
 		string cameraPos =
 			to_string(pos[0]) + ", " +
@@ -507,8 +493,6 @@ namespace EngineFile
 	}
 	void SceneFile::LoadGlobalGraphicsData()
 	{
-		cout << "!!!! load global graphics data\n";
-
 		vector<string> cameraPosVector = String::Split(GetValue("camera_position"), ',');
 		vec3 cameraPos = vec3(
 			stof(cameraPosVector[0]),
