@@ -215,10 +215,14 @@ namespace Graphics::Shape
 
 		shader.SetMat4("model", model);
 
+		glLineWidth(5.0f);
+
 		auto thisMesh = obj->GetComponent<MeshComponent>();
 		GLuint VAO = thisMesh->GetVAO();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_LINES, 0, 24);
+
+		glLineWidth(1.0f);
 	}
 }
 #endif

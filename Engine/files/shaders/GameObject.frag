@@ -94,7 +94,7 @@ void main()
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    vec3 result = globalAmbientColor * globalAmbientIntensity;
+    vec3 result = vec3(0);
 	
     if (dirLightCount > 0)
     {   
@@ -124,12 +124,16 @@ void main()
             }
         }
     }
+	
+	vec3 baseColor = vec3(texture(material.diffuse, TexCoords));
+	vec3 ambientContribution = baseColor * (globalAmbientColor * globalAmbientIntensity);
+	vec3 finalColor = result + ambientContribution;
 
+	//set alpha
     float alpha = GetAlpha(material.diffuse, TexCoords);
-
     if (alpha < 0.1) discard;
 
-    FragColor = vec4(result, alpha);
+    FragColor = vec4(finalColor, alpha);
 }
 
 float GetAlpha(sampler2D tex, vec2 coords)

@@ -37,8 +37,9 @@
 - save audio play/stop state to gameobject
 
 0.1.3.0005:
+- added back shininess slider
 - created a new gameobject type for audio component with its own audio icon
 - added missing rigidbody component that gets copied and pasted alongside gameobject and its other components
 - fixed a crash that occured when adding a light component to a empty gameobject
 - fixed an issue that added back light component to empty gameobject if it was removed and the scene was reloaded
-- added back shininess slider
+- made selected object border thicker so its more visible
