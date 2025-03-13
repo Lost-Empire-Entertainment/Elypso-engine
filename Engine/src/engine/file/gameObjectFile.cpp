@@ -37,6 +37,7 @@
 #include "audioplayercomponent.hpp"
 #include "rigidbodycomponent.hpp"
 #include "physics.hpp"
+#include "audio.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -86,6 +87,7 @@ using Graphics::Components::RigidBodyComponent;
 using ElypsoPhysics::ColliderType;
 using ElypsoPhysics::Collider;
 using Core::Physics;
+using Core::Audio;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -277,12 +279,14 @@ namespace EngineFile
 				if (apc)
 				{
 					string audioFileName = apc->GetName();
+					bool isPlaying = apc->IsPlaying();
 					bool is3D = apc->Is3D();
 					float currVolume = apc->GetVolume();
 					float minRange = apc->GetMinRange();
 					float maxRange = apc->GetMaxRange();
 
 					data.push_back("audioFileName= " + audioFileName + "\n");
+					data.push_back("isPlaying= " + to_string(isPlaying) + "\n");
 					data.push_back("is3D= " + to_string(is3D) + "\n");
 					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
 					data.push_back("minRange= " + to_string(minRange) + "\n");
@@ -1072,6 +1076,7 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 					|| key == "audioFileName"
+					|| key == "isPlaying"
 					|| key == "is3D"
 					|| key == "currentVolume"
 					|| key == "minRange"
@@ -1097,6 +1102,7 @@ namespace EngineFile
 		vec3 scale{};
 
 		string audioFileName{};
+		bool isPlaying{};
 		bool is3D{};
 		float currVolume{};
 		float minRange{};
@@ -1147,6 +1153,10 @@ namespace EngineFile
 			{
 				audioFileName = value;
 			}
+			else if (key == "isPlaying")
+			{
+				isPlaying = stoi(value);
+			}
 			else if (key == "is3D")
 			{
 				is3D = stoi(value);
@@ -1184,6 +1194,7 @@ namespace EngineFile
 			isEnabled);
 
 		if (audioFileName != ""
+			|| data["isPlaying"] != ""
 			|| data["is3D"] != ""
 			|| data["currentVolume"] != ""
 			|| data["minRange"] != ""
@@ -1192,10 +1203,13 @@ namespace EngineFile
 			auto apc = empty->AddComponent<AudioPlayerComponent>();
 			apc->SetOwner(empty);
 			apc->SetName(audioFileName);
+			apc->SetPlayState(isPlaying);
 			apc->Set3DState(is3D);
 			apc->SetVolume(currVolume);
 			apc->SetMinRange(minRange);
 			apc->SetMaxRange(maxRange);
+
+			if (isPlaying) Audio::Play(audioFileName);
 		}
 
 		GameObject::nextID = ID + 1;

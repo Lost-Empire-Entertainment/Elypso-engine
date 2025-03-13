@@ -36,7 +36,7 @@ namespace Core
     static ma_engine engine;
     unordered_map<string, unique_ptr<ma_sound>> soundMap;
 
-    bool Audio::Initialize()
+    void Audio::Initialize()
     {
         ma_result result = ma_engine_init(NULL, &engine);
         if (result != MA_SUCCESS)
@@ -45,7 +45,7 @@ namespace Core
                 Caller::INITIALIZE,
                 Type::EXCEPTION,
                 "Error: Failed to initialize miniaudio!\n");
-            return false;
+            return;
         }
 
         ConsoleManager::WriteConsoleMessage(
@@ -53,11 +53,20 @@ namespace Core
             Type::DEBUG,
             "Miniaudio initialized successfully!\n");
 
-        return true;
+        isInitialized = true;
     }
 
     bool Audio::Import(const string& name)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot import audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
 
         if (!exists(fullPath))
@@ -101,6 +110,15 @@ namespace Core
 
     bool Audio::Play(const string& name)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot play audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
 
         if (!IsImported(name))
@@ -143,6 +161,15 @@ namespace Core
     }
     bool Audio::Stop(const string& name)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot stop audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
 
         if (!IsImported(name))
@@ -186,6 +213,15 @@ namespace Core
 
     bool Audio::Pause(const string& name)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot pause audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
 
         if (!IsImported(name))
@@ -217,6 +253,15 @@ namespace Core
     }
     bool Audio::Continue(const string& name)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot continue audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
 
         if (!IsImported(name))
@@ -249,6 +294,15 @@ namespace Core
 
     void Audio::SetVolume(const string& name, float volume)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot chane volume of audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return;
+        }
+
         if (!IsImported(name))
         {
             
@@ -272,6 +326,15 @@ namespace Core
 
     void Audio::SetMinRange(const string& name, float minRange)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot set min range of audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return;
+        }
+
         if (!IsImported(name))
         {
             
@@ -285,11 +348,20 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
-                "Min range set to " + to_string(minRange) + "% for audio file: " + name + "\n");
+                "Min range set to " + to_string(minRange) + " for audio file: " + name + "\n");
         }
     }
     void Audio::SetMaxRange(const string& name, float maxRange)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot set max range of audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return;
+        }
+
         if (!IsImported(name))
         {
             
@@ -303,12 +375,21 @@ namespace Core
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::DEBUG,
-                "Max range set to " + to_string(maxRange) + "% for audio file: " + name + "\n");
+                "Max range set to " + to_string(maxRange) + " for audio file: " + name + "\n");
         }
     }
 
     bool Audio::Set3DState(const string& name, bool state)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot set 3D state of audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
         if (!IsImported(name))
         {
             return false;
@@ -392,6 +473,15 @@ namespace Core
 
     bool Audio::Delete(const string& name)
     {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot delete audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
         string fullPath = (path(Engine::projectPath) / "audio" / name).string();
 
         if (!IsImported(name))

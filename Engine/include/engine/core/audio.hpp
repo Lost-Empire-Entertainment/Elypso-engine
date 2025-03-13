@@ -17,7 +17,9 @@ namespace Core
 	class Audio
 	{
 	public:
-		static bool Initialize();
+		static inline bool isInitialized;
+
+		static void Initialize();
 
 		static bool Import(const string& path);
 

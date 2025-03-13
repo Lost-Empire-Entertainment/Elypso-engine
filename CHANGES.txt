@@ -34,3 +34,5 @@
 - renamed settings other tab to game
 - added missing rigidbody component that gets copied and pasted alongside gameobject and its other components
 - overhauled scene file save and load system to be more similar to config file
+- scene camera is only accessible in the engine, user needs to create their own camera to see anything in game, this is also saved and loaded as a separate gameobject, can switch between created cameras and scene camera in engine
+- save audio play/stop state to gameobject

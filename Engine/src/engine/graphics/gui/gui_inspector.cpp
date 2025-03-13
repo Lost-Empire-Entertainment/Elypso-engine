@@ -1244,7 +1244,8 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = 5;
+		int numLines = !audioPlayer->Is3D() ? 6 : 8;
+		if (audioPlayer->IsPlaying()) numLines++;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Audio player", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
@@ -1296,6 +1297,8 @@ namespace Graphics::GUI
 						"Stopped audio file '" + audioFile + "'.\n");
 				}
 			}
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
 		if (isPlaying)
