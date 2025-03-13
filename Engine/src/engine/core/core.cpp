@@ -19,9 +19,6 @@
 
 //external
 #include "glfw3.h"
-#if DISCORD_MODE
-#include "discord.h"
-#endif
 
 //engine
 #include "core.hpp"
@@ -76,15 +73,12 @@ using Graphics::GUI::GameGUI;
 
 namespace Core
 {
-#if DISCORD_MODE
-	unique_ptr<discord::Core> core{};
-#endif
 	void Engine::InitializeEngine()
 	{
+		version = "Pre-release 0.1.3.0005";
 #ifdef NDEBUG
-		version = "Pre-release 0.1.3.0004";
 #else
-		version = "Pre-release 0.1.3.0004 [DEBUG]";
+		version = version + " [DEBUG]";
 #endif
 
 #if ENGINE_MODE
@@ -554,45 +548,8 @@ namespace Core
 		//otherwise load first scene
 		else SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 
-#if ENGINE_MODE
-#if DISCORD_MODE
-		string appID{};
-		//app id specific for the engine
-		if (!appID.empty())
-		{
-			InitializeDiscordRichPresence(appID);
-		}
-#endif
-#endif
-
 		SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 	}
-
-#if DISCORD_MODE
-	void Engine::InitializeDiscordRichPresence(const __int64& appID)
-	{
-		discord::Core* rawCore{};
-		discord::Result result = discord::Core::Create(
-			appID,
-			DiscordCreateFlags_Default, 
-			&rawCore);
-		if (result != discord::Result::Ok)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INITIALIZE,
-				Type::EXCEPTION,
-				"Failed to initialize Discord!");
-		}
-		else
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::INITIALIZE,
-				Type::INFO,
-				"Successfully initialized Discord!");
-			core.reset(rawCore);
-		}
-	}
-#endif
 
 	void Engine::CreateErrorPopup(const char* errorMessage)
 	{
@@ -739,66 +696,13 @@ namespace Core
 #endif
 
 			Render::WindowLoop();
-#if DISCORD_MODE
-			RunDiscordRichPresence();
-#endif
+
 			if (glfwWindowShouldClose(Render::window))
 			{
 				isEngineRunning = false;
 			}
 		}
 	}
-#if DISCORD_MODE
-	void Engine::RunDiscordRichPresence()
-	{
-		if (core) core->RunCallbacks();
-	}
-	void Engine::SetDiscordRichPresence(
-		const string& state,
-		const string& details,
-		const time_t& time_start,
-		const time_t& time_end,
-		const string& largeImage,
-		const string& largeText,
-		const string& smallImage,
-		const string& smallText)
-	{
-		if (!core) return;
-
-		discord::Activity activity{};
-
-		//set Rich Presence details
-		activity.SetState(state.c_str());
-		activity.SetDetails(details.c_str());
-
-		//starts counting from when discord rich presence 
-		//was called for first time until application closes
-		if (time_start == 0)
-		{
-			static bool setCurrentTimeOnce = false;
-
-			if (!setCurrentTimeOnce)
-			{
-				activity.GetTimestamps().SetStart(time(nullptr));
-				setCurrentTimeOnce = true;
-			}
-		}
-		//starts counting from assigned time
-		else if (time_start > 0) activity.GetTimestamps().SetStart(time_start);
-
-		//ends counting at assigned time
-		if (time_end != 0) activity.GetTimestamps().SetEnd(time_end);
-
-		//set large and small images
-		if (largeImage != "") activity.GetAssets().SetLargeImage(largeImage.c_str());
-		if (largeText != "") activity.GetAssets().SetLargeText(largeText.c_str());
-		if (smallImage != "") activity.GetAssets().SetSmallImage(smallImage.c_str());
-		if (smallText != "") activity.GetAssets().SetSmallText(smallText.c_str());
-
-		//update the activity via the ActivityManager
-		core->ActivityManager().UpdateActivity(activity, [](discord::Result result) {});
-	}
-#endif
 
 #if ENGINE_MODE
 	bool Engine::CheckForMissingCompilerFiles()

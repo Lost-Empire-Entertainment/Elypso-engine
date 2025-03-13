@@ -77,7 +77,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Discord"))
 			{
-				Browser::OpenLink("https://discord.gg/FqJgy2SvDs");
+				Browser::OpenLink("https://discord.gg/jkvasmTND5");
 			}
 
 			ImGui::Text(" ");

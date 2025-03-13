@@ -170,11 +170,6 @@ namespace EngineFile
 					Type::INFO,
 					"Set game first scene to " + Engine::gameFirstScene + "\n");
 			}
-#if DISCORD_MODE
-			string exeName = Engine::name;
-			string sceneName = path(Engine::scenePath).parent_path().stem().string();
-			Engine::SetDiscordRichPresence(exeName, "Loaded scene " + sceneName, 0, 0, "icon");
-#endif
 			
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,

@@ -25,10 +25,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Toggles engine mode for game
 remove_definitions(-DENGINE_MODE)
 
-# Toggles discord mode for game
-# REPLACE 'remove' WITH 'add' TO USE DISCORD GAME SDK
-remove_definitions(-DDISCORD_MODE)
-
 project("Game")
 
 if (MSVC)
@@ -62,8 +58,6 @@ set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
 set(EXT_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/elypsophysics")
-# UNCOMMENT TO USE DISCORD GAME SDK
-# set(EXT_DISCORD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Discord")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -112,10 +106,6 @@ endif()
 add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${EXT_MAGIC_ENUM_DIR})
 
-# Add discord
-# UNCOMMENT TO USE DISCORD GAME SDK
-# set(DISCORD_LIBRARY_PATH "${EXT_DISCORD_DIR}/discord_game_sdk.dll.lib")
-
 # Group external libraries
 add_library(external_libs INTERFACE)
 target_link_libraries(external_libs INTERFACE glad magic_enum)
@@ -125,10 +115,6 @@ file(GLOB_RECURSE SOURCE_FILES
 	${SRC_DIR}/*.cpp
 	${SRC_DIR}/*/*.cpp
 )
-
-# Add discord source files
-# UNCOMMENT TO USE DISCORD GAME SDK
-# file(GLOB DISCORD_SRC_FILES ${EXT_DISCORD_DIR}/src/*.cpp)
 
 # Add external source files
 list(APPEND SOURCE_FILES
@@ -140,8 +126,6 @@ list(APPEND SOURCE_FILES
 	${EXT_IMGUI_DIR}/imgui_tables.cpp
 	${EXT_IMGUI_DIR}/imgui_widgets.cpp
 	${EXT_STB_IMAGE_DIR}/stb_image.cpp
-	# UNCOMMENT TO USE DISCORD GAME SDK
-	# ${DISCORD_SRC_FILES}
 )
 
 # Build as game executable
@@ -187,8 +171,6 @@ target_include_directories(Game PRIVATE
 	${EXT_STB_IMAGE_DIR}
 	${EXT_MINIAUDIO_DIR}
 	${EXT_PHYSICS_DIR}
-	# UNCOMMENT TO USE DISCORD GAME SDK
-	# ${EXT_DISCORD_DIR}/include
 )
 
 if (WIN32)
@@ -251,9 +233,6 @@ else()
 	endif()
 endif()
 
-# UNCOMMENT TO USE DISCORD GAME SDK
-# target_link_libraries(Game PUBLIC ${DISCORD_LIBRARY_PATH})
-
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Game PRIVATE GLFW_INCLUDE_NONE)
 
@@ -288,16 +267,6 @@ foreach(DLL_FILE ${DLL_FILES})
             ${DLL_TARGET_DIR}/${DLL_NAME}
     )
 endforeach()
-
-# Copy discord dll to the install directory after build
-# UNCOMMENT TO USE DISCORD GAME SDK
-# add_custom_command(TARGET Game POST_BUILD
-	# COMMAND ${CMAKE_COMMAND} -E remove
-	# $<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
-	# COMMAND ${CMAKE_COMMAND} -E copy
-	# ${CMAKE_SOURCE_DIR}/files/external\ dlls/discord_game_sdk.dll
-	# $<TARGET_FILE_DIR:Game>/discord_game_sdk.dll
-# )
 
 # Include CPack to enable packaging
 include(CPack)
