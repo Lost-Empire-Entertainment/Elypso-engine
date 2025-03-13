@@ -11,6 +11,7 @@
 //external
 #include "glm.hpp"
 #include "miniaudio.h"
+#include "physicsworld.hpp"
 
 //engine
 #include "gameobject.hpp"
@@ -31,6 +32,8 @@
 #include "audio.hpp"
 #include "audioplayercomponent.hpp"
 #include "materialcomponent.hpp"
+#include "rigidbodycomponent.hpp"
+#include "physics.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -62,6 +65,9 @@ using Utils::File;
 using Core::Audio;
 using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::MaterialComponent;
+using Core::Physics;
+using Graphics::Components::RigidBodyComponent;
+using ElypsoPhysics::PhysicsWorld;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -220,6 +226,12 @@ namespace Graphics::Shape
 		switch (type)
 		{
 		case Type::model:
+			if (obj->GetComponent<RigidBodyComponent>() != nullptr)
+			{
+				PhysicsWorld* physicsWorld = Physics::physicsWorld;
+				physicsWorld->RemoveRigidBody(obj->GetComponent<RigidBodyComponent>()->GetHandle());
+				obj->RemoveComponent<RigidBodyComponent>();
+			}
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			if (!obj->GetComponent<MaterialComponent>()->IsTransparent())
 			{

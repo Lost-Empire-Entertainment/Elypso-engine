@@ -193,9 +193,27 @@ namespace Graphics::GUI
 							}
 							else
 							{
-								auto pointLight = Select::selectedObj->AddComponent<LightComponent>(LightComponent::LightType::Point);
+								shared_ptr<GameObject> obj = Select::selectedObj;
+								string name = obj->GetName();
+								unsigned int ID = obj->GetID();
+								vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+								vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+								vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
 
-								pointLight->SetOwner(Select::selectedObj);
+								GameObjectManager::DestroyGameObject(obj, false);
+
+								auto pointLight = PointLight::InitializePointLight(
+									pos,
+									rot,
+									scale,
+									"",
+									vec3(1.0f),
+									1.0f,
+									1.0f,
+									name,
+									ID,
+									true);
+
 								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 							}
 						}
@@ -715,7 +733,27 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 		if (ImGui::Button("X"))
 		{
-			obj->RemoveComponent<LightComponent>();
+			string name = obj->GetName();
+			unsigned int ID = obj->GetID();
+			vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+			vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+			vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
+
+			shared_ptr<GameObject> deletedObj = Select::selectedObj;
+			GameObjectManager::DestroyGameObject(deletedObj, false);
+
+			Select::selectedObj = nullptr;
+			Select::isObjectSelected = false;
+
+			auto newEmpty = Empty::InitializeEmpty(
+				pos,
+				rot,
+				scale,
+				"",
+				name,
+				ID,
+				true);
+
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
@@ -1255,7 +1293,27 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 		if (ImGui::Button("X"))
 		{
-			obj->RemoveComponent<AudioPlayerComponent>();
+			string name = obj->GetName();
+			unsigned int ID = obj->GetID();
+			vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+			vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+			vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
+
+			shared_ptr<GameObject> deletedObj = Select::selectedObj;
+			GameObjectManager::DestroyGameObject(deletedObj, false);
+
+			Select::selectedObj = nullptr;
+			Select::isObjectSelected = false;
+
+			auto newEmpty = Empty::InitializeEmpty(
+				pos,
+				rot,
+				scale,
+				"",
+				name,
+				ID,
+				true);
+
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
@@ -1426,12 +1484,15 @@ namespace Graphics::GUI
 		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 		if (ImGui::Button("X"))
 		{
-			GameObjectHandle handle = obj->GetComponent<RigidBodyComponent>()->GetHandle();
 			PhysicsWorld* physicsWorld = Physics::physicsWorld;
-			physicsWorld->RemoveRigidBody(handle);
-
+			physicsWorld->RemoveRigidBody(obj->GetComponent<RigidBodyComponent>()->GetHandle());
 			obj->RemoveComponent<RigidBodyComponent>();
+
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
+			//early end to prevent crash because rigidbody is no longer attached
+			ImGui::EndChild();
+			return;
 		}
 		ImGui::Separator();
 

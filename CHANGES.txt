@@ -32,7 +32,12 @@
 - replaced default model and skybox textures
 - can now set global ambient color and intensity in settings inside graphics tab, they are saved to scene file
 - renamed settings other tab to game
-- added missing rigidbody component that gets copied and pasted alongside gameobject and its other components
 - overhauled scene file save and load system to be more similar to config file
 - scene camera is only accessible in the engine, user needs to create their own camera to see anything in game, this is also saved and loaded as a separate gameobject, can switch between created cameras and scene camera in engine
 - save audio play/stop state to gameobject
+
+0.1.3.0005:
+- created a new gameobject type for audio component with its own audio icon
+- added missing rigidbody component that gets copied and pasted alongside gameobject and its other components
+- fixed a crash that occured when adding a light component to a empty gameobject
+- fixed an issue that added back light component to empty gameobject if it was removed and the scene was reloaded
