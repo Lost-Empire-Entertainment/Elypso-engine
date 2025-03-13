@@ -50,6 +50,7 @@ namespace Graphics::Shape
 			const string& heightTexture = "EMPTY",
 			const bool& isTransparent = false,
 			const float& transparentValue = 1.0f,
+			const float& shininessValue = 32.0f,
 			string& name = tempName,
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
@@ -68,6 +69,7 @@ namespace Graphics::Shape
 			const string& heightTexture,
 			const bool& isTransparent,
 			const float& transparentValue,
+			const float& shininessValue,
 			aiNode* node,
 			const aiScene* scene);
 

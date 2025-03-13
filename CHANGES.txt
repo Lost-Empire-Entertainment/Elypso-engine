@@ -41,3 +41,4 @@
 - added missing rigidbody component that gets copied and pasted alongside gameobject and its other components
 - fixed a crash that occured when adding a light component to a empty gameobject
 - fixed an issue that added back light component to empty gameobject if it was removed and the scene was reloaded
+- added back shininess slider

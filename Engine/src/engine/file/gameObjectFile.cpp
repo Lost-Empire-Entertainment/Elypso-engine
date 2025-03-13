@@ -193,7 +193,7 @@ namespace EngineFile
 
 				if (meshType == MeshComponent::MeshType::model)
 				{
-					data.push_back("shininess= " + to_string(32) + "\n");
+					data.push_back("shininess= " + to_string(mat->GetShininessValue()) + "\n");
 				}
 
 				//
@@ -476,6 +476,7 @@ namespace EngineFile
 				"EMPTY",
 				false,
 				0.0f,
+				32.0f,
 				fileName,
 				Importer::tempID);
 		}
@@ -954,6 +955,7 @@ namespace EngineFile
 			Texture::LoadTexture(foundObj, normalTexture, MaterialComponent::TextureType::height, false);
 			Texture::LoadTexture(foundObj, heightTexture, MaterialComponent::TextureType::normal, false);
 
+			mat->SetShininessValue(shininess);
 			mat->SetTransparent(isTransparent);
 			mat->SetTransparentValue(transparencyValue);
 
@@ -1015,14 +1017,6 @@ namespace EngineFile
 				Collider* collider = rb->GetCollider();
 				collider->UpdateScale(scale);
 			}
-
-			/*
-			* 
-			* SHININESS VARIABLE IS CURRENTLY UNUSED
-			* IT WILL BE RE-ENABLED IN THE FUTURE
-			* 
-			foundObj->GetBasicShape()->SetShininess(shininess);
-			*/
 
 			GameObject::nextID = ID + 1;
 		}

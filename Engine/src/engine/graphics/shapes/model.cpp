@@ -94,6 +94,7 @@ namespace Graphics::Shape
 		const string& heightTexture,
 		const bool& isTransparent,
 		const float& transparentValue,
+		const float& shininessValue,
 		const vector<AssimpVertex> vertices,
 		const vector<unsigned int> indices,
 		string& name,
@@ -180,6 +181,7 @@ namespace Graphics::Shape
 
 		mat->SetTransparent(isTransparent);
 		mat->SetTransparentValue(transparentValue);
+		mat->SetShininessValue(shininessValue);
 
 		Shader assignedShader = mat->GetShader();
 		assignedShader.Use();
@@ -229,7 +231,7 @@ namespace Graphics::Shape
 
 			shader.Use();
 			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
-			shader.SetFloat("material.shininess", 2);
+			shader.SetFloat("material.shininess", mat->GetShininessValue());
 
 			shader.SetVec3("globalAmbientColor", Render::globalAmbientColor);
 			shader.SetFloat("globalAmbientIntensity", Render::globalAmbientIntensity);

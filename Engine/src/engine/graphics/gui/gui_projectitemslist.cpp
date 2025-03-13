@@ -531,6 +531,7 @@ namespace Graphics::GUI
 			"EMPTY",
 			false,
 			1.0f,
+			32.0f,
 			name,
 			ID);
 

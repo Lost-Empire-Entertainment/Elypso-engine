@@ -47,6 +47,7 @@ namespace Graphics::Shape
 			const string& heightTexture = "EMPTY",
 			const bool& isTransparent = false,
 			const float& transparentValue = 1.0f,
+			const float& shininessValue = 32.0f,
 			const vector<AssimpVertex> vertices = {},
 			const vector<unsigned int> indices = {},
 			string& name = tempName,

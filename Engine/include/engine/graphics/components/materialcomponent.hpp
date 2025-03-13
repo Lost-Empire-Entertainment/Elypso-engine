@@ -135,9 +135,11 @@ namespace Graphics::Components
 
         type_index GetType() const override { return typeid(MaterialComponent); }
 
+        void SetShininessValue(float newShininessValue) { shininessValue = newShininessValue; }
         void SetTransparent(bool newTransparent) { isTransparent = newTransparent; }
         void SetTransparentValue(float newTransparentValue) { transparentValue = newTransparentValue; }
 
+        const float& GetShininessValue() const { return shininessValue; }
         const bool& IsTransparent() const { return isTransparent; }
         const float& GetTransparentValue() const { return transparentValue; }
 
@@ -145,6 +147,7 @@ namespace Graphics::Components
 
     private:
         bool isTransparent;
+        float shininessValue;
         float transparentValue;
         map<TextureType, map<string, unsigned int>> textures;
         vector<string> shaderNames;

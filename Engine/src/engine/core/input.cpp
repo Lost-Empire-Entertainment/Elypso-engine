@@ -379,7 +379,7 @@ namespace Core
             copiedObject["isTransparent"] = to_string(selectedObj->GetComponent<MaterialComponent>()->IsTransparent());
             copiedObject["transparentValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetTransparentValue());
 
-            copiedObject["shininess"] = "32";
+            copiedObject["shininessValue"] = to_string(selectedObj->GetComponent<MaterialComponent>()->GetShininessValue());
         }
 
         else if (type == MeshComponent::MeshType::point_light)
@@ -497,6 +497,8 @@ namespace Core
             bool isTransparent = stoi(copiedObject["isTransparent"]);
             float transparentValue = stof(copiedObject["transparentValue"]);
 
+            float shininessValue = stof(copiedObject["shininessValue"]);
+
             Importer::Initialize(
                 newPos,
                 rot,
@@ -508,6 +510,7 @@ namespace Core
                 copiedObject["heightTexture"],
                 isTransparent,
                 transparentValue,
+                shininessValue,
                 targetName,
                 nextID,
                 true);

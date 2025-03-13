@@ -671,6 +671,14 @@ namespace Graphics::GUI
 				}
 			}
 
+			ImGui::Text("Shininess");
+			float shininess = mat->GetShininessValue();
+			if (ImGui::DragFloat("##shininess", &shininess, 0.1f, 0.001f, 128.0f))
+			{
+				mat->SetShininessValue(shininess);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			ImGui::Text("Toggle transparency");
 			bool isTransparent = mat->IsTransparent();
 			string transparentButtonName = isTransparent ? "Disable" : "Enable";

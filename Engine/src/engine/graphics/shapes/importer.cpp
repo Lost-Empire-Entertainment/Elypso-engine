@@ -92,6 +92,7 @@ namespace Graphics::Shape
         const string& heightTexture,
         const bool& isTransparent,
         const float& transparentValue,
+        const float& shininessValue,
         string& name,
         unsigned int& id,
         const bool& isEnabled)
@@ -171,6 +172,7 @@ namespace Graphics::Shape
             heightTexture,
             isTransparent,
             transparentValue,
+            shininessValue,
             topLevelNode,
             scene);
     }
@@ -189,6 +191,7 @@ namespace Graphics::Shape
         const string& heightTexture,
         const bool& isTransparent,
         const float& transparentValue,
+        const float& shininessValue,
         aiNode* node,
         const aiScene* scene)
     {
@@ -261,6 +264,7 @@ namespace Graphics::Shape
             heightTexture,
             isTransparent,
             transparentValue,
+            shininessValue,
             newMesh.vertices,
             newMesh.indices,
             name,
@@ -519,6 +523,7 @@ namespace Graphics::Shape
             "EMPTY",
             false,
             1.0f,
+            32.0f,
             name,
             ID);
     }
