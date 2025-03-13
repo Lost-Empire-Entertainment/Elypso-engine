@@ -27,8 +27,10 @@
 
 0.1.3.0004:
 - small fix that allows moving, rotating and scaling rigidbody if isDynamic is true but physics simulation is off
-- added modifyable gravity, angular damping, low angular velocity factor, friction multiplier, correction factor and minimum penetration factor to settings into physics tab and to config file
+- added modifyable gravity, angular damping, low angular velocity factor, friction multiplier, correction factor and minimum penetration factor to settings into physics tab and to scene file
 - now displaying center of gravity in rigidbody component
 - replaced default model and skybox textures
-- can now set sky color in settings inside graphics tab
+- can now set global ambient color and intensity in settings inside graphics tab, they are saved to scene file
 - renamed settings other tab to game
+- added missing rigidbody component that gets copied and pasted alongside gameobject and its other components
+- overhauled scene file save and load system to be more similar to config file

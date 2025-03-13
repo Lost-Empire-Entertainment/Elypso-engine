@@ -5,9 +5,6 @@
 
 //engine
 #include "physics.hpp"
-#include "configFile.hpp"
-
-using EngineFile::ConfigFile;
 
 namespace Core
 {
@@ -15,8 +12,6 @@ namespace Core
 	{
 		if (!physicsWorld) physicsWorld = &PhysicsWorld::GetInstance();
 		physicsWorld->InitializePhysics(gravity);
-
-		ConfigFile::LoadGlobalPhysicsData();
 	}
 
 	void Physics::Update(float deltaTime)

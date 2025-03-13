@@ -8,6 +8,8 @@
 #include <map>
 #include <string>
 
+#include "glm.hpp"
+
 //engine
 #include "camera.hpp"
 
@@ -32,6 +34,11 @@ namespace Graphics
 
 		static inline unsigned int textureColorbuffer;
 		static inline unsigned int rbo;
+
+		//default color applied to all models in the scene
+		static inline vec3 globalAmbientColor = vec3(0.3f, 0.4f, 0.5f);
+		//How strong the intensity of the global ambient color is
+		static inline float globalAmbientIntensity = 0.5f;
 
 		static void RenderSetup();
 		static void UpdateAfterRescale(GLFWwindow* window, int width, int height);

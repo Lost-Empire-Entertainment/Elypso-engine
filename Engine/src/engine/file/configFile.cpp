@@ -20,7 +20,6 @@
 #include "sceneFile.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
-#include "physics.hpp"
 #if ENGINE_MODE
 #include "gui_settings.hpp"
 #endif
@@ -42,7 +41,6 @@ using Type = Core::ConsoleManager::Type;
 using Utils::File;
 using Graphics::Render;
 using Utils::String;
-using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::GUISettings;
 #endif
@@ -121,8 +119,6 @@ namespace EngineFile
 
 			configFile.close();
 
-			LoadGlobalPhysicsData();
-
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::DEBUG,
@@ -136,8 +132,6 @@ namespace EngineFile
 		{
 			File::DeleteFileOrfolder(configFilePath);
 		}
-
-		SaveGlobalPhysicsData();
 
 		ofstream configFile(configFilePath);
 
@@ -168,62 +162,45 @@ namespace EngineFile
 			"\nSuccessfully saved config file!\n");
 	}
 
+	string ConfigFile::GetKey(const string& key)
+	{
+		auto it = find(keys.begin(), keys.end(), key);
+		return (it != keys.end()) ? *it : "";
+	}
 	string ConfigFile::GetValue(const string& key, bool silent)
 	{
-		int keyIndex = -1;
-		for (int i = 0; i < keys.size(); i++)
-		{
-			if (keys[i] == key)
-			{
-				keyIndex = i;
-				break;
-			}
-		}
-
-		if (keyIndex != -1)
-		{
-			return values[keyIndex];
-		}
-		else 
-		{
-			if (!silent)
-			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::FILE,
-					Type::EXCEPTION,
-					"Error: Cannot get config key " + key + " value because it does not exist! This will cause a crash if the config file was not filled correctly.\n");
-			}
-			return "";
-		}
-	}
-
-	void ConfigFile::SetValue(const string& key, const string& value)
-	{
-		int keyIndex = -1;
-		for (int i = 0; i < keys.size(); i++)
-		{
-			if (keys[i] == key)
-			{
-				keyIndex = i;
-				break;
-			}
-		}
-
-		if (keyIndex != -1)
-		{
-			values[keyIndex] = value;
-
-			if (key == "gui_fontScale")
-			{
-				ImGui::GetIO().FontGlobalScale = stof(value);
-			}
-		}
-		else
+		string foundKey = GetKey(key);
+		if (foundKey == "")
 		{
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Cannot set value to config key " + key + " because it does not exist!\n");
+				"Error: Cannot get config file key " + key + " value because it does not exist!\n");
+		}
+		else
+		{
+			auto it = find(keys.begin(), keys.end(), key);
+			int pos = distance(keys.begin(), it);
+
+			return values[pos];
+		}
+	}
+	void ConfigFile::SetValue(const string& key, const string& value)
+	{
+		string foundKey = GetKey(key);
+		if (foundKey == "")
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Cannot get config file key " + key + " value because it does not exist!\n");
+		}
+		else
+		{
+			auto it = find(keys.begin(), keys.end(), key);
+			int pos = distance(keys.begin(), it);
+
+			values[pos] = value;
 		}
 	}
 
@@ -260,6 +237,11 @@ namespace EngineFile
 			values.push_back("0.001");
 		keys.push_back("camera_farClip");
 			values.push_back("200.0");
+
+		keys.push_back("globalAmbientColor");
+			values.push_back("0.3, 0.4, 0.5");
+		keys.push_back("globalAmbientIntensity");
+			values.push_back("0.5");
 
 		keys.push_back("gravity");
 			values.push_back("0.0, -9.81, 0.0");
@@ -315,63 +297,5 @@ namespace EngineFile
 		configFile.close();
 
 		LoadConfigFile();
-	}
-
-	void ConfigFile::SaveGlobalPhysicsData()
-	{
-		if (Physics::physicsWorld != nullptr)
-		{
-			vec3 gravity = Physics::physicsWorld->GetGravity();
-			string gravityString =
-				to_string(gravity.x) + ", " +
-				to_string(gravity.y) + ", " +
-				to_string(gravity.z);
-			SetValue("gravity", gravityString);
-
-			string angularDamping = 
-				to_string(Physics::physicsWorld->GetAngularDamping());
-			SetValue("angularDamping", angularDamping);
-
-			string lowAngularVelocityFactor = 
-				to_string(Physics::physicsWorld->GetLowAngularVelocityFactor());
-			SetValue("lowAngularVelocityFactor", lowAngularVelocityFactor);
-
-			string frictionMultiplier =
-				to_string(Physics::physicsWorld->GetFrictionMultiplier());
-			SetValue("frictionMultiplier", frictionMultiplier);
-
-			string correctionFactor =
-				to_string(Physics::physicsWorld->GetCorrectionFactor());
-			SetValue("correctionFactor", correctionFactor);
-
-			string minPenetrationThreshold =
-				to_string(Physics::physicsWorld->GetMinPenetrationThreshold());
-			SetValue("minPenetrationThreshold", minPenetrationThreshold);
-		}
-	}
-	void ConfigFile::LoadGlobalPhysicsData()
-	{
-		if (Physics::physicsWorld != nullptr)
-		{
-			string gravityString = GetValue("gravity");
-			vector<string> split = String::Split(gravityString, ',');
-			vec3 gravity = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
-			Physics::physicsWorld->SetGravity(gravity);
-
-			float angularDamping = stof(GetValue("angularDamping"));
-			Physics::physicsWorld->SetAngularDamping(angularDamping);
-
-			float lowAngularVelocityFactor = stof(GetValue("lowAngularVelocityFactor"));
-			Physics::physicsWorld->SetLowAngularVelocityFactor(lowAngularVelocityFactor);
-
-			float frictionMultiplier = stof(GetValue("frictionMultiplier"));
-			Physics::physicsWorld->SetFrictionMultiplier(frictionMultiplier);
-
-			float correctionFactor = stof(GetValue("correctionFactor"));
-			Physics::physicsWorld->SetCorrectionFactor(correctionFactor);
-
-			float minPenetrationThreshold = stof(GetValue("minPenetrationThreshold"));
-			Physics::physicsWorld->SetMinPenetrationThreshold(minPenetrationThreshold);
-		}
 	}
 }

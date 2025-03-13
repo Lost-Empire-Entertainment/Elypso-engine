@@ -231,6 +231,9 @@ namespace Graphics::Shape
 			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
 			shader.SetFloat("material.shininess", 2);
 
+			shader.SetVec3("globalAmbientColor", Render::globalAmbientColor);
+			shader.SetFloat("globalAmbientIntensity", Render::globalAmbientIntensity);
+
 			//directional light
 			if (GameObjectManager::GetDirectionalLight() != nullptr)
 			{

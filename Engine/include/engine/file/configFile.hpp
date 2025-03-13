@@ -27,6 +27,12 @@ namespace EngineFile
 		static void SaveConfigFile();
 
 		/// <summary>
+		/// Search by key to check if a variable exists in the keys vector.
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		static string GetKey(const string& key);
+		/// <summary>
 		/// Gets a value by key from the config value map.
 		/// </summary>
 		/// <param name="key">The name of the key in the map we need a value for</param>

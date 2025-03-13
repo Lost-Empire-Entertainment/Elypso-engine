@@ -28,6 +28,7 @@
 #include "console.hpp"
 #include "gameObjectFile.hpp"
 #include "skybox.hpp"
+#include "physics.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -57,11 +58,14 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::GameObjectFile;
 using Graphics::Shape::Skybox;
+using Core::Physics;
 
 namespace EngineFile
 {
 	void SceneFile::LoadScene(const string& scenePath)
 	{
+		cout << "!!!! load scene\n";
+
 		if (!exists(scenePath))
 		{
 			if (scenePath != (path(Engine::scenesPath) / "Scene1" / "scene.txt").string())
@@ -78,36 +82,11 @@ namespace EngineFile
 			{
 				File::CreateNewFolder(defaultSceneFolder);
 				File::CreateNewFolder((path(defaultSceneFolder) / "gameobjects").string());
-
-				//create new default scene file
-				string defaultScenePath = (path(defaultSceneFolder) / "scene.txt").string();
-				ofstream defaultSceneFile(defaultScenePath);
-				if (!defaultSceneFile.is_open())
-				{
-					Engine::CreateErrorPopup(
-						"Failed to create default scene file!");
-				}
-				defaultSceneFile.close();
-
-				//sets camera default position and rotation if default scene is created
-				Render::camera.SetCameraPosition(vec3(0.0f, 1.0f, 0.0f));
-				Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f));
 			}
 
 			//create new default scene file if it doesnt exist
 			string defaultScenePath = (path(defaultSceneFolder) / "scene.txt").string();
-			if (!exists(defaultScenePath))
-			{
-				ofstream defaultSceneFile(defaultScenePath);
-				if (!defaultSceneFile.is_open())
-				{
-					Engine::CreateErrorPopup(
-						"Failed to create default scene file!");
-				}
-				defaultSceneFile.close();
-			}
-
-			LoadScene(defaultScenePath);
+			if (!exists(defaultScenePath)) CreateNewSceneFile(defaultScenePath);
 		}
 		else 
 		{
@@ -133,10 +112,6 @@ namespace EngineFile
 				return;
 			}
 
-			string texturesFolder = (path(Engine::filesPath) / "textures").string();
-			string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
-			vector<string> skyboxTextures;
-
 			string line;
 			map<string, string> obj;
 			while (getline(sceneFile, line))
@@ -145,7 +120,7 @@ namespace EngineFile
 					&& line.find("=") != string::npos)
 				{
 					vector<string> splitLine = String::Split(line, '=');
-					string type = splitLine[0];
+					string key = splitLine[0];
 					string value = splitLine[1];
 
 					//remove one space in front of value if it exists
@@ -161,116 +136,19 @@ namespace EngineFile
 						}
 					}
 
-					vector<string> splitValue;
-					if (value.find(',') != string::npos)
+					if (GetKey(key) == "")
 					{
-						splitValue = String::Split(value, ',');
+						keys.push_back(key);
+						values.push_back(value);
 					}
-
-					if (type == "camera_position")
-					{
-						vec3 cameraPos = vec3(
-							stof(splitValue[0]),
-							stof(splitValue[1]),
-							stof(splitValue[2]));
-						Render::camera.SetCameraPosition(cameraPos);
-					}
-					else if (type == "camera_rotation")
-					{
-						vec3 cameraRot = vec3(
-							stof(splitValue[0]),
-							stof(splitValue[1]),
-							stof(splitValue[2]));
-						Render::camera.SetCameraRotation(cameraRot);
-					}
-#if ENGINE_MODE
-					else if (type == "renderBillboards")
-					{
-						GameObjectManager::renderBillboards = stoi(value);
-					}
-					else if (type == "renderLightBorders")
-					{
-						GameObjectManager::renderLightBorders = stoi(value);
-					}
-#endif
-					else if (type == "skybox_right")
-					{
-						string finalValue = value != ""
-							? value
-							: skyboxDefault;
-
-						skyboxTextures.push_back(finalValue);
-						skyboxTexturesMap["right"] = finalValue;
-					}
-					else if (type == "skybox_left")
-					{
-						string finalValue = value != ""
-							? value
-							: skyboxDefault;
-
-						skyboxTextures.push_back(finalValue);
-						skyboxTexturesMap["left"] = finalValue;
-					}
-					else if (type == "skybox_top")
-					{
-						string finalValue = value != ""
-							? value
-							: skyboxDefault;
-
-						skyboxTextures.push_back(finalValue);
-						skyboxTexturesMap["top"] = finalValue;
-					}
-					else if (type == "skybox_bottom")
-					{
-						string finalValue = value != ""
-							? value
-							: skyboxDefault;
-
-						skyboxTextures.push_back(finalValue);
-						skyboxTexturesMap["bottom"] = finalValue;
-					}
-					else if (type == "skybox_front")
-					{
-						string finalValue = value != ""
-							? value
-							: skyboxDefault;
-
-						skyboxTextures.push_back(finalValue);
-						skyboxTexturesMap["front"] = finalValue;
-					}
-					else if (type == "skybox_back")
-					{
-						string finalValue = value != ""
-							? value
-							: skyboxDefault;
-
-						skyboxTextures.push_back(finalValue);
-						skyboxTexturesMap["back"] = finalValue;
-					}
+					else SetValue(key, value);
 				}
 			}
 
 			sceneFile.close();
 
-			if (skyboxTextures.empty())
-			{
-				skyboxTextures.push_back(skyboxDefault);
-				skyboxTextures.push_back(skyboxDefault);
-				skyboxTextures.push_back(skyboxDefault);
-				skyboxTextures.push_back(skyboxDefault);
-				skyboxTextures.push_back(skyboxDefault);
-				skyboxTextures.push_back(skyboxDefault);
-
-				skyboxTexturesMap["right"] = skyboxDefault;
-				skyboxTexturesMap["left"] = skyboxDefault;
-				skyboxTexturesMap["top"] = skyboxDefault;
-				skyboxTexturesMap["bottom"] = skyboxDefault;
-				skyboxTexturesMap["front"] = skyboxDefault;
-				skyboxTexturesMap["back"] = skyboxDefault;
-			}
-			Skybox::AssignSkyboxTextures(skyboxTextures, false);
-
-			GameObjectFile::LoadGameObjects();
+			LoadGlobalGraphicsData();
+			LoadGlobalPhysicsData();
 
 			Render::SetWindowNameAsUnsaved(false);
 
@@ -299,6 +177,7 @@ namespace EngineFile
 			string sceneName = path(Engine::scenePath).parent_path().stem().string();
 			Engine::SetDiscordRichPresence(exeName, "Loaded scene " + sceneName, 0, 0, "icon");
 #endif
+			
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::INFO,
@@ -311,7 +190,17 @@ namespace EngineFile
 
 	void SceneFile::SaveScene(SaveType saveType, const string& targetLevel, bool sendSuccessMessage)
 	{
+		cout << "!!!! save scene\n";
+
+		if (exists(sceneFilePath))
+		{
+			File::DeleteFileOrfolder(sceneFilePath);
+		}
+
 		GameObjectFile::SaveGameObjects();
+
+		SaveGlobalGraphicsData();
+		SaveGlobalPhysicsData();
 
 		ofstream sceneFile(Engine::scenePath);
 		if (!sceneFile.is_open())
@@ -323,29 +212,13 @@ namespace EngineFile
 			return;
 		}
 
-		vec3 pos = Render::camera.GetCameraPosition();
-		string cameraPos =
-			to_string(pos[0]) + "," +
-			to_string(pos[1]) + "," +
-			to_string(pos[2]);
-		sceneFile << "camera_position= " << cameraPos << "\n";
+		for (int i = 0; i < keys.size(); i++)
+		{
+			string key = keys[i];
+			string value = values[i];
 
-		vec3 rot = Render::camera.GetCameraRotation();
-		string cameraRot =
-			to_string(rot[0]) + "," +
-			to_string(rot[1]) + "," +
-			to_string(rot[2]);
-		sceneFile << "camera_rotation= " << cameraRot << "\n";
-#if ENGINE_MODE
-		sceneFile << "renderBillboards= " << GameObjectManager::renderBillboards << "\n";
-		sceneFile << "renderLightBorders= " << GameObjectManager::renderLightBorders << "\n";
-#endif
-		sceneFile << "skybox_right= " << skyboxTexturesMap["right"] << "\n";
-		sceneFile << "skybox_left= " << skyboxTexturesMap["left"] << "\n";
-		sceneFile << "skybox_top= " << skyboxTexturesMap["top"] << "\n";
-		sceneFile << "skybox_bottom= " << skyboxTexturesMap["bottom"] << "\n";
-		sceneFile << "skybox_front= " << skyboxTexturesMap["front"] << "\n";
-		sceneFile << "skybox_back= " << skyboxTexturesMap["back"] << "\n";
+			sceneFile << key << "= " << value << "\n";
+		}
 
 		sceneFile.close();
 
@@ -385,5 +258,339 @@ namespace EngineFile
 			Engine::Shutdown();
 			break;
 		}
+	}
+
+	string SceneFile::GetKey(const string& key)
+	{
+		auto it = find(keys.begin(), keys.end(), key);
+		return (it != keys.end()) ? *it : "";
+	}
+	string SceneFile::GetValue(const string& key, bool silent)
+	{
+		string foundKey = GetKey(key);
+		if (foundKey == "")
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Cannot get scene file key " + key + " value because it does not exist!\n");
+		}
+		else
+		{
+			auto it = find(keys.begin(), keys.end(), key);
+			int pos = distance(keys.begin(), it);
+
+			return values[pos];
+		}
+	}
+	void SceneFile::SetValue(const string& key, const string& value)
+	{
+		string foundKey = GetKey(key);
+		if (foundKey == "")
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Cannot get scene file key " + key + " value because it does not exist!\n");
+		}
+		else
+		{
+			auto it = find(keys.begin(), keys.end(), key);
+			int pos = distance(keys.begin(), it);
+
+			values[pos] = value;
+		}
+	}
+
+	void SceneFile::CreateNewSceneFile(const string& newPath)
+	{
+		cout << "!!!! create new scene file\n";
+
+		if (sceneFilePath == "") sceneFilePath = newPath;
+
+		keys.clear();
+		values.clear();
+
+		SetDefaultData();
+
+		ofstream sceneFile(sceneFilePath);
+
+		if (!sceneFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Couldn't write into scene file '" + sceneFilePath + "'!\n");
+			return;
+		}
+
+		for (int i = 0; i < keys.size(); i++)
+		{
+			string key = keys[i];
+			string value = values[i];
+
+			sceneFile << key << "= " << value << "\n";
+		}
+
+		sceneFile.close();
+
+		LoadScene(sceneFilePath);
+	}
+
+	void SceneFile::SetDefaultData()
+	{
+		cout << "!!!! set default data\n";
+
+		//
+		// GLOBAL GRAPHICS DATA
+		//
+
+		//sets camera default position and rotation if default scene is created
+		Render::camera.SetCameraPosition(vec3(0.0f, 1.0f, 0.0f));
+		Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f));
+
+		keys.push_back("camera_position"); 
+			values.push_back("0.0, 1.0, 0.0");
+		keys.push_back("camera_rotation");
+			values.push_back("-90.0, 0.0, 0.0");
+#if ENGINE_MODE
+		keys.push_back("renderBillboards");
+			values.push_back("1");
+		keys.push_back("renderLightBorders");
+			values.push_back("1");
+#endif
+
+		string texturesFolder = (path(Engine::filesPath) / "textures").string();
+		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
+
+		keys.push_back("skybox_right");
+			values.push_back(skyboxDefault);
+		keys.push_back("skybox_left");
+			values.push_back(skyboxDefault);
+		keys.push_back("skybox_top");
+			values.push_back(skyboxDefault);
+		keys.push_back("skybox_bottom");
+			values.push_back(skyboxDefault);
+		keys.push_back("skybox_front");
+			values.push_back(skyboxDefault);
+		keys.push_back("skybox_back");
+			values.push_back(skyboxDefault);
+
+		keys.push_back("globalAmbientColor");
+			values.push_back("0.3, 0.4, 0.5");
+		keys.push_back("globalAmbientIntensity");
+			values.push_back("0.5");
+
+		//
+		// GLOBAL PHYSICS DATA
+		//
+
+		keys.push_back("gravity");
+			values.push_back("0.0, -9.81, 0.0");
+		keys.push_back("angularDamping");
+			values.push_back("0.5");
+		keys.push_back("lowAngularVelocityFactor");
+			values.push_back("0.5");
+		keys.push_back("frictionMultiplier");
+			values.push_back("0.1");
+		keys.push_back("correctionFactor");
+			values.push_back("0.2");
+		keys.push_back("minPenetrationThreshold");
+			values.push_back("0.01");
+	}
+
+	void SceneFile::SaveGlobalPhysicsData()
+	{
+		cout << "!!!! save global physics data\n";
+
+		if (Physics::physicsWorld != nullptr)
+		{
+			vec3 gravity = Physics::physicsWorld->GetGravity();
+			string gravityString =
+				to_string(gravity.x) + ", " +
+				to_string(gravity.y) + ", " +
+				to_string(gravity.z);
+			SetValue("gravity", gravityString);
+
+			string angularDamping =
+				to_string(Physics::physicsWorld->GetAngularDamping());
+			SetValue("angularDamping", angularDamping);
+
+			string lowAngularVelocityFactor =
+				to_string(Physics::physicsWorld->GetLowAngularVelocityFactor());
+			SetValue("lowAngularVelocityFactor", lowAngularVelocityFactor);
+
+			string frictionMultiplier =
+				to_string(Physics::physicsWorld->GetFrictionMultiplier());
+			SetValue("frictionMultiplier", frictionMultiplier);
+
+			string correctionFactor =
+				to_string(Physics::physicsWorld->GetCorrectionFactor());
+			SetValue("correctionFactor", correctionFactor);
+
+			string minPenetrationThreshold =
+				to_string(Physics::physicsWorld->GetMinPenetrationThreshold());
+			SetValue("minPenetrationThreshold", minPenetrationThreshold);
+		}
+	}
+	void SceneFile::LoadGlobalPhysicsData()
+	{
+		cout << "!!!! load global physics data\n";
+
+		if (Physics::physicsWorld == nullptr)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Tried to load global physics data but Elypso Physics has not yet been initialized!");
+			return;
+		}
+		
+		string gravityString = GetValue("gravity");
+		vector<string> split = String::Split(gravityString, ',');
+		vec3 gravity = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+		Physics::physicsWorld->SetGravity(gravity);
+
+		float angularDamping = stof(GetValue("angularDamping"));
+		Physics::physicsWorld->SetAngularDamping(angularDamping);
+
+		float lowAngularVelocityFactor = stof(GetValue("lowAngularVelocityFactor"));
+		Physics::physicsWorld->SetLowAngularVelocityFactor(lowAngularVelocityFactor);
+
+		float frictionMultiplier = stof(GetValue("frictionMultiplier"));
+		Physics::physicsWorld->SetFrictionMultiplier(frictionMultiplier);
+
+		float correctionFactor = stof(GetValue("correctionFactor"));
+		Physics::physicsWorld->SetCorrectionFactor(correctionFactor);
+
+		float minPenetrationThreshold = stof(GetValue("minPenetrationThreshold"));
+		Physics::physicsWorld->SetMinPenetrationThreshold(minPenetrationThreshold);
+	}
+
+	void SceneFile::SaveGlobalGraphicsData()
+	{
+		cout << "!!!! save global graphics data\n";
+
+		vec3 pos = Render::camera.GetCameraPosition();
+		string cameraPos =
+			to_string(pos[0]) + ", " +
+			to_string(pos[1]) + ", " +
+			to_string(pos[2]);
+		SetValue("camera_position", cameraPos);
+
+		vec3 rot = Render::camera.GetCameraRotation();
+		string cameraRot =
+			to_string(rot[0]) + ", " +
+			to_string(rot[1]) + ", " +
+			to_string(rot[2]);
+		SetValue("camera_rotation", cameraRot);
+#if ENGINE_MODE
+		SetValue("renderBillboards", to_string(GameObjectManager::renderBillboards));
+		SetValue("renderLightBorders", to_string(GameObjectManager::renderLightBorders));
+#endif
+		SetValue("skybox_right", skyboxTexturesMap["right"]);
+		SetValue("skybox_left", skyboxTexturesMap["left"]);
+		SetValue("skybox_top", skyboxTexturesMap["top"]);
+		SetValue("skybox_bottom", skyboxTexturesMap["bottom"]);
+		SetValue("skybox_front", skyboxTexturesMap["front"]);
+		SetValue("skybox_back", skyboxTexturesMap["back"]);
+
+		vec3 globalAmbientColor = Render::globalAmbientColor;
+		string globalAmbientColorString =
+			to_string(globalAmbientColor.x) + ", " +
+			to_string(globalAmbientColor.y) + ", " +
+			to_string(globalAmbientColor.z);
+		SetValue("globalAmbientColor", globalAmbientColorString);
+
+		float globalAmbientIntensity = Render::globalAmbientIntensity;
+		SetValue("globalAmbientIntensity", to_string(globalAmbientIntensity));
+	}
+	void SceneFile::LoadGlobalGraphicsData()
+	{
+		cout << "!!!! load global graphics data\n";
+
+		vector<string> cameraPosVector = String::Split(GetValue("camera_position"), ',');
+		vec3 cameraPos = vec3(
+			stof(cameraPosVector[0]),
+			stof(cameraPosVector[1]),
+			stof(cameraPosVector[2]));
+		Render::camera.SetCameraPosition(cameraPos);
+
+		vector<string> cameraRotVector = String::Split(GetValue("camera_rotation"), ',');
+		vec3 cameraRot = vec3(
+			stof(cameraRotVector[0]),
+			stof(cameraRotVector[1]),
+			stof(cameraRotVector[2]));
+		Render::camera.SetCameraRotation(cameraRot);
+
+#if ENGINE_MODE
+		string renderBillboards = GetValue("renderBillboards");
+		GameObjectManager::renderBillboards = stoi(renderBillboards);
+
+		string renderLightBorders = GetValue("renderLightBorders");
+		GameObjectManager::renderLightBorders = stoi(renderLightBorders);
+#endif
+
+		string texturesFolder = (path(Engine::filesPath) / "textures").string();
+		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
+		vector<string> skyboxTextures;
+
+		string skybox_right = GetValue("skybox_right") != ""
+			? GetValue("skybox_right") : skyboxDefault;
+		skyboxTextures.push_back(skybox_right);
+		skyboxTexturesMap["right"] = skybox_right;
+
+		string skybox_left = GetValue("skybox_left") != ""
+			? GetValue("skybox_left") : skyboxDefault;
+		skyboxTextures.push_back(skybox_left);
+		skyboxTexturesMap["left"] = skybox_left;
+
+		string skybox_top = GetValue("skybox_top") != ""
+			? GetValue("skybox_top") : skyboxDefault;
+		skyboxTextures.push_back(skybox_top);
+		skyboxTexturesMap["top"] = skybox_top;
+
+		string skybox_bottom = GetValue("skybox_bottom") != ""
+			? GetValue("skybox_bottom") : skyboxDefault;
+		skyboxTextures.push_back(skybox_bottom);
+		skyboxTexturesMap["bottom"] = skybox_bottom;
+
+		string skybox_front = GetValue("skybox_front") != ""
+			? GetValue("skybox_front") : skyboxDefault;
+		skyboxTextures.push_back(skybox_front);
+		skyboxTexturesMap["front"] = skybox_front;
+
+		string skybox_back = GetValue("skybox_back") != ""
+			? GetValue("skybox_back") : skyboxDefault;
+		skyboxTextures.push_back(skybox_back);
+		skyboxTexturesMap["back"] = skybox_back;
+
+		if (skyboxTextures.empty())
+		{
+			skyboxTextures.push_back(skyboxDefault);
+			skyboxTextures.push_back(skyboxDefault);
+			skyboxTextures.push_back(skyboxDefault);
+			skyboxTextures.push_back(skyboxDefault);
+			skyboxTextures.push_back(skyboxDefault);
+			skyboxTextures.push_back(skyboxDefault);
+
+			skyboxTexturesMap["right"] = skyboxDefault;
+			skyboxTexturesMap["left"] = skyboxDefault;
+			skyboxTexturesMap["top"] = skyboxDefault;
+			skyboxTexturesMap["bottom"] = skyboxDefault;
+			skyboxTexturesMap["front"] = skyboxDefault;
+			skyboxTexturesMap["back"] = skyboxDefault;
+		}
+		Skybox::AssignSkyboxTextures(skyboxTextures, false);
+
+		string globalAmbientColorString = GetValue("globalAmbientColor");
+		vector<string> split = String::Split(globalAmbientColorString, ',');
+		vec3 globalAmbientColor = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+		Render::globalAmbientColor = globalAmbientColor;
+
+		string globalAmbientIntensityString = GetValue("globalAmbientIntensity");
+		Render::globalAmbientIntensity = stof(globalAmbientIntensityString);
+
+		GameObjectFile::LoadGameObjects();
 	}
 }

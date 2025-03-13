@@ -35,7 +35,8 @@ namespace Graphics::GUI
 		static void InputSettings();
 		static void GUIStyleSettings();
 		static void GraphicsSettings();
-		static void OtherSettings();
+		static void PhysicsSettings();
+		static void GameSettings();
 	};
 }
 #endif

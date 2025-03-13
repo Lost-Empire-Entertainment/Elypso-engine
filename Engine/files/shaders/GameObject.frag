@@ -57,6 +57,9 @@ struct SpotLight
     bool enabled;
 };
 
+uniform vec3 globalAmbientColor;
+uniform float globalAmbientIntensity;
+
 #define MAX_POINT_LIGHTS 16
 uniform int pointLightCount;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
@@ -91,7 +94,8 @@ void main()
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    vec3 result = vec3(0.0);
+    vec3 result = globalAmbientColor * globalAmbientIntensity;
+	
     if (dirLightCount > 0)
     {   
         if (dirLight.enabled)

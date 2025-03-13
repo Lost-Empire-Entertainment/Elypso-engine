@@ -31,6 +31,7 @@
 #include "stringUtils.hpp"
 #include "gui_projectitemslist.hpp"
 #include "skybox.hpp"
+#include "physics.hpp"
 
 using std::to_string;
 using std::stof;
@@ -53,6 +54,7 @@ using EngineFile::FileExplorer;
 using EngineFile::ConfigFile;
 using Utils::String;
 using Graphics::Shape::Skybox;
+using Core::Physics;
 
 namespace Graphics::GUI
 {
@@ -96,9 +98,14 @@ namespace Graphics::GUI
 					GraphicsSettings();
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("Other"))
+				if (ImGui::BeginTabItem("Physics"))
 				{
-					OtherSettings();
+					PhysicsSettings();
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Game"))
+				{
+					GameSettings();
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();
@@ -121,8 +128,8 @@ namespace Graphics::GUI
 		ImGui::Text("Run compiled game: Ctrl + R");
 		ImGui::Text("Select GameObject: Left Mouse Button");
 		ImGui::Text("Delete selected GameObject or node: Delete");
-		//ImGui::Text("Copy selected object: Ctrl + C"); TEMPORARILY DISABLED, WILL BE FIXED IN A FUTURE VERSION
-		//ImGui::Text("Paste copied object: Ctrl + V"); TEMPORARILY DISABLED, WILL BE FIXED IN A FUTURE VERSION
+		ImGui::Text("Copy selected object: Ctrl + C");
+		ImGui::Text("Paste copied object: Ctrl + V");
 		ImGui::Text("Switch to X axis: X");
 		ImGui::Text("Switch to Y axis: Y");
 		ImGui::Text("Switch to Z axis: Z");
@@ -159,6 +166,24 @@ namespace Graphics::GUI
 
 	void GUISettings::GraphicsSettings()
 	{
+		ImGui::Text("Global ambient color");
+		vec3 globalAmbientColor = Render::globalAmbientColor;
+		if (ImGui::ColorEdit3("##globalAmbientColor", value_ptr(globalAmbientColor)))
+		{
+			Render::globalAmbientColor = globalAmbientColor;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Global ambient intensity");
+		float globalAmbientIntensity = Render::globalAmbientIntensity;
+		if (ImGui::DragFloat("##globalAmbientIntensity", &globalAmbientIntensity, 0.01f, 0.0f, 1.0f))
+		{
+			Render::globalAmbientIntensity = globalAmbientIntensity;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
 		if (skyboxTextures.empty())
 		{
 			skyboxTextures["right"] = SceneFile::skyboxTexturesMap["right"];
@@ -286,7 +311,94 @@ namespace Graphics::GUI
 		}
 	}
 
-	void GUISettings::OtherSettings()
+	void GUISettings::PhysicsSettings()
+	{
+		ImGui::Text("Global gravity");
+		vec3 gravity = Physics::physicsWorld->GetGravity();
+		if (ImGui::DragFloat3("##globalGravity", value_ptr(gravity), 0.01f, 100.00f, 100.00f))
+		{
+			Physics::physicsWorld->SetGravity(gravity);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pw_resetG"))
+		{
+			Physics::physicsWorld->SetGravity(vec3(0.0f, -9.81f, 0.0f));
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Angular damping");
+		float angularDamping = Physics::physicsWorld->GetAngularDamping();
+		if (ImGui::DragFloat("##angularDamping", &angularDamping, 0.001f, 0.0f, 1.0f))
+		{
+			Physics::physicsWorld->SetAngularDamping(angularDamping);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pw_resetAD"))
+		{
+			Physics::physicsWorld->SetAngularDamping(0.5f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Low angular velocity factor");
+		float lowAngularVelocityFactor = Physics::physicsWorld->GetLowAngularVelocityFactor();
+		if (ImGui::DragFloat("##lowAngularVelocityFactor", &lowAngularVelocityFactor, 0.001f, 0.0f, 1.0f))
+		{
+			Physics::physicsWorld->SetLowAngularVelocityFactor(lowAngularVelocityFactor);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pw_resetLAVF"))
+		{
+			Physics::physicsWorld->SetLowAngularVelocityFactor(0.5f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Friction multiplier");
+		float frictionMultiplier = Physics::physicsWorld->GetFrictionMultiplier();
+		if (ImGui::DragFloat("##frictionMultiplier", &frictionMultiplier, 0.001f, 0.0f, 1.0f))
+		{
+			Physics::physicsWorld->SetFrictionMultiplier(frictionMultiplier);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pw_resetFM"))
+		{
+			Physics::physicsWorld->SetFrictionMultiplier(0.1f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Correction factor");
+		float correctionFactor = Physics::physicsWorld->GetCorrectionFactor();
+		if (ImGui::DragFloat("##correctionFactor", &correctionFactor, 0.001f, 0.0f, 1.0f))
+		{
+			Physics::physicsWorld->SetCorrectionFactor(correctionFactor);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pw_resetCF"))
+		{
+			Physics::physicsWorld->SetCorrectionFactor(0.2f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Minimum penetration threshold");
+		float minPenetrationThreshold = Physics::physicsWorld->GetMinPenetrationThreshold();
+		if (ImGui::DragFloat("##minPenetrationThreshold", &minPenetrationThreshold, 0.0001f, 0.001f, 0.2f))
+		{
+			Physics::physicsWorld->SetMinPenetrationThreshold(minPenetrationThreshold);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pw_resetMPT"))
+		{
+			Physics::physicsWorld->SetMinPenetrationThreshold(0.01f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+	}
+
+	void GUISettings::GameSettings()
 	{
 		string gameName = ConfigFile::GetValue("gameName");
 
