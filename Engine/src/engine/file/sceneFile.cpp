@@ -266,6 +266,7 @@ namespace EngineFile
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Error: Cannot get scene file key " + key + " value because it does not exist!\n");
+			return "";
 		}
 		else
 		{

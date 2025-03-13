@@ -177,6 +177,7 @@ namespace EngineFile
 				Caller::FILE,
 				Type::EXCEPTION,
 				"Error: Cannot get config file key " + key + " value because it does not exist!\n");
+			return "";
 		}
 		else
 		{
