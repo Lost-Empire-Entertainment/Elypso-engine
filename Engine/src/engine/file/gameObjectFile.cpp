@@ -261,10 +261,12 @@ namespace EngineFile
 					}
 				}
 
-				//also save billboard data of each light source
+				//also save billboard data of each light source and audio or camera object
 				if (meshType == MeshComponent::MeshType::point_light
 					|| meshType == MeshComponent::MeshType::spot_light
-					|| meshType == MeshComponent::MeshType::directional_light)
+					|| meshType == MeshComponent::MeshType::directional_light
+					|| meshType == MeshComponent::MeshType::audio
+					|| meshType == MeshComponent::MeshType::camera)
 				{
 					data.push_back("\n");
 					data.push_back("---attached billboard data---\n");
