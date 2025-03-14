@@ -17,7 +17,10 @@
 #include "console.hpp"
 #include "meshcomponent.hpp"
 #include "billboard.hpp"
+#include "audioplayercomponent.hpp"
+#if ENGINE_MODE
 #include "gui_scenewindow.hpp"
+#endif
 
 using glm::mat4_cast;
 using glm::quat;
@@ -31,7 +34,10 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using MeshType = Graphics::Components::MeshComponent::MeshType;
+using Graphics::Components::AudioPlayerComponent;
+#if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
+#endif
 
 namespace Graphics::Shape
 {
@@ -110,7 +116,7 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		auto mesh = obj->AddComponent<MeshComponent>(
-			MeshType::point_light,
+			MeshType::audio,
 			vao,
 			vbo,
 			ebo);
@@ -131,14 +137,8 @@ namespace Graphics::Shape
 		mat->SetOwner(obj);
 		mat->AddShader(vert, frag, audioObjectShader);
 
-		/*
-		auto pointLight = obj->AddComponent<LightComponent>(
-			LightComponent::LightType::Point,
-			diffuse,
-			intensity,
-			distance);
-		pointLight->SetOwner(obj);
-		*/
+		auto apc = obj->AddComponent<AudioPlayerComponent>();
+		apc->SetOwner(obj);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "audio.png").string();
 		auto billboard = Billboard::InitializeBillboard(
@@ -156,7 +156,6 @@ namespace Graphics::Shape
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
-		GameObjectManager::AddPointLight(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();

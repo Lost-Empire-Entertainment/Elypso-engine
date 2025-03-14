@@ -25,6 +25,7 @@ namespace Graphics::GUI
 		static void Component_Light();
 		static void Component_AudioPlayer();
 		static void Component_RigidBody();
+		static void Component_Camera();
 	};
 }
 #endif

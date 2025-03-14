@@ -38,9 +38,11 @@ namespace Graphics::Components
 
         MaterialComponent(
             bool isTransparent = false,
-            float transparentValue = 1.0f) :
+            float transparentValue = 1.0f,
+            float shininessvalue = 0.5f) :
             isTransparent(isTransparent),
-            transparentValue(transparentValue) {}
+            transparentValue(transparentValue),
+            shininessValue(shininessValue) {}
 
         void AddTexture(
             const string& textureName, 

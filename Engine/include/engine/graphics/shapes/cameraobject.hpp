@@ -22,6 +22,7 @@ namespace Graphics::Shape
 
 	class CameraObject
 	{
+	public:
 		static inline string tempName = "123456789";
 		static inline unsigned int tempID = 123456789;
 

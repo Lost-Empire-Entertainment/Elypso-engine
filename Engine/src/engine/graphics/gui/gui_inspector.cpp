@@ -49,6 +49,9 @@
 #include "audio.hpp"
 #include "empty.hpp"
 #include "physics.hpp"
+#include "cameracomponent.hpp"
+#include "audioobject.hpp"
+#include "cameraobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -96,6 +99,9 @@ using Core::Physics;
 using ElypsoPhysics::RigidBody;
 using ElypsoPhysics::ColliderType;
 using ElypsoPhysics::Collider;
+using Graphics::Components::CameraComponent;
+using Graphics::Shape::AudioObject;
+using Graphics::Shape::CameraObject;
 
 namespace Graphics::GUI
 {
@@ -128,8 +134,9 @@ namespace Graphics::GUI
 				auto mesh = Select::selectedObj->GetComponent<MeshComponent>();
 				auto mat = Select::selectedObj->GetComponent<MaterialComponent>();
 				auto light = Select::selectedObj->GetComponent<LightComponent>();
-				auto audioPlayer = Select::selectedObj->GetComponent<AudioPlayerComponent>();
-				auto rigidbodycomponent = Select::selectedObj->GetComponent<RigidBodyComponent>();
+				auto apc = Select::selectedObj->GetComponent<AudioPlayerComponent>();
+				auto rbc = Select::selectedObj->GetComponent<RigidBodyComponent>();
+				auto cc = Select::selectedObj->GetComponent<CameraComponent>();
 
 				if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) Component_GameObject();
 				if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) Component_Transform();
@@ -141,15 +148,20 @@ namespace Graphics::GUI
 				{
 					Component_Light();
 				}
-				if (audioPlayer
+				if (apc
 					&& ImGui::CollapsingHeader("Audio"))
 				{
 					Component_AudioPlayer();
 				}
-				if (rigidbodycomponent
+				if (rbc
 					&& ImGui::CollapsingHeader("RigidBody"))
 				{
 					Component_RigidBody();
+				}
+				if (cc
+					&& ImGui::CollapsingHeader("Camera"))
+				{
+					Component_Camera();
 				}
 			}
 
@@ -159,7 +171,7 @@ namespace Graphics::GUI
 
 	void GUIInspector::AddComponent()
 	{
-		const char* items[] = { "Light", "Audio player", "Rigidbody"};
+		const char* items[] = { "Light", "Audio player", "Rigidbody", "Camera"};
 		static int currentItem = -1;
 
 		const char* currentLabel = (currentItem >= 0) ? items[currentItem] : "Add component";
@@ -184,12 +196,12 @@ namespace Graphics::GUI
 						else
 						{
 							if (Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType()
-								== MeshComponent::MeshType::model)
+								!= MeshComponent::MeshType::empty)
 							{
 								ConsoleManager::WriteConsoleMessage(
 									ConsoleCaller::INPUT,
 									ConsoleType::EXCEPTION,
-									"Error: " + Select::selectedObj->GetName() + " cannot be given a light component because it is a model! Remove the model first and then attach the light component.");
+									"Error: " + Select::selectedObj->GetName() + " cannot be given a light component! Only empty gameobjects are supported.");
 							}
 							else
 							{
@@ -230,9 +242,40 @@ namespace Graphics::GUI
 						}
 						else
 						{
-							auto apc = Select::selectedObj->AddComponent<AudioPlayerComponent>();
-							apc->SetOwner(Select::selectedObj);
-							if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+							if (Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType()
+								!= MeshComponent::MeshType::empty)
+							{
+								ConsoleManager::WriteConsoleMessage(
+									ConsoleCaller::INPUT,
+									ConsoleType::EXCEPTION,
+									"Error: " + Select::selectedObj->GetName() + " cannot be given an audio component! Only empty gameobjects are supported.");
+							}
+							else
+							{
+								shared_ptr<GameObject> obj = Select::selectedObj;
+								string name = obj->GetName();
+								unsigned int ID = obj->GetID();
+								vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+								vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+								vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
+
+								shared_ptr<GameObject> deletedObj = Select::selectedObj;
+								GameObjectManager::DestroyGameObject(deletedObj, false);
+
+								Select::selectedObj = nullptr;
+								Select::isObjectSelected = false;
+
+								auto newAudio = AudioObject::InitializeAudioObject(
+									pos,
+									rot,
+									scale,
+									"",
+									name,
+									ID,
+									true);
+
+								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+							}
 						}
 					}
 					else if (strcmp(items[i], "Rigidbody") == 0)
@@ -258,6 +301,54 @@ namespace Graphics::GUI
 							else
 							{
 								auto rb = Select::selectedObj->AddComponent<RigidBodyComponent>(Select::selectedObj);
+								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+							}
+						}
+					}
+					else if (strcmp(items[i], "Camera") == 0)
+					{
+						auto existingCamera = Select::selectedObj->GetComponent<CameraComponent>();
+						if (existingCamera)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								ConsoleCaller::INPUT,
+								ConsoleType::EXCEPTION,
+								"Error: " + Select::selectedObj->GetName() + " already has a camera component!");
+						}
+						else
+						{
+							if (Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType()
+								!= MeshComponent::MeshType::empty)
+							{
+								ConsoleManager::WriteConsoleMessage(
+									ConsoleCaller::INPUT,
+									ConsoleType::EXCEPTION,
+									"Error: " + Select::selectedObj->GetName() + " cannot be given a camera component! Only empty gameobjects are supported.");
+							}
+							else
+							{
+								shared_ptr<GameObject> obj = Select::selectedObj;
+								string name = obj->GetName();
+								unsigned int ID = obj->GetID();
+								vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+								vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+								vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
+
+								shared_ptr<GameObject> deletedObj = Select::selectedObj;
+								GameObjectManager::DestroyGameObject(deletedObj, false);
+
+								Select::selectedObj = nullptr;
+								Select::isObjectSelected = false;
+
+								auto newAudio = CameraObject::InitializeCameraObject(
+									pos,
+									rot,
+									scale,
+									"",
+									name,
+									ID,
+									true);
+
 								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 							}
 						}
@@ -1738,6 +1829,53 @@ namespace Graphics::GUI
 		{
 			rigidbody->ApplyTorque(torque);
 		}
+
+		ImGui::EndChild();
+	}
+
+	void GUIInspector::Component_Camera()
+	{
+		auto& obj = Select::selectedObj;
+		auto cc = obj->GetComponent<CameraComponent>();
+
+		ImGuiChildFlags childWindowFlags{};
+
+		int numLines = 3;
+		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
+		ImGui::BeginChild("Camera", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
+
+		ImGui::Text("Camera");
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+		if (ImGui::Button("X"))
+		{
+			string name = obj->GetName();
+			unsigned int ID = obj->GetID();
+			vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+			vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
+			vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
+
+			shared_ptr<GameObject> deletedObj = Select::selectedObj;
+			GameObjectManager::DestroyGameObject(deletedObj, false);
+
+			Select::selectedObj = nullptr;
+			Select::isObjectSelected = false;
+
+			auto newEmpty = Empty::InitializeEmpty(
+				pos,
+				rot,
+				scale,
+				"",
+				name,
+				ID,
+				true);
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::Separator();
+
+		ImGui::Text("this is where camera content will be at...\n");
 
 		ImGui::EndChild();
 	}

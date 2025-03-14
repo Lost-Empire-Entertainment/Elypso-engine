@@ -34,6 +34,8 @@
 #include "materialcomponent.hpp"
 #include "rigidbodycomponent.hpp"
 #include "physics.hpp"
+#include "audioobject.hpp"
+#include "cameraobject.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -68,6 +70,8 @@ using Graphics::Components::MaterialComponent;
 using Core::Physics;
 using Graphics::Components::RigidBodyComponent;
 using ElypsoPhysics::PhysicsWorld;
+using Graphics::Shape::AudioObject;
+using Graphics::Shape::CameraObject;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -120,6 +124,12 @@ namespace Graphics::Shape
 					break;
 				case Type::empty:
 					Empty::RenderEmpty(obj, view, projection);
+					break;
+				case Type::audio:
+					AudioObject::RenderAudioObject(obj, view, projection);
+					break;
+				case Type::camera:
+					CameraObject::RenderCameraObject(obj, view, projection);
 					break;
 				case Type::directional_light:
 					DirectionalLight::RenderDirectionalLight(obj, view, projection);

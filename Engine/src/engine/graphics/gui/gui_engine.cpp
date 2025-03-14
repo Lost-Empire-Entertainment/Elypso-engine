@@ -45,6 +45,8 @@
 #include "fileexplorer.hpp"
 #include "compile.hpp"
 #include "physics.hpp"
+#include "cameraobject.hpp"
+#include "audioobject.hpp"
 
 using std::cout;
 using std::endl;
@@ -80,6 +82,8 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Compilation;
 using Core::Physics;
+using Graphics::Shape::CameraObject;
+using Graphics::Shape::AudioObject;
 
 namespace Graphics::GUI
 {
@@ -571,7 +575,6 @@ namespace Graphics::GUI
 					string scenePath = path(Engine::scenePath).parent_path().filename().string();
 					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-					string name = "Billboard";
 					unsigned int nextID = ++GameObject::nextID;
 					unsigned int nextID2 = ++GameObject::nextID;
 
@@ -604,7 +607,6 @@ namespace Graphics::GUI
 					string scenePath = path(Engine::scenePath).parent_path().filename().string();
 					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-					string name = "Billboard";
 					unsigned int nextID = ++GameObject::nextID;
 					unsigned int nextID2 = ++GameObject::nextID;
 
@@ -648,7 +650,6 @@ namespace Graphics::GUI
 						string scenePath = path(Engine::scenePath).parent_path().filename().string();
 						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-						string name = "Billboard";
 						unsigned int nextID = ++GameObject::nextID;
 						unsigned int nextID2 = ++GameObject::nextID;
 
@@ -672,6 +673,75 @@ namespace Graphics::GUI
 					}
 				}
 
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Audio object"))
+			{
+				if (ImGui::IsItemClicked())
+				{
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
+					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".txt";
+					File::CreateNewFolder(targetPath);
+
+					string scenePath = path(Engine::scenePath).parent_path().filename().string();
+					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
+
+					unsigned int nextID = ++GameObject::nextID;
+					unsigned int nextID2 = ++GameObject::nextID;
+
+					shared_ptr<GameObject> obj =
+						AudioObject::InitializeAudioObject(
+							newPos,
+							vec3(0),
+							vec3(1),
+							finalTxtPath,
+							targetName,
+							nextID,
+							true,
+
+							//billboard values
+							nextID2,
+							true);
+
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Camera"))
+			{
+				if (ImGui::IsItemClicked())
+				{
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Camera", "");
+					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".txt";
+					File::CreateNewFolder(targetPath);
+
+					string scenePath = path(Engine::scenePath).parent_path().filename().string();
+					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
+
+					string name = "Billboard";
+					unsigned int nextID = ++GameObject::nextID;
+					unsigned int nextID2 = ++GameObject::nextID;
+
+					shared_ptr<GameObject> obj =
+						CameraObject::InitializeCameraObject(
+							newPos,
+							vec3(0),
+							vec3(1),
+							finalTxtPath,
+							targetName,
+							nextID,
+							true,
+
+							//billboard values
+							nextID2,
+							true);
+
+					ImGui::CloseCurrentPopup();
+				}
 				ImGui::EndMenu();
 			}
 

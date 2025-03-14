@@ -28,7 +28,6 @@ namespace Graphics::Components
             Directional
         };
 
-        //spotlight
         LightComponent(
             LightType type,
             const vec3& diffuse = vec3(1.0f),

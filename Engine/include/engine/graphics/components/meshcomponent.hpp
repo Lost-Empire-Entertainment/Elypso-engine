@@ -51,14 +51,16 @@ namespace Graphics::Components
     public:
         enum class MeshType
         {
-            border,
-            actionTex,
-            model,
             empty,
+            model,
+            audio,
+            camera,
             point_light,
             spot_light,
             directional_light,
             billboard,
+            border,
+            actionTex,
             skybox
         };
 

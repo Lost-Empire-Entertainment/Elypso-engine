@@ -49,3 +49,4 @@
 - actually added audio gameobject with its own icon this time
 - added camera gameobject with its own icon
 - minor linux compatibility fixes
+- limit camera, light and audio components to empty gameobject only, cannot add more than one of those to it

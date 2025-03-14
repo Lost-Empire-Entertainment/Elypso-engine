@@ -75,7 +75,7 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
-		version = "Pre-release 0.1.3.0005";
+		version = "Pre-release 0.1.3.0006";
 #ifdef NDEBUG
 #else
 		version = version + " [DEBUG]";

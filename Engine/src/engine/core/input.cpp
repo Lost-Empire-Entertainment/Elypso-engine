@@ -42,6 +42,8 @@
 #include "audioplayercomponent.hpp"
 #include "core.hpp"
 #include "rigidbodycomponent.hpp"
+#include "audioobject.hpp"
+#include "cameraobject.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #endif
@@ -88,6 +90,8 @@ using Graphics::Components::AudioPlayerComponent;
 using Core::Engine;
 using Graphics::Components::RigidBodyComponent;
 using ElypsoPhysics::ColliderType;
+using Graphics::Shape::AudioObject;
+using Graphics::Shape::CameraObject;
 #if ENGINE_MODE
 using Core::Compilation;
 #endif
@@ -444,9 +448,11 @@ namespace Core
             copiedObject["type"] = "empty";
         }
 
-        auto apc = selectedObj->GetComponent<AudioPlayerComponent>();
-        if (apc)
+        else if (type == MeshComponent::MeshType::audio)
         {
+            copiedObject["type"] = "audio";
+
+            auto apc = selectedObj->GetComponent<AudioPlayerComponent>();
             string audioFileName = apc->GetName();
             bool is3D = apc->Is3D();
             float currVolume = apc->GetVolume();
@@ -454,6 +460,11 @@ namespace Core
             copiedObject["audioFileName"] = audioFileName;
             copiedObject["is3D"] = to_string(is3D);
             copiedObject["currentVolume"] = to_string(currVolume);
+        }
+
+        else if (type == MeshComponent::MeshType::camera)
+        {
+            copiedObject["type"] = "camera";
         }
 
         selectedObj = nullptr;
@@ -669,17 +680,66 @@ namespace Core
             if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
         }
 
-        if (copiedObject.find("audioFileName") != copiedObject.end())
+        //if an audio object was copied
+        else if (copiedObject["type"] == "audio")
         {
+            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + ".txt";
+            File::CreateNewFolder(targetPath);
+
+            string filePath = (path(targetPath) / targetNameAndExtension).string();
+
+            auto newAudioObject = AudioObject::InitializeAudioObject(
+                newPos,
+                rot,
+                scale,
+                filePath,
+                targetName,
+                nextID,
+                true,
+
+                //billboard values
+                nextID2,
+                true);
+
             string audioFileName = copiedObject["audioFileName"];
             bool is3D = stoi(copiedObject["is3D"]);
             float currentVolume = stof(copiedObject["currentVolume"]);
 
-            auto apc = Select::selectedObj->AddComponent<AudioPlayerComponent>();
+            auto apc = newAudioObject->GetComponent<AudioPlayerComponent>();
             apc->SetOwner(Select::selectedObj);
             apc->SetName(audioFileName);
             apc->Set3DState(is3D);
             apc->SetVolume(currentVolume);
+
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+        }
+
+        //if a camera object was copied
+        else if (copiedObject["type"] == "camera")
+        {
+            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetName = path(targetPath).stem().string();
+            string targetNameAndExtension = targetName + ".txt";
+            File::CreateNewFolder(targetPath);
+
+            string filePath = (path(targetPath) / targetNameAndExtension).string();
+
+            auto newCameraObject = CameraObject::InitializeCameraObject(
+                newPos,
+                rot,
+                scale,
+                filePath,
+                targetName,
+                nextID,
+                true,
+
+                //billboard values
+                nextID2,
+                true);
+
+            if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
         }
 
         ConsoleManager::WriteConsoleMessage(

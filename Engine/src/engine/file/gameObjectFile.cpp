@@ -38,6 +38,8 @@
 #include "rigidbodycomponent.hpp"
 #include "physics.hpp"
 #include "audio.hpp"
+#include "audioobject.hpp"
+#include "cameraobject.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -88,6 +90,8 @@ using ElypsoPhysics::ColliderType;
 using ElypsoPhysics::Collider;
 using Core::Physics;
 using Core::Audio;
+using Graphics::Shape::AudioObject;
+using Graphics::Shape::CameraObject;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -275,9 +279,10 @@ namespace EngineFile
 				// AUDIO PLAYER DATA
 				//
 
-				auto apc = obj->GetComponent<AudioPlayerComponent>();
-				if (apc)
+				if (meshType == MeshComponent::MeshType::audio)
 				{
+					auto apc = obj->GetComponent<AudioPlayerComponent>();
+
 					string audioFileName = apc->GetName();
 					bool isPlaying = apc->IsPlaying();
 					bool is3D = apc->Is3D();
@@ -500,6 +505,16 @@ namespace EngineFile
 				LoadEmpty(filePath);
 			}
 
+			else if (type == "audio")
+			{
+				LoadAudioObject(filePath);
+			}
+
+			else if (type == "camera")
+			{
+				LoadCameraObject(filePath);
+			}
+
 			else if (type == "point_light")
 			{
 				LoadPointLight(filePath);
@@ -586,12 +601,6 @@ namespace EngineFile
 					|| key == "model"
 					|| key == "shininess"
 
-					|| key == "audioFileName"
-					|| key == "is3D"
-					|| key == "currentVolume"
-					|| key == "minRange"
-					|| key == "maxRange"
-
 					|| key == "isDynamic"
 					|| key == "useGravity"
 					|| key == "colliderType"
@@ -628,12 +637,6 @@ namespace EngineFile
 		float transparencyValue{};
 		string model{};
 		float shininess{};
-
-		string audioFileName{};
-		bool is3D{};
-		float currVolume{};
-		float minRange{};
-		float maxRange{};
 
 		bool isDynamic{};
 		bool useGravity{};
@@ -784,26 +787,6 @@ namespace EngineFile
 			else if (key == "shininess")
 			{
 				shininess = stof(value);
-			}
-			else if (key == "audioFileName")
-			{
-				audioFileName = value;
-			}
-			else if (key == "is3D")
-			{
-				is3D = stoi(value);
-			}
-			else if (key == "currentVolume")
-			{
-				currVolume = stof(value);
-			}
-			else if (key == "minRange")
-			{
-				minRange = stof(value);
-			}
-			else if (key == "maxRange")
-			{
-				maxRange = stof(value);
 			}
 
 			else if (key == "isDynamic")
@@ -973,21 +956,6 @@ namespace EngineFile
 				}
 			}
 
-			if (audioFileName != ""
-				|| data["is3D"] != ""
-				|| data["currentVolume"] != ""
-				|| data["minRange"] != ""
-				|| data["maxRange"] != "")
-			{
-				auto apc = foundObj->AddComponent<AudioPlayerComponent>();
-				apc->SetOwner(foundObj);
-				apc->SetName(audioFileName);
-				apc->Set3DState(is3D);
-				apc->SetVolume(currVolume);
-				apc->SetMinRange(minRange);
-				apc->SetMaxRange(maxRange);
-			}
-
 			if (data["isDynamic"] != ""
 				|| data["useGravity"] != ""
 				|| data["colliderType"] != ""
@@ -1068,13 +1036,7 @@ namespace EngineFile
 					|| key == "type"
 					|| key == "position"
 					|| key == "rotation"
-					|| key == "scale"
-					|| key == "audioFileName"
-					|| key == "isPlaying"
-					|| key == "is3D"
-					|| key == "currentVolume"
-					|| key == "minRange"
-					|| key == "maxRange")
+					|| key == "scale")
 				{
 					data[key] = value;
 				}
@@ -1094,6 +1056,149 @@ namespace EngineFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
+
+		for (const auto& [key, value] : data)
+		{
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
+			else if (key == "enabled")
+			{
+				isEnabled = stoi(value);
+			}
+			else if (key == "type")
+			{
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
+				if (typeAuto.has_value())
+				{
+					type = typeAuto.value();
+				}
+			}
+			else if (key == "position")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				pos = newPos;
+			}
+			else if (key == "rotation")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				rot = newRot;
+			}
+			else if (key == "scale")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				scale = newScale;
+			}
+		}
+
+		//
+		// LOAD EMPTY
+		//
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Loading empty '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+		auto empty = Empty::InitializeEmpty(
+			pos,
+			rot,
+			scale,
+			file,
+			name,
+			ID,
+			isEnabled);
+
+		GameObject::nextID = ID + 1;
+	}
+
+	void GameObjectFile::LoadAudioObject(const string& file)
+	{
+		//
+		// READ FROM AUDIO OBJECT FILE
+		//
+
+		ifstream audioObjectFile(file);
+		if (!audioObjectFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to open audio object file '" + file + "'!\n\n");
+			return;
+		}
+
+		unordered_map<string, string> data;
+		string line;
+		while (getline(audioObjectFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "enabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+
+					|| key == "billboard id"
+					|| key == "billboard enabled"
+
+					|| key == "audioFileName"
+					|| key == "isPlaying"
+					|| key == "is3D"
+					|| key == "currentVolume"
+					|| key == "minRange"
+					|| key == "maxRange")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		audioObjectFile.close();
+
+		//
+		// ASSIGN CAMERA OBJECT DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		MeshComponent::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+
+		unsigned int billboardID{};
+		bool isBillboardEnabled{};
 
 		string audioFileName{};
 		bool isPlaying{};
@@ -1143,6 +1248,15 @@ namespace EngineFile
 				scale = newScale;
 			}
 
+			else if (key == "billboard id")
+			{
+				billboardID = stoul(value);
+			}
+			else if (key == "billboard enabled")
+			{
+				isBillboardEnabled = stoi(value);
+			}
+
 			else if (key == "audioFileName")
 			{
 				audioFileName = value;
@@ -1170,22 +1284,24 @@ namespace EngineFile
 		}
 
 		//
-		// LOAD EMPTY
+		// LOAD AUDIO OBJECT
 		//
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
-			"Loading empty '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+			"Loading audio object '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
 
-		auto empty = Empty::InitializeEmpty(
+		auto audioObject = AudioObject::InitializeAudioObject(
 			pos,
 			rot,
 			scale,
 			file,
 			name,
 			ID,
-			isEnabled);
+			isEnabled,
+			billboardID,
+			isBillboardEnabled);
 
 		if (audioFileName != ""
 			|| data["isPlaying"] != ""
@@ -1194,8 +1310,8 @@ namespace EngineFile
 			|| data["minRange"] != ""
 			|| data["maxRange"] != "")
 		{
-			auto apc = empty->AddComponent<AudioPlayerComponent>();
-			apc->SetOwner(empty);
+			auto apc = audioObject->AddComponent<AudioPlayerComponent>();
+			apc->SetOwner(audioObject);
 			apc->SetName(audioFileName);
 			apc->SetPlayState(isPlaying);
 			apc->Set3DState(is3D);
@@ -1205,6 +1321,153 @@ namespace EngineFile
 
 			if (isPlaying) Audio::Play(audioFileName);
 		}
+
+		GameObject::nextID = ID + 1;
+	}
+
+	void GameObjectFile::LoadCameraObject(const string& file)
+	{
+		//
+		// READ FROM CAMERA OBJECT FILE
+		//
+
+		ifstream audioObjectFile(file);
+		if (!audioObjectFile.is_open())
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to open camera object file '" + file + "'!\n\n");
+			return;
+		}
+
+		unordered_map<string, string> data;
+		string line;
+		while (getline(audioObjectFile, line))
+		{
+			if (!line.empty()
+				&& line.find("=") != string::npos)
+			{
+				vector<string> splitLine = String::Split(line, '=');
+				string key = splitLine[0];
+				string value = splitLine[1];
+
+				//remove one space in front of value if it exists
+				if (value[0] == ' ') value.erase(0, 1);
+				//remove one space in front of each value comma if it exists
+				for (size_t i = 0; i < value.length(); i++)
+				{
+					if (value[i] == ','
+						&& i + 1 < value.length()
+						&& value[i + 1] == ' ')
+					{
+						value.erase(i + 1, 1);
+					}
+				}
+
+				if (key == "name"
+					|| key == "id"
+					|| key == "enabled"
+					|| key == "type"
+					|| key == "position"
+					|| key == "rotation"
+					|| key == "scale"
+
+					|| key == "billboard id"
+					|| key == "billboard enabled")
+				{
+					data[key] = value;
+				}
+			}
+		}
+
+		audioObjectFile.close();
+
+		//
+		// ASSIGN CAMERA OBJECT DATA TO VARIABLES
+		//
+
+		string name{};
+		unsigned int ID{};
+		bool isEnabled{};
+		MeshComponent::MeshType type{};
+		vec3 pos{};
+		vec3 rot{};
+		vec3 scale{};
+
+		unsigned int billboardID{};
+		bool isBillboardEnabled{};
+
+		for (const auto& [key, value] : data)
+		{
+			if (key == "name")
+			{
+				name = value;
+			}
+			else if (key == "id")
+			{
+				ID = stoul(value);
+			}
+			else if (key == "enabled")
+			{
+				isEnabled = stoi(value);
+			}
+			else if (key == "type")
+			{
+				auto typeAuto = magic_enum::enum_cast<MeshComponent::MeshType>(value);
+				if (typeAuto.has_value())
+				{
+					type = typeAuto.value();
+				}
+			}
+			else if (key == "position")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				pos = newPos;
+			}
+			else if (key == "rotation")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				rot = newRot;
+			}
+			else if (key == "scale")
+			{
+				vector<string> split = String::Split(value, ',');
+				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
+				scale = newScale;
+			}
+
+			else if (key == "billboard id")
+			{
+				billboardID = stoul(value);
+			}
+			else if (key == "billboard enabled")
+			{
+				isBillboardEnabled = stoi(value);
+			}
+		}
+
+		//
+		// LOAD CAMERA OBJECT
+		//
+
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Loading camera object '" + name + "' with ID '" + to_string(ID) + "' for scene '" + path(Engine::scenePath).parent_path().stem().string() + "'.\n");
+
+		auto cameraObject = CameraObject::InitializeCameraObject(
+			pos,
+			rot,
+			scale,
+			file,
+			name,
+			ID,
+			isEnabled,
+			billboardID,
+			isBillboardEnabled);
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1262,13 +1525,7 @@ namespace EngineFile
 					|| key == "distance"
 
 					|| key == "billboard id"
-					|| key == "billboard enabled"
-					
-					|| key == "audioFileName"
-					|| key == "is3D"
-					|| key == "currentVolume"
-					|| key == "minRange"
-					|| key == "maxRange")
+					|| key == "billboard enabled")
 				{
 					data[key] = value;
 				}
@@ -1295,12 +1552,6 @@ namespace EngineFile
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-
-		string audioFileName{};
-		bool is3D{};
-		float currVolume{};
-		float minRange{};
-		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1360,27 +1611,6 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-
-			else if (key == "audioFileName")
-			{
-				audioFileName = value;
-			}
-			else if (key == "is3D")
-			{
-				is3D = stoi(value);
-			}
-			else if (key == "currentVolume")
-			{
-				currVolume = stof(value);
-			}
-			else if (key == "minRange")
-			{
-				minRange = stof(value);
-			}
-			else if (key == "maxRange")
-			{
-				maxRange = stof(value);
-			}
 		}
 
 		//
@@ -1405,21 +1635,6 @@ namespace EngineFile
 			isEnabled,
 			billboardID,
 			isBillboardEnabled);
-
-		if (audioFileName != ""
-			|| data["is3D"] != ""
-			|| data["currentVolume"] != ""
-			|| data["minRange"] != ""
-			|| data["maxRange"] != "")
-		{
-			auto apc = pl->AddComponent<AudioPlayerComponent>();
-			apc->SetOwner(pl);
-			apc->SetName(audioFileName);
-			apc->Set3DState(is3D);
-			apc->SetVolume(currVolume);
-			apc->SetMinRange(minRange);
-			apc->SetMaxRange(maxRange);
-		}
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1479,13 +1694,7 @@ namespace EngineFile
 					|| key == "outer angle"
 
 					|| key == "billboard id"
-					|| key == "billboard enabled"
-
-					|| key == "audioFileName"
-					|| key == "is3D"
-					|| key == "currentVolume"
-					|| key == "minRange"
-					|| key == "maxRange")
+					|| key == "billboard enabled")
 				{
 					data[key] = value;
 				}
@@ -1514,12 +1723,6 @@ namespace EngineFile
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-
-		string audioFileName{};
-		bool is3D{};
-		float currVolume{};
-		float minRange{};
-		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1581,27 +1784,6 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-
-			else if (key == "audioFileName")
-			{
-				audioFileName = value;
-			}
-			else if (key == "is3D")
-			{
-				is3D = stoi(value);
-			}
-			else if (key == "currentVolume")
-			{
-				currVolume = stof(value);
-			}
-			else if (key == "minRange")
-			{
-				minRange = stof(value);
-			}
-			else if (key == "maxRange")
-			{
-				maxRange = stof(value);
-			}
 		}
 
 		//
@@ -1628,21 +1810,6 @@ namespace EngineFile
 			isEnabled,
 			billboardID,
 			isBillboardEnabled);
-
-		if (audioFileName != ""
-			|| data["is3D"] != ""
-			|| data["currentVolume"] != ""
-			|| data["minRange"] != ""
-			|| data["maxRange"] != "")
-		{
-			auto apc = sl->AddComponent<AudioPlayerComponent>();
-			apc->SetOwner(sl);
-			apc->SetName(audioFileName);
-			apc->Set3DState(is3D);
-			apc->SetVolume(currVolume);
-			apc->SetMinRange(minRange);
-			apc->SetMaxRange(maxRange);
-		}
 
 		GameObject::nextID = ID + 1;
 	}
@@ -1700,13 +1867,7 @@ namespace EngineFile
 					|| key == "distance"
 
 					|| key == "billboard id"
-					|| key == "billboard enabled"
-
-					|| key == "audioFileName"
-					|| key == "is3D"
-					|| key == "currentVolume"
-					|| key == "minRange"
-					|| key == "maxRange")
+					|| key == "billboard enabled")
 				{
 					data[key] = value;
 				}
@@ -1732,12 +1893,6 @@ namespace EngineFile
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
-
-		string audioFileName{};
-		bool is3D{};
-		float currVolume{};
-		float minRange{};
-		float maxRange{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -1796,27 +1951,6 @@ namespace EngineFile
 			{
 				isBillboardEnabled = stoi(value);
 			}
-
-			else if (key == "audioFileName")
-			{
-				audioFileName = value;
-			}
-			else if (key == "is3D")
-			{
-				is3D = stoi(value);
-			}
-			else if (key == "currentVolume")
-			{
-				currVolume = stof(value);
-			}
-			else if (key == "minRange")
-			{
-				minRange = stof(value);
-			}
-			else if (key == "maxRange")
-			{
-				maxRange = stof(value);
-			}
 		}
 
 		//
@@ -1840,21 +1974,6 @@ namespace EngineFile
 			isEnabled,
 			billboardID,
 			isBillboardEnabled);
-
-		if (audioFileName != ""
-			|| data["is3D"] != ""
-			|| data["currentVolume"] != ""
-			|| data["minRange"] != ""
-			|| data["maxRange"] != "")
-		{
-			auto apc = dl->AddComponent<AudioPlayerComponent>();
-			apc->SetOwner(dl);
-			apc->SetName(audioFileName);
-			apc->Set3DState(is3D);
-			apc->SetVolume(currVolume);
-			apc->SetMinRange(minRange);
-			apc->SetMaxRange(maxRange);
-		}
 
 		GameObject::nextID = ID + 1;
 	}

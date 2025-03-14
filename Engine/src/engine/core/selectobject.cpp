@@ -17,6 +17,8 @@
 #include "gameobject.hpp"
 #include "meshcomponent.hpp"
 #include "transformcomponent.hpp"
+#include "audioobject.hpp"
+#include "cameraobject.hpp"
 
 using glm::inverse;
 using glm::normalize;
@@ -31,6 +33,8 @@ using Graphics::Render;
 using Graphics::Components::MeshComponent;
 using Graphics::Components::TransformComponent;
 using Type = Graphics::Components::MeshComponent::MeshType;
+using Graphics::Shape::AudioObject;
+using Graphics::Shape::CameraObject;
 
 namespace Core
 {
@@ -69,6 +73,8 @@ namespace Core
 			Type objType = mesh->GetMeshType();
 			if (objType == Type::model
 				|| objType == Type::empty
+				|| objType == Type::audio
+				|| objType == Type::camera
 				|| objType == Type::point_light
 				|| objType == Type::spot_light
 				|| objType == Type::directional_light)
@@ -99,6 +105,8 @@ namespace Core
 
 		if (objType == Type::model
 			|| objType == Type::empty
+			|| objType == Type::audio
+			|| objType == Type::camera
 			|| objType == Type::point_light
 			|| objType == Type::spot_light
 			|| objType == Type::directional_light)
