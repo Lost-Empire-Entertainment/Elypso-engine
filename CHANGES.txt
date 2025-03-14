@@ -44,3 +44,8 @@
 - fixed a crash that occured when adding a light component to a empty gameobject
 - fixed an issue that added back light component to empty gameobject if it was removed and the scene was reloaded
 - fixed dynamic rigidbody with gravity enabled not moving in game
+
+0.1.3.0006:
+- actually added audio gameobject with its own icon this time
+- added camera gameobject with its own icon
+- minor linux compatibility fixes
