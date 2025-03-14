@@ -10,50 +10,42 @@
 #include "matrix_transform.hpp"
 
 //engine
-#include "empty.hpp"
+#include "audioobject.hpp"
+#include "core.hpp"
+#include "gameobject.hpp"
 #include "selectobject.hpp"
 #include "console.hpp"
-#include "core.hpp"
-#include "transformcomponent.hpp"
 #include "meshcomponent.hpp"
-#include "materialcomponent.hpp"
-#if ENGINE_MODE
+#include "billboard.hpp"
 #include "gui_scenewindow.hpp"
-#endif
 
-using std::make_shared;
-using std::to_string;
+using glm::mat4_cast;
+using glm::quat;
 using std::filesystem::exists;
 using std::filesystem::path;
-using glm::quat;
-using glm::translate;
-using glm::scale;
-using glm::mat4_cast;
+using std::to_string;
 
+using Core::Engine;
 using Core::Select;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Core::Engine;
-using Graphics::Shader;
-using Graphics::Components::TransformComponent;
-using Graphics::Components::MeshComponent;
-using Graphics::Components::MaterialComponent;
 using MeshType = Graphics::Components::MeshComponent::MeshType;
-#if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
-#endif
 
 namespace Graphics::Shape
 {
-	shared_ptr<GameObject> Empty::InitializeEmpty(
+	shared_ptr<GameObject> AudioObject::InitializeAudioObject(
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale,
 		const string& txtFilePath,
 		string& name,
 		unsigned int& id,
-		const bool& isEnabled)
+		const bool& isEnabled,
+
+		unsigned int& billboardID,
+		const bool& isBillboardEnabled)
 	{
 		auto obj = make_shared<GameObject>(name, id, isEnabled);
 		auto transform = obj->AddComponent<TransformComponent>();
@@ -118,7 +110,7 @@ namespace Graphics::Shape
 		glBindVertexArray(0);
 
 		auto mesh = obj->AddComponent<MeshComponent>(
-			MeshType::empty,
+			MeshType::point_light,
 			vao,
 			vbo,
 			ebo);
@@ -130,19 +122,41 @@ namespace Graphics::Shape
 		if (!exists(vert)
 			|| !exists(frag))
 		{
-			Engine::CreateErrorPopup("One of the shader paths for empty is invalid!");
+			Engine::CreateErrorPopup("One of the shader paths for audio object is invalid!");
 		}
 
-		Shader emptyShader = Shader::LoadShader(vert, frag);
+		Shader audioObjectShader = Shader::LoadShader(vert, frag);
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, emptyShader);
+		mat->AddShader(vert, frag, audioObjectShader);
+
+		/*
+		auto pointLight = obj->AddComponent<LightComponent>(
+			LightComponent::LightType::Point,
+			diffuse,
+			intensity,
+			distance);
+		pointLight->SetOwner(obj);
+		*/
+
+		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "audio.png").string();
+		auto billboard = Billboard::InitializeBillboard(
+			pos,
+			rot,
+			scale,
+			billboardDiffTexture,
+			billboardID,
+			isBillboardEnabled);
+
+		billboard->SetParentBillboardHolder(obj);
+		obj->SetChildBillboard(billboard);
 
 		obj->SetTxtFilePath(txtFilePath);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
+		GameObjectManager::AddPointLight(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
@@ -153,17 +167,17 @@ namespace Graphics::Shape
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
-			"Successfully initialized Empty with name " + obj->GetName() + " and ID " + to_string(obj->GetID()) + "\n");
+			"Successfully initialized audio object with name " + obj->GetName() + " and ID " + to_string(obj->GetID()) + "\n");
 
 		return obj;
 	}
 
-	void Empty::RenderEmpty(
-		const shared_ptr<GameObject>& obj,
-		const mat4& view,
+	void AudioObject::RenderAudioObject(
+		const shared_ptr<GameObject>& obj, 
+		const mat4& view, 
 		const mat4& projection)
 	{
-		if (!obj) Engine::CreateErrorPopup("Empty gameobject is invalid.");
+		if (!obj) Engine::CreateErrorPopup("Audio gameobject is invalid.");
 
 		if (obj->IsEnabled())
 		{
