@@ -676,73 +676,61 @@ namespace Graphics::GUI
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Audio object"))
+			if (ImGui::MenuItem("Audio object"))
 			{
-				if (ImGui::IsItemClicked())
-				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".txt";
-					File::CreateNewFolder(targetPath);
+				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
+				string targetName = path(targetPath).stem().string();
+				string targetNameAndExtension = targetName + ".txt";
+				File::CreateNewFolder(targetPath);
 
-					string scenePath = path(Engine::scenePath).parent_path().filename().string();
-					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
+				string scenePath = path(Engine::scenePath).parent_path().filename().string();
+				string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-					unsigned int nextID = ++GameObject::nextID;
-					unsigned int nextID2 = ++GameObject::nextID;
+				unsigned int nextID = ++GameObject::nextID;
+				unsigned int nextID2 = ++GameObject::nextID;
 
-					shared_ptr<GameObject> obj =
-						AudioObject::InitializeAudioObject(
-							newPos,
-							vec3(0),
-							vec3(1),
-							finalTxtPath,
-							targetName,
-							nextID,
-							true,
+				shared_ptr<GameObject> obj =
+					AudioObject::InitializeAudioObject(
+						newPos,
+						vec3(0),
+						vec3(1),
+						finalTxtPath,
+						targetName,
+						nextID,
+						true,
 
-							//billboard values
-							nextID2,
-							true);
-
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::EndMenu();
+						//billboard values
+						nextID2,
+						true);
 			}
 
-			if (ImGui::BeginMenu("Camera"))
+			if (ImGui::MenuItem("Camera"))
 			{
-				if (ImGui::IsItemClicked())
-				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Camera", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".txt";
-					File::CreateNewFolder(targetPath);
+				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Camera", "");
+				string targetName = path(targetPath).stem().string();
+				string targetNameAndExtension = targetName + ".txt";
+				File::CreateNewFolder(targetPath);
 
-					string scenePath = path(Engine::scenePath).parent_path().filename().string();
-					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
+				string scenePath = path(Engine::scenePath).parent_path().filename().string();
+				string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-					string name = "Billboard";
-					unsigned int nextID = ++GameObject::nextID;
-					unsigned int nextID2 = ++GameObject::nextID;
+				string name = "Billboard";
+				unsigned int nextID = ++GameObject::nextID;
+				unsigned int nextID2 = ++GameObject::nextID;
 
-					shared_ptr<GameObject> obj =
-						CameraObject::InitializeCameraObject(
-							newPos,
-							vec3(0),
-							vec3(1),
-							finalTxtPath,
-							targetName,
-							nextID,
-							true,
+				shared_ptr<GameObject> obj =
+					CameraObject::InitializeCameraObject(
+						newPos,
+						vec3(0),
+						vec3(1),
+						finalTxtPath,
+						targetName,
+						nextID,
+						true,
 
-							//billboard values
-							nextID2,
-							true);
-
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::EndMenu();
+						//billboard values
+						nextID2,
+						true);
 			}
 
 			ImGui::EndMenu();
@@ -787,15 +775,9 @@ namespace Graphics::GUI
 
 		ImGui::SameLine(170 * fontScale * 0.75f);
 
-		if (ImGui::BeginMenu("Settings"))
+		if (ImGui::MenuItem("Settings"))
 		{
-			if (ImGui::IsItemClicked())
-			{
-				GUISettings::renderSettings = true;
-
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndMenu();
+			GUISettings::renderSettings = true;
 		}
 
 		ImGui::SameLine(240 * fontScale * 0.75f);
@@ -841,15 +823,9 @@ namespace Graphics::GUI
 
 		ImGui::SameLine(310 * fontScale * 0.75f);
 
-		if (ImGui::BeginMenu("Run"))
+		if (ImGui::MenuItem("Run"))
 		{
-			if (ImGui::IsItemClicked())
-			{
-				Compilation::Run();
-
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndMenu();
+			Compilation::Run();
 		}
 		if (ImGui::IsItemHovered())
 		{
