@@ -67,8 +67,6 @@ namespace Graphics::Components
 		mat4 GetViewMatrix() const;
 
         type_index GetType() const override { return typeid(CameraComponent); }
-
-        void Update(float deltaTime) override {}
 	private:
 		bool isEnabled;
 		float speed;

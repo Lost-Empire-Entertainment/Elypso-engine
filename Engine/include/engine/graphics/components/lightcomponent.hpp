@@ -56,9 +56,6 @@ namespace Graphics::Components
         LightType GetLightType() const { return lightType; }
 
         type_index GetType() const override { return typeid(LightComponent); }
-
-        void Update(float deltaTime) override {}
-
     private:
         LightType lightType;
 

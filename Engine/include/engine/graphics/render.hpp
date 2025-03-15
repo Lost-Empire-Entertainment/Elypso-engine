@@ -31,8 +31,14 @@ namespace Graphics
 	{
 	public:
 #if ENGINE_MODE
+		/// <summary>
+		/// The scene camera used by the engine
+		/// </summary>
 		static inline shared_ptr<GameObject> sceneCamera;
 #endif
+		/// <summary>
+		/// The camera that is currently in use by the engine or game
+		/// </summary>
 		static inline shared_ptr<GameObject> activeCamera;
 
 		static inline GLFWwindow* window;

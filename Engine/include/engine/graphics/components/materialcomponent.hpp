@@ -144,9 +144,6 @@ namespace Graphics::Components
         const float& GetShininessValue() const { return shininessValue; }
         const bool& IsTransparent() const { return isTransparent; }
         const float& GetTransparentValue() const { return transparentValue; }
-
-        void Update(float deltaTime) override {}
-
     private:
         bool isTransparent;
         float shininessValue;

@@ -38,9 +38,6 @@ namespace Graphics::Components
         }
 
         virtual type_index GetType() const = 0;
-
-        virtual void Update(float deltaTime) {}
-
     private:
         weak_ptr<GameObject> owner;
     };

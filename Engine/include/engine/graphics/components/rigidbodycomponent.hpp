@@ -100,9 +100,6 @@ namespace Graphics::Components
 		float GetDynamicFriction() const { return dynamicFriction; }
 
 		type_index GetType() const override { return typeid(RigidBodyComponent); }
-
-		void Update(float deltaTime) override {}
-
 	private:
 		GameObjectHandle handle;
 		bool isDynamic;

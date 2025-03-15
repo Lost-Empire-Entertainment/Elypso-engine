@@ -99,9 +99,6 @@ namespace Graphics::Components
         const vector<unsigned int>& GetIndices() const { return indices; }
 
         type_index GetType() const override { return typeid(MeshComponent); }
-
-        void Update(float deltaTime) override {}
-
     private:
         MeshType type;
         GLuint VAO;

@@ -38,9 +38,6 @@ namespace Graphics::Components
         const vec3& GetScale() const { return scale; }
 
         type_index GetType() const override { return typeid(TransformComponent); }
-
-        void Update(float deltaTime) override {}
-
     private:
         vec3 position;
         vec3 rotation;
