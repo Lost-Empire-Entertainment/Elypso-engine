@@ -183,16 +183,19 @@ namespace Graphics::Shape
 			shader.SetVec3("color", vec3(1.0f));
 
 			auto mesh = obj->GetComponent<MeshComponent>();
-			mat4 model = mat4(1.0f);
-			model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());
-			quat newRot = quat(radians(obj->GetComponent<TransformComponent>()->GetRotation()));
-			model *= mat4_cast(newRot);
-			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
+			if (GameObjectManager::renderBorders)
+			{
+				mat4 model = mat4(1.0f);
+				model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());
+				quat newRot = quat(radians(obj->GetComponent<TransformComponent>()->GetRotation()));
+				model *= mat4_cast(newRot);
+				model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
-			shader.SetMat4("model", model);
-			GLuint VAO = mesh->GetVAO();
-			glBindVertexArray(VAO);
-			glDrawArrays(GL_LINES, 0, 32);
+				shader.SetMat4("model", model);
+				GLuint VAO = mesh->GetVAO();
+				glBindVertexArray(VAO);
+				glDrawArrays(GL_LINES, 0, 32);
+			}
 		}
 	}
 }

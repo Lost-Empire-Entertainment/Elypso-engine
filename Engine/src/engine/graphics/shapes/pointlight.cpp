@@ -210,7 +210,7 @@ namespace Graphics::Shape
 			}
 
 			auto mesh = obj->GetComponent<MeshComponent>();
-			if (GameObjectManager::renderLightBorders)
+			if (GameObjectManager::renderBorders)
 			{
 				mat4 model = mat4(1.0f);
 				model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());

@@ -54,3 +54,4 @@
 - can play multiple songs at the same time
 - no longer importing files in audio folder
 - can remove attached audio file from audio object
+- can individually control border, point light, spotlight, directional light, audio object and camera object rendering from new menu in scene window

@@ -1419,7 +1419,7 @@ namespace Graphics::GUI
 				if (audioPlayer->IsPlaying())
 				{
 					audioPlayer->SetPlayState(false); //stop locally
-					Audio::Stop(audioFileName, obj);      //stop in audio library
+					Audio::Stop(audioFileName, obj);  //stop in audio library
 				}
 
 				Audio::Delete(audioFileName, obj); //remove from audio library

@@ -145,7 +145,22 @@ namespace Graphics::Shape
 		if (obj->GetParentBillboardHolder() == nullptr) Engine::CreateErrorPopup("Billboard parent gameobject is invalid.");
 		shared_ptr<GameObject> parent = obj->GetParentBillboardHolder();
 
-		if (GameObjectManager::renderBillboards
+		MeshComponent::MeshType type = parent->GetComponent<MeshComponent>()->GetMeshType();
+
+		//checks whether this object type matches the billboard types that are rendered
+		bool correctType =
+			(type == MeshComponent::MeshType::point_light
+			&& GameObjectManager::renderPointLightBillboards)
+			|| (type == MeshComponent::MeshType::spot_light
+			&& GameObjectManager::renderSpotlightBillboards)
+			|| (type == MeshComponent::MeshType::directional_light
+			&& GameObjectManager::renderDirLightBillboard)
+			|| (type == MeshComponent::MeshType::audio
+			&& GameObjectManager::renderAudioObjectBillboards)
+			|| (type == MeshComponent::MeshType::camera
+			&& GameObjectManager::renderAudioObjectBillboards);
+
+		if (correctType
 			&& obj->IsEnabled())
 		{
 			auto mat = obj->GetComponent<MaterialComponent>();

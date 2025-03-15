@@ -468,8 +468,12 @@ namespace EngineFile
 			to_string(rot[2]);
 		SetValue("camera_rotation", cameraRot);
 #if ENGINE_MODE
-		SetValue("renderBillboards", to_string(GameObjectManager::renderBillboards));
-		SetValue("renderLightBorders", to_string(GameObjectManager::renderLightBorders));
+		SetValue("renderBorders", to_string(GameObjectManager::renderBorders));
+		SetValue("renderPointLightBillboards", to_string(GameObjectManager::renderPointLightBillboards));
+		SetValue("renderSpotlightBillboards", to_string(GameObjectManager::renderSpotlightBillboards));
+		SetValue("renderDirLightBillboard", to_string(GameObjectManager::renderDirLightBillboard));
+		SetValue("renderAudioObjectBillboards", to_string(GameObjectManager::renderAudioObjectBillboards));
+		SetValue("renderCameraObjectBillboards", to_string(GameObjectManager::renderCameraObjectBillboards));
 #endif
 		SetValue("skybox_right", skyboxTexturesMap["right"]);
 		SetValue("skybox_left", skyboxTexturesMap["left"]);
@@ -505,11 +509,19 @@ namespace EngineFile
 		Render::camera.SetCameraRotation(cameraRot);
 
 #if ENGINE_MODE
-		string renderBillboards = GetValue("renderBillboards");
-		GameObjectManager::renderBillboards = stoi(renderBillboards);
+		string renderBorders = GetValue("renderBorders");
+		GameObjectManager::renderBorders = stoi(renderBorders);
 
-		string renderLightBorders = GetValue("renderLightBorders");
-		GameObjectManager::renderLightBorders = stoi(renderLightBorders);
+		string renderPointLightBillboards = GetValue("renderPointLightBillboards");
+		GameObjectManager::renderPointLightBillboards = stoi(renderPointLightBillboards);
+		string renderSpotlightBillboards = GetValue("renderSpotlightBillboards");
+		GameObjectManager::renderSpotlightBillboards = stoi(renderSpotlightBillboards);
+		string renderDirLightBillboard = GetValue("renderDirLightBillboard");
+		GameObjectManager::renderDirLightBillboard = stoi(renderDirLightBillboard);
+		string renderAudioObjectBillboards = GetValue("renderAudioObjectBillboards");
+		GameObjectManager::renderAudioObjectBillboards = stoi(renderAudioObjectBillboards);
+		string renderCameraObjectBillboards = GetValue("renderCameraObjectBillboards");
+		GameObjectManager::renderCameraObjectBillboards = stoi(renderCameraObjectBillboards);
 #endif
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
