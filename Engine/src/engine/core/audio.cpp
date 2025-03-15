@@ -79,7 +79,7 @@ namespace Core
             return false;
         }
 
-        if (soundMap.find(name) != soundMap.end())
+        if (soundMap.find(fullPath) != soundMap.end())
         {
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
@@ -99,7 +99,7 @@ namespace Core
             return false;
         }
 
-        soundMap[name] = move(sound);
+        soundMap[fullPath] = move(sound);
 
         ConsoleManager::WriteConsoleMessage(
             Caller::FILE,
@@ -128,7 +128,7 @@ namespace Core
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             //reset audio to the beginning
             ma_result seekResult = ma_sound_seek_to_pcm_frame(it->second.get(), 0);
@@ -179,7 +179,7 @@ namespace Core
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             ma_result result = ma_sound_stop(it->second.get());
             if (result != MA_SUCCESS)
@@ -231,7 +231,7 @@ namespace Core
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             ma_result result = ma_sound_stop(it->second.get());
             if (result != MA_SUCCESS)
@@ -271,7 +271,7 @@ namespace Core
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             ma_result result = ma_sound_start(it->second.get());
             if (result != MA_SUCCESS)
@@ -304,13 +304,15 @@ namespace Core
             return;
         }
 
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
+
         if (!IsImported(name, obj))
         {
             
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             //convert the volume from 0.0f - 100.0f range to 0.0f - 1.0f range
             float scaledVolume = volume / 100.0f;
@@ -336,13 +338,15 @@ namespace Core
             return;
         }
 
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
+
         if (!IsImported(name, obj))
         {
             
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             ma_sound_set_min_distance(it->second.get(), minRange);
 
@@ -363,13 +367,15 @@ namespace Core
             return;
         }
 
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
+
         if (!IsImported(name, obj))
         {
             
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             ma_sound_set_max_distance(it->second.get(), maxRange);
 
@@ -391,13 +397,15 @@ namespace Core
             return false;
         }
 
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
+
         if (!IsImported(name, obj))
         {
             return false;
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             if (state)
             {
@@ -455,7 +463,8 @@ namespace Core
         }
         else
         {
-            auto it = soundMap.find(name);
+            string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
+            auto it = soundMap.find(fullPath);
 
             ma_sound* sound = it->second.get();
 
@@ -491,7 +500,7 @@ namespace Core
         }
         else
         {
-            auto it = soundMap.find(name);
+            auto it = soundMap.find(fullPath);
 
             ma_sound_uninit(it->second.get());
             soundMap.erase(it);
@@ -510,7 +519,7 @@ namespace Core
     {
         string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
-        auto it = soundMap.find(name);
+        auto it = soundMap.find(fullPath);
 
         if (!IsImported(name, obj))
         {
@@ -527,7 +536,7 @@ namespace Core
     {
         string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
-        auto it = soundMap.find(name);
+        auto it = soundMap.find(fullPath);
         return it != soundMap.end();
     }
 
