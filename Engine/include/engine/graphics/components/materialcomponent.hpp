@@ -39,7 +39,7 @@ namespace Graphics::Components
         MaterialComponent(
             bool isTransparent = false,
             float transparentValue = 1.0f,
-            float shininessvalue = 0.5f) :
+            float shininessValue = 0.5f) :
             isTransparent(isTransparent),
             transparentValue(transparentValue),
             shininessValue(shininessValue) {}

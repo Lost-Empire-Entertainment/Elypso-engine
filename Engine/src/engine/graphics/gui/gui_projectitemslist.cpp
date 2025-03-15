@@ -377,6 +377,7 @@ namespace Graphics::GUI
 				//set copied audio file path as audio object file path
 				string fileName = path(selectedPath).filename().string();
 				audioPlayerComponent->SetName(fileName);
+				Audio::Import(fileName, obj);
 
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,

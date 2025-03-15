@@ -454,16 +454,20 @@ namespace Core
 
             auto apc = selectedObj->GetComponent<AudioPlayerComponent>();
             string audioFileName = apc->GetName();
-            bool isPlaying = apc->IsPlaying();
-            bool isPaused = apc->IsPaused();
             bool is3D = apc->Is3D();
             float currVolume = apc->GetVolume();
             float minRange = apc->GetMinRange();
             float maxRange = apc->GetMaxRange();
 
+            if (audioFileName != "")
+            {
+                copiedObject["audioFileOrigin"] = (
+                    path(Engine::projectPath) 
+                    / path(selectedObj->GetTxtFilePath()).parent_path() 
+                    / audioFileName).string();
+            }
+
             copiedObject["audioFileName"] = audioFileName;
-            copiedObject["isPlaying"] = to_string(isPlaying);
-            copiedObject["isPaused"] = to_string(isPaused);
             copiedObject["is3D"] = to_string(is3D);
             copiedObject["currentVolume"] = to_string(currVolume);
             copiedObject["minRange"] = to_string(minRange);
@@ -698,13 +702,19 @@ namespace Core
 
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 
+            string audioFileOrigin = copiedObject["audioFileOrigin"];
             string audioFileName = copiedObject["audioFileName"];
-            bool isPlaying = stoi(copiedObject["isPlaying"]);
-            bool isPaused = stoi(copiedObject["isPaused"]);
             bool is3D = stoi(copiedObject["is3D"]);
             float currentVolume = stof(copiedObject["currentVolume"]);
             float minRange = stof(copiedObject["minRange"]);
             float maxRange = stof(copiedObject["maxRange"]);
+
+            //also copy audio file to new folder
+            if (audioFileName != "")
+            {
+                string audioFileTarget = (path(targetPath) / audioFileName).string();
+                File::CopyFileOrFolder(audioFileOrigin, audioFileTarget);
+            }
 
             auto newAudioObject = AudioObject::InitializeAudioObject(
                 newPos,
@@ -717,8 +727,8 @@ namespace Core
 
                 //audio component values
                 audioFileName,
-                isPlaying,
-                isPaused,
+                false,
+                false,
                 currentVolume,
                 minRange,
                 maxRange,
