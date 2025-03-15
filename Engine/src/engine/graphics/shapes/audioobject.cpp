@@ -18,6 +18,7 @@
 #include "meshcomponent.hpp"
 #include "billboard.hpp"
 #include "audioplayercomponent.hpp"
+#include "audio.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -35,6 +36,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Components::AudioPlayerComponent;
+using Core::Audio;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -49,6 +51,13 @@ namespace Graphics::Shape
 		string& name,
 		unsigned int& id,
 		const bool& isEnabled,
+
+		const string& audioFileName,
+		const bool& isPlaying,
+		const bool& is3D,
+		const float& volume,
+		const float& minRange,
+		const float& maxRange,
 
 		unsigned int& billboardID,
 		const bool& isBillboardEnabled)
@@ -137,8 +146,20 @@ namespace Graphics::Shape
 		mat->SetOwner(obj);
 		mat->AddShader(vert, frag, audioObjectShader);
 
-		auto apc = obj->AddComponent<AudioPlayerComponent>();
+		auto apc = obj->AddComponent<AudioPlayerComponent>(
+			isPlaying,
+			false,
+			is3D,
+			volume,
+			minRange,
+			maxRange);
 		apc->SetOwner(obj);
+		if (audioFileName != "")
+		{
+			apc->SetName(audioFileName);
+			Audio::Import(audioFileName, obj);
+		}
+		if (isPlaying) Audio::Play(audioFileName, obj);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "audio.png").string();
 		auto billboard = Billboard::InitializeBillboard(
@@ -192,7 +213,7 @@ namespace Graphics::Shape
 				Select::selectedObj == obj
 				&& Select::isObjectSelected ? 1.0f : 0.5f;
 			shader.SetFloat("transparency", transparency);
-			shader.SetVec3("color", vec3(0.5f));
+			shader.SetVec3("color", vec3(1.0f));
 
 			auto mesh = obj->GetComponent<MeshComponent>();
 			mat4 model = mat4(1.0f);

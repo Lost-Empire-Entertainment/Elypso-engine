@@ -699,6 +699,14 @@ namespace Graphics::GUI
 						nextID,
 						true,
 
+						//audio component values
+						"",
+						false,
+						false,
+						50.0f,
+						1.0f,
+						100.0f,
+
 						//billboard values
 						nextID2,
 						true);

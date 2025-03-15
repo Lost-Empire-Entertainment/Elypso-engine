@@ -352,13 +352,26 @@ namespace Graphics::GUI
 			case Type::Audio:
 			{
 				auto audioPlayerComponent = obj->GetComponent<AudioPlayerComponent>();
-				string audioFileName = path(selectedPath).filename().string();
-				audioPlayerComponent->SetName(audioFileName);
+
+				//delete existing file
+				if (audioPlayerComponent->GetName() != "")
+				{
+					string fullPath = (path(obj->GetTxtFilePath()).parent_path() / audioPlayerComponent->GetName()).string();
+					cout << "!!!!!!!!!! attempting to remove audio file from: " << fullPath << "\n";
+					File::DeleteFileOrfolder(fullPath);
+				}
+
+				//copy audio file to audio object folder
+				string newPath = (path(obj->GetTxtFilePath()).parent_path() / path(selectedPath).filename().string()).string();
+				File::CopyFileOrFolder(selectedPath, newPath);
+
+				//set copied audio file path as audio object file path
+				audioPlayerComponent->SetName(newPath);
 
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
 					ConsoleType::INFO,
-					"Assigned audio file '" + audioFileName + "' to '" + obj->GetName() + "'.\n");
+					"Assigned audio file '" + newPath + "' to '" + obj->GetName() + "'.\n");
 				break;
 			}
 			}
@@ -476,22 +489,6 @@ namespace Graphics::GUI
 		string name = obj->GetName();
 		unsigned int ID = obj->GetID();
 
-		//audio data
-		bool is3D{};
-		float maxRange{};
-		float minRange{};
-		float volume{};
-		string audioFilePath{};
-		auto apc = obj->GetComponent<AudioPlayerComponent>();
-		if (apc)
-		{
-			is3D = apc->Is3D();
-			maxRange = apc->GetMaxRange();
-			minRange = apc->GetMinRange();
-			volume = apc->GetVolume();
-			audioFilePath = apc->GetName();
-		}
-
 		//store model origin and target path
 		string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
 		string originPath = (path(Engine::projectPath) / "models" / fileAndExtension).string();
@@ -534,27 +531,6 @@ namespace Graphics::GUI
 			32.0f,
 			name,
 			ID);
-
-		if (audioFilePath != "")
-		{
-			for (const auto& obj : GameObjectManager::GetObjects())
-			{
-				if (obj->GetName() == name)
-				{
-					shared_ptr<GameObject> initializedObj = obj;
-					auto apc = initializedObj->AddComponent<AudioPlayerComponent>();
-					apc->SetOwner(initializedObj);
-
-					apc->Set3DState(is3D);
-					apc->SetMaxRange(maxRange);
-					apc->SetMinRange(minRange);
-					apc->SetVolume(volume);
-					apc->SetName(audioFilePath);
-
-					break;
-				}
-			}
-		}
 	}
 }
 #endif

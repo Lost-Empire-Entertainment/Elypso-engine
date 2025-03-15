@@ -51,17 +51,17 @@ namespace Graphics::Components
     public:
         enum class MeshType
         {
-            empty,
-            model,
-            audio,
-            camera,
-            point_light,
-            spot_light,
-            directional_light,
-            billboard,
-            border,
-            actionTex,
-            skybox
+            empty,             //Gameobject which doesnt have any removable components
+            model,             //Gameobject whose mesh component has a model
+            audio,             //Gameobject with an audio component and its billboard icon
+            camera,            //Gameobject with a camera component and its billboard icon
+            point_light,       //Gameobject with a light component switched to point light and its billboard icon
+            spot_light,        //Gameobject with a light component switched to spotlight and its billboard icon
+            directional_light, //Gameobject with a light component switched to directional light and its billboard icon
+            billboard,         //Internal billboard gameobject attached to light gameobjects, camera and audio object
+            border,            //Internal gameobject used to render the border for selected gameobject
+            actionTex,         //Internal gameobject used to render textures for axis and interaction type for selected gameobject
+            skybox             //Internal gameobject used for rendering the skybox
         };
 
         MeshComponent(

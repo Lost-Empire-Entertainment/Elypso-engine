@@ -29,16 +29,16 @@ namespace Graphics::GUI
 	public:
 		enum class Type
 		{
-			SkyboxTexture_right,
-			SkyboxTexture_left,
-			SkyboxTexture_top,
-			SkyboxTexture_bottom,
-			SkyboxTexture_front,
-			SkyboxTexture_back,
-			GameobjectTexture,
-			GameobjectModel,
-			Scene,
-			Audio
+			SkyboxTexture_right,  //The skybox texture in the right
+			SkyboxTexture_left,   //The skybox texture in the left
+			SkyboxTexture_top,    //The skybox texture at the top
+			SkyboxTexture_bottom, //The skybox texture at the bottom
+			SkyboxTexture_front,  //The skybox texture in the front
+			SkyboxTexture_back,   //The skybox texture at the back
+			GameobjectTexture,    //The texture attached to the gameobject
+			GameobjectModel,      //The model file used by the gameobject
+			Scene,                //The chosen scene file
+			Audio                 //The chosen audio file
 		};
 
 		static inline bool renderProjectItemsList;

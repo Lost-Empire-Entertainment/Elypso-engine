@@ -454,12 +454,20 @@ namespace Core
 
             auto apc = selectedObj->GetComponent<AudioPlayerComponent>();
             string audioFileName = apc->GetName();
+            bool isPlaying = apc->IsPlaying();
+            bool isPaused = apc->IsPaused();
             bool is3D = apc->Is3D();
             float currVolume = apc->GetVolume();
+            float minRange = apc->GetMinRange();
+            float maxRange = apc->GetMaxRange();
 
             copiedObject["audioFileName"] = audioFileName;
+            copiedObject["isPlaying"] = to_string(isPlaying);
+            copiedObject["isPaused"] = to_string(isPaused);
             copiedObject["is3D"] = to_string(is3D);
             copiedObject["currentVolume"] = to_string(currVolume);
+            copiedObject["minRange"] = to_string(minRange);
+            copiedObject["maxRange"] = to_string(maxRange);
         }
 
         else if (type == MeshComponent::MeshType::camera)
@@ -690,6 +698,14 @@ namespace Core
 
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 
+            string audioFileName = copiedObject["audioFileName"];
+            bool isPlaying = stoi(copiedObject["isPlaying"]);
+            bool isPaused = stoi(copiedObject["isPaused"]);
+            bool is3D = stoi(copiedObject["is3D"]);
+            float currentVolume = stof(copiedObject["currentVolume"]);
+            float minRange = stof(copiedObject["minRange"]);
+            float maxRange = stof(copiedObject["maxRange"]);
+
             auto newAudioObject = AudioObject::InitializeAudioObject(
                 newPos,
                 rot,
@@ -699,19 +715,20 @@ namespace Core
                 nextID,
                 true,
 
+                //audio component values
+                audioFileName,
+                isPlaying,
+                isPaused,
+                currentVolume,
+                minRange,
+                maxRange,
+
                 //billboard values
                 nextID2,
                 true);
 
-            string audioFileName = copiedObject["audioFileName"];
-            bool is3D = stoi(copiedObject["is3D"]);
-            float currentVolume = stof(copiedObject["currentVolume"]);
-
             auto apc = newAudioObject->GetComponent<AudioPlayerComponent>();
             apc->SetOwner(Select::selectedObj);
-            apc->SetName(audioFileName);
-            apc->Set3DState(is3D);
-            apc->SetVolume(currentVolume);
 
             if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
         }

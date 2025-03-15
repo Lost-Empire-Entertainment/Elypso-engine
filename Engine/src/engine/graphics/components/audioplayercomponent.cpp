@@ -17,18 +17,24 @@ namespace Graphics::Components
 {
 	void AudioPlayerComponent::SetVolume(float newVolume)
 	{
+		const shared_ptr<GameObject>& owner = GetOwner();
+
 		volume = newVolume;
-		Audio::SetVolume(audioFileName, volume);
+		Audio::SetVolume(audioFileName, volume, owner);
 	}
 	void AudioPlayerComponent::SetMinRange(float newMinRange)
 	{
+		const shared_ptr<GameObject>& owner = GetOwner();
+
 		minRange = newMinRange;
-		Audio::SetMinRange(audioFileName, minRange);
+		Audio::SetMinRange(audioFileName, minRange, owner);
 	}
 	void AudioPlayerComponent::SetMaxRange(float newMaxRange)
 	{
+		const shared_ptr<GameObject>& owner = GetOwner();
+
 		maxRange = newMaxRange;
-		Audio::SetMaxRange(audioFileName, maxRange);
+		Audio::SetMaxRange(audioFileName, maxRange, owner);
 	}
 	void AudioPlayerComponent::Set3DState(bool newState)
 	{

@@ -63,43 +63,31 @@ namespace Graphics::Shape
 
 		float vertices[] =
 		{
-			//edges of the cube
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
+			//four corner edges
+			0.0f,  0.5f,  0.0f,
+		   -0.5f, -0.5f, -0.5f,
 
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+			0.5f, -0.5f, -0.5f,
 
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+		   -0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			0.0f,  0.5f,  0.0f,
+			0.5f, -0.5f,  0.5f,
 
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
+			//four bottom edges
+			0.5f, -0.5f,  0.5f,
+		   -0.5f, -0.5f,  0.5f,
 
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+			0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f, -0.5f,
 
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+		   -0.5f, -0.5f, -0.5f,
+		   -0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-
-			//connecting edges
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-
-			-0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f,  0.5f,
+			0.5f, -0.5f, -0.5f,
+			0.5f, -0.5f,  0.5f
 		};
 
 		GLuint vao, vbo, ebo;
@@ -192,7 +180,7 @@ namespace Graphics::Shape
 				Select::selectedObj == obj
 				&& Select::isObjectSelected ? 1.0f : 0.5f;
 			shader.SetFloat("transparency", transparency);
-			shader.SetVec3("color", vec3(0.5f));
+			shader.SetVec3("color", vec3(1.0f));
 
 			auto mesh = obj->GetComponent<MeshComponent>();
 			mat4 model = mat4(1.0f);
@@ -204,7 +192,7 @@ namespace Graphics::Shape
 			shader.SetMat4("model", model);
 			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
-			glDrawArrays(GL_LINES, 0, 24);
+			glDrawArrays(GL_LINES, 0, 32);
 		}
 	}
 }

@@ -36,6 +36,17 @@ namespace Graphics::Shape
 			const bool& isEnabled = true,
 
 			//
+			// AUDIO COMPONENT VALUES
+			//
+
+			const string& audioFileName = "",
+			const bool& isPlaying = false,
+			const bool& is3D = false,
+			const float& volume = 50.0f,
+			const float& minRange = 1.0f,
+			const float& maxRange = 100.0f,
+
+			//
 			// BILLBOARD VALUES
 			//
 

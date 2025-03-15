@@ -18,12 +18,12 @@ namespace Graphics::Components
 	{
 	public:
 		AudioPlayerComponent(
-			const bool& isPlaying = false,
-			const bool& isPaused = false,
-			const bool& is3D = false,
-			const float& volume = 50.0f,
-			const float& minRange = 1.0f,
-			const float& maxRange = 100.0f) :
+			const bool& isPlaying,
+			const bool& isPaused,
+			const bool& is3D,
+			const float& volume,
+			const float& minRange,
+			const float& maxRange) :
 			isPlaying(isPlaying),
 			isPaused(isPaused),
 			is3D(is3D),

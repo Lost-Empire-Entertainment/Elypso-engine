@@ -614,21 +614,6 @@ namespace Graphics::GUI
 					vec3 rot = obj->GetComponent<TransformComponent>()->GetRotation();
 					vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
 
-					bool is3D{};
-					float maxRange{};
-					float minRange{};
-					float volume{};
-					string audioFilePath{};
-					auto apc = obj->GetComponent<AudioPlayerComponent>();
-					if (apc)
-					{
-						is3D = apc->Is3D();
-						maxRange = apc->GetMaxRange();
-						minRange = apc->GetMinRange();
-						volume = apc->GetVolume();
-						audioFilePath = apc->GetName();
-					}
-
 					GameObjectManager::DestroyGameObject(obj, false);
 
 					File::CreateNewFolder(txtFileParent);
@@ -640,17 +625,6 @@ namespace Graphics::GUI
 						name,
 						ID,
 						true);
-					if (audioFilePath != "")
-					{
-						auto emptyAPC = empty->AddComponent<AudioPlayerComponent>();
-						emptyAPC->SetOwner(empty);
-						
-						emptyAPC->Set3DState(is3D);
-						emptyAPC->SetMaxRange(maxRange);
-						emptyAPC->SetMinRange(minRange);
-						emptyAPC->SetVolume(volume);
-						emptyAPC->SetName(audioFilePath);
-					}
 				}
 			}
 		}
@@ -1381,7 +1355,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = !audioPlayer->Is3D() ? 6 : 8;
+		int numLines = !audioPlayer->Is3D() ? 7 : 9;
 		if (audioPlayer->IsPlaying()) numLines++;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Audio player", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
@@ -1436,7 +1410,7 @@ namespace Graphics::GUI
 				bool newPlayState = audioPlayer->IsPlaying();
 				if (newPlayState)
 				{
-					Audio::Play(audioFile);
+					Audio::Play(audioFile, obj);
 
 					ConsoleManager::WriteConsoleMessage(
 						ConsoleCaller::INPUT,
@@ -1445,7 +1419,7 @@ namespace Graphics::GUI
 				}
 				else
 				{
-					Audio::Stop(audioFile);
+					Audio::Stop(audioFile, obj);
 					audioPlayer->SetPauseState(false);
 
 					ConsoleManager::WriteConsoleMessage(
@@ -1470,7 +1444,7 @@ namespace Graphics::GUI
 				bool newPauseState = audioPlayer->IsPaused();
 				if (newPauseState)
 				{
-					Audio::Pause(audioFile);
+					Audio::Pause(audioFile, obj);
 
 					ConsoleManager::WriteConsoleMessage(
 						ConsoleCaller::INPUT,
@@ -1479,7 +1453,7 @@ namespace Graphics::GUI
 				}
 				else
 				{
-					Audio::Continue(audioFile);
+					Audio::Continue(audioFile, obj);
 
 					ConsoleManager::WriteConsoleMessage(
 						ConsoleCaller::INPUT,
@@ -1494,7 +1468,7 @@ namespace Graphics::GUI
 		{
 			audioPlayer->Set3DState(is3D);
 
-			string audioFile = path(audioPlayer->GetName()).filename().string();
+			string audioFile = audioPlayer->GetName();
 
 			bool new3DState = audioPlayer->Is3D();
 			if (is3D)
@@ -1544,7 +1518,7 @@ namespace Graphics::GUI
 			}
 		}
 
-		if (ImGui::Button("Set path"))
+		if (ImGui::Button("Add audio file"))
 		{
 			string audioFolder = (path(Engine::projectPath) / "audio").string();
 			if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
@@ -1561,6 +1535,34 @@ namespace Graphics::GUI
 			ImGui::BeginTooltip();
 			ImGui::Text(audioFileName.c_str());
 			ImGui::EndTooltip();
+		}
+
+		if (ImGui::Button("Remove audio file"))
+		{
+			string audioPath = audioPlayer->GetName();
+			if (audioPath == "")
+			{
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::EXCEPTION,
+					"Error: Cannot remove audio file because no audio has been assigned!'\n");
+			}
+			else
+			{
+				if (audioPlayer->IsPlaying())
+				{
+					audioPlayer->SetPlayState(false); //stop locally
+					Audio::Stop(audioPath, obj);      //stop in audio library
+				}
+
+				Audio::Delete(audioPath, obj); //remove from audio library
+
+				string fullPath = (path(obj->GetTxtFilePath()).parent_path() / audioPath).string();
+				cout << "!!!!!!!!!! attempting to remove audio file from: " << fullPath << "\n";
+				File::DeleteFileOrfolder(audioPath); //remove externally saved file
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
 		}
 
 		ImGui::EndChild();

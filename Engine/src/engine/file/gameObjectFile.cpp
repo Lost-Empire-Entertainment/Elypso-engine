@@ -1302,27 +1302,18 @@ namespace EngineFile
 			name,
 			ID,
 			isEnabled,
+
+			//audio component values
+			audioFileName,
+			isPlaying,
+			is3D,
+			currVolume,
+			minRange,
+			maxRange,
+
+			//billboard values
 			billboardID,
 			isBillboardEnabled);
-
-		if (audioFileName != ""
-			|| data["isPlaying"] != ""
-			|| data["is3D"] != ""
-			|| data["currentVolume"] != ""
-			|| data["minRange"] != ""
-			|| data["maxRange"] != "")
-		{
-			auto apc = audioObject->AddComponent<AudioPlayerComponent>();
-			apc->SetOwner(audioObject);
-			apc->SetName(audioFileName);
-			apc->SetPlayState(isPlaying);
-			apc->Set3DState(is3D);
-			apc->SetVolume(currVolume);
-			apc->SetMinRange(minRange);
-			apc->SetMaxRange(maxRange);
-
-			if (isPlaying) Audio::Play(audioFileName);
-		}
 
 		GameObject::nextID = ID + 1;
 	}

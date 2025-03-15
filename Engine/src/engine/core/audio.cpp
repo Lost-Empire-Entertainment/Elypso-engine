@@ -19,6 +19,7 @@
 
 using std::unordered_map;
 using std::unique_ptr;
+using std::shared_ptr;
 using std::make_unique;
 using std::move;
 using std::filesystem::exists;
@@ -56,7 +57,7 @@ namespace Core
         isInitialized = true;
     }
 
-    bool Audio::Import(const string& name)
+    bool Audio::Import(const string& name, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -67,7 +68,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         if (!exists(fullPath))
         {
@@ -108,7 +109,7 @@ namespace Core
         return true;
     }
 
-    bool Audio::Play(const string& name)
+    bool Audio::Play(const string& name, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -119,9 +120,9 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -159,7 +160,7 @@ namespace Core
         }
         return true;
     }
-    bool Audio::Stop(const string& name)
+    bool Audio::Stop(const string& name, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -170,9 +171,9 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -211,7 +212,7 @@ namespace Core
         return true;
     }
 
-    bool Audio::Pause(const string& name)
+    bool Audio::Pause(const string& name, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -222,9 +223,9 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -251,7 +252,7 @@ namespace Core
         }
         return true;
     }
-    bool Audio::Continue(const string& name)
+    bool Audio::Continue(const string& name, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -262,9 +263,9 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -292,7 +293,7 @@ namespace Core
         return true;
     }
 
-    void Audio::SetVolume(const string& name, float volume)
+    void Audio::SetVolume(const string& name, float volume, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -303,7 +304,7 @@ namespace Core
             return;
         }
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             
         }
@@ -324,7 +325,7 @@ namespace Core
         }
     }
 
-    void Audio::SetMinRange(const string& name, float minRange)
+    void Audio::SetMinRange(const string& name, float minRange, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -335,7 +336,7 @@ namespace Core
             return;
         }
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             
         }
@@ -351,7 +352,7 @@ namespace Core
                 "Min range set to " + to_string(minRange) + " for audio file: " + name + "\n");
         }
     }
-    void Audio::SetMaxRange(const string& name, float maxRange)
+    void Audio::SetMaxRange(const string& name, float maxRange, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -362,7 +363,7 @@ namespace Core
             return;
         }
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             
         }
@@ -379,7 +380,7 @@ namespace Core
         }
     }
 
-    bool Audio::Set3DState(const string& name, bool state)
+    bool Audio::Set3DState(const string& name, bool state, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -390,7 +391,7 @@ namespace Core
             return false;
         }
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -417,7 +418,7 @@ namespace Core
                 ma_sound_set_positioning(it->second.get(), ma_positioning_absolute);
 
                 //reset position to origin for non-3D audio
-                UpdatePlayerPosition(name, vec3(0));
+                UpdatePlayerPosition(name, vec3(0), obj);
 
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
@@ -446,9 +447,9 @@ namespace Core
             ma_engine_listener_set_world_up(&engine, 0, up.x, up.y, up.z);
         }
     }
-    bool Audio::UpdatePlayerPosition(const string& name, const vec3& pos)
+    bool Audio::UpdatePlayerPosition(const string& name, const vec3& pos, const shared_ptr<GameObject>& obj)
     {
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -471,7 +472,7 @@ namespace Core
         return true;
     }
 
-    bool Audio::Delete(const string& name)
+    bool Audio::Delete(const string& name, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)
         {
@@ -482,9 +483,9 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -505,13 +506,13 @@ namespace Core
         return true;
     }
 
-    bool Audio::HasReachedEnd(const string& name)
+    bool Audio::HasReachedEnd(const string& name, const shared_ptr<GameObject>& obj)
     {
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         auto it = soundMap.find(name);
 
-        if (!IsImported(name))
+        if (!IsImported(name, obj))
         {
             return false;
         }
@@ -522,9 +523,9 @@ namespace Core
         }
     }
 
-    bool Audio::IsImported(const string& name)
+    bool Audio::IsImported(const string& name, const shared_ptr<GameObject>& obj)
     {
-        string fullPath = (path(Engine::projectPath) / "audio" / name).string();
+        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         auto it = soundMap.find(name);
         return it != soundMap.end();

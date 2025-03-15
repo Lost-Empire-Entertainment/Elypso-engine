@@ -95,7 +95,7 @@ namespace Graphics::Shape
 				if (apc)
 				{
 					if (apc->IsPlaying()
-						&& Audio::HasReachedEnd(apc->GetName()))
+						&& Audio::HasReachedEnd(apc->GetName(), obj))
 					{
 						apc->SetPlayState(false);
 					}
@@ -105,9 +105,9 @@ namespace Graphics::Shape
 						has3DAudio = true;
 
 						string apcName = apc->GetName();
-						if (Audio::IsImported(apc->GetName()))
+						if (Audio::IsImported(apc->GetName(), obj))
 						{
-							Audio::UpdatePlayerPosition(apcName, obj->GetComponent<TransformComponent>()->GetPosition());
+							Audio::UpdatePlayerPosition(apcName, obj->GetComponent<TransformComponent>()->GetPosition(), obj);
 						}
 					}
 				}
@@ -256,6 +256,24 @@ namespace Graphics::Shape
 			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
 			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
 			break;
+		case Type::audio:
+		{
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+			obj->RemoveChildBillboard();
+			DestroyGameObject(childBillboard, false);
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			break;
+		}
+		case Type::camera:
+		{
+			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
+			obj->RemoveChildBillboard();
+			DestroyGameObject(childBillboard, false);
+			objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+			opaqueObjects.erase(std::remove(opaqueObjects.begin(), opaqueObjects.end(), obj), opaqueObjects.end());
+			break;
+		}
 		case Type::point_light:
 		{
 			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();

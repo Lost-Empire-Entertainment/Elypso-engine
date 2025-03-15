@@ -46,7 +46,11 @@
 - fixed dynamic rigidbody with gravity enabled not moving in game
 
 0.1.3.0006:
-- actually added audio gameobject with its own icon this time
+- actually added audio gameobject with its own icon for real this time
 - added camera gameobject with its own icon
 - minor linux compatibility fixes
 - limit camera, light and audio components to empty gameobject only, cannot add more than one of those to it
+- copy attached audio file to audio object folder
+- can play multiple songs at the same time
+- no longer importing files in audio folder
+- can remove attached audio file from audio object
