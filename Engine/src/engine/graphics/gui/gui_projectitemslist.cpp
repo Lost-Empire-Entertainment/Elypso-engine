@@ -312,7 +312,7 @@ namespace Graphics::GUI
 				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
 
 				string originPath = (path(Engine::projectPath) / "textures" / fileAndExtension).string();
-				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().string() / fileAndExtension).string();
+				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).string() / fileAndExtension).string();
 				
 				File::CopyFileOrFolder(originPath, targetPath);
 
@@ -354,24 +354,35 @@ namespace Graphics::GUI
 				auto audioPlayerComponent = obj->GetComponent<AudioPlayerComponent>();
 
 				//delete existing file
-				if (audioPlayerComponent->GetName() != "")
+				string audioFileName = audioPlayerComponent->GetName();
+				if (audioFileName != "")
 				{
-					string fullPath = (path(obj->GetTxtFilePath()).parent_path() / audioPlayerComponent->GetName()).string();
+					auto apc = obj->GetComponent<AudioPlayerComponent>();
+					if (apc->IsPlaying())
+					{
+						apc->SetPlayState(false);        //stop locally
+						Audio::Stop(audioFileName, obj); //stop in audio library
+					}
+
+					Audio::Delete(audioFileName, obj); //remove from audio library
+
+					string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / audioFileName).string();
 					cout << "!!!!!!!!!! attempting to remove audio file from: " << fullPath << "\n";
-					File::DeleteFileOrfolder(fullPath);
+					File::DeleteFileOrfolder(fullPath); //remove externally saved file
 				}
 
 				//copy audio file to audio object folder
-				string newPath = (path(obj->GetTxtFilePath()).parent_path() / path(selectedPath).filename().string()).string();
+				string newPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / path(selectedPath).filename().string()).string();
 				File::CopyFileOrFolder(selectedPath, newPath);
 
 				//set copied audio file path as audio object file path
-				audioPlayerComponent->SetName(newPath);
+				string fileName = path(selectedPath).filename().string();
+				audioPlayerComponent->SetName(fileName);
 
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
 					ConsoleType::INFO,
-					"Assigned audio file '" + newPath + "' to '" + obj->GetName() + "'.\n");
+					"Assigned audio file '" + fileName + "' to '" + obj->GetName() + "'.\n");
 				break;
 			}
 			}

@@ -1355,7 +1355,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = !audioPlayer->Is3D() ? 7 : 9;
+		int numLines = !audioPlayer->Is3D() ? 6 : 8;
 		if (audioPlayer->IsPlaying()) numLines++;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Audio player", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
@@ -1392,8 +1392,53 @@ namespace Graphics::GUI
 
 		ImGui::Separator();
 
-		bool isPlaying = audioPlayer->IsPlaying();
-		string playButtonName = isPlaying ? "Stop##apc" : "Play##apc";
+		if (ImGui::Button("Add audio file"))
+		{
+			string audioFolder = (path(Engine::projectPath) / "audio").string();
+			if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
+
+			GUIProjectItemsList::obj = obj;
+			GUIProjectItemsList::type = GUIProjectItemsList::Type::Audio;
+			GUIProjectItemsList::renderProjectItemsList = true;
+
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		if (ImGui::IsItemHovered())
+		{
+			string audioFileName = "Audio file: " + obj->GetComponent<AudioPlayerComponent>()->GetName();
+			ImGui::BeginTooltip();
+			ImGui::Text(audioFileName.c_str());
+			ImGui::EndTooltip();
+		}
+
+		string audioPath = audioPlayer->GetName();
+		if (audioPath != "")
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("Remove"))
+			{
+				if (audioPlayer->IsPlaying())
+				{
+					audioPlayer->SetPlayState(false); //stop locally
+					Audio::Stop(audioPath, obj);      //stop in audio library
+				}
+
+				Audio::Delete(audioPath, obj); //remove from audio library
+
+				string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / audioPath).string();
+				cout << "!!!!!!!!!! attempting to remove audio file from: " << fullPath << "\n";
+				File::DeleteFileOrfolder(audioPath); //remove externally saved file
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+		}
+
+		bool isPlaying = Audio::IsImported(audioPlayer->GetName(), obj) 
+			? audioPlayer->IsPlaying() 
+			: false;
+		string playButtonName = isPlaying 
+			? "Stop##apc" 
+			: "Play##apc";
 		if (ImGui::Button(playButtonName.c_str()))
 		{
 			string audioFile = audioPlayer->GetName();
@@ -1406,26 +1451,36 @@ namespace Graphics::GUI
 			}
 			else
 			{
-				audioPlayer->SetPlayState(!isPlaying);
-				bool newPlayState = audioPlayer->IsPlaying();
-				if (newPlayState)
+				if (!Audio::IsImported(audioFile, obj))
 				{
-					Audio::Play(audioFile, obj);
-
 					ConsoleManager::WriteConsoleMessage(
 						ConsoleCaller::INPUT,
-						ConsoleType::DEBUG,
-						"Playing audio file '" + audioFile + "'.\n");
+						ConsoleType::EXCEPTION,
+						"Error: Cannot play because audio file '" + audioFile + "' has not been imported!'\n");
 				}
 				else
 				{
-					Audio::Stop(audioFile, obj);
-					audioPlayer->SetPauseState(false);
+					audioPlayer->SetPlayState(!isPlaying);
+					bool newPlayState = audioPlayer->IsPlaying();
+					if (newPlayState)
+					{
+						Audio::Play(audioFile, obj);
 
-					ConsoleManager::WriteConsoleMessage(
-						ConsoleCaller::INPUT,
-						ConsoleType::DEBUG,
-						"Stopped audio file '" + audioFile + "'.\n");
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::INPUT,
+							ConsoleType::DEBUG,
+							"Playing audio file '" + audioFile + "'.\n");
+					}
+					else
+					{
+						Audio::Stop(audioFile, obj);
+						audioPlayer->SetPauseState(false);
+
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::INPUT,
+							ConsoleType::DEBUG,
+							"Stopped audio file '" + audioFile + "'.\n");
+					}
 				}
 			}
 
@@ -1513,53 +1568,6 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat("Max range##apc", &currMaxRange, 0.1f, minMaxRange, 100.0f, "%.2f"))
 			{
 				audioPlayer->SetMaxRange(currMaxRange);
-
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-		}
-
-		if (ImGui::Button("Add audio file"))
-		{
-			string audioFolder = (path(Engine::projectPath) / "audio").string();
-			if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
-
-			GUIProjectItemsList::obj = obj;
-			GUIProjectItemsList::type = GUIProjectItemsList::Type::Audio;
-			GUIProjectItemsList::renderProjectItemsList = true;
-
-			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-		if (ImGui::IsItemHovered())
-		{
-			string audioFileName = "Audio file: " + obj->GetComponent<AudioPlayerComponent>()->GetName();
-			ImGui::BeginTooltip();
-			ImGui::Text(audioFileName.c_str());
-			ImGui::EndTooltip();
-		}
-
-		if (ImGui::Button("Remove audio file"))
-		{
-			string audioPath = audioPlayer->GetName();
-			if (audioPath == "")
-			{
-				ConsoleManager::WriteConsoleMessage(
-					ConsoleCaller::INPUT,
-					ConsoleType::EXCEPTION,
-					"Error: Cannot remove audio file because no audio has been assigned!'\n");
-			}
-			else
-			{
-				if (audioPlayer->IsPlaying())
-				{
-					audioPlayer->SetPlayState(false); //stop locally
-					Audio::Stop(audioPath, obj);      //stop in audio library
-				}
-
-				Audio::Delete(audioPath, obj); //remove from audio library
-
-				string fullPath = (path(obj->GetTxtFilePath()).parent_path() / audioPath).string();
-				cout << "!!!!!!!!!! attempting to remove audio file from: " << fullPath << "\n";
-				File::DeleteFileOrfolder(audioPath); //remove externally saved file
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

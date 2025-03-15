@@ -68,7 +68,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / obj->GetTxtFilePath() / name).string();
 
         if (!exists(fullPath))
         {
@@ -120,7 +120,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         if (!IsImported(name, obj))
         {
@@ -171,7 +171,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         if (!IsImported(name, obj))
         {
@@ -223,7 +223,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         if (!IsImported(name, obj))
         {
@@ -263,7 +263,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         if (!IsImported(name, obj))
         {
@@ -483,7 +483,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().parent_path() / name).string();
 
         if (!IsImported(name, obj))
         {
@@ -508,7 +508,7 @@ namespace Core
 
     bool Audio::HasReachedEnd(const string& name, const shared_ptr<GameObject>& obj)
     {
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         auto it = soundMap.find(name);
 
@@ -525,7 +525,7 @@ namespace Core
 
     bool Audio::IsImported(const string& name, const shared_ptr<GameObject>& obj)
     {
-        string fullPath = (path(obj->GetTxtFilePath()).parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         auto it = soundMap.find(name);
         return it != soundMap.end();

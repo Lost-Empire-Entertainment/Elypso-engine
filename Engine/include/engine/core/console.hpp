@@ -18,17 +18,17 @@ namespace Core
 	public:
 		enum Caller
 		{
-			FILE,
-			INPUT,
-			INITIALIZE,
-			SHUTDOWN
+			FILE,       //Message originates from a file interaction
+			INPUT,      //Message originates from a user input interaction
+			INITIALIZE, //Message originates from an initializing function
+			SHUTDOWN    //Message originates from the shutdown function
 		};
 
 		enum Type
 		{
-			INFO,
-			DEBUG,
-			EXCEPTION
+			INFO,     //Standard message type
+			DEBUG,    //Message type that should only be displayed for debugging purposes
+			EXCEPTION //Message type that should only be displayed when something is not working as intended
 		};
 
 		static inline bool sendDebugMessages;
