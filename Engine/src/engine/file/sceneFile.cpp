@@ -342,12 +342,6 @@ namespace EngineFile
 			values.push_back("0.0, 1.0, 0.0");
 		keys.push_back("camera_rotation");
 			values.push_back("-90.0, 0.0, 0.0");
-#if ENGINE_MODE
-		keys.push_back("renderBillboards");
-			values.push_back("1");
-		keys.push_back("renderLightBorders");
-			values.push_back("1");
-#endif
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
 		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
@@ -467,14 +461,7 @@ namespace EngineFile
 			to_string(rot[1]) + ", " +
 			to_string(rot[2]);
 		SetValue("camera_rotation", cameraRot);
-#if ENGINE_MODE
-		SetValue("renderBorders", to_string(GameObjectManager::renderBorders));
-		SetValue("renderPointLightBillboards", to_string(GameObjectManager::renderPointLightBillboards));
-		SetValue("renderSpotlightBillboards", to_string(GameObjectManager::renderSpotlightBillboards));
-		SetValue("renderDirLightBillboard", to_string(GameObjectManager::renderDirLightBillboard));
-		SetValue("renderAudioObjectBillboards", to_string(GameObjectManager::renderAudioObjectBillboards));
-		SetValue("renderCameraObjectBillboards", to_string(GameObjectManager::renderCameraObjectBillboards));
-#endif
+
 		SetValue("skybox_right", skyboxTexturesMap["right"]);
 		SetValue("skybox_left", skyboxTexturesMap["left"]);
 		SetValue("skybox_top", skyboxTexturesMap["top"]);
@@ -507,22 +494,6 @@ namespace EngineFile
 			stof(cameraRotVector[1]),
 			stof(cameraRotVector[2]));
 		Render::camera.SetCameraRotation(cameraRot);
-
-#if ENGINE_MODE
-		string renderBorders = GetValue("renderBorders");
-		GameObjectManager::renderBorders = stoi(renderBorders);
-
-		string renderPointLightBillboards = GetValue("renderPointLightBillboards");
-		GameObjectManager::renderPointLightBillboards = stoi(renderPointLightBillboards);
-		string renderSpotlightBillboards = GetValue("renderSpotlightBillboards");
-		GameObjectManager::renderSpotlightBillboards = stoi(renderSpotlightBillboards);
-		string renderDirLightBillboard = GetValue("renderDirLightBillboard");
-		GameObjectManager::renderDirLightBillboard = stoi(renderDirLightBillboard);
-		string renderAudioObjectBillboards = GetValue("renderAudioObjectBillboards");
-		GameObjectManager::renderAudioObjectBillboards = stoi(renderAudioObjectBillboards);
-		string renderCameraObjectBillboards = GetValue("renderCameraObjectBillboards");
-		GameObjectManager::renderCameraObjectBillboards = stoi(renderCameraObjectBillboards);
-#endif
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
 		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();

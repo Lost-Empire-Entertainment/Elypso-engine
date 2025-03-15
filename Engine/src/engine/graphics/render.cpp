@@ -102,8 +102,12 @@ namespace Graphics
 
 #if	ENGINE_MODE
 #else
-		GameObjectManager::renderBillboards = false;
-		GameObjectManager::renderLightBorders = false;
+		GameObjectManager::renderBorders = false;
+		GameObjectManager::renderPointLightBillboards = false;
+		GameObjectManager::renderSpotlightBillboards = false;
+		GameObjectManager::renderDirLightBillboard = false;
+		GameObjectManager::renderAudioObjectBillboards = false;
+		GameObjectManager::renderCameraObjectBillboards = false;
 #endif
 	}
 

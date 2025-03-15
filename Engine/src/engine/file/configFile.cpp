@@ -21,6 +21,7 @@
 #include "sceneFile.hpp"
 #include "render.hpp"
 #include "stringUtils.hpp"
+#include "gameobject.hpp"
 #if ENGINE_MODE
 #include "gui_settings.hpp"
 #endif
@@ -42,6 +43,7 @@ using Type = Core::ConsoleManager::Type;
 using Utils::File;
 using Graphics::Render;
 using Utils::String;
+using Graphics::Shape::GameObjectManager;
 #if ENGINE_MODE
 using Graphics::GUI::GUISettings;
 #endif
@@ -135,6 +137,15 @@ namespace EngineFile
 		}
 
 		ofstream configFile(configFilePath);
+
+#if ENGINE_MODE
+		SetValue("renderBorders", to_string(GameObjectManager::renderBorders));
+		SetValue("renderPointLightBillboards", to_string(GameObjectManager::renderPointLightBillboards));
+		SetValue("renderSpotlightBillboards", to_string(GameObjectManager::renderSpotlightBillboards));
+		SetValue("renderDirLightBillboard", to_string(GameObjectManager::renderDirLightBillboard));
+		SetValue("renderAudioObjectBillboards", to_string(GameObjectManager::renderAudioObjectBillboards));
+		SetValue("renderCameraObjectBillboards", to_string(GameObjectManager::renderCameraObjectBillboards));
+#endif
 
 		if (!configFile.is_open())
 		{
@@ -276,6 +287,21 @@ namespace EngineFile
 #endif
 		keys.push_back("gui_console");
 			values.push_back("1");
+
+#if ENGINE_MODE
+		keys.push_back("renderBorders");
+			values.push_back("1");
+		keys.push_back("renderPointLightBillboards");
+			values.push_back("1");
+		keys.push_back("renderSpotlightBillboards");
+			values.push_back("1");
+		keys.push_back("renderDirLightBillboard");
+			values.push_back("1");
+		keys.push_back("renderAudioObjectBillboards");
+			values.push_back("1");
+		keys.push_back("renderCameraObjectBillboards");
+			values.push_back("1");
+#endif
 
 		ofstream configFile(configFilePath);
 

@@ -54,4 +54,5 @@
 - can play multiple songs at the same time
 - no longer importing files in audio folder
 - can remove attached audio file from audio object
-- can individually control border, point light, spotlight, directional light, audio object and camera object rendering from new menu in scene window
+- moved billboard and border bool checks from scene window right panel to settings window graphics tab
+- saving billboard and border checks in config file instead of scene file

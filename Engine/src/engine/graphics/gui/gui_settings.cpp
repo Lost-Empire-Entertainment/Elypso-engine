@@ -32,6 +32,7 @@
 #include "gui_projectitemslist.hpp"
 #include "skybox.hpp"
 #include "physics.hpp"
+#include "gameobject.hpp"
 
 using std::to_string;
 using std::stof;
@@ -55,6 +56,7 @@ using EngineFile::ConfigFile;
 using Utils::String;
 using Graphics::Shape::Skybox;
 using Core::Physics;
+using Graphics::Shape::GameObjectManager;
 
 namespace Graphics::GUI
 {
@@ -307,6 +309,68 @@ namespace Graphics::GUI
 				Type::INFO,
 				"Successfully reset skybox textures to default values!\n");
 
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Separator();
+
+		ImGui::Text("Render borders");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		bool renderBorders = GameObjectManager::renderBorders;
+		if (ImGui::Checkbox("##renderBorders", &renderBorders))
+		{
+			GameObjectManager::renderBorders = renderBorders;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Render point light billboards");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		bool renderPointLightBillboards = GameObjectManager::renderPointLightBillboards;
+		if (ImGui::Checkbox("##renderPointLightBillboards", &renderPointLightBillboards))
+		{
+			GameObjectManager::renderPointLightBillboards = renderPointLightBillboards;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Render spotlight billboards");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		bool renderSpotlightBillboards = GameObjectManager::renderSpotlightBillboards;
+		if (ImGui::Checkbox("##renderSpotlightBillboards", &renderSpotlightBillboards))
+		{
+			GameObjectManager::renderSpotlightBillboards = renderSpotlightBillboards;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Render directional light billboard");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		bool renderDirLightBillboard = GameObjectManager::renderDirLightBillboard;
+		if (ImGui::Checkbox("##renderDirLightBillboard", &renderDirLightBillboard))
+		{
+			GameObjectManager::renderDirLightBillboard = renderDirLightBillboard;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Render audio billboards");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		bool renderAudioObjectBillboards = GameObjectManager::renderAudioObjectBillboards;
+		if (ImGui::Checkbox("##renderAudioObjectBillboards", &renderAudioObjectBillboards))
+		{
+			GameObjectManager::renderAudioObjectBillboards = renderAudioObjectBillboards;
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Render camera billboards");
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 50);
+		bool renderCameraObjectBillboards = GameObjectManager::renderCameraObjectBillboards;
+		if (ImGui::Checkbox("##renderCameraObjectBillboards", &renderCameraObjectBillboards))
+		{
+			GameObjectManager::renderCameraObjectBillboards = renderCameraObjectBillboards;
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 	}
