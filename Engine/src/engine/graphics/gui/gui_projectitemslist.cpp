@@ -367,7 +367,6 @@ namespace Graphics::GUI
 					Audio::Delete(audioFileName, obj); //remove from audio library
 
 					string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / audioFileName).string();
-					cout << "!!!!!!!!!! attempting to remove audio file from: " << fullPath << "\n";
 					File::DeleteFileOrfolder(fullPath); //remove externally saved file
 				}
 
