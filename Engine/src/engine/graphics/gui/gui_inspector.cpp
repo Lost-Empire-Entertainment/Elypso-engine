@@ -1427,7 +1427,7 @@ namespace Graphics::GUI
 
 				string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / audioPath).string();
 				cout << "!!!!!!!!!! attempting to remove audio file from: " << fullPath << "\n";
-				File::DeleteFileOrfolder(audioPath); //remove externally saved file
+				File::DeleteFileOrfolder(fullPath); //remove externally saved file
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

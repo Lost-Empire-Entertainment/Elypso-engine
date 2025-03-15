@@ -154,12 +154,7 @@ namespace Graphics::Shape
 			minRange,
 			maxRange);
 		apc->SetOwner(obj);
-		if (audioFileName != "")
-		{
-			apc->SetName(audioFileName);
-			Audio::Import(audioFileName, obj);
-		}
-		if (isPlaying) Audio::Play(audioFileName, obj);
+		if (audioFileName != "") apc->SetName(audioFileName);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "audio.png").string();
 		auto billboard = Billboard::InitializeBillboard(
@@ -174,6 +169,10 @@ namespace Graphics::Shape
 		obj->SetChildBillboard(billboard);
 
 		obj->SetTxtFilePath(txtFilePath);
+
+		//import and play audio file after txt file path has been assigned
+		if (audioFileName != "") Audio::Import(audioFileName, obj);
+		if (isPlaying) Audio::Play(audioFileName, obj);
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
