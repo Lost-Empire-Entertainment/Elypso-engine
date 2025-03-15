@@ -18,10 +18,25 @@ namespace Graphics::Components
     CameraComponent::CameraComponent(
         bool isEnabled,
         float speed,
-        float sensitivity) :
+        float sensitivity,
+        float yaw,
+        float pitch,
+        float lastX,
+        float lastY,
+        float aspectRatio,
+        vec3 cameraFront,
+        vec3 cameraUp,
+        vec3 lastRotation) :
         isEnabled(isEnabled),
         speed(speed),
-        sensitivity(sensitivity) {}
+        sensitivity(sensitivity),
+        yaw(yaw),
+        pitch(pitch),
+        lastX(lastX), 
+        lastY(lastY),
+        cameraFront(cameraFront),
+        cameraUp(cameraUp),
+        lastRotation(lastRotation) {}
 
     void CameraComponent::RotateCamera(double deltaX, double deltaY)
     {

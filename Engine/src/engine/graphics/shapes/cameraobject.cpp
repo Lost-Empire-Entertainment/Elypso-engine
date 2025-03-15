@@ -125,10 +125,7 @@ namespace Graphics::Shape
 		mat->SetOwner(obj);
 		mat->AddShader(vert, frag, cameraObjectShader);
 
-		auto cc = obj->AddComponent<CameraComponent>(
-			true,
-			2.5f,
-			0.05f);
+		auto cc = obj->AddComponent<CameraComponent>();
 		cc->SetOwner(obj);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "camera.png").string();

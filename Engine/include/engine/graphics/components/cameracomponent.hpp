@@ -28,9 +28,17 @@ namespace Graphics::Components
 	{
 	public:
 		CameraComponent(
-			bool isEnabled,
-			float speed,
-			float sensitivity);
+			bool isEnabled = false,
+			float speed = 2.5f,
+			float sensitivity = 0.05f,
+			float yaw = -90.0f,
+			float pitch = 0.0f,
+			float lastX = 0.0f,
+			float lastY = 0.0f,
+			float aspectRatio = 0.0f,
+			vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f),
+			vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f),
+			vec3 lastRotation = vec3(0));
 
 		void RotateCamera(double xPos, double yPos);
 
@@ -71,13 +79,13 @@ namespace Graphics::Components
 		bool isEnabled;
 		float speed;
 		float sensitivity;
-		float yaw = -90.0f;
+		float yaw;
 		float pitch;
 		float lastX;
 		float lastY;
 		float aspectRatio;
-		vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
-		vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
+		vec3 cameraFront;
+		vec3 cameraUp;
 		vec3 lastRotation;
 	};
 }
