@@ -17,12 +17,14 @@
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
 #include "sceneFile.hpp"
+#include "cameracomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
 
 using glm::mat3;
 using std::filesystem::exists;
+using std::to_string;
 
 using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
@@ -33,6 +35,7 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::SceneFile;
+using Graphics::Components::CameraComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -328,7 +331,9 @@ namespace Graphics::Shape
         auto mat = obj->GetComponent<MaterialComponent>();
         Shader skyboxShader = mat->GetShader();
         skyboxShader.Use();
-        view = mat4(mat3(Render::camera.GetViewMatrix()));
+
+        auto cc = Render::activeCamera->GetComponent<CameraComponent>();
+        view = mat4(mat3(cc->GetViewMatrix()));
         skyboxShader.SetMat4("view", view);
         skyboxShader.SetMat4("projection", projection);
 

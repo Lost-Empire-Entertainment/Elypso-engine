@@ -36,6 +36,7 @@
 #include "physics.hpp"
 #include "audioobject.hpp"
 #include "cameraobject.hpp"
+#include "cameracomponent.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -72,6 +73,7 @@ using Graphics::Components::RigidBodyComponent;
 using ElypsoPhysics::PhysicsWorld;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
+using Graphics::Components::CameraComponent;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -144,17 +146,19 @@ namespace Graphics::Shape
 			}
 		}
 
+		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+		auto cc = Render::activeCamera->GetComponent<CameraComponent>();
 		if (has3DAudio)
 		{
-			vec3 camPos = Render::camera.GetCameraPosition();
-			vec3 camFront = Render::camera.GetFront();
-			vec3 camUp = Render::camera.GetUp();
+			vec3 camPos = tc->GetPosition();
+			vec3 camFront = cc->GetFront();
+			vec3 camUp = cc->GetUp();
 			Audio::UpdateListenerPosition(camPos, camFront, camUp);
 		}
 		else
 		{
-			vec3 camFront = Render::camera.GetFront();
-			vec3 camUp = Render::camera.GetUp();
+			vec3 camFront = cc->GetFront();
+			vec3 camUp = cc->GetUp();
 			Audio::UpdateListenerPosition(vec3(0), camFront, camUp);
 		}
 
@@ -164,7 +168,7 @@ namespace Graphics::Shape
 		//transparent objects are rendered last
 		if (transparentObjects.size() > 0)
 		{
-			vec3 camPos = Render::camera.GetCameraPosition();
+			vec3 camPos = tc->GetPosition();
 			sort(transparentObjects.begin(), transparentObjects.end(),
 				[&camPos, &view](const auto& a, const auto& b)
 				{

@@ -56,7 +56,8 @@ namespace Core
 		vec4 rayWorld = inverse(viewMatrix) * rayEye;
 		vec3 rayDirection = normalize(vec3(rayWorld));
 
-		return Ray(Render::camera.GetCameraPosition(), rayDirection);
+		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+		return Ray(tc->GetPosition(), rayDirection);
 	}
 
 	int Select::CheckRayObjectIntersections(

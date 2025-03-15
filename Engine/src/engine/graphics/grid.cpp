@@ -17,6 +17,7 @@
 #include "configFile.hpp"
 #include "stringUtils.hpp"
 #include "render.hpp"
+#include "transformcomponent.hpp"
 
 using glm::mat4;
 using std::vector;
@@ -27,7 +28,7 @@ using Graphics::Shader;
 using Core::Engine;
 using EngineFile::ConfigFile;
 using Utils::String;
-using Graphics::Render;
+using Graphics::Components::TransformComponent;
 
 namespace Graphics
 {
@@ -92,7 +93,9 @@ namespace Graphics
 		fadeDistance = static_cast<float>(maxDistance * 0.9);
 		shader.SetFloat("fadeDistance", fadeDistance);
 		shader.SetFloat("maxDistance", maxDistance);
-		shader.SetVec3("center", Render::camera.GetCameraPosition());
+
+		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+		shader.SetVec3("center", tc->GetPosition());
 
 		string gridColorString = ConfigFile::GetValue("grid_color");
 		vector<string> gridColorSplit = String::Split(gridColorString, ',');

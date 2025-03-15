@@ -32,7 +32,7 @@ namespace Graphics::Components
             this->owner = owner;
         }
 
-        std::shared_ptr<GameObject> GetOwner() const
+        shared_ptr<GameObject> GetOwner() const
         {
             return owner.lock();
         }

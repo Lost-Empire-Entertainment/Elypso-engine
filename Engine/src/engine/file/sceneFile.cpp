@@ -30,6 +30,7 @@
 #include "gameObjectFile.hpp"
 #include "skybox.hpp"
 #include "physics.hpp"
+#include "transformcomponent.hpp"
 
 using std::ifstream;
 using std::ofstream;
@@ -60,6 +61,7 @@ using Type = Core::ConsoleManager::Type;
 using EngineFile::GameObjectFile;
 using Graphics::Shape::Skybox;
 using Core::Physics;
+using Graphics::Components::TransformComponent;
 
 namespace EngineFile
 {
@@ -335,8 +337,9 @@ namespace EngineFile
 		//
 
 		//sets camera default position and rotation if default scene is created
-		Render::camera.SetCameraPosition(vec3(0.0f, 1.0f, 0.0f));
-		Render::camera.SetCameraRotation(vec3(-90.0f, 0.0f, 0.0f));
+		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+		tc->SetPosition(vec3(0.0f, 1.0f, 0.0f));
+		tc->SetRotation(vec3(-90.0f, 0.0f, 0.0f));
 
 		keys.push_back("camera_position"); 
 			values.push_back("0.0, 1.0, 0.0");
@@ -448,14 +451,15 @@ namespace EngineFile
 
 	void SceneFile::SaveGlobalGraphicsData()
 	{
-		vec3 pos = Render::camera.GetCameraPosition();
+		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+		vec3 pos = tc->GetPosition();
 		string cameraPos =
 			to_string(pos[0]) + ", " +
 			to_string(pos[1]) + ", " +
 			to_string(pos[2]);
 		SetValue("camera_position", cameraPos);
 
-		vec3 rot = Render::camera.GetCameraRotation();
+		vec3 rot = tc->GetRotation();
 		string cameraRot =
 			to_string(rot[0]) + ", " +
 			to_string(rot[1]) + ", " +
@@ -481,19 +485,21 @@ namespace EngineFile
 	}
 	void SceneFile::LoadGlobalGraphicsData()
 	{
+		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+
 		vector<string> cameraPosVector = String::Split(GetValue("camera_position"), ',');
 		vec3 cameraPos = vec3(
 			stof(cameraPosVector[0]),
 			stof(cameraPosVector[1]),
 			stof(cameraPosVector[2]));
-		Render::camera.SetCameraPosition(cameraPos);
+		tc->SetPosition(cameraPos);
 
 		vector<string> cameraRotVector = String::Split(GetValue("camera_rotation"), ',');
 		vec3 cameraRot = vec3(
 			stof(cameraRotVector[0]),
 			stof(cameraRotVector[1]),
 			stof(cameraRotVector[2]));
-		Render::camera.SetCameraRotation(cameraRot);
+		tc->SetRotation(cameraRot);
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
 		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();

@@ -18,7 +18,6 @@
 
 //engine
 #include "gui_scenewindow.hpp"
-#include "camera.hpp"
 #include "input.hpp"
 #include "render.hpp"
 #include "configFile.hpp"
@@ -29,12 +28,14 @@
 #include "stringUtils.hpp"
 #include "timeManager.hpp"
 #include "meshcomponent.hpp"
+#include "cameracomponent.hpp"
+#include "transformcomponent.hpp"
 
 using std::shared_ptr;
 using std::vector;
 using std::cout;
+using std::to_string;
 
-using Graphics::Camera;
 using Core::Input;
 using Graphics::Render;
 using EngineFile::ConfigFile;
@@ -46,6 +47,8 @@ using Graphics::Shape::GameObject;
 using Graphics::Components::MeshComponent;
 using Utils::String;
 using Core::TimeManager;
+using Graphics::Components::CameraComponent;
+using Graphics::Components::TransformComponent;
 
 namespace Graphics::GUI
 {
@@ -135,7 +138,7 @@ namespace Graphics::GUI
 				framebufferWidth,
 				framebufferHeight);
 
-			Camera::aspectRatio = targetAspectRatio;
+			Render::activeCamera->GetComponent<CameraComponent>()->SetAspectRatio(targetAspectRatio);
 
 			glViewport(0, 0, framebufferWidth, framebufferHeight);
 		}
@@ -284,16 +287,18 @@ namespace Graphics::GUI
 			string strVerticesCount = "Vertices: " + to_string(verticesCount);
 			ImGui::Text("%s", strVerticesCount.c_str());
 
+			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+
 			ImGui::Text(
 				"Position: %.2f, %.2f, %.2f",
-				Render::camera.GetCameraPosition().x,
-				Render::camera.GetCameraPosition().y,
-				Render::camera.GetCameraPosition().z);
+				tc->GetPosition().x,
+				tc->GetPosition().y,
+				tc->GetPosition().z);
 			ImGui::Text(
 				"Angle: %.2f, %.2f, %.2f",
-				Render::camera.GetCameraRotation().x,
-				Render::camera.GetCameraRotation().y,
-				Render::camera.GetCameraRotation().z);
+				tc->GetRotation().x,
+				tc->GetRotation().y,
+				tc->GetRotation().z);
 
 			ImGui::EndChild();
 		}

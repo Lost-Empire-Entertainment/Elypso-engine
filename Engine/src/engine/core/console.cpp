@@ -27,6 +27,7 @@
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
+#include "transformcomponent.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #endif
@@ -55,6 +56,7 @@ using Graphics::Components::MeshComponent;
 using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
 using Graphics::GUI::GUIConsole;
+using Graphics::Components::TransformComponent;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 #endif
@@ -244,8 +246,9 @@ namespace Core
                  && cleanedCommands.size() == 1)
         {
             vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
-            Render::camera.SetCameraPosition(newPosition);
-            Render::camera.SetCameraRotation(vec3(-90, 0, 0));
+            auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+            tc->SetPosition(newPosition);
+            tc->SetRotation(vec3(-90, 0, 0));
 
             WriteConsoleMessage(
                 Caller::INPUT,

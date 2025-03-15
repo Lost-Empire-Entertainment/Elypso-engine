@@ -32,6 +32,7 @@ using glm::quat;
 using glm::scale;
 using std::filesystem::path;
 using std::filesystem::exists;
+using std::to_string;
 
 using Graphics::Shader;
 using Graphics::Texture;
@@ -180,7 +181,9 @@ namespace Graphics::Shape
 			obj->GetComponent<TransformComponent>()->SetPosition(pos);
 
 			vec3 objectPos = obj->GetComponent<TransformComponent>()->GetPosition();
-			vec3 cameraPos = Render::camera.GetCameraPosition();
+
+			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+			vec3 cameraPos = tc->GetPosition();
 			model = translate(model, objectPos);
 
 			mat4 rotationMatrix = lookAt(objectPos, cameraPos, vec3(0.0f, 1.0f, 0.0f));

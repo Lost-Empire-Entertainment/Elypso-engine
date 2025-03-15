@@ -9,8 +9,6 @@
 #include <vector>
 
 //external
-#include "glad.h"
-#include "glfw3.h"
 #include "glm.hpp"
 #include "matrix_transform.hpp"
 #include "type_ptr.hpp"
@@ -31,6 +29,8 @@
 #include "shader.hpp"
 #include "selectobject.hpp"
 #include "skybox.hpp"
+#include "cameraobject.hpp"
+#include "cameracomponent.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #include "grid.hpp"
@@ -66,6 +66,8 @@ using Type = Core::ConsoleManager::Type;
 using EngineFile::ConfigFile;
 using Utils::String;
 using Core::Select;
+using Graphics::Shape::CameraObject;
+using Graphics::Components::CameraComponent;
 #if ENGINE_MODE
 using Core::Compilation;
 using Graphics::Grid;
@@ -78,7 +80,6 @@ using Graphics::GUI::GameGUI;
 
 namespace Graphics
 {
-	Camera Render::camera(Render::window, 0.05f);
 #if ENGINE_MODE
 	unsigned int framebuffer;
 #endif
@@ -283,6 +284,25 @@ namespace Graphics
 		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox();
 
 		glfwMaximizeWindow(window);
+
+#if	ENGINE_MODE
+		string sceneCameraName = "SceneCamera";
+		unsigned int nextID = ++GameObject::nextID;
+		unsigned int nextID2 = ++GameObject::nextID;
+
+		sceneCamera = CameraObject::InitializeCameraObject(
+			vec3(0.0f, 0.0f, 0.0f),
+			vec3(0.0f, 0.0f, -90.0f),
+			vec3(1.0f),
+			"",
+			sceneCameraName,
+			nextID,
+			true,
+			nextID2,
+			true);
+
+		activeCamera = sceneCamera;
+#endif
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
@@ -316,17 +336,18 @@ namespace Graphics
 		Input::ProcessKeyboardInput(window);
 
 		//calculate the new projection matrix
+		auto cc = Render::activeCamera->GetComponent<CameraComponent>();
 		float fov = stof(ConfigFile::GetValue("camera_fov"));
 		float nearClip = stof(ConfigFile::GetValue("camera_nearClip"));
 		float farClip = stof(ConfigFile::GetValue("camera_farClip"));
 		projection = perspective(
 			radians(fov),
-			Camera::aspectRatio,
+			cc->GetAspectRatio(),
 			nearClip,
 			farClip);
 
 		//update the camera
-		view = camera.GetViewMatrix();
+		view = cc->GetViewMatrix();
 
 #if ENGINE_MODE
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

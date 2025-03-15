@@ -47,6 +47,8 @@
 #include "physics.hpp"
 #include "cameraobject.hpp"
 #include "audioobject.hpp"
+#include "transformcomponent.hpp"
+#include "cameracomponent.hpp"
 
 using std::cout;
 using std::endl;
@@ -84,6 +86,8 @@ using Core::Compilation;
 using Core::Physics;
 using Graphics::Shape::CameraObject;
 using Graphics::Shape::AudioObject;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::CameraComponent;
 
 namespace Graphics::GUI
 {
@@ -378,7 +382,9 @@ namespace Graphics::GUI
 				}
 			}
 
-			vec3 newPos = Render::camera.GetCameraPosition() + Render::camera.GetFront() * 5.0f;
+			auto cc = Render::activeCamera->GetComponent<CameraComponent>();
+			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+			vec3 newPos = tc->GetPosition() + cc->GetFront() * 5.0f;
 
 			int resultX = static_cast<int>(newPos.x);
 			int resultY = static_cast<int>(newPos.y);

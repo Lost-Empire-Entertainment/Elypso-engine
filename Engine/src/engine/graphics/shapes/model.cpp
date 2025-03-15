@@ -230,7 +230,8 @@ namespace Graphics::Shape
 			Shader shader = mat->GetShader();
 
 			shader.Use();
-			shader.SetVec3("viewPos", Render::camera.GetCameraPosition());
+			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+			shader.SetVec3("viewPos", tc->GetPosition());
 			shader.SetFloat("material.shininess", mat->GetShininessValue());
 
 			shader.SetVec3("globalAmbientColor", Render::globalAmbientColor);

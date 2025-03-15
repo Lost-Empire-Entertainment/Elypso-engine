@@ -7,11 +7,15 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
+//external
+#include "glad.h"
+#include "glfw3.h"
 #include "glm.hpp"
 
 //engine
-#include "camera.hpp"
+#include "gameobject.hpp"
 
 namespace Graphics
 {
@@ -19,18 +23,22 @@ namespace Graphics
 	using glm::mat4;
 	using std::map;
 	using std::string;
+	using std::shared_ptr;
 
-	using Graphics::Camera;
+	using Graphics::Shape::GameObject;
 
 	class Render
 	{
 	public:
+#if ENGINE_MODE
+		static inline shared_ptr<GameObject> sceneCamera;
+#endif
+		static inline shared_ptr<GameObject> activeCamera;
+
 		static inline GLFWwindow* window;
 
 		static inline mat4 projection;
 		static inline mat4 view;
-
-		static Camera camera;
 
 		static inline unsigned int textureColorbuffer;
 		static inline unsigned int rbo;
