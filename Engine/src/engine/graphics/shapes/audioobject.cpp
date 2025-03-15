@@ -154,7 +154,7 @@ namespace Graphics::Shape
 			minRange,
 			maxRange);
 		apc->SetOwner(obj);
-		if (audioFileName != "") apc->SetName(audioFileName);
+		apc->SetName(audioFileName);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "audio.png").string();
 		auto billboard = Billboard::InitializeBillboard(

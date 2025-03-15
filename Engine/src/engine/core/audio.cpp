@@ -68,7 +68,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / obj->GetTxtFilePath() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         if (!exists(fullPath))
         {
@@ -483,7 +483,7 @@ namespace Core
             return false;
         }
 
-        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().parent_path() / name).string();
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
 
         if (!IsImported(name, obj))
         {
