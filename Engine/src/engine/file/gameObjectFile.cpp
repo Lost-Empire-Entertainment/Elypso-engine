@@ -149,11 +149,11 @@ namespace EngineFile
 
 				data.push_back("\n");
 
-				auto mesh = obj->GetComponent<MeshComponent>();
 				//
 				// MESH DATA
 				//
 
+				auto mesh = obj->GetComponent<MeshComponent>();
 				string type = string(magic_enum::enum_name(mesh->GetMeshType()));
 				data.push_back("type= " + type + "\n");
 
@@ -206,75 +206,59 @@ namespace EngineFile
 
 				else if (meshType == MeshComponent::MeshType::point_light)
 				{
+					data.push_back("\n");
+
 					auto light = obj->GetComponent<LightComponent>();
-					if (light)
-					{
-						float pointDiffuseX = light->GetDiffuse().x;
-						float pointDiffuseY = light->GetDiffuse().y;
-						float pointDiffuseZ = light->GetDiffuse().z;
-						data.push_back(
-							"diffuse= " + to_string(pointDiffuseX) + ", "
-							+ to_string(pointDiffuseY) + ", "
-							+ to_string(pointDiffuseZ) + "\n");
+					
+					float pointDiffuseX = light->GetDiffuse().x;
+					float pointDiffuseY = light->GetDiffuse().y;
+					float pointDiffuseZ = light->GetDiffuse().z;
+					data.push_back(
+						"diffuse= " + to_string(pointDiffuseX) + ", "
+						+ to_string(pointDiffuseY) + ", "
+						+ to_string(pointDiffuseZ) + "\n");
 
-						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
-					}
+					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
 				}
 				else if (meshType == MeshComponent::MeshType::spot_light)
 				{
+					data.push_back("\n");
+
 					auto light = obj->GetComponent<LightComponent>();
-					if (light)
-					{
-						float spotDiffuseX = light->GetDiffuse().x;
-						float spotDiffuseY = light->GetDiffuse().y;
-						float spotDiffuseZ = light->GetDiffuse().z;
-						data.push_back(
-							"diffuse= " + to_string(spotDiffuseX) + ", "
-							+ to_string(spotDiffuseY) + ", "
-							+ to_string(spotDiffuseZ) + "\n");
 
-						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
+					float spotDiffuseX = light->GetDiffuse().x;
+					float spotDiffuseY = light->GetDiffuse().y;
+					float spotDiffuseZ = light->GetDiffuse().z;
+					data.push_back(
+						"diffuse= " + to_string(spotDiffuseX) + ", "
+						+ to_string(spotDiffuseY) + ", "
+						+ to_string(spotDiffuseZ) + "\n");
 
-						data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-						data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
+					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
 
-						data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
-					}
+					data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
+
+					data.push_back("outer angle= " + to_string(light->GetOuterAngle()) + "\n");
 				}
 				else if (meshType == MeshComponent::MeshType::directional_light)
 				{
+					data.push_back("\n");
+
 					auto light = obj->GetComponent<LightComponent>();
-					if (light)
-					{
-						float dirDiffuseX = light->GetDiffuse().x;
-						float dirDiffuseY = light->GetDiffuse().y;
-						float dirDiffuseZ = light->GetDiffuse().z;
-						data.push_back(
-							"diffuse= " + to_string(dirDiffuseX) + ", "
-							+ to_string(dirDiffuseY) + ", "
-							+ to_string(dirDiffuseZ) + "\n");
 
-						data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
-					}
-				}
+					float dirDiffuseX = light->GetDiffuse().x;
+					float dirDiffuseY = light->GetDiffuse().y;
+					float dirDiffuseZ = light->GetDiffuse().z;
+					data.push_back(
+						"diffuse= " + to_string(dirDiffuseX) + ", "
+						+ to_string(dirDiffuseY) + ", "
+						+ to_string(dirDiffuseZ) + "\n");
 
-				//also save billboard data of each light source and audio or camera object
-				if (meshType == MeshComponent::MeshType::point_light
-					|| meshType == MeshComponent::MeshType::spot_light
-					|| meshType == MeshComponent::MeshType::directional_light
-					|| meshType == MeshComponent::MeshType::audio
-					|| meshType == MeshComponent::MeshType::camera)
-				{
-					data.push_back("\n");
-					data.push_back("---attached billboard data---\n");
-					data.push_back("\n");
-
-					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
-
-					data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
+					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 				}
 
 				//
@@ -283,6 +267,8 @@ namespace EngineFile
 
 				if (meshType == MeshComponent::MeshType::audio)
 				{
+					data.push_back("\n");
+
 					auto apc = obj->GetComponent<AudioPlayerComponent>();
 
 					string audioFileName = apc->GetName();
@@ -298,6 +284,25 @@ namespace EngineFile
 					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
 					data.push_back("minRange= " + to_string(minRange) + "\n");
 					data.push_back("maxRange= " + to_string(maxRange) + "\n");
+				}
+
+				//
+				// BILLBOARD DATA
+				//
+
+				if (meshType == MeshComponent::MeshType::point_light
+					|| meshType == MeshComponent::MeshType::spot_light
+					|| meshType == MeshComponent::MeshType::directional_light
+					|| meshType == MeshComponent::MeshType::audio
+					|| meshType == MeshComponent::MeshType::camera)
+				{
+					data.push_back("\n");
+					data.push_back("----ATTACHED BILLBOARD DATA----\n");
+					data.push_back("\n");
+
+					data.push_back("billboard id= " + to_string(obj->GetChildBillboard()->GetID()) + "\n");
+
+					data.push_back("billboard enabled= " + to_string(obj->GetChildBillboard()->IsEnabled()) + "\n");
 				}
 
 				//
