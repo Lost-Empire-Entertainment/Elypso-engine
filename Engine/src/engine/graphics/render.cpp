@@ -286,7 +286,6 @@ namespace Graphics
 		glfwMaximizeWindow(window);
 
 #if	ENGINE_MODE
-		/*
 		string sceneCameraName = "SceneCamera";
 		unsigned int nextID = ++GameObject::nextID;
 		unsigned int nextID2 = ++GameObject::nextID;
@@ -303,7 +302,6 @@ namespace Graphics
 			true);
 
 		activeCamera = sceneCamera;
-		*/
 #endif
 	}
 

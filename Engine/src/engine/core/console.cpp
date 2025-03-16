@@ -177,7 +177,7 @@ namespace Core
             || (!sendDebugMessages
             && type != Type::DEBUG)))
         {
-            if (Engine::isEngineRunning) GUIConsole::AddTextToConsole(internalMsg);
+            if (Engine::isRunning) GUIConsole::AddTextToConsole(internalMsg);
             else AddConsoleLog(internalMsg);
         }
 

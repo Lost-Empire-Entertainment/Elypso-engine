@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <iostream>
+
 //external
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -17,6 +19,8 @@
 #include "gui_console.hpp"
 #include "render.hpp"
 #include "configFile.hpp"
+
+using std::cout;
 
 using Graphics::Render;
 using Core::Engine;
@@ -107,7 +111,7 @@ namespace Graphics::GUI
 				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
 				if (isNearBottom
 					|| (!firstScrollToBottom
-					&& Engine::isEngineRunning))
+					&& Engine::isRunning))
 				{
 					ImGui::SetScrollHereY(1.0f);
 					firstScrollToBottom = true;

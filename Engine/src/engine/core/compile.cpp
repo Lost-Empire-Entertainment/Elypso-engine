@@ -377,7 +377,7 @@ namespace Core
 				bool isNearBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10.0f;
 				if (isNearBottom
 					|| (!firstScrollToBottom
-					&& Engine::isEngineRunning))
+					&& Engine::isRunning))
 				{
 					ImGui::SetScrollHereY(1.0f);
 					firstScrollToBottom = true;

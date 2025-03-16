@@ -32,7 +32,10 @@ namespace Core
 		static inline string gameExePath;
 		static inline string gameParentPath;
 #endif
-		static inline bool isEngineRunning;
+		/// <summary>
+		/// Check if engine or game is currently running
+		/// </summary>
+		static inline bool isRunning;
 #if ENGINE_MODE
 		static void InitializeEngine();
 

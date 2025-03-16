@@ -78,6 +78,9 @@ namespace Core
 		version = "Pre-release 0.1.3.0007";
 #ifdef NDEBUG
 #else
+		//always enable debug messages by default in engine or game debug version
+		ConsoleManager::sendDebugMessages = true;
+
 		version = version + " [DEBUG]";
 #endif
 
@@ -651,15 +654,13 @@ namespace Core
 			true,
 			false);
 
-		isEngineRunning = true;
-#if ENGINE_MODE
+		isRunning = true;
 		if (!ConsoleManager::storedLogs.empty())
 		{
 			ConsoleManager::PrintLogsToBuffer();
 		}
-#endif
 
-		while (isEngineRunning)
+		while (isRunning)
 		{
 			TimeManager::UpdateDeltaTime();
 
@@ -673,7 +674,7 @@ namespace Core
 
 			if (glfwWindowShouldClose(Render::window))
 			{
-				isEngineRunning = false;
+				isRunning = false;
 			}
 		}
 	}
@@ -734,7 +735,7 @@ namespace Core
 	{
 		if (immediate)
 		{
-			isEngineRunning = false;
+			isRunning = false;
 
 			ConsoleManager::CloseLogger();
 #if ENGINE_MODE
@@ -768,7 +769,7 @@ namespace Core
 			}
 			else
 			{
-				isEngineRunning = false;
+				isRunning = false;
 
 				ConfigFile::SaveConfigFile();
 

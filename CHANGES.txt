@@ -63,3 +63,6 @@
 - engine always creates a scene camera and switches to it by default when scene is opened
 - can toggle between scene camera and user-created cameras
 - can set player camera in settings window game tab
+- qqq console command bypasses save check
+- fixed game not printing engine messages to game console
+- enable debug console messages by default in engine or game debug version
