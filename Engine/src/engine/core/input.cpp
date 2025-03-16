@@ -111,6 +111,9 @@ namespace Core
         if (!Compilation::renderBuildingWindow
             && !ImGui::GetIO().WantCaptureMouse)
         {
+            //ignore all scroll callback if no camera is active
+            if (Render::activeCamera == nullptr) return;
+
             float combinedOffset = increment * static_cast<float>(yoffset);
 
             auto cc = Render::activeCamera->GetComponent<CameraComponent>();
@@ -156,11 +159,14 @@ namespace Core
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
 #if ENGINE_MODE
-        auto cc = Render::activeCamera->GetComponent<CameraComponent>();
-        if (!Compilation::renderBuildingWindow
-            && !cc->IsEnabled())
+        shared_ptr<CameraComponent> cc{};
+        if (Render::activeCamera != nullptr) cc = Render::activeCamera->GetComponent<CameraComponent>();
+
+        if (!Compilation::renderBuildingWindow)
         {
-            if (!ImGui::GetIO().WantCaptureMouse)
+            if (Render::activeCamera != nullptr
+                && !cc->IsEnabled()
+                && !ImGui::GetIO().WantCaptureMouse)
             {
                 //copy selected object
                 if (key == GLFW_KEY_C
@@ -280,7 +286,9 @@ namespace Core
             }
         }
 #else
-        if (!Render::camera.cameraEnabled)
+        if (Render::activeCamera != nullptr
+            && !Render::activeCamera->IsEnabled()
+            || Render::activeCamera == nullptr)
         {
             //save current scene
             if (key == GLFW_KEY_S
@@ -303,6 +311,9 @@ namespace Core
 
     void Input::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     {
+        //ignore all mouse button callback if no camera is active
+        if (Render::activeCamera == nullptr) return;
+
 #if ENGINE_MODE
 #else
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -333,6 +344,9 @@ namespace Core
 
     void Input::Copy()
     {
+        //ignore all copy input if no camera is active
+        if (Render::activeCamera == nullptr) return;
+
         copiedObject.clear();
 
         shared_ptr<GameObject> selectedObj = Select::selectedObj;
@@ -491,6 +505,9 @@ namespace Core
 
     void Input::Paste()
     {
+        //ignore all paste input if no camera is active
+        if (Render::activeCamera == nullptr) return;
+
         string name = copiedObject["name"];
         unsigned int nextID = ++GameObject::nextID;
         unsigned int nextID2 = ++GameObject::nextID;
@@ -779,6 +796,9 @@ namespace Core
 
     void Input::SceneWindowInput()
     {
+        //ignore all scene window input if no camera is active
+        if (Render::activeCamera == nullptr) return;
+
         DragCamera();
         MoveCamera();
         SetCameraSpeed();
@@ -786,6 +806,9 @@ namespace Core
 
     void Input::ObjectInteraction(float width, float height, double posX, double posY)
     {
+        //ignore all scene object interaction input if no camera is active
+        if (Render::activeCamera == nullptr) return;
+
 #if ENGINE_MODE
         auto cc = Render::activeCamera->GetComponent<CameraComponent>();
         if (!Compilation::renderBuildingWindow
@@ -868,47 +891,50 @@ namespace Core
             }
         }
 #else
-        static double lastX = 0.0, lastY = 0.0;
-        static bool firstMove = true;
-
-        double currentX, currentY;
-        glfwGetCursorPos(Render::window, &currentX, &currentY);
-
-        Render::camera.cameraEnabled =
-            glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
-
-        if (Render::camera.cameraEnabled)
+        if (Render::activeCamera != nullptr)
         {
-            if (firstMove)
+            static double lastX = 0.0, lastY = 0.0;
+            static bool firstMove = true;
+
+            double currentX, currentY;
+            glfwGetCursorPos(Render::window, &currentX, &currentY);
+
+            auto cc = Render::activeCamera->GetComponent<CameraComponent>();
+            cc->SetEnableState(glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+
+            if (cc->IsEnabled())
             {
+                if (firstMove)
+                {
+                    lastX = currentX;
+                    lastY = currentY;
+                    firstMove = false;
+                }
+
+                double mouseDeltaX = currentX - lastX;
+                double mouseDeltaY = currentY - lastY;
+
                 lastX = currentX;
                 lastY = currentY;
-                firstMove = false;
+
+                //camera rotation with mouse drag
+                if (mouseDeltaX != 0.0f
+                    || mouseDeltaY != 0.0f)
+                {
+                    float sensitivity = 1.0f;
+
+                    //invert Y-axis of mouse delta to work with inverted imgui scene window
+                    mouseDeltaY = -mouseDeltaY;
+
+                    cc->RotateCamera(
+                        mouseDeltaX * sensitivity,
+                        mouseDeltaY * sensitivity);
+
+                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                }
             }
-
-            double mouseDeltaX = currentX - lastX;
-            double mouseDeltaY = currentY - lastY;
-
-            lastX = currentX;
-            lastY = currentY;
-
-            //camera rotation with mouse drag
-            if (mouseDeltaX != 0.0f
-                || mouseDeltaY != 0.0f)
-            {
-                float sensitivity = 1.0f;
-
-                //invert Y-axis of mouse delta to work with inverted imgui scene window
-                mouseDeltaY = -mouseDeltaY;
-
-                Render::camera.RotateCamera(
-                    mouseDeltaX * sensitivity,
-                    mouseDeltaY * sensitivity);
-
-                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-            }
+            else firstMove = true;
         }
-        else firstMove = true;
 #endif
     }
 

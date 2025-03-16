@@ -387,6 +387,15 @@ namespace EngineFile
 
 	void SceneFile::SaveGlobalPhysicsData()
 	{
+		if (Render::activeCamera == nullptr)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to save global physics data because no camera was found!\n");
+			return;
+		}
+
 		if (Physics::physicsWorld != nullptr)
 		{
 			vec3 gravity = Physics::physicsWorld->GetGravity();
@@ -419,6 +428,15 @@ namespace EngineFile
 	}
 	void SceneFile::LoadGlobalPhysicsData()
 	{
+		if (Render::activeCamera == nullptr)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to load global physics data because no camera was found!\n");
+			return;
+		}
+
 		if (Physics::physicsWorld == nullptr)
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -451,6 +469,15 @@ namespace EngineFile
 
 	void SceneFile::SaveGlobalGraphicsData()
 	{
+		if (Render::activeCamera == nullptr)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to save global graphics data because no camera was found!\n");
+			return;
+		}
+
 		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 		vec3 pos = tc->GetPosition();
 		string cameraPos =
@@ -485,6 +512,15 @@ namespace EngineFile
 	}
 	void SceneFile::LoadGlobalGraphicsData()
 	{
+		if (Render::activeCamera == nullptr)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to load global graphics data because no camera was found!\n");
+			return;
+		}
+
 		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 
 		vector<string> cameraPosVector = String::Split(GetValue("camera_position"), ',');

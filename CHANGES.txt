@@ -56,3 +56,10 @@
 - can remove attached audio file from audio object
 - moved billboard and border bool checks from scene window right panel to settings window graphics tab
 - saving billboard and border checks in config file instead of scene file
+
+0.1.3.0007:
+- engine and game can run even if there is no camera
+- removed old camera scripts and moved their content to cameraobject and cameracomponent scripts
+- engine always creates a scene camera and switches to it by default when scene is opened
+- can toggle between scene camera and user-created cameras
+- can set player camera in settings window game tab

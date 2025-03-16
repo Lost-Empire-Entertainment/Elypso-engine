@@ -286,6 +286,7 @@ namespace Graphics
 		glfwMaximizeWindow(window);
 
 #if	ENGINE_MODE
+		/*
 		string sceneCameraName = "SceneCamera";
 		unsigned int nextID = ++GameObject::nextID;
 		unsigned int nextID2 = ++GameObject::nextID;
@@ -302,14 +303,19 @@ namespace Graphics
 			true);
 
 		activeCamera = sceneCamera;
+		*/
 #endif
 	}
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
 #ifndef ENGINE_MODE
-		glViewport(0, 0, width, height);
-		Camera::aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+		if (activeCamera != nullptr)
+		{
+			glViewport(0, 0, width, height);
+			auto cc = activeCamera->GetComponent<CameraComponent>();
+			cc->SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
+		}
 #endif
 	}
 
@@ -335,19 +341,22 @@ namespace Graphics
 		//camera transformation
 		Input::ProcessKeyboardInput(window);
 
-		//calculate the new projection matrix
-		auto cc = Render::activeCamera->GetComponent<CameraComponent>();
-		float fov = stof(ConfigFile::GetValue("camera_fov"));
-		float nearClip = stof(ConfigFile::GetValue("camera_nearClip"));
-		float farClip = stof(ConfigFile::GetValue("camera_farClip"));
-		projection = perspective(
-			radians(fov),
-			cc->GetAspectRatio(),
-			nearClip,
-			farClip);
+		if (activeCamera != nullptr)
+		{
+			//calculate the new projection matrix
+			auto cc = Render::activeCamera->GetComponent<CameraComponent>();
+			float fov = stof(ConfigFile::GetValue("camera_fov"));
+			float nearClip = stof(ConfigFile::GetValue("camera_nearClip"));
+			float farClip = stof(ConfigFile::GetValue("camera_farClip"));
+			projection = perspective(
+				radians(fov),
+				cc->GetAspectRatio(),
+				nearClip,
+				farClip);
 
-		//update the camera
-		view = cc->GetViewMatrix();
+			//update the camera
+			view = cc->GetViewMatrix();
+		}
 
 #if ENGINE_MODE
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -359,21 +368,23 @@ namespace Graphics
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		if (GameObjectManager::GetSkybox() != nullptr)
+		if (activeCamera != nullptr
+			&& GameObjectManager::GetSkybox() != nullptr)
 		{
 			mat4 nonConstView = view;
 			Skybox::RenderSkybox(
 				GameObjectManager::GetSkybox(), 
 				nonConstView, 
 				projection);
-		}
 
 #if ENGINE_MODE
-		glDepthMask(GL_FALSE);
-		Grid::RenderGrid(view, projection);
-		glDepthMask(GL_TRUE);
+
+			glDepthMask(GL_FALSE);
+			Grid::RenderGrid(view, projection);
+			glDepthMask(GL_TRUE);
 #endif
-		GameObjectManager::RenderAll(view, projection);
+			GameObjectManager::RenderAll(view, projection);
+		}
 
 #if ENGINE_MODE
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -388,6 +399,7 @@ namespace Graphics
 		GameGUI::Render();
 		Input::SceneWindowInput();
 #endif
+
 		//swap the front and back buffers
 		glfwSwapBuffers(window);
 		if (!Engine::IsUserIdle())

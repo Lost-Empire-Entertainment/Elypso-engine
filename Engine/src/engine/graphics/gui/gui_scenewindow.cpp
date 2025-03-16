@@ -138,7 +138,10 @@ namespace Graphics::GUI
 				framebufferWidth,
 				framebufferHeight);
 
-			Render::activeCamera->GetComponent<CameraComponent>()->SetAspectRatio(targetAspectRatio);
+			if (Render::activeCamera != nullptr)
+			{
+				Render::activeCamera->GetComponent<CameraComponent>()->SetAspectRatio(targetAspectRatio);
+			}
 
 			glViewport(0, 0, framebufferWidth, framebufferHeight);
 		}
@@ -287,18 +290,21 @@ namespace Graphics::GUI
 			string strVerticesCount = "Vertices: " + to_string(verticesCount);
 			ImGui::Text("%s", strVerticesCount.c_str());
 
-			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+			if (Render::activeCamera != nullptr)
+			{
+				auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 
-			ImGui::Text(
-				"Position: %.2f, %.2f, %.2f",
-				tc->GetPosition().x,
-				tc->GetPosition().y,
-				tc->GetPosition().z);
-			ImGui::Text(
-				"Angle: %.2f, %.2f, %.2f",
-				tc->GetRotation().x,
-				tc->GetRotation().y,
-				tc->GetRotation().z);
+				ImGui::Text(
+					"Position: %.2f, %.2f, %.2f",
+					tc->GetPosition().x,
+					tc->GetPosition().y,
+					tc->GetPosition().z);
+				ImGui::Text(
+					"Angle: %.2f, %.2f, %.2f",
+					tc->GetRotation().x,
+					tc->GetRotation().y,
+					tc->GetRotation().z);
+			}
 
 			ImGui::EndChild();
 		}

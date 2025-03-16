@@ -328,242 +328,316 @@ namespace Graphics::GUI
 		{
 			if (ImGui::MenuItem("Import asset"))
 			{
-				string assetPath = FileExplorer::Select(FileExplorer::SearchType::asset);
-				if (assetPath != "")
+				if (Render::activeCamera == nullptr)
 				{
-					string name = path(assetPath).stem().string();
-					string extension = path(assetPath).extension().string();
-					if (extension != ".fbx"
-						&& extension != ".gltw"
-						&& extension != ".obj"
-						&& extension != ".png"
-						&& extension != ".jpg"
-						&& extension != ".jpeg"
-						&& extension != ".mp3"
-						&& extension != ".flac"
-						&& extension != ".wav")
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::EXCEPTION,
+						"Error: Cannot import asset because scene has no active camera!\n");
+				}
+				else
+				{
+					string assetPath = FileExplorer::Select(FileExplorer::SearchType::asset);
+					if (assetPath != "")
 					{
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							"Error: File '" + name + "' with extension '" + extension + "' is not yet supported!");
-					}
-					else
-					{
-						bool foundExisting = false;
-						string existingFilePath;
-						string existingFileName;
-						string importedFileName = path(assetPath).stem().string();
-						for (const auto& file : directory_iterator(Engine::currentGameobjectsPath))
-						{
-							existingFilePath = file.path().string();
-							existingFileName = path(existingFilePath).stem().string();
-
-							if (importedFileName == existingFileName)
-							{
-								foundExisting = true;
-								break;
-							}
-						}
-
-						if (foundExisting)
+						string name = path(assetPath).stem().string();
+						string extension = path(assetPath).extension().string();
+						if (extension != ".fbx"
+							&& extension != ".gltw"
+							&& extension != ".obj"
+							&& extension != ".png"
+							&& extension != ".jpg"
+							&& extension != ".jpeg"
+							&& extension != ".mp3"
+							&& extension != ".flac"
+							&& extension != ".wav")
 						{
 							ConsoleManager::WriteConsoleMessage(
 								Caller::FILE,
 								Type::EXCEPTION,
-								"Error: Gameobject '" + importedFileName + "' already exists in the current scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+								"Error: File '" + name + "' with extension '" + extension + "' is not yet supported!");
 						}
 						else
 						{
-							GUIImportAsset::renderImportAsset = true;
-							GUIImportAsset::assetPath = assetPath;
+							bool foundExisting = false;
+							string existingFilePath;
+							string existingFileName;
+							string importedFileName = path(assetPath).stem().string();
+							for (const auto& file : directory_iterator(Engine::currentGameobjectsPath))
+							{
+								existingFilePath = file.path().string();
+								existingFileName = path(existingFilePath).stem().string();
+
+								if (importedFileName == existingFileName)
+								{
+									foundExisting = true;
+									break;
+								}
+							}
+
+							if (foundExisting)
+							{
+								ConsoleManager::WriteConsoleMessage(
+									Caller::FILE,
+									Type::EXCEPTION,
+									"Error: Gameobject '" + importedFileName + "' already exists in the current scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
+							}
+							else
+							{
+								GUIImportAsset::renderImportAsset = true;
+								GUIImportAsset::assetPath = assetPath;
+							}
 						}
 					}
 				}
 			}
 
-			auto cc = Render::activeCamera->GetComponent<CameraComponent>();
-			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
-			vec3 newPos = tc->GetPosition() + cc->GetFront() * 5.0f;
+			vec3 newPos{};
+			if (Render::activeCamera != nullptr)
+			{
+				auto cc = Render::activeCamera->GetComponent<CameraComponent>();
+				auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+				newPos = tc->GetPosition() + cc->GetFront() * 5.0f;
 
-			int resultX = static_cast<int>(newPos.x);
-			int resultY = static_cast<int>(newPos.y);
-			int resultZ = static_cast<int>(newPos.z);
-			newPos = vec3(resultX, resultY, resultZ);
+				int resultX = static_cast<int>(newPos.x);
+				int resultY = static_cast<int>(newPos.y);
+				int resultZ = static_cast<int>(newPos.z);
+				newPos = vec3(resultX, resultY, resultZ);
+			}
 
 			if (ImGui::BeginMenu("Model"))
 			{
 				if (ImGui::MenuItem("Empty"))
 				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Empty", "");
-					string targetName = path(targetPath).stem().string();
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Empty because scene has no active camera!\n");
+					}
+					else
+					{
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Empty", "");
+						string targetName = path(targetPath).stem().string();
 
-					string targetNameAndExtension = targetName + ".txt";
-					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+						string targetNameAndExtension = targetName + ".txt";
+						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 
-					File::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 
-					unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID = ++GameObject::nextID;
 
-					Empty::InitializeEmpty(
-						newPos,
-						vec3(0),
-						vec3(1),
-						destinationPath,
-						targetName,
-						nextID);
+						Empty::InitializeEmpty(
+							newPos,
+							vec3(0),
+							vec3(1),
+							destinationPath,
+							targetName,
+							nextID);
 
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+					}
 				}
 				else if (ImGui::MenuItem("Cube"))
 				{
-					string originPath = (path(Engine::filesPath) / "models" / "cube.fbx").string();
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".fbx";
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Cube because scene has no active camera!\n");
+					}
+					else
+					{
+						string originPath = (path(Engine::filesPath) / "models" / "cube.fbx").string();
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
+						string targetName = path(targetPath).stem().string();
+						string targetNameAndExtension = targetName + ".fbx";
 
-					File::CreateNewFolder(targetPath);
-					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-					File::CopyFileOrFolder(originPath, destinationPath);
+						File::CreateNewFolder(targetPath);
+						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+						File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID = ++GameObject::nextID;
 
-					Importer::Initialize(
-						newPos,
-						vec3(0),
-						vec3(1),
-						destinationPath,
-						"DEFAULTDIFF",
-						"DEFAULTSPEC",
-						"EMPTY",
-						"EMPTY",
-						false,
-						1.0f,
-						32.0f,
-						targetName,
-						nextID);
+						Importer::Initialize(
+							newPos,
+							vec3(0),
+							vec3(1),
+							destinationPath,
+							"DEFAULTDIFF",
+							"DEFAULTSPEC",
+							"EMPTY",
+							"EMPTY",
+							false,
+							1.0f,
+							32.0f,
+							targetName,
+							nextID);
 
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+					}
 				}
 				else if (ImGui::MenuItem("Sphere"))
 				{
-					string originPath = (path(Engine::filesPath) / "models" / "sphere.fbx").string();
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".fbx";
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Sphere because scene has no active camera!\n");
+					}
+					else
+					{
+						string originPath = (path(Engine::filesPath) / "models" / "sphere.fbx").string();
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
+						string targetName = path(targetPath).stem().string();
+						string targetNameAndExtension = targetName + ".fbx";
 
-					File::CreateNewFolder(targetPath);
-					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-					File::CopyFileOrFolder(originPath, destinationPath);
+						File::CreateNewFolder(targetPath);
+						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+						File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID = ++GameObject::nextID;
 
-					Importer::Initialize(
-						newPos,
-						vec3(0),
-						vec3(1),
-						destinationPath,
-						"DEFAULTDIFF",
-						"DEFAULTSPEC",
-						"EMPTY",
-						"EMPTY",
-						false,
-						1.0f,
-						32.0f,
-						targetName,
-						nextID);
+						Importer::Initialize(
+							newPos,
+							vec3(0),
+							vec3(1),
+							destinationPath,
+							"DEFAULTDIFF",
+							"DEFAULTSPEC",
+							"EMPTY",
+							"EMPTY",
+							false,
+							1.0f,
+							32.0f,
+							targetName,
+							nextID);
 
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+					}
 				}
 				else if (ImGui::MenuItem("Cylinder"))
 				{
-					string originPath = (path(Engine::filesPath) / "models" / "cylinder.fbx").string();
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".fbx";
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Cylinder because scene has no active camera!\n");
+					}
+					else
+					{
+						string originPath = (path(Engine::filesPath) / "models" / "cylinder.fbx").string();
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
+						string targetName = path(targetPath).stem().string();
+						string targetNameAndExtension = targetName + ".fbx";
 
-					File::CreateNewFolder(targetPath);
-					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-					File::CopyFileOrFolder(originPath, destinationPath);
+						File::CreateNewFolder(targetPath);
+						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+						File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID = ++GameObject::nextID;
 
-					Importer::Initialize(
-						newPos,
-						vec3(0),
-						vec3(1),
-						destinationPath,
-						"DEFAULTDIFF",
-						"DEFAULTSPEC",
-						"EMPTY",
-						"EMPTY",
-						false,
-						1.0f,
-						32.0f,
-						targetName,
-						nextID);
+						Importer::Initialize(
+							newPos,
+							vec3(0),
+							vec3(1),
+							destinationPath,
+							"DEFAULTDIFF",
+							"DEFAULTSPEC",
+							"EMPTY",
+							"EMPTY",
+							false,
+							1.0f,
+							32.0f,
+							targetName,
+							nextID);
 
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+					}
 				}
 				else if (ImGui::MenuItem("Cone"))
 				{
-					string originPath = (path(Engine::filesPath) / "models" / "cone.fbx").string();
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".fbx";
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Cone because scene has no active camera!\n");
+					}
+					else
+					{
+						string originPath = (path(Engine::filesPath) / "models" / "cone.fbx").string();
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
+						string targetName = path(targetPath).stem().string();
+						string targetNameAndExtension = targetName + ".fbx";
 
-					File::CreateNewFolder(targetPath);
-					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-					File::CopyFileOrFolder(originPath, destinationPath);
+						File::CreateNewFolder(targetPath);
+						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+						File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID = ++GameObject::nextID;
 
-					Importer::Initialize(
-						newPos,
-						vec3(0),
-						vec3(1),
-						destinationPath,
-						"DEFAULTDIFF",
-						"DEFAULTSPEC",
-						"EMPTY",
-						"EMPTY",
-						false,
-						1.0f,
-						32.0f,
-						targetName,
-						nextID);
+						Importer::Initialize(
+							newPos,
+							vec3(0),
+							vec3(1),
+							destinationPath,
+							"DEFAULTDIFF",
+							"DEFAULTSPEC",
+							"EMPTY",
+							"EMPTY",
+							false,
+							1.0f,
+							32.0f,
+							targetName,
+							nextID);
 
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+					}
 				}
 				else if (ImGui::MenuItem("Pyramid"))
 				{
-					string originPath = (path(Engine::filesPath) / "models" / "pyramid.fbx").string();
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".fbx";
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Pyramid because scene has no active camera!\n");
+					}
+					else
+					{
+						string originPath = (path(Engine::filesPath) / "models" / "pyramid.fbx").string();
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
+						string targetName = path(targetPath).stem().string();
+						string targetNameAndExtension = targetName + ".fbx";
 
-					File::CreateNewFolder(targetPath);
-					string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-					File::CopyFileOrFolder(originPath, destinationPath);
+						File::CreateNewFolder(targetPath);
+						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
+						File::CopyFileOrFolder(originPath, destinationPath);
 
-					unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID = ++GameObject::nextID;
 
-					Importer::Initialize(
-						newPos,
-						vec3(0),
-						vec3(1),
-						destinationPath,
-						"DEFAULTDIFF",
-						"DEFAULTSPEC",
-						"EMPTY",
-						"EMPTY",
-						false,
-						1.0f,
-						32.0f,
-						targetName,
-						nextID);
+						Importer::Initialize(
+							newPos,
+							vec3(0),
+							vec3(1),
+							destinationPath,
+							"DEFAULTDIFF",
+							"DEFAULTSPEC",
+							"EMPTY",
+							"EMPTY",
+							false,
+							1.0f,
+							32.0f,
+							targetName,
+							nextID);
 
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+					}
 				}
 
 				ImGui::EndMenu();
@@ -573,82 +647,16 @@ namespace Graphics::GUI
 			{
 				if (ImGui::MenuItem("Point light"))
 				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".txt";
-					File::CreateNewFolder(targetPath);
-
-					string scenePath = path(Engine::scenePath).parent_path().filename().string();
-					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
-
-					unsigned int nextID = ++GameObject::nextID;
-					unsigned int nextID2 = ++GameObject::nextID;
-
-					shared_ptr<GameObject> obj = 
-						PointLight::InitializePointLight(
-							newPos,
-							vec3(0),
-							vec3(1),
-							finalTxtPath,
-							vec3(1),
-							1.0f,
-							1.0f,
-							targetName,
-							nextID,
-							true,
-
-							//billboard values
-							nextID2,
-							true);
-
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
-				}
-				if (ImGui::MenuItem("Spotlight"))
-				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
-					string targetName = path(targetPath).stem().string();
-					string targetNameAndExtension = targetName + ".txt";
-					File::CreateNewFolder(targetPath);
-
-					string scenePath = path(Engine::scenePath).parent_path().filename().string();
-					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
-
-					unsigned int nextID = ++GameObject::nextID;
-					unsigned int nextID2 = ++GameObject::nextID;
-
-					shared_ptr<GameObject> obj = 
-						SpotLight::InitializeSpotLight(
-							newPos,
-							vec3(0),
-							vec3(1),
-							finalTxtPath,
-							vec3(1),
-							1.0f,
-							1.0f,
-							12.5f,
-							17.5f,
-							targetName,
-							nextID,
-							true,
-
-							//billboard values
-							nextID2,
-							true);
-
-					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
-				}
-				if (ImGui::MenuItem("Directional light"))
-				{
-					if (GameObjectManager::GetDirectionalLight() != nullptr)
+					if (Render::activeCamera == nullptr)
 					{
 						ConsoleManager::WriteConsoleMessage(
 							Caller::INPUT,
 							Type::EXCEPTION,
-							"Error: Cannot have more than one directional light in scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!");
+							"Error: Cannot initialize Point light because scene has no active camera!\n");
 					}
 					else
 					{
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Directional light", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".txt";
 						File::CreateNewFolder(targetPath);
@@ -660,12 +668,13 @@ namespace Graphics::GUI
 						unsigned int nextID2 = ++GameObject::nextID;
 
 						shared_ptr<GameObject> obj =
-							DirectionalLight::InitializeDirectionalLight(
+							PointLight::InitializePointLight(
 								newPos,
 								vec3(0),
 								vec3(1),
 								finalTxtPath,
 								vec3(1),
+								1.0f,
 								1.0f,
 								targetName,
 								nextID,
@@ -678,44 +687,151 @@ namespace Graphics::GUI
 						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 					}
 				}
+				if (ImGui::MenuItem("Spotlight"))
+				{
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Spotlight because scene has no active camera!\n");
+					}
+					else
+					{
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
+						string targetName = path(targetPath).stem().string();
+						string targetNameAndExtension = targetName + ".txt";
+						File::CreateNewFolder(targetPath);
+
+						string scenePath = path(Engine::scenePath).parent_path().filename().string();
+						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
+
+						unsigned int nextID = ++GameObject::nextID;
+						unsigned int nextID2 = ++GameObject::nextID;
+
+						shared_ptr<GameObject> obj =
+							SpotLight::InitializeSpotLight(
+								newPos,
+								vec3(0),
+								vec3(1),
+								finalTxtPath,
+								vec3(1),
+								1.0f,
+								1.0f,
+								12.5f,
+								17.5f,
+								targetName,
+								nextID,
+								true,
+
+								//billboard values
+								nextID2,
+								true);
+
+						SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+					}
+				}
+				if (ImGui::MenuItem("Directional light"))
+				{
+					if (Render::activeCamera == nullptr)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::INPUT,
+							Type::EXCEPTION,
+							"Error: Cannot initialize Directional light because scene has no active camera!\n");
+					}
+					else
+					{
+						if (GameObjectManager::GetDirectionalLight() != nullptr)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								Caller::INPUT,
+								Type::EXCEPTION,
+								"Error: Cannot have more than one directional light in scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!");
+						}
+						else
+						{
+							string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Directional light", "");
+							string targetName = path(targetPath).stem().string();
+							string targetNameAndExtension = targetName + ".txt";
+							File::CreateNewFolder(targetPath);
+
+							string scenePath = path(Engine::scenePath).parent_path().filename().string();
+							string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
+
+							unsigned int nextID = ++GameObject::nextID;
+							unsigned int nextID2 = ++GameObject::nextID;
+
+							shared_ptr<GameObject> obj =
+								DirectionalLight::InitializeDirectionalLight(
+									newPos,
+									vec3(0),
+									vec3(1),
+									finalTxtPath,
+									vec3(1),
+									1.0f,
+									targetName,
+									nextID,
+									true,
+
+									//billboard values
+									nextID2,
+									true);
+
+							SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+						}
+					}
+				}
 
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::MenuItem("Audio object"))
 			{
-				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
-				string targetName = path(targetPath).stem().string();
-				string targetNameAndExtension = targetName + ".txt";
-				File::CreateNewFolder(targetPath);
+				if (Render::activeCamera == nullptr)
+				{
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::EXCEPTION,
+						"Error: Cannot initialize Audio object because scene has no active camera!\n");
+				}
+				else
+				{
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
+					string targetName = path(targetPath).stem().string();
+					string targetNameAndExtension = targetName + ".txt";
+					File::CreateNewFolder(targetPath);
 
-				string scenePath = path(Engine::scenePath).parent_path().filename().string();
-				string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
+					string scenePath = path(Engine::scenePath).parent_path().filename().string();
+					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-				unsigned int nextID = ++GameObject::nextID;
-				unsigned int nextID2 = ++GameObject::nextID;
+					unsigned int nextID = ++GameObject::nextID;
+					unsigned int nextID2 = ++GameObject::nextID;
 
-				shared_ptr<GameObject> obj =
-					AudioObject::InitializeAudioObject(
-						newPos,
-						vec3(0),
-						vec3(1),
-						finalTxtPath,
-						targetName,
-						nextID,
-						true,
+					shared_ptr<GameObject> obj =
+						AudioObject::InitializeAudioObject(
+							newPos,
+							vec3(0),
+							vec3(1),
+							finalTxtPath,
+							targetName,
+							nextID,
+							true,
 
-						//audio component values
-						"",
-						false,
-						false,
-						50.0f,
-						1.0f,
-						100.0f,
+							//audio component values
+							"",
+							false,
+							false,
+							50.0f,
+							1.0f,
+							100.0f,
 
-						//billboard values
-						nextID2,
-						true);
+							//billboard values
+							nextID2,
+							true);
+
+					SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+				}
 			}
 
 			if (ImGui::MenuItem("Camera"))
@@ -745,6 +861,14 @@ namespace Graphics::GUI
 						//billboard values
 						nextID2,
 						true);
+
+				if (Render::activeCamera == nullptr)
+				{
+					Render::sceneCamera = obj;
+					Render::activeCamera = obj;
+				}
+
+				SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 			}
 
 			ImGui::EndMenu();
