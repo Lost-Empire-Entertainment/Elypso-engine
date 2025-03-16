@@ -49,7 +49,11 @@ namespace Core
 
 		static void RunEngine();
 
-		/// <param name="immediate">Does the engine need to be shut down immediately?</param>
-		static void Shutdown(bool immediate = false);
+		/// <summary>
+		/// Shut down the engine or game.
+		/// </summary>
+		/// <param name="immediate">Quick shutdown with fewer checks.</param>
+		/// <param name="bypassSaveCheck">Shut down without checking if anything needs to be saved.</param>
+		static void Shutdown(bool immediate = false, bool bypassSaveCheck = false);
 	};
 }

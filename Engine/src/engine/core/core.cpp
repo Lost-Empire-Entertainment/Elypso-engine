@@ -730,7 +730,7 @@ namespace Core
 		else return false;
 	}
 
-	void Engine::Shutdown(bool immediate)
+	void Engine::Shutdown(bool immediate, bool bypassSaveCheck)
 	{
 		if (immediate)
 		{
@@ -748,7 +748,8 @@ namespace Core
 		}
 		else
 		{
-			if (SceneFile::unsavedChanges == true)
+			if (!bypassSaveCheck
+				&& SceneFile::unsavedChanges == true)
 			{
 #if ENGINE_MODE
 				//unminimize and bring to focus to ensure the user always sees the shutdown confirmation popup

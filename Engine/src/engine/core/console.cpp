@@ -122,10 +122,7 @@ namespace Core
 
     void ConsoleManager::AddLoggerLog(const string& message)
     {
-        if (logFile.is_open())
-        {
-            logFile << message << "\n";
-        }
+        if (logFile.is_open()) logFile << message << "\n";
     }
 
     void ConsoleManager::AddConsoleLog(const std::string& message)
@@ -135,10 +132,7 @@ namespace Core
 
     void ConsoleManager::CloseLogger()
     {
-        if (logFile.is_open())
-        {
-            logFile.close();
-        }
+        if (logFile.is_open()) logFile.close();
     }
 
     void ConsoleManager::WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage, bool internalMessage)
@@ -212,20 +206,27 @@ namespace Core
             }
         }
 
+#if ENGINE_MODE
+        ParseEngineCommand(command, splitCommand, count);
+#else
+        ParseGameCommand(command, splitCommand, count);
+#endif
+    }
+
+    void ConsoleManager::ParseEngineCommand(
+        const string& command,
+        const vector<string>& cleanedCommands,
+        size_t commandSize)
+    {
         if (cleanedCommands[0] == "help"
-            && cleanedCommands.size() == 1)
+            && commandSize == 1)
         {
             stringstream ss;
             ss <<
                 "help - lists all console commands\n"
                 << "qqq - quits the engine\n"
                 << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
-                << "rc - resets the camera back to its original position and rotation\n"
-#if ENGINE_MODE
-#else
-                << "toggle - enables or disables selected gameobject based on its enabled state (click on object before using this command)\n"
-#endif
-                ;
+                << "rc - resets the camera back to its original position and rotation\n";
 
             WriteConsoleMessage(
                 Caller::INPUT,
@@ -234,31 +235,120 @@ namespace Core
                 true);
         }
         else if (cleanedCommands[0] == "qqq"
-                 && cleanedCommands.size() == 1)
+                 && commandSize == 1)
+        {
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::DEBUG,
+                "User closed engine with 'qqq' console command.\n");
+            Engine::Shutdown(true, true);
+        }
+        else if (cleanedCommands[0] == "rc"
+                 && commandSize == 1)
+        {
+            if (Render::activeCamera == nullptr)
+            {
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::EXCEPTION,
+                    "Error: Cannot reset camera position through console because there is no active camera!\n");
+            }
+            else
+            {
+                vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
+                auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+                tc->SetPosition(newPosition);
+                tc->SetRotation(vec3(-90, 0, 0));
+
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::INFO,
+                    "Reset camera position and rotation.\n");
+            }
+        }
+        else if (cleanedCommands[0] == "srm"
+                 && (cleanedCommands[1] == "1"
+                 || cleanedCommands[1] == "2")
+                 && commandSize == 2)
+        {
+            wireframeMode = cleanedCommands[1] != "1";
+            glPolygonMode(
+                GL_FRONT_AND_BACK,
+                wireframeMode ? GL_LINE : GL_FILL);
+
+            string wireframeModeValue = cleanedCommands[1] == "1" ?
+                "shaded" :
+                "wireframe";
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                "Set wireframe mode to " + wireframeModeValue + ".\n");
+        }
+        else
+        {
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::EXCEPTION,
+                "Error: '" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
+        }
+    }
+
+    void ConsoleManager::ParseGameCommand(
+        const string& command,
+        const vector<string>& cleanedCommands,
+        size_t commandSize)
+    {
+        if (cleanedCommands[0] == "help"
+            && commandSize == 1)
+        {
+            stringstream ss;
+            ss <<
+                "help - lists all console commands\n"
+                << "qqq - quits the game\n"
+                << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
+                << "rc - resets the camera back to its original position and rotation\n"
+                << "toggle - enables or disables selected gameobject based on its enabled state (click on object before using this command)\n";
+
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                ss.str(),
+                true);
+        }
+        else if (cleanedCommands[0] == "qqq"
+                 && commandSize == 1)
         {
             WriteConsoleMessage(
                 Caller::INPUT,
                 Type::DEBUG,
                 "User closed game with 'qqq' console command.\n");
-            Engine::Shutdown();
+            Engine::Shutdown(true, true);
         }
         else if (cleanedCommands[0] == "rc"
-                 && cleanedCommands.size() == 1)
+                 && commandSize == 1)
         {
-            vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
-            auto tc = Render::activeCamera->GetComponent<TransformComponent>();
-            tc->SetPosition(newPosition);
-            tc->SetRotation(vec3(-90, 0, 0));
+            if (Render::activeCamera == nullptr)
+            {
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::EXCEPTION,
+                    "Error: Cannot reset camera position through console because there is no active camera!\n");
+            }
+            else
+            {
+                vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
+                auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+                tc->SetPosition(newPosition);
+                tc->SetRotation(vec3(-90, 0, 0));
 
-            WriteConsoleMessage(
-                Caller::INPUT,
-                Type::INFO,
-                "Reset camera position and rotation.\n");
+                WriteConsoleMessage(
+                    Caller::INPUT,
+                    Type::INFO,
+                    "Reset camera position and rotation.\n");
+            }
         }
-#if ENGINE_MODE
-#else
         else if (cleanedCommands[0] == "toggle"
-                 && cleanedCommands.size() == 1)
+                 && commandSize == 1)
         {
             if (Select::selectedObj == nullptr)
             {
@@ -274,11 +364,10 @@ namespace Core
                 Select::selectedObj->SetEnableState(enabled);
             }
         }
-#endif
         else if (cleanedCommands[0] == "srm"
                  && (cleanedCommands[1] == "1"
                  || cleanedCommands[1] == "2")
-                 && cleanedCommands.size() == 2)
+                 && commandSize == 2)
         {
             wireframeMode = cleanedCommands[1] != "1";
             glPolygonMode(

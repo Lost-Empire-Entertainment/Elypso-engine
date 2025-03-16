@@ -48,6 +48,14 @@ namespace Core
 		static void CloseLogger();
 
 		static void ParseConsoleCommand(const string& message);
+		static void ParseEngineCommand(
+			const string& command,
+			const vector<string>& splitCommand, 
+			size_t commandSize);
+		static void ParseGameCommand(
+			const string& command,
+			const vector<string>& splitCommand, 
+			size_t commandSize);
 
 		/// <summary>
 		/// Print selected message to in-game console.
