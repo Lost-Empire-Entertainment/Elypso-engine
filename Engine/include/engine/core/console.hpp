@@ -58,14 +58,19 @@ namespace Core
 			size_t commandSize);
 
 		/// <summary>
-		/// Print selected message to in-game console.
+		/// Print selected message to engine or game console.
 		/// </summary>
 		/// <param name="caller">What called the message.</param>
 		/// <param name="type">What kind of a message is it.</param>
 		/// <param name="message">The message itself.</param>
 		/// <param name="onlyMessage">Do we only send the message without message caller, type and timestamp?</param>
-		/// <param name="internalMessage">Do we also print this message to the in-game console?</param>
-		static void WriteConsoleMessage(Caller caller, Type type, const string& message, bool onlyMessage = false, bool internalMessage = true);
+		/// <param name="internalMessage">Do we also print this message to the engine or game console?</param>
+		static void WriteConsoleMessage(
+			Caller caller, 
+			Type type, 
+			const string& message, 
+			bool onlyMessage = false, 
+			bool internalMessage = true);
 
 	private:
 		static inline bool wireframeMode;

@@ -89,6 +89,10 @@ namespace Graphics::GUI
 				&& mesh->GetMeshType() != MeshComponent::MeshType::skybox))
 			{
 				string name = obj->GetName();
+
+				//dont show SceneCamera in gameobjects list
+				if (name == "SceneCamera") continue;
+
 				string label = name + "##" + to_string(obj->GetID());
 
 				bool isSelected = (obj == Select::selectedObj);

@@ -148,8 +148,7 @@ namespace EngineFile
 
 			sceneFile.close();
 
-			LoadGlobalGraphicsData();
-			LoadGlobalPhysicsData();
+			GameObjectFile::LoadGameObjects();
 
 			Render::SetWindowNameAsUnsaved(false);
 
@@ -336,6 +335,7 @@ namespace EngineFile
 		// GLOBAL GRAPHICS DATA
 		//
 
+#if ENGINE_MODE
 		//sets camera default position and rotation if default scene is created
 		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 		tc->SetPosition(vec3(0.0f, 1.0f, 0.0f));
@@ -345,6 +345,7 @@ namespace EngineFile
 			values.push_back("0.0, 1.0, 0.0");
 		keys.push_back("camera_rotation");
 			values.push_back("-90.0, 0.0, 0.0");
+#endif
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
 		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
@@ -387,14 +388,7 @@ namespace EngineFile
 
 	void SceneFile::SaveGlobalPhysicsData()
 	{
-		if (Render::activeCamera == nullptr)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Error: Failed to save global physics data because no camera was found!\n");
-			return;
-		}
+		if (Render::activeCamera == nullptr) return;
 
 		if (Physics::physicsWorld != nullptr)
 		{
@@ -428,14 +422,7 @@ namespace EngineFile
 	}
 	void SceneFile::LoadGlobalPhysicsData()
 	{
-		if (Render::activeCamera == nullptr)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Error: Failed to load global physics data because no camera was found!\n");
-			return;
-		}
+		if (Render::activeCamera == nullptr) return;
 
 		if (Physics::physicsWorld == nullptr)
 		{
@@ -469,6 +456,7 @@ namespace EngineFile
 
 	void SceneFile::SaveGlobalGraphicsData()
 	{
+#if ENGINE_MODE
 		if (Render::activeCamera == nullptr)
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -492,6 +480,7 @@ namespace EngineFile
 			to_string(rot[1]) + ", " +
 			to_string(rot[2]);
 		SetValue("camera_rotation", cameraRot);
+#endif
 
 		SetValue("skybox_right", skyboxTexturesMap["right"]);
 		SetValue("skybox_left", skyboxTexturesMap["left"]);
@@ -512,6 +501,7 @@ namespace EngineFile
 	}
 	void SceneFile::LoadGlobalGraphicsData()
 	{
+#if ENGINE_MODE
 		if (Render::activeCamera == nullptr)
 		{
 			ConsoleManager::WriteConsoleMessage(
@@ -536,6 +526,7 @@ namespace EngineFile
 			stof(cameraRotVector[1]),
 			stof(cameraRotVector[2]));
 		tc->SetRotation(cameraRot);
+#endif
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
 		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
@@ -596,7 +587,5 @@ namespace EngineFile
 
 		string globalAmbientIntensityString = GetValue("globalAmbientIntensity");
 		Render::globalAmbientIntensity = stof(globalAmbientIntensityString);
-
-		GameObjectFile::LoadGameObjects();
 	}
 }

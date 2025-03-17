@@ -6,10 +6,14 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <algorithm>
 
 namespace Core
 {
 	using std::string;
+	using std::vector;
+	using std::find;
 
 	class Engine
 	{
@@ -27,29 +31,61 @@ namespace Core
 		static inline string currentGameobjectsPath;
 		static inline string scenesPath;
 		static inline string texturesPath;
+
 #if ENGINE_MODE
 		static inline string gamePath;
 		static inline string gameExePath;
 		static inline string gameParentPath;
 #endif
 		/// <summary>
-		/// Check if engine or game is currently running
+		/// Check if the engine or game is currently running.
 		/// </summary>
 		static inline bool isRunning;
-#if ENGINE_MODE
-		static void InitializeEngine();
 
-		static bool CheckForMissingCompilerFiles();
-#else
+		/// <summary>
+		/// Initialize engine or game.
+		/// </summary>
 		static void InitializeEngine();
+#if ENGINE_MODE
+		/// <summary>
+		/// Checks if all necessary files required for compiling the game inside the engine have been set up correctly.
+		/// </summary>
+		/// <returns></returns>
+		static bool CheckForMissingCompilerFiles();
 #endif
 
+		/// <summary>
+		/// Show an error popup that shuts down the engine or game immediately after the Ok button is pressed.
+		/// </summary>
 		static void CreateErrorPopup(const char* errorMessage);
+		/// <summary>
+		/// Show a warning popup that doesn't shut down the engine or game.
+		/// </summary>
 		static void CreateWarningPopup(const char* warningMessage);
+		/// <summary>
+		/// Checks whether the engine or game with the same name is already running or not.
+		/// </summary>
 		static bool IsThisProcessAlreadyRunning(const string& processName);
 
+		/// <summary>
+		/// Checks whether the engine or game is minimized. 
+		/// </summary>
 		static bool IsUserIdle();
 
+		/// <summary>
+		/// Checks whether the chosen name can be assigned to the name of a gameobject.
+		/// </summary>
+		static bool IsReservedName(const string& name) 
+		{
+			return find(
+				reservedNames.begin(),
+				reservedNames.end(),
+				name) != reservedNames.end();
+		}
+
+		/// <summary>
+		/// Engine and game runtime loop.
+		/// </summary>
 		static void RunEngine();
 
 		/// <summary>
@@ -58,5 +94,18 @@ namespace Core
 		/// <param name="immediate">Quick shutdown with fewer checks.</param>
 		/// <param name="bypassSaveCheck">Shut down without checking if anything needs to be saved.</param>
 		static void Shutdown(bool immediate = false, bool bypassSaveCheck = false);
+	private:
+		/// <summary>
+		/// A vector of used engine gameobject names 
+		/// that cannot be assigned to any names of 
+		/// any gameobject types to prevent potential naming conflicts.
+		/// </summary>
+		static inline vector<string> reservedNames
+		{
+			"SceneCamera",          //engine-only camera gameobject
+			"SelectedObjectAction", //selected object action gameobject
+			"SelectedObjectBorder", //selected object border gameobject
+			"Skybox"                //skybox gameobject
+		};
 	};
 }

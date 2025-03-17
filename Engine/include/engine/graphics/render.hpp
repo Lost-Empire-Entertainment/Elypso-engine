@@ -65,6 +65,11 @@ namespace Graphics
 		static void ContentSetup();
 
 #if ENGINE_MODE
+		/// <summary>
+		/// Initializes scene camera for engine at the first frame of the render loop
+		/// </summary>
+		static void InitializeSceneCamera();
+
 		static void FramebufferSetup();
 #endif
 	};

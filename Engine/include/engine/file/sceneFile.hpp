@@ -56,6 +56,16 @@ namespace EngineFile
 		/// <param name="key">The name of the key in the map we need to set a value for</param>
 		/// <param name="value">The value the key will be set to</param>
 		static void SetValue(const string& key, const string& value);
+
+		/// <summary>
+		/// Loads global physics data from the current scene file to Elypso Library
+		/// </summary>
+		static void LoadGlobalPhysicsData();
+
+		/// <summary>
+		/// Loads global graphics data from current scene file
+		/// </summary>
+		static void LoadGlobalGraphicsData();
 	private:
 		static inline string sceneFilePath;
 
@@ -74,19 +84,11 @@ namespace EngineFile
 		/// Saves global physics data from Elypso library to current scene file
 		/// </summary>
 		static void SaveGlobalPhysicsData();
-		/// <summary>
-		/// Loads global physics data from the current scene file to Elypso Library
-		/// </summary>
-		static void LoadGlobalPhysicsData();
 
 		/// <summary>
 		/// Saves global graphics data to current scene file
 		/// </summary>
 		static void SaveGlobalGraphicsData();
-		/// <summary>
-		/// Loads global graphics data from current scene file
-		/// </summary>
-		static void LoadGlobalGraphicsData();
 
 		/// <summary>
 		/// Creates a brand new scene file with default values.

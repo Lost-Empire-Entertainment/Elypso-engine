@@ -118,7 +118,7 @@ namespace Graphics::GUI
 		bool renderInspector = stoi(ConfigFile::GetValue("gui_inspector"));
 
 		if (renderInspector
-			&& ImGui::Begin("Inpsector", NULL, windowFlags))
+			&& ImGui::Begin("Inspector", NULL, windowFlags))
 		{
 			if (Select::selectedObj) AddComponent();
 
@@ -421,48 +421,62 @@ namespace Graphics::GUI
 				}
 				else
 				{
-					string oldFolderPath = (path(Engine::currentGameobjectsPath) / oldName).string();
-					File::MoveOrRenameFileOrFolder(oldFolderPath, newFolderPath, true);
-
-					//rename model file if gameobject mesh type is model
-					auto mesh = obj->GetComponent<MeshComponent>();
-					if (mesh->GetMeshType() == MeshComponent::MeshType::model)
+					if (Engine::IsReservedName(newFolderName))
 					{
-						for (const auto& file : directory_iterator(newFolderPath))
+						//resets inputTextBuffer_objName to oldName
+						copy(oldName.begin(), oldName.end(), inputTextBuffer_objName);
+						inputTextBuffer_objName[oldName.size()] = '\0';
+
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::INPUT,
+							ConsoleType::EXCEPTION,
+							"Error: Cannot set gameobject name to engine reserved name '" + newFolderName + "'!\n");
+					}
+					else
+					{
+						string oldFolderPath = (path(Engine::currentGameobjectsPath) / oldName).string();
+						File::MoveOrRenameFileOrFolder(oldFolderPath, newFolderPath, true);
+
+						//rename model file if gameobject mesh type is model
+						auto mesh = obj->GetComponent<MeshComponent>();
+						if (mesh->GetMeshType() == MeshComponent::MeshType::model)
 						{
-							string oldFileName = path(file).stem().string();
-							string oldFilePath = path(file).string();
-							string oldFileExtension = path(file).extension().string();
-							string extension;
-
-							if (is_regular_file(oldFilePath)
-								&& oldFileName == oldName
-								&& (path(oldFilePath).extension().string() == ".fbx"
-									|| path(oldFilePath).extension().string() == ".obj"
-									|| path(oldFilePath).extension().string() == ".glfw"))
+							for (const auto& file : directory_iterator(newFolderPath))
 							{
-								if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
-								else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
-								else if (path(oldFilePath).extension().string() == ".glfw") extension = ".glfw";
+								string oldFileName = path(file).stem().string();
+								string oldFilePath = path(file).string();
+								string oldFileExtension = path(file).extension().string();
+								string extension;
 
-								string newFolderNameAndExtension = newFolderName + extension;
-								string newFilePath = (path(Engine::currentGameobjectsPath) / newFolderName / newFolderNameAndExtension).string();
+								if (is_regular_file(oldFilePath)
+									&& oldFileName == oldName
+									&& (path(oldFilePath).extension().string() == ".fbx"
+										|| path(oldFilePath).extension().string() == ".obj"
+										|| path(oldFilePath).extension().string() == ".glfw"))
+								{
+									if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
+									else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
+									else if (path(oldFilePath).extension().string() == ".glfw") extension = ".glfw";
 
-								File::MoveOrRenameFileOrFolder(oldFilePath, newFilePath, true);
+									string newFolderNameAndExtension = newFolderName + extension;
+									string newFilePath = (path(Engine::currentGameobjectsPath) / newFolderName / newFolderNameAndExtension).string();
 
-								break;
+									File::MoveOrRenameFileOrFolder(oldFilePath, newFilePath, true);
+
+									break;
+								}
 							}
 						}
+
+						obj->SetName(newFolderName);
+
+						ConsoleManager::WriteConsoleMessage(
+							ConsoleCaller::INPUT,
+							ConsoleType::INFO,
+							"Successfully set gameobject new name to '" + newFolderName + "'!");
+
+						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
-
-					obj->SetName(newFolderName);
-
-					ConsoleManager::WriteConsoleMessage(
-						ConsoleCaller::INPUT,
-						ConsoleType::INFO,
-						"Successfully set gameobject new name to '" + newFolderName + "'!");
-
-					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 			}
 		}
@@ -508,26 +522,24 @@ namespace Graphics::GUI
 		ImGui::Text("Rotation");
 		if (ImGui::DragFloat3("##objRot", value_ptr(rot), 0.1f))
 		{
+			if (rot.x > 359.99f
+				|| rot.x < -359.99f)
+			{
+				rot.x = 0.0f;
+			}
+			if (rot.y > 359.99f
+				|| rot.y < -359.99f)
+			{
+				rot.y = 0.0f;
+			}
+			if (rot.z > 359.99f
+				|| rot.z < -359.99f)
+			{
+				rot.z = 0.0f;
+			}
+
 			obj->GetComponent<TransformComponent>()->SetRotation(rot);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-		}
-		if (rot.x > 359.99f
-			|| rot.x < -359.99f)
-		{
-			rot.x = 0.0f;
-			obj->GetComponent<TransformComponent>()->SetRotation(rot);
-		}
-		if (rot.y > 359.99f
-			|| rot.y < -359.99f)
-		{
-			rot.y = 0.0f;
-			obj->GetComponent<TransformComponent>()->SetRotation(rot);
-		}
-		if (rot.z > 359.99f
-			|| rot.z < -359.99f)
-		{
-			rot.z = 0.0f;
-			obj->GetComponent<TransformComponent>()->SetRotation(rot);
 		}
 
 		vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();

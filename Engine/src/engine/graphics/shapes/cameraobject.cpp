@@ -166,6 +166,9 @@ namespace Graphics::Shape
 	{
 		if (!obj) Engine::CreateErrorPopup("Camera gameobject is invalid.");
 
+		//dont render SceneCamera mesh
+		//if (obj->GetName() == "SceneCamera") return;
+
 		if (obj->IsEnabled())
 		{
 			auto mat = obj->GetComponent<MaterialComponent>();
@@ -185,11 +188,16 @@ namespace Graphics::Shape
 			auto mesh = obj->GetComponent<MeshComponent>();
 			if (GameObjectManager::renderBorders)
 			{
+				auto cc = obj->GetComponent<CameraComponent>();
+				auto tc = obj->GetComponent<TransformComponent>();
+
 				mat4 model = mat4(1.0f);
-				model = translate(model, obj->GetComponent<TransformComponent>()->GetPosition());
-				quat newRot = quat(radians(obj->GetComponent<TransformComponent>()->GetRotation()));
+				model = translate(model, tc->GetPosition());
+
+				quat newRot = quat(radians(tc->GetRotation()));
 				model *= mat4_cast(newRot);
-				model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
+
+				model = scale(model, tc->GetScale());
 
 				shader.SetMat4("model", model);
 				GLuint VAO = mesh->GetVAO();

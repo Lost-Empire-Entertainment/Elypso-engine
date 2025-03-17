@@ -108,6 +108,9 @@ namespace EngineFile
 				string txtName = objectName + ".txt";
 				string objectTxtFilePath = (path(Engine::scenePath).parent_path() / "gameobjects" / objectName / txtName).string();
 
+				//dont save scene camera
+				if (objectName == "SceneCamera") continue;
+
 				vector<string> data;
 
 				data.push_back("name= " + obj->GetName() + "\n");

@@ -30,7 +30,7 @@ namespace Graphics::Components
             scale(scale) {}
 
         void SetPosition(const vec3& newPosition) { position = newPosition; }
-        void SetRotation(const vec3& newRotation) { rotation = newRotation; }
+        void SetRotation(const vec3& newRotation);
         void SetScale(const vec3& newScale) { scale = newScale; }
 
         const vec3& GetPosition() const { return position; }

@@ -152,6 +152,19 @@ namespace Graphics::GUI
 			}
 
 			//
+			// CHECK IF ASSET NAME IS RESERVED NAME
+			//
+
+			bool isReservedName = Engine::IsReservedName(newName);
+			if (isReservedName)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::EXCEPTION,
+					"Error: Cannot set asset name to engine reserved name '" + newName + "'!\n");
+			}
+
+			//
 			// IMPORT MODEL
 			//
 

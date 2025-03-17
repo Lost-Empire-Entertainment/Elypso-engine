@@ -284,13 +284,16 @@ namespace Graphics
 		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox();
 
 		glfwMaximizeWindow(window);
+	}
 
 #if	ENGINE_MODE
+	void Render::InitializeSceneCamera()
+	{
 		string sceneCameraName = "SceneCamera";
 		unsigned int nextID = ++GameObject::nextID;
 		unsigned int nextID2 = ++GameObject::nextID;
 
-		sceneCamera = CameraObject::InitializeCameraObject(
+		Render::sceneCamera = CameraObject::InitializeCameraObject(
 			vec3(0.0f, 0.0f, 0.0f),
 			vec3(0.0f, 0.0f, -90.0f),
 			vec3(1.0f),
@@ -301,9 +304,12 @@ namespace Graphics
 			nextID2,
 			true);
 
-		activeCamera = sceneCamera;
-#endif
+		Render::activeCamera = Render::sceneCamera;
+
+		SceneFile::LoadGlobalGraphicsData();
+		SceneFile::LoadGlobalPhysicsData();
 	}
+#endif
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
@@ -336,6 +342,10 @@ namespace Graphics
 
 	void Render::WindowLoop()
 	{
+#if	ENGINE_MODE
+		if (Render::activeCamera == nullptr) InitializeSceneCamera();
+#endif
+
 		//camera transformation
 		Input::ProcessKeyboardInput(window);
 

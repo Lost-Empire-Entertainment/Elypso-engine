@@ -6,6 +6,7 @@
 #pragma once
 
 #include <typeindex>
+#include <iostream>
 
 //external
 #include "glm.hpp"
@@ -13,6 +14,7 @@
 
 //engine
 #include "component.hpp"
+#include "gameobject.hpp"
 
 namespace Graphics::Components
 {
@@ -23,6 +25,9 @@ namespace Graphics::Components
 	using glm::cross;
 	using glm::radians;
 	using std::shared_ptr;
+	using std::cout;
+
+	using Graphics::Shape::GameObject;
 
 	class CameraComponent : public Component
 	{
@@ -40,27 +45,25 @@ namespace Graphics::Components
 			vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f),
 			vec3 lastRotation = vec3(0));
 
+		/// <summary>
+		/// Sets the rotation of this camera from user mouse input.
+		/// </summary>
 		void RotateCamera(double xPos, double yPos);
+		/// <summary>
+		/// Sets the rotation of this camera with the transform rotation of the transform component.
+		/// </summary>
+		void SetRotation(const vec3& transformRotation);
 
 		void SetEnableState(bool newEnableState) { isEnabled = newEnableState; }
-		void SetSpeed(float newSpeed) { float speed = newSpeed; }
+		void SetSpeed(float newSpeed) { speed = newSpeed; }
 		void SetSensitivity(float newSensitivity) { sensitivity = newSensitivity; }
 		void SetAspectRatio(float newAspectRatio) { aspectRatio = newAspectRatio; }
 		void SetLastRotation(const vec3& newLastRotation) { lastRotation = newLastRotation; }
 
-		void SetRotation(const vec3& newRotation)
-		{
-			//update internal state
-			yaw = newRotation.x;
-			pitch = newRotation.y;
-
-			//recalculate cameraFront based on new yaw and pitch
-			vec3 front{};
-			front.x = cos(radians(yaw)) * cos(radians(pitch));
-			front.y = sin(radians(pitch));
-			front.z = sin(radians(yaw)) * cos(radians(pitch));
-			cameraFront = normalize(front);
-		}
+		/// <summary>
+		/// Returns the rotation of this camera component in transform-friendly vec3 format.
+		/// </summary>
+		const vec3 GetRotation() const;
 
 		bool IsEnabled() const { return isEnabled; }
 		float GetSpeed() const { return speed; }
