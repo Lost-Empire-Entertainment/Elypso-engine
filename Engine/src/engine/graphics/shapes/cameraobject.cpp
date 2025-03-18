@@ -194,7 +194,7 @@ namespace Graphics::Shape
 				mat4 model = mat4(1.0f);
 				model = translate(model, tc->GetPosition());
 
-				quat newRot = quat(radians(tc->GetRotation()));
+				quat newRot = quat(radians(cc->GetFront()));
 				model *= mat4_cast(newRot);
 
 				model = scale(model, tc->GetScale());
