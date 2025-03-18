@@ -233,6 +233,9 @@ namespace EngineFile
 		keys.push_back("gameName");
 			values.push_back("Game");
 #endif
+		keys.push_back("gameCamera");
+			values.push_back("");
+
 		keys.push_back("gui_fontScale");
 			values.push_back("1.5");
 

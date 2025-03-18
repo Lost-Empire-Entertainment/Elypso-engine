@@ -30,6 +30,7 @@
 #include "meshcomponent.hpp"
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
+#include "configFile.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -57,6 +58,7 @@ using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
 using Utils::String;
 using Core::Select;
+using EngineFile::ConfigFile;
 
 namespace Graphics::GUI
 {
@@ -88,6 +90,7 @@ namespace Graphics::GUI
 		else if (type == Type::GameobjectTexture) listType = "Gameobject texture";
 		else if (type == Type::Scene) listType = "Scene";
 		else if (type == Type::Audio) listType = "Audio";
+		else if (type == Type::Camera) listType = "Camera";
 
 		if (renderProjectItemsList
 			&& ImGui::Begin(listType.c_str(), NULL, windowFlags))
@@ -186,6 +189,16 @@ namespace Graphics::GUI
 				}
 				break;
 			}
+			case Type::Camera:
+			{
+				const vector<shared_ptr<GameObject>>& cameras = GameObjectManager::GetCameras();
+				for (const auto& camera : cameras)
+				{
+					string cameraName = camera->GetName();
+					if (cameraName != "SceneCamera") content.push_back(cameraName);
+				}
+				break;
+			}
 			}
 
 			isContentVectorFilled = true;
@@ -225,6 +238,7 @@ namespace Graphics::GUI
 					case Type::GameobjectTexture:
 					case Type::GameobjectModel:
 					case Type::Audio:
+					case Type::Camera:
 					{
 						selectedPath = entry;
 						break;
@@ -383,6 +397,25 @@ namespace Graphics::GUI
 					ConsoleCaller::INPUT,
 					ConsoleType::INFO,
 					"Assigned audio file '" + fileName + "' to '" + obj->GetName() + "'.\n");
+				break;
+			}
+			case Type::Camera:
+			{
+				const vector<shared_ptr<GameObject>>& cameras = GameObjectManager::GetCameras();
+				for (const auto& camera : cameras)
+				{
+					string cameraName = camera->GetName();
+					if (selectedPath == cameraName)
+					{
+						ConfigFile::SetValue("gameCamera", selectedPath);
+						break;
+					}
+				}
+
+				ConsoleManager::WriteConsoleMessage(
+					ConsoleCaller::INPUT,
+					ConsoleType::INFO,
+					"Assigned camera '" + ConfigFile::GetValue("gameCamera") + "' as game player camera.\n");
 				break;
 			}
 			}

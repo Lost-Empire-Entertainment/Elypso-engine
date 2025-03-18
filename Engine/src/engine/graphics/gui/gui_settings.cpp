@@ -560,12 +560,31 @@ namespace Graphics::GUI
 		ImGui::Separator();
 
 		ImGui::Text("Set first scene");
-		if (ImGui::Button("Select start scene"))
+		if (ImGui::Button("Select##firstScene"))
 		{
 			GUIProjectItemsList::type = GUIProjectItemsList::Type::Scene;
 			GUIProjectItemsList::selectStartScene = true;
 			GUIProjectItemsList::renderProjectItemsList = true;
 		}
+
+		ImGui::Text("Set game camera");
+		if (ImGui::Button("Select##gameCamera"))
+		{
+			if (GameObjectManager::GetCameras().size() <= 1)
+			{
+				ConsoleManager::WriteConsoleMessage(
+					Caller::INPUT,
+					Type::EXCEPTION,
+					"Error: Cannot assign game camera if there are no user-created cameras in the scene!\n");
+			}
+			else
+			{
+				GUIProjectItemsList::type = GUIProjectItemsList::Type::Camera;
+				GUIProjectItemsList::renderProjectItemsList = true;
+			}
+		}
+		string gameCameraName = ConfigFile::GetValue("gameCamera");
+		ImGui::Text(("Game camera: " + gameCameraName).c_str());
 	}
 }
 #endif

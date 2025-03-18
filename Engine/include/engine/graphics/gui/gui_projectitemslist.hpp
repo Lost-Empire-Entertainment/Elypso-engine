@@ -38,7 +38,8 @@ namespace Graphics::GUI
 			GameobjectTexture,    //The texture attached to the gameobject
 			GameobjectModel,      //The model file used by the gameobject
 			Scene,                //The chosen scene file
-			Audio                 //The chosen audio file
+			Audio,                //The chosen audio file
+			Camera                //The chosen camera gameobject
 		};
 
 		static inline bool renderProjectItemsList;
