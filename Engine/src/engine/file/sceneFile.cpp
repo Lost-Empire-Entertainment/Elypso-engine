@@ -460,14 +460,7 @@ namespace EngineFile
 	void SceneFile::SaveGlobalGraphicsData()
 	{
 #if ENGINE_MODE
-		if (Render::activeCamera == nullptr)
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Error: Failed to save global graphics data because no camera was found!\n");
-			return;
-		}
+		if (Render::activeCamera == nullptr) return;
 
 		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 		vec3 pos = tc->GetPosition();

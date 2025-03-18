@@ -1858,7 +1858,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = 3;
+		int numLines = 10;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Camera", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
@@ -1893,7 +1893,68 @@ namespace Graphics::GUI
 		}
 		ImGui::Separator();
 
-		ImGui::Text("this is where camera content will be at...\n");
+		ImGui::Text("FOV");
+		float fov = cc->GetFieldOfView();
+		if (ImGui::DragFloat("##fov", &fov, 0.1f, 70.0f, 110.0f))
+		{
+			if (fov > 110.0f) fov = 110.0f;
+			if (fov < 70.0f) fov = 70.0f;
+
+			cc->SetFieldOfView(fov);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Camera near clip");
+		float nearClip = cc->GetNearClip();
+		float farClip = cc->GetFarClip();
+		if (ImGui::DragFloat("##camNearClip", &nearClip, 0.1f, 0.001f, farClip - 0.001f))
+		{
+			if (nearClip > farClip - 0.001f) nearClip = farClip - 0.001f;
+			if (nearClip > 0.5f) nearClip = 0.5f;
+			if (nearClip < 0.01f) nearClip = 0.01f;
+
+			cc->SetNearClip(nearClip);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##camNearClip"))
+		{
+			cc->SetNearClip(0.01f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Camera far clip");
+		if (ImGui::DragFloat("##camFarClip", &farClip, 0.1f, nearClip + 0.001f, 10000))
+		{
+			if (farClip > 10000.0f) farClip = 10000.0f;
+			if (farClip < nearClip + 0.001f) farClip = nearClip + 0.001f;
+
+			cc->SetFarClip(farClip);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##camFarClip"))
+		{
+			cc->SetFarClip(500.0f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Camera move speed multiplier");
+		float moveSpeed = cc->GetSpeedMultiplier();
+		if (ImGui::DragFloat("##camMoveSpeed", &moveSpeed, 0.1f, 0.1f, 100.0))
+		{
+			if (moveSpeed > 100.0f) moveSpeed = 100.0f;
+			if (moveSpeed < 0.1f) moveSpeed = 0.1f;
+
+			cc->SetSpeedMultiplier(moveSpeed);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##camMoveSpeed"))
+		{
+			cc->SetSpeedMultiplier(1.0f);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
 
 		ImGui::EndChild();
 	}
