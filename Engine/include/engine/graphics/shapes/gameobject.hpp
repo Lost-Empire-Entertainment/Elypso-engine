@@ -252,6 +252,10 @@ namespace Graphics::Shape
 		{
 			transparentObjects.push_back(obj);
 		}
+		static void AddCamera(const shared_ptr<GameObject>& obj)
+		{
+			cameras.push_back(obj);
+		}
 		static void AddPointLight(const shared_ptr<GameObject>& obj)
 		{
 			pointLights.push_back(obj);
@@ -324,6 +328,10 @@ namespace Graphics::Shape
 		{
 			return transparentObjects;
 		}
+		static vector<shared_ptr<GameObject>>& GetCameras()
+		{
+			return cameras;
+		}
 		static const vector<shared_ptr<GameObject>> GetPointLights()
 		{
 			return pointLights;
@@ -366,6 +374,7 @@ namespace Graphics::Shape
 		static inline vector<shared_ptr<GameObject>> objects;
 		static inline vector<shared_ptr<GameObject>> opaqueObjects;
 		static inline vector<shared_ptr<GameObject>> transparentObjects;
+		static inline vector<shared_ptr<GameObject>> cameras;
 		static inline vector<shared_ptr<GameObject>> pointLights;
 		static inline vector<shared_ptr<GameObject>> spotLights;
 		static inline shared_ptr<GameObject> directionalLight;

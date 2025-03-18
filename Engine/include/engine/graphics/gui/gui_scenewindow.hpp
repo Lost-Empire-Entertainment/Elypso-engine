@@ -42,6 +42,7 @@ namespace Graphics::GUI
 		static void RenderSceneWindowLeftContent();
 		static void RenderSceneWindowRightContent();
 		static void RenderSceneWindowActionButtons();
+		static void RenderCameraSelection();
 	};
 }
 #endif

@@ -336,15 +336,18 @@ namespace EngineFile
 		//
 
 #if ENGINE_MODE
-		//sets camera default position and rotation if default scene is created
-		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
-		tc->SetPosition(vec3(0.0f, 1.0f, 0.0f));
-		tc->SetRotation(vec3(-90.0f, 0.0f, 0.0f));
+		if (Render::activeCamera != nullptr)
+		{
+			//sets camera default position and rotation if default scene is created
+			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+			tc->SetPosition(vec3(0.0f, 1.0f, 0.0f));
+			tc->SetRotation(vec3(-90.0f, 0.0f, 0.0f));
+		}
 
 		keys.push_back("camera_position"); 
 			values.push_back("0.0, 1.0, 0.0");
 		keys.push_back("camera_rotation");
-			values.push_back("-90.0, 0.0, 0.0");
+			values.push_back("0.0, 0.0, 0.0");
 #endif
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();

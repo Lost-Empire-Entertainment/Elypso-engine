@@ -242,15 +242,6 @@ namespace EngineFile
 		keys.push_back("aspect_ratio");
 			values.push_back("1");
 
-		keys.push_back("camera_speedMultiplier");
-			values.push_back("1.0");
-		keys.push_back("camera_fov");
-			values.push_back("90.0");
-		keys.push_back("camera_nearClip");
-			values.push_back("0.001");
-		keys.push_back("camera_farClip");
-			values.push_back("200.0");
-
 		keys.push_back("globalAmbientColor");
 			values.push_back("0.3, 0.4, 0.5");
 		keys.push_back("globalAmbientIntensity");

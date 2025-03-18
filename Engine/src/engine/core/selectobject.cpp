@@ -104,13 +104,16 @@ namespace Core
 		auto mesh = shape->GetComponent<MeshComponent>();
 		Type objType = mesh->GetMeshType();
 
-		if (objType == Type::model
-			|| objType == Type::empty
-			|| objType == Type::audio
-			|| objType == Type::camera
-			|| objType == Type::point_light
-			|| objType == Type::spot_light
-			|| objType == Type::directional_light)
+		//cannot select scene camera
+		if (shape->GetName() == "SceneCamera") return false;
+
+		if (objType == Type::model                 //can select any model gameobject
+			|| objType == Type::empty              //can select any empty gameobject
+			|| objType == Type::audio              //can select any audio gameobject
+			|| objType == Type::camera             //can select almost any camera gameobject
+			|| objType == Type::point_light        //can select any point light gameobject
+			|| objType == Type::spot_light         //can select any spotlight gameobject
+			|| objType == Type::directional_light) //can select directional light gameobject
 		{
 			vec3 minBound, maxBound;
 			auto transform = shape->GetComponent<TransformComponent>();

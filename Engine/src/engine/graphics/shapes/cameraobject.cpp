@@ -18,6 +18,7 @@
 #include "meshcomponent.hpp"
 #include "billboard.hpp"
 #include "cameracomponent.hpp"
+#include "render.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
 #endif
@@ -35,6 +36,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Components::CameraComponent;
+using Graphics::Render;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 #endif
@@ -63,31 +65,43 @@ namespace Graphics::Shape
 
 		float vertices[] =
 		{
-			//four corner edges
-			0.0f,  0.5f,  0.0f,
-		   -0.5f, -0.5f, -0.5f,
+			//edges of the cube
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
 
-			0.0f,  0.5f,  0.0f,
-			0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
 
-			0.0f,  0.5f,  0.0f,
-		   -0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
 
-			0.0f,  0.5f,  0.0f,
-			0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
 
-			//four bottom edges
-			0.5f, -0.5f,  0.5f,
-		   -0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
 
-			0.5f, -0.5f, -0.5f,
-		   -0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
 
-		   -0.5f, -0.5f, -0.5f,
-		   -0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
 
-			0.5f, -0.5f, -0.5f,
-			0.5f, -0.5f,  0.5f
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			//connecting edges
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+
+			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f,  0.5f,
 		};
 
 		GLuint vao, vbo, ebo;
@@ -144,12 +158,17 @@ namespace Graphics::Shape
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
+		GameObjectManager::AddCamera(obj);
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();
 #endif
-		Select::selectedObj = obj;
-		Select::isObjectSelected = true;
+		//do not select SceneCamera when initialized
+		if (name != "SceneCamera")
+		{
+			Select::selectedObj = obj;
+			Select::isObjectSelected = true;
+		}
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
@@ -167,7 +186,10 @@ namespace Graphics::Shape
 		if (!obj) Engine::CreateErrorPopup("Camera gameobject is invalid.");
 
 		//dont render SceneCamera mesh
-		//if (obj->GetName() == "SceneCamera") return;
+		if (obj->GetName() == "SceneCamera") return;
+
+		//dont render active camera mesh
+		if (obj == Render::activeCamera) return;
 
 		if (obj->IsEnabled())
 		{
@@ -188,21 +210,21 @@ namespace Graphics::Shape
 			auto mesh = obj->GetComponent<MeshComponent>();
 			if (GameObjectManager::renderBorders)
 			{
-				auto cc = obj->GetComponent<CameraComponent>();
 				auto tc = obj->GetComponent<TransformComponent>();
 
 				mat4 model = mat4(1.0f);
 				model = translate(model, tc->GetPosition());
 
-				quat newRot = quat(radians(cc->GetFront()));
-				model *= mat4_cast(newRot);
+				//camera mesh doesnt need to rotate
+				//quat newRot = quat(radians(tc->GetRotation()));
+				//model *= mat4_cast(newRot);
 
 				model = scale(model, tc->GetScale());
 
 				shader.SetMat4("model", model);
 				GLuint VAO = mesh->GetVAO();
 				glBindVertexArray(VAO);
-				glDrawArrays(GL_LINES, 0, 32);
+				glDrawArrays(GL_LINES, 0, 24);
 			}
 		}
 	}

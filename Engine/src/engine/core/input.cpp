@@ -960,7 +960,7 @@ namespace Core
 
         if (cc->IsEnabled())
         {
-            float moveSpeedMultiplier = stof(ConfigFile::GetValue("camera_speedMultiplier"));
+            float moveSpeedMultiplier = cc->GetSpeedMultiplier();
 
             bool isLeftShiftPressed;
 #if ENGINE_MODE
@@ -1064,13 +1064,13 @@ namespace Core
         {
             float yoffset = ImGui::GetIO().MouseWheel;
             float combinedOffset = increment * static_cast<float>(yoffset);
-            float currentSpeed = stof(ConfigFile::GetValue("camera_speedMultiplier"));
+            float currentSpeed = cc->GetSpeedMultiplier();
             float newSpeed = currentSpeed + currentSpeed * combinedOffset;
 
             if (newSpeed > 100.0f) newSpeed = 100.0f;
             if (newSpeed < 0.1f) newSpeed = 0.1f;
 
-            ConfigFile::SetValue("camera_speedMultiplier", to_string(newSpeed));
+            cc->SetSpeedMultiplier(newSpeed);
         }
     }
 }

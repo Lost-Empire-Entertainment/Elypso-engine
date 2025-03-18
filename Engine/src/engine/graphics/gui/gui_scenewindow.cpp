@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 //external
 #include "imgui.h"
@@ -30,11 +31,13 @@
 #include "meshcomponent.hpp"
 #include "cameracomponent.hpp"
 #include "transformcomponent.hpp"
+#include "console.hpp"
 
 using std::shared_ptr;
 using std::vector;
 using std::cout;
 using std::to_string;
+using std::find;
 
 using Core::Input;
 using Graphics::Render;
@@ -49,6 +52,9 @@ using Utils::String;
 using Core::TimeManager;
 using Graphics::Components::CameraComponent;
 using Graphics::Components::TransformComponent;
+using Core::ConsoleManager;
+using Caller = Core::ConsoleManager::Caller;
+using Type = Core::ConsoleManager::Type;
 
 namespace Graphics::GUI
 {
@@ -247,7 +253,14 @@ namespace Graphics::GUI
 			&& windowSize.y > 400
 			&& !Compilation::renderBuildingWindow)
 		{
-			if (showSceneWindowDebugMenu) RenderSceneWindowRightContent();
+			if (showSceneWindowDebugMenu)
+			{
+				RenderSceneWindowRightContent();
+
+				float widthFromRight = ImGui::GetWindowWidth() - 550.0f;
+				ImGui::SetCursorPos(ImVec2(widthFromRight, 40));
+				RenderCameraSelection();
+			}
 
 			if (showLeftCornerContent)
 			{
@@ -361,56 +374,72 @@ namespace Graphics::GUI
 
 			ImGui::Separator();
 
-			ImGui::Text("FOV");
-			float fov = stof(ConfigFile::GetValue("camera_fov"));
-			if (ImGui::DragFloat("##fov", &fov, 0.1f, 70.0f, 110.0f))
+			if (Render::activeCamera != nullptr)
 			{
-				if (fov > 110.0f) fov = 110.0f;
-				if (fov < 70.0f) fov = 70.0f;
+				auto cc = Render::activeCamera->GetComponent<CameraComponent>();
 
-				ConfigFile::SetValue("camera_fov", to_string(fov));
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
+				ImGui::Text("FOV");
+				float fov = cc->GetFieldOfView();
+				if (ImGui::DragFloat("##fov", &fov, 0.1f, 70.0f, 110.0f))
+				{
+					if (fov > 110.0f) fov = 110.0f;
+					if (fov < 70.0f) fov = 70.0f;
 
-			ImGui::Text("Camera near clip");
-			float nearClip = stof(ConfigFile::GetValue("camera_nearClip"));
-			float farClip = stof(ConfigFile::GetValue("camera_farClip"));
-			if (ImGui::DragFloat("##camNearClip", &nearClip, 0.1f, 0.001f, farClip - 0.001f))
-			{
-				if (nearClip > farClip - 0.001f) nearClip = farClip - 0.001f;
-				if (nearClip > 0.5f) nearClip = 0.5f;
-				if (nearClip < 0.001f) nearClip = 0.001f;
+					cc->SetFieldOfView(fov);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
 
-				ConfigFile::SetValue("camera_nearClip", to_string(nearClip));
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
+				ImGui::Text("Camera near clip");
+				float nearClip = cc->GetNearClip();
+				float farClip = cc->GetFarClip();
+				if (ImGui::DragFloat("##camNearClip", &nearClip, 0.1f, 0.001f, farClip - 0.001f))
+				{
+					if (nearClip > farClip - 0.001f) nearClip = farClip - 0.001f;
+					if (nearClip > 0.5f) nearClip = 0.5f;
+					if (nearClip < 0.01f) nearClip = 0.01f;
 
-			ImGui::Text("Camera far clip");
-			if (ImGui::DragFloat("##camFarClip", &farClip, 0.1f, nearClip + 0.001f, 10000))
-			{
-				if (farClip > 10000.0f) farClip = 10000.0f;
-				if (farClip < nearClip + 0.001f) farClip = nearClip + 0.001f;
-				if (farClip < 50.0f) farClip = 50.0f;
+					cc->SetNearClip(nearClip);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##camNearClip"))
+				{
+					cc->SetNearClip(0.01f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
 
-				ConfigFile::SetValue("camera_farClip", to_string(farClip));
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
+				ImGui::Text("Camera far clip");
+				if (ImGui::DragFloat("##camFarClip", &farClip, 0.1f, nearClip + 0.001f, 10000))
+				{
+					if (farClip > 10000.0f) farClip = 10000.0f;
+					if (farClip < nearClip + 0.001f) farClip = nearClip + 0.001f;
 
-			ImGui::Text("Camera move speed multiplier");
-			float moveSpeed = stof(ConfigFile::GetValue("camera_speedMultiplier"));
-			if (ImGui::DragFloat("##camMoveSpeed", &moveSpeed, 0.1f, 0.1f, 100.0))
-			{
-				if (moveSpeed > 100.0f) moveSpeed = 100.0f;
-				if (moveSpeed < 0.1f) moveSpeed = 0.1f;
+					cc->SetFarClip(farClip);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##camFarClip"))
+				{
+					cc->SetFarClip(500.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
 
-				ConfigFile::SetValue("camera_speedMultiplier", to_string(moveSpeed));
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Reset##camMoveSpeed"))
-			{
-				ConfigFile::SetValue("camera_speedMultiplier", "1.0");
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				ImGui::Text("Camera move speed multiplier");
+				float moveSpeed = cc->GetSpeedMultiplier();
+				if (ImGui::DragFloat("##camMoveSpeed", &moveSpeed, 0.1f, 0.1f, 100.0))
+				{
+					if (moveSpeed > 100.0f) moveSpeed = 100.0f;
+					if (moveSpeed < 0.1f) moveSpeed = 0.1f;
+
+					cc->SetSpeedMultiplier(moveSpeed);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##camMoveSpeed"))
+				{
+					cc->SetSpeedMultiplier(1.0f);
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
 			}
 
 			//
@@ -456,6 +485,10 @@ namespace Graphics::GUI
 
 			ImGui::Text("Grid max distance");
 			float gridMaxDistance = stof(ConfigFile::GetValue("grid_maxDistance"));
+
+			float farClip = Render::activeCamera != nullptr
+				? Render::activeCamera->GetComponent<CameraComponent>()->GetFarClip()
+				: 200.0f;
 
 			if (gridMaxDistance > farClip)
 			{
@@ -536,7 +569,6 @@ namespace Graphics::GUI
 		ImGui::Dummy(ImVec2(20.0f, 0.0f));
 
 		ImGui::SameLine();
-
 		{
 			bool isSelected = (Input::axis == "X");
 			if (isSelected)
@@ -585,6 +617,88 @@ namespace Graphics::GUI
 			{
 				ImGui::PopStyleColor();
 			}
+		}
+	}
+
+	void GUISceneWindow::RenderCameraSelection()
+	{
+		int cameraVecSize = GameObjectManager::GetCameras().size();
+		if (cameraVecSize == 0)
+		{
+			static int selectedItem = 0;
+			const char* cameras[] = { "No Cameras" };
+			ImGui::PushItemWidth(150.0f);
+			ImGui::Combo("##activeCamera", &selectedItem, cameras, IM_ARRAYSIZE(cameras));
+			ImGui::PopItemWidth();
+		}
+		else
+		{
+			vector<const char*> cameraNames;
+			const vector<shared_ptr<GameObject>>& cameras = GameObjectManager::GetCameras();
+			for (const auto& camera : cameras)
+			{
+				cameraNames.push_back(camera->GetName().c_str());
+			}
+
+			static int selectedItem = -1;
+			if (selectedItem == -1)
+			{
+				string activeCameraName = Render::activeCamera->GetName();
+
+				selectedItem = static_cast<int>(find(
+					cameraNames.begin(),
+					cameraNames.end(),
+					activeCameraName) - cameraNames.begin());
+			}
+
+			ImGui::PushItemWidth(150.0f);
+
+			if (ImGui::BeginCombo("##activeCamera", cameraNames[selectedItem]))
+			{
+				for (int i = 0; i < cameraNames.size(); i++)
+				{
+					bool isSelected = (selectedItem == i);
+
+					if (ImGui::Selectable(cameraNames[i], isSelected))
+					{
+						selectedItem = i;
+
+						string selectedCameraName = cameraNames[selectedItem];
+
+						if (Render::activeCamera 
+							&& Render::activeCamera->GetName() == selectedCameraName)
+						{
+							ConsoleManager::WriteConsoleMessage(
+								Caller::INPUT,
+								Type::EXCEPTION,
+								"Error: Cannot assign already active camera as active camera!\n");
+						}
+						else
+						{
+							for (const auto& camera : cameras)
+							{
+								if (camera->GetName() == cameraNames[i])
+								{
+									Render::activeCamera = camera;
+									break;
+								}
+							}
+
+							ConsoleManager::WriteConsoleMessage(
+								Caller::INPUT,
+								Type::DEBUG,
+								"Changed active camera to '" + Render::activeCamera->GetName() + "'.\n");
+
+							if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+						}
+					}
+
+					if (isSelected) ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::PopItemWidth();
 		}
 	}
 

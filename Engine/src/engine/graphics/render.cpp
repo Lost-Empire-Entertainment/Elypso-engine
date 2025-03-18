@@ -294,8 +294,8 @@ namespace Graphics
 		unsigned int nextID2 = ++GameObject::nextID;
 
 		Render::sceneCamera = CameraObject::InitializeCameraObject(
-			vec3(0.0f, 0.0f, 0.0f),
-			vec3(0.0f, 0.0f, -90.0f),
+			vec3(0.0f),
+			vec3(0.0f),
 			vec3(1.0f),
 			"",
 			sceneCameraName,
@@ -353,14 +353,11 @@ namespace Graphics
 		{
 			//calculate the new projection matrix
 			auto cc = Render::activeCamera->GetComponent<CameraComponent>();
-			float fov = stof(ConfigFile::GetValue("camera_fov"));
-			float nearClip = stof(ConfigFile::GetValue("camera_nearClip"));
-			float farClip = stof(ConfigFile::GetValue("camera_farClip"));
 			projection = perspective(
-				radians(fov),
+				radians(cc->GetFieldOfView()),
 				cc->GetAspectRatio(),
-				nearClip,
-				farClip);
+				cc->GetNearClip(),
+				cc->GetFarClip());
 
 			//update the camera
 			view = cc->GetViewMatrix();
