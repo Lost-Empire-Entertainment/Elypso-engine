@@ -309,6 +309,40 @@ namespace Graphics
 		SceneFile::LoadGlobalGraphicsData();
 		SceneFile::LoadGlobalPhysicsData();
 	}
+#else
+	void Render::AssignGameCamera()
+	{
+		string gameCameraName = ConfigFile::GetValue("gameCamera");
+
+		const vector<shared_ptr<GameObject>>& cameras = GameObjectManager::GetCameras();
+		for (const auto& camera : cameras)
+		{
+			string cameraName = camera->GetName();
+			if (cameraName == gameCameraName)
+			{
+				Render::activeCamera = camera;
+				break;
+			}
+		}
+
+		if (Render::activeCamera == nullptr)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to load game camera because camera '" + gameCameraName + "' does not exist in the scene!\n");
+		}
+		else
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				"Error: Successfully loaded game camera '" + Render::activeCamera->GetName() + "'!\n");
+
+			SceneFile::LoadGlobalGraphicsData();
+			SceneFile::LoadGlobalPhysicsData();
+		}
+	}
 #endif
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
@@ -344,6 +378,14 @@ namespace Graphics
 	{
 #if	ENGINE_MODE
 		if (Render::activeCamera == nullptr) InitializeSceneCamera();
+#else
+		if (Render::activeCamera == nullptr
+			&& ConfigFile::GetValue("gameCamera") != ""
+			&& GameObjectManager::GetCameras().size() > 0)
+		{
+			AssignGameCamera();
+		}
+		else cout << "Failed to assign game camera...\n";
 #endif
 
 		//camera transformation

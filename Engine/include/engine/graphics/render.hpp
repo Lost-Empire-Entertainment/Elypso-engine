@@ -71,6 +71,11 @@ namespace Graphics
 		static void InitializeSceneCamera();
 
 		static void FramebufferSetup();
+#else
+		/// <summary>
+		/// Assigns game camera for game at the first frame of the render loop
+		/// </summary>
+		static void AssignGameCamera();
 #endif
 	};
 }
