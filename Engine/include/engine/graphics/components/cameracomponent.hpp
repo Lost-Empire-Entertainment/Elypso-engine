@@ -34,7 +34,6 @@ namespace Graphics::Components
 	public:
 		CameraComponent(
 			float speed = 2.5f,
-			float speedMultiplier = 1.0f,
 			float sensitivity = 0.05f);
 
 		/// <summary>
@@ -43,6 +42,7 @@ namespace Graphics::Components
 		void RotateCamera(double xPos, double yPos);
 
 		void SetEnableState(bool newEnableState) { isEnabled = newEnableState; }
+		void SetPlayerCameraState(bool newEnableState) { isPlayerCamera = newEnableState; }
 		void SetSpeed(float newSpeed) { speed = newSpeed; }
 		void SetSpeedMultiplier(float newSM) { speedMultiplier = newSM; }
 		void SetSensitivity(float newSensitivity) { sensitivity = newSensitivity; }
@@ -53,6 +53,7 @@ namespace Graphics::Components
 		void SetLastRotation(const vec3& newLastRotation) { lastRotation = newLastRotation; }
 
 		bool IsEnabled() const { return isEnabled; }
+		bool IsPlayerCamera() const { return isPlayerCamera; }
 		float GetSpeed() const { return speed; }
 		float GetSpeedMultiplier() const { return speedMultiplier; }
 		float GetSensitivity() const { return sensitivity; }
@@ -74,8 +75,9 @@ namespace Graphics::Components
         type_index GetType() const override { return typeid(CameraComponent); }
 	private:
 		bool isEnabled = false;
+		bool isPlayerCamera = false;
 		float speed;
-		float speedMultiplier;
+		float speedMultiplier = 1.0f;
 		float sensitivity;
 		float fov = 90.0f;
 		float nearClip = 0.1f;

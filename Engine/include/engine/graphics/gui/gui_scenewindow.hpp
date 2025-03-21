@@ -38,6 +38,8 @@ namespace Graphics::GUI
 		static inline int objectsCount = 0;
 		static inline int verticesCount = 0;
 
+		static void UpdateFrameBuffer();
+
 		static void RenderSceneWindowMainContent();
 		static void RenderSceneWindowLeftContent();
 		static void RenderSceneWindowRightContent();

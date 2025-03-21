@@ -33,6 +33,7 @@
 #include "skybox.hpp"
 #include "physics.hpp"
 #include "gameobject.hpp"
+#include "cameracomponent.hpp"
 
 using std::to_string;
 using std::stof;
@@ -57,6 +58,7 @@ using Utils::String;
 using Graphics::Shape::Skybox;
 using Core::Physics;
 using Graphics::Shape::GameObjectManager;
+using Graphics::Components::CameraComponent;
 
 namespace Graphics::GUI
 {
@@ -583,8 +585,41 @@ namespace Graphics::GUI
 				GUIProjectItemsList::renderProjectItemsList = true;
 			}
 		}
-		string gameCameraName = ConfigFile::GetValue("gameCamera");
-		ImGui::Text(("Game camera: " + gameCameraName).c_str());
+
+		if (playerCameraName != "")
+		{
+			ImGui::SameLine();
+
+			if (ImGui::Button("Clear##gameCamera"))
+			{
+				shared_ptr<GameObject> foundCamera = nullptr;
+
+				for (const auto& camera : GameObjectManager::GetCameras())
+				{
+					if (camera->GetName() == playerCameraName)
+					{
+						foundCamera = camera;
+						break;
+					}
+				}
+
+				if (foundCamera != nullptr)
+				{
+					foundCamera->GetComponent<CameraComponent>()->SetPlayerCameraState(false);
+
+					ConsoleManager::WriteConsoleMessage(
+						Caller::INPUT,
+						Type::DEBUG,
+						"Disabled player camera for '" + playerCameraName + "'.\n");
+
+					playerCameraName = "";
+
+					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+				}
+			}
+		}
+
+		ImGui::Text(("Game camera: " + playerCameraName).c_str());
 	}
 }
 #endif

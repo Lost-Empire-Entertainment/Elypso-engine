@@ -72,6 +72,7 @@ namespace Graphics
 
 		static void FramebufferSetup();
 #else
+		static inline bool failedToAssignPlayerCamera;
 		/// <summary>
 		/// Assigns game camera for game at the first frame of the render loop
 		/// </summary>

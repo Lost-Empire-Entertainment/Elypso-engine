@@ -19,10 +19,8 @@ namespace Graphics::Components
 {
     CameraComponent::CameraComponent(
         float speed,
-        float speedMultiplier,
         float sensitivity) :
         speed(speed),
-        speedMultiplier(speedMultiplier),
         sensitivity(sensitivity) {}
 
     void CameraComponent::RotateCamera(double deltaX, double deltaY)

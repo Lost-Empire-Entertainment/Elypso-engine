@@ -158,10 +158,10 @@ namespace Core
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-#if ENGINE_MODE
         shared_ptr<CameraComponent> cc{};
         if (Render::activeCamera != nullptr) cc = Render::activeCamera->GetComponent<CameraComponent>();
 
+#if ENGINE_MODE
         if (!Compilation::renderBuildingWindow)
         {
             if (Render::activeCamera != nullptr
@@ -287,7 +287,7 @@ namespace Core
         }
 #else
         if (Render::activeCamera != nullptr
-            && !Render::activeCamera->IsEnabled()
+            && !cc->IsEnabled()
             || Render::activeCamera == nullptr)
         {
             //save current scene

@@ -19,6 +19,7 @@ namespace Graphics::GUI
 		static inline map<string, string> skyboxTextures;
 
 		static inline bool renderSettings;
+		static inline string playerCameraName;
 		static void RenderSettings();
 
 	private:

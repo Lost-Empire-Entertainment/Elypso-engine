@@ -233,9 +233,6 @@ namespace EngineFile
 		keys.push_back("gameName");
 			values.push_back("Game");
 #endif
-		keys.push_back("gameCamera");
-			values.push_back("");
-
 		keys.push_back("gui_fontScale");
 			values.push_back("1.5");
 
@@ -244,24 +241,6 @@ namespace EngineFile
 
 		keys.push_back("aspect_ratio");
 			values.push_back("1");
-
-		keys.push_back("globalAmbientColor");
-			values.push_back("0.3, 0.4, 0.5");
-		keys.push_back("globalAmbientIntensity");
-			values.push_back("0.5");
-
-		keys.push_back("gravity");
-			values.push_back("0.0, -9.81, 0.0");
-		keys.push_back("angularDamping");
-			values.push_back("0.998");
-		keys.push_back("lowAngularVelocityFactor");
-			values.push_back("0.5");
-		keys.push_back("frictionMultiplier");
-			values.push_back("0.1");
-		keys.push_back("correctionFactor");
-			values.push_back("0.2");
-		keys.push_back("minPenetrationThreshold");
-			values.push_back("0.01");
 #if ENGINE_MODE
 		keys.push_back("grid_color");
 			values.push_back("0.4, 0.4, 0.4");

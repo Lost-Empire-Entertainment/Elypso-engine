@@ -31,6 +31,8 @@
 #include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "configFile.hpp"
+#include "cameracomponent.hpp"
+#include "render.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -59,6 +61,8 @@ using Graphics::Components::MeshComponent;
 using Utils::String;
 using Core::Select;
 using EngineFile::ConfigFile;
+using Graphics::Components::CameraComponent;
+using Graphics::Render;
 
 namespace Graphics::GUI
 {
@@ -401,21 +405,33 @@ namespace Graphics::GUI
 			}
 			case Type::Camera:
 			{
+				string cameraName{};
 				const vector<shared_ptr<GameObject>>& cameras = GameObjectManager::GetCameras();
+
+				//first clear any previous player camera
 				for (const auto& camera : cameras)
 				{
-					string cameraName = camera->GetName();
+					camera->GetComponent<CameraComponent>()->SetPlayerCameraState(false);
+				}
+
+				//then assign new player camera
+				for (const auto& camera : cameras)
+				{
+					cameraName = camera->GetName();
 					if (selectedPath == cameraName)
 					{
-						ConfigFile::SetValue("gameCamera", selectedPath);
+						camera->GetComponent<CameraComponent>()->SetPlayerCameraState(true);
+						GUISettings::playerCameraName = cameraName;
 						break;
 					}
 				}
 
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+
 				ConsoleManager::WriteConsoleMessage(
 					ConsoleCaller::INPUT,
 					ConsoleType::INFO,
-					"Assigned camera '" + ConfigFile::GetValue("gameCamera") + "' as game player camera.\n");
+					"Assigned camera '" + cameraName + "' as game player camera.\n");
 				break;
 			}
 			}

@@ -37,11 +37,11 @@
 #include "audioobject.hpp"
 #include "cameraobject.hpp"
 #include "cameracomponent.hpp"
-#include "configFile.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "gui_scenewindow.hpp"
+#include "gui_settings.hpp"
 #endif
 
 using std::cout;
@@ -75,11 +75,11 @@ using ElypsoPhysics::PhysicsWorld;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;
-using EngineFile::ConfigFile;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
 using Graphics::GUI::GUISceneWindow;
+using Graphics::GUI::GUISettings;
 #endif
 
 namespace Graphics::Shape
@@ -273,15 +273,15 @@ namespace Graphics::Shape
 		}
 		case Type::camera:
 		{
-			if (ConfigFile::GetValue("gameCamera") == obj->GetName())
+#if ENGINE_MODE
+			//remove player camera name from 
+			//settings game player camera slot 
+			//because this player camera was destroyed
+			if (GUISettings::playerCameraName == obj->GetName())
 			{
-				ConsoleManager::WriteConsoleMessage(
-					Caller::INPUT,
-					ConsoleType::DEBUG,
-					"Removed game camera '" + obj->GetName() + "' from config file because the camera was deleted.");
-
-				ConfigFile::SetValue("gameCamera", "");
+				GUISettings::playerCameraName = "";
 			}
+#endif
 
 			shared_ptr<GameObject> childBillboard = obj->GetChildBillboard();
 			obj->RemoveChildBillboard();

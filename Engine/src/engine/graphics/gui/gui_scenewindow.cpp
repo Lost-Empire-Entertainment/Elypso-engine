@@ -122,34 +122,7 @@ namespace Graphics::GUI
 		if (renderSize.x != framebufferWidth
 			|| renderSize.y != framebufferHeight)
 		{
-			framebufferWidth = static_cast<int>(renderSize.x);
-			framebufferHeight = static_cast<int>(renderSize.y);
-
-			glBindTexture(GL_TEXTURE_2D, Render::textureColorbuffer);
-			glTexImage2D(
-				GL_TEXTURE_2D,
-				0,
-				GL_RGB,
-				framebufferWidth,
-				framebufferHeight,
-				0,
-				GL_RGB,
-				GL_UNSIGNED_BYTE,
-				NULL);
-
-			glBindRenderbuffer(GL_RENDERBUFFER, Render::rbo);
-			glRenderbufferStorage(
-				GL_RENDERBUFFER,
-				GL_DEPTH24_STENCIL8,
-				framebufferWidth,
-				framebufferHeight);
-
-			if (Render::activeCamera != nullptr)
-			{
-				Render::activeCamera->GetComponent<CameraComponent>()->SetAspectRatio(targetAspectRatio);
-			}
-
-			glViewport(0, 0, framebufferWidth, framebufferHeight);
+			UpdateFrameBuffer();
 		}
 
 		isSceneSelected = ImGui::IsWindowFocused();
@@ -283,6 +256,71 @@ namespace Graphics::GUI
 				}
 			}
 		}
+	}
+
+	void GUISceneWindow::UpdateFrameBuffer()
+	{
+		ImVec2 contentRegionMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 contentRegionMax = ImGui::GetWindowContentRegionMax();
+		ImVec2 availableSize = ImVec2(
+			contentRegionMax.x - contentRegionMin.x,
+			contentRegionMax.y - contentRegionMin.y);
+
+		float windowAspectRatio = availableSize.x / availableSize.y;
+		float targetAspectRatio = windowAspectRatio;
+
+		ImVec2 renderSize = availableSize;
+		if (windowAspectRatio > targetAspectRatio)
+		{
+			renderSize.x = availableSize.y * targetAspectRatio;
+		}
+		else if (windowAspectRatio < targetAspectRatio)
+		{
+			renderSize.y = availableSize.x / targetAspectRatio;
+		}
+
+		renderSize.x = roundf(renderSize.x);
+		renderSize.y = roundf(renderSize.y);
+
+		if (aspectRatio[currentIndex] == "16:9")
+			targetAspectRatio = 16.0f / 9.0f;
+		else if (aspectRatio[currentIndex] == "16:10")
+			targetAspectRatio = 16.0f / 10.0f;
+		else if (aspectRatio[currentIndex] == "21:9")
+			targetAspectRatio = 21.0f / 9.0f;
+		else if (aspectRatio[currentIndex] == "32:9")
+			targetAspectRatio = 32.0f / 9.0f;
+		else if (aspectRatio[currentIndex] == "4:3")
+			targetAspectRatio = 4.0f / 3.0f;
+
+		framebufferWidth = static_cast<int>(renderSize.x);
+		framebufferHeight = static_cast<int>(renderSize.y);
+
+		glBindTexture(GL_TEXTURE_2D, Render::textureColorbuffer);
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RGB,
+			framebufferWidth,
+			framebufferHeight,
+			0,
+			GL_RGB,
+			GL_UNSIGNED_BYTE,
+			NULL);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, Render::rbo);
+		glRenderbufferStorage(
+			GL_RENDERBUFFER,
+			GL_DEPTH24_STENCIL8,
+			framebufferWidth,
+			framebufferHeight);
+
+		if (Render::activeCamera != nullptr)
+		{
+			Render::activeCamera->GetComponent<CameraComponent>()->SetAspectRatio(targetAspectRatio);
+		}
+
+		glViewport(0, 0, framebufferWidth, framebufferHeight);
 	}
 
 	void GUISceneWindow::RenderSceneWindowLeftContent()
@@ -690,6 +728,8 @@ namespace Graphics::GUI
 									break;
 								}
 							}
+
+							UpdateFrameBuffer();
 
 							ConsoleManager::WriteConsoleMessage(
 								Caller::INPUT,

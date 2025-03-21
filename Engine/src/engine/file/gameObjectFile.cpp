@@ -40,8 +40,10 @@
 #include "audio.hpp"
 #include "audioobject.hpp"
 #include "cameraobject.hpp"
+#include "cameracomponent.hpp"
 #if ENGINE_MODE
 #include "gui_scenewindow.hpp"
+#include "gui_settings.hpp"
 #endif
 
 using std::ifstream;
@@ -92,8 +94,10 @@ using Core::Physics;
 using Core::Audio;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
+using Graphics::Components::CameraComponent;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
+using Graphics::GUI::GUISettings;
 #endif
 
 namespace EngineFile
@@ -287,6 +291,35 @@ namespace EngineFile
 					data.push_back("currentVolume= " + to_string(currVolume) + "\n");
 					data.push_back("minRange= " + to_string(minRange) + "\n");
 					data.push_back("maxRange= " + to_string(maxRange) + "\n");
+				}
+
+				//
+				// CAMERA DATA
+				//
+
+				if (meshType == MeshComponent::MeshType::camera)
+				{
+					data.push_back("\n");
+
+					auto cc = obj->GetComponent<CameraComponent>();
+
+					bool isPlayerCamera = cc->IsPlayerCamera();
+					float speed = cc->GetSpeed();
+					float sensitivity = cc->GetSensitivity();
+					float fov = cc->GetFieldOfView();
+					float nearClip = cc->GetNearClip();
+					float farClip = cc->GetFarClip();
+
+					data.push_back("isPlayerCamera= " + to_string(isPlayerCamera) + "\n");
+					data.push_back("speed= " + to_string(speed) + "\n");
+					data.push_back("sensitivity= " + to_string(sensitivity) + "\n");
+					data.push_back("fov= " + to_string(fov) + "\n");
+					data.push_back("nearClip= " + to_string(nearClip) + "\n");
+					data.push_back("farClip= " + to_string(farClip) + "\n");
+
+#if ENGINE_MODE
+					if (isPlayerCamera) GUISettings::playerCameraName = objectName;
+#endif
 				}
 
 				//
@@ -1374,6 +1407,13 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
+					|| key == "isPlayerCamera"
+					|| key == "speed"
+					|| key == "sensitivity"
+					|| key == "fov"
+					|| key == "nearClip"
+					|| key == "farClip"
+
 					|| key == "billboard id"
 					|| key == "billboard enabled")
 				{
@@ -1395,6 +1435,13 @@ namespace EngineFile
 		vec3 pos{};
 		vec3 rot{};
 		vec3 scale{};
+
+		bool isPlayerCamera{};
+		float speed{};
+		float sensitivity{};
+		float fov{};
+		float nearClip{};
+		float farClip{};
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
@@ -1440,6 +1487,31 @@ namespace EngineFile
 				scale = newScale;
 			}
 
+			else if (key == "isPlayerCamera")
+			{
+				isPlayerCamera = stoi(value);
+			}
+			else if (key == "speed")
+			{
+				speed = stof(value);
+			}
+			else if (key == "sensitivity")
+			{
+				sensitivity = stof(value);
+			}
+			else if (key == "fov")
+			{
+				fov = stof(value);
+			}
+			else if (key == "nearClip")
+			{
+				nearClip = stof(value);
+			}
+			else if (key == "farClip")
+			{
+				farClip = stof(value);
+			}
+
 			else if (key == "billboard id")
 			{
 				billboardID = stoul(value);
@@ -1469,6 +1541,18 @@ namespace EngineFile
 			isEnabled,
 			billboardID,
 			isBillboardEnabled);
+
+		auto cc = cameraObject->GetComponent<CameraComponent>();
+		cc->SetPlayerCameraState(isPlayerCamera);
+		cc->SetSpeed(speed);
+		cc->SetSensitivity(sensitivity);
+		cc->SetFieldOfView(fov);
+		cc->SetNearClip(nearClip);
+		cc->SetFarClip(farClip);
+
+#if ENGINE_MODE
+		if (isPlayerCamera) GUISettings::playerCameraName = name;
+#endif
 
 		GameObject::nextID = ID + 1;
 	}

@@ -312,13 +312,22 @@ namespace Graphics
 #else
 	void Render::AssignGameCamera()
 	{
-		string gameCameraName = ConfigFile::GetValue("gameCamera");
+		int cameraCount = GameObjectManager::GetCameras().size();
+		if (cameraCount == 0)
+		{
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Error: Failed to load game camera because there are no cameras in the scene!\n");
+			failedToAssignPlayerCamera = true;
+			return;
+		}
 
 		const vector<shared_ptr<GameObject>>& cameras = GameObjectManager::GetCameras();
 		for (const auto& camera : cameras)
 		{
-			string cameraName = camera->GetName();
-			if (cameraName == gameCameraName)
+			auto cc = camera->GetComponent<CameraComponent>();
+			if (cc->IsPlayerCamera())
 			{
 				Render::activeCamera = camera;
 				break;
@@ -330,27 +339,34 @@ namespace Graphics
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Failed to load game camera because camera '" + gameCameraName + "' does not exist in the scene!\n");
+				"Error: Failed to load game camera because no player cameras exist in the scene!\n");
+			failedToAssignPlayerCamera = true;
+			return;
 		}
-		else
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::DEBUG,
-				"Error: Successfully loaded game camera '" + Render::activeCamera->GetName() + "'!\n");
 
-			SceneFile::LoadGlobalGraphicsData();
-			SceneFile::LoadGlobalPhysicsData();
-		}
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+
+		auto cc = Render::activeCamera->GetComponent<CameraComponent>();
+		cc->SetAspectRatio(static_cast<float>(width) / height);
+		
+		ConsoleManager::WriteConsoleMessage(
+			Caller::FILE,
+			Type::DEBUG,
+			"Successfully loaded game camera '" + Render::activeCamera->GetName() + "'!\n");
+
+		SceneFile::LoadGlobalGraphicsData();
+		SceneFile::LoadGlobalPhysicsData();
 	}
 #endif
 
 	void Render::UpdateAfterRescale(GLFWwindow* window, int width, int height)
 	{
+		glViewport(0, 0, width, height);
 #ifndef ENGINE_MODE
 		if (activeCamera != nullptr)
 		{
-			glViewport(0, 0, width, height);
 			auto cc = activeCamera->GetComponent<CameraComponent>();
 			cc->SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
 		}
@@ -380,12 +396,10 @@ namespace Graphics
 		if (Render::activeCamera == nullptr) InitializeSceneCamera();
 #else
 		if (Render::activeCamera == nullptr
-			&& ConfigFile::GetValue("gameCamera") != ""
-			&& GameObjectManager::GetCameras().size() > 0)
+			&& !failedToAssignPlayerCamera)
 		{
 			AssignGameCamera();
 		}
-		else cout << "Failed to assign game camera...\n";
 #endif
 
 		//camera transformation
