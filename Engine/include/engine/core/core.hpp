@@ -47,8 +47,6 @@ namespace Core
 		/// </summary>
 		static void InitializeEngine();
 
-		static void InitializeCrashHandler();
-
 		static void CrashTest();
 #if ENGINE_MODE
 		/// <summary>

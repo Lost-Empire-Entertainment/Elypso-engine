@@ -79,10 +79,6 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
-#ifdef _WIN32
-		InitializeCrashHandler();
-#endif
-
 		version = "Pre-release 0.1.3.0007";
 #ifdef NDEBUG
 #else
@@ -120,6 +116,10 @@ namespace Core
 			}
 		}
 #endif
+
+		CrashHandler::Initialize();
+		CrashHandler::SetProgramName(name);
+		CrashHandler::SetShutdownCallback([] { Shutdown(true); });
 
 #ifdef _WIN32
 		string nameAndExe = name + ".exe";
@@ -536,15 +536,6 @@ namespace Core
 		SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 	}
 
-	void Engine::InitializeCrashHandler()
-	{
-#if _WIN32
-		SetUnhandledExceptionFilter(CrashHandler::HandleCrash);
-
-		CrashHandler::SetShutdownCallback([] { Shutdown(true); });
-#endif
-	}
-
 	void Engine::CreateErrorPopup(const char* errorMessage)
 	{
 		if (name == "")
@@ -689,13 +680,13 @@ namespace Core
 
 	void Engine::CrashTest()
 	{
+		/*
 		int* ptr = nullptr;
 		*ptr = 42;
+		*/
 
-		/*
 		char buffer[1024]{};
 		CrashTest();
-		*/
 	}
 
 	void Engine::RunEngine()

@@ -52,12 +52,10 @@ namespace ElypsoUtils
 		/// </summary>
 		static inline void Shutdown() { if (ShutdownCallback) ShutdownCallback(); }
 
-#ifdef _WIN32
 		/// <summary>
-		/// Windows crash handler that calls the minidump creator function and sends error info to error popup.
+		/// Initialize the crash handler
 		/// </summary>
-		static LONG WINAPI HandleCrash(EXCEPTION_POINTERS* info);
-#endif
+		static void Initialize();
 
 		/// <summary>
 		/// Return current day as number, current hour, minute and second.
@@ -70,6 +68,11 @@ namespace ElypsoUtils
 		static inline string name;
 
 #ifdef _WIN32
+		/// <summary>
+		/// Windows crash handler that calls the minidump creator function and sends error info to error popup.
+		/// </summary>
+		static LONG WINAPI HandleCrash(EXCEPTION_POINTERS* info);
+
 		/// <summary>
 		/// Creates a windows crash .dmp file to exe location.
 		/// </summary>
