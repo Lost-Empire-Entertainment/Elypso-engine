@@ -680,13 +680,8 @@ namespace Core
 
 	void Engine::CrashTest()
 	{
-		/*
-		int* ptr = nullptr;
-		*ptr = 42;
-		*/
-
-		char buffer[1024]{};
-		CrashTest();
+		char* ptr = (char*)VirtualAlloc(nullptr, 4096, MEM_RESERVE, PAGE_NOACCESS);
+		*ptr = 1; // Accessing inaccessible memory page
 	}
 
 	void Engine::RunEngine()
