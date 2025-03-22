@@ -4,6 +4,10 @@
 //Read LICENSE.md for more information.
 
 #define NOMINMAX
+#include <filesystem>
+#include <fstream>
+#include <cstdlib>
+#include <memory>
 #ifdef _WIN32
 #include <Windows.h>
 #include <ShlObj.h>
@@ -12,13 +16,10 @@
 #elif __linux__
 #include <unistd.h>
 #endif
-#include <filesystem>
-#include <fstream>
-#include <cstdlib>
-#include <memory>
 
 //external
 #include "glfw3.h"
+#include "crashHandler.hpp"
 
 //engine
 #include "core.hpp"
@@ -52,6 +53,8 @@ using std::filesystem::create_directory;
 using std::system;
 using std::unique_ptr;
 using std::to_string;
+using std::ostringstream;
+using std::string;
 
 using Utils::String;
 using Utils::File;
@@ -63,6 +66,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
 using Core::Physics;
+using ElypsoUtils::CrashHandler;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
@@ -75,6 +79,10 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
+#ifdef _WIN32
+		InitializeCrashHandler();
+#endif
+
 		version = "Pre-release 0.1.3.0007";
 #ifdef NDEBUG
 #else
@@ -528,8 +536,32 @@ namespace Core
 		SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 	}
 
+	void Engine::InitializeCrashHandler()
+	{
+#if _WIN32
+		SetUnhandledExceptionFilter(CrashHandler::HandleCrash);
+
+		CrashHandler::SetShutdownCallback([] { Shutdown(true); });
+#endif
+	}
+
 	void Engine::CreateErrorPopup(const char* errorMessage)
 	{
+		if (name == "")
+		{
+#if _WIN32
+			char exePath[MAX_PATH];
+			GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+			name = path(exePath).stem().string();
+#else
+			char exePath[PATH_MAX];
+			ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
+			if (len != -1) {
+				exePath[len] = '\0';
+				name = path(exePath).stem().string();
+			}
+#endif
+		}
 		string title = name + " has shut down";
 
 		cout << "\n"
@@ -560,15 +592,30 @@ namespace Core
 
 	void Engine::CreateWarningPopup(const char* warningMessage)
 	{
-		string title = "Elypso Engine Warning";
+		if (name == "")
+		{
+#if _WIN32
+			char exePath[MAX_PATH];
+			GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+			name = path(exePath).stem().string();
+#else
+			char exePath[PATH_MAX];
+			ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
+			if (len != -1) {
+				exePath[len] = '\0';
+				name = path(exePath).stem().string();
+			}
+#endif
+		}
+		string title = name + " Warning";
 
 		cout << "\n"
 			<< "===================="
 			<< "\n"
 #if ENGINE_MODE
-			<< "ENGINE SHUTDOWN\n"
+			<< "ENGINE WARNING\n"
 #else
-			<< "GAME SHUTDOWN\n"
+			<< "GAME WARNING\n"
 #endif
 			<< "\n\n"
 			<< warningMessage
@@ -640,6 +687,17 @@ namespace Core
 		return false;
 	}
 
+	void Engine::CrashTest()
+	{
+		int* ptr = nullptr;
+		*ptr = 42;
+
+		/*
+		char buffer[1024]{};
+		CrashTest();
+		*/
+	}
+
 	void Engine::RunEngine()
 	{
 		ConsoleManager::WriteConsoleMessage(
@@ -676,6 +734,8 @@ namespace Core
 			{
 				isRunning = false;
 			}
+
+			CrashTest();
 		}
 	}
 

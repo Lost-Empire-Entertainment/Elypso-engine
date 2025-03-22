@@ -34,7 +34,7 @@
             "inherits": "windows-base",
 			"binaryDir": "${sourceDir}/out/build/x64-release",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
         {

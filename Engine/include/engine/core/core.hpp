@@ -46,6 +46,10 @@ namespace Core
 		/// Initialize engine or game.
 		/// </summary>
 		static void InitializeEngine();
+
+		static void InitializeCrashHandler();
+
+		static void CrashTest();
 #if ENGINE_MODE
 		/// <summary>
 		/// Checks if all necessary files required for compiling the game inside the engine have been set up correctly.

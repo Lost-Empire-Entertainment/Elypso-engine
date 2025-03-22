@@ -63,6 +63,7 @@ set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
 set(EXT_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/elypsophysics")
+set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/CrashHandler")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -70,7 +71,7 @@ target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
 
 # Add GLFW
 if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/release/glfw3dll.lib")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/debug/glfw3dll.lib")
@@ -81,7 +82,7 @@ endif()
 
 # Add Assimp
 if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 		set(ASSIMP_LIBRARY_PATH "${EXT_ASSIMP_DIR}/release/assimp-vc143-mt.lib")
 		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/release/zlibstatic.lib")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -94,16 +95,31 @@ endif()
 
 # Add Elypso physics
 if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/ElypsoPhysics.lib")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/ElypsoPhysicsD.lib")
 	endif()
 else()
-	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/libElypsoPhysics.so")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/libElypsoPhysicsD.so")
+	endif()
+endif()
+
+# Add Crash Handler
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/CrashHandler.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/CrashHandlerD.lib")
+	endif()
+else()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libCrashHandler.so")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libCrashHandlerD.so")
 	endif()
 endif()
 
@@ -177,6 +193,7 @@ target_include_directories(Elypso_engine PRIVATE
     ${EXT_STB_IMAGE_DIR}
 	${EXT_MINIAUDIO_DIR}
 	${EXT_PHYSICS_DIR}
+	${EXT_CRASH_DIR}
 )
 
 # Apply all directories to target
@@ -188,7 +205,8 @@ if (WIN32)
 		${GLFW_LIBRARY_PATH} 
 		${ASSIMP_LIBRARY_PATH} 
 		${ASSIMP_LIBRARY_PATH2}
-		${PHYSICS_LIBRARY_PATH})
+		${PHYSICS_LIBRARY_PATH}
+		${CRASH_LIBRARY_PATH})
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)
@@ -198,14 +216,16 @@ else()
 			glfw 
 			assimp 
 			Wayland::Client
-			${PHYSICS_LIBRARY_PATH})
+			${PHYSICS_LIBRARY_PATH}
+			${CRASH_LIBRARY_PATH})
 	elseif (X11_FOUND)
 		target_link_libraries(Elypso_engine PRIVATE 
 			external_libs 
 			glfw 
 			assimp 
 			${X11_LIBRARIES}
-			${PHYSICS_LIBRARY_PATH})
+			${PHYSICS_LIBRARY_PATH}
+			${CRASH_LIBRARY_PATH})
 	endif()
 endif()
 
@@ -238,7 +258,7 @@ add_custom_command(TARGET Elypso_engine POST_BUILD
 )
 
 # Copy all DLLs to the install directory after build
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 	set(DLL_ORIGIN_DIR "${CMAKE_SOURCE_DIR}/files/external dlls/release")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(DLL_ORIGIN_DIR "${CMAKE_SOURCE_DIR}/files/external dlls/debug")

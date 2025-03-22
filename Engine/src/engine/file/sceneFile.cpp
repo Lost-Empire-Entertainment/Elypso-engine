@@ -331,6 +331,8 @@ namespace EngineFile
 
 	void SceneFile::SetDefaultData()
 	{
+		cout << "set default data...\n";
+
 		//
 		// GLOBAL GRAPHICS DATA
 		//
@@ -393,35 +395,36 @@ namespace EngineFile
 	{
 		if (Render::activeCamera == nullptr) return;
 
-		if (Physics::physicsWorld != nullptr)
-		{
-			vec3 gravity = Physics::physicsWorld->GetGravity();
-			string gravityString =
-				to_string(gravity.x) + ", " +
-				to_string(gravity.y) + ", " +
-				to_string(gravity.z);
-			SetValue("gravity", gravityString);
+		if (Physics::physicsWorld == nullptr) return;
 
-			string angularDamping =
-				to_string(Physics::physicsWorld->GetAngularDamping());
-			SetValue("angularDamping", angularDamping);
+		cout << "save p data...\n";
 
-			string lowAngularVelocityFactor =
-				to_string(Physics::physicsWorld->GetLowAngularVelocityFactor());
-			SetValue("lowAngularVelocityFactor", lowAngularVelocityFactor);
+		vec3 gravity = Physics::physicsWorld->GetGravity();
+		string gravityString =
+			to_string(gravity.x) + ", " +
+			to_string(gravity.y) + ", " +
+			to_string(gravity.z);
+		SetValue("gravity", gravityString);
 
-			string frictionMultiplier =
-				to_string(Physics::physicsWorld->GetFrictionMultiplier());
-			SetValue("frictionMultiplier", frictionMultiplier);
+		string angularDamping =
+			to_string(Physics::physicsWorld->GetAngularDamping());
+		SetValue("angularDamping", angularDamping);
 
-			string correctionFactor =
-				to_string(Physics::physicsWorld->GetCorrectionFactor());
-			SetValue("correctionFactor", correctionFactor);
+		string lowAngularVelocityFactor =
+			to_string(Physics::physicsWorld->GetLowAngularVelocityFactor());
+		SetValue("lowAngularVelocityFactor", lowAngularVelocityFactor);
 
-			string minPenetrationThreshold =
-				to_string(Physics::physicsWorld->GetMinPenetrationThreshold());
-			SetValue("minPenetrationThreshold", minPenetrationThreshold);
-		}
+		string frictionMultiplier =
+			to_string(Physics::physicsWorld->GetFrictionMultiplier());
+		SetValue("frictionMultiplier", frictionMultiplier);
+
+		string correctionFactor =
+			to_string(Physics::physicsWorld->GetCorrectionFactor());
+		SetValue("correctionFactor", correctionFactor);
+
+		string minPenetrationThreshold =
+			to_string(Physics::physicsWorld->GetMinPenetrationThreshold());
+		SetValue("minPenetrationThreshold", minPenetrationThreshold);
 	}
 	void SceneFile::LoadGlobalPhysicsData()
 	{
@@ -435,6 +438,8 @@ namespace EngineFile
 				"Error: Tried to load global physics data but Elypso Physics has not yet been initialized!");
 			return;
 		}
+
+		cout << "load p data...\n";
 		
 		string gravityString = GetValue("gravity");
 		vector<string> split = String::Split(gravityString, ',');
@@ -477,6 +482,8 @@ namespace EngineFile
 			to_string(rot[2]);
 		SetValue("camera_rotation", cameraRot);
 #endif
+
+		cout << "save g data...\n";
 
 		SetValue("skybox_right", skyboxTexturesMap["right"]);
 		SetValue("skybox_left", skyboxTexturesMap["left"]);
@@ -523,6 +530,8 @@ namespace EngineFile
 			stof(cameraRotVector[2]));
 		tc->SetRotation(cameraRot);
 #endif
+
+		cout << "load g data...\n";
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
 		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();
