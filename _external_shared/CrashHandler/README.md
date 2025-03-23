@@ -1,10 +1,17 @@
-## Introduction
+# Introduction
 
 CrashHandler is a lightweight C++ 20 library for Windows that detects mostly common and some rarer but useful crashes caused by the program the crash handler is attached to. It will display crash messages in the error popup and it will generate a log file with extra info and a dmp file for debugging.
 
 ![Crash Screenshot](images/crash_popup.png)
 
-## How to use
+# Prerequisites (when compiling from source code)
+
+- Visual Studio 2022 (with C++ CMake tools and Windows 10 or 11 SDK)
+- Ninja and CMake 3.30.3 or newer (or extract Windows_prerequsites.7z and run setup.bat)
+
+To compile from source code simply run 'build_windows_release.bat' or 'build_windows_debug.bat' depending on your preferences then simply copy and attach the dll, lib and header files with your preferred way to your program source directory.
+
+# How to use
 
 ```cpp
 #include <string>
@@ -24,7 +31,8 @@ int main()
     //call this function to initialize crash handler
     CrashHandler::Initialize();
 
-    //attach a string to this function to set the name of the program that will be displayed when the program crashes
+    //attach a string to this function to set the name
+    //of the program that will be displayed when the program crashes
     std::string name = "MyProgramName";
     CrashHandler::SetProgramName(name);
 
@@ -36,59 +44,71 @@ int main()
 }
 ```
 
-## Types of crashes that are supported
+---
 
-### Access violation
+# These crash types are supported and will be displayed
+
+The images in the images folder also show each crash type (except EXCEPTION_IN_PAGE_ERROR) and what their error messages look like.
+
+---
+
+### Common and high priority crash types
+
+#### Access violation (nullptr or invalid memory access)
 
     Occurs when a program dereferences a null or invalid pointer.  
-    Typically caused by reading from or writing to memory that hasn’t been allocated.
+    Typically caused by reading from, writing to, or executing memory that hasn’t been allocated.  
+    The type of access (read, write, execute) is reported.  
+    Exception: `EXCEPTION_ACCESS_VIOLATION`
 
-### Access violation (reserved + PAGE_NOACCESS)
-
-    Triggers a crash by accessing memory that was reserved but never committed,  
-    and marked as PAGE_NOACCESS via VirtualAlloc.
-
-### In-page error
-
-    Occurs when accessing a valid memory address whose backing storage (e.g. memory-mapped file or pagefile)  
-    could not be loaded into memory — typically due to I/O errors or missing file mappings.
-
-### Datatype misalignment
-
-    Happens when data (e.g. a double) is accessed from an improperly aligned memory address.  
-    On some CPUs (e.g. ARM), this causes a crash due to alignment requirements.
-
-### Array bounds exceeded
-
-    Reading or writing outside the bounds of an array, leading to unpredictable behavior or crashes.  
-    May not crash on all platforms, but it is undefined behavior and often results in an access violation.
-
-### Guard page accessed
-
-    Accessing a guard page (used for stack expansion or protected memory regions)  
-    triggers a controlled crash, often seen just before a stack overflow.
-
-### Integer divide by zero
-
-    Dividing an integer by zero results in a structured exception (STATUS_INTEGER_DIVIDE_BY_ZERO).  
-    This is a definite crash on Windows platforms.
-
-### Integer overflow
-
-    Occurs when signed integer arithmetic exceeds the representable range,  
-    and overflow checking is enabled (e.g. with /RTC or `_overflow` intrinsics).
-
-### Privileged instruction
-
-    Executing a privileged CPU instruction (e.g. `hlt`, `cli`) from user mode causes a crash.  
-    These are restricted to kernel-mode code.
-
-### Illegal instruction
-
-    Manually executes invalid or undefined CPU instructions (e.g. 0xFF 0xFF 0xFF 0xFF).  
-    Always causes an illegal instruction exception (STATUS_ILLEGAL_INSTRUCTION).
-
-### Stack overflow
+#### Stack overflow (likely due to infinite recursion)
 
     Triggers infinite recursion or excessive stack allocation until the call stack limit is exceeded.  
-    Results in a stack overflow exception (STATUS_STACK_OVERFLOW) and immediate crash.
+    Results in a stack overflow exception and immediate crash.  
+    Exception: `EXCEPTION_STACK_OVERFLOW`
+
+#### Illegal CPU instruction executed
+
+    Manually executes invalid or undefined CPU instructions (e.g. 0xFF 0xFF 0xFF 0xFF).  
+    Always causes an illegal instruction exception.  
+    Exception: `EXCEPTION_ILLEGAL_INSTRUCTION`
+
+#### Integer divide by zero
+
+    Dividing an integer by zero results in a structured exception.  
+    This is a definite crash on Windows platforms.  
+    Exception: `EXCEPTION_INT_DIVIDE_BY_ZERO`
+
+---
+
+### Rare but useful crashes
+
+#### Breakpoint hit (INT 3 instruction executed)
+
+    A software breakpoint (typically inserted by a debugger) was triggered.  
+    This is normal during debugging but causes a crash if unhandled at runtime.  
+    Exception: `EXCEPTION_BREAKPOINT`
+
+#### Guard page accessed (likely stack guard or memory protection violation)
+
+    Accessing a guard page (used for stack expansion or protected memory regions)  
+    triggers a controlled crash, often seen just before a stack overflow.  
+    Exception: `EXCEPTION_GUARD_PAGE`
+
+#### Privileged instruction executed in user mode
+
+    Executing a privileged CPU instruction (e.g. `hlt`, `cli`) from user mode causes a crash.  
+    These are restricted to kernel-mode code.  
+    Exception: `EXCEPTION_PRIV_INSTRUCTION`
+
+#### Attempted to continue after a non-continuable exception
+
+    Code tried to resume execution after a fatal exception that cannot be recovered from.  
+    Typically a logic or state machine error.  
+    Exception: `EXCEPTION_NONCONTINUABLE_EXCEPTION`
+
+#### Memory access failed (I/O or paging failure)
+
+    Occurs when accessing a valid memory address whose backing storage (e.g. memory-mapped file or pagefile)  
+    could not be loaded into memory — typically due to I/O errors, device removal, or disk failure.  
+    Exception: `EXCEPTION_IN_PAGE_ERROR`

@@ -18,6 +18,7 @@ Full list of libraries:
 Libraries created by Lost Empire Entertainment
 ==================================================
 
-The following libraries are exceptions and are made by Lost Empire Entertainment.
+The following libraries are exceptions and are made and are actively managed by Lost Empire Entertainment.
 
 - [Elypso Physics - Handles physics in Elypso engine and game template](https://github.com/Lost-Empire-Entertainment/Elypso-physics)
+- [CrashHandler - Displays error popup and generates minidump and log files](https://github.com/Lost-Empire-Entertainment/CrashHandler)

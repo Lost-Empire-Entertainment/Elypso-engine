@@ -678,12 +678,6 @@ namespace Core
 		return false;
 	}
 
-	void Engine::CrashTest()
-	{
-		char* ptr = (char*)VirtualAlloc(nullptr, 4096, MEM_RESERVE, PAGE_NOACCESS);
-		*ptr = 1; // Accessing inaccessible memory page
-	}
-
 	void Engine::RunEngine()
 	{
 		ConsoleManager::WriteConsoleMessage(
@@ -720,8 +714,6 @@ namespace Core
 			{
 				isRunning = false;
 			}
-
-			CrashTest();
 		}
 	}
 
