@@ -119,6 +119,7 @@ namespace Core
 
 		CrashHandler::Initialize();
 		CrashHandler::SetProgramName(name);
+		CrashHandler::SetDumpCreateState(true);
 		CrashHandler::SetShutdownCallback([] { Shutdown(true); });
 
 #ifdef _WIN32

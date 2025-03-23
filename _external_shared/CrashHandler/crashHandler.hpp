@@ -31,9 +31,16 @@ namespace ElypsoUtils
 	class CRASHHANDLER_API CrashHandler
 	{
 	public:
+		/// <summary>
+		/// Assign a name that will be displayed 
+		/// before "has shut down" in the error popup title.
+		/// </summary>
 		static void SetProgramName(const string& newName) { name = newName; }
-
-		static string GetProgramName() { return name; }
+		/// <summary>
+		/// If set to true, then a dmp file will be 
+		/// created at crash in the location of the executable on Windows.
+		/// </summary>
+		static void SetDumpCreateState(bool newState) { createDump = newState; };
 
 		static inline function<void()> ShutdownCallback;
 
@@ -57,11 +64,13 @@ namespace ElypsoUtils
 		/// </summary>
 		static void Initialize();
 
-		/// <summary>
-		/// Return current day as number, current hour, minute and second.
-		/// </summary>
-		static string GetCurrentTimeStamp();
+
 	private:
+		/// <summary>
+		/// Toggles whether the dmp file is created on Windows or not.
+		/// </summary>
+		static inline bool createDump;
+
 		/// <summary>
 		/// The name of the program this crash handler is attached to
 		/// </summary>
@@ -73,15 +82,38 @@ namespace ElypsoUtils
 		/// </summary>
 		static LONG WINAPI HandleCrash(EXCEPTION_POINTERS* info);
 
+		static void WriteLog(
+			const string& message, 
+			const string& exePath, 
+			const string& timeStamp);
+
 		/// <summary>
 		/// Creates a windows crash .dmp file to exe location.
 		/// </summary>
-		static string WriteMiniDump(EXCEPTION_POINTERS* info);
+		static void WriteMiniDump(
+			EXCEPTION_POINTERS* info, 
+			const string& exePath, 
+			const string& timeStamp);
 
 		/// <summary>
 		/// Appends up to to last 10 frames of the call stack upon crash.
 		/// </summary>
 		static void AppendCallStackToStream(ostringstream& oss, CONTEXT* context);
+
+		/// <summary>
+		/// Internal error popup function, not meant to be used by end user.
+		/// </summary>
+		static void CreateErrorPopup(const string& message);
+
+		/// <summary>
+		/// Return current day as number, current hour, minute and second.
+		/// </summary>
+		static string GetCurrentTimeStamp();
+
+		/// <summary>
+		/// Return current executable path.
+		/// </summary>
+		static string GetExePath();
 #endif
 	};
 }
