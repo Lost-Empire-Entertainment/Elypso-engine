@@ -9,7 +9,7 @@ CrashHandler is a lightweight C++ 20 library for Windows that detects mostly com
 - Visual Studio 2022 (with C++ CMake tools and Windows 10 or 11 SDK)
 - Ninja and CMake 3.30.3 or newer (or extract Windows_prerequsites.7z and run setup.bat)
 
-To compile from source code simply run 'build_windows_release.bat' or 'build_windows_debug.bat' depending on your preferences then simply copy and attach the dll, lib and header files with your preferred way to your program source directory.
+To compile from source code simply run 'build_windows_release.bat' or 'build_windows_debug.bat' depending on your preferences then copy and attach the dll, lib and header files with your preferred way to your program source directory.
 
 # How to use
 
