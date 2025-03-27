@@ -71,10 +71,10 @@ using Utils::String;
 using Core::Select;
 using EngineFile::GameObjectFile;
 using Graphics::Components::RigidBodyComponent;
-using ElypsoPhysics::RigidBody;
-using ElypsoPhysics::GameObjectHandle;
-using ElypsoPhysics::PhysicsWorld;
-using ElypsoPhysics::Collider;
+using KalaKit::RigidBody;
+using KalaKit::GameObjectHandle;
+using KalaKit::PhysicsWorld;
+using KalaKit::Collider;
 using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;

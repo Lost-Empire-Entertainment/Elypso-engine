@@ -57,8 +57,8 @@ set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
-set(EXT_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/elypsophysics")
-set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/CrashHandler")
+set(EXT_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/KalaPhysics")
+set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/KalaCrashHandler")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -88,33 +88,33 @@ else()
 	find_package(assimp REQUIRED)
 endif()
 
-# Add Elypso physics
+# Add KalaPhysics
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/ElypsoPhysics.lib")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/KalaPhysics.lib")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/ElypsoPhysicsD.lib")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/KalaPhysicsD.lib")
 	endif()
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/libElypsoPhysics.so")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/libKalaPhysics.so")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/libElypsoPhysicsD.so")
+		set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/libKalaPhysicsD.so")
 	endif()
 endif()
 
-# Add Crash Handler
+# Add KalaCrashHandler
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/CrashHandler.lib")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/KalaCrashHandler.lib")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/CrashHandlerD.lib")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/KalaCrashHandlerD.lib")
 	endif()
 else()
 	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libCrashHandler.so")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.so")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libCrashHandlerD.so")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.so")
 	endif()
 endif()
 
@@ -258,6 +258,21 @@ endif()
 
 # Define GLFW_INCLUDE_NONE
 target_compile_definitions(Game PRIVATE GLFW_INCLUDE_NONE)
+
+# Disable console on release
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+	# Set the subsystem to WINDOWS
+	set_target_properties(Elypso_engine PROPERTIES
+		WIN32_EXECUTABLE TRUE
+	)
+
+	# Set the entry point (MSVC-specific)
+	if (MSVC)
+		set_target_properties(Elypso_engine PROPERTIES
+		LINK_FLAGS "/ENTRY:mainCRTStartup"
+		)
+	endif()
+endif()
 
 # Set the folder inside the install folder where the exe will be placed for this project
 set(CMAKE_INSTALL_BINDIR bin)

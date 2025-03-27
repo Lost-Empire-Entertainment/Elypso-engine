@@ -19,10 +19,10 @@
 
 namespace Graphics::Components
 {
-	using ElypsoPhysics::PhysicsWorld;
-	using ElypsoPhysics::GameObjectHandle;
-	using ElypsoPhysics::ColliderType;
-	using ElypsoPhysics::Collider;
+	using KalaKit::PhysicsWorld;
+	using KalaKit::GameObjectHandle;
+	using KalaKit::ColliderType;
+	using KalaKit::Collider;
 	using Graphics::Shape::GameObject;
 
 	using std::string;

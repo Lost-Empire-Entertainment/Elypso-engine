@@ -18,11 +18,11 @@
 #include "console.hpp"
 #include "physics.hpp"
 
-using ElypsoPhysics::ColliderType;
-using ElypsoPhysics::RigidBody;
-using ElypsoPhysics::Collider;
-using ElypsoPhysics::BoxCollider;
-using ElypsoPhysics::SphereCollider;
+using KalaKit::ColliderType;
+using KalaKit::RigidBody;
+using KalaKit::Collider;
+using KalaKit::BoxCollider;
+using KalaKit::SphereCollider;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;

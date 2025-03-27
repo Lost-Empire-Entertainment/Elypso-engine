@@ -71,7 +71,7 @@ using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::MaterialComponent;
 using Core::Physics;
 using Graphics::Components::RigidBodyComponent;
-using ElypsoPhysics::PhysicsWorld;
+using KalaKit::PhysicsWorld;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;

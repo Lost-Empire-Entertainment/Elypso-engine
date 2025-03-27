@@ -11,7 +11,7 @@
 
 namespace Core
 {
-	using ElypsoPhysics::PhysicsWorld;
+	using KalaKit::PhysicsWorld;
 	using glm::vec3;
 
 	class Physics

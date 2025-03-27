@@ -88,7 +88,7 @@ using Graphics::Components::LightComponent;
 using Graphics::Components::AudioPlayerComponent;
 using Core::Engine;
 using Graphics::Components::RigidBodyComponent;
-using ElypsoPhysics::ColliderType;
+using KalaKit::ColliderType;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;

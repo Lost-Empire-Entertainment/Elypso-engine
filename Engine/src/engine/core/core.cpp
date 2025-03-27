@@ -66,7 +66,7 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
 using Core::Physics;
-using ElypsoUtils::CrashHandler;
+using KalaKit::KalaCrashHandler;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
@@ -117,10 +117,10 @@ namespace Core
 		}
 #endif
 
-		CrashHandler::Initialize();
-		CrashHandler::SetProgramName(name);
-		CrashHandler::SetDumpCreateState(true);
-		CrashHandler::SetShutdownCallback([] { Shutdown(true); });
+		KalaCrashHandler::Initialize();
+		KalaCrashHandler::SetProgramName(name);
+		KalaCrashHandler::SetDumpCreateState(true);
+		KalaCrashHandler::SetShutdownCallback([] { Shutdown(true); });
 
 #ifdef _WIN32
 		string nameAndExe = name + ".exe";

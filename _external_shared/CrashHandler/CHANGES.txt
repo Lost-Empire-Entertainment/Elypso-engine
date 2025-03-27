@@ -1,7 +1,0 @@
-Original repository link:
-https://github.com/Lost-Empire-Entertainment/CrashHandler
-
-Changes:
-- used build_windows_release.bat to make CrashHandler.dll and CrashHandler.lib and copied them into new empty folder release
-- used build_debug.bat to make CrashHandlerD.dll and CrashHandlerD.lib and copied them into new empty folder debug
-- copied main.hpp to CrashHandler root folder

@@ -1,0 +1,7 @@
+Original repository link:
+https://github.com/KalaKit/KalaCrashHandler
+
+Changes:
+- used build_windows_release.bat to make KalaCrashHandler.dll and KalaCrashHandler.lib and copied them into new empty folder release
+- used build_debug.bat to make KalaCrashHandlerD.dll and KalaCrashHandlerD.lib and copied them into new empty folder debug
+- copied main.hpp to KalaCrashHandler root folder
