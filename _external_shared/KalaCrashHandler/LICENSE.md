@@ -1,5 +1,9 @@
-Crash Handler library repository
-https://github.com/Lost-Empire-Entertainment/CrashHandler
+KalaCrashHandler library repository
+https://github.com/KalaKit/KalaCrashHandler
+
+---
+
+This library is licensed under the zlib/libpng License:
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
