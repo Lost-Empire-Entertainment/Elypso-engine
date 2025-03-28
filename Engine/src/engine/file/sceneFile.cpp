@@ -397,7 +397,7 @@ namespace EngineFile
 
 		if (Physics::physicsWorld == nullptr) return;
 
-		cout << "save p data...\n";
+		cout << "save global physics data!\n";
 
 		vec3 gravity = Physics::physicsWorld->GetGravity();
 		string gravityString =
@@ -439,7 +439,7 @@ namespace EngineFile
 			return;
 		}
 
-		cout << "load p data...\n";
+		cout << "!!!! load global physics data!\n";
 		
 		string gravityString = GetValue("gravity");
 		vector<string> split = String::Split(gravityString, ',');
@@ -483,7 +483,7 @@ namespace EngineFile
 		SetValue("camera_rotation", cameraRot);
 #endif
 
-		cout << "save g data...\n";
+		cout << "!!!! save global graphics data!\n";
 
 		SetValue("skybox_right", skyboxTexturesMap["right"]);
 		SetValue("skybox_left", skyboxTexturesMap["left"]);
@@ -531,7 +531,7 @@ namespace EngineFile
 		tc->SetRotation(cameraRot);
 #endif
 
-		cout << "load g data...\n";
+		cout << "!!!! load global graphics data!\n";
 
 		string texturesFolder = (path(Engine::filesPath) / "textures").string();
 		string skyboxDefault = (path(texturesFolder).filename() / "skybox_default.png").string();

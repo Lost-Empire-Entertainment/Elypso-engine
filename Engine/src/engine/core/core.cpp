@@ -117,11 +117,6 @@ namespace Core
 		}
 #endif
 
-		KalaCrashHandler::Initialize();
-		KalaCrashHandler::SetProgramName(name);
-		KalaCrashHandler::SetDumpCreateState(true);
-		KalaCrashHandler::SetShutdownCallback([] { Shutdown(true); });
-
 #ifdef _WIN32
 		string nameAndExe = name + ".exe";
 		if (IsThisProcessAlreadyRunning(nameAndExe))
@@ -162,6 +157,11 @@ namespace Core
 			name + " " + version + "\n" +
 			"Copyright (C) Lost Empire Entertainment 2025\n\n",
 			true);
+
+		KalaCrashHandler::Initialize();
+		KalaCrashHandler::SetProgramName(name);
+		KalaCrashHandler::SetDumpCreateState(true);
+		KalaCrashHandler::SetShutdownCallback([] { Shutdown(true); });
 
 		//
 		// SET FILES PATH
@@ -534,7 +534,12 @@ namespace Core
 		//otherwise load first scene
 		else SceneFile::LoadScene((path(scenesPath) / "Scene1" / "scene.txt").string());
 
-		SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
+		if (!SceneFile::unsavedChanges)
+		{
+			Render::SetWindowNameAsUnsaved(true);
+			cout << "!!!! called for core save!\n";
+		}
+		//SceneFile::SaveScene(SceneFile::SaveType::defaultSave, "", false);
 	}
 
 	void Engine::CreateErrorPopup(const char* errorMessage)
