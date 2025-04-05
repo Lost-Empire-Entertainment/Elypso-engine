@@ -15,12 +15,12 @@
 #include "magic_enum.hpp"
 #include "glfw3.h"
 #include "glm.hpp"
+#include "stringutils.hpp"
 
 //engine
 #include "console.hpp"
 #include "core.hpp"
 #include "render.hpp"
-#include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
 #include "gui_console.hpp"
@@ -49,7 +49,6 @@ using std::filesystem::current_path;
 
 using Core::Engine;
 using Graphics::Render;
-using Utils::String;
 using Core::Select;
 using Graphics::Shape::GameObject;
 using Graphics::Components::MeshComponent;
@@ -57,6 +56,7 @@ using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
 using Graphics::GUI::GUIConsole;
 using Graphics::Components::TransformComponent;
+using KalaKit::StringUtils;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 #endif
@@ -189,7 +189,7 @@ namespace Core
     {
         if (command == "") return;
 
-        vector<string> splitCommand = String::Split(command, ' ');
+        vector<string> splitCommand = StringUtils::Split(command, ' ');
         size_t count = splitCommand.size();
 
         vector<string> cleanedCommands;

@@ -31,6 +31,8 @@ namespace Graphics::GUI
 		/// </summary>
 		static ImVec2 CenterWindow(const ImVec2& size);
 
+		static void OpenLink(const char* url);
+
 		static void Render();
 		static void Shutdown();
 	private:

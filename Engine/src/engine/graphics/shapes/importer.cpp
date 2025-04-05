@@ -18,6 +18,8 @@
 #include "postprocess.h"
 #include "stb_image.h"
 #include "Assimp/Importer.hpp"
+#include "fileutils.hpp"
+#include "stringutils.hpp"
 
 //engine
 #include "importer.hpp"
@@ -28,12 +30,10 @@
 #include "core.hpp"
 #include "console.hpp"
 #include "selectobject.hpp"
-#include "fileUtils.hpp"
 #include "transformcomponent.hpp"
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
-#include "stringUtils.hpp"
 
 using std::cout;
 using std::endl;
@@ -76,8 +76,8 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Select;
-using Utils::File;
-using Utils::String;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 
 namespace Graphics::Shape
 {
@@ -489,7 +489,7 @@ namespace Graphics::Shape
                 || key == "rot"
                 || key == "scale")
             {
-                vector<string> stringData = String::Split(value, ',');
+                vector<string> stringData = StringUtils::Split(value, ',');
                 vec3 data = vec3(
                     stof(stringData[0]),
                     stof(stringData[1]),
@@ -503,13 +503,13 @@ namespace Graphics::Shape
 
         //delete original folder and make a new one with the same name
         string parentFolder = path(originalDestinationPath).parent_path().string();
-        File::DeleteFileOrfolder(parentFolder);
-        File::CreateNewFolder(parentFolder);
+        FileUtils::DeleteTarget(parentFolder);
+        FileUtils::CreateNewFolder(parentFolder);
 
         //copy error model
         string targetName = name + ".fbx";
         string targetPath = (path(parentFolder) / targetName).string();
-        File::CopyFileOrFolder(originPath, targetPath);
+        FileUtils::CopyTarget(originPath, targetPath);
 
         //load the error model for the failed model
         Importer::Initialize(

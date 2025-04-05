@@ -17,13 +17,12 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "glfw3.h"
+#include "fileutils.hpp"
 
 //engine
 #include "compile.hpp"
 #include "console.hpp"
 #include "core.hpp"
-#include "stringUtils.hpp"
-#include "fileUtils.hpp"
 #include "gameobject.hpp"
 #include "render.hpp"
 #include "sceneFile.hpp"
@@ -48,8 +47,6 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Engine;
-using Utils::String;
-using Utils::File;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Render;
@@ -57,6 +54,7 @@ using EngineFile::SceneFile;
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
 using EngineFile::ConfigFile;
+using KalaKit::FileUtils;
 
 namespace Core
 {
@@ -84,7 +82,7 @@ namespace Core
 
 						if (fileExtension == ".exe")
 						{
-							File::DeleteFileOrfolder(filePath);
+							FileUtils::DeleteTarget(filePath);
 						}
 					}
 				}
@@ -97,10 +95,9 @@ namespace Core
 					string gameStem = path(Engine::gameExePath).stem().string();
 					if (gameStem != "Game")
 					{
-						File::MoveOrRenameFileOrFolder(
-							path(Engine::gameParentPath) / "Game.exe",
-							Engine::gameExePath,
-							true);
+						FileUtils::MoveOrRenameTarget(
+							(path(Engine::gameParentPath) / "Game.exe").string(),
+							Engine::gameExePath);
 					}
 
 					//
@@ -108,13 +105,13 @@ namespace Core
 					//
 
 					string targetFolder = (path(Engine::gameParentPath) / "project").string();
-					if (exists(targetFolder)) File::DeleteFileOrfolder(targetFolder);
-					File::CreateNewFolder(targetFolder);
+					if (exists(targetFolder)) FileUtils::DeleteTarget(targetFolder);
+					FileUtils::CreateNewFolder(targetFolder);
 
 					string projectFileOriginPath = (path(Engine::docsPath) / "project.txt").string();
 					string projectFileTargetPath = (path(targetFolder) / "project.txt").string();
-					if (exists(projectFileTargetPath)) File::DeleteFileOrfolder(projectFileTargetPath);
-					File::CopyFileOrFolder(projectFileOriginPath, projectFileTargetPath);
+					if (exists(projectFileTargetPath)) FileUtils::DeleteTarget(projectFileTargetPath);
+					FileUtils::CopyTarget(projectFileOriginPath, projectFileTargetPath);
 
 					//
 					// COPY SCENE FILES TO GAME EXE FOLDER
@@ -132,7 +129,7 @@ namespace Core
 							string originFileName = path(entry).filename().string();
 							string target = (path(targetFolder) / originFileName).string();
 
-							File::CopyFileOrFolder(origin, target);
+							FileUtils::CopyTarget(origin, target);
 						}
 					}
 
@@ -141,7 +138,7 @@ namespace Core
 					//
 
 					string firstSceneFilePath = (path(targetFolder) / "firstScene.txt").string();
-					if (exists(firstSceneFilePath)) File::DeleteFileOrfolder(firstSceneFilePath);
+					if (exists(firstSceneFilePath)) FileUtils::DeleteTarget(firstSceneFilePath);
 
 					ofstream firstSceneFile(firstSceneFilePath);
 					if (!firstSceneFile.is_open())
@@ -223,7 +220,7 @@ namespace Core
 		targetLib = (path(gameRootFolder) / "Elypso engineD.lib").string();
 #endif
 
-		File::CopyFileOrFolder(originLib, targetLib);
+		FileUtils::CopyTarget(originLib, targetLib);
 
 		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
@@ -238,7 +235,7 @@ namespace Core
 		targetLib = (path(gameRootFolder) / "libElypso engineD.a").string();
 #endif
 
-		File::CopyFileOrFolder(originLib, targetLib);
+		FileUtils::CopyTarget(originLib, targetLib);
 
 		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
 #endif
@@ -454,7 +451,7 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES AND THEIR CONTENT TO IT
 				//
 
-				if (exists(projectFolder)) File::DeleteFileOrfolder(path(projectFolder) / "scenes");
+				if (exists(projectFolder)) FileUtils::DeleteTarget((path(projectFolder) / "scenes").string());
 
 				string engineProjectFolder = path(Engine::projectPath).string();
 				for (const auto& entry : directory_iterator(path(engineProjectFolder)))
@@ -470,11 +467,11 @@ namespace Core
 						string originFileName = path(entry).filename().string();
 						string target = (path(projectFolder) / originFileName).string();
 
-						File::CopyFileOrFolder(origin, target);
+						FileUtils::CopyTarget(origin, target);
 					}
 				}
 
-				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+				FileUtils::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
 		}
 	}

@@ -12,9 +12,6 @@
 //engine
 #include "gui_links.hpp"
 #include "gui_engine.hpp"
-#include "browserUtils.hpp"
-
-using Utils::Browser;
 
 namespace Graphics::GUI
 {
@@ -57,7 +54,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Paypal"))
 			{
-				Browser::OpenLink("https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6");
+				EngineGUI::OpenLink("https://www.paypal.com/donate/?hosted_button_id=QWG8SAYX5TTP6");
 			}
 
 			ImGui::Text(" ");
@@ -67,7 +64,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Website"))
 			{
-				Browser::OpenLink("https://elypsoengine.com");
+				EngineGUI::OpenLink("https://elypsoengine.com");
 			}
 
 			ImGui::Text(" ");
@@ -77,7 +74,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Discord"))
 			{
-				Browser::OpenLink("https://discord.gg/jkvasmTND5");
+				EngineGUI::OpenLink("https://discord.gg/jkvasmTND5");
 			}
 
 			ImGui::Text(" ");
@@ -87,7 +84,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Youtube"))
 			{
-				Browser::OpenLink("https://youtube.com/greenlaser");
+				EngineGUI::OpenLink("https://youtube.com/greenlaser");
 			}
 
 			ImGui::Text(" ");
@@ -97,7 +94,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Repository"))
 			{
-				Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine");
+				EngineGUI::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine");
 			}
 
 			ImGui::Text(" ");
@@ -107,7 +104,7 @@ namespace Graphics::GUI
 
 			if (ImGui::Button("Trello"))
 			{
-				Browser::OpenLink("https://trello.com/b/hbt6ebCZ/elypso-engine");
+				EngineGUI::OpenLink("https://trello.com/b/hbt6ebCZ/elypso-engine");
 			}
 		}
 		ImGui::EndChild();

@@ -12,15 +12,15 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "fileutils.hpp"
+#include "stringutils.hpp"
 
 //engine
 #include "gui_createscene.hpp"
 #include "gui_engine.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
-#include "fileUtils.hpp"
 #include "core.hpp"
-#include "stringUtils.hpp"
 #include "console.hpp"
 
 using std::cout;
@@ -31,12 +31,12 @@ using std::filesystem::path;
 
 using EngineFile::SceneFile;
 using Graphics::Render;
-using Utils::File;
 using Core::Engine;
-using Utils::String;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 
 namespace Graphics::GUI
 {
@@ -108,7 +108,7 @@ namespace Graphics::GUI
 			char illegalChar;
 			for (char c : assignedSceneName)
 			{
-				if (!String::IsValidSymbolInPath(c))
+				if (!StringUtils::IsValidSymbolInPath(c))
 				{
 					foundIllegalChar = true;
 					illegalChar = c;
@@ -176,8 +176,8 @@ namespace Graphics::GUI
 			//
 
 			string newSceneFolder = (path(Engine::scenesPath) / assignedSceneName).string();
-			File::CreateNewFolder(newSceneFolder);
-			File::CreateNewFolder((path(newSceneFolder) / "gameobjects").string());
+			FileUtils::CreateNewFolder(newSceneFolder);
+			FileUtils::CreateNewFolder((path(newSceneFolder) / "gameobjects").string());
 
 			string newSceneFile = (path(newSceneFolder) / "scene.txt").string();
 

@@ -5,11 +5,15 @@
 #if ENGINE_MODE
 #include <string>
 #include <filesystem>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 //external
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "fileutils.hpp"
 
 //engine
 #include "console.hpp"
@@ -29,9 +33,6 @@
 #include "gui_scenewindow.hpp"
 #include "input.hpp"
 #include "render.hpp"
-#include "stringUtils.hpp"
-#include "fileUtils.hpp"
-#include "browserUtils.hpp"
 #include "gameobject.hpp"
 #include "timeManager.hpp"
 #include "importer.hpp"
@@ -67,9 +68,6 @@ using Core::Input;
 using Core::ConsoleManager;
 using Core::TimeManager;
 using Core::Select;
-using Utils::File;
-using Utils::Browser;
-using Utils::String;
 using Graphics::Shape::Importer;
 using Graphics::Shape::Empty;
 using Graphics::Shape::PointLight;
@@ -88,6 +86,7 @@ using Graphics::Shape::CameraObject;
 using Graphics::Shape::AudioObject;
 using Graphics::Components::TransformComponent;
 using Graphics::Components::CameraComponent;
+using KalaKit::FileUtils;
 
 namespace Graphics::GUI
 {
@@ -102,7 +101,7 @@ namespace Graphics::GUI
 		string imguiTemplateFile = (path(Engine::filesPath) / "imgui.ini").string();
 		if (!exists(imguiConfigFile))
 		{
-			File::CopyFileOrFolder(imguiTemplateFile, imguiConfigFile);
+			FileUtils::CopyTarget(imguiTemplateFile, imguiConfigFile);
 
 			ConfigFile::SetValue("gui_sceneHierarchy", "1");
 			ConfigFile::SetValue("gui_projectHierarchy", "1");
@@ -418,13 +417,13 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Empty", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Empty", "");
 						string targetName = path(targetPath).stem().string();
 
 						string targetNameAndExtension = targetName + ".txt";
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -451,13 +450,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "cube.fbx").string();
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						File::CopyFileOrFolder(originPath, destinationPath);
+						FileUtils::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -491,13 +490,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "sphere.fbx").string();
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						File::CopyFileOrFolder(originPath, destinationPath);
+						FileUtils::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -531,13 +530,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "cylinder.fbx").string();
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						File::CopyFileOrFolder(originPath, destinationPath);
+						FileUtils::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -571,13 +570,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "cone.fbx").string();
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						File::CopyFileOrFolder(originPath, destinationPath);
+						FileUtils::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -611,13 +610,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "pyramid.fbx").string();
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						File::CopyFileOrFolder(originPath, destinationPath);
+						FileUtils::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -656,10 +655,10 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".txt";
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 
 						string scenePath = path(Engine::scenePath).parent_path().filename().string();
 						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -698,10 +697,10 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
+						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".txt";
-						File::CreateNewFolder(targetPath);
+						FileUtils::CreateNewFolder(targetPath);
 
 						string scenePath = path(Engine::scenePath).parent_path().filename().string();
 						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -751,10 +750,10 @@ namespace Graphics::GUI
 						}
 						else
 						{
-							string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Directional light", "");
+							string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Directional light", "");
 							string targetName = path(targetPath).stem().string();
 							string targetNameAndExtension = targetName + ".txt";
-							File::CreateNewFolder(targetPath);
+							FileUtils::CreateNewFolder(targetPath);
 
 							string scenePath = path(Engine::scenePath).parent_path().filename().string();
 							string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -797,10 +796,10 @@ namespace Graphics::GUI
 				}
 				else
 				{
-					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
+					string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
 					string targetName = path(targetPath).stem().string();
 					string targetNameAndExtension = targetName + ".txt";
-					File::CreateNewFolder(targetPath);
+					FileUtils::CreateNewFolder(targetPath);
 
 					string scenePath = path(Engine::scenePath).parent_path().filename().string();
 					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -836,10 +835,10 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Camera"))
 			{
-				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Camera", "");
+				string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Camera", "");
 				string targetName = path(targetPath).stem().string();
 				string targetNameAndExtension = targetName + ".txt";
-				File::CreateNewFolder(targetPath);
+				FileUtils::CreateNewFolder(targetPath);
 
 				string scenePath = path(Engine::scenePath).parent_path().filename().string();
 				string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -1034,7 +1033,7 @@ namespace Graphics::GUI
 						Caller::INPUT,
 						Type::DEBUG,
 						"User opened link to Github repository issues page.\n");
-					Browser::OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine/issues");
+					OpenLink("https://github.com/Lost-Empire-Entertainment/Elypso-engine/issues");
 				}
 				catch (const exception& e)
 				{
@@ -1149,6 +1148,17 @@ namespace Graphics::GUI
 		}
 
 		ImGui::End();
+	}
+
+	void EngineGUI::OpenLink(const char* url)
+	{
+#ifdef _WIN32
+		ShellExecuteA(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
+#elif __linux__
+		string command = "xdg-open \"" + string(link) + "\"";
+		int result = system(command.c_str());
+		(void)result;
+#endif
 	}
 
 	void EngineGUI::Shutdown()

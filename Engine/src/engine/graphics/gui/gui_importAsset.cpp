@@ -11,6 +11,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "gui_importAsset.hpp"
@@ -21,8 +23,6 @@
 #include "core.hpp"
 #include "fileexplorer.hpp"
 #include "gameobject.hpp"
-#include "stringUtils.hpp"
-#include "fileUtils.hpp"
 #include "texture.hpp"
 #include "console.hpp"
 
@@ -39,12 +39,12 @@ using Core::Engine;
 using EngineFile::FileExplorer;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
-using Utils::String;
-using Utils::File;
 using Graphics::Texture;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 
 namespace Graphics::GUI
 {
@@ -127,7 +127,7 @@ namespace Graphics::GUI
 			bool foundIllegalChar = false;
 			for (char c : newName)
 			{
-				if (!String::IsValidSymbolInPath(c))
+				if (!StringUtils::IsValidSymbolInPath(c))
 				{
 					foundIllegalChar = true;
 					break;
@@ -173,7 +173,7 @@ namespace Graphics::GUI
 				|| extension == ".obj")
 			{
 				string targetFolder = (path(Engine::projectPath) / "models").string();
-				if (!exists(targetFolder)) File::CreateNewFolder(targetFolder);
+				if (!exists(targetFolder)) FileUtils::CreateNewFolder(targetFolder);
 				string assetName = path(assetPath).filename().string();
 				string targetPath = (path(targetFolder) / assetName).string();
 
@@ -186,7 +186,7 @@ namespace Graphics::GUI
 				}
 				else 
 				{
-					File::CopyFileOrFolder(assetPath, targetPath);
+					FileUtils::CopyTarget(assetPath, targetPath);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 			}
@@ -204,7 +204,7 @@ namespace Graphics::GUI
 
 				string newFilePath = 
 					(path(texturesFolder) / textureFilename).string();
-				File::CopyFileOrFolder(assetPath, newFilePath);
+				FileUtils::CopyTarget(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
@@ -219,11 +219,11 @@ namespace Graphics::GUI
 			{
 				string audioFilename = newName + extension;
 				string audioFolder = (path(Engine::projectPath) / "audio").string();
-				if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
+				if (!exists(audioFolder)) FileUtils::CreateNewFolder(audioFolder);
 
 				string newFilePath =
 					(path(audioFolder) / audioFilename).string();
-				File::CopyFileOrFolder(assetPath, newFilePath);
+				FileUtils::CopyTarget(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

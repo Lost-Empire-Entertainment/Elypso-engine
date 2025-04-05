@@ -14,18 +14,18 @@
 //external
 #include "magic_enum.hpp"
 #include "glm.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "sceneFile.hpp"
 #include "core.hpp"
 #include "gameobject.hpp"
 #include "selectobject.hpp"
-#include "stringUtils.hpp"
 #include "render.hpp"
 #include "model.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
-#include "fileUtils.hpp"
 #include "console.hpp"
 #include "gameObjectFile.hpp"
 #include "skybox.hpp"
@@ -49,12 +49,10 @@ using Core::Engine;
 using Core::Select;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
-using Utils::String;
 using Graphics::Render;
 using Graphics::Shape::Model;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
-using Utils::File;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -62,6 +60,8 @@ using EngineFile::GameObjectFile;
 using Graphics::Shape::Skybox;
 using Core::Physics;
 using Graphics::Components::TransformComponent;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 
 namespace EngineFile
 {
@@ -81,8 +81,8 @@ namespace EngineFile
 			string defaultSceneFolder = (path(Engine::scenesPath) / "Scene1").string();
 			if (!exists(defaultSceneFolder))
 			{
-				File::CreateNewFolder(defaultSceneFolder);
-				File::CreateNewFolder((path(defaultSceneFolder) / "gameobjects").string());
+				FileUtils::CreateNewFolder(defaultSceneFolder);
+				FileUtils::CreateNewFolder((path(defaultSceneFolder) / "gameobjects").string());
 			}
 
 			//create new default scene file if it doesnt exist
@@ -120,7 +120,7 @@ namespace EngineFile
 				if (!line.empty()
 					&& line.find("=") != string::npos)
 				{
-					vector<string> splitLine = String::Split(line, '=');
+					vector<string> splitLine = StringUtils::Split(line, '=');
 					string key = splitLine[0];
 					string value = splitLine[1];
 
@@ -155,7 +155,7 @@ namespace EngineFile
 			//update project file originating from hub 
 			//to ensure currently opened scene is always opened when hub opens engine
 			string projectFilePath = (path(Engine::docsPath) / "project.txt").string();
-			File::DeleteFileOrfolder(projectFilePath);
+			FileUtils::DeleteTarget(projectFilePath);
 			ofstream projFile(projectFilePath);
 
 			projFile << "scene: " << Engine::scenePath << "\n";
@@ -187,7 +187,7 @@ namespace EngineFile
 	{
 		if (exists(sceneFilePath))
 		{
-			File::DeleteFileOrfolder(sceneFilePath);
+			FileUtils::DeleteTarget(sceneFilePath);
 		}
 
 		GameObjectFile::SaveGameObjects();
@@ -226,7 +226,7 @@ namespace EngineFile
 		}
 
 		string lastSavedScenePath = (path(Engine::docsPath) / "lastSavedScene.txt").string();
-		if (exists(lastSavedScenePath)) File::DeleteFileOrfolder(lastSavedScenePath);
+		if (exists(lastSavedScenePath)) FileUtils::DeleteTarget(lastSavedScenePath);
 		ofstream lastSavedSceneFile(lastSavedScenePath);
 		if (!lastSavedSceneFile.is_open())
 		{
@@ -442,7 +442,7 @@ namespace EngineFile
 		cout << "!!!! load global physics data!\n";
 		
 		string gravityString = GetValue("gravity");
-		vector<string> split = String::Split(gravityString, ',');
+		vector<string> split = StringUtils::Split(gravityString, ',');
 		vec3 gravity = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 		Physics::physicsWorld->SetGravity(gravity);
 
@@ -516,14 +516,14 @@ namespace EngineFile
 
 		auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 
-		vector<string> cameraPosVector = String::Split(GetValue("camera_position"), ',');
+		vector<string> cameraPosVector = StringUtils::Split(GetValue("camera_position"), ',');
 		vec3 cameraPos = vec3(
 			stof(cameraPosVector[0]),
 			stof(cameraPosVector[1]),
 			stof(cameraPosVector[2]));
 		tc->SetPosition(cameraPos);
 
-		vector<string> cameraRotVector = String::Split(GetValue("camera_rotation"), ',');
+		vector<string> cameraRotVector = StringUtils::Split(GetValue("camera_rotation"), ',');
 		vec3 cameraRot = vec3(
 			stof(cameraRotVector[0]),
 			stof(cameraRotVector[1]),
@@ -586,7 +586,7 @@ namespace EngineFile
 		Skybox::AssignSkyboxTextures(skyboxTextures, false);
 
 		string globalAmbientColorString = GetValue("globalAmbientColor");
-		vector<string> split = String::Split(globalAmbientColorString, ',');
+		vector<string> split = StringUtils::Split(globalAmbientColorString, ',');
 		vec3 globalAmbientColor = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 		Render::globalAmbientColor = globalAmbientColor;
 

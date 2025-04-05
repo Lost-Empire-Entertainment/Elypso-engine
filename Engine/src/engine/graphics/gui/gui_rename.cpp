@@ -12,15 +12,15 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "gui_rename.hpp"
 #include "gui_engine.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
-#include "fileUtils.hpp"
 #include "core.hpp"
-#include "stringUtils.hpp"
 #include "console.hpp"
 
 using std::cout;
@@ -34,12 +34,12 @@ using std::filesystem::path;
 
 using EngineFile::SceneFile;
 using Graphics::Render;
-using Utils::File;
 using Core::Engine;
-using Utils::String;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 
 namespace Graphics::GUI
 {
@@ -109,7 +109,7 @@ namespace Graphics::GUI
 			bool foundIllegalChar = false;
 			for (char c : newName)
 			{
-				if (!String::IsValidSymbolInPath(c))
+				if (!StringUtils::IsValidSymbolInPath(c))
 				{
 					foundIllegalChar = true;
 					break;
@@ -245,7 +245,7 @@ namespace Graphics::GUI
 
 			writeSceneFile.close();
 
-			File::MoveOrRenameFileOrFolder(originalPath, newPath, true);
+			FileUtils::MoveOrRenameTarget(originalPath, newPath);
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 

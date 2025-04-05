@@ -20,8 +20,6 @@
 #include "configFile.hpp"
 #include "gameobject.hpp"
 #include "core.hpp"
-#include "fileUtils.hpp"
-#include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "input.hpp"
 #include "meshcomponent.hpp"
@@ -39,8 +37,6 @@ using EngineFile::ConfigFile;
 using Graphics::Shape::GameObject;
 using Graphics::Shape::GameObjectManager;
 using Core::Engine;
-using Utils::File;
-using Utils::String;
 using Core::Select;
 using Core::Input;
 using Graphics::Components::MeshComponent;

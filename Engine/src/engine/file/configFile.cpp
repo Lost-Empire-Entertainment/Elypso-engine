@@ -12,15 +12,15 @@
 #include "glm.hpp"
 #include "glfw3.h"
 #include "imgui_impl_glfw.h"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "configFile.hpp"
 #include "core.hpp"
 #include "console.hpp"
-#include "fileUtils.hpp"
 #include "sceneFile.hpp"
 #include "render.hpp"
-#include "stringUtils.hpp"
 #include "gameobject.hpp"
 #if ENGINE_MODE
 #include "gui_settings.hpp"
@@ -40,10 +40,10 @@ using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Utils::File;
 using Graphics::Render;
-using Utils::String;
 using Graphics::Shape::GameObjectManager;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 #if ENGINE_MODE
 using Graphics::GUI::GUISettings;
 #endif
@@ -98,7 +98,7 @@ namespace EngineFile
 				if (!line.empty()
 					&& line.find("=") != string::npos)
 				{
-					vector<string> splitLine = String::Split(line, '=');
+					vector<string> splitLine = StringUtils::Split(line, '=');
 					string key = splitLine[0];
 					string value = splitLine[1];
 
@@ -133,7 +133,7 @@ namespace EngineFile
 	{
 		if (exists(configFilePath))
 		{
-			File::DeleteFileOrfolder(configFilePath);
+			FileUtils::DeleteTarget(configFilePath);
 		}
 
 		ofstream configFile(configFilePath);

@@ -12,6 +12,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "magic_enum.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "gui_projectitemslist.hpp"
@@ -22,13 +23,11 @@
 #include "console.hpp"
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
-#include "fileUtils.hpp"
 #include "importer.hpp"
 #include "audioplayercomponent.hpp"
 #include "audio.hpp"
 #include "transformcomponent.hpp"
 #include "meshcomponent.hpp"
-#include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "configFile.hpp"
 #include "cameracomponent.hpp"
@@ -51,18 +50,17 @@ using Graphics::Texture;
 using Core::ConsoleManager;
 using ConsoleCaller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
-using Utils::File;
 using Graphics::Shape::Importer;
 using Graphics::GUI::GUISettings;
 using Graphics::Components::AudioPlayerComponent;
 using Core::Audio;
 using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
-using Utils::String;
 using Core::Select;
 using EngineFile::ConfigFile;
 using Graphics::Components::CameraComponent;
 using Graphics::Render;
+using KalaKit::FileUtils;
 
 namespace Graphics::GUI
 {
@@ -332,7 +330,7 @@ namespace Graphics::GUI
 				string originPath = (path(Engine::projectPath) / "textures" / fileAndExtension).string();
 				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).string() / fileAndExtension).string();
 				
-				File::CopyFileOrFolder(originPath, targetPath);
+				FileUtils::CopyTarget(originPath, targetPath);
 
 				Texture::LoadTexture(obj, targetPath, textureType, true);
 				break;
@@ -385,12 +383,12 @@ namespace Graphics::GUI
 					Audio::Delete(audioFileName, obj); //remove from audio library
 
 					string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / audioFileName).string();
-					File::DeleteFileOrfolder(fullPath); //remove externally saved file
+					FileUtils::DeleteTarget(fullPath); //remove externally saved file
 				}
 
 				//copy audio file to audio object folder
 				string newPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / path(selectedPath).filename().string()).string();
-				File::CopyFileOrFolder(selectedPath, newPath);
+				FileUtils::CopyTarget(selectedPath, newPath);
 
 				//set copied audio file path as audio object file path
 				string fileName = path(selectedPath).filename().string();
@@ -567,15 +565,15 @@ namespace Graphics::GUI
 		//delete old gameobject and its model file
 		GameObjectManager::DestroyGameObject(obj, false);
 		//then create new folder
-		File::CreateNewFolder(path(targetPath).parent_path().string());
+		FileUtils::CreateNewFolder(path(targetPath).parent_path().string());
 		//then copy model from origin to target path
-		File::CopyFileOrFolder(originPath, targetPath);
+		FileUtils::CopyTarget(originPath, targetPath);
 
 		//and finally rename model to correct name
 		string newCorrectFolder = path(targetPath).parent_path().string();
 		string nameAndExtension = targetFolderName + path(targetPath).extension().string();
 		string newCorrectPath = (path(newCorrectFolder) / nameAndExtension).string();
-		File::MoveOrRenameFileOrFolder(targetPath, newCorrectPath, true);
+		FileUtils::MoveOrRenameTarget(targetPath, newCorrectPath);
 
 		Importer::Initialize(
 			pos,

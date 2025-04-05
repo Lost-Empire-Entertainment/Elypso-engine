@@ -6,20 +6,19 @@
 #pragma once
 
 #ifdef _WIN32
-	#ifdef PHYSICS_DLL_EXPORT
-		#define PHYSICS_API __declspec(dllexport)  //Export symbols when building the DLL
+	#ifdef KALAUTILS_DLL_EXPORT
+		#define KALAUTILS_API __declspec(dllexport)
 	#else
-		#define PHYSICS_API __declspec(dllimport)  //Import symbols when using the DLL
+		#define KALAUTILS_API __declspec(dllimport)
 	#endif
 #else
-	#define PHYSICS_API
+	#define KALAUTILS_API
 #endif
 
-namespace Core
+namespace KalaKit
 {
-	class Physics
+	class KALAUTILS_API GitUtils
 	{
-	public:
-		static void Test1();
+
 	};
 }

@@ -24,7 +24,6 @@
 #include "texture.hpp"
 #include "core.hpp"
 #include "console.hpp"
-#include "stringUtils.hpp"
 #include "selectobject.hpp"
 #include "gameObjectFile.hpp"
 #include "transformcomponent.hpp"
@@ -67,7 +66,6 @@ using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Utils::String;
 using Core::Select;
 using EngineFile::GameObjectFile;
 using Graphics::Components::RigidBodyComponent;

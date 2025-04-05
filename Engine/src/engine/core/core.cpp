@@ -20,6 +20,8 @@
 //external
 #include "glfw3.h"
 #include "crashHandler.hpp"
+#include "fileutils.hpp"
+#include "stringutils.hpp"
 
 //engine
 #include "core.hpp"
@@ -28,8 +30,6 @@
 #include "timeManager.hpp"
 #include "configFile.hpp"
 #include "sceneFile.hpp"
-#include "fileUtils.hpp"
-#include "stringUtils.hpp"
 #include "gameobject.hpp"
 #include "audio.hpp"
 #include "physics.hpp"
@@ -56,8 +56,6 @@ using std::to_string;
 using std::ostringstream;
 using std::string;
 
-using Utils::String;
-using Utils::File;
 using Graphics::Render;
 using EngineFile::SceneFile;
 using EngineFile::ConfigFile;
@@ -67,6 +65,8 @@ using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
 using Core::Physics;
 using KalaKit::KalaCrashHandler;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
@@ -218,7 +218,7 @@ namespace Core
 #if ENGINE_MODE
 			docsPath = (path(narrowPath) / name).string();
 
-			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
+			if (!exists(docsPath)) FileUtils::CreateNewFolder(docsPath);
 
 			output = "Documents path: " + docsPath + "\n";
 			ConsoleManager::WriteConsoleMessage(
@@ -349,7 +349,7 @@ namespace Core
 				if (!line.empty()
 					&& line.find("=") != string::npos)
 				{
-					vector<string> splitLine = String::Split(line, '=');
+					vector<string> splitLine = StringUtils::Split(line, '=');
 					string type = splitLine[0];
 					string value = splitLine[1];
 

@@ -11,12 +11,12 @@
 //external
 #include "glfw3.h"
 #include "stb_image.h"
+#include "fileutils.hpp"
 
 //engine
 #include "texture.hpp"
 #include "console.hpp"
 #include "core.hpp"
-#include "fileUtils.hpp"
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
 
@@ -32,9 +32,9 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::Engine;
-using Utils::File;
 using Graphics::Components::MaterialComponent;
 using Graphics::Components::MeshComponent;
+using KalaKit::FileUtils;
 
 namespace Graphics
 {
@@ -217,7 +217,7 @@ namespace Graphics
 
 				if (!exists(targetPath))
 				{
-					File::CopyFileOrFolder(originPath, targetPath);
+					FileUtils::CopyTarget(originPath, targetPath);
 				}
 			}
 

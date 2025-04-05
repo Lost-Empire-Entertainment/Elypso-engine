@@ -12,6 +12,8 @@
 #include "glm.hpp"
 #include "miniaudio.h"
 #include "physicsworld.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "gameobject.hpp"
@@ -26,8 +28,6 @@
 #include "selectobject.hpp"
 #include "console.hpp"
 #include "sceneFile.hpp"
-#include "stringUtils.hpp"
-#include "fileUtils.hpp"
 #include "meshcomponent.hpp"
 #include "audio.hpp"
 #include "audioplayercomponent.hpp"
@@ -64,8 +64,6 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using ConsoleType = Core::ConsoleManager::Type;
 using EngineFile::SceneFile;
-using Utils::String;
-using Utils::File;
 using Core::Audio;
 using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::MaterialComponent;
@@ -75,6 +73,8 @@ using KalaKit::PhysicsWorld;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;
+using KalaKit::StringUtils;
+using KalaKit::FileUtils;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -340,7 +340,7 @@ namespace Graphics::Shape
 				if (Select::selectedObj->GetName() == pathName)
 				{
 					string entryString = path(entry).string();
-					File::DeleteFileOrfolder(entryString);
+					FileUtils::DeleteTarget(entryString);
 					break;
 				}
 			}
@@ -381,7 +381,7 @@ namespace Graphics::Shape
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 

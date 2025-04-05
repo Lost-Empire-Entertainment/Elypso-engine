@@ -14,13 +14,13 @@
 #include "magic_enum.hpp"
 #include "glm.hpp"
 #include "collider.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "gameObjectFile.hpp"
 #include "core.hpp"
 #include "console.hpp"
-#include "fileUtils.hpp"
-#include "stringUtils.hpp"
 #include "importer.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
@@ -67,8 +67,6 @@ using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using Utils::File;
-using Utils::String;
 using Graphics::Components::TransformComponent;
 using Graphics::Components::MeshComponent;
 using Graphics::Components::MaterialComponent;
@@ -95,6 +93,8 @@ using Core::Audio;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;
+using KalaKit::StringUtils;
+using KalaKit::FileUtils;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
 using Graphics::GUI::GUISettings;
@@ -390,10 +390,10 @@ namespace EngineFile
 				string folderPath = (path(Engine::scenePath).parent_path() / "gameobjects" / objectName).string();
 				if (!exists(folderPath))
 				{
-					File::CreateNewFolder(folderPath);
+					FileUtils::CreateNewFolder(folderPath);
 				}
 
-				if (exists(objectTxtFilePath)) File::DeleteFileOrfolder(objectTxtFilePath);
+				if (exists(objectTxtFilePath)) FileUtils::DeleteTarget(objectTxtFilePath);
 
 				ofstream objectFile(objectTxtFilePath);
 
@@ -613,7 +613,7 @@ namespace EngineFile
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 
@@ -717,26 +717,26 @@ namespace EngineFile
 			}
 			else if (key == "position")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				pos = newPos;
 			}
 			else if (key == "rotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				rot = newRot;
 			}
 			else if (key == "scale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
 
 			else if (key == "textures")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 
 				string fullTex0Path{};
 				if (split[0] == "DEFAULTDIFF"
@@ -866,19 +866,19 @@ namespace EngineFile
 			}
 			else if (key == "offsetPosition")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				offsetPosition = newPos;
 			}
 			else if (key == "offsetRotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				offsetRotation = newRot;
 			}
 			else if (key == "offsetScale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				offsetScale = newScale;
 			}
@@ -1056,7 +1056,7 @@ namespace EngineFile
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 
@@ -1124,19 +1124,19 @@ namespace EngineFile
 			}
 			else if (key == "position")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				pos = newPos;
 			}
 			else if (key == "rotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				rot = newRot;
 			}
 			else if (key == "scale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
@@ -1186,7 +1186,7 @@ namespace EngineFile
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 
@@ -1274,19 +1274,19 @@ namespace EngineFile
 			}
 			else if (key == "position")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				pos = newPos;
 			}
 			else if (key == "rotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				rot = newRot;
 			}
 			else if (key == "scale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
@@ -1382,7 +1382,7 @@ namespace EngineFile
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 
@@ -1470,19 +1470,19 @@ namespace EngineFile
 			}
 			else if (key == "position")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				pos = newPos;
 			}
 			else if (key == "rotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				rot = newRot;
 			}
 			else if (key == "scale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
@@ -1580,7 +1580,7 @@ namespace EngineFile
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 
@@ -1662,26 +1662,26 @@ namespace EngineFile
 			}
 			else if (key == "position")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				pos = newPos;
 			}
 			else if (key == "rotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				rot = newRot;
 			}
 			else if (key == "scale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
 
 			else if (key == "diffuse")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newDiffuse = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				diffuse = newDiffuse;
 			}
@@ -1747,7 +1747,7 @@ namespace EngineFile
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 
@@ -1833,26 +1833,26 @@ namespace EngineFile
 			}
 			else if (key == "position")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				pos = newPos;
 			}
 			else if (key == "rotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				rot = newRot;
 			}
 			else if (key == "scale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
 
 			else if (key == "diffuse")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newDiffuse = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				diffuse = newDiffuse;
 			}
@@ -1922,7 +1922,7 @@ namespace EngineFile
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = String::Split(line, '=');
+				vector<string> splitLine = StringUtils::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 
@@ -2003,26 +2003,26 @@ namespace EngineFile
 			}
 			else if (key == "position")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				pos = newPos;
 			}
 			else if (key == "rotation")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				rot = newRot;
 			}
 			else if (key == "scale")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				scale = newScale;
 			}
 
 			else if (key == "diffuse")
 			{
-				vector<string> split = String::Split(value, ',');
+				vector<string> split = StringUtils::Split(value, ',');
 				vec3 newDiffuse = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 				diffuse = newDiffuse;
 			}

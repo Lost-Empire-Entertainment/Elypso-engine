@@ -16,13 +16,14 @@
 #include "imgui_impl_opengl3.h"
 #include "magic_enum.hpp"
 #include "collider.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 //engine
 #include "console.hpp"
 #include "gui_engine.hpp"
 #include "render.hpp"
 #include "timeManager.hpp"
-#include "stringUtils.hpp"
 #include "input.hpp"
 #include "selectobject.hpp"
 #include "gameobject.hpp"
@@ -32,7 +33,6 @@
 #include "empty.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
-#include "fileUtils.hpp"
 #include "gui_console.hpp"
 #include "transformcomponent.hpp"
 #include "meshcomponent.hpp"
@@ -76,9 +76,7 @@ using Graphics::Shape::Importer;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::Empty;
-using Utils::File;
 using Core::Input;
-using Utils::String;
 using Core::TimeManager;
 using Graphics::GUI::GUIConsole;
 using Graphics::Components::TransformComponent;
@@ -92,6 +90,8 @@ using KalaKit::ColliderType;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;
+using KalaKit::FileUtils;
+using KalaKit::StringUtils;
 #if ENGINE_MODE
 using Core::Compilation;
 #endif
@@ -512,16 +512,16 @@ namespace Core
         unsigned int nextID = ++GameObject::nextID;
         unsigned int nextID2 = ++GameObject::nextID;
 
-        vector<string> posSplit = String::Split(copiedObject["pos"].c_str(), ',');
+        vector<string> posSplit = StringUtils::Split(copiedObject["pos"].c_str(), ',');
         vec3 newPos = vec3(
             stof(posSplit[0]) + 1.0f, 
             stof(posSplit[1]), 
             stof(posSplit[2]));
 
-        vector<string> rotSplit = String::Split(copiedObject["rot"].c_str(), ',');
+        vector<string> rotSplit = StringUtils::Split(copiedObject["rot"].c_str(), ',');
         vec3 rot = vec3(stof(rotSplit[0]), stof(rotSplit[1]), stof(rotSplit[2]));
 
-        vector<string> scaleSplit = String::Split(copiedObject["scale"].c_str(), ',');
+        vector<string> scaleSplit = StringUtils::Split(copiedObject["scale"].c_str(), ',');
         vec3 scale = vec3(stof(scaleSplit[0]), stof(scaleSplit[1]), stof(scaleSplit[2]));
 
         //if a regular model was pasted
@@ -541,13 +541,13 @@ namespace Core
                     break;
                 }
             }
-            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, name);
             string targetName = path(targetPath).stem().string();
             string targetNameAndExtension = targetName + extension;
 
-            File::CreateNewFolder(targetPath);
+            FileUtils::CreateNewFolder(targetPath);
             string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-            File::CopyFileOrFolder(originPath, destinationPath);
+            FileUtils::CopyTarget(originPath, destinationPath);
             
             string diffTexturePath = copiedObject["diffuseTexture"];
             if (diffTexturePath != "DEFAULTDIFF")
@@ -555,7 +555,7 @@ namespace Core
                 string diffTextureFile = path(diffTexturePath).filename().string();
                 string diffDestinationPath = (path(targetPath) / diffTextureFile).string();
 
-                File::CopyFileOrFolder(diffTexturePath, diffDestinationPath);
+                FileUtils::CopyTarget(diffTexturePath, diffDestinationPath);
             }
 
             string specTexturePath = copiedObject["specularTexture"];
@@ -564,7 +564,7 @@ namespace Core
                 string specTextureFile = path(specTexturePath).filename().string();
                 string specDestinationPath = (path(targetPath) / specTextureFile).string();
 
-                File::CopyFileOrFolder(specTexturePath, specDestinationPath);
+                FileUtils::CopyTarget(specTexturePath, specDestinationPath);
             }
 
             bool isTransparent = stoi(copiedObject["isTransparent"]);
@@ -602,21 +602,21 @@ namespace Core
                 rb->SetStaticFriction(stof(copiedObject["staticFriction"]));
                 rb->SetDynamicFriction(stof(copiedObject["dynamicFriction"]));
 
-                vector<string> offsetPosSplit = String::Split(copiedObject["offsetPos"], ',');
+                vector<string> offsetPosSplit = StringUtils::Split(copiedObject["offsetPos"], ',');
                 vec3 offsetPosVector = vec3(
                     stof(offsetPosSplit[0]),
                     stof(offsetPosSplit[1]),
                     stof(offsetPosSplit[2]));
                 rb->SetOffsetPosition(offsetPosVector);
 
-                vector<string> offsetRotplit = String::Split(copiedObject["offsetRot"], ',');
+                vector<string> offsetRotplit = StringUtils::Split(copiedObject["offsetRot"], ',');
                 vec3 offsetRotVector = vec3(
                     stof(offsetRotplit[0]),
                     stof(offsetRotplit[1]),
                     stof(offsetRotplit[2]));
                 rb->SetOffsetRotation(offsetRotVector);
 
-                vector<string> offsetScaleSplit = String::Split(copiedObject["offsetScale"], ',');
+                vector<string> offsetScaleSplit = StringUtils::Split(copiedObject["offsetScale"], ',');
                 vec3 offsetScaleVector = vec3(
                     stof(offsetScaleSplit[0]),
                     stof(offsetScaleSplit[1]),
@@ -630,14 +630,14 @@ namespace Core
         //if a point light was copied
         else if (copiedObject["type"] == "point")
         {
-            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, name);
             string targetName = path(targetPath).stem().string();
             string targetNameAndExtension = targetName + ".txt";
-            File::CreateNewFolder(targetPath);
+            FileUtils::CreateNewFolder(targetPath);
 
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 
-            vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
+            vector<string> diffSplit = StringUtils::Split(copiedObject["diffuse"].c_str(), ',');
             vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
 
             shared_ptr<GameObject> newPointLight = PointLight::InitializePointLight(
@@ -660,14 +660,14 @@ namespace Core
         //if a spotlight was copied
         else if (copiedObject["type"] == "spot")
         {
-            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, name);
             string targetName = path(targetPath).stem().string();
             string targetNameAndExtension = targetName + ".txt";
-            File::CreateNewFolder(targetPath);
+            FileUtils::CreateNewFolder(targetPath);
 
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 
-            vector<string> diffSplit = String::Split(copiedObject["diffuse"].c_str(), ',');
+            vector<string> diffSplit = StringUtils::Split(copiedObject["diffuse"].c_str(), ',');
             vec3 diff = vec3(stof(diffSplit[0]), stof(diffSplit[1]), stof(diffSplit[2]));
 
             shared_ptr<GameObject> newSpotlight = SpotLight::InitializeSpotLight(
@@ -692,10 +692,10 @@ namespace Core
         //if an empty was copied
         else if (copiedObject["type"] == "empty")
         {
-            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, name);
             string targetName = path(targetPath).stem().string();
             string targetNameAndExtension = targetName + ".txt";
-            File::CreateNewFolder(targetPath);
+            FileUtils::CreateNewFolder(targetPath);
 
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 
@@ -714,10 +714,10 @@ namespace Core
         //if an audio object was copied
         else if (copiedObject["type"] == "audio")
         {
-            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, name);
             string targetName = path(targetPath).stem().string();
             string targetNameAndExtension = targetName + ".txt";
-            File::CreateNewFolder(targetPath);
+            FileUtils::CreateNewFolder(targetPath);
 
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 
@@ -732,7 +732,7 @@ namespace Core
             if (audioFileName != "")
             {
                 string audioFileTarget = (path(targetPath) / audioFileName).string();
-                File::CopyFileOrFolder(audioFileOrigin, audioFileTarget);
+                FileUtils::CopyTarget(audioFileOrigin, audioFileTarget);
             }
 
             auto newAudioObject = AudioObject::InitializeAudioObject(
@@ -765,10 +765,10 @@ namespace Core
         //if a camera object was copied
         else if (copiedObject["type"] == "camera")
         {
-            string targetPath = File::AddIndex(Engine::currentGameobjectsPath, name);
+            string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, name);
             string targetName = path(targetPath).stem().string();
             string targetNameAndExtension = targetName + ".txt";
-            File::CreateNewFolder(targetPath);
+            FileUtils::CreateNewFolder(targetPath);
 
             string filePath = (path(targetPath) / targetNameAndExtension).string();
 

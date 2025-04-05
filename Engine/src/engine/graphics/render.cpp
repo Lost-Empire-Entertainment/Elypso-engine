@@ -25,7 +25,6 @@
 #include "sceneFile.hpp"
 #include "configFile.hpp"
 #include "input.hpp"
-#include "stringUtils.hpp"
 #include "shader.hpp"
 #include "selectobject.hpp"
 #include "skybox.hpp"
@@ -64,7 +63,6 @@ using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using EngineFile::ConfigFile;
-using Utils::String;
 using Core::Select;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;

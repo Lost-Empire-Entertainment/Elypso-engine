@@ -16,6 +16,7 @@
 #include "imgui_internal.h"
 #include "glad.h"
 #include "type_ptr.hpp"
+#include "stringutils.hpp"
 
 //engine
 #include "gui_scenewindow.hpp"
@@ -26,7 +27,6 @@
 #include "selectobject.hpp"
 #include "sceneFile.hpp"
 #include "gameobject.hpp"
-#include "stringUtils.hpp"
 #include "timeManager.hpp"
 #include "meshcomponent.hpp"
 #include "cameracomponent.hpp"
@@ -48,13 +48,13 @@ using EngineFile::SceneFile;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
 using Graphics::Components::MeshComponent;
-using Utils::String;
 using Core::TimeManager;
 using Graphics::Components::CameraComponent;
 using Graphics::Components::TransformComponent;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
+using KalaKit::StringUtils;
 
 namespace Graphics::GUI
 {
@@ -495,7 +495,7 @@ namespace Graphics::GUI
 
 			ImGui::Text("Grid color");
 			string gridColorString = ConfigFile::GetValue("grid_color");
-			vector<string> gridColorSplit = String::Split(gridColorString, ',');
+			vector<string> gridColorSplit = StringUtils::Split(gridColorString, ',');
 			vec3 gridColor = vec3(
 				stof(gridColorSplit[0]),
 				stof(gridColorSplit[1]),
