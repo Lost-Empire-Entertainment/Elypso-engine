@@ -71,3 +71,4 @@
 - delete old gameobject save file if object was renamed in inspector, mark scene as unsaved
 - deny changing selected gameobject name to any reserved name used by gameobjects not created by end user
 - deny setting imported asset name to any reserved name used by gameobjects not created by end user
+- replaced internal utils with kalautils
