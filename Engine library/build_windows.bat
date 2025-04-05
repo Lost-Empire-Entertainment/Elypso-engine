@@ -9,6 +9,7 @@ set "cmexc=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
 
 set "rootDir=%~dp0"
+echo rootDir is "%rootDir%"
 set "numCores=%NUMBER_OF_PROCESSORS%"
 
 :: Validate input parameters
@@ -98,7 +99,7 @@ if %errorlevel% neq 0 (
 cd /d "%buildPath%"
 
 :: Configure the project
-cmake --preset x64-%~2 -S "%rootDir%"
+cmake --preset x64-%~2 -S %rootDir%
 if %errorlevel% neq 0 (
     echo %cmexc% Configuration failed.
     if not "%~3"=="skipwait" pause
