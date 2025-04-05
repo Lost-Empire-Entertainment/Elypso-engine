@@ -99,20 +99,26 @@ namespace EngineFile
 					&& line.find("=") != string::npos)
 				{
 					vector<string> splitLine = StringUtils::Split(line, '=');
+					if (splitLine.size() < 2) continue;
+
 					string key = splitLine[0];
 					string value = splitLine[1];
 
 					//remove one space in front of value if it exists
-					if (value[0] == ' ') value.erase(0, 1);
-					//remove one space in front of each value comma if it exists
-					for (size_t i = 0; i < value.length(); i++)
+					if (!value.empty()
+						&& value[0] == ' ')
 					{
-						if (value[i] == ','
-							&& i + 1 < value.length()
-							&& value[i + 1] == ' ')
+						value.erase(0, 1);
+					}
+					//remove one space in front of each value comma if it exists
+					size_t i = 0;
+					while (i + 1 < value.size())
+					{
+						if (value[i] == ',' && value[i + 1] == ' ')
 						{
 							value.erase(i + 1, 1);
 						}
+						else ++i;
 					}
 
 					keys.push_back(key);
