@@ -9,7 +9,11 @@ set "cmexc=[CMAKE_EXCEPTION]"
 set "cmsuc=[CMAKE_SUCCESS]"
 
 set "rootDir=%~dp0"
-echo rootDir is "%rootDir%"
+echo [BATCH FILE] Root directory is %rootDir%
+
+set "buildPath=%rootDir%out\build\x64-%~2"
+echo [BATCH FILE] Build directory is %buildPath%
+
 set "numCores=%NUMBER_OF_PROCESSORS%"
 
 :: Validate input parameters
@@ -46,9 +50,6 @@ if NOT "%~3"=="" if NOT "%~3"=="skipwait" (
 :: Record start time
 for /f "tokens=1-4 delims=:.," %%a in ("%TIME%") do set "TIME_START=%%a:%%b:%%c"
 
-:: Set build path dynamically
-set "buildPath=%rootDir%out/build/x64-%~2"
-
 :: Set up MSVC environment
 call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 if %errorlevel% neq 0 (
@@ -61,12 +62,14 @@ if %errorlevel% neq 0 (
 if "%~1"=="cmake" goto cmake
 
 :build
-cd /d "%rootDir%"
+
+echo [BATCH FILE] Building project...
 
 :: Configure first if the build folder does not exist
 if not exist "%buildPath%" goto cmake
 
 cd /d "%buildPath%"
+
 echo %cminf% Started build generation using %numCores% cores.
 cmake --build . -- -j%numCores%
 if %errorlevel% neq 0 (
@@ -87,6 +90,10 @@ if not "%~3"=="skipwait" pause
 exit /b 0
 
 :cmake
+cd /d "%rootDir%"
+
+echo [BATCH FILE] Configuring CMake...
+
 :: Remove old build directory if it exists
 if exist "%buildPath%" rd /S /Q "%buildPath%"
 mkdir "%buildPath%"
@@ -96,10 +103,8 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-cd /d "%buildPath%"
-
 :: Configure the project
-cmake --preset x64-%~2 -S %rootDir%
+cmake --preset x64-%~2
 if %errorlevel% neq 0 (
     echo %cmexc% Configuration failed.
     if not "%~3"=="skipwait" pause
