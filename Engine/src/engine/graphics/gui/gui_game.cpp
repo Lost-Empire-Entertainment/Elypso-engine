@@ -11,7 +11,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
-#include "fileutils.hpp"
 
 //engine
 #include "gui_game.hpp"
@@ -19,6 +18,7 @@
 #include "configFile.hpp"
 #include "render.hpp"
 #include "gui_console.hpp"
+#include "fileutils.hpp"
 
 using std::string;
 using std::filesystem::exists;
@@ -28,7 +28,7 @@ using std::filesystem::current_path;
 using Core::Engine;
 using EngineFile::ConfigFile;
 using Graphics::Render;
-using KalaKit::FileUtils;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -40,7 +40,7 @@ namespace Graphics::GUI
 		string imguiTemplateFile = (path(Engine::filesPath) / "imgui.ini").string();
 		if (!exists(imguiConfigFile))
 		{
-			FileUtils::CopyTarget(imguiTemplateFile, imguiConfigFile);
+			File::CopyTarget(imguiTemplateFile, imguiConfigFile);
 
 			ConfigFile::SetValue("gui_console", "1");
 			ConfigFile::SaveConfigFile();

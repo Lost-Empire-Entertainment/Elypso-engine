@@ -11,8 +11,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
-#include "stringutils.hpp"
-#include "fileutils.hpp"
 
 //engine
 #include "gui_importAsset.hpp"
@@ -25,6 +23,8 @@
 #include "gameobject.hpp"
 #include "texture.hpp"
 #include "console.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 using std::filesystem::exists;
 using std::filesystem::path;
@@ -43,8 +43,8 @@ using Graphics::Texture;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using KalaKit::FileUtils;
-using KalaKit::StringUtils;
+using Utils::File;
+using Utils::String;
 
 namespace Graphics::GUI
 {
@@ -127,7 +127,7 @@ namespace Graphics::GUI
 			bool foundIllegalChar = false;
 			for (char c : newName)
 			{
-				if (!StringUtils::IsValidSymbolInPath(c))
+				if (!File::IsValidSymbolInPath(c))
 				{
 					foundIllegalChar = true;
 					break;
@@ -173,7 +173,7 @@ namespace Graphics::GUI
 				|| extension == ".obj")
 			{
 				string targetFolder = (path(Engine::projectPath) / "models").string();
-				if (!exists(targetFolder)) FileUtils::CreateNewFolder(targetFolder);
+				if (!exists(targetFolder)) File::CreateNewFolder(targetFolder);
 				string assetName = path(assetPath).filename().string();
 				string targetPath = (path(targetFolder) / assetName).string();
 
@@ -186,7 +186,7 @@ namespace Graphics::GUI
 				}
 				else 
 				{
-					FileUtils::CopyTarget(assetPath, targetPath);
+					File::CopyTarget(assetPath, targetPath);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 				}
 			}
@@ -204,7 +204,7 @@ namespace Graphics::GUI
 
 				string newFilePath = 
 					(path(texturesFolder) / textureFilename).string();
-				FileUtils::CopyTarget(assetPath, newFilePath);
+				File::CopyTarget(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
@@ -219,11 +219,11 @@ namespace Graphics::GUI
 			{
 				string audioFilename = newName + extension;
 				string audioFolder = (path(Engine::projectPath) / "audio").string();
-				if (!exists(audioFolder)) FileUtils::CreateNewFolder(audioFolder);
+				if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
 
 				string newFilePath =
 					(path(audioFolder) / audioFilename).string();
-				FileUtils::CopyTarget(assetPath, newFilePath);
+				File::CopyTarget(assetPath, newFilePath);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}

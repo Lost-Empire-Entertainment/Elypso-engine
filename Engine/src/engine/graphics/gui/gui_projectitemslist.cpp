@@ -12,7 +12,6 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "magic_enum.hpp"
-#include "fileutils.hpp"
 
 //engine
 #include "gui_projectitemslist.hpp"
@@ -32,6 +31,7 @@
 #include "configFile.hpp"
 #include "cameracomponent.hpp"
 #include "render.hpp"
+#include "fileutils.hpp"
 
 using std::filesystem::path;
 using std::filesystem::exists;
@@ -60,7 +60,7 @@ using Core::Select;
 using EngineFile::ConfigFile;
 using Graphics::Components::CameraComponent;
 using Graphics::Render;
-using KalaKit::FileUtils;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -330,7 +330,7 @@ namespace Graphics::GUI
 				string originPath = (path(Engine::projectPath) / "textures" / fileAndExtension).string();
 				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).string() / fileAndExtension).string();
 				
-				FileUtils::CopyTarget(originPath, targetPath);
+				File::CopyTarget(originPath, targetPath);
 
 				Texture::LoadTexture(obj, targetPath, textureType, true);
 				break;
@@ -383,12 +383,12 @@ namespace Graphics::GUI
 					Audio::Delete(audioFileName, obj); //remove from audio library
 
 					string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / audioFileName).string();
-					FileUtils::DeleteTarget(fullPath); //remove externally saved file
+					File::DeleteTarget(fullPath); //remove externally saved file
 				}
 
 				//copy audio file to audio object folder
 				string newPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / path(selectedPath).filename().string()).string();
-				FileUtils::CopyTarget(selectedPath, newPath);
+				File::CopyTarget(selectedPath, newPath);
 
 				//set copied audio file path as audio object file path
 				string fileName = path(selectedPath).filename().string();
@@ -565,15 +565,15 @@ namespace Graphics::GUI
 		//delete old gameobject and its model file
 		GameObjectManager::DestroyGameObject(obj, false);
 		//then create new folder
-		FileUtils::CreateNewFolder(path(targetPath).parent_path().string());
+		File::CreateNewFolder(path(targetPath).parent_path().string());
 		//then copy model from origin to target path
-		FileUtils::CopyTarget(originPath, targetPath);
+		File::CopyTarget(originPath, targetPath);
 
 		//and finally rename model to correct name
 		string newCorrectFolder = path(targetPath).parent_path().string();
 		string nameAndExtension = targetFolderName + path(targetPath).extension().string();
 		string newCorrectPath = (path(newCorrectFolder) / nameAndExtension).string();
-		FileUtils::MoveOrRenameTarget(targetPath, newCorrectPath);
+		File::MoveOrRenameTarget(targetPath, newCorrectPath);
 
 		Importer::Initialize(
 			pos,

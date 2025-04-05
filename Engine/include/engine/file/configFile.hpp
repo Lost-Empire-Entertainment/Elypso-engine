@@ -46,14 +46,6 @@ namespace EngineFile
 		/// <param name="value">The value the key will be set to</param>
 		static void SetValue(const string& key, const string& value);
 	private:
-		static inline string configFilePath;
-
-		/// <summary>
-		/// Temporary storage for all config settings until engine is saved.
-		/// </summary>
-		static inline vector<string> keys;
-		static inline vector<string> values;
-
 		/// <summary>
 		/// Creates a brand new config file with default values.
 		/// </summary>

@@ -20,8 +20,6 @@
 //external
 #include "glfw3.h"
 #include "crashHandler.hpp"
-#include "fileutils.hpp"
-#include "stringutils.hpp"
 
 //engine
 #include "core.hpp"
@@ -33,6 +31,8 @@
 #include "gameobject.hpp"
 #include "audio.hpp"
 #include "physics.hpp"
+#include "fileutils.hpp"
+#include "stringutils.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
@@ -65,8 +65,8 @@ using Type = Core::ConsoleManager::Type;
 using Graphics::Shape::GameObjectManager;
 using Core::Physics;
 using KalaKit::KalaCrashHandler;
-using KalaKit::FileUtils;
-using KalaKit::StringUtils;
+using Utils::String;
+using Utils::File;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
@@ -218,7 +218,7 @@ namespace Core
 #if ENGINE_MODE
 			docsPath = (path(narrowPath) / name).string();
 
-			if (!exists(docsPath)) FileUtils::CreateNewFolder(docsPath);
+			if (!exists(docsPath)) File::CreateNewFolder(docsPath);
 
 			output = "Documents path: " + docsPath + "\n";
 			ConsoleManager::WriteConsoleMessage(
@@ -349,7 +349,7 @@ namespace Core
 				if (!line.empty()
 					&& line.find("=") != string::npos)
 				{
-					vector<string> splitLine = StringUtils::Split(line, '=');
+					vector<string> splitLine = String::Split(line, '=');
 					string type = splitLine[0];
 					string value = splitLine[1];
 

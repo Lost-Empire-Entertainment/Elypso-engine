@@ -19,9 +19,6 @@ set "CRASH_DEBUG=%PROJECT_ROOT%\KalaCrashHandler\debug\KalaCrashHandlerD.dll"
 set "PHYSICS_RELEASE=%PROJECT_ROOT%\KalaPhysics\release\KalaPhysics.dll"
 set "PHYSICS_DEBUG=%PROJECT_ROOT%\KalaPhysics\debug\KalaPhysicsD.dll"
 
-set "UTILS_RELEASE=%PROJECT_ROOT%\KalaUtils\release\KalaUtils.dll"
-set "UTILS_DEBUG=%PROJECT_ROOT%\KalaUtils\debug\KalaUtilsD.dll"
-
 :: Target paths
 
 set "ENGINE_RELEASE_DLLS=%PROJECT_ROOT%..\Engine\files\external dlls\release"
@@ -40,8 +37,6 @@ copy /Y "%CRASH_RELEASE%"   "%ENGINE_RELEASE_DLLS%\"
 copy /Y "%CRASH_RELEASE%"   "%GAME_RELEASE_DLLS%\"
 copy /Y "%PHYSICS_RELEASE%" "%ENGINE_RELEASE_DLLS%\"
 copy /Y "%PHYSICS_RELEASE%" "%GAME_RELEASE_DLLS%\"
-copy /Y "%UTILS_RELEASE%"   "%ENGINE_RELEASE_DLLS%\"
-copy /Y "%UTILS_RELEASE%"   "%GAME_RELEASE_DLLS%\"
 
 :: Copy target dlls
 
@@ -53,8 +48,6 @@ copy /Y "%CRASH_DEBUG%"   "%ENGINE_DEBUG_DLLS%\"
 copy /Y "%CRASH_DEBUG%"   "%GAME_DEBUG_DLLS%\"
 copy /Y "%PHYSICS_DEBUG%" "%ENGINE_DEBUG_DLLS%\"
 copy /Y "%PHYSICS_DEBUG%" "%GAME_DEBUG_DLLS%\"
-copy /Y "%UTILS_DEBUG%"   "%ENGINE_DEBUG_DLLS%\"
-copy /Y "%UTILS_DEBUG%"   "%GAME_DEBUG_DLLS%\"
 
 echo.
 echo Finished copying Elypso engine DLLs!

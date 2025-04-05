@@ -5,25 +5,15 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAUTILS_DLL_EXPORT
-		#define KALAUTILS_API __declspec(dllexport)
-	#else
-		#define KALAUTILS_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAUTILS_API
-#endif
-
 #include <string>
 #include <filesystem>
 
-namespace KalaKit
+namespace Utils
 {
-	using std::filesystem::path;
 	using std::string;
+	using std::filesystem::path;
 
-	class KALAUTILS_API FileUtils
+	class File
 	{
 	public:
 		/// <summary>
@@ -44,30 +34,15 @@ namespace KalaKit
 		/// Run an executable.
 		/// </summary>
 		/// <param name="exePath">Direct path to exe itself.</param>
-		/// <param name="commands">Additional optional commands.</param>
-		static void RunApplication(const string& exePath, const string& commands = "");
+		static void RunApplication(const string& parentPath, const string& exePath);
 
 		/// <summary>
-		/// Check if the selected file contains the selected string.
+		/// Move or rename the selected file or folder.
 		/// </summary>
-		/// <param name="filePath">Where is the file located?</param>
-		/// <param name="targetString">What is the string you are looking for?</param>
-		static bool ContainsString(const string& filePath, const string& targetString);
-
-		/// <summary>
-		/// Move or rename the selected file or folder to the target path.
-		/// It always renames if origin and target are in the same folder.
-		/// </summary>
-		/// <param name="originPath">Full path to the file or folder that will be moved or renamed.</param>
-		/// <param name="targetPath">Full path to where the file or folder will be moved to or renamed to.</param>
+		/// <param name="originPath">Full path to the file or folder you are trying to move or rename.</param>
+		/// <param name="targetPath">Full path to the target destination.</param>
+		/// <param name="isRenaming">Should the file or folder be renamed?</param>
 		static void MoveOrRenameTarget(const string& originPath, const string& targetPath);
-
-		/// <summary>
-		/// Rename the selected file or folder to the target path.
-		/// </summary>
-		/// <param name="originPath">Full path to the file or folder that will be renamed.</param>
-		/// <param name="targetPath">Full path to what the file or folder will be renamed to.</param>
-		static void RenameTarget(const string& originPath, const string& targetPath);
 
 		/// <summary>
 		/// Copy the selected file or folder to the target path.
@@ -77,10 +52,10 @@ namespace KalaKit
 		static void CopyTarget(const string& originPath, const string& targetPath);
 
 		/// <summary>
-		/// Delete the selected file or folder.
+		/// Delete a file or folder.
 		/// </summary>
 		/// <param name="originPath">Full path to the file or folder you are trying to delete.</param>
-		static void DeleteTarget(const string& targetPath);
+		static void DeleteTarget(const string& originPath);
 
 		/// <summary>
 		/// Create a new folder at the target destination.
@@ -89,13 +64,19 @@ namespace KalaKit
 		static void CreateNewFolder(const string& folderPath);
 
 		/// <summary>
+		/// Check if the character is allowed in paths in Windows
+		/// </summary>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		static bool IsValidSymbolInPath(char c);
+
+		/// <summary>
 		/// Add an index (1), etc after this file or folder name.
 		/// </summary>
 		/// <param name="folderPath">Parent folder of this file</param>
 		/// <param name="fileName">Name of the file the index will be added after</param>
-		/// <param name="extension">Name of the extension if this is a file</param>
 		static string AddIndex(
-			const path& folderPath,
+			const string& folderPath,
 			const string& fileName,
 			const string& extension = "");
 	private:

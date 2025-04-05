@@ -14,7 +14,6 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "glfw3.h"
-#include "fileutils.hpp"
 
 //engine
 #include "gui_projecthierarchy.hpp"
@@ -25,6 +24,7 @@
 #include "console.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+#include "fileutils.hpp"
 
 using std::filesystem::path;
 using std::filesystem::directory_iterator;
@@ -46,7 +46,7 @@ using Type = Core::ConsoleManager::Type;
 using Graphics::Render;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Shape::GameObject;
-using KalaKit::FileUtils;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -192,7 +192,7 @@ namespace Graphics::GUI
                                     }
                                 }
 
-                                FileUtils::DeleteTarget(path(entry).string());
+                                File::DeleteTarget(path(entry).string());
                             }
                         }
                     }
@@ -231,14 +231,14 @@ namespace Graphics::GUI
                             if (thisParentFolder == texturesFolder
                                 && ImGui::MenuItem("Delete texture"))
                             {
-                                FileUtils::DeleteTarget(path(entry).string());
+                                File::DeleteTarget(path(entry).string());
                             }
                         }
                         //can delete png, jpg and jpeg files as textures inside gameobject txt file folders
                         else if (path(thisParentFolder).parent_path().parent_path().stem().string() == "gameobjects"
                             && ImGui::MenuItem("Delete texture"))
                         {
-                            FileUtils::DeleteTarget(path(entry).string());
+                            File::DeleteTarget(path(entry).string());
                         }
                     }
                     else if (path(entry).extension().string() == ".fbx"
@@ -248,7 +248,7 @@ namespace Graphics::GUI
                         if (path(thisParentFolder).stem().string() == "models"
                             && ImGui::MenuItem("Delete model"))
                         {
-                            FileUtils::DeleteTarget(path(entry).string());
+                            File::DeleteTarget(path(entry).string());
                         }
                     }
 
@@ -259,7 +259,7 @@ namespace Graphics::GUI
 
         if (toBeDeleted.string() != "")
         {
-            FileUtils::DeleteTarget(path(toBeDeleted).string());
+            File::DeleteTarget(path(toBeDeleted).string());
             toBeDeleted = "";
         }
 	}

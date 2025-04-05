@@ -17,7 +17,6 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "glfw3.h"
-#include "fileutils.hpp"
 
 //engine
 #include "compile.hpp"
@@ -29,6 +28,7 @@
 #include "gui_engine.hpp"
 #include "gui_settings.hpp"
 #include "configFile.hpp"
+#include "fileutils.hpp"
 
 using std::cout;
 using std::filesystem::directory_iterator;
@@ -54,7 +54,7 @@ using EngineFile::SceneFile;
 using Graphics::GUI::EngineGUI;
 using Graphics::GUI::GUISettings;
 using EngineFile::ConfigFile;
-using KalaKit::FileUtils;
+using Utils::File;
 
 namespace Core
 {
@@ -82,7 +82,7 @@ namespace Core
 
 						if (fileExtension == ".exe")
 						{
-							FileUtils::DeleteTarget(filePath);
+							File::DeleteTarget(filePath);
 						}
 					}
 				}
@@ -95,7 +95,7 @@ namespace Core
 					string gameStem = path(Engine::gameExePath).stem().string();
 					if (gameStem != "Game")
 					{
-						FileUtils::MoveOrRenameTarget(
+						File::MoveOrRenameTarget(
 							(path(Engine::gameParentPath) / "Game.exe").string(),
 							Engine::gameExePath);
 					}
@@ -105,13 +105,13 @@ namespace Core
 					//
 
 					string targetFolder = (path(Engine::gameParentPath) / "project").string();
-					if (exists(targetFolder)) FileUtils::DeleteTarget(targetFolder);
-					FileUtils::CreateNewFolder(targetFolder);
+					if (exists(targetFolder)) File::DeleteTarget(targetFolder);
+					File::CreateNewFolder(targetFolder);
 
 					string projectFileOriginPath = (path(Engine::docsPath) / "project.txt").string();
 					string projectFileTargetPath = (path(targetFolder) / "project.txt").string();
-					if (exists(projectFileTargetPath)) FileUtils::DeleteTarget(projectFileTargetPath);
-					FileUtils::CopyTarget(projectFileOriginPath, projectFileTargetPath);
+					if (exists(projectFileTargetPath)) File::DeleteTarget(projectFileTargetPath);
+					File::CopyTarget(projectFileOriginPath, projectFileTargetPath);
 
 					//
 					// COPY SCENE FILES TO GAME EXE FOLDER
@@ -129,7 +129,7 @@ namespace Core
 							string originFileName = path(entry).filename().string();
 							string target = (path(targetFolder) / originFileName).string();
 
-							FileUtils::CopyTarget(origin, target);
+							File::CopyTarget(origin, target);
 						}
 					}
 
@@ -138,7 +138,7 @@ namespace Core
 					//
 
 					string firstSceneFilePath = (path(targetFolder) / "firstScene.txt").string();
-					if (exists(firstSceneFilePath)) FileUtils::DeleteTarget(firstSceneFilePath);
+					if (exists(firstSceneFilePath)) File::DeleteTarget(firstSceneFilePath);
 
 					ofstream firstSceneFile(firstSceneFilePath);
 					if (!firstSceneFile.is_open())
@@ -220,7 +220,7 @@ namespace Core
 		targetLib = (path(gameRootFolder) / "Elypso engineD.lib").string();
 #endif
 
-		FileUtils::CopyTarget(originLib, targetLib);
+		File::CopyTarget(originLib, targetLib);
 
 		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
@@ -235,7 +235,7 @@ namespace Core
 		targetLib = (path(gameRootFolder) / "libElypso engineD.a").string();
 #endif
 
-		FileUtils::CopyTarget(originLib, targetLib);
+		File::CopyTarget(originLib, targetLib);
 
 		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
 #endif
@@ -451,7 +451,7 @@ namespace Core
 				// CREATE NEW GAME DOCUMENTS FOLDER AND PLACE ALL SCENES AND THEIR CONTENT TO IT
 				//
 
-				if (exists(projectFolder)) FileUtils::DeleteTarget((path(projectFolder) / "scenes").string());
+				if (exists(projectFolder)) File::DeleteTarget((path(projectFolder) / "scenes").string());
 
 				string engineProjectFolder = path(Engine::projectPath).string();
 				for (const auto& entry : directory_iterator(path(engineProjectFolder)))
@@ -467,11 +467,11 @@ namespace Core
 						string originFileName = path(entry).filename().string();
 						string target = (path(projectFolder) / originFileName).string();
 
-						FileUtils::CopyTarget(origin, target);
+						File::CopyTarget(origin, target);
 					}
 				}
 
-				FileUtils::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
 			}
 		}
 	}

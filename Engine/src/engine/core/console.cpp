@@ -15,7 +15,6 @@
 #include "magic_enum.hpp"
 #include "glfw3.h"
 #include "glm.hpp"
-#include "stringutils.hpp"
 
 //engine
 #include "console.hpp"
@@ -28,6 +27,7 @@
 #include "materialcomponent.hpp"
 #include "lightcomponent.hpp"
 #include "transformcomponent.hpp"
+#include "stringutils.hpp"
 #if ENGINE_MODE
 #include "gui_engine.hpp"
 #endif
@@ -56,7 +56,7 @@ using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
 using Graphics::GUI::GUIConsole;
 using Graphics::Components::TransformComponent;
-using KalaKit::StringUtils;
+using Utils::String;
 #if ENGINE_MODE
 using Graphics::GUI::EngineGUI;
 #endif
@@ -189,7 +189,7 @@ namespace Core
     {
         if (command == "") return;
 
-        vector<string> splitCommand = StringUtils::Split(command, ' ');
+        vector<string> splitCommand = String::Split(command, ' ');
         size_t count = splitCommand.size();
 
         vector<string> cleanedCommands;

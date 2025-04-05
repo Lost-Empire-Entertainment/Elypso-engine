@@ -81,12 +81,14 @@ namespace KalaKit
 		/// Windows crash handler that calls the minidump creator function and sends error info to error popup.
 		/// </summary>
 		static LONG WINAPI HandleCrash(EXCEPTION_POINTERS* info);
+#endif
 
 		static void WriteLog(
 			const string& message, 
 			const string& exePath, 
 			const string& timeStamp);
 
+#ifdef _WIN32
 		/// <summary>
 		/// Creates a windows crash .dmp file to exe location.
 		/// </summary>
@@ -99,6 +101,7 @@ namespace KalaKit
 		/// Appends up to to last 10 frames of the call stack upon crash.
 		/// </summary>
 		static void AppendCallStackToStream(ostringstream& oss, CONTEXT* context);
+#endif
 
 		/// <summary>
 		/// Internal error popup function, not meant to be used by end user.
@@ -114,6 +117,6 @@ namespace KalaKit
 		/// Return current executable path.
 		/// </summary>
 		static string GetExePath();
-#endif
+
 	};
 }

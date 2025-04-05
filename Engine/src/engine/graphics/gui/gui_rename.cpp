@@ -12,8 +12,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
-#include "stringutils.hpp"
-#include "fileutils.hpp"
 
 //engine
 #include "gui_rename.hpp"
@@ -22,6 +20,8 @@
 #include "render.hpp"
 #include "core.hpp"
 #include "console.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 
 using std::cout;
 using std::ifstream;
@@ -38,8 +38,8 @@ using Core::Engine;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using KalaKit::FileUtils;
-using KalaKit::StringUtils;
+using Utils::String;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -109,7 +109,7 @@ namespace Graphics::GUI
 			bool foundIllegalChar = false;
 			for (char c : newName)
 			{
-				if (!StringUtils::IsValidSymbolInPath(c))
+				if (!File::IsValidSymbolInPath(c))
 				{
 					foundIllegalChar = true;
 					break;
@@ -245,7 +245,7 @@ namespace Graphics::GUI
 
 			writeSceneFile.close();
 
-			FileUtils::MoveOrRenameTarget(originalPath, newPath);
+			File::MoveOrRenameTarget(originalPath, newPath);
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 

@@ -12,8 +12,6 @@
 #include "glm.hpp"
 #include "miniaudio.h"
 #include "physicsworld.hpp"
-#include "stringutils.hpp"
-#include "fileutils.hpp"
 
 //engine
 #include "gameobject.hpp"
@@ -37,6 +35,8 @@
 #include "audioobject.hpp"
 #include "cameraobject.hpp"
 #include "cameracomponent.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 #if ENGINE_MODE
 #include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
@@ -73,8 +73,8 @@ using KalaKit::PhysicsWorld;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;
-using KalaKit::StringUtils;
-using KalaKit::FileUtils;
+using Utils::String;
+using Utils::File;
 #if ENGINE_MODE
 using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
@@ -340,7 +340,7 @@ namespace Graphics::Shape
 				if (Select::selectedObj->GetName() == pathName)
 				{
 					string entryString = path(entry).string();
-					FileUtils::DeleteTarget(entryString);
+					File::DeleteTarget(entryString);
 					break;
 				}
 			}
@@ -381,7 +381,7 @@ namespace Graphics::Shape
 			if (!line.empty()
 				&& line.find("=") != string::npos)
 			{
-				vector<string> splitLine = StringUtils::Split(line, '=');
+				vector<string> splitLine = String::Split(line, '=');
 				string key = splitLine[0];
 				string value = splitLine[1];
 

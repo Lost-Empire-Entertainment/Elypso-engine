@@ -9,7 +9,6 @@
 
 //external
 #include "glad.h"
-#include "stringutils.hpp"
 
 //engine
 #include "grid.hpp"
@@ -18,6 +17,7 @@
 #include "configFile.hpp"
 #include "render.hpp"
 #include "transformcomponent.hpp"
+#include "stringutils.hpp"
 
 using glm::mat4;
 using std::vector;
@@ -28,7 +28,7 @@ using Graphics::Shader;
 using Core::Engine;
 using EngineFile::ConfigFile;
 using Graphics::Components::TransformComponent;
-using KalaKit::StringUtils;
+using Utils::String;
 
 namespace Graphics
 {
@@ -98,7 +98,7 @@ namespace Graphics
 		shader.SetVec3("center", tc->GetPosition());
 
 		string gridColorString = ConfigFile::GetValue("grid_color");
-		vector<string> gridColorSplit = StringUtils::Split(gridColorString, ',');
+		vector<string> gridColorSplit = String::Split(gridColorString, ',');
 		vec3 color = vec3(
 			stof(gridColorSplit[0]), 
 			stof(gridColorSplit[1]),

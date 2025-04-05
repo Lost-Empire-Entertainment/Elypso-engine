@@ -16,7 +16,6 @@
 #include "imgui_internal.h"
 #include "glad.h"
 #include "type_ptr.hpp"
-#include "stringutils.hpp"
 
 //engine
 #include "gui_scenewindow.hpp"
@@ -32,6 +31,7 @@
 #include "cameracomponent.hpp"
 #include "transformcomponent.hpp"
 #include "console.hpp"
+#include "stringutils.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -54,7 +54,7 @@ using Graphics::Components::TransformComponent;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using KalaKit::StringUtils;
+using Utils::String;
 
 namespace Graphics::GUI
 {
@@ -495,7 +495,7 @@ namespace Graphics::GUI
 
 			ImGui::Text("Grid color");
 			string gridColorString = ConfigFile::GetValue("grid_color");
-			vector<string> gridColorSplit = StringUtils::Split(gridColorString, ',');
+			vector<string> gridColorSplit = String::Split(gridColorString, ',');
 			vec3 gridColor = vec3(
 				stof(gridColorSplit[0]),
 				stof(gridColorSplit[1]),

@@ -12,8 +12,6 @@
 #include "glm.hpp"
 #include "glfw3.h"
 #include "imgui_impl_glfw.h"
-#include "stringutils.hpp"
-#include "fileutils.hpp"
 
 //engine
 #include "configFile.hpp"
@@ -22,6 +20,8 @@
 #include "sceneFile.hpp"
 #include "render.hpp"
 #include "gameobject.hpp"
+#include "stringutils.hpp"
+#include "fileutils.hpp"
 #if ENGINE_MODE
 #include "gui_settings.hpp"
 #endif
@@ -42,14 +42,18 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Graphics::Render;
 using Graphics::Shape::GameObjectManager;
-using KalaKit::FileUtils;
-using KalaKit::StringUtils;
+using Utils::String;
+using Utils::File;
 #if ENGINE_MODE
 using Graphics::GUI::GUISettings;
 #endif
 
 namespace EngineFile
 {
+	string configFilePath;
+	vector<string> keys;
+	vector<string> values;
+
 	void ConfigFile::LoadConfigFile()
 	{
 #if ENGINE_MODE
@@ -98,31 +102,33 @@ namespace EngineFile
 				if (!line.empty()
 					&& line.find("=") != string::npos)
 				{
-					vector<string> splitLine = StringUtils::Split(line, '=');
-					if (splitLine.size() < 2) continue;
+					vector<string> splitLine = String::Split(line, '=');
 
-					string key = splitLine[0];
-					string value = splitLine[1];
-
-					//remove one space in front of value if it exists
-					if (!value.empty()
-						&& value[0] == ' ')
+					if (splitLine.size() < 2 
+						|| splitLine[0].empty() 
+						|| splitLine[1].empty())
 					{
-						value.erase(0, 1);
-					}
-					//remove one space in front of each value comma if it exists
-					size_t i = 0;
-					while (i + 1 < value.size())
-					{
-						if (value[i] == ',' && value[i + 1] == ' ')
-						{
-							value.erase(i + 1, 1);
-						}
-						else ++i;
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							"Error: Malformed config line: '" + line + "'"
+						);
+						continue;
 					}
 
-					keys.push_back(key);
-					values.push_back(value);
+					if (splitLine.size() < 2)
+					{
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							"Error: Key or value for line '" + line + "' in config file is invalid!");
+						continue;
+					}
+					else
+					{
+						keys.push_back(splitLine[0]);
+						values.push_back(splitLine[1]);
+					}
 				}
 			}
 
@@ -139,7 +145,7 @@ namespace EngineFile
 	{
 		if (exists(configFilePath))
 		{
-			FileUtils::DeleteTarget(configFilePath);
+			File::DeleteTarget(configFilePath);
 		}
 
 		ofstream configFile(configFilePath);

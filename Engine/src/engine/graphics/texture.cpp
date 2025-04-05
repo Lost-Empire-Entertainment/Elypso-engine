@@ -11,7 +11,6 @@
 //external
 #include "glfw3.h"
 #include "stb_image.h"
-#include "fileutils.hpp"
 
 //engine
 #include "texture.hpp"
@@ -19,6 +18,7 @@
 #include "core.hpp"
 #include "meshcomponent.hpp"
 #include "materialcomponent.hpp"
+#include "fileutils.hpp"
 
 using std::cout;
 using std::endl;
@@ -34,7 +34,7 @@ using Type = Core::ConsoleManager::Type;
 using Core::Engine;
 using Graphics::Components::MaterialComponent;
 using Graphics::Components::MeshComponent;
-using KalaKit::FileUtils;
+using Utils::File;
 
 namespace Graphics
 {
@@ -217,7 +217,7 @@ namespace Graphics
 
 				if (!exists(targetPath))
 				{
-					FileUtils::CopyTarget(originPath, targetPath);
+					File::CopyTarget(originPath, targetPath);
 				}
 			}
 

@@ -19,7 +19,6 @@
 #include "gameobjecthandle.hpp"
 #include "rigidbody.hpp"
 #include "collider.hpp"
-#include "fileutils.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -51,6 +50,7 @@
 #include "cameracomponent.hpp"
 #include "audioobject.hpp"
 #include "cameraobject.hpp"
+#include "fileutils.hpp"
 
 using std::cout;
 using std::endl;
@@ -99,7 +99,7 @@ using KalaKit::Collider;
 using Graphics::Components::CameraComponent;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
-using KalaKit::FileUtils;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -433,7 +433,7 @@ namespace Graphics::GUI
 					else
 					{
 						string oldFolderPath = (path(Engine::currentGameobjectsPath) / oldName).string();
-						FileUtils::MoveOrRenameTarget(oldFolderPath, newFolderPath);
+						File::MoveOrRenameTarget(oldFolderPath, newFolderPath);
 
 						//rename model file if gameobject mesh type is model
 						auto mesh = obj->GetComponent<MeshComponent>();
@@ -459,7 +459,7 @@ namespace Graphics::GUI
 									string newFolderNameAndExtension = newFolderName + extension;
 									string newFilePath = (path(Engine::currentGameobjectsPath) / newFolderName / newFolderNameAndExtension).string();
 
-									FileUtils::MoveOrRenameTarget(oldFilePath, newFilePath);
+									File::MoveOrRenameTarget(oldFilePath, newFilePath);
 
 									break;
 								}
@@ -601,7 +601,7 @@ namespace Graphics::GUI
 			if (ImGui::Button(model_assign.c_str()))
 			{
 				string modelsFolder = (path(Engine::projectPath) / "models").string();
-				if (!exists(modelsFolder)) FileUtils::CreateNewFolder(modelsFolder);
+				if (!exists(modelsFolder)) File::CreateNewFolder(modelsFolder);
 
 				GUIProjectItemsList::obj = obj;
 				GUIProjectItemsList::type = GUIProjectItemsList::Type::GameobjectModel;
@@ -626,7 +626,7 @@ namespace Graphics::GUI
 
 					GameObjectManager::DestroyGameObject(obj, false);
 
-					FileUtils::CreateNewFolder(txtFileParent);
+					File::CreateNewFolder(txtFileParent);
 					auto empty = Empty::InitializeEmpty(
 						pos, 
 						rot, 
@@ -694,7 +694,7 @@ namespace Graphics::GUI
 
 					if (removedTexture.find("diff_missing.png") == string::npos)
 					{
-						FileUtils::DeleteTarget(removedTexture);
+						File::DeleteTarget(removedTexture);
 					}
 				}
 				else
@@ -735,7 +735,7 @@ namespace Graphics::GUI
 					Texture::LoadTexture(obj, spec_defaultTexturePath.string(), MaterialComponent::TextureType::specular, true);
 					if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 
-					FileUtils::DeleteTarget(removedTexture);
+					File::DeleteTarget(removedTexture);
 				}
 				else
 				{
@@ -1412,7 +1412,7 @@ namespace Graphics::GUI
 		if (ImGui::Button(addButtonText.c_str()))
 		{
 			string audioFolder = (path(Engine::projectPath) / "audio").string();
-			if (!exists(audioFolder)) FileUtils::CreateNewFolder(audioFolder);
+			if (!exists(audioFolder)) File::CreateNewFolder(audioFolder);
 
 			GUIProjectItemsList::obj = obj;
 			GUIProjectItemsList::type = GUIProjectItemsList::Type::Audio;
@@ -1435,7 +1435,7 @@ namespace Graphics::GUI
 				Audio::Delete(audioFileName, obj); //remove from audio library
 
 				string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / audioFileName).string();
-				FileUtils::DeleteTarget(fullPath); //remove externally saved file
+				File::DeleteTarget(fullPath); //remove externally saved file
 
 				audioPlayer->SetName("");
 

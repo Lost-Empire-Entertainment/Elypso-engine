@@ -13,7 +13,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
-#include "fileutils.hpp"
 
 //engine
 #include "console.hpp"
@@ -50,6 +49,7 @@
 #include "audioobject.hpp"
 #include "transformcomponent.hpp"
 #include "cameracomponent.hpp"
+#include "fileutils.hpp"
 
 using std::cout;
 using std::endl;
@@ -86,7 +86,7 @@ using Graphics::Shape::CameraObject;
 using Graphics::Shape::AudioObject;
 using Graphics::Components::TransformComponent;
 using Graphics::Components::CameraComponent;
-using KalaKit::FileUtils;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -101,7 +101,7 @@ namespace Graphics::GUI
 		string imguiTemplateFile = (path(Engine::filesPath) / "imgui.ini").string();
 		if (!exists(imguiConfigFile))
 		{
-			FileUtils::CopyTarget(imguiTemplateFile, imguiConfigFile);
+			File::CopyTarget(imguiTemplateFile, imguiConfigFile);
 
 			ConfigFile::SetValue("gui_sceneHierarchy", "1");
 			ConfigFile::SetValue("gui_projectHierarchy", "1");
@@ -417,13 +417,13 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Empty", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Empty", "");
 						string targetName = path(targetPath).stem().string();
 
 						string targetNameAndExtension = targetName + ".txt";
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
 
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -450,13 +450,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "cube.fbx").string();
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cube", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						FileUtils::CopyTarget(originPath, destinationPath);
+						File::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -490,13 +490,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "sphere.fbx").string();
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Sphere", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						FileUtils::CopyTarget(originPath, destinationPath);
+						File::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -530,13 +530,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "cylinder.fbx").string();
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cylinder", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						FileUtils::CopyTarget(originPath, destinationPath);
+						File::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -570,13 +570,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "cone.fbx").string();
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Cone", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						FileUtils::CopyTarget(originPath, destinationPath);
+						File::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -610,13 +610,13 @@ namespace Graphics::GUI
 					else
 					{
 						string originPath = (path(Engine::filesPath) / "models" / "pyramid.fbx").string();
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Pyramid", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".fbx";
 
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 						string destinationPath = (path(targetPath) / targetNameAndExtension).string();
-						FileUtils::CopyTarget(originPath, destinationPath);
+						File::CopyTarget(originPath, destinationPath);
 
 						unsigned int nextID = ++GameObject::nextID;
 
@@ -655,10 +655,10 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Point light", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".txt";
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 
 						string scenePath = path(Engine::scenePath).parent_path().filename().string();
 						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -697,10 +697,10 @@ namespace Graphics::GUI
 					}
 					else
 					{
-						string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
+						string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Spotlight", "");
 						string targetName = path(targetPath).stem().string();
 						string targetNameAndExtension = targetName + ".txt";
-						FileUtils::CreateNewFolder(targetPath);
+						File::CreateNewFolder(targetPath);
 
 						string scenePath = path(Engine::scenePath).parent_path().filename().string();
 						string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -750,10 +750,10 @@ namespace Graphics::GUI
 						}
 						else
 						{
-							string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Directional light", "");
+							string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Directional light", "");
 							string targetName = path(targetPath).stem().string();
 							string targetNameAndExtension = targetName + ".txt";
-							FileUtils::CreateNewFolder(targetPath);
+							File::CreateNewFolder(targetPath);
 
 							string scenePath = path(Engine::scenePath).parent_path().filename().string();
 							string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -796,10 +796,10 @@ namespace Graphics::GUI
 				}
 				else
 				{
-					string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
+					string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Audio object", "");
 					string targetName = path(targetPath).stem().string();
 					string targetNameAndExtension = targetName + ".txt";
-					FileUtils::CreateNewFolder(targetPath);
+					File::CreateNewFolder(targetPath);
 
 					string scenePath = path(Engine::scenePath).parent_path().filename().string();
 					string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
@@ -835,10 +835,10 @@ namespace Graphics::GUI
 
 			if (ImGui::MenuItem("Camera"))
 			{
-				string targetPath = FileUtils::AddIndex(Engine::currentGameobjectsPath, "Camera", "");
+				string targetPath = File::AddIndex(Engine::currentGameobjectsPath, "Camera", "");
 				string targetName = path(targetPath).stem().string();
 				string targetNameAndExtension = targetName + ".txt";
-				FileUtils::CreateNewFolder(targetPath);
+				File::CreateNewFolder(targetPath);
 
 				string scenePath = path(Engine::scenePath).parent_path().filename().string();
 				string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();

@@ -1,17 +1,5 @@
 cmake_minimum_required(VERSION 3.30.3)
 
-if (WIN32)
-	# Enable hot reload for MSVC
-	if (POLICY CMP0141)
-		cmake_policy(SET CMP0141 NEW)
-		set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-	endif()
-	# Explicitly set the MSVC toolset for Visual Studio
-	if (MSVC)
-		set(CMAKE_GENERATOR_TOOLSET "v143")
-	endif()
-endif()
-
 # Specify the compiler for Linux builds
 if (UNIX)
     set(CMAKE_C_COMPILER "/usr/bin/gcc")
@@ -33,7 +21,11 @@ set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 project("Elypso engine" VERSION ${PROJECT_VERSION})
 
 if (MSVC)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+    else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    endif()
 endif()
 
 # Paths to frequently used directories
@@ -64,7 +56,6 @@ set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
 set(EXT_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/KalaPhysics")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/KalaCrashHandler")
-set(EXT_UTILS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/KalaUtils")
 
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
@@ -121,21 +112,6 @@ else()
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.so")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.so")
-	endif()
-endif()
-
-# Add KalaUtils
-if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/release/KalaUtils.lib")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/debug/KalaUtilsD.lib")
-	endif()
-else()
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/release/libKalaUtils.so")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/debug/libKalaUtilsD.so")
 	endif()
 endif()
 
@@ -210,7 +186,6 @@ target_include_directories(Elypso_engine PRIVATE
 	${EXT_MINIAUDIO_DIR}
 	${EXT_PHYSICS_DIR}
 	${EXT_CRASH_DIR}
-	${EXT_UTILS_DIR}
 )
 
 # Apply all directories to target
@@ -223,8 +198,7 @@ if (WIN32)
 		${ASSIMP_LIBRARY_PATH} 
 		${ASSIMP_LIBRARY_PATH2}
 		${PHYSICS_LIBRARY_PATH}
-		${CRASH_LIBRARY_PATH}
-		${UTILS_LIBRARY_PATH})
+		${CRASH_LIBRARY_PATH})
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)
@@ -235,8 +209,7 @@ else()
 			assimp 
 			Wayland::Client
 			${PHYSICS_LIBRARY_PATH}
-			${CRASH_LIBRARY_PATH}
-			${UTILS_LIBRARY_PATH})
+			${CRASH_LIBRARY_PATH})
 	elseif (X11_FOUND)
 		target_link_libraries(Elypso_engine PRIVATE 
 			external_libs 
@@ -244,8 +217,7 @@ else()
 			assimp 
 			${X11_LIBRARIES}
 			${PHYSICS_LIBRARY_PATH}
-			${CRASH_LIBRARY_PATH}
-			${UTILS_LIBRARY_PATH})
+			${CRASH_LIBRARY_PATH})
 	endif()
 endif()
 

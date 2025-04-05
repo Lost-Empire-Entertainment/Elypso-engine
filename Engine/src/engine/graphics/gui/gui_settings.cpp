@@ -15,7 +15,6 @@
 #include "magic_enum.hpp"
 #include "type_ptr.hpp"
 #include "glm.hpp"
-#include "stringutils.hpp"
 
 //engine
 #include "gui_settings.hpp"
@@ -34,6 +33,7 @@
 #include "physics.hpp"
 #include "gameobject.hpp"
 #include "cameracomponent.hpp"
+#include "fileutils.hpp"
 
 using std::to_string;
 using std::stof;
@@ -58,7 +58,7 @@ using Graphics::Shape::Skybox;
 using Core::Physics;
 using Graphics::Shape::GameObjectManager;
 using Graphics::Components::CameraComponent;
-using KalaKit::StringUtils;
+using Utils::File;
 
 namespace Graphics::GUI
 {
@@ -502,7 +502,7 @@ namespace Graphics::GUI
 			{
 				for (char c : gameName)
 				{
-					if (!StringUtils::IsValidSymbolInPath(c))
+					if (!File::IsValidSymbolInPath(c))
 					{
 						nameDenyReason = NameDenyReason::invalidCharacter;
 						canApply = false;

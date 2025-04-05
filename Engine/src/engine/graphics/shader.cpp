@@ -29,7 +29,7 @@ using std::filesystem::path;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
-using KalaKit::StringUtils;
+using Utils::String;
 
 namespace Graphics
 {
@@ -59,8 +59,8 @@ namespace Graphics
         if (vertexPath != ""
             && fragmentPath != "")
         {
-            vector<string> vertSplit = StringUtils::Split(vertexPath, '/');
-            vector<string> fragSplit = StringUtils::Split(fragmentPath, '/');
+            vector<string> vertSplit = String::Split(vertexPath, '/');
+            vector<string> fragSplit = String::Split(fragmentPath, '/');
 
             string vertexCode;
             string fragmentCode;
