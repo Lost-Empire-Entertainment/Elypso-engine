@@ -8,10 +8,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Origin paths
 
 CRASH_RELEASE="${ROOT_DIR}/KalaCrashHandler/release/libKalaCrashHandler.so"
-CRASH_DEBUG="${ROOT_DIR}/KalaCrashHandler/release/libKalaCrashHandlerD.so"
+CRASH_DEBUG="${ROOT_DIR}/KalaCrashHandler/debug/libKalaCrashHandlerD.so"
 
 PHYSICS_RELEASE="${ROOT_DIR}/KalaPhysics/release/libKalaPhysics.so"
-PHYSICS_DEBUG="${ROOT_DIR}/KalaPhysics/release/libKalaPhysicsD.so"
+PHYSICS_DEBUG="${ROOT_DIR}/KalaPhysics/debug/libKalaPhysicsD.so"
 
 # Target paths
 
