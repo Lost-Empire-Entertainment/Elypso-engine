@@ -1,7 +1,0 @@
-Original repository link:
-https://github.com/Kalakit/KalaPhysics
-
-Changes:
-- used build_windows_release.bat to make KalaPhysics.dll and KalaPhysics.lib and copied them into new empty folder release
-- used build_debug.bat to make KalaPhysicsD.dll and KalaPhysicsD.lib and copied them into new empty folder debug
-- copied main.hpp to KalaPhysics root folder
