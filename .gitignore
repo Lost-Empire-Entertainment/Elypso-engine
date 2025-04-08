@@ -1,30 +1,14 @@
 # Elypso engine ignored files and folders
-Engine/build/
+Engine/build-release/
+Engine/build-debug/
 Engine/.vs/
-Engine/out/
-Engine/Elypso engine.lib
-Engine/Elypso engineD.lib
-Engine/libElypso engine.a
-Engine/libElypso engineD.a
-Engine/Elypso_engine.dll
-Engine/Elypso_engineD.dll
-Engine/libElypso_engine.so
-Engine/libElypso_engineD.so
 
 # Engine library ignored files and folders
-Engine library/build/
+Engine library/build-release/
+Engine library/build-debug/
 Engine library/.vs/
-Engine library/out/
 
 # Game ignored files and folders
-Game/build/
+Game/build-release/
+Game/build-debug/
 Game/.vs/
-Game/out/
-Game/Elypso engine.lib
-Game/Elypso engineD.lib
-Game/libElypso engine.a
-Game/libElypso engineD.a
-Game/Elypso_engine.dll
-Game/Elypso_engineD.dll
-Game/libElypso_engine.so
-Game/libElypso_engineD.so

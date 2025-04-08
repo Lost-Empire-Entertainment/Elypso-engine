@@ -44,13 +44,14 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [INFO] Installing to "%INSTALLER_BUILD_DIR%"
-cmake --install "%INSTALLER_BUILD_DIR%"
-if errorlevel 1 (
-    echo [ERROR] Install failed
-	pause
-    exit /b 1
-)
+:: Don't install executables
+::echo [INFO] Installing to "%INSTALLER_BUILD_DIR%"
+::cmake --install "%INSTALLER_BUILD_DIR%"
+::if errorlevel 1 (
+::    echo [ERROR] Install failed
+::	pause
+::    exit /b 1
+::)
 
 :: Record end time
 for /f "tokens=1-4 delims=:.," %%a in ("%TIME%") do set "TIME_END=%%a:%%b:%%c"
