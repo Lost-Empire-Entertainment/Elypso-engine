@@ -93,6 +93,20 @@ namespace Core
 				if (RunInstaller())
 				{
 					string gameStem = path(Engine::gameExePath).stem().string();
+					string gameDir = (path(Engine::gameParentPath) / "Game.exe").string();
+
+					if (!exists(gameDir))
+					{
+						string output = "Game directory '" + gameDir + "' does not exist!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							output);
+
+						finishedBuild = true;
+						return;
+					}
+
 					if (gameStem != "Game")
 					{
 						File::MoveOrRenameTarget(
@@ -173,24 +187,44 @@ namespace Core
 	
 	bool Compilation::RunInstaller()
 	{
-		string engineRootFolder = "";
-		string gameRootFolder = "";
+		string engineLibRootFolder{};
+		string engineRootFolder{};
+		string gameRootFolder{};
 
 		string parentFolder = current_path().stem().string();
 		//if engine is ran from repository or visual studio folder
-		string msvcRelease = "x64-release";
-		string msvcDebug = "x64-debug";
+		string releaseFolderName = "build-release";
+		string debugFolderName = "build-debug";
 
-		if (parentFolder == msvcRelease
-			|| parentFolder == msvcDebug)
+		if (parentFolder == releaseFolderName
+			|| parentFolder == debugFolderName)
 		{
-			engineRootFolder = (current_path().parent_path().parent_path().parent_path()).string();
-			gameRootFolder = (current_path().parent_path().parent_path().parent_path().parent_path() / "Game").string();
+#ifdef NDEBUG
+			engineLibRootFolder = (current_path()
+				.parent_path()
+				.parent_path()
+				/ "Engine library"
+				/ releaseFolderName
+				).string();
+#else
+			engineLibRootFolder = (current_path()
+				.parent_path()
+				.parent_path()
+				/ "Engine library"
+				/ debugFolderName
+				).string();
+#endif
+			engineRootFolder = (current_path()
+				.parent_path()).string();
+			gameRootFolder = (current_path()
+				.parent_path()
+				.parent_path() / "Game").string();
 		}
 		else if (parentFolder == "Engine")
 		{
 			engineRootFolder = current_path().string();
-			gameRootFolder = (current_path().parent_path() / "Game").string();
+			gameRootFolder = (current_path()
+				.parent_path() / "Game").string();
 		}
 
 		if (gameRootFolder == ""
@@ -204,61 +238,78 @@ namespace Core
 			return false;
 		}
 
-		string originLib{};
-		string targetLib{};
+		string libStart{};
+		string libEngineEnd{};
+		string libGameEnd{};
 		string releaseType{};
+		string gameBuilder{};
 
 #ifdef _WIN32
 
 #ifdef NDEBUG
 		releaseType = "release";
-		originLib = (path(engineRootFolder) / "Elypso engine.lib").string();
-		targetLib = (path(gameRootFolder) / "Elypso engine.lib").string();
+		libStart = (path(engineLibRootFolder) / "Elypso engine.lib").string();
+		libEngineEnd = (path(engineRootFolder) / "Elypso engine.lib").string();
+		libGameEnd = (path(gameRootFolder) / "Elypso engine.lib").string();
+		gameBuilder = (path(gameRootFolder) / "build_windows_release.bat").string();
 #else
 		releaseType = "debug";
-		originLib = (path(engineRootFolder) / "Elypso engineD.lib").string();
-		targetLib = (path(gameRootFolder) / "Elypso engineD.lib").string();
+		libStart = (path(engineLibRootFolder) / "Elypso engineD.lib").string();
+		libEngineEnd = (path(engineRootFolder) / "Elypso engineD.lib").string();
+		libGameEnd = (path(gameRootFolder) / "Elypso engineD.lib").string();
+		gameBuilder = (path(gameRootFolder) / "build_windows_debug.bat").string();
 #endif
 
-		File::CopyTarget(originLib, targetLib);
-
-		string gameBuilder = (path(gameRootFolder) / "build_windows.bat").string();
 #elif __linux__
 
 #ifdef NDEBUG
 		releaseType = "release";
-		originLib = (path(engineRootFolder) / "libElypso engine.a").string();
-		targetLib = (path(gameRootFolder) / "libElypso engine.a").string();
+		libStart = (path(engineLibRootFolder) / "libElypso engine.a").string();
+		libEngineEnd = (path(engineRootFolder) / "libElypso engine.a").string();
+		libGameEnd = (path(gameRootFolder) / "libElypso engine.lib").string();
+		gameBuilder = (path(gameRootFolder) / "build_linux_release.bat").string();
 #else
 		releaseType = "debug";
-		originLib = (path(engineRootFolder) / "libElypso engineD.a").string();
-		targetLib = (path(gameRootFolder) / "libElypso engineD.a").string();
+		libStart = (path(engineLibRootFolder) / "libElypso engineD.a").string();
+		libEngineEnd = (path(engineRootFolder) / "libElypso engineD.a").string();
+		libGameEnd = (path(gameRootFolder) / "libElypso engineD.lib").string();
+		gameBuilder = (path(gameRootFolder) / "build_linux_debug.bat").string();
 #endif
 
-		File::CopyTarget(originLib, targetLib);
-
-		string gameBuilder = (path(gameRootFolder) / "build_linux.sh").string();
 #endif
 
-		string command = "";
+		if (!exists(libStart))
+		{
+			string output = "Engine library '" + libStart + "' does not exist!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				output);
+			return false;
+		}
+
+		File::CopyTarget(libStart, libEngineEnd);
+		File::CopyTarget(libStart, libGameEnd);
+
+		string command{};
 
 		switch (installerType)
 		{
 		case InstallerType::reset:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" cmake " + releaseType + " skipwait";
+			command = "cmd /c " + gameBuilder;
 #elif __linux__
-			command = "bash \"" + gameBuilder + "\" cmake " + releaseType + " skipwait";
+			command = "bash " + gameBuilder;
 #endif
 			break;
 		}
 		case InstallerType::compile:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + "\" build " + releaseType + " skipwait";
+			command = "cmd /c " + gameBuilder;
 #elif __linux__
-			command = "bash \"" + gameBuilder + "\" build " + releaseType + " skipwait";
+			command = "bash " + gameBuilder;
 #endif
 			break;
 		}
