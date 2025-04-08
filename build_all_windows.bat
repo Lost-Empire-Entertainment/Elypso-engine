@@ -31,7 +31,7 @@ if errorlevel 1 (
 )
 
 :: Then build engine library
-cd "%PROJECT_ROOT%..\Engine-library"
+cd "%PROJECT_ROOT%\Engine-library"
 
 echo =====================================
 echo [INFO] Building engine library in Release mode...
