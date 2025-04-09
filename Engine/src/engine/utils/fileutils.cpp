@@ -16,10 +16,10 @@
 #include <string>
 
 //engine
-#include "fileUtils.hpp"
+#include "fileutils.hpp"
 #include "console.hpp"
 #include "core.hpp"
-#include "stringUtils.hpp"
+#include "stringutils.hpp"
 #include "gameobject.hpp"
 
 using std::cout;
@@ -160,34 +160,8 @@ namespace Utils
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
 #elif __linux__
-        //change working directory to parentFolderPath
-        if (chdir(parentFolderPath.c_str()) != 0)
-        {
-            perror("Error changing directory");
-            return;
-        }
-
-        //parse the commands into arguments
-        vector<string> args;
-        size_t pos = 0, found;
-        while ((found = commands.find(' ', pos)) != string::npos)
-        {
-            args.push_back(commands.substr(pos, found - pos));
-            pos = found + 1;
-        }
-        args.push_back(commands.substr(pos));
-
-        //prepare arguments for execvp
-        vector<char*> execArgs;
-        execArgs.push_back(const_cast<char*>(exePath.c_str()));
-        for (auto& arg : args)
-        {
-            execArgs.push_back(const_cast<char*>(arg.c_str()));
-        }
-        execArgs.push_back(nullptr);
-
         pid_t pid = fork();
-        if (pid == -1)
+        if (pid < 0)
         {
             perror("Error during fork");
             return;
@@ -195,27 +169,28 @@ namespace Utils
 
         if (pid == 0)
         {
-            //child process: execute the program
-            execvp(execArgs[0], execArgs.data());
-            perror("Error during execvp");
-            exit(EXIT_FAILURE); //exit if execvp fails
-        }
-        else
-        {
-            //parent process: wait for the child to finish
-            int status;
-            if (waitpid(pid, &status, 0) == -1)
+            //detach from parent session
+            if (setsid() < 0)
             {
-                perror("Error during waitpid");
+                perror("Error creating new session");
+                exit(EXIT_FAILURE);
             }
-            else if (WIFEXITED(status))
+
+            //change working dir to game exe folder
+            if (chdir(parentPath.c_str()) != 0)
             {
-                cout << "Child exited with status: " << WEXITSTATUS(status) << "\n";
+                perror("Error changing directory");
+                exit(EXIT_FAILURE);
             }
-            else
-            {
-                cout << "Child did not exit normally\n";
-            }
+
+            //empty arguments
+            char* const argv[] = { const_cast<char*>(exePath.c_str()), nullptr };
+
+            //replace child with executable
+            execv(exePath.c_str(), argv);
+
+            perror("Error launching exe process");
+            exit(EXIT_FAILURE);
         }
 #endif
     }

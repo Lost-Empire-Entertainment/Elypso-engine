@@ -8,7 +8,7 @@
 #include <algorithm>
 
 //engine
-#include "stringUtils.hpp"
+#include "stringutils.hpp"
 #include "console.hpp"
 
 using std::stof;

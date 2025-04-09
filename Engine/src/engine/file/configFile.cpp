@@ -35,6 +35,7 @@ using std::filesystem::path;
 using std::filesystem::current_path;
 using std::cout;
 using std::to_string;
+using std::isalnum;
 
 using Core::Engine;
 using Core::ConsoleManager;
@@ -172,6 +173,31 @@ namespace EngineFile
 		{
 			string key = keys[i];
 			string value = values[i];
+
+			if (value[0] == ' ')
+			{
+				//get the position where we should trim from
+				size_t firstAlphaNum = 0;
+				while (firstAlphaNum < value.size() &&
+						  !isalnum(static_cast<unsigned char>(value[firstAlphaNum])))
+				{
+					++firstAlphaNum;
+				}
+
+				//trim all spaces, tabs, newlines and non-alphanums
+				if (firstAlphaNum < value.size())
+				{
+					value = value.substr(firstAlphaNum);
+					SetValue(key, value);
+
+					string message = "Forcefully modified key '" + key + "' value to be '" + value + "' to prevent issues. If this is called then the key value is set incorrectly and should be fixed!\n";
+					ConsoleManager::WriteConsoleMessage(
+						Caller::FILE,
+						Type::EXCEPTION,
+						message
+					);
+				}
+			}
 
 			configFile << key << "= " << value << "\n";
 		}

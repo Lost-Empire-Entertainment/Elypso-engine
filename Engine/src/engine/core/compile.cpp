@@ -69,6 +69,36 @@ namespace Core
 
 		thread CompileThread([]()
 			{
+				string gameStem = path(Engine::gameExePath).stem().string();
+				if (gameStem[0] == ' ')
+				{
+					//get the position where we should trim from
+					size_t firstAlphaNum = 0;
+					while (firstAlphaNum < gameStem.size() &&
+						   !isalnum(static_cast<unsigned char>(gameStem[firstAlphaNum])))
+					{
+						++firstAlphaNum;
+					}
+
+					//trim all spaces, tabs, newlines and non-alphanums
+					if (firstAlphaNum < gameStem.size())
+					{
+						gameStem = gameStem.substr(firstAlphaNum);
+#ifdef _WIN32
+						gameStem = gameStem + ".exe";
+#endif
+
+						Engine::gameExePath = (path(Engine::gameExePath).parent_path() / gameStem);
+
+						string message = "Forcefully modified game name value to be '" + gameStem + "' to prevent issues. If this is called then the game name value is set incorrectly and should be fixed!\n";
+						ConsoleManager::WriteConsoleMessage(
+							Caller::FILE,
+							Type::EXCEPTION,
+							message
+						);
+					}
+				}
+
 				//
 				// REMOVE OLD GAME EXE IF ANY EXISTS
 				//
@@ -92,8 +122,20 @@ namespace Core
 				//
 				if (RunInstaller())
 				{
-					string gameStem = path(Engine::gameExePath).stem().string();
-					string gameDir = (path(Engine::gameParentPath) / "Game.exe").string();
+					string gameDir{};
+					string gameFileName{};
+					
+#ifdef _WIN32
+					gameFileName = gameStem + ".exe";
+					gameDir = (path(Engine::gameParentPath) / gameFileName).string();
+#else
+					gameFileName = gameStem;
+					gameDir = (path(Engine::gameParentPath) / gameFileName).string();
+#endif
+
+					cout << "gameStem: " << gameStem << "\n";
+					cout << "gameDir: " << gameDir << "\n";
+					cout << "gameFileName: " << gameFileName << "\n";
 
 					if (!exists(gameDir))
 					{
@@ -107,12 +149,7 @@ namespace Core
 						return;
 					}
 
-					if (gameStem != "Game")
-					{
-						File::MoveOrRenameTarget(
-							(path(Engine::gameParentPath) / "Game.exe").string(),
-							Engine::gameExePath);
-					}
+					File::MoveOrRenameTarget(gameDir, Engine::gameExePath);
 
 					//
 					// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
@@ -266,14 +303,14 @@ namespace Core
 		releaseType = "release";
 		libStart = (path(engineLibRootFolder) / "libElypso engine.a").string();
 		libEngineEnd = (path(engineRootFolder) / "libElypso engine.a").string();
-		libGameEnd = (path(gameRootFolder) / "libElypso engine.lib").string();
-		gameBuilder = (path(gameRootFolder) / "build_linux_release.bat").string();
+		libGameEnd = (path(gameRootFolder) / "libElypso engine.a").string();
+		gameBuilder = (path(gameRootFolder) / "build_linux_release.sh").string();
 #else
 		releaseType = "debug";
 		libStart = (path(engineLibRootFolder) / "libElypso engineD.a").string();
 		libEngineEnd = (path(engineRootFolder) / "libElypso engineD.a").string();
-		libGameEnd = (path(gameRootFolder) / "libElypso engineD.lib").string();
-		gameBuilder = (path(gameRootFolder) / "build_linux_debug.bat").string();
+		libGameEnd = (path(gameRootFolder) / "libElypso engineD.a").string();
+		gameBuilder = (path(gameRootFolder) / "build_linux_debug.sh").string();
 #endif
 
 #endif

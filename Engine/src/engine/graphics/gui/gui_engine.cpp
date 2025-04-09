@@ -1155,7 +1155,7 @@ namespace Graphics::GUI
 #ifdef _WIN32
 		ShellExecuteA(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
 #elif __linux__
-		string command = "xdg-open \"" + string(link) + "\"";
+		string command = "xdg-open \"" + string(url) + "\"";
 		int result = system(command.c_str());
 		(void)result;
 #endif
