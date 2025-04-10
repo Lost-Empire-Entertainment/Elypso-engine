@@ -109,6 +109,21 @@ else()
 	endif()
 endif()
 
+# Add Elypso engine
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(ENGINE_LIBRARY_PATH "${CMAKE_SOURCE_DIR}/Elypso engine.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(ENGINE_LIBRARY_PATH "${CMAKE_SOURCE_DIR}/Elypso EngineD.lib")
+	endif()
+else()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(ENGINE_LIBRARY_PATH "${CMAKE_SOURCE_DIR}/libElypso engine.a")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(ENGINE_LIBRARY_PATH "${CMAKE_SOURCE_DIR}/libElypso engineD.a")
+	endif()
+endif()
+
 # Add magic_enum
 add_library(magic_enum INTERFACE)
 target_include_directories(magic_enum INTERFACE ${EXT_MAGIC_ENUM_DIR})
@@ -182,68 +197,39 @@ target_include_directories(Game PRIVATE
 )
 
 if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		target_link_libraries(Game PRIVATE 
-		external_libs 
-		"${CMAKE_SOURCE_DIR}/Elypso engine.lib" 
-		${GLFW_LIBRARY_PATH} 
-		${ASSIMP_LIBRARY_PATH} 
+	target_link_libraries(Game PRIVATE
+		external_libs
+		${ENGINE_LIBRARY_PATH}
+		${GLFW_LIBRARY_PATH}
+		${ASSIMP_LIBRARY_PATH}
 		${ASSIMP_LIBRARY_PATH2}
 		${PHYSICS_LIBRARY_PATH}
-		${CRASH_LIBRARY_PATH})
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		target_link_libraries(Game PRIVATE 
-		external_libs 
-		"${CMAKE_SOURCE_DIR}/Elypso engineD.lib" 
-		${GLFW_LIBRARY_PATH} 
-		${ASSIMP_LIBRARY_PATH} 
-		${ASSIMP_LIBRARY_PATH2} 
-		${PHYSICS_LIBRARY_PATH}
-		${CRASH_LIBRARY_PATH})
-	endif()
+		${CRASH_LIBRARY_PATH}
+	)
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		if (Wayland_FOUND)
-			target_link_libraries(Game PRIVATE 
-				"${CMAKE_SOURCE_DIR}/libElypso engine.a" 
-				external_libs 
-				glfw 
-				assimp 
-				Wayland::Client
-				${PHYSICS_LIBRARY_PATH}
-				${CRASH_LIBRARY_PATH})
-		elseif (X11_FOUND)
-			target_link_libraries(Game PRIVATE 
-				"${CMAKE_SOURCE_DIR}/libElypso engine.a" 
-				external_libs 
-				glfw 
-				assimp 
-				${X11_LIBRARIES}
-				${PHYSICS_LIBRARY_PATH}
-				${CRASH_LIBRARY_PATH})
-		endif()
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		if (Wayland_FOUND)
-			target_link_libraries(Game PRIVATE 
-				"${CMAKE_SOURCE_DIR}/libElypso engineD.a" 
-				external_libs 
-				glfw 
-				assimp 
-				Wayland::Client
-				${PHYSICS_LIBRARY_PATH}
-				${CRASH_LIBRARY_PATH})
-		elseif (X11_FOUND)
-			target_link_libraries(Game PRIVATE 
-				"${CMAKE_SOURCE_DIR}/libElypso engineD.a" 
-				external_libs 
-				glfw 
-				assimp 
-				${X11_LIBRARIES}
-				${PHYSICS_LIBRARY_PATH}
-				${CRASH_LIBRARY_PATH})
-		endif()
+
+	if (Wayland_FOUND)
+		target_link_libraries(Game PRIVATE
+			${ENGINE_LIBRARY_PATH}
+			external_libs
+			glfw
+			assimp
+			Wayland::Client
+			${PHYSICS_LIBRARY_PATH}
+			${CRASH_LIBRARY_PATH}
+		)
+	elseif (X11_FOUND)
+		target_link_libraries(Game PRIVATE
+			${ENGINE_LIBRARY_PATH}
+			external_libs
+			glfw
+			assimp
+			${X11_LIBRARIES}
+			${PHYSICS_LIBRARY_PATH}
+			${CRASH_LIBRARY_PATH}
+		)
 	endif()
 endif()
 
