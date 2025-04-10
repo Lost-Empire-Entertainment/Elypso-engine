@@ -21,7 +21,7 @@ cmake --preset=linux-debug
 if [ $? -ne 0 ]; then
     echo "[ERROR] Configuration failed."
     if [[ "$1" == "pause" ]]; then
-		read -r -p "Press enter to exit..."'
+		read -r -p "Press enter to exit..."
 	fi
     exit 1
 fi
@@ -30,7 +30,7 @@ cmake --build --preset=linux-debug -- -j$(nproc)
 if [ $? -ne 0 ]; then
     echo "[ERROR] Build failed."
     if [[ "$1" == "pause" ]]; then
-		read -r -p "Press enter to exit..."'
+		read -r -p "Press enter to exit..."
 	fi
     exit 1
 fi
@@ -38,11 +38,11 @@ fi
 #Don't install executables
 #cmake --install build-debug
 #if [ $? -ne 0 ]; then
-#   echo "[ERROR] Install failed."
-#   if [[ "$1" == "pause" ]]; then
-#		read -r -p "Press enter to exit..."'
+#	echo "[ERROR] Install failed."
+#    if [[ "$1" == "pause" ]]; then
+#		read -r -p "Press enter to exit..."
 #	fi
-#   exit 1
+#    exit 1
 #fi
 
 # Record end time
@@ -58,6 +58,6 @@ echo "---------------------------------------------"
 
 # Pause to allow to review the output
 if [[ "$1" == "pause" ]]; then
-	read -r -p "Press enter to exit..."'
+	read -r -p "Press enter to exit..."
 fi
 exit 0
