@@ -10,17 +10,17 @@ set "PRESET=windows-release"
 set "INSTALLER_BUILD_DIR=build-release"
 
 if exist "%BUILD_DIR%" (
-    echo [INFO] Removing existing build directory
-    rmdir /s /q "%BUILD_DIR%"
+	echo [INFO] Removing existing build directory
+	rmdir /s /q "%BUILD_DIR%"
 )
 
 if exist "%INSTALL_DIR%" (
-    echo [INFO] Removing existing install directory
-    rmdir /s /q "%INSTALL_DIR%"
+	echo [INFO] Removing existing install directory
+	rmdir /s /q "%INSTALL_DIR%"
 )
 
 :: Ensure Visual Studio environment is set up correctly
-call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" || (
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" ||(
     echo [ERROR] Failed to set up Visual Studio environment.
     exit /b 1
 )
@@ -32,8 +32,9 @@ echo [INFO] Configuring with preset: %PRESET%
 cmake --preset %PRESET%
 if errorlevel 1 (
     echo [ERROR] Configuration failed
-	:: Don't pause for Game
-	::pause
+	if /i "%1"=="pause" (
+	    pause
+	)
     exit /b 1
 )
 
@@ -41,8 +42,9 @@ echo [INFO] Building with preset: %PRESET%
 cmake --build --preset %PRESET%
 if errorlevel 1 (
     echo [ERROR] Build failed
-	:: Don't pause for Game
-	::pause
+	if /i "%1"=="pause" (
+	    pause
+	)
     exit /b 1
 )
 
@@ -50,9 +52,11 @@ if errorlevel 1 (
 ::echo [INFO] Installing to "%INSTALLER_BUILD_DIR%"
 ::cmake --install "%INSTALLER_BUILD_DIR%"
 ::if errorlevel 1 (
-::    echo [ERROR] Install failed
-::	  pause
-::    exit /b 1
+::		echo [ERROR] Install failed
+::	    if /i "%1"=="pause" (
+::	    	pause
+::		)
+::      exit /b 1
 ::)
 
 :: Record end time
@@ -67,6 +71,7 @@ echo Include headers: "%INSTALL_DIR%\include"
 echo Build duration: %TIME_START% - %TIME_END%
 echo ---------------------------------------------
 
-:: Don't pause for Game
-::pause
+if /i "%1"=="pause" (
+	pause
+)
 exit /b 0

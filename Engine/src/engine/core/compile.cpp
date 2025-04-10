@@ -88,7 +88,7 @@ namespace Core
 						gameStem = gameStem + ".exe";
 #endif
 
-						Engine::gameExePath = (path(Engine::gameExePath).parent_path() / gameStem);
+						Engine::gameExePath = (path(Engine::gameExePath).parent_path() / gameStem).string();
 
 						string message = "Forcefully modified game name value to be '" + gameStem + "' to prevent issues. If this is called then the game name value is set incorrectly and should be fixed!\n";
 						ConsoleManager::WriteConsoleMessage(
@@ -122,35 +122,6 @@ namespace Core
 				//
 				if (RunInstaller())
 				{
-					string gameDir{};
-					string gameFileName{};
-					
-#ifdef _WIN32
-					gameFileName = gameStem + ".exe";
-					gameDir = (path(Engine::gameParentPath) / gameFileName).string();
-#else
-					gameFileName = gameStem;
-					gameDir = (path(Engine::gameParentPath) / gameFileName).string();
-#endif
-
-					cout << "gameStem: " << gameStem << "\n";
-					cout << "gameDir: " << gameDir << "\n";
-					cout << "gameFileName: " << gameFileName << "\n";
-
-					if (!exists(gameDir))
-					{
-						string output = "Game directory '" + gameDir + "' does not exist!\n";
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							output);
-
-						finishedBuild = true;
-						return;
-					}
-
-					File::MoveOrRenameTarget(gameDir, Engine::gameExePath);
-
 					//
 					// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
 					//
