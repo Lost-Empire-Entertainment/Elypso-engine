@@ -796,8 +796,11 @@ namespace Core
 
     void Input::SceneWindowInput()
     {
-        //ignore all scene window input if no camera is active
+        //ignore all camera movement if no camera is active
         if (Render::activeCamera == nullptr) return;
+
+        //ignore all camera movement if movement is disabled
+        if (!allowMovement) return;
 
         DragCamera();
         MoveCamera();
@@ -855,13 +858,20 @@ namespace Core
         {
             glfwSetInputMode(Render::window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
-        if (glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT))
+        if (rightClickState)
         {
-            glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            if (glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT))
+            {
+                glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
+            else
+            {
+                glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            }
         }
         else
         {
-            glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
 
 #if ENGINE_MODE
@@ -900,7 +910,12 @@ namespace Core
             glfwGetCursorPos(Render::window, &currentX, &currentY);
 
             auto cc = Render::activeCamera->GetComponent<CameraComponent>();
-            cc->SetEnableState(glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+            bool draggingCamera =
+                !rightClickState
+                || (rightClickState
+                && glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+
+            cc->SetEnableState(draggingCamera);
 
             if (cc->IsEnabled())
             {
@@ -942,11 +957,12 @@ namespace Core
     {
         auto cc = Render::activeCamera->GetComponent<CameraComponent>();
         auto tc = Render::activeCamera->GetComponent<TransformComponent>();
-        if (cc->IsEnabled()
+
+        if (rightClickState
+            && cc->IsEnabled()
             && !startedHolding)
         {
             startedHolding = true;
-            appliedUpdate = false;
         }
         if (!cc->IsEnabled()
             && (startedHolding
@@ -974,6 +990,15 @@ namespace Core
 
             vec3 front = cc->GetFront();
             vec3 right = cc->GetRight();
+
+            if (!allowYMovement)
+            {
+                front.y = 0.0f;
+                right.y = 0.0f;
+
+                front = normalize(front);
+                right = normalize(right);
+            }
 
             //camera forwards
 #if ENGINE_MODE
@@ -1034,11 +1059,14 @@ namespace Core
             if (glfwGetKey(Render::window, GLFW_KEY_E) == GLFW_PRESS)
 #endif
             {
-                tc->SetPosition(
-                    tc->GetPosition()
-                    + cc->GetUp() * cc->GetSpeed() * currentSpeed);
+                if (allowYMovement)
+                {
+                    tc->SetPosition(
+                        tc->GetPosition()
+                        + cc->GetUp() * cc->GetSpeed() * currentSpeed);
 
-                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                }
             }
             //camera down
 #if ENGINE_MODE
@@ -1047,11 +1075,14 @@ namespace Core
             if (glfwGetKey(Render::window, GLFW_KEY_Q) == GLFW_PRESS)
 #endif
             {
-                tc->SetPosition(
-                    tc->GetPosition()
-                    - cc->GetUp() * cc->GetSpeed() * currentSpeed);
+                if (allowYMovement)
+                {
+                    tc->SetPosition(
+                        tc->GetPosition()
+                        - cc->GetUp() * cc->GetSpeed() * currentSpeed);
 
-                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+                }
             }
         }
         else increment = ImGui::IsKeyDown(ImGuiKey_LeftShift) ? 1.0f : 0.1f;

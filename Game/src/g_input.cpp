@@ -10,7 +10,7 @@
 #include "render.hpp"
 
 //game
-#include "input.hpp"
+#include "g_input.hpp"
 
 using Graphics::Render;
 
@@ -18,14 +18,18 @@ namespace GameTemplate
 {
 	static GLFWwindow* window = nullptr;
 
-	void T_Input::Initialize()
+	void G_Input::Initialize()
 	{
 		window = Render::window;
 
-		keyStates["R"] = { GLFW_KEY_R };
+		keyStates["R"] = { GLFW_KEY_R }; //randomize point light color
+
+		keyStates["Z"] = { GLFW_KEY_Z }; //toggle camera y movement lock
+		keyStates["X"] = { GLFW_KEY_X }; //hold right mouse to rotate camera
+		keyStates["C"] = { GLFW_KEY_C }; //toggle all camera movement lock
 	}
 
-	void T_Input::UpdateKeyStates()
+	void G_Input::UpdateKeyStates()
 	{
 		for (auto& [name, state] : keyStates)
 		{
@@ -34,7 +38,7 @@ namespace GameTemplate
 		}
 	}
 
-	bool T_Input::IsPressed(const string& name)
+	bool G_Input::IsPressed(const string& name)
 	{
 		auto it = keyStates.find(name);
 		return it != keyStates.end()
@@ -42,7 +46,7 @@ namespace GameTemplate
 			&& !it->second.wasDown;
 	}
 
-	bool T_Input::IsHeld(const string& name)
+	bool G_Input::IsHeld(const string& name)
 	{
 		auto it = keyStates.find(name);
 		return it != keyStates.end()

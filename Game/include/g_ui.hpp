@@ -5,7 +5,7 @@
 
 namespace GameTemplate
 {
-	class T_UI
+	class G_UI
 	{
 	public:
 		static void AddWindowsToList();

@@ -20,6 +20,13 @@ namespace Game
 	class Game_Asset
 	{
 	public:
+		/// <summary>
+		/// Returns gameobject with given name if it exists.
+		/// </summary>
 		static shared_ptr<GameObject> GetGameObject(const string& name);
+		/// <summary>
+		/// Returns camera of the current scene.
+		/// </summary>
+		static shared_ptr<GameObject> GetCamera();
 	};
 }

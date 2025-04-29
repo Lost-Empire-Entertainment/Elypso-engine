@@ -21,9 +21,9 @@
 #include "render.hpp"
 
 //game
-#include "core.hpp"
-#include "gui.hpp"
-#include "input.hpp"
+#include "g_core.hpp"
+#include "g_ui.hpp"
+#include "g_input.hpp"
 
 using std::string;
 using std::shared_ptr;
@@ -45,18 +45,26 @@ using Graphics::Render;
 
 namespace GameTemplate
 {
+	static bool currentYMovementState = false;
+	static bool currentRightClickState = false;
+	static bool currentMovementState = true;
+
 	static bool calledModelCheckOnce = false;
 	static shared_ptr<GameObject> model = nullptr;
 	static string modelName = "";
 
-	void T_Core::Initialize()
+	void G_Core::Initialize()
 	{
 		Game_Core::Initialize();
-		T_UI::AddWindowsToList();
-		T_Input::Initialize();
+		G_UI::AddWindowsToList();
+		G_Input::Initialize();
+
+		Game_Core::SetYMovementState(currentYMovementState);
+		Game_Core::SetRightClickState(currentRightClickState);
+		Game_Core::SetMovementState(currentMovementState);
 	}
 
-	void T_Core::Run()
+	void G_Core::Run()
 	{
 		while (!Game_Core::ShouldClose())
 		{
@@ -67,12 +75,12 @@ namespace GameTemplate
 		}
 	}
 
-	void T_Core::Shutdown()
+	void G_Core::Shutdown()
 	{
 		Game_Core::Shutdown();
 	}
 
-	void T_Core::ModelCheck(const string& name)
+	void G_Core::ModelCheck(const string& name)
 	{
 		if (!calledModelCheckOnce)
 		{
@@ -98,10 +106,10 @@ namespace GameTemplate
 		}
 	}
 
-	void T_Core::KeyCheck()
+	void G_Core::KeyCheck()
 	{
-		T_Input::UpdateKeyStates();
-		if (T_Input::IsPressed("R"))
+		G_Input::UpdateKeyStates();
+		if (G_Input::IsPressed("R"))
 		{
 			if (model == nullptr) return;
 
@@ -114,8 +122,25 @@ namespace GameTemplate
 
 			SetLightColor(model, R, G, B);
 		}
+
+		if (G_Input::IsPressed("Z"))
+		{
+			currentYMovementState = !currentYMovementState;
+			Game_Core::SetYMovementState(currentYMovementState);
+		}
+		if (G_Input::IsPressed("X"))
+		{
+			currentRightClickState = !currentRightClickState;
+			Game_Core::SetRightClickState(currentRightClickState);
+		}
+		if (G_Input::IsPressed("C"))
+		{
+			currentMovementState = !currentMovementState;
+			Game_Core::SetMovementState(currentMovementState);
+
+		}
 	}
-	float T_Core::RandomFloat(float min, float max)
+	float G_Core::RandomFloat(float min, float max)
 	{
 		static random_device rd;
 		static mt19937 gen(rd());
@@ -123,7 +148,7 @@ namespace GameTemplate
 
 		return dist(gen);
 	}
-	void T_Core::SetLightColor(
+	void G_Core::SetLightColor(
 		shared_ptr<GameObject> obj,
 		float r,
 		float g,

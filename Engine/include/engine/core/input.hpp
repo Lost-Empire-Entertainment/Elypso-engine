@@ -22,7 +22,18 @@ namespace Core
     class Input
     {
     public:
-        static inline bool appliedUpdate;
+        /// <summary>
+        /// If true, then you must hold down right mouse click to rotate camera.
+        /// </summary>
+        static inline bool rightClickState = true;
+        /// <summary>
+        /// If true, then camera move and rotation is enabled.
+        /// </summary>
+        static inline bool allowMovement = true;
+        /// <summary>
+        /// If true, then camera Y movement is allowed.
+        /// </summary>
+        static inline bool allowYMovement = true;
 
         static inline string axis = "";
         enum class ObjectAction

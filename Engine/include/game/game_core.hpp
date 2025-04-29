@@ -34,5 +34,21 @@ namespace Game
 		/// Shut down game.
 		/// </summary>
 		static void Shutdown();
+
+		/// <summary>
+		/// Toggle if right mouse key needs to be held to rotate camera.
+		/// </summary>
+		/// <param name="rightMouseState"></param>
+		static void SetRightClickState(bool rightClickState);
+
+		/// <summary>
+		/// Toggle all camera movement on and off.
+		/// </summary>
+		static void SetMovementState(bool movementState);
+
+		/// <summary>
+		/// Toggle Y camera movement on and off.
+		/// </summary>
+		static void SetYMovementState(bool yMovementState);
 	};
 }

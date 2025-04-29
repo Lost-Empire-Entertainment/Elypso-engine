@@ -18,7 +18,7 @@ namespace GameTemplate
 
 	using Graphics::Shape::GameObject;
 
-	class T_Core
+	class G_Core
 	{
 	public:
 		static void Initialize();

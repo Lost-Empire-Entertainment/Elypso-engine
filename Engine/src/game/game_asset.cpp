@@ -8,6 +8,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "cameracomponent.hpp"
 
 //game
 #include "game_asset.hpp"
@@ -15,6 +16,7 @@
 using std::vector;
 
 using Graphics::Shape::GameObjectManager;
+using Graphics::Components::CameraComponent;
 
 namespace Game
 {
@@ -29,6 +31,18 @@ namespace Game
 			{
 				return obj;
 			}
+		}
+		return nullptr;
+	}
+
+	shared_ptr<GameObject> Game_Asset::GetCamera()
+	{
+		vector<shared_ptr<GameObject>> cameras = GameObjectManager::GetCameras();
+
+		for (const auto& cam : cameras)
+		{
+			bool isPlayerCamera = cam->GetComponent<CameraComponent>()->IsPlayerCamera();
+			if (isPlayerCamera) return cam;
 		}
 		return nullptr;
 	}

@@ -3,14 +3,14 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include "core.hpp"
+#include "g_core.hpp"
 
-using GameTemplate::T_Core;
+using GameTemplate::G_Core;
 
 int main()
 {
-	T_Core::Initialize();
-	T_Core::Run();
-	T_Core::Shutdown();
+	G_Core::Initialize();
+	G_Core::Run();
+	G_Core::Shutdown();
 	return 0;
 }

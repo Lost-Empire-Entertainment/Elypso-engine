@@ -20,7 +20,7 @@ namespace GameTemplate
 		bool isDown = false;
 	};
 
-	class T_Input
+	class G_Input
 	{
 	public:
 		static void Initialize();
