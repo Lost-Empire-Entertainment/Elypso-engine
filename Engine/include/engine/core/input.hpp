@@ -27,13 +27,17 @@ namespace Core
         /// </summary>
         static inline bool rightClickState = true;
         /// <summary>
-        /// If true, then camera move and rotation is enabled.
-        /// </summary>
-        static inline bool allowMovement = true;
-        /// <summary>
         /// If true, then camera Y movement is allowed.
         /// </summary>
         static inline bool allowYMovement = true;
+        /// <summary>
+        /// If true, then camera rotation is allowed.
+        /// </summary>
+        static inline bool allowRotation = true;
+        /// <summary>
+        /// If true, then camera movement is allowed.
+        /// </summary>
+        static inline bool allowMovement = true;
 
         static inline string axis = "";
         enum class ObjectAction

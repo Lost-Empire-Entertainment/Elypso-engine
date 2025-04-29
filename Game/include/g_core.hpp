@@ -5,17 +5,11 @@
 
 #pragma once
 
-#include <string>
-#include <memory>
-
 //engine
 #include "gameobject.hpp"
 
 namespace GameTemplate
 {
-	using std::string;
-	using std::shared_ptr;
-
 	using Graphics::Shape::GameObject;
 
 	class G_Core
@@ -24,16 +18,5 @@ namespace GameTemplate
 		static void Initialize();
 		static void Run();
 		static void Shutdown();
-
-		static void ModelCheck(const string& name);
-
-		static void KeyCheck();
-
-		static float RandomFloat(float min, float max);
-		static void SetLightColor(
-			shared_ptr<GameObject> obj,
-			float r,
-			float g,
-			float b);
 	};
 }

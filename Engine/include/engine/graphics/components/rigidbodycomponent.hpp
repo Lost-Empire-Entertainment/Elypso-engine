@@ -51,6 +51,8 @@ namespace Graphics::Components
 		void SetOffsetScale(const vec3& newScale) const;
 		void SetCombinedScale(const vec3& newScale) const;
 
+		void SetVelocity(const vec3& newVelocity);
+		void SetAngularVelocity(const vec3& newAngularVelocity);
 		void ResetVelocity() const;
 		void ResetAngularVelocity() const;
 

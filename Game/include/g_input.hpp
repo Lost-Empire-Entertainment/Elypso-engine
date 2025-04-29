@@ -25,6 +25,7 @@ namespace GameTemplate
 	public:
 		static void Initialize();
 		static void UpdateKeyStates();
+		static void UpdateMouse();
 
 		/// <summary>
 		/// Returns true if key is pressed once, not held.

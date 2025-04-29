@@ -8,11 +8,15 @@
 
 //engine
 #include "render.hpp"
+#include "game_core.hpp"
 
 //game
 #include "g_input.hpp"
+#include "g_states.hpp"
+#include "g_player.hpp"
 
 using Graphics::Render;
+using Game::Game_Core;
 
 namespace GameTemplate
 {
@@ -22,11 +26,15 @@ namespace GameTemplate
 	{
 		window = Render::window;
 
-		keyStates["R"] = { GLFW_KEY_R }; //randomize point light color
-
-		keyStates["Z"] = { GLFW_KEY_Z }; //toggle camera y movement lock
-		keyStates["X"] = { GLFW_KEY_X }; //hold right mouse to rotate camera
-		keyStates["C"] = { GLFW_KEY_C }; //toggle all camera movement lock
+		keyStates["Front"] = { GLFW_KEY_W };
+		keyStates["Left"] = { GLFW_KEY_A };
+		keyStates["Back"] = { GLFW_KEY_S };
+		keyStates["Right"] = { GLFW_KEY_D };
+		keyStates["Jump"] = { GLFW_KEY_SPACE };
+		keyStates["Crouch"] = { GLFW_KEY_LEFT_CONTROL };
+		keyStates["Sprint"] = { GLFW_KEY_LEFT_SHIFT };
+		keyStates["Interact"] = { GLFW_KEY_E };
+		keyStates["Pause"] = { GLFW_KEY_ESCAPE };
 	}
 
 	void G_Input::UpdateKeyStates()
@@ -35,6 +43,35 @@ namespace GameTemplate
 		{
 			state.wasDown = state.isDown;
 			state.isDown = glfwGetKey(window, state.key) == GLFW_PRESS;
+		}
+
+		if (IsPressed("Pause"))
+		{
+			G_States::isInPauseMenu = !G_States::isInPauseMenu;
+			if (G_States::isInPauseMenu)
+			{
+				G_States::canMove = false;
+				G_States::rotationState = false;
+			}
+			else
+			{
+				G_States::canMove = true;
+				G_States::rotationState = true;
+			}
+			Game_Core::SetRotationState(G_States::rotationState);
+		}
+
+		G_Player::UpdateLastRotation();
+	}
+	void G_Input::UpdateMouse()
+	{
+		if (!G_States::rotationState)
+		{
+			glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+		else
+		{
+			glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
 

@@ -799,9 +799,6 @@ namespace Core
         //ignore all camera movement if no camera is active
         if (Render::activeCamera == nullptr) return;
 
-        //ignore all camera movement if movement is disabled
-        if (!allowMovement) return;
-
         DragCamera();
         MoveCamera();
         SetCameraSpeed();
@@ -854,25 +851,23 @@ namespace Core
 
     void Input::DragCamera()
     {
+        if (!allowRotation) return;
+
         if (glfwRawMouseMotionSupported())
         {
             glfwSetInputMode(Render::window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         }
-        if (rightClickState)
-        {
-            if (glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT))
-            {
-                glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            }
-            else
-            {
-                glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            }
-        }
-        else
+
+#if ENGINE_MODE
+        if (glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT))
         {
             glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
+        else
+        {
+            glfwSetInputMode(Render::window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+#endif
 
 #if ENGINE_MODE
         auto cc = Render::activeCamera->GetComponent<CameraComponent>();
@@ -955,6 +950,8 @@ namespace Core
 
     void Input::MoveCamera()
     {
+        if (!allowMovement) return;
+
         auto cc = Render::activeCamera->GetComponent<CameraComponent>();
         auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 

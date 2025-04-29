@@ -652,7 +652,7 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = mesh->GetMeshType() == MeshComponent::MeshType::model ? 8 : 1;
+		int numLines = mesh->GetMeshType() == MeshComponent::MeshType::model ? 10 : 1;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Material", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 		

@@ -202,6 +202,19 @@ namespace Graphics::Components
 		}
 	}
 
+	void RigidBodyComponent::SetVelocity(const vec3& newVelocity)
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+
+		rb->velocity = vec3(newVelocity);
+	}
+	void RigidBodyComponent::SetAngularVelocity(const vec3& newAngularVelocity)
+	{
+		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
+
+		rb->angularVelocity = vec3(newAngularVelocity);
+	}
+
 	void RigidBodyComponent::ResetVelocity() const
 	{
 		RigidBody* rb = Physics::physicsWorld->GetRigidBody(handle);
