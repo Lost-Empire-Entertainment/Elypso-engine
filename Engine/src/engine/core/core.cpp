@@ -8,6 +8,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <memory>
+#include <functional>
 #ifdef _WIN32
 #include <Windows.h>
 #include <ShlObj.h>
@@ -150,13 +151,6 @@ namespace Core
 			<< ".\n"
 			<< ".\n"
 			<< ".\n\n";
-
-		ConsoleManager::WriteConsoleMessage(
-			Caller::INPUT,
-			Type::INFO,
-			name + " " + version + "\n" +
-			"Copyright (C) Lost Empire Entertainment 2025\n\n",
-			true);
 
 		KalaCrashHandler::Initialize();
 		KalaCrashHandler::SetProgramName(name);
@@ -706,11 +700,7 @@ namespace Core
 		{
 			TimeManager::UpdateDeltaTime();
 
-#if ENGINE_MODE
 			if (Physics::simulatePhysics) Physics::Update(TimeManager::deltaTime);
-#else
-			Physics::Update(TimeManager::deltaTime);
-#endif
 
 			Render::WindowLoop();
 

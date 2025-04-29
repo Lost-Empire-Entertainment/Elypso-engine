@@ -10,7 +10,7 @@ echo [INFO] Building engine in Release mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_release.bat"
+cmd /c "build_windows_release.bat reset"
 if errorlevel 1 (
     echo [ERROR] Release build failed.
     pause
@@ -23,7 +23,7 @@ echo [INFO] Building engine in Debug mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_debug.bat"
+cmd /c "build_windows_debug.bat reset"
 if errorlevel 1 (
     echo [ERROR] Debug build failed.
     pause
@@ -38,7 +38,7 @@ echo [INFO] Building engine library in Release mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_release.bat"
+cmd /c "build_windows_release.bat reset"
 if errorlevel 1 (
     echo [ERROR] Release build failed.
     pause
@@ -51,7 +51,7 @@ echo [INFO] Building engine library in Debug mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_debug.bat"
+cmd /c "build_windows_debug.bat reset"
 if errorlevel 1 (
     echo [ERROR] Debug build failed.
     pause

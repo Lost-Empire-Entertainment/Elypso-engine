@@ -3,9 +3,9 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-namespace TheGameGUI
+namespace GameTemplate
 {
-	class GUI
+	class T_UI
 	{
 	public:
 		static void AddWindowsToList();

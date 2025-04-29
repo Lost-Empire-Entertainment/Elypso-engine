@@ -306,18 +306,18 @@ namespace Core
 		case InstallerType::reset:
 		{
 #ifdef _WIN32
-			command = "cmd /c " + gameBuilder;
+			command = "cmd /c \"" + gameBuilder + " reset\"";
 #elif __linux__
-			command = "bash " + gameBuilder;
+			command = "bash \"" + gameBuilder + "\" reset";
 #endif
 			break;
 		}
 		case InstallerType::compile:
 		{
 #ifdef _WIN32
-			command = "cmd /c " + gameBuilder;
+			command = "cmd /c \"" + gameBuilder + "\"";
 #elif __linux__
-			command = "bash " + gameBuilder;
+			command = "bash \"" + gameBuilder + "\"";
 #endif
 			break;
 		}

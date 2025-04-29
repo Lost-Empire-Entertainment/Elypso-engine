@@ -12,14 +12,14 @@
 //engine
 using Graphics::GUI::GameGUI;
 
-namespace TheGameGUI
+namespace GameTemplate
 {
-	void GUI::AddWindowsToList()
+	void T_UI::AddWindowsToList()
 	{
 		//GameGUI::imguiWindows.push_back(TestWindow);
 	}
 
-	void GUI::TestWindow()
+	void T_UI::TestWindow()
 	{
 		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);

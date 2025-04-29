@@ -5,11 +5,12 @@
 
 #include "core.hpp"
 
-using GameCore::GameTemplate;
+using GameTemplate::T_Core;
 
 int main()
 {
-	GameTemplate::InitializeGame();
-	GameTemplate::RunGame();
+	T_Core::Initialize();
+	T_Core::Run();
+	T_Core::Shutdown();
 	return 0;
 }

@@ -166,7 +166,7 @@ target_include_directories(Game PRIVATE
 	${INCLUDE_DIR}
 	
 	# Engine code for game
-	${GAME_INCLUDE_DIR}/core
+	${GAME_INCLUDE_DIR}
 	
 	# Engine code
 	${ENGINE_INCLUDE_DIR}/core

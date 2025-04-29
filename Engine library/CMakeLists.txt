@@ -154,7 +154,8 @@ set_target_properties(Elypso_engine PROPERTIES
 target_compile_features(Elypso_engine PRIVATE cxx_std_20)
 
 target_include_directories(Elypso_engine PRIVATE
-		${GAME_INCLUDE_DIR}/core
+		# Engine include folders
+		${GAME_INCLUDE_DIR}
 		${ENGINE_INCLUDE_DIR}/core
 		${ENGINE_INCLUDE_DIR}/file
 		${ENGINE_INCLUDE_DIR}/graphics
@@ -163,6 +164,8 @@ target_include_directories(Elypso_engine PRIVATE
 		${ENGINE_INCLUDE_DIR}/graphics/shapes
 		${ENGINE_INCLUDE_DIR}/physics
 		${ENGINE_INCLUDE_DIR}/utils
+		
+		# External include folders
 		${EXT_ASSIMP_DIR}
 		${EXT_GLAD_DIR}
 		${EXT_GLFW_DIR}

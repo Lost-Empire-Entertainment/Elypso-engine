@@ -5,12 +5,35 @@
 
 #pragma once
 
-namespace GameCore
+#include <string>
+#include <memory>
+
+//engine
+#include "gameobject.hpp"
+
+namespace GameTemplate
 {
-	class GameTemplate
+	using std::string;
+	using std::shared_ptr;
+
+	using Graphics::Shape::GameObject;
+
+	class T_Core
 	{
 	public:
-		static void InitializeGame();
-		static void RunGame();
+		static void Initialize();
+		static void Run();
+		static void Shutdown();
+
+		static void ModelCheck(const string& name);
+
+		static void KeyCheck();
+
+		static float RandomFloat(float min, float max);
+		static void SetLightColor(
+			shared_ptr<GameObject> obj,
+			float r,
+			float g,
+			float b);
 	};
 }
