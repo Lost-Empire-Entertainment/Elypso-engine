@@ -28,64 +28,64 @@ if [[ ! -f "$DEBUG_SH" ]]; then
 fi
 
 echo "====================================="
-echo "[INFO] Copying external binaries..."
+echo "[INFO] Copying binaries..."
 echo "====================================="
 echo ""
 
 # Copy external shared
 if ! bash "${COPY_SH}"; then
-    echo "[FATAL] Copy failed!"
+    echo "[ERROR] Failed to copy binaries."
     read -r -p "Press enter to exit..."
     exit 1
 fi
 
 echo "====================================="
-echo "[INFO] Building engine in Release mode..."
+echo "[INFO] Building Elypso engine in Release mode..."
 echo "====================================="
 echo ""
 
 if ! bash "${ENGINE_RELEASE_SH}"; then
-    echo "[FATAL] Engine Release build failed!"
+    echo "[ERROR] Engine Release build failed!"
     read -r -p "Press enter to exit..."
     exit 1
 fi
 
 echo "====================================="
-echo "[INFO] Building engine in Debug mode..."
+echo "[INFO] Building Elypso engine in Debug mode..."
 echo "====================================="
 echo ""
 
 if ! bash "${ENGINE_DEBUG_SH}"; then
-    echo "[FATAL] Engine Debug build failed!"
+    echo "[ERROR] Engine Debug build failed!"
     read -r -p "Press enter to exit..."
     exit 1
 fi
 
 echo "====================================="
-echo "[INFO] Building engine library in Release mode..."
+echo "[INFO] Building Elypso engine library in Release mode..."
 echo "====================================="
 echo ""
 
 if ! bash "${ENGINE_LIB_RELEASE_SH}"; then
-    echo "[FATAL] Engine Library Release build failed!"
+    echo "[ERROR] Engine Library Release build failed!"
     read -r -p "Press enter to exit..."
     exit 1
 fi
 
 echo "====================================="
-echo "[INFO] Building engine library in Debug mode..."
+echo "[INFO] Building Elypso engine library in Debug mode..."
 echo "====================================="
 echo ""
 
 if ! bash "${ENGINE_LIB_DEBUG_SH}"; then
-    echo "[FATAL] Engine Library Debug build failed!"
+    echo "[ERROR] Engine Library Debug build failed!"
     read -r -p "Press enter to exit..."
     exit 1
 fi
 
 echo ""
 echo "====================================="
-echo "[SUCCESS] Finished building and installing engine and engine library!"
+echo "[SUCCESS] Finished building and installing Elypso engine and Elypso engine library!"
 echo "====================================="
 echo ""
 
