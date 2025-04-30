@@ -3,21 +3,21 @@
 set "PROJECT_ROOT=%~dp0"
 
 echo =====================================
-echo [INFO] Copying external dlls...
+echo [INFO] Copying binaries...
 echo =====================================
 echo.
 
 cd "%PROJECT_ROOT%\_external_shared"
 cmd /c "copy_windows.bat"
 if errorlevel 1 (
-    echo [ERROR] DLL copy failed.
+    echo [ERROR] Failed to copy binaries.
     pause
     exit /b 1
 )
 cd ..
 
 echo =====================================
-echo [INFO] Building engine in Release mode...
+echo [INFO] Building Elypso engine in Release mode...
 echo =====================================
 echo.
 
@@ -32,7 +32,7 @@ if errorlevel 1 (
 
 echo.
 echo =====================================
-echo [INFO] Building engine in Debug mode...
+echo [INFO] Building Elypso engine in Debug mode...
 echo =====================================
 echo.
 
@@ -44,7 +44,7 @@ if errorlevel 1 (
 )
 
 echo =====================================
-echo [INFO] Building engine library in Release mode...
+echo [INFO] Building Elypso engine library in Release mode...
 echo =====================================
 echo.
 
@@ -59,7 +59,7 @@ if errorlevel 1 (
 
 echo.
 echo =====================================
-echo [INFO] Building engine library in Debug mode...
+echo [INFO] Building Elypso engine library in Debug mode...
 echo =====================================
 echo.
 
@@ -72,7 +72,7 @@ if errorlevel 1 (
 
 echo.
 echo =====================================
-echo [SUCCESS] Finished building and installing engine and engine library!
+echo [SUCCESS] Finished building and installing Elypso engine and Elypso engine library!
 echo =====================================
 echo.
 
