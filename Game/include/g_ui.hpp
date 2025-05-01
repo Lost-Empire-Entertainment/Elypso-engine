@@ -10,6 +10,6 @@ namespace GameTemplate
 	public:
 		static void AddWindowsToList();
 	private:
-		static void TestWindow();
+		static void DebugWindow();
 	};
 }

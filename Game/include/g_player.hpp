@@ -5,11 +5,28 @@
 
 #pragma once
 
+#include <memory>
+
+//engine
+#include "gameobject.hpp"
+
 namespace GameTemplate
 {
+	using std::shared_ptr;
+
+	using Graphics::Shape::GameObject;
+
 	class G_Player
 	{
 	public:
+		static inline float walkSpeed = 1.0f;
+		static inline float speedAmplify = 10.0f;
+		static inline float jumpStrength = 3.0f;
+		static inline float maxVelocity = 1.0f;
+
+		static inline shared_ptr<GameObject> model_player = nullptr;
+		static inline shared_ptr<GameObject> camera = nullptr;
+
 		/// <summary>
 		/// Set up player and camera.
 		/// </summary>

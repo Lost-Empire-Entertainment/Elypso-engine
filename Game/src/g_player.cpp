@@ -3,7 +3,6 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <memory>
 #include <string>
 #include <iostream>
 
@@ -13,7 +12,6 @@
 //engine
 #include "game_core.hpp"
 #include "game_asset.hpp"
-#include "gameobject.hpp"
 #include "core.hpp"
 #include "transformcomponent.hpp"
 #include "rigidbodycomponent.hpp"
@@ -25,7 +23,6 @@
 #include "g_input.hpp"
 #include "g_states.hpp"
 
-using std::shared_ptr;
 using std::string;
 using glm::vec3;
 using std::cout;
@@ -36,7 +33,6 @@ using glm::mix;
 
 using Game::Game_Core;
 using Game::Game_Asset;
-using Graphics::Shape::GameObject;
 using Core::Engine;
 using Graphics::Components::TransformComponent;
 using Graphics::Components::RigidBodyComponent;
@@ -45,11 +41,10 @@ using Core::TimeManager;
 
 namespace GameTemplate
 {
+	float currentMaxVelocity = G_Player::maxVelocity;
+
 	static vec3 lastRotation{};
 	static bool startedHolding{};
-
-	static shared_ptr<GameObject> model_player{};
-	static shared_ptr<GameObject> camera{};
 
 	static shared_ptr<TransformComponent> mtc{};
 	static shared_ptr<TransformComponent> ctc{};
@@ -128,7 +123,7 @@ namespace GameTemplate
 				cc = camera->GetComponent<CameraComponent>();
 			}
 
-			float currentSpeed = static_cast<float>(1.0f * TimeManager::deltaTime);
+			float currentSpeed = static_cast<float>(walkSpeed * TimeManager::deltaTime);
 
 			vec3 front = cc->GetFront();
 			vec3 right = cc->GetRight();
@@ -142,7 +137,7 @@ namespace GameTemplate
 			if (length(impulse) > 0.0f)
 			{
 				impulse = normalize(impulse);
-				float desiredImpulse = currentSpeed * 1.0f;
+				float desiredImpulse = currentSpeed * speedAmplify;
 				impulse *= desiredImpulse;
 
 				vec3 currentVelocity = mrc->GetVelocity();
@@ -150,8 +145,8 @@ namespace GameTemplate
 				vec3 horizontalImpulse = vec3(impulse.x, 0.0f, impulse.z);
 
 				vec3 newHorizontal = horizontalVelocity + horizontalImpulse;
-				static float currentMaxVelocity = 2.0f;
-				float targetMaxVelocity = G_Input::IsHeld("Sprint") ? 4.0f : 2.0f;
+
+				float targetMaxVelocity = G_Input::IsHeld("Sprint") ? maxVelocity * 2 : maxVelocity;
 				currentMaxVelocity = mix(currentMaxVelocity, targetMaxVelocity, 0.1f);
 
 				if (length(newHorizontal) > currentMaxVelocity)
@@ -166,7 +161,7 @@ namespace GameTemplate
 			if (G_Input::IsPressed("Jump")
 				&& abs(mrc->GetVelocity().y) < 0.1f)
 			{
-				impulse.y += 0.5f;
+				impulse.y += jumpStrength;
 			}
 
 			mrc->ApplyImpulse(impulse);
