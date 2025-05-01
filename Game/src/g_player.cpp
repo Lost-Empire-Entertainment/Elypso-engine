@@ -128,6 +128,7 @@ namespace GameTemplate
 			vec3 front = cc->GetFront();
 			vec3 right = cc->GetRight();
 			vec3 impulse{};
+			vec3 velocity = mrc->GetVelocity();
 
 			if (G_Input::IsHeld("Front")) impulse += front;
 			if (G_Input::IsHeld("Back")) impulse -= front;
@@ -140,8 +141,7 @@ namespace GameTemplate
 				float desiredImpulse = currentSpeed * speedAmplify;
 				impulse *= desiredImpulse;
 
-				vec3 currentVelocity = mrc->GetVelocity();
-				vec3 horizontalVelocity = vec3(currentVelocity.x, 0.0f, currentVelocity.z);
+				vec3 horizontalVelocity = vec3(velocity.x, 0.0f, velocity.z);
 				vec3 horizontalImpulse = vec3(impulse.x, 0.0f, impulse.z);
 
 				vec3 newHorizontal = horizontalVelocity + horizontalImpulse;
@@ -159,7 +159,7 @@ namespace GameTemplate
 			}
 
 			if (G_Input::IsPressed("Jump")
-				&& abs(mrc->GetVelocity().y) < 0.1f)
+				&& abs(velocity.y) < 0.1f)
 			{
 				impulse.y += jumpStrength;
 			}
@@ -171,9 +171,9 @@ namespace GameTemplate
 				&& !G_Input::IsHeld("Left")
 				&& !G_Input::IsHeld("Back")
 				&& !G_Input::IsHeld("Right")
-				&& mrc->GetVelocity().x != 0.0f
-				&& mrc->GetVelocity().y == 0.0f
-				&& mrc->GetVelocity().z != 0.0f)
+				&& (velocity.x != 0.0f
+				|| velocity.z != 0.0f)
+				&& abs(velocity.y) < 0.1f)
 			{
 				mrc->ResetVelocity();
 			}
