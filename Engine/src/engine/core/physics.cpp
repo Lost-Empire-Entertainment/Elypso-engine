@@ -12,8 +12,8 @@ namespace Core
 	{
 		if (!physicsWorld) physicsWorld = &PhysicsWorld::GetInstance();
 		physicsWorld->InitializePhysics(gravity);
-	}
 
+	}
 	void Physics::Update(float deltaTime)
 	{
 		physicsWorld->StepSimulation(deltaTime);

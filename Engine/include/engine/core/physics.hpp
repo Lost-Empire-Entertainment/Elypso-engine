@@ -22,7 +22,6 @@ namespace Core
 		static inline PhysicsWorld* physicsWorld = nullptr;
 
 		static void Initialize(const vec3& gravity);
-
 		static void Update(float deltaTime);
 	};
 }

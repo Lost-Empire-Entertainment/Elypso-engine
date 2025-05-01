@@ -379,6 +379,8 @@ namespace EngineFile
 
 		keys.push_back("gravity");
 			values.push_back("0.0, -9.81, 0.0");
+		keys.push_back("angleLimit");
+			values.push_back("45.0");
 		keys.push_back("angularDamping");
 			values.push_back("0.5");
 		keys.push_back("lowAngularVelocityFactor");
@@ -405,6 +407,10 @@ namespace EngineFile
 			to_string(gravity.y) + ", " +
 			to_string(gravity.z);
 		SetValue("gravity", gravityString);
+
+		string angleLimit =
+			to_string(Physics::physicsWorld->GetAngleLimit());
+		SetValue("angleLimit", angleLimit);
 
 		string angularDamping =
 			to_string(Physics::physicsWorld->GetAngularDamping());
@@ -445,6 +451,9 @@ namespace EngineFile
 		vector<string> split = String::Split(gravityString, ',');
 		vec3 gravity = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
 		Physics::physicsWorld->SetGravity(gravity);
+
+		float angleLimit = stof(GetValue("angleLimit"));
+		Physics::physicsWorld->SetAngleLimit(angleLimit);
 
 		float angularDamping = stof(GetValue("angularDamping"));
 		Physics::physicsWorld->SetAngularDamping(angularDamping);
