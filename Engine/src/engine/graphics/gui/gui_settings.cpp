@@ -381,7 +381,7 @@ namespace Graphics::GUI
 	{
 		ImGui::Text("Global gravity");
 		vec3 gravity = Physics::physicsWorld->GetGravity();
-		if (ImGui::DragFloat3("##globalGravity", value_ptr(gravity), 0.01f, 100.00f, 100.00f))
+		if (ImGui::DragFloat3("##globalGravity", value_ptr(gravity), 0.01f, -100.00f, 100.00f))
 		{
 			Physics::physicsWorld->SetGravity(gravity);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -390,6 +390,20 @@ namespace Graphics::GUI
 		if (ImGui::Button("Reset##pw_resetG"))
 		{
 			Physics::physicsWorld->SetGravity(vec3(0.0f, -9.81f, 0.0f));
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+
+		ImGui::Text("Global angle limit");
+		float angleLimit = Physics::physicsWorld->GetAngleLimit();
+		if (ImGui::DragFloat("##globalAngleLimit", &angleLimit, 0.01f, 0.0f, 90.0f))
+		{
+			Physics::physicsWorld->SetAngleLimit(angleLimit);
+			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Reset##pw_resetAL"))
+		{
+			Physics::physicsWorld->SetAngleLimit(45.0f);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
