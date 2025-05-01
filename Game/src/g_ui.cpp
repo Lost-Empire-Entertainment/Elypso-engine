@@ -46,7 +46,7 @@ namespace GameTemplate
 
 	void G_UI::DebugWindow()
 	{
-		ImVec2 windowSize = ImVec2(300.0f, 300.0f);
+		ImVec2 windowSize = ImVec2(300.0f, 600.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
 
 		ImVec2 windowPos = ImVec2(20.0f, 20.0f);
@@ -95,6 +95,10 @@ namespace GameTemplate
 
 			if (G_Player::model_player != nullptr)
 			{
+				ImGui::Text("");
+				ImGui::Text("==============================");
+				ImGui::Text("");
+
 				static shared_ptr<RigidBodyComponent> mrc{};
 				if (mrc == nullptr)
 				{
@@ -107,16 +111,20 @@ namespace GameTemplate
 				string vY = FormatFloat(playerVelocity.y);
 				string vZ = FormatFloat(playerVelocity.z);
 
-				string playerVelocityString =
-					"("
-					+ vX
-					+ ", "
-					+ vY
-					+ ", "
-					+ vZ
-					+ ")";
-				ImGui::Text(("current velocity: " + playerVelocityString).c_str());
+				ImGui::Text("current velocity");
+				ImGui::Text(("x: " + vX).c_str());
+				ImGui::Text(("y: " + vY).c_str());
+				ImGui::Text(("z: " + vZ).c_str());
 			}
+
+			ImGui::Text("");
+			ImGui::Text("==============================");
+			ImGui::Text("");
+
+			ImGui::Text("Walk: WASD");
+			ImGui::Text("Jump: Space");
+			ImGui::Text("Sprint: Left Shift");
+			ImGui::Text("Lock/Unlock cursor: ESC");
 
 			ImGui::End();
 		}
