@@ -17,6 +17,7 @@
 //game
 #include "g_ui.hpp"
 #include "g_player.hpp"
+#include "g_states.hpp"
 
 using std::string;
 using std::to_string;
@@ -49,7 +50,8 @@ namespace GameTemplate
 		ImVec2 windowSize = ImVec2(300.0f, 600.0f);
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
 
-		ImVec2 windowPos = ImVec2(20.0f, 20.0f);
+		float height = G_States::isConsoleOpen ? 420.0f : 20.0f;
+		ImVec2 windowPos = ImVec2(20.0f, height);
 		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Always);
 
 		ImGuiWindowFlags windowFlags =
@@ -125,6 +127,7 @@ namespace GameTemplate
 			ImGui::Text("Jump: Space");
 			ImGui::Text("Sprint: Left Shift");
 			ImGui::Text("Lock/Unlock cursor: ESC");
+			ImGui::Text("Open/close console: Page up");
 
 			ImGui::End();
 		}

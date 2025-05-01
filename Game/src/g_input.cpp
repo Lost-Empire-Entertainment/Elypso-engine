@@ -35,6 +35,7 @@ namespace GameTemplate
 		keyStates["Sprint"] = { GLFW_KEY_LEFT_SHIFT };
 		keyStates["Interact"] = { GLFW_KEY_E };
 		keyStates["Pause"] = { GLFW_KEY_ESCAPE };
+		keyStates["Console"] = { GLFW_KEY_PAGE_UP };
 	}
 
 	void G_Input::UpdateKeyStates()
@@ -59,6 +60,11 @@ namespace GameTemplate
 				G_States::rotationState = true;
 			}
 			Game_Core::SetRotationState(G_States::rotationState);
+		}
+
+		if (IsPressed("Console"))
+		{
+			G_States::isConsoleOpen = !G_States::isConsoleOpen;
 		}
 
 		G_Player::UpdateLastRotation();
