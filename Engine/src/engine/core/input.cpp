@@ -298,13 +298,13 @@ namespace Core
                 SceneFile::SaveScene();
                 ConfigFile::SaveConfigFile();
             }
+        }
 
-            //toggle game console on and off
-            if (key == GLFW_KEY_PAGE_UP
-                && action == GLFW_PRESS)
-            {
-                GUIConsole::renderConsole = !GUIConsole::renderConsole;
-            }
+        //toggle game console on and off
+        if (key == GLFW_KEY_PAGE_UP
+            && action == GLFW_PRESS)
+        {
+            GUIConsole::renderConsole = !GUIConsole::renderConsole;
         }
 #endif
     }
