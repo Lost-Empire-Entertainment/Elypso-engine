@@ -46,6 +46,9 @@ using std::cout;
 using glm::vec3;
 using std::filesystem::path;
 using std::filesystem::current_path;
+using std::to_string;
+using std::size_t;
+using std::stoi;
 
 using Core::Engine;
 using Graphics::Render;
@@ -64,6 +67,41 @@ using Graphics::GUI::EngineGUI;
 namespace Core
 {
     ofstream logFile;
+
+    static bool StringToInt(const string& in, int& out)
+    {
+        try
+        {
+            size_t pos{};
+            out = stoi(in, &pos);
+            return pos == in.length();
+        }
+        catch (...)
+        {
+            return false;
+        }
+    }
+
+    void ConsoleManager::AddCommands()
+    {
+        AddCommand("help", "Prints all console command names.", 1, CommandTarget::TARGET_BOTH, Command_Help_All);
+
+        string hDesc = "Prints info about the selected command.";
+        AddCommand("h", hDesc, 2, CommandTarget::TARGET_BOTH, Command_Help_Info);
+
+        string srmDesc = "Sets the OpenGL render mode. 1 = Shaded, 2 = Wireframe.";
+        AddCommand("srm", srmDesc, 2, CommandTarget::TARGET_BOTH, Command_SetRenderMode);
+
+        string qqqDesc = "Force-quits the engine or game, bypassing all checks and quickly saving the most important things.";
+        AddCommand("qqq", qqqDesc, 1, CommandTarget::TARGET_BOTH, Command_Quit);
+
+#if ENGINE_MODE
+
+        string rcDesc = "Resets the scene camera position to (0, 1, 0) and rotation to (0, 0, 0).";
+        AddCommand("rc", rcDesc, 1, CommandTarget::TARGET_ENGINE, Command_Engine_ResetCamera);
+
+#endif
+    }
 
     string ConsoleManager::GetCurrentTimestamp()
     {
@@ -185,6 +223,60 @@ namespace Core
         AddLoggerLog(externalMsg);
     }
 
+    void ConsoleManager::AddCommand(
+        const string& command,
+        const string& description,
+        unsigned int parameterCount,
+        CommandTarget target,
+        function<void(const vector<string>&)> action)
+    {
+        if (parameterCount == 0)
+        {
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::EXCEPTION,
+                "Error: Cannot create command '" + command + "' with parameter count '0'! Parameter count must atleast be 1 or higher.\n");
+
+            return;
+        }
+
+        Command cmd
+        {
+            description,
+            parameterCount,
+            target,
+            action
+        };
+
+        if (target == CommandTarget::TARGET_ENGINE)
+        {
+#if ENGINE_MODE
+            engineCommands[command] = cmd;
+#else
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::EXCEPTION,
+                "Error: Cannot pass console commands to engine in game!\n");
+#endif
+        }
+        else if (target == CommandTarget::TARGET_GAME)
+        {
+            gameCommands[command] = cmd;
+        }
+        else
+        {
+#if ENGINE_MODE
+            engineCommands[command] = cmd;
+#else
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::EXCEPTION,
+                "Error: Cannot pass console commands to engine in game!\n");
+#endif
+            gameCommands[command] = cmd;
+        }
+    }
+
     void ConsoleManager::ParseConsoleCommand(const string& command)
     {
         if (command == "") return;
@@ -206,188 +298,193 @@ namespace Core
             }
         }
 
+        FindCommand(splitCommand[0], splitCommand);
+    }
+
+    void ConsoleManager::FindCommand(
+        const string& name, 
+        const vector<string>& parameters)
+    {
+        Command* foundCommand = nullptr;
+
 #if ENGINE_MODE
-        ParseEngineCommand(command, splitCommand, count);
+        auto it = engineCommands.find(name);
+        if (it != engineCommands.end())
+        {
+            foundCommand = &it->second;
+        }
 #else
-        ParseGameCommand(command, splitCommand, count);
+        auto it = gameCommands.find(name);
+        if (it != gameCommands.end())
+        {
+            foundCommand = &it->second;
+        }
+#endif
+
+        if (foundCommand == nullptr)
+        {
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::EXCEPTION,
+                "Error: Command with name '" 
+                + name 
+                + "' does not exist! Type 'help' to list all commands.\n");
+            return;
+        }
+
+        if (parameters.size() != foundCommand->parameterCount)
+        {
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::EXCEPTION,
+                "Error: Command '" 
+                + name 
+                + "' requires " 
+                + to_string(foundCommand->parameterCount) 
+                + " parameter(s), but got " + to_string(parameters.size())
+                + ". Type 'help' to list all commands, or 'h " 
+                + name 
+                + "' to view details about this command.\n");
+            return;
+        }
+
+        foundCommand->action(parameters);
+    }
+
+    //
+    // ALL CONSOLE COMMANDS USED IN BOTH ENGINE AND GAME
+    //
+
+    void ConsoleManager::Command_Help_All(const vector<string>& args)
+    {
+        WriteConsoleMessage(
+            Caller::INPUT,
+            Type::INFO,
+            "Listing all console commands:\n",
+            true);
+
+#if ENGINE_MODE
+        for (const auto& [name, cmd] : engineCommands)
+        {
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                name + "\n",
+                true);
+        }
+#else
+        for (const auto& [name, cmd] : gameCommands)
+        {
+            WriteConsoleMessage(
+                Caller::INPUT,
+                Type::INFO,
+                name + "\n",
+                true);
+        }
 #endif
     }
 
-    void ConsoleManager::ParseEngineCommand(
-        const string& command,
-        const vector<string>& cleanedCommands,
-        size_t commandSize)
+    void ConsoleManager::Command_Help_Info(const vector<string>& args)
     {
-        if (cleanedCommands[0] == "help"
-            && commandSize == 1)
-        {
-            stringstream ss;
-            ss <<
-                "help - lists all console commands\n"
-                << "qqq - quits the engine\n"
-                << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
-                << "rc - resets the camera back to its original position and rotation\n";
+        Command* targetCommand{};
 
-            WriteConsoleMessage(
-                Caller::INPUT,
-                Type::INFO,
-                ss.str(),
-                true);
-        }
-        else if (cleanedCommands[0] == "qqq"
-                 && commandSize == 1)
+#if ENGINE_MODE
+        auto it = engineCommands.find(args[1]);
+        if (it != engineCommands.end())
         {
-            WriteConsoleMessage(
-                Caller::INPUT,
-                Type::DEBUG,
-                "User closed engine with 'qqq' console command.\n");
-            Engine::Shutdown(true, true);
+            targetCommand = &it->second;
         }
-        else if (cleanedCommands[0] == "rc"
-                 && commandSize == 1)
+#else
+        auto it = gameCommands.find(args[1]);
+        if (it != gameCommands.end())
         {
-            if (Render::activeCamera == nullptr)
-            {
-                WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::EXCEPTION,
-                    "Error: Cannot reset camera position through console because there is no active camera!\n");
-            }
-            else
-            {
-                vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
-                auto tc = Render::activeCamera->GetComponent<TransformComponent>();
-                tc->SetPosition(newPosition);
-                tc->SetRotation(vec3(-90, 0, 0));
+            targetCommand = &it->second;
+        }
+#endif
 
-                WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::INFO,
-                    "Reset camera position and rotation.\n");
-            }
-        }
-        else if (cleanedCommands[0] == "srm"
-                 && (cleanedCommands[1] == "1"
-                 || cleanedCommands[1] == "2")
-                 && commandSize == 2)
-        {
-            wireframeMode = cleanedCommands[1] != "1";
-            glPolygonMode(
-                GL_FRONT_AND_BACK,
-                wireframeMode ? GL_LINE : GL_FILL);
-
-            string wireframeModeValue = cleanedCommands[1] == "1" ?
-                "shaded" :
-                "wireframe";
-            WriteConsoleMessage(
-                Caller::INPUT,
-                Type::INFO,
-                "Set wireframe mode to " + wireframeModeValue + ".\n");
-        }
-        else
+        if (targetCommand == nullptr)
         {
             WriteConsoleMessage(
                 Caller::INPUT,
                 Type::EXCEPTION,
-                "Error: '" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
+                "Error: Did not find command with name '" + args[1] + "'! Type 'help' to list all commands.\n");
+
+            return;
         }
+
+        WriteConsoleMessage(
+            Caller::INPUT,
+            Type::INFO,
+            targetCommand->description + "\n",
+            true);
     }
 
-    void ConsoleManager::ParseGameCommand(
-        const string& command,
-        const vector<string>& cleanedCommands,
-        size_t commandSize)
+    void ConsoleManager::Command_SetRenderMode(const vector<string>& args)
     {
-        if (cleanedCommands[0] == "help"
-            && commandSize == 1)
-        {
-            stringstream ss;
-            ss <<
-                "help - lists all console commands\n"
-                << "qqq - quits the game\n"
-                << "srm 'int' - sets the render mode (shaded (1), wireframe (2)\n"
-                << "rc - resets the camera back to its original position and rotation\n"
-                << "toggle - enables or disables selected gameobject based on its enabled state (click on object before using this command)\n";
+        int choice{};
 
+        if (!StringToInt(args[1], choice))
+        {
             WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
-                ss.str(),
-                true);
-        }
-        else if (cleanedCommands[0] == "qqq"
-                 && commandSize == 1)
-        {
-            WriteConsoleMessage(
-                Caller::INPUT,
-                Type::DEBUG,
-                "User closed game with 'qqq' console command.\n");
-            Engine::Shutdown(true, true);
-        }
-        else if (cleanedCommands[0] == "rc"
-                 && commandSize == 1)
-        {
-            if (Render::activeCamera == nullptr)
-            {
-                WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::EXCEPTION,
-                    "Error: Cannot reset camera position through console because there is no active camera!\n");
-            }
-            else
-            {
-                vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
-                auto tc = Render::activeCamera->GetComponent<TransformComponent>();
-                tc->SetPosition(newPosition);
-                tc->SetRotation(vec3(-90, 0, 0));
+                "Error: '" + args[1] + "' is not an integer! Type 'h srm' to get more info about this command.\n");
 
-                WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::INFO,
-                    "Reset camera position and rotation.\n");
-            }
+            return;
         }
-        else if (cleanedCommands[0] == "toggle"
-                 && commandSize == 1)
-        {
-            if (Select::selectedObj == nullptr)
-            {
-                WriteConsoleMessage(
-                    Caller::INPUT,
-                    Type::EXCEPTION,
-                    "Please select a gameobject first before using the 'toggle' command.\n");
-            }
-            else
-            {
-                bool enabled = Select::selectedObj->IsEnabled();
-                enabled = !enabled;
-                Select::selectedObj->SetEnableState(enabled);
-            }
-        }
-        else if (cleanedCommands[0] == "srm"
-                 && (cleanedCommands[1] == "1"
-                 || cleanedCommands[1] == "2")
-                 && commandSize == 2)
-        {
-            wireframeMode = cleanedCommands[1] != "1";
-            glPolygonMode(
-                GL_FRONT_AND_BACK,
-                wireframeMode ? GL_LINE : GL_FILL);
 
-            string wireframeModeValue = cleanedCommands[1] == "1" ?
-                "shaded" :
-                "wireframe";
+        if (choice != 1
+            && choice != 2)
+        {
             WriteConsoleMessage(
                 Caller::INPUT,
                 Type::INFO,
-                "Set wireframe mode to " + wireframeModeValue + ".\n");
+                "Error: '" + args[1] + "' is out of range! Type 'h srm' to get more info about this command.\n");
+
+            return;
         }
-        else
-        {
-            WriteConsoleMessage(
-                Caller::INPUT,
-                Type::EXCEPTION,
-                "Error: '" + command + "' is not a valid command! Use 'help' to list all commands and their valid parameters.\n");
-        }
+
+        wireframeMode = args[1] != "1";
+        glPolygonMode(
+            GL_FRONT_AND_BACK,
+            wireframeMode ? GL_LINE : GL_FILL);
+
+        string wireframeModeValue = choice == 1 ?
+            "shaded" :
+            "wireframe";
+        WriteConsoleMessage(
+            Caller::INPUT,
+            Type::INFO,
+            "Set wireframe mode to " + wireframeModeValue + ".\n");
     }
+
+    void ConsoleManager::Command_Quit(const vector<string>& args)
+    {
+        WriteConsoleMessage(
+            Caller::INPUT,
+            Type::DEBUG,
+            "User closed engine with 'qqq' console command.\n");
+        Engine::Shutdown(true, true);
+    }
+
+#if ENGINE_MODE
+
+    //
+    // ALL CONSOLE COMMANDS IN ENGINE
+    //
+
+    void ConsoleManager::Command_Engine_ResetCamera(const vector<string>& args)
+    {
+        vec3 newPosition = vec3(0.0f, 1.0f, 0.0f);
+        auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+        tc->SetPosition(newPosition);
+        tc->SetRotation(vec3(0, 0, 0));
+
+        WriteConsoleMessage(
+            Caller::INPUT,
+            Type::INFO,
+            "Reset camera position and rotation.\n");
+    }
+
+#endif
 }

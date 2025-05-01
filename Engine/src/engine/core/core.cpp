@@ -80,6 +80,8 @@ namespace Core
 {
 	void Engine::InitializeEngine()
 	{
+		ConsoleManager::AddCommands();
+
 		version = "Pre-release 0.1.3.0007";
 #ifdef NDEBUG
 #else
