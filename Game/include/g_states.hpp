@@ -16,6 +16,8 @@ namespace GameTemplate
 		static inline bool isInMainMenu = false;
 		//Are we currently in the pause menu?
 		static inline bool isInPauseMenu = false;
+		//Should the debug window be rendered?
+		static inline bool renderDebugWindow = false;
 		//Is the game console currently open?
 		static inline bool isConsoleOpen = false;
 

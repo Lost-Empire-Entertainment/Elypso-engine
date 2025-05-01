@@ -13,6 +13,8 @@
 //engine
 #include "gui_game.hpp"
 #include "rigidbody.hpp"
+#include "transformcomponent.hpp"
+#include "cameracomponent.hpp"
 
 //game
 #include "g_ui.hpp"
@@ -28,6 +30,8 @@ using std::ostringstream;
 
 using Graphics::GUI::GameGUI;
 using Graphics::Components::RigidBodyComponent;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::CameraComponent;
 
 namespace GameTemplate
 {
@@ -61,7 +65,8 @@ namespace GameTemplate
 			| ImGuiWindowFlags_NoSavedSettings
 			| ImGuiWindowFlags_NoDocking;
 
-		if (ImGui::Begin("##gameDebugWindow", NULL, windowFlags))
+		if (G_States::renderDebugWindow
+			&& ImGui::Begin("##gameDebugWindow", NULL, windowFlags))
 		{
 			ImGui::Text("walk speed");
 			ImGui::SameLine();
@@ -101,6 +106,40 @@ namespace GameTemplate
 				ImGui::Text("==============================");
 				ImGui::Text("");
 
+				//display player position
+
+				static shared_ptr<TransformComponent> mtc{};
+				if (mtc == nullptr)
+				{
+					mtc = G_Player::model_player->GetComponent<TransformComponent>();
+				}
+
+				vec3 playerPosition = mtc->GetPosition();
+
+				string pX = FormatFloat(playerPosition.x);
+				string pY = FormatFloat(playerPosition.y);
+				string pZ = FormatFloat(playerPosition.z);
+
+				ImGui::Text(("current position: (" + pX + ", " + pY + ", " + pZ + ")").c_str());
+
+				//display player rotation
+
+				static shared_ptr<CameraComponent> mcc{};
+				if (mcc == nullptr)
+				{
+					mcc = G_Player::camera->GetComponent<CameraComponent>();
+				}
+
+				vec3 playerRotation = mcc->GetFront();
+
+				string rX = FormatFloat(playerRotation.x);
+				string rY = FormatFloat(playerRotation.y);
+				string rZ = FormatFloat(playerRotation.z);
+
+				ImGui::Text(("current rotation: (" + rX + ", " + rY + ", " + rZ + ")").c_str());
+
+				//display player velocity
+
 				static shared_ptr<RigidBodyComponent> mrc{};
 				if (mrc == nullptr)
 				{
@@ -113,10 +152,7 @@ namespace GameTemplate
 				string vY = FormatFloat(playerVelocity.y);
 				string vZ = FormatFloat(playerVelocity.z);
 
-				ImGui::Text("current velocity");
-				ImGui::Text(("x: " + vX).c_str());
-				ImGui::Text(("y: " + vY).c_str());
-				ImGui::Text(("z: " + vZ).c_str());
+				ImGui::Text(("current velocity: (" + vX + ", " + vY + ", " + vZ + ")").c_str());
 			}
 
 			ImGui::Text("");

@@ -16,6 +16,7 @@
 #include "g_ui.hpp"
 #include "g_input.hpp"
 #include "g_player.hpp"
+#include "g_console.hpp"
 
 using Game::Game_Core;
 
@@ -24,9 +25,12 @@ namespace GameTemplate
 	void G_Core::Initialize()
 	{
 		Game_Core::Initialize();
+
 		G_UI::AddWindowsToList();
 		G_Input::Initialize();
 		G_Player::Initialize();
+
+		G_Console::AddCommands();
 	}
 
 	void G_Core::Run()
