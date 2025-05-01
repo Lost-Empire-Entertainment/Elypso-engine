@@ -71,4 +71,5 @@
 - delete old gameobject save file if object was renamed in inspector, mark scene as unsaved
 - deny changing selected gameobject name to any reserved name used by gameobjects not created by end user
 - deny setting imported asset name to any reserved name used by gameobjects not created by end user
-- replaced internal utils with kalautils
+- kalaphysics now properly handles wall collisions
+- improved console commands system by allowing to easily add any new commands to console in either engine or game source code
