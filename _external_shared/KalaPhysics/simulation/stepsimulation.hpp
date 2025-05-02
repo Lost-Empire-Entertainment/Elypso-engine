@@ -37,16 +37,5 @@ namespace KalaKit::Physics::Simulation
 		static void Step(PhysicsWorld& world, float deltaTime);
 	private:
 		static bool IsValidCollision(RigidBody& bodyA, RigidBody& bodyB);
-
-		static void ApplyPhysicsIntegration(PhysicsWorld& world, float deltaTime);
-
-		static void PredictCollision(
-			PhysicsWorld& world,
-			RigidBody* bodyPtr,
-			RigidBody& body,
-			float deltaTime);
-
-		static bool CanTilt(RigidBody& body);
-		static void TiltBody(RigidBody& body);
 	};
 }
