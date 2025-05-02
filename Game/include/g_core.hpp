@@ -5,13 +5,8 @@
 
 #pragma once
 
-//engine
-#include "gameobject.hpp"
-
 namespace GameTemplate
 {
-	using Graphics::Shape::GameObject;
-
 	class G_Core
 	{
 	public:
