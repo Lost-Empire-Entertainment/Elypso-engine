@@ -3,8 +3,13 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+//external
+#include "simulation/stepsimulation.hpp"
+
 //engine
 #include "physics.hpp"
+
+using KalaKit::Physics::Simulation::StepSimulation;
 
 namespace Core
 {
@@ -16,6 +21,6 @@ namespace Core
 	}
 	void Physics::Update(float deltaTime)
 	{
-		physicsWorld->StepSimulation(deltaTime);
+		StepSimulation::Step(*physicsWorld, deltaTime);
 	}
 }
