@@ -49,14 +49,15 @@ namespace KalaKit::Physics::Core
 		GameObjectHandle CreateRigidBody(
 			const vec3& position,
 			const quat& rotation,
-			ColliderType colliderType,
-			const vec3& colliderSizeOrRadius,
+			const vec3& scale,
+			bool isDynamic = false,
+			bool useGravity = false,
+			ColliderType colliderType = ColliderType::BOX,
 			float mass = 1.0f,
 			float restitution = 0.5f,
 			float staticFriction = 0.5f,
 			float dynamicFriction = 0.3f,
-			float gravityFactor = 1.0f,
-			bool useGravity = true);
+			float gravityFactor = 1.0f);
 
 		/// <summary>
 		/// Get a RigidBody by handle

@@ -73,8 +73,10 @@ namespace Graphics::Components
 		handle = physicsWorld->CreateRigidBody(
 			pos,
 			rot,
-			colliderType,
 			scale,
+			isDynamic,
+			useGravity,
+			colliderType,
 			mass,
 			restitution,
 			staticFriction,
@@ -103,8 +105,6 @@ namespace Graphics::Components
 			else
 			{
 				SetHandle(handle);
-				rb->scale = scale;
-				rb->SetCollider(ColliderType::BOX);
 
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,

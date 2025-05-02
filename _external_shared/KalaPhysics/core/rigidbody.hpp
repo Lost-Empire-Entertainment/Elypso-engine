@@ -38,12 +38,12 @@ namespace KalaKit::Physics::Core
 		vec3 position;					//The gameobject position
 		quat rotation;					//The gameobject rotation
 		vec3 scale;                     //The gameobject scale
-		vec3 velocity;                  //Linear velocity
-		vec3 angularVelocity;           //Angular velocity (rotation speed)
+		vec3 velocity{};                //Linear velocity
+		vec3 angularVelocity{};         //Angular velocity (rotation speed)
 		float mass;                     //Object's mass affecting inertia
 		bool isDynamic;                 //True if the object responds to forces
-		Collider* collider;             //Pointer to the object's collider
-		vec3 inertiaTensor;             //Precomputed inertia tensor for rotations
+		Collider* collider{};           //Pointer to the object's collider
+		vec3 inertiaTensor{};           //Precomputed inertia tensor for rotations
 
 		float restitution;              //Bounciness factor after collisions
 		float staticFriction;           //Resists initial movement when at rest
@@ -52,9 +52,9 @@ namespace KalaKit::Physics::Core
 		bool useGravity;                //True if affected by global gravity
 
 		float tiltTimer = 0.0f;         //Tracks time elapsed since the last tilt correction for this body
-		float angleToFlat;              //Tilt angle from the best UP-facing side
+		float angleToFlat{};            //Tilt angle from the best UP-facing side
 		vec3 closestUp = vec3(0, 1, 0); //Best face to align with UP
-		vec3 centerOfGravity;           //Offset from the combined position
+		vec3 centerOfGravity{};         //Offset from the combined position
 
 		bool isSleeping = false;        //True if the object is inactive
 		float sleepThreshold = 0.01f;   //Velocity below this puts object to sleep
@@ -64,6 +64,9 @@ namespace KalaKit::Physics::Core
 			GameObjectHandle h,
 			const vec3& position,
 			const quat& rotation,
+			const vec3& scale,
+			bool isDynamic = false,
+			bool useGravity = false,
 			float m = 1.0f,
 			float rest = 0.0f,
 			float staticFrict = 0.9f,
@@ -85,7 +88,7 @@ namespace KalaKit::Physics::Core
 		/// <summary>
 		/// Precompute inertia tensor based off of collider scale
 		/// </summary>
-		void ComputeInertiaTensor(const vec3& scale = vec3(1.0f));
+		void ComputeInertiaTensor();
 		/// <summary>
 		/// Dynamically updates center of gravity for physics calculations
 		/// </summary>
