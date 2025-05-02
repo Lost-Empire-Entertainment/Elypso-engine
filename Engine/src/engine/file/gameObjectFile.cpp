@@ -357,9 +357,6 @@ namespace EngineFile
 					float restitution = rigidbody->GetRestitution();
 					float staticFriction = rigidbody->GetStaticFriction();
 					float dynamicFriction = rigidbody->GetDynamicFriction();
-					vec3 offsetPosition = rigidbody->GetOffsetPosition();
-					vec3 offsetRotation = rigidbody->GetOffsetRotation();
-					vec3 offsetScale = rigidbody->GetOffsetScale();
 
 					data.push_back("isDynamic= " + to_string(isDynamic) + "\n");
 					data.push_back("useGravity= " + to_string(useGravity) + "\n");
@@ -369,18 +366,6 @@ namespace EngineFile
 					data.push_back("restitution= " + to_string(restitution) + "\n");
 					data.push_back("staticFriction= " + to_string(staticFriction) + "\n");
 					data.push_back("dynamicFriction= " + to_string(dynamicFriction) + "\n");
-					data.push_back("offsetPosition= "
-						+ to_string(offsetPosition.x) + ", "
-						+ to_string(offsetPosition.y) + ", "
-						+ to_string(offsetPosition.z) + "\n");
-					data.push_back("offsetRotation= "
-						+ to_string(offsetRotation.x) + ", "
-						+ to_string(offsetRotation.y) + ", "
-						+ to_string(offsetRotation.z) + "\n");
-					data.push_back("offsetScale= "
-						+ to_string(offsetScale.x) + ", "
-						+ to_string(offsetScale.y) + ", "
-						+ to_string(offsetScale.z) + "\n");
 				}
 
 				//
@@ -651,10 +636,7 @@ namespace EngineFile
 					|| key == "mass"
 					|| key == "restitution"
 					|| key == "staticFriction"
-					|| key == "dynamicFriction"
-					|| key == "offsetPosition"
-					|| key == "offsetRotation"
-					|| key == "offsetScale")
+					|| key == "dynamicFriction")
 				{
 					data[key] = value;
 				}
@@ -689,9 +671,6 @@ namespace EngineFile
 		float restitution{};
 		float staticFriction{};
 		float dynamicFriction{};
-		vec3 offsetPosition{};
-		vec3 offsetRotation{};
-		vec3 offsetScale{};
 
 		for (const auto& [key, value] : data)
 		{
@@ -864,24 +843,6 @@ namespace EngineFile
 			{
 				dynamicFriction = stof(value);
 			}
-			else if (key == "offsetPosition")
-			{
-				vector<string> split = String::Split(value, ',');
-				vec3 newPos = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
-				offsetPosition = newPos;
-			}
-			else if (key == "offsetRotation")
-			{
-				vector<string> split = String::Split(value, ',');
-				vec3 newRot = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
-				offsetRotation = newRot;
-			}
-			else if (key == "offsetScale")
-			{
-				vector<string> split = String::Split(value, ',');
-				vec3 newScale = vec3(stof(split[0]), stof(split[1]), stof(split[2]));
-				offsetScale = newScale;
-			}
 		}
 
 		//
@@ -1006,27 +967,18 @@ namespace EngineFile
 				|| data["mass"] != ""
 				|| data["restitution"] != ""
 				|| data["staticFriction"] != ""
-				|| data["dynamicFriction"] != ""
-				|| data["offsetPosition"] != ""
-				|| data["offsetRotation"] != ""
-				|| data["offsetScale"] != "")
+				|| data["dynamicFriction"] != "")
 			{
-				auto rb = foundObj->AddComponent<RigidBodyComponent>(foundObj);
-
-				rb->SetDynamic(isDynamic);
-				rb->EnableGravity(useGravity);
-				rb->SetColliderType(colliderType);
-				rb->SetGravityFactor(gravityFactor);
-				rb->SetMass(mass);
-				rb->SetRestitution(restitution);
-				rb->SetStaticFriction(staticFriction);
-				rb->SetDynamicFriction(dynamicFriction);
-				rb->SetOffsetPosition(offsetPosition);
-				rb->SetOffsetRotation(offsetRotation);
-				rb->SetOffsetScale(offsetScale);
-
-				Collider* collider = rb->GetCollider();
-				collider->UpdateScale(scale);
+				foundObj->AddComponent<RigidBodyComponent>(
+					foundObj,
+					colliderType,
+					isDynamic,
+					useGravity,
+					gravityFactor,
+					mass,
+					restitution,
+					staticFriction,
+					dynamicFriction);
 			}
 
 			GameObject::nextID = ID + 1;

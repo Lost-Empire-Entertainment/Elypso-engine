@@ -38,14 +38,10 @@ namespace KalaKit::Physics::Shape
 	class KALAPHYSICS_API SphereCollider : public Collider
 	{
 	public:
-		float radius;
+		float radius = 0.0f;
 
-		SphereCollider(
-			const vec3& offsetScale,
-			const vec3& combinedScale,
-			const GameObjectHandle& handle);
+		SphereCollider(const GameObjectHandle& handle);
 
-		void UpdateScale(const vec3& newCombinedScale) override;
 		void CalculateBoundingRadius() override;
 
 		ContactManifold GenerateContacts(

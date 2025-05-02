@@ -513,6 +513,13 @@ namespace Graphics::GUI
 		if (ImGui::DragFloat3("##objPos", value_ptr(pos), 0.01f))
 		{
 			obj->GetComponent<TransformComponent>()->SetPosition(pos);
+
+			auto rigidbody = obj->GetComponent<RigidBodyComponent>();
+			if (rigidbody)
+			{
+				rigidbody->SetPosition(pos);
+			}
+
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
@@ -537,6 +544,13 @@ namespace Graphics::GUI
 			}
 
 			obj->GetComponent<TransformComponent>()->SetRotation(rot);
+
+			auto rigidbody = obj->GetComponent<RigidBodyComponent>();
+			if (rigidbody)
+			{
+				rigidbody->SetRotation(rot);
+			}
+
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
@@ -549,8 +563,7 @@ namespace Graphics::GUI
 			auto rigidbody = obj->GetComponent<RigidBodyComponent>();
 			if (rigidbody)
 			{
-				Collider* collider = rigidbody->GetCollider();
-				collider->UpdateScale(scale);
+				rigidbody->SetScale(scale);
 			}
 
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -1746,27 +1759,27 @@ namespace Graphics::GUI
 		}
 		ImGui::PopItemWidth();
 
-		vec3 offsetPos = rigidbody->GetOffsetPosition();
-		ImGui::Text("Offset position");
-		if (ImGui::DragFloat3("##objOffsetPos", value_ptr(offsetPos), 0.01f))
+		vec3 pos = rigidbody->GetPosition();
+		ImGui::Text("Position");
+		if (ImGui::DragFloat3("##objOffsetPos", value_ptr(pos), 0.01f))
 		{
-			rigidbody->SetOffsetPosition(offsetPos);
+			rigidbody->SetPosition(pos);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
-		vec3 offsetRot = rigidbody->GetOffsetRotation();
-		ImGui::Text("Offset rotation");
-		if (ImGui::DragFloat3("##objOffsetRot", value_ptr(offsetRot), 0.1f))
+		vec3 rot = rigidbody->GetRotation();
+		ImGui::Text("Rotation");
+		if (ImGui::DragFloat3("##objRot", value_ptr(rot), 0.1f))
 		{
-			rigidbody->SetOffsetRotation(offsetRot);
+			rigidbody->SetRotation(rot);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 
-		vec3 offsetScale = rigidbody->GetOffsetScale();
-		ImGui::Text("Offset scale");
-		if (ImGui::DragFloat3("##objOffsetScale", value_ptr(offsetScale), 0.01f))
+		vec3 scale = rigidbody->GetScale();
+		ImGui::Text("Scale");
+		if (ImGui::DragFloat3("##objScale", value_ptr(scale), 0.01f))
 		{
-			rigidbody->SetOffsetScale(offsetScale);
+			rigidbody->SetScale(scale);
 			if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 		}
 

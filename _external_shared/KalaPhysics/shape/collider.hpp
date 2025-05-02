@@ -62,18 +62,12 @@ namespace KalaKit::Physics::Shape
 	public:
 		ColliderType type;
 		GameObjectHandle handle;
-		vec3 offsetScale;             //The offset scale relative to the target gameobject
-		vec3 combinedScale;           //The combined scale of target gameobject scale and local offset
 		float boundingRadius = 0.0f;
 
 		Collider(
-			const vec3& offsetScale,
-			const vec3& combinedScale,
 			ColliderType type, 
 			const GameObjectHandle& h)
-			: offsetScale(offsetScale),
-			combinedScale(combinedScale),
-			type(type),
+			: type(type),
 			handle(h) {}
 		
 		virtual ~Collider() = default;
@@ -86,7 +80,6 @@ namespace KalaKit::Physics::Shape
 			const Collider& otherCol) const = 0;
 
 		virtual void CalculateBoundingRadius() = 0;
-		virtual void UpdateScale(const vec3& newCombinedScale) = 0;
 
 		Collider(const Collider&) = delete;
 		Collider& operator=(const Collider&) = delete;

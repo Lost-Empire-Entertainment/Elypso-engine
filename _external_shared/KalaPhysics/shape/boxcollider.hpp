@@ -39,14 +39,10 @@ namespace KalaKit::Physics::Shape
 	class KALAPHYSICS_API BoxCollider : public Collider
 	{
 	public:
-		vec3 halfExtents;
+		vec3 halfExtents = vec3(0);
 
-		BoxCollider(
-			const vec3& offsetScale,
-			const vec3& combinedScale,
-			const GameObjectHandle& handle);
+		BoxCollider(const GameObjectHandle& handle);
 
-		void UpdateScale(const vec3& newCombinedScale) override;
 		void CalculateBoundingRadius() override;
 
 		ContactManifold GenerateContacts(

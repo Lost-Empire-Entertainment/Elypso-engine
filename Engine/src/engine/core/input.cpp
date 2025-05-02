@@ -419,17 +419,17 @@ namespace Core
                 copiedObject["staticFriction"] = to_string(rb->GetStaticFriction());
                 copiedObject["dynamicFriction"] = to_string(rb->GetDynamicFriction());
                 copiedObject["offsetPos"] =
-                    to_string(rb->GetOffsetPosition().x) + ", " +
-                    to_string(rb->GetOffsetPosition().y) + ", " + 
-                    to_string(rb->GetOffsetPosition().z);
+                    to_string(rb->GetPosition().x) + ", " +
+                    to_string(rb->GetPosition().y) + ", " + 
+                    to_string(rb->GetPosition().z);
                 copiedObject["offsetRot"] =
-                    to_string(rb->GetOffsetRotation().x) + ", " +
-                    to_string(rb->GetOffsetRotation().y) + ", " +
-                    to_string(rb->GetOffsetRotation().z);
+                    to_string(rb->GetRotation().x) + ", " +
+                    to_string(rb->GetRotation().y) + ", " +
+                    to_string(rb->GetRotation().z);
                 copiedObject["offsetScale"] =
-                    to_string(rb->GetOffsetScale().x) + ", " +
-                    to_string(rb->GetOffsetScale().y) + ", " +
-                    to_string(rb->GetOffsetScale().z);
+                    to_string(rb->GetScale().x) + ", " +
+                    to_string(rb->GetScale().y) + ", " +
+                    to_string(rb->GetScale().z);
             } 
         }
 
@@ -607,21 +607,21 @@ namespace Core
                     stof(offsetPosSplit[0]),
                     stof(offsetPosSplit[1]),
                     stof(offsetPosSplit[2]));
-                rb->SetOffsetPosition(offsetPosVector);
+                rb->SetPosition(offsetPosVector);
 
                 vector<string> offsetRotplit = String::Split(copiedObject["offsetRot"], ',');
                 vec3 offsetRotVector = vec3(
                     stof(offsetRotplit[0]),
                     stof(offsetRotplit[1]),
                     stof(offsetRotplit[2]));
-                rb->SetOffsetRotation(offsetRotVector);
+                rb->SetRotation(offsetRotVector);
 
                 vector<string> offsetScaleSplit = String::Split(copiedObject["offsetScale"], ',');
                 vec3 offsetScaleVector = vec3(
                     stof(offsetScaleSplit[0]),
                     stof(offsetScaleSplit[1]),
                     stof(offsetScaleSplit[2]));
-                rb->SetOffsetScale(offsetScaleVector);
+                rb->SetScale(offsetScaleVector);
             }
 
             if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);

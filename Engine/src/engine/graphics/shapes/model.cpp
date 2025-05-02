@@ -384,18 +384,18 @@ namespace Graphics::Shape
 				{
 					if (regularMovement) regularMovement = false;
 
-					vec3 combinedPos = rbComp->GetCombinedPosition() + rbComp->GetOffsetPosition();
-					vec3 combinedRot = rbComp->GetCombinedRotation() + rbComp->GetOffsetRotation();
-
-					vec3 offsetScale = rbComp->GetOffsetScale();
-					offsetScale.x = (offsetScale.x == 0.0f) ? 1.0f : offsetScale.x;
-					offsetScale.y = (offsetScale.y == 0.0f) ? 1.0f : offsetScale.y;
-					offsetScale.z = (offsetScale.z == 0.0f) ? 1.0f : offsetScale.z;
-
-					rbComp->SetCombinedScale(transform->GetScale() * offsetScale);
-
-					transform->SetPosition(combinedPos);
-					transform->SetRotation(combinedRot);
+					if (transform->GetPosition() != rbComp->GetPosition())
+					{
+						transform->SetPosition(rbComp->GetPosition());
+					}
+					if (transform->GetRotation() != rbComp->GetRotation())
+					{
+						transform->SetRotation(rbComp->GetRotation());
+					}
+					if (rbComp->GetScale() != transform->GetScale())
+					{
+						rbComp->SetScale(transform->GetScale());
+					}
 
 					model = translate(mat4(1.0f), transform->GetPosition());
 
@@ -425,17 +425,17 @@ namespace Graphics::Shape
 
 				if (rbComp)
 				{
-					if (rbComp->GetCombinedPosition() != transform->GetPosition())
+					if (rbComp->GetPosition() != transform->GetPosition())
 					{
-						rbComp->SetCombinedPosition(transform->GetPosition());
+						rbComp->SetPosition(transform->GetPosition());
 					}
-					if (rbComp->GetCombinedRotation() != transform->GetRotation())
+					if (rbComp->GetRotation() != transform->GetRotation())
 					{
-						rbComp->SetCombinedRotation(transform->GetRotation());
+						rbComp->SetRotation(transform->GetRotation());
 					}
-					if (rbComp->GetCombinedScale() != transform->GetScale())
+					if (rbComp->GetScale() != transform->GetScale())
 					{
-						rbComp->SetCombinedScale(transform->GetScale());
+						rbComp->SetScale(transform->GetScale());
 					}
 				}
 			}

@@ -47,10 +47,8 @@ namespace KalaKit::Physics::Core
 		/// Create a RigidBody and return its handle
 		/// </summary>
 		GameObjectHandle CreateRigidBody(
-			const vec3& offsetPosition,
-			const vec3& combinedPosition,
-			const quat& offsetRotation,
-			const quat& combinedRotation,
+			const vec3& position,
+			const quat& rotation,
 			ColliderType colliderType,
 			const vec3& colliderSizeOrRadius,
 			float mass = 1.0f,
