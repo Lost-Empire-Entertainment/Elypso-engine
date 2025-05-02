@@ -9,9 +9,9 @@
 #include <memory>
 
 //external
-#include "physicsworld.hpp"
-#include "gameobjecthandle.hpp"
-#include "collider.hpp"
+#include "core/physicsworld.hpp"
+#include "core/gameobjecthandle.hpp"
+#include "shape/collider.hpp"
 
 //engine
 #include "component.hpp"
@@ -19,10 +19,10 @@
 
 namespace Graphics::Components
 {
-	using KalaKit::PhysicsWorld;
-	using KalaKit::GameObjectHandle;
-	using KalaKit::ColliderType;
-	using KalaKit::Collider;
+	using KalaKit::Physics::Core::PhysicsWorld;
+	using KalaKit::Physics::Core::GameObjectHandle;
+	using KalaKit::Physics::Shape::ColliderType;
+	using KalaKit::Physics::Shape::Collider;
 	using Graphics::Shape::GameObject;
 
 	using std::string;

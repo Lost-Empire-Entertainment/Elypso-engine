@@ -10,10 +10,9 @@
 
 //engine
 #include "console.hpp"
-#include "importer.hpp"
-#include "gameobject.hpp"
 #include "transformcomponent.hpp"
-#include "meshcomponent.hpp"
+#include "rigidbodycomponent.hpp"
+#include "physics.hpp"
 
 //game
 #include "g_console.hpp"
@@ -31,10 +30,9 @@ using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Core::ConsoleManager;
 using Core::CommandTarget;
-using Graphics::Shape::Importer;
-using Graphics::Shape::GameObject;
 using Graphics::Components::TransformComponent;
-using Graphics::Components::MeshComponent;
+using Graphics::Components::RigidBodyComponent;
+using Core::Physics;
 
 namespace GameTemplate
 {
@@ -56,11 +54,11 @@ namespace GameTemplate
 
 	void G_Console::AddCommands()
 	{
-		string acDesc = "Add a simple 1x1x1 cube in front of the player, you must pass string as first parameter for cube name.";
-		ConsoleManager::AddCommand("ac", acDesc, 2, CommandTarget::TARGET_GAME, CreateCube);
-
 		string rdwDesc = "Set debug window render state (1 = on, 0 = off).";
 		ConsoleManager::AddCommand("rdw", rdwDesc, 2, CommandTarget::TARGET_GAME, RenderDebugWindow);
+
+		string rpDesc = "Attempts to free the player if stuck in the ground or any object.";
+		ConsoleManager::AddCommand("rp", rpDesc, 1, CommandTarget::TARGET_GAME, ResetPlayer);
 	}
 
 	void G_Console::RenderDebugWindow(const vector<string>& args)
@@ -97,60 +95,23 @@ namespace GameTemplate
 			"Successfully set 'render debug window' state to '" + valueStr + "'!\n");
 	}
 
-	void G_Console::CreateCube(const vector<string>& args)
+	void G_Console::ResetPlayer(const vector<string>& args)
 	{
-		auto ptc = G_Player::model_player->GetComponent<TransformComponent>();
-		vec3 pos = ptc->GetPosition();
-		vec3 rot = ptc->GetRotation();
-		vec3 scale = vec3(0.2f);
+		auto mtc = G_Player::model_player->GetComponent<TransformComponent>();
+		auto mrc = G_Player::model_player->GetComponent<RigidBodyComponent>();
+		auto ctc = G_Player::camera->GetComponent<TransformComponent>();
 
-		string cubeModelPath = path(
-			current_path()
-			/ "project"
-			/ "scenes"
-			/ "Scene1"
-			/ "gameobjects"
-			/ "floor"
-			/ "floor.fbx").string();
+		vec3 startPos = mtc->GetPosition();
+		startPos = startPos + vec3(0.0f, 2.0f, 0.0f);
 
-		if (!exists(cubeModelPath))
-		{
-			ConsoleManager::WriteConsoleMessage(
-				Caller::FILE,
-				Type::EXCEPTION,
-				"Error: Failed to find cube model at path '" + cubeModelPath + "'!\n");
+		Physics::simulatePhysics = false;
 
-			return;
-		}
+		mtc->SetPosition(startPos);
+		ctc->SetPosition(startPos);
 
-		string name = args[1];
-		unsigned int newID = ++customID;
+		mrc->ResetVelocity();
+		mrc->ResetAngularVelocity();
 
-		Importer::Initialize(
-			pos,
-			rot,
-			scale,
-			cubeModelPath,
-			"DEFAULTDIFF",
-			"DEFAULTSPEC",
-			"EMPTY",
-			"EMPTY",
-			false,
-			1.0f,
-			32.0f,
-			name,
-			newID,
-			true);
-
-		string posStr =
-			"(" +
-			to_string(pos.x) + ", " +
-			to_string(pos.y) + ", " +
-			to_string(pos.z) + ")";
-		ConsoleManager::WriteConsoleMessage(
-			Caller::FILE,
-			Type::INFO,
-			"Successfully created new cube model with name '" 
-			+ name + "' at position " + posStr + "!\n");
+		Physics::simulatePhysics = true;
 	}
 }

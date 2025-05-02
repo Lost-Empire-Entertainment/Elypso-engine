@@ -65,6 +65,17 @@ namespace GameTemplate
 		if (IsPressed("Console"))
 		{
 			G_States::isConsoleOpen = !G_States::isConsoleOpen;
+			if (G_States::isConsoleOpen)
+			{
+				G_States::canMove = false;
+				G_States::rotationState = false;
+			}
+			else
+			{
+				G_States::canMove = true;
+				G_States::rotationState = true;
+			}
+			Game_Core::SetRotationState(G_States::rotationState);
 		}
 
 		G_Player::UpdateLastRotation();

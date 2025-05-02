@@ -15,7 +15,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "magic_enum.hpp"
-#include "collider.hpp"
+#include "shape/collider.hpp"
 
 //engine
 #include "console.hpp"
@@ -86,7 +86,7 @@ using Graphics::Components::LightComponent;
 using Graphics::Components::AudioPlayerComponent;
 using Core::Engine;
 using Graphics::Components::RigidBodyComponent;
-using KalaKit::ColliderType;
+using KalaKit::Physics::Shape::ColliderType;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;

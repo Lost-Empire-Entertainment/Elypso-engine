@@ -6,12 +6,12 @@
 #pragma once
 
 //external
-#include "physicsworld.hpp"
+#include "core/physicsworld.hpp"
 #include "glm.hpp"
 
 namespace Core
 {
-	using KalaKit::PhysicsWorld;
+	using KalaKit::Physics::Core::PhysicsWorld;
 	using glm::vec3;
 
 	class Physics

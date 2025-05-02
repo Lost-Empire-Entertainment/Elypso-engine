@@ -16,9 +16,18 @@ namespace GameTemplate
 	class G_Console
 	{
 	public:
+		/// <summary>
+		/// Add all game commands to the console manager
+		/// </summary>
 		static void AddCommands();
 	private:
+		/// <summary>
+		/// Toggle game debug window on and off
+		/// </summary>
 		static void RenderDebugWindow(const vector<string>& args);
-		static void CreateCube(const vector<string>& args);
+		/// <summary>
+		/// Reset player position to start of level
+		/// </summary>
+		static void ResetPlayer(const vector<string>& args);
 	};
 }

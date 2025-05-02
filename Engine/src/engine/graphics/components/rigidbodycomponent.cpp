@@ -6,8 +6,10 @@
 #include <optional>
 
 //external
-#include "rigidbody.hpp"
-#include "collider.hpp"
+#include "core/rigidbody.hpp"
+#include "shape/collider.hpp"
+#include "shape/boxcollider.hpp"
+#include "shape/spherecollider.hpp"
 #include "magic_enum.hpp"
 #include "glm.hpp"
 #include "gtc/quaternion.hpp"
@@ -18,11 +20,11 @@
 #include "console.hpp"
 #include "physics.hpp"
 
-using KalaKit::ColliderType;
-using KalaKit::RigidBody;
-using KalaKit::Collider;
-using KalaKit::BoxCollider;
-using KalaKit::SphereCollider;
+using KalaKit::Physics::Shape::ColliderType;
+using KalaKit::Physics::Core::RigidBody;
+using KalaKit::Physics::Shape::Collider;
+using KalaKit::Physics::Shape::BoxCollider;
+using KalaKit::Physics::Shape::SphereCollider;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;

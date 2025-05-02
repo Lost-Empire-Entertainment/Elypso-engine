@@ -9,10 +9,10 @@
 
 //external
 #include "glm.hpp"
+#include "core/rigidbody.hpp"
 
 //engine
 #include "gui_game.hpp"
-#include "rigidbody.hpp"
 #include "transformcomponent.hpp"
 #include "cameracomponent.hpp"
 

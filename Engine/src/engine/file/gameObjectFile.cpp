@@ -13,7 +13,7 @@
 //external
 #include "magic_enum.hpp"
 #include "glm.hpp"
-#include "collider.hpp"
+#include "shape/collider.hpp"
 
 //engine
 #include "gameObjectFile.hpp"
@@ -86,8 +86,8 @@ using Graphics::Shader;
 using Graphics::Shape::GameObject;
 using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::RigidBodyComponent;
-using KalaKit::ColliderType;
-using KalaKit::Collider;
+using KalaKit::Physics::Shape::ColliderType;
+using KalaKit::Physics::Shape::Collider;
 using Core::Physics;
 using Core::Audio;
 using Graphics::Shape::AudioObject;
@@ -351,7 +351,7 @@ namespace EngineFile
 					bool isDynamic = rigidbody->IsDynamic();
 					bool useGravity = rigidbody->UseGravity();
 					ColliderType type = rigidbody->GetColliderType();
-					string colliderType = type == KalaKit::ColliderType::BOX ? "BOX" : "SPHERE";
+					string colliderType = type == ColliderType::BOX ? "BOX" : "SPHERE";
 					float gravityFactor = rigidbody->GetGravityFactor();
 					float mass = rigidbody->GetMass();
 					float restitution = rigidbody->GetRestitution();

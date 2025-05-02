@@ -11,7 +11,7 @@
 //external
 #include "glm.hpp"
 #include "miniaudio.h"
-#include "physicsworld.hpp"
+#include "core/physicsworld.hpp"
 
 //engine
 #include "gameobject.hpp"
@@ -69,7 +69,7 @@ using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::MaterialComponent;
 using Core::Physics;
 using Graphics::Components::RigidBodyComponent;
-using KalaKit::PhysicsWorld;
+using KalaKit::Physics::Core::PhysicsWorld;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;

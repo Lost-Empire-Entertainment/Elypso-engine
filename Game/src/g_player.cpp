@@ -127,24 +127,24 @@ namespace GameTemplate
 
 			vec3 front = cc->GetFront();
 			vec3 right = cc->GetRight();
-			vec3 impulse{};
+			vec3 force{};
 			vec3 velocity = mrc->GetVelocity();
 
-			if (G_Input::IsHeld("Front")) impulse += front;
-			if (G_Input::IsHeld("Back")) impulse -= front;
-			if (G_Input::IsHeld("Right")) impulse += right;
-			if (G_Input::IsHeld("Left")) impulse -= right;
+			if (G_Input::IsHeld("Front")) force += front;
+			if (G_Input::IsHeld("Back")) force -= front;
+			if (G_Input::IsHeld("Right")) force += right;
+			if (G_Input::IsHeld("Left")) force -= right;
 
-			if (length(impulse) > 0.0f)
+			if (length(force) > 0.0f)
 			{
-				impulse = normalize(impulse);
-				float desiredImpulse = currentSpeed * speedAmplify;
-				impulse *= desiredImpulse;
+				force = normalize(force);
+				float desiredForce = currentSpeed * speedAmplify;
+				force *= desiredForce;
 
 				vec3 horizontalVelocity = vec3(velocity.x, 0.0f, velocity.z);
-				vec3 horizontalImpulse = vec3(impulse.x, 0.0f, impulse.z);
+				vec3 horizontalForce = vec3(force.x, 0.0f, force.z);
 
-				vec3 newHorizontal = horizontalVelocity + horizontalImpulse;
+				vec3 newHorizontal = horizontalVelocity + horizontalForce;
 
 				float targetMaxVelocity = G_Input::IsHeld("Sprint") ? maxVelocity * 2 : maxVelocity;
 				currentMaxVelocity = mix(currentMaxVelocity, targetMaxVelocity, 0.1f);
@@ -152,19 +152,19 @@ namespace GameTemplate
 				if (length(newHorizontal) > currentMaxVelocity)
 				{
 					newHorizontal = normalize(newHorizontal) * currentMaxVelocity;
-					vec3 clampedImpulse = newHorizontal - horizontalVelocity;
-					impulse.x = clampedImpulse.x;
-					impulse.z = clampedImpulse.z;
+					vec3 clampedForce = newHorizontal - horizontalVelocity;
+					force.x = clampedForce.x;
+					force.z = clampedForce.z;
 				}
 			}
 
 			if (G_Input::IsPressed("Jump")
 				&& abs(velocity.y) < 0.1f)
 			{
-				impulse.y += jumpStrength;
+				force.y += jumpStrength;
 			}
 
-			mrc->ApplyImpulse(impulse);
+			mrc->ApplyForce(force);
 
 			//only reset velocity if not moving and not falling
 			if (!G_Input::IsHeld("Front")
@@ -178,28 +178,6 @@ namespace GameTemplate
 				mrc->ResetVelocity();
 			}
 		}
-
-		/*
-		//fix player position if player falls off of map
-		vec3 finalPos = mtc->GetPosition();
-		if (finalPos.y < -10.0f
-			|| finalPos.y > 100.0f
-			|| finalPos.x < -1000.0f
-			|| finalPos.x > 1000.0f
-			|| finalPos.z < -1000.0f
-			|| finalPos.z > 1000.0f)
-		{
-			mrc->SetDynamic(false);
-
-			mtc->SetPosition(vec3(0.0f, 1.0f, 0.0f));
-			ctc->SetPosition(vec3(0.0f, 1.0f, 0.0f));
-
-			mrc->ResetVelocity();
-			mrc->ResetAngularVelocity();
-
-			mrc->SetDynamic(true);
-		}
-		*/
 	}
 
 	void G_Player::UpdateLastRotation()

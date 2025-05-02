@@ -15,10 +15,10 @@
 #include "imgui_internal.h"
 #include "type_ptr.hpp"
 #include "magic_enum.hpp"
-#include "physicsworld.hpp"
-#include "gameobjecthandle.hpp"
-#include "rigidbody.hpp"
-#include "collider.hpp"
+#include "core/physicsworld.hpp"
+#include "core/gameobjecthandle.hpp"
+#include "core/rigidbody.hpp"
+#include "shape/collider.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -90,12 +90,12 @@ using Graphics::Shape::PointLight;
 using Graphics::Shape::Billboard;
 using Graphics::Shape::Empty;
 using Core::Audio;
-using KalaKit::PhysicsWorld;
-using KalaKit::GameObjectHandle;
+using KalaKit::Physics::Core::PhysicsWorld;
+using KalaKit::Physics::Core::GameObjectHandle;
 using Core::Physics;
-using KalaKit::RigidBody;
-using KalaKit::ColliderType;
-using KalaKit::Collider;
+using KalaKit::Physics::Core::RigidBody;
+using KalaKit::Physics::Shape::ColliderType;
+using KalaKit::Physics::Shape::Collider;
 using Graphics::Components::CameraComponent;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;

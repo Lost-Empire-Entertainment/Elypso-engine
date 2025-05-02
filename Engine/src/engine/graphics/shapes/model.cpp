@@ -12,10 +12,10 @@
 #include "glad.h"
 #include "quaternion.hpp"
 #include "matrix_transform.hpp"
-#include "rigidbody.hpp"
-#include "gameobjecthandle.hpp"
-#include "physicsworld.hpp"
-#include "collider.hpp"
+#include "core/rigidbody.hpp"
+#include "core/gameobjecthandle.hpp"
+#include "core/physicsworld.hpp"
+#include "shape/collider.hpp"
 
 //engine
 #include "render.hpp"
@@ -69,10 +69,10 @@ using Type = Core::ConsoleManager::Type;
 using Core::Select;
 using EngineFile::GameObjectFile;
 using Graphics::Components::RigidBodyComponent;
-using KalaKit::RigidBody;
-using KalaKit::GameObjectHandle;
-using KalaKit::PhysicsWorld;
-using KalaKit::Collider;
+using KalaKit::Physics::Core::RigidBody;
+using KalaKit::Physics::Core::GameObjectHandle;
+using KalaKit::Physics::Core::PhysicsWorld;
+using KalaKit::Physics::Shape::Collider;
 using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;
