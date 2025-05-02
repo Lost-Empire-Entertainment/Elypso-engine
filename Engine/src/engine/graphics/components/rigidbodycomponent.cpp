@@ -98,18 +98,18 @@ namespace Graphics::Components
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Failed to initialize rigidbody!\n");
+					"Error: Failed to initialize rigidbody for '" + owner->GetName() + "'!\n");
 			}
 			else
 			{
 				SetHandle(handle);
-
-				auto rbc = GetOwner()->GetComponent<RigidBodyComponent>();
+				rb->scale = scale;
+				rb->SetCollider(ColliderType::BOX);
 
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::DEBUG,
-					"Successfully initialized rigidbody!\n");
+					"Successfully initialized rigidbody for '" + owner->GetName() + "'!\n");
 			}
 		}
 	}
