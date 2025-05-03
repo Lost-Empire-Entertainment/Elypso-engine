@@ -38,8 +38,6 @@ namespace KalaKit::Physics::Shape
 	class KALAPHYSICS_API SphereCollider : public Collider
 	{
 	public:
-		float radius = 0.0f;
-
 		SphereCollider(const GameObjectHandle& handle);
 
 		void CalculateBoundingRadius() override;
@@ -48,5 +46,17 @@ namespace KalaKit::Physics::Shape
 			const RigidBody& self,
 			const RigidBody& other,
 			const Collider& otherCol) const override;
+
+		bool IsGrounded() const override { return isGrounded; }
+		vec3 GetGroundNormal() const override { return groundNormal; }
+		vec3 GetSize() const override { return vec3(radius, 0.0f, 0.0f); }
+
+		void SetGroundedState(bool value) { isGrounded = value; }
+		void SetGroundNormal(vec3 value) { groundNormal = value; }
+		void SetSize(vec3 value) { radius = value.x; }
+	private:
+		bool isGrounded = false;
+		vec3 groundNormal = vec3(0.0f, 1.0f, 0.0f);
+		float radius = 0.0f;
 	};
 }

@@ -39,8 +39,6 @@ namespace KalaKit::Physics::Shape
 	class KALAPHYSICS_API BoxCollider : public Collider
 	{
 	public:
-		vec3 halfExtents = vec3(0);
-
 		BoxCollider(const GameObjectHandle& handle);
 
 		void CalculateBoundingRadius() override;
@@ -49,5 +47,17 @@ namespace KalaKit::Physics::Shape
 			const RigidBody& self,
 			const RigidBody& other,
 			const Collider& otherCol) const override;
+
+		bool IsGrounded() const override { return isGrounded; }
+		vec3 GetGroundNormal() const override { return groundNormal; }
+		vec3 GetSize() const override { return halfExtents; }
+
+		void SetGroundedState(bool value) { isGrounded = value; }
+		void SetGroundNormal(vec3 value) { groundNormal = value; }
+		void SetSize(vec3 value) { halfExtents = value; }
+	private:
+		bool isGrounded = false;
+		vec3 groundNormal = vec3(0.0f, 1.0f, 0.0f);
+		vec3 halfExtents = vec3(0);
 	};
 }

@@ -81,6 +81,14 @@ namespace KalaKit::Physics::Shape
 
 		virtual void CalculateBoundingRadius() = 0;
 
+		virtual bool IsGrounded() const = 0;
+		virtual vec3 GetGroundNormal() const = 0;
+		virtual vec3 GetSize() const = 0;
+
+		virtual void SetGroundedState(bool value) = 0;
+		virtual void SetGroundNormal(vec3 value) = 0;
+		virtual void SetSize(vec3 value) = 0;
+
 		Collider(const Collider&) = delete;
 		Collider& operator=(const Collider&) = delete;
 	};
