@@ -12,3 +12,13 @@ Engine library/.vs/
 Game/build-release/
 Game/build-debug/
 Game/.vs/
+
+# Ignored binaries
+Engine/Elypso engine.lib
+Engine/Elypso engineD.lib
+Engine/libElypso engine.a
+Engine/libElypso engineD.a
+Game/Elypso engine.lib
+Game/Elypso engineD.lib
+Game/libElypso engine.a
+Game/libElypso engineD.a
