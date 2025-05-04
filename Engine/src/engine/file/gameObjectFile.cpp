@@ -13,7 +13,7 @@
 //external
 #include "magic_enum.hpp"
 #include "glm.hpp"
-#include "shape/collider.hpp"
+#include "collision/collider.hpp"
 
 //engine
 #include "gameObjectFile.hpp"
@@ -86,8 +86,8 @@ using Graphics::Shader;
 using Graphics::Shape::GameObject;
 using Graphics::Components::AudioPlayerComponent;
 using Graphics::Components::RigidBodyComponent;
-using KalaKit::Physics::Shape::ColliderType;
-using KalaKit::Physics::Shape::Collider;
+using KalaKit::Physics::Collision::ColliderType;
+using KalaKit::Physics::Collision::Collider;
 using Core::Physics;
 using Core::Audio;
 using Graphics::Shape::AudioObject;

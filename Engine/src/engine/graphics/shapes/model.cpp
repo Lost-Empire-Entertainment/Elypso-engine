@@ -15,7 +15,7 @@
 #include "core/rigidbody.hpp"
 #include "core/gameobjecthandle.hpp"
 #include "core/physicsworld.hpp"
-#include "shape/collider.hpp"
+#include "collision/collider.hpp"
 
 //engine
 #include "render.hpp"
@@ -72,7 +72,7 @@ using Graphics::Components::RigidBodyComponent;
 using KalaKit::Physics::Core::RigidBody;
 using KalaKit::Physics::Core::GameObjectHandle;
 using KalaKit::Physics::Core::PhysicsWorld;
-using KalaKit::Physics::Shape::Collider;
+using KalaKit::Physics::Collision::Collider;
 using Core::Physics;
 #if ENGINE_MODE
 using Graphics::GUI::GUISceneWindow;

@@ -5,18 +5,11 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAPHYSICS_DLL_EXPORT
-		#define KALAPHYSICS_API __declspec(dllexport)
-	#else
-		#define KALAPHYSICS_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAPHYSICS_API
-#endif
-
 #include <cstdint>
 #include <functional>
+
+//physics
+#include "core/utils.hpp"
 
 namespace KalaKit::Physics::Core
 {
@@ -36,6 +29,8 @@ namespace KalaKit::Physics::Core
 		}
 	};
 }
+
+#include "gameobjecthandle.hpp"
 
 namespace std
 {

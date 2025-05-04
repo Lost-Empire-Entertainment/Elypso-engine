@@ -5,16 +5,6 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAPHYSICS_DLL_EXPORT
-		#define KALAPHYSICS_API __declspec(dllexport)
-	#else
-		#define KALAPHYSICS_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAPHYSICS_API
-#endif
-
 #include <vector>
 #include <unordered_map>
 #include <cstdint>
@@ -23,6 +13,7 @@
 #include "glm.hpp"
 
 //physics
+#include "core/utils.hpp"
 #include "core/rigidbody.hpp"
 
 namespace KalaKit::Physics::Core
@@ -50,9 +41,9 @@ namespace KalaKit::Physics::Core
 			const vec3& position,
 			const quat& rotation,
 			const vec3& scale,
+			ColliderType colliderType,
 			bool isDynamic = false,
 			bool useGravity = false,
-			ColliderType colliderType = ColliderType::BOX,
 			float mass = 1.0f,
 			float restitution = 0.5f,
 			float staticFriction = 0.5f,
@@ -69,10 +60,13 @@ namespace KalaKit::Physics::Core
 		/// </summary>
 		void RemoveRigidBody(const GameObjectHandle& handle);
 
+		/// <summary>
+		/// Update physics simulation
+		/// </summary>
+		void StepSimulation(float deltaTime);
+
 		void SetGravity(const vec3& newGravity) { gravity = newGravity; }
 		void SetAngleLimit(float value) { angleLimit = value; }
-		void SetBaumgarteSlop(float value) { baumgarteSlop = value; }
-		void SetBaumgarteFactor(float value) { baumgarteFactor = value; }
 		void SetAngularDamping(float value) { angularDamping = value; }
 		void SetLowAngularVelocityFactor(float value) { lowAngularVelocityFactor = value; }
 		void SetFrictionMultiplier(float value) { frictionMultiplier = value; }
@@ -81,8 +75,6 @@ namespace KalaKit::Physics::Core
 
 		const vec3& GetGravity() const { return gravity; }
 		float GetAngleLimit() const { return angleLimit; }
-		float GetBaumgarteSlop() const { return baumgarteSlop; }
-		float GetBaumgarteFactor() const { return baumgarteFactor; }
 		float GetAngularDamping() const { return angularDamping; }
 		float GetLowAngularVelocityFactor() const { return lowAngularVelocityFactor; }
 		float GetFrictionMultiplier() const { return frictionMultiplier; }
@@ -99,6 +91,37 @@ namespace KalaKit::Physics::Core
 		PhysicsWorld(const PhysicsWorld&) = delete;
 		PhysicsWorld& operator=(const PhysicsWorld&) = delete;
 
+		bool IsValidCollision(RigidBody& bodyA, RigidBody& bodyB);
+
+		void ApplyPhysicsIntegration(float deltaTime);
+
+		void PredictCollision(
+			RigidBody* bodyPtr, 
+			RigidBody& body, 
+			float deltaTime);
+
+		/// <summary>
+		/// Resolves a collision by applying impulse forces to separate the bodies and simulate realistic response
+		/// </summary>
+		void ResolveCollision(
+			RigidBody& bodyA,
+			RigidBody& bodyB,
+			const vec3& collisionNormal,
+			const vec3& contactPoint,
+			float penetration);
+
+		/// <summary>
+		/// Applies frictional forces to reduce sliding and simulate surface resistance after a collision
+		/// </summary>
+		void ApplyFriction(
+			RigidBody& bodyA,
+			RigidBody& bodyB,
+			const vec3& collisionNormal,
+			const vec3& contactPoint) const;
+
+		bool CanTilt(RigidBody& body);
+		void TiltBody(RigidBody& body);
+
 		bool isInitialized = false;
 
 		//Array of all active RigidBody instances managed by the physics world
@@ -109,8 +132,6 @@ namespace KalaKit::Physics::Core
 		vector<uint32_t> generations;
 
 		vec3 gravity = vec3(0.0f, -9.81f, 0.0f); //Global gravity
-		float baumgarteSlop = 0.01f;             //Tolerance before applying correction
-		float baumgarteFactor = 0.2f;            //Strength of correction
 		float angleLimit = 45.0f;                //Global angle limit for slopes
 		float angularDamping = 0.5f;             //Controls how quickly rotation slows down
 		float lowAngularVelocityFactor = 0.5f;   //How much to slow rotation when velocity is very low

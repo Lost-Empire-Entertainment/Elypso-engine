@@ -5,6 +5,12 @@
 
 #pragma once
 
+#include <iostream>
+
+//
+// DLL MACRO
+//
+
 #ifdef _WIN32
 	#ifdef KALAPHYSICS_DLL_EXPORT
 		#define KALAPHYSICS_API __declspec(dllexport)
@@ -15,13 +21,17 @@
 	#define KALAPHYSICS_API
 #endif
 
-namespace KalaKit::Physics::Simulation
-{
-	class KALAPHYSICS_API Solver
-	{
-	public:
-		virtual void Solve(float deltaTime, int iterations) = 0;
-		virtual void Clear() = 0;
-		virtual ~Solver() = default;
-	};
-}
+//
+// LOG MACRO
+//
+
+#define WRITE_LOG(type, msg) std::cout << "[KALAKIT_PHYSICS | " << type << "] " << msg << "\n"
+
+//log types
+#if KALAPHYSICS_DEBUG
+	#define LOG_DEBUG(msg) WRITE_LOG("DEBUG", msg)
+#else
+	#define LOG_DEBUG(msg)
+#endif
+#define LOG_SUCCESS(msg) WRITE_LOG("SUCCESS", msg)
+#define LOG_ERROR(msg) WRITE_LOG("ERROR", msg)

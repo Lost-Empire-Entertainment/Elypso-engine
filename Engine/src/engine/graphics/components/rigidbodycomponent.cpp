@@ -7,9 +7,7 @@
 
 //external
 #include "core/rigidbody.hpp"
-#include "shape/collider.hpp"
-#include "shape/boxcollider.hpp"
-#include "shape/spherecollider.hpp"
+#include "collision/collider.hpp"
 #include "magic_enum.hpp"
 #include "glm.hpp"
 #include "gtc/quaternion.hpp"
@@ -20,11 +18,9 @@
 #include "console.hpp"
 #include "physics.hpp"
 
-using KalaKit::Physics::Shape::ColliderType;
+using KalaKit::Physics::Collision::ColliderType;
 using KalaKit::Physics::Core::RigidBody;
-using KalaKit::Physics::Shape::Collider;
-using KalaKit::Physics::Shape::BoxCollider;
-using KalaKit::Physics::Shape::SphereCollider;
+using KalaKit::Physics::Collision::Collider;
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
@@ -74,9 +70,9 @@ namespace Graphics::Components
 			pos,
 			rot,
 			scale,
+			colliderType,
 			isDynamic,
 			useGravity,
-			colliderType,
 			mass,
 			restitution,
 			staticFriction,

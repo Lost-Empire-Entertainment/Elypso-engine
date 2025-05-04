@@ -4,12 +4,12 @@
 //Read LICENSE.md for more information.
 
 //external
-#include "simulation/stepsimulation.hpp"
+#include "core/physicsworld.hpp"
 
 //engine
 #include "physics.hpp"
 
-using KalaKit::Physics::Simulation::StepSimulation;
+using KalaKit::Physics::Core::PhysicsWorld;
 
 namespace Core
 {
@@ -21,6 +21,6 @@ namespace Core
 	}
 	void Physics::Update(float deltaTime)
 	{
-		StepSimulation::Step(*physicsWorld, deltaTime);
+		physicsWorld->StepSimulation(deltaTime);
 	}
 }

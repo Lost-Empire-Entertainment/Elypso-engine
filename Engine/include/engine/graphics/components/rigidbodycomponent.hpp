@@ -11,7 +11,7 @@
 //external
 #include "core/physicsworld.hpp"
 #include "core/gameobjecthandle.hpp"
-#include "shape/collider.hpp"
+#include "collision/collider.hpp"
 
 //engine
 #include "component.hpp"
@@ -21,8 +21,8 @@ namespace Graphics::Components
 {
 	using KalaKit::Physics::Core::PhysicsWorld;
 	using KalaKit::Physics::Core::GameObjectHandle;
-	using KalaKit::Physics::Shape::ColliderType;
-	using KalaKit::Physics::Shape::Collider;
+	using KalaKit::Physics::Collision::ColliderType;
+	using KalaKit::Physics::Collision::Collider;
 	using Graphics::Shape::GameObject;
 
 	using std::string;

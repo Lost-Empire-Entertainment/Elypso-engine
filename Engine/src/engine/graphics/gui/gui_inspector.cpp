@@ -18,7 +18,7 @@
 #include "core/physicsworld.hpp"
 #include "core/gameobjecthandle.hpp"
 #include "core/rigidbody.hpp"
-#include "shape/collider.hpp"
+#include "collision/collider.hpp"
 
 //engine
 #include "gui_inspector.hpp"
@@ -94,8 +94,8 @@ using KalaKit::Physics::Core::PhysicsWorld;
 using KalaKit::Physics::Core::GameObjectHandle;
 using Core::Physics;
 using KalaKit::Physics::Core::RigidBody;
-using KalaKit::Physics::Shape::ColliderType;
-using KalaKit::Physics::Shape::Collider;
+using KalaKit::Physics::Collision::ColliderType;
+using KalaKit::Physics::Collision::Collider;
 using Graphics::Components::CameraComponent;
 using Graphics::Shape::AudioObject;
 using Graphics::Shape::CameraObject;
