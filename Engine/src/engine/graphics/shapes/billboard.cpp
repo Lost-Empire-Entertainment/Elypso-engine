@@ -3,7 +3,6 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <iostream>
 #include <filesystem>
 
 //external
@@ -24,7 +23,6 @@
 #include "lightcomponent.hpp"
 #include "console.hpp"
 
-using std::cout;
 using glm::translate;
 using glm::rotate;
 using glm::radians;
@@ -62,8 +60,7 @@ namespace Graphics::Shape
 	{
 		if (id == tempID)
 		{
-			unsigned int nextID = ++GameObject::nextID;
-			id = nextID;
+			id = ++GameObject::nextID;
 		}
 
 		auto obj = make_shared<GameObject>("Billboard", id, isEnabled);
@@ -229,6 +226,9 @@ namespace Graphics::Shape
 
 		if (obj->IsEnabled())
 		{
+			CorrectTransformValues(obj);
+			string textureName = obj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::diffuse);
+
 			auto mat = obj->GetComponent<MaterialComponent>();
 
 			Shader shader = mat->GetShader();
@@ -243,11 +243,9 @@ namespace Graphics::Shape
 			mat4 model = mat4(1.0f);
 
 			vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
-
-			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
-			vec3 cameraPos = tc->GetPosition();
 			model = translate(model, pos);
 
+			vec3 mscale = obj->GetComponent<TransformComponent>()->GetScale();
 			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 
 			//bind diffuse map
@@ -259,6 +257,61 @@ namespace Graphics::Shape
 			GLuint VAO = mesh->GetVAO();
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
+	}
+
+	void Billboard::CorrectTransformValues(const shared_ptr<GameObject>& obj)
+	{
+		vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+		if (pos.z != 0.0f)
+		{
+			pos.z = 0.0f;
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Warning: UI Billboard z position is not 0! Resetting back to 0.");
+
+			obj->GetComponent<TransformComponent>()->SetPosition(pos);
+		}
+
+		vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
+		if (scale.x > 200.0f
+			|| scale.y > 200.0f)
+		{
+			scale.x = 200.0f;
+			scale.y = 200.0f;
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Warning: UI Billboard scale is too big! Resetting back to 200.");
+
+			obj->GetComponent<TransformComponent>()->SetScale(scale);
+		}
+		if (scale.x <= 0.0f
+			|| scale.y <= 0.0f)
+		{
+			scale.x = 10.0f;
+			scale.y = 10.0f;
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Warning: UI Billboard scale is 0 or negative! Resetting back to 10.");
+
+			obj->GetComponent<TransformComponent>()->SetScale(scale);
+		}
+		if (scale.z != 0.0f)
+		{
+			scale.z = 0.0f;
+
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::EXCEPTION,
+				"Warning: UI Billboard z scale is not 0! Resetting back to 0.");
+
+			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
 	}
 }

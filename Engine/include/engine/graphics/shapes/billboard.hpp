@@ -50,5 +50,7 @@ namespace Graphics::Shape
 			const shared_ptr<GameObject>& obj,
 			const mat4& view,
 			const mat4& projection);
+	private:
+		static void CorrectTransformValues(const shared_ptr<GameObject>& obj);
 	};
 }

@@ -197,7 +197,10 @@ namespace Graphics::Shape
 				switch (type)
 				{
 				case Type::billboard:
-					Billboard::RenderBillboard(obj, view, projection);
+					if (!obj->IsBillboardUI())
+					{
+						Billboard::RenderBillboard(obj, view, projection);
+					}
 					break;
 				case Type::model:
 					if (obj->GetComponent<MaterialComponent>()->IsTransparent())

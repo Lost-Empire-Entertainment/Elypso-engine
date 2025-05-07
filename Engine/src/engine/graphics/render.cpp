@@ -457,6 +457,9 @@ namespace Graphics
 		//all windows, including RenderToImguiWindow 
 		//with scene content are called in the Render function
 		EngineGUI::Render();
+#else
+		GameGUI::Render();
+		Input::SceneWindowInput();
 
 		int screenWidth{};
 		int screenHeight{};
@@ -469,9 +472,6 @@ namespace Graphics
 
 		//all game UI
 		GameObjectManager::RenderAllUI(uiProjection, uiView);
-#else
-		GameGUI::Render();
-		Input::SceneWindowInput();
 #endif
 
 		//swap the front and back buffers
