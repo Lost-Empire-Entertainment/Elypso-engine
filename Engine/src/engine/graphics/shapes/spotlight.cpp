@@ -149,6 +149,7 @@ namespace Graphics::Shape
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();
 		shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+			false,
 			pos,
 			rot,
 			scale,

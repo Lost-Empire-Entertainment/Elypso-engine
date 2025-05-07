@@ -27,6 +27,7 @@ namespace Graphics::Shape
 		static inline unsigned int tempID = 123456789;
 
 		static shared_ptr<GameObject> InitializeBillboard(
+			bool isBillboardUI,
 			const vec3& pos = vec3(0),
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
@@ -34,6 +35,20 @@ namespace Graphics::Shape
 			unsigned int& id = tempID,
 			const bool& isEnabled = true);
 
-		static void RenderBillboard(const shared_ptr<GameObject>& obj, const mat4& view, const mat4& projection);
+		/// <summary>
+		/// Render billboard in 3D space.
+		/// </summary>
+		static void RenderBillboard(
+			const shared_ptr<GameObject>& obj, 
+			const mat4& view, 
+			const mat4& projection);
+
+		/// <summary>
+		/// Render billboard in screen space as a UI element (image).
+		/// </summary>
+		static void RenderBillboardUI(
+			const shared_ptr<GameObject>& obj,
+			const mat4& view,
+			const mat4& projection);
 	};
 }

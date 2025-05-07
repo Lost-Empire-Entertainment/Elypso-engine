@@ -1118,6 +1118,7 @@ namespace Graphics::GUI
 
 							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();
 							auto billboard = Billboard::InitializeBillboard(
+								false,
 								oldBillboardPos,
 								vec3(0),
 								vec3(1),
@@ -1229,6 +1230,7 @@ namespace Graphics::GUI
 
 							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();
 							shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+								false,
 								oldBillboardPos,
 								vec3(0),
 								vec3(1),
@@ -1344,6 +1346,7 @@ namespace Graphics::GUI
 
 								string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "directionalLight.png").string();
 								shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
+									false,
 									oldBillboardPos,
 									vec3(0),
 									vec3(1),

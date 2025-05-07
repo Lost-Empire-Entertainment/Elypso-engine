@@ -20,6 +20,7 @@
 #include "core.hpp"
 #include "console.hpp"
 #include "importer.hpp"
+#include "billboard.hpp"
 #include "pointlight.hpp"
 #include "spotlight.hpp"
 #include "directionallight.hpp"
@@ -73,6 +74,7 @@ using Graphics::Components::MaterialComponent;
 using Graphics::Components::LightComponent;
 using MeshType = Graphics::Components::MeshComponent::MeshType;
 using Graphics::Shape::Importer;
+using Graphics::Shape::Billboard;
 using Graphics::Shape::PointLight;
 using Graphics::Shape::SpotLight;
 using Graphics::Shape::DirectionalLight;
@@ -366,6 +368,15 @@ namespace EngineFile
 					data.push_back("restitution= " + to_string(restitution) + "\n");
 					data.push_back("staticFriction= " + to_string(staticFriction) + "\n");
 					data.push_back("dynamicFriction= " + to_string(dynamicFriction) + "\n");
+				}
+
+				//
+				// BILLBOARD UI DATA
+				//
+
+				if (obj->IsBillboardUI())
+				{
+
 				}
 
 				//

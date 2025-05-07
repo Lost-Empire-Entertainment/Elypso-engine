@@ -214,6 +214,30 @@ namespace Graphics::Shape
 		}
 	}
 
+	void GameObjectManager::RenderAllUI(const mat4& view, const mat4& projection)
+	{
+		if (billboardUI.size() == 0) return;
+
+		glDisable(GL_DEPTH_TEST);
+
+		for (const auto& obj : billboardUI)
+		{
+			if (obj->GetName() == "") obj->SetName(".");
+
+			auto mesh = obj->GetComponent<MeshComponent>();
+			auto type = mesh->GetMeshType();
+
+			switch (type)
+			{
+			case MeshComponent::MeshType::billboard:
+				Billboard::RenderBillboardUI(obj, view, projection);
+				break;
+			}
+		}
+
+		glEnable(GL_DEPTH_TEST);
+	}
+
 	void GameObjectManager::DestroyGameObject(const shared_ptr<GameObject>& obj, bool localOnly)
 	{
 		if (obj == nullptr) return;

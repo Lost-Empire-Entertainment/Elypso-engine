@@ -30,6 +30,7 @@
 #include "skybox.hpp"
 #include "cameraobject.hpp"
 #include "cameracomponent.hpp"
+#include "billboard.hpp"
 #if ENGINE_MODE
 #include "compile.hpp"
 #include "grid.hpp"
@@ -51,6 +52,7 @@ using std::endl;
 using std::to_string;
 using std::filesystem::path;
 using std::vector;
+using glm::ortho;
 
 using Core::Input;
 using Core::TimeManager;
@@ -66,6 +68,7 @@ using EngineFile::ConfigFile;
 using Core::Select;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;
+using Graphics::Shape::Billboard;
 #if ENGINE_MODE
 using Core::Compilation;
 using Graphics::Grid;
@@ -454,6 +457,18 @@ namespace Graphics
 		//all windows, including RenderToImguiWindow 
 		//with scene content are called in the Render function
 		EngineGUI::Render();
+
+		int screenWidth{};
+		int screenHeight{};
+		glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
+
+		mat4 uiProjection = ortho(
+			0.0f, static_cast<float>(screenWidth),
+			0.0f, static_cast<float>(screenHeight));
+		mat4 uiView = mat4(1.0f);
+
+		//all game UI
+		GameObjectManager::RenderAllUI(uiProjection, uiView);
 #else
 		GameGUI::Render();
 		Input::SceneWindowInput();

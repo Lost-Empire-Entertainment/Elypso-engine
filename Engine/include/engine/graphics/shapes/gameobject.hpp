@@ -79,6 +79,7 @@ namespace Graphics::Shape
 		* COMPONENTS
 		*
 		*/
+
 		template <typename T, typename... Args>
 		shared_ptr<T> AddComponent(Args&&... args)
 		{
@@ -114,6 +115,7 @@ namespace Graphics::Shape
 		* PARENT
 		* 
 		*/
+
 		void SetParent(const shared_ptr<GameObject>& newParent)
 		{
 			parent = newParent;
@@ -136,6 +138,7 @@ namespace Graphics::Shape
 		* CHILDREN
 		* 
 		*/
+
 		void AddChild(const shared_ptr<GameObject>& child)
 		{
 			children.push_back(child);
@@ -156,6 +159,7 @@ namespace Graphics::Shape
 		* PARENT BILLBOARD HOLDER
 		*
 		*/
+
 		void SetParentBillboardHolder(const shared_ptr<GameObject>& newParentBillboardHolder)
 		{
 			parentBillboardHolder = newParentBillboardHolder;
@@ -174,6 +178,7 @@ namespace Graphics::Shape
 		* CHILD BILLBOARD
 		*
 		*/
+
 		void SetChildBillboard(const shared_ptr<GameObject>& newChildBillboard)
 		{
 			childBillboard = newChildBillboard;
@@ -192,6 +197,7 @@ namespace Graphics::Shape
 		* BASIC PROPERTIES SHARED ACROSS ALL GAMEOBJECTS
 		*
 		*/
+
 		void SetName(const string& newName) { name = newName; }
 		const string& GetName() const { return name; }
 
@@ -206,11 +212,15 @@ namespace Graphics::Shape
 
 		void Initialize() { isInitialized = true; }
 		bool IsInitialized() const { return isInitialized; }
+
+		void SetBillboardUI(bool newBillboardUIState) { isBillboardUI = newBillboardUIState; }
+		bool IsBillboardUI() const { return isBillboardUI; }
 	private:
 		string name;
 		unsigned int ID;
 		bool isInitialized;
 		bool isEnabled;
+		bool isBillboardUI = false;
 		string txtFilePath;
 
 		unordered_map<type_index, shared_ptr<Component>> components;
@@ -226,6 +236,10 @@ namespace Graphics::Shape
 	{
 	public:
 		static void RenderAll(
+			const mat4& view,
+			const mat4& projection);
+
+		static void RenderAllUI(
 			const mat4& view,
 			const mat4& projection);
 
@@ -279,6 +293,10 @@ namespace Graphics::Shape
 		static void AddBillboard(const shared_ptr<GameObject>& obj)
 		{
 			billboards.push_back(obj);
+		}
+		static void AddBillboardUI(const shared_ptr<GameObject>& obj)
+		{
+			billboardUI.push_back(obj);
 		}
 		static void SetSkybox(const shared_ptr<GameObject>& obj)
 		{
@@ -356,6 +374,10 @@ namespace Graphics::Shape
 		{
 			return billboards;
 		}
+		static const vector<shared_ptr<GameObject>> GetBillboardUI()
+		{
+			return billboardUI;
+		}
 		static const shared_ptr<GameObject> GetSkybox()
 		{
 			return skybox;
@@ -381,6 +403,7 @@ namespace Graphics::Shape
 		static inline shared_ptr<GameObject> actionTex;
 		static inline shared_ptr<GameObject> border;
 		static inline vector<shared_ptr<GameObject>> billboards;
+		static inline vector<shared_ptr<GameObject>> billboardUI;
 		static inline shared_ptr<GameObject> skybox;
 	};
 }

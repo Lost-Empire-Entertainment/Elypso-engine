@@ -52,6 +52,7 @@ using Type = Core::ConsoleManager::Type;
 namespace Graphics::Shape
 {
 	shared_ptr<GameObject> Billboard::InitializeBillboard(
+		bool isBillboardUI,
 		const vec3& pos,
 		const vec3& rot,
 		const vec3& scale,
@@ -59,12 +60,19 @@ namespace Graphics::Shape
 		unsigned int& id,
 		const bool& isEnabled)
 	{
+		if (id == tempID)
+		{
+			unsigned int nextID = ++GameObject::nextID;
+			id = nextID;
+		}
+
 		auto obj = make_shared<GameObject>("Billboard", id, isEnabled);
 		auto transform = obj->AddComponent<TransformComponent>();
 		transform->SetOwner(obj);
 		transform->SetPosition(pos);
 		transform->SetRotation(rot);
 		transform->SetScale(scale);
+		obj->SetBillboardUI(isBillboardUI);
 
 		float vertices[] =
 		{
@@ -127,7 +135,15 @@ namespace Graphics::Shape
 
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddTransparentObject(obj);
-		GameObjectManager::AddBillboard(obj);
+
+		if (!isBillboardUI)
+		{
+			GameObjectManager::AddBillboard(obj);
+		}
+		else
+		{
+			GameObjectManager::AddBillboardUI(obj);
+		}
 
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
@@ -189,6 +205,48 @@ namespace Graphics::Shape
 			mat4 rotationMatrix = lookAt(objectPos, cameraPos, vec3(0.0f, 1.0f, 0.0f));
 			rotationMatrix = inverse(rotationMatrix);
 			model = rotationMatrix;
+
+			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
+
+			//bind diffuse map
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::diffuse));
+
+			shader.SetMat4("model", model);
+			auto mesh = obj->GetComponent<MeshComponent>();
+			GLuint VAO = mesh->GetVAO();
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
+	}
+
+	void Billboard::RenderBillboardUI(
+		const shared_ptr<GameObject>& obj,
+		const mat4& view,
+		const mat4& projection)
+	{
+		if (obj == nullptr) Engine::CreateErrorPopup("Billboard gameobject is invalid.");
+
+		if (obj->IsEnabled())
+		{
+			auto mat = obj->GetComponent<MaterialComponent>();
+
+			Shader shader = mat->GetShader();
+
+			shader.Use();
+			shader.SetMat4("projection", projection);
+			shader.SetMat4("view", view);
+
+			shader.SetFloat("transparency", 1.0f);
+			shader.SetVec3("color", vec3(1));
+
+			mat4 model = mat4(1.0f);
+
+			vec3 pos = obj->GetComponent<TransformComponent>()->GetPosition();
+
+			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
+			vec3 cameraPos = tc->GetPosition();
+			model = translate(model, pos);
 
 			model = scale(model, obj->GetComponent<TransformComponent>()->GetScale());
 

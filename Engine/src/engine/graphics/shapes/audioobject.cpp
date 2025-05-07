@@ -158,6 +158,7 @@ namespace Graphics::Shape
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "audio.png").string();
 		auto billboard = Billboard::InitializeBillboard(
+			false,
 			pos,
 			rot,
 			scale,
