@@ -371,10 +371,16 @@ namespace Core
 
 	void Compilation::RenderBuildingWindow()
 	{
-		ImVec2 windowSize = ImVec2(600.0f, 600.0f);
+		int fbWidth{};
+		int fbHeight{};
+		glfwGetFramebufferSize(Render::window, &fbWidth, &fbHeight);
+
+		ImVec2 windowSize = ImVec2(500.0f, 500.0f);
+		if (windowSize.x > fbWidth - 50.0f) windowSize.x = fbWidth - 50.0f;
+		if (windowSize.y > fbHeight - 50.0f) windowSize.x = fbHeight - 50.0f;
 		ImGui::SetNextWindowSize(windowSize, ImGuiCond_Appearing);
 
-		ImGui::SetNextWindowSizeConstraints(ImVec2(500.0f, 500.0f), ImVec2(1500.0f, 1500.0f));
+		ImGui::SetNextWindowSizeConstraints(ImVec2(300.0f, 300.0f), ImVec2(fbWidth - 50.0f, fbHeight - 50.0f));
 
 		ImVec2 windowPos = EngineGUI::CenterWindow(windowSize);
 		ImGui::SetNextWindowPos(ImVec2(windowPos), ImGuiCond_Appearing);

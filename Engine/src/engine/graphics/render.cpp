@@ -157,7 +157,7 @@ namespace Graphics
 
 		glfwMakeContextCurrent(window);
 		glfwSetFramebufferSizeCallback(window, UpdateAfterRescale);
-		glfwSetWindowSizeLimits(window, 1024, 768, 7680, 4320);
+		glfwSetWindowSizeLimits(window, 480, 270, 7680, 4320);
 		glfwSwapInterval(1);
 
 		int width, height, channels;

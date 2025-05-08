@@ -276,8 +276,8 @@ namespace Graphics::Shape
 		}
 
 		vec3 scale = obj->GetComponent<TransformComponent>()->GetScale();
-		if (scale.x > 200.0f
-			|| scale.y > 200.0f)
+		if (scale.x > 10000.0f
+			|| scale.y > 10000.0f)
 		{
 			scale.x = 200.0f;
 			scale.y = 200.0f;
@@ -285,20 +285,20 @@ namespace Graphics::Shape
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Warning: UI Billboard scale is too big! Resetting back to 200.");
+				"Warning: UI Billboard scale is too big! Resetting back to 200 for width and height.");
 
 			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
-		if (scale.x <= 0.0f
-			|| scale.y <= 0.0f)
+		if (scale.x <= 100.0f
+			|| scale.y <= 100.0f)
 		{
-			scale.x = 10.0f;
-			scale.y = 10.0f;
+			scale.x = 200.0f;
+			scale.y = 200.0f;
 
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Warning: UI Billboard scale is 0 or negative! Resetting back to 10.");
+				"Warning: UI Billboard scale is 100 or below! Resetting back to 200 for width and height.");
 
 			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
