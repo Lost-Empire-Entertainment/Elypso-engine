@@ -189,7 +189,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								ConsoleCaller::INPUT,
 								ConsoleType::EXCEPTION,
-								"Error: " + Select::selectedObj->GetName() + " already has a light component!");
+								"Error: " + Select::selectedObj->GetName() + " already has a light component!\n");
 						}
 						else
 						{
@@ -199,7 +199,7 @@ namespace Graphics::GUI
 								ConsoleManager::WriteConsoleMessage(
 									ConsoleCaller::INPUT,
 									ConsoleType::EXCEPTION,
-									"Error: " + Select::selectedObj->GetName() + " cannot be given a light component! Only empty gameobjects are supported.");
+									"Error: " + Select::selectedObj->GetName() + " cannot be given a light component! Only empty gameobjects are supported.\n");
 							}
 							else
 							{
@@ -236,7 +236,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								ConsoleCaller::INPUT,
 								ConsoleType::EXCEPTION,
-								"Error: " + Select::selectedObj->GetName() + " already has a audio player component!");
+								"Error: " + Select::selectedObj->GetName() + " already has a audio player component!\n");
 						}
 						else
 						{
@@ -246,7 +246,7 @@ namespace Graphics::GUI
 								ConsoleManager::WriteConsoleMessage(
 									ConsoleCaller::INPUT,
 									ConsoleType::EXCEPTION,
-									"Error: " + Select::selectedObj->GetName() + " cannot be given an audio component! Only empty gameobjects are supported.");
+									"Error: " + Select::selectedObj->GetName() + " cannot be given an audio component! Only empty gameobjects are supported.\n");
 							}
 							else
 							{
@@ -284,7 +284,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								ConsoleCaller::INPUT,
 								ConsoleType::EXCEPTION,
-								"Error: " + Select::selectedObj->GetName() + " already has a rigidbody component!");
+								"Error: " + Select::selectedObj->GetName() + " already has a rigidbody component!\n");
 						}
 						else
 						{
@@ -294,7 +294,7 @@ namespace Graphics::GUI
 								ConsoleManager::WriteConsoleMessage(
 									ConsoleCaller::INPUT,
 									ConsoleType::EXCEPTION,
-									"Error: " + Select::selectedObj->GetName() + " cannot be given a rigidbody component! Only models are supported.");
+									"Error: " + Select::selectedObj->GetName() + " cannot be given a rigidbody component! Only models are supported.\n");
 							}
 							else
 							{
@@ -311,7 +311,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								ConsoleCaller::INPUT,
 								ConsoleType::EXCEPTION,
-								"Error: " + Select::selectedObj->GetName() + " already has a camera component!");
+								"Error: " + Select::selectedObj->GetName() + " already has a camera component!\n");
 						}
 						else
 						{
@@ -321,7 +321,7 @@ namespace Graphics::GUI
 								ConsoleManager::WriteConsoleMessage(
 									ConsoleCaller::INPUT,
 									ConsoleType::EXCEPTION,
-									"Error: " + Select::selectedObj->GetName() + " cannot be given a camera component! Only empty gameobjects are supported.");
+									"Error: " + Select::selectedObj->GetName() + " cannot be given a camera component! Only empty gameobjects are supported.\n");
 							}
 							else
 							{
@@ -415,7 +415,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						ConsoleCaller::INPUT,
 						ConsoleType::EXCEPTION,
-						"Error: Cannot change the name to '" + newFolderName + "' because a gameobject with the same name already exists in this scene " + path(Engine::scenePath).stem().string() + "!");
+						"Error: Cannot change the name to '" + newFolderName + "' because a gameobject with the same name already exists in this scene " + path(Engine::scenePath).stem().string() + "!\n");
 				}
 				else
 				{
@@ -449,8 +449,8 @@ namespace Graphics::GUI
 								if (is_regular_file(oldFilePath)
 									&& oldFileName == oldName
 									&& (path(oldFilePath).extension().string() == ".fbx"
-										|| path(oldFilePath).extension().string() == ".obj"
-										|| path(oldFilePath).extension().string() == ".glfw"))
+									|| path(oldFilePath).extension().string() == ".obj"
+									|| path(oldFilePath).extension().string() == ".glfw"))
 								{
 									if (path(oldFilePath).extension().string() == ".fbx") extension = ".fbx";
 									else if (path(oldFilePath).extension().string() == ".obj") extension = ".obj";
@@ -471,7 +471,7 @@ namespace Graphics::GUI
 						ConsoleManager::WriteConsoleMessage(
 							ConsoleCaller::INPUT,
 							ConsoleType::INFO,
-							"Successfully set gameobject new name to '" + newFolderName + "'!");
+							"Successfully set gameobject new name to '" + newFolderName + "'!\n");
 
 						if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 					}
@@ -1023,7 +1023,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								ConsoleCaller::INPUT,
 								ConsoleType::EXCEPTION,
-								"Error: The current light type already is a point light!");
+								"Error: The current light type already is a point light!\n");
 						}
 						else
 						{
@@ -1143,7 +1143,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								ConsoleCaller::INPUT,
 								ConsoleType::EXCEPTION,
-								"Error: The current light type already is a spotlight!");
+								"Error: The current light type already is a spotlight!\n");
 						}
 						else
 						{
@@ -1255,7 +1255,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								ConsoleCaller::INPUT,
 								ConsoleType::EXCEPTION,
-								"Error: A directional light already exists in this scene!");
+								"Error: A directional light already exists in this scene!\n");
 						}
 						else
 						{
@@ -1264,7 +1264,7 @@ namespace Graphics::GUI
 								ConsoleManager::WriteConsoleMessage(
 									ConsoleCaller::INPUT,
 									ConsoleType::EXCEPTION,
-									"Error: The current light type already is a directional light!");
+									"Error: The current light type already is a directional light!\n");
 							}
 							else
 							{

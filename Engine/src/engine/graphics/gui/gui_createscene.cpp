@@ -122,7 +122,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Invalid character '" + str + "' detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!");
+					"Error: Invalid character '" + str + "' detected in scene name '" + assignedSceneName + "'! Please only use english letters, roman numbers and dash or underscore symbol!\n");
 
 #ifdef _WIN32
 				strcpy_s(sceneName, bufferSize, "Scene");
@@ -164,7 +164,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Scene name '" + assignedSceneName + "' already exists in this project! Please pick a new scene name.");
+					"Error: Scene name '" + assignedSceneName + "' already exists in this project! Please pick a new scene name.\n");
 
 				renderCreateSceneWindow = false;
 

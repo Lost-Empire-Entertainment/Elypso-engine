@@ -270,7 +270,7 @@ namespace Graphics::Shape
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Warning: UI Billboard z position is not 0! Resetting back to 0.");
+				"Warning: UI Billboard z position is not 0! Resetting back to 0.\n");
 
 			obj->GetComponent<TransformComponent>()->SetPosition(pos);
 		}
@@ -285,7 +285,7 @@ namespace Graphics::Shape
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Warning: UI Billboard scale is too big! Resetting back to 200 for width and height.");
+				"Warning: UI Billboard scale is too big! Resetting back to 200 for width and height.\n");
 
 			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
@@ -298,7 +298,7 @@ namespace Graphics::Shape
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Warning: UI Billboard scale is 100 or below! Resetting back to 200 for width and height.");
+				"Warning: UI Billboard scale is 100 or below! Resetting back to 200 for width and height.\n");
 
 			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}
@@ -309,7 +309,7 @@ namespace Graphics::Shape
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Warning: UI Billboard z scale is not 0! Resetting back to 0.");
+				"Warning: UI Billboard z scale is not 0! Resetting back to 0.\n");
 
 			obj->GetComponent<TransformComponent>()->SetScale(scale);
 		}

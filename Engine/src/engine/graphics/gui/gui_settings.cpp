@@ -534,7 +534,7 @@ namespace Graphics::GUI
 					ConsoleManager::WriteConsoleMessage(
 						Caller::INPUT,
 						Type::EXCEPTION,
-						"Error: Invalid character detected in game name! Please pick another game name.");
+						"Error: Invalid character detected in game name! Please pick another game name.\n");
 
 					Engine::gameExePath = (path(Engine::gameParentPath) / "Game.exe").string();
 					ConfigFile::SetValue("gameName", "Game");

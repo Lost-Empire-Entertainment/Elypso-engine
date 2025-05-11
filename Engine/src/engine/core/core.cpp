@@ -390,7 +390,7 @@ namespace Core
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Error: Failed to assign valid first scene file because the provided one does not exist! Clearing assigned value.");
+					"Error: Failed to assign valid first scene file because the provided one does not exist! Clearing assigned value.\n");
 				gameFirstScene = "";
 			}
 			else

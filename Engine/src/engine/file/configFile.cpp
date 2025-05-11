@@ -112,8 +112,7 @@ namespace EngineFile
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Error: Malformed config line: '" + line + "'"
-						);
+							"Error: Malformed config line: '" + line + "'\n");
 						continue;
 					}
 
@@ -122,7 +121,7 @@ namespace EngineFile
 						ConsoleManager::WriteConsoleMessage(
 							Caller::FILE,
 							Type::EXCEPTION,
-							"Error: Key or value for line '" + line + "' in config file is invalid!");
+							"Error: Key or value for line '" + line + "' in config file is invalid!\n");
 						continue;
 					}
 					else

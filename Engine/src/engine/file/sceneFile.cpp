@@ -441,7 +441,7 @@ namespace EngineFile
 			ConsoleManager::WriteConsoleMessage(
 				Caller::FILE,
 				Type::EXCEPTION,
-				"Error: Tried to load global physics data but Elypso Physics has not yet been initialized!");
+				"Error: Tried to load global physics data but Elypso Physics has not yet been initialized!\n");
 			return;
 		}
 

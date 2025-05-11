@@ -120,7 +120,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+					"Error: Invalid character detected in file/folder name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!\n");
 
 #ifdef _WIN32
 				strcpy_s(name, bufferSize, "Name");
@@ -165,7 +165,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::FILE,
 					Type::EXCEPTION,
-					"Error: File/folder name '" + newName + "' already exists in this folder! Please pick a new file/folder name.");
+					"Error: File/folder name '" + newName + "' already exists in this folder! Please pick a new file/folder name.\n");
 
 				extension = "";
 				originalName = "";

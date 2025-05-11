@@ -140,7 +140,7 @@ namespace Graphics::Shape
             ConsoleManager::WriteConsoleMessage(
                 Caller::FILE,
                 Type::EXCEPTION,
-                "Loaded incomplete model!");
+                "Loaded incomplete model!\n");
         }
 
         if (!scene->mMeshes

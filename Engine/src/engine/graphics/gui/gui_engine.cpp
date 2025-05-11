@@ -354,7 +354,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								Caller::FILE,
 								Type::EXCEPTION,
-								"Error: File '" + name + "' with extension '" + extension + "' is not yet supported!");
+								"Error: File '" + name + "' with extension '" + extension + "' is not yet supported!\n");
 						}
 						else
 						{
@@ -746,7 +746,7 @@ namespace Graphics::GUI
 							ConsoleManager::WriteConsoleMessage(
 								Caller::INPUT,
 								Type::EXCEPTION,
-								"Error: Cannot have more than one directional light in scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!");
+								"Error: Cannot have more than one directional light in scene '" + path(Engine::scenePath).parent_path().stem().string() + "'!\n");
 						}
 						else
 						{

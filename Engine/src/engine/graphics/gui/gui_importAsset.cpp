@@ -138,7 +138,7 @@ namespace Graphics::GUI
 				ConsoleManager::WriteConsoleMessage(
 					Caller::INPUT,
 					Type::EXCEPTION,
-					"Error: Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!");
+					"Error: Invalid character detected in file name '" + newName + "'! Please only use english letters, roman numbers and dash, dot or underscore symbol!\n");
 
 #ifdef _WIN32
 				strcpy_s(name, bufferSize, path(assetPath).filename().string().c_str());
