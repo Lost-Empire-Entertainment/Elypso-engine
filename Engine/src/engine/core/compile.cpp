@@ -42,6 +42,7 @@ using std::array;
 using std::unique_ptr;
 using std::filesystem::current_path;
 using std::filesystem::is_directory;
+using std::filesystem::path;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
@@ -69,43 +70,13 @@ namespace Core
 
 		thread CompileThread([]()
 			{
-				string gameStem = path(Engine::gameExePath).stem().string();
-				if (gameStem[0] == ' ')
-				{
-					//get the position where we should trim from
-					size_t firstAlphaNum = 0;
-					while (firstAlphaNum < gameStem.size() &&
-						   !isalnum(static_cast<unsigned char>(gameStem[firstAlphaNum])))
-					{
-						++firstAlphaNum;
-					}
-
-					//trim all spaces, tabs, newlines and non-alphanums
-					if (firstAlphaNum < gameStem.size())
-					{
-						gameStem = gameStem.substr(firstAlphaNum);
-#ifdef _WIN32
-						gameStem = gameStem + ".exe";
-#endif
-
-						Engine::gameExePath = (path(Engine::gameExePath).parent_path() / gameStem).string();
-
-						string message = "Forcefully modified game name value to be '" + gameStem + "' to prevent issues. If this is called then the game name value is set incorrectly and should be fixed!\n";
-						ConsoleManager::WriteConsoleMessage(
-							Caller::FILE,
-							Type::EXCEPTION,
-							message
-						);
-					}
-				}
-
 				//
 				// REMOVE OLD GAME EXE IF ANY EXISTS
 				//
 
-				if (exists(Engine::gameParentPath))
+				if (exists(path(Engine::gameExePath).parent_path()))
 				{
-					for (const auto& file : directory_iterator(Engine::gameParentPath))
+					for (const auto& file : directory_iterator(path(Engine::gameExePath).parent_path()))
 					{
 						string filePath = path(file).string();
 						string fileExtension = path(file).extension().string();
@@ -126,7 +97,7 @@ namespace Core
 					// COPY PROJECT FILE TO GAME DOCUMETS FOLDER
 					//
 
-					string targetFolder = (path(Engine::gameParentPath) / "project").string();
+					string targetFolder = ((path(Engine::gameExePath).parent_path()) / "project").string();
 					if (exists(targetFolder)) File::DeleteTarget(targetFolder);
 					File::CreateNewFolder(targetFolder);
 
@@ -481,7 +452,7 @@ namespace Core
 				ImGui::SetCursorPos(button3Pos);
 				if (ImGui::Button("Clean rebuild", buttonSize))
 				{
-					string gameBatPath = (path(Engine::gamePath) / "quickBuild.bat").string();
+					string gameBatPath = (path(Engine::gameRootFolder) / "quickBuild.bat").string();
 
 					installerType = InstallerType::reset;
 					Compile();
@@ -496,7 +467,7 @@ namespace Core
 	{
 		string gameName = path(Engine::gameExePath).stem().string();
 
-		string projectFolder = (path(Engine::gameParentPath) / "project").string();
+		string projectFolder = (path(Engine::gameExePath).parent_path() / "project").string();
 
 		if (!exists(projectFolder))
 		{
@@ -536,7 +507,7 @@ namespace Core
 					}
 				}
 
-				File::RunApplication(Engine::gameParentPath, Engine::gameExePath);
+				File::RunApplication(Engine::gameExePath);
 			}
 		}
 	}

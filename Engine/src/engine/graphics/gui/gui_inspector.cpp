@@ -1241,8 +1241,6 @@ namespace Graphics::GUI
 							billboard->SetParentBillboardHolder(obj);
 							obj->SetChildBillboard(billboard);
 
-							obj->SetTxtFilePath(oldTxtPath);
-
 							GameObjectManager::AddSpotLight(Select::selectedObj);
 
 							GameObjectManager::DestroyGameObject(oldBillboard, false);
@@ -1356,8 +1354,6 @@ namespace Graphics::GUI
 
 								billboard->SetParentBillboardHolder(obj);
 								obj->SetChildBillboard(billboard);
-
-								obj->SetTxtFilePath(oldTxtPath);
 
 								GameObjectManager::SetDirectionalLight(Select::selectedObj);
 

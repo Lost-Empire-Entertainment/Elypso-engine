@@ -126,8 +126,15 @@ namespace EngineFile
 					}
 					else
 					{
+						//clean all spaces from value
+						string value = splitLine[1];
+						if (value[0] == ' ')
+						{
+							value = String::StringReplace(value, " ", "");
+						}
+
 						keys.push_back(splitLine[0]);
-						values.push_back(splitLine[1]);
+						values.push_back(value);
 					}
 				}
 			}
@@ -173,29 +180,10 @@ namespace EngineFile
 			string key = keys[i];
 			string value = values[i];
 
+			//clean all spaces from value
 			if (value[0] == ' ')
 			{
-				//get the position where we should trim from
-				size_t firstAlphaNum = 0;
-				while (firstAlphaNum < value.size() &&
-						  !isalnum(static_cast<unsigned char>(value[firstAlphaNum])))
-				{
-					++firstAlphaNum;
-				}
-
-				//trim all spaces, tabs, newlines and non-alphanums
-				if (firstAlphaNum < value.size())
-				{
-					value = value.substr(firstAlphaNum);
-					SetValue(key, value);
-
-					string message = "Forcefully modified key '" + key + "' value to be '" + value + "' to prevent issues. If this is called then the key value is set incorrectly and should be fixed!\n";
-					ConsoleManager::WriteConsoleMessage(
-						Caller::FILE,
-						Type::EXCEPTION,
-						message
-					);
-				}
+				value = String::StringReplace(value, " ", "");
 			}
 
 			configFile << key << "= " << value << "\n";
@@ -232,7 +220,9 @@ namespace EngineFile
 			auto it = find(keys.begin(), keys.end(), key);
 			int pos = distance(keys.begin(), it);
 
-			return values[pos];
+			string result = String::StringReplace(values[pos], " ", "");
+
+			return result;
 		}
 	}
 	void ConfigFile::SetValue(const string& key, const string& value)

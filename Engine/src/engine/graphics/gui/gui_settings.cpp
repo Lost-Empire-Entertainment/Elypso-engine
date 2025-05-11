@@ -536,7 +536,7 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Error: Invalid character detected in game name! Please pick another game name.\n");
 
-					Engine::gameExePath = (path(Engine::gameParentPath) / "Game.exe").string();
+					Engine::gameExePath = (path(Engine::gameExePath).parent_path() / "Game.exe").string();
 					ConfigFile::SetValue("gameName", "Game");
 					ConfigFile::SaveConfigFile();
 					SceneFile::SaveScene();
@@ -549,7 +549,7 @@ namespace Graphics::GUI
 						Type::EXCEPTION,
 						"Error: Name '" + gameName + "' is not allowed to be set as the game name! Please pick another name.\n");
 
-					Engine::gameExePath = (path(Engine::gameParentPath) / "Game.exe").string();
+					Engine::gameExePath = (path(Engine::gameExePath).parent_path() / "Game.exe").string();
 					ConfigFile::SetValue("gameName", "Game");
 					ConfigFile::SaveConfigFile();
 					SceneFile::SaveScene();
@@ -560,7 +560,7 @@ namespace Graphics::GUI
 			else
 			{
 				string gameNameAndExtension = gameName + ".exe";
-				string finalPath = (path(Engine::gameParentPath) / gameNameAndExtension).string();
+				string finalPath = (path(Engine::gameExePath).parent_path() / gameNameAndExtension).string();
 				Engine::gameExePath = finalPath;
 
 				ConsoleManager::WriteConsoleMessage(

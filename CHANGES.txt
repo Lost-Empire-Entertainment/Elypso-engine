@@ -73,3 +73,6 @@
 - deny setting imported asset name to any reserved name used by gameobjects not created by end user
 - kalaphysics now properly handles wall collisions
 - improved console commands system by allowing to easily add any new commands to console in either engine or game source code
+- decreased minimum allowed window scale for engine and game
+- increased max and decreased min compiler window allowed scale in engine
+- returned back to old gameobject.txt for each gameobject txt file name instead of naming each gameobject txt file name as the name of the actual gameobject

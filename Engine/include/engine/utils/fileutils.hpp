@@ -34,7 +34,7 @@ namespace Utils
 		/// Run an executable.
 		/// </summary>
 		/// <param name="exePath">Direct path to exe itself.</param>
-		static void RunApplication(const string& parentPath, const string& exePath);
+		static void RunApplication(const string& exePath);
 
 		/// <summary>
 		/// Move or rename the selected file or folder.

@@ -33,9 +33,8 @@ namespace Core
 		static inline string texturesPath;
 
 #if ENGINE_MODE
-		static inline string gamePath;
+		static inline string gameRootFolder;
 		static inline string gameExePath;
-		static inline string gameParentPath;
 #endif
 		/// <summary>
 		/// Check if the engine or game is currently running.

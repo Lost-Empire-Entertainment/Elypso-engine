@@ -111,7 +111,7 @@ namespace EngineFile
 			if (obj->GetParentBillboardHolder() == nullptr)
 			{
 				string objectName = obj->GetName();
-				string txtName = objectName + ".txt";
+				string txtName = "gameobject.txt";
 				string objectTxtFilePath = (path(Engine::scenePath).parent_path() / "gameobjects" / objectName / txtName).string();
 
 				//dont save scene camera
@@ -371,15 +371,6 @@ namespace EngineFile
 				}
 
 				//
-				// BILLBOARD UI DATA
-				//
-
-				if (obj->IsBillboardUI())
-				{
-
-				}
-
-				//
 				// WRITE ALL DATA INTO NEW TXT FILE
 				//
 
@@ -477,7 +468,7 @@ namespace EngineFile
 			//look through child gameobject folders
 			for (const auto& file : directory_iterator(folder))
 			{
-				//look for light txt files
+				//look for txt files
 				if (is_regular_file(file))
 				{
 					string extension = path(file).extension().string();
@@ -497,7 +488,7 @@ namespace EngineFile
 
 			string sceneName = path(Engine::scenePath).parent_path().stem().string();
 			string parentFolderName = path(modelPath).parent_path().stem().string();
-			string txtFile = parentFolderName + ".txt";
+			string txtFile = "gameobject.txt";
 
 			string txtPath = (path(Engine::projectPath) / "scenes" / sceneName / "gameobjects" / parentFolderName / txtFile).string();
 			string type = GetType(txtPath);
@@ -584,6 +575,7 @@ namespace EngineFile
 #else
 		string fullTxtFilePath = (current_path() / "project" / txtFilePath).string();
 #endif
+
 		//skip running this function for newly imported models that dont actually
 		//have a txt file yet even though their txt file path was assigned
 		if (!exists(fullTxtFilePath)) return;

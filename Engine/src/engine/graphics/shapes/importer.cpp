@@ -158,6 +158,7 @@ namespace Graphics::Shape
 
         aiNode* topLevelNode = scene->mRootNode->mChildren[0];
 
+
         ProcessNode(
             name,
             id,
@@ -246,7 +247,7 @@ namespace Graphics::Shape
 
         if (id == tempID) id = ++GameObject::nextID;
 
-        string nameAndExtension = name + ".txt";
+        string nameAndExtension = "gameobject.txt";
 
         string scenePath = path(Engine::scenePath).parent_path().filename().string();
         string parentFolderName = path(modelPath).parent_path().filename().string();

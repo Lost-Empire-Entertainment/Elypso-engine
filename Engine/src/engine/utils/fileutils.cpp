@@ -112,9 +112,10 @@ namespace Utils
         return system(command.c_str());
     }
 
-    void File::RunApplication(const string& parentPath, const string& exePath)
+    void File::RunApplication(const string& exePath)
     {
 #ifdef _WIN32
+        string parentPath = path(exePath).parent_path().string();
         wstring wParentFolderPath(parentPath.begin(), parentPath.end());
         wstring wExePath(exePath.begin(), exePath.end());
         wstring wCommands{};

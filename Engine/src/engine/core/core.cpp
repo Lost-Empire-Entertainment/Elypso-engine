@@ -419,37 +419,42 @@ namespace Core
 		string gameName = ConfigFile::GetValue("gameName");
 
 		string parentFolder = current_path().stem().string();
-		//if engine is ran from repository or visual studio folder
+
 		string releaseFolderName = "build-release";
 		string debugFolderName = "build-debug";
+
+		//
+		// IF ENGINE IS RAN FROM REPOSITORY OR VS FOLDER
+		//
 
 		if (parentFolder == releaseFolderName
 			|| parentFolder == debugFolderName)
 		{
-			gamePath = (current_path()
+			gameRootFolder = (current_path()
 				.parent_path()
 				.parent_path() / "Game").string();
-			gameExePath = (path(gamePath) / parentFolder / gameName).string();
-			gameParentPath = path(gameExePath).parent_path().string();
+			gameExePath = (path(gameRootFolder) / parentFolder / gameName).string();
 
 #ifdef _WIN32
 			gameExePath = gameExePath + ".exe";
 #endif
 		}
-		//if engine is ran from public release configuration or something else
+
+		//
+		// IF ENGINE IS RAN FROM PUBLIC RELEASE CONFIG OR SOMETHING ELSE
+		//
+
 		else
 		{
-			gamePath = (current_path().parent_path() / "Game").string();
-			gameExePath = (path(gamePath) / releaseFolderName / gameName).string();
-
-			gameParentPath = path(gameExePath).parent_path().string();
+			gameRootFolder = (current_path().parent_path() / "Game").string();
+			gameExePath = (path(gameRootFolder) / releaseFolderName / gameName).string();
 
 #ifdef _WIN32
 			gameExePath = gameExePath + ".exe";
 #endif
 		}
 
-		output = "Game path: " + gamePath + "\n\n";
+		output = "Game path: " + gameRootFolder + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
@@ -461,14 +466,13 @@ namespace Core
 			Type::DEBUG,
 			output);
 
-		output = "Game parent path: " + gameParentPath + "\n\n";
 		ConsoleManager::WriteConsoleMessage(
 			Caller::FILE,
 			Type::DEBUG,
 			output);
 
 		//if neither one works then engine cannot proceed
-		if (!exists(gamePath))
+		if (!exists(gameRootFolder))
 		{
 			CreateErrorPopup("Failed to find game template folder!");
 		}
