@@ -896,55 +896,52 @@ namespace Core
             }
         }
 #else
-        if (Render::activeCamera != nullptr)
+        static double lastX = 0.0, lastY = 0.0;
+        static bool firstMove = true;
+
+        double currentX, currentY;
+        glfwGetCursorPos(Render::window, &currentX, &currentY);
+
+        auto cc = Render::activeCamera->GetComponent<CameraComponent>();
+        bool draggingCamera =
+            !rightClickState
+            || (rightClickState
+            && glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+
+        cc->SetEnableState(draggingCamera);
+
+        if (cc->IsEnabled())
         {
-            static double lastX = 0.0, lastY = 0.0;
-            static bool firstMove = true;
-
-            double currentX, currentY;
-            glfwGetCursorPos(Render::window, &currentX, &currentY);
-
-            auto cc = Render::activeCamera->GetComponent<CameraComponent>();
-            bool draggingCamera =
-                !rightClickState
-                || (rightClickState
-                && glfwGetMouseButton(Render::window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
-
-            cc->SetEnableState(draggingCamera);
-
-            if (cc->IsEnabled())
+            if (firstMove)
             {
-                if (firstMove)
-                {
-                    lastX = currentX;
-                    lastY = currentY;
-                    firstMove = false;
-                }
-
-                double mouseDeltaX = currentX - lastX;
-                double mouseDeltaY = currentY - lastY;
-
                 lastX = currentX;
                 lastY = currentY;
-
-                //camera rotation with mouse drag
-                if (mouseDeltaX != 0.0f
-                    || mouseDeltaY != 0.0f)
-                {
-                    float sensitivity = 1.0f;
-
-                    //invert Y-axis of mouse delta to work with inverted imgui scene window
-                    mouseDeltaY = -mouseDeltaY;
-
-                    cc->RotateCamera(
-                        mouseDeltaX * sensitivity,
-                        mouseDeltaY * sensitivity);
-
-                    if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-                }
+                firstMove = false;
             }
-            else firstMove = true;
+
+            double mouseDeltaX = currentX - lastX;
+            double mouseDeltaY = currentY - lastY;
+
+            lastX = currentX;
+            lastY = currentY;
+
+            //camera rotation with mouse drag
+            if (mouseDeltaX != 0.0f
+                || mouseDeltaY != 0.0f)
+            {
+                float sensitivity = 1.0f;
+
+                //invert Y-axis of mouse delta to work with inverted imgui scene window
+                mouseDeltaY = -mouseDeltaY;
+
+                cc->RotateCamera(
+                    mouseDeltaX * sensitivity,
+                    mouseDeltaY * sensitivity);
+
+                if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+            }
         }
+        else firstMove = true;
 #endif
     }
 
