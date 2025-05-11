@@ -91,6 +91,7 @@ namespace Core
 				//
 				// START BUILDING GAME FROM SOURCE CODE
 				//
+
 				if (RunInstaller())
 				{
 					//

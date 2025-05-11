@@ -252,11 +252,6 @@ namespace Core
         {
 #if ENGINE_MODE
             engineCommands[command] = cmd;
-#else
-            WriteConsoleMessage(
-                Caller::INPUT,
-                Type::EXCEPTION,
-                "Error: Cannot pass console commands to engine in game!\n");
 #endif
         }
         else if (target == CommandTarget::TARGET_GAME)
