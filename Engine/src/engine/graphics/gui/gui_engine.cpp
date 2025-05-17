@@ -165,7 +165,8 @@ namespace Graphics::GUI
 		style.GrabRounding = 20.0f;
 		style.TabRounding = 4.0f;
 		style.TabBorderSize = 1.0f;
-		style.TabMinWidthForCloseButton = 0.0f;
+		style.TabCloseButtonMinWidthSelected = 0.0f;
+		style.TabCloseButtonMinWidthUnselected = 0.0f;
 		style.ColorButtonPosition = ImGuiDir_Right;
 		style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
 		style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
@@ -254,7 +255,7 @@ namespace Graphics::GUI
 				ImGuiDockNodeFlags dockFlags =
 					ImGuiDockNodeFlags_PassthruCentralNode;
 
-				ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockFlags);
+				ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), dockFlags, nullptr);
 
 				if (!Compilation::renderBuildingWindow)
 				{

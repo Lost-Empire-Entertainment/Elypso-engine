@@ -139,8 +139,8 @@ namespace Graphics::GUI
 				[](ImGuiInputTextCallbackData* data) -> int
 				{
 					//allow inserting text with Ctrl+V
-					if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_V)) &&
-						ImGui::GetIO().KeyCtrl)
+					if (ImGui::IsKeyPressed(ImGuiKey_V)
+						&& ImGui::GetIO().KeyCtrl)
 					{
 						const char* clipboardText = glfwGetClipboardString(Render::window);
 						if (clipboardText)

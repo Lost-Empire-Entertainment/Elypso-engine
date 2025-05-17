@@ -128,7 +128,7 @@ namespace Graphics::GUI
 		isSceneSelected = ImGui::IsWindowFocused();
 		if (isSceneSelected)
 		{
-			ImGui::CaptureMouseFromApp(false);
+			ImGui::GetIO().WantCaptureMouse = false;
 			Input::SceneWindowInput();
 
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -162,10 +162,12 @@ namespace Graphics::GUI
 		else ImGui::ResetMouseDragDelta();
 
 		//render to imgui image and flip the Y-axis
+		GLuint textureID = Render::textureColorbuffer;
+		ImTextureID myTexture = (ImTextureID)(intptr_t)textureID;
 		ImGui::Image(
-			(void*)(intptr_t)Render::textureColorbuffer,
-			renderSize,
-			ImVec2(0, 1),
+			myTexture, 
+			renderSize, 
+			ImVec2(0, 1), 
 			ImVec2(1, 0));
 
 		//makes sure none of the interactable scene window buttons are displayed
