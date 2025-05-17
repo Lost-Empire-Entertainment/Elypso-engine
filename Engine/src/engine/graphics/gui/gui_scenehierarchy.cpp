@@ -117,7 +117,10 @@ namespace Graphics::GUI
 				{
 					if (ImGui::MenuItem("Delete"))
 					{
-						GameObjectManager::DestroyGameObject(obj, false);
+						Select::selectedObj = obj;
+						Select::isObjectSelected = true;
+
+						GameObjectManager::DestroyGameObject(Select::selectedObj, false);
 					}
 					ImGui::EndPopup();
 				}

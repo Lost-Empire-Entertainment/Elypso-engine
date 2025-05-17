@@ -193,8 +193,7 @@ namespace Core
                     && action == GLFW_PRESS
                     && Select::selectedObj != nullptr)
                 {
-                    shared_ptr<GameObject> selectedObj = Select::selectedObj;
-                    GameObjectManager::DestroyGameObject(selectedObj, false);
+                    GameObjectManager::DestroyGameObject(Select::selectedObj, false);
                 }
 
                 if (Select::selectedObj != nullptr)

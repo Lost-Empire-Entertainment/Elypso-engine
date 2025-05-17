@@ -183,7 +183,7 @@ namespace Graphics::Shape
 		{
 			childBillboard = newChildBillboard;
 		}
-		const shared_ptr<GameObject>& GetChildBillboard() const
+		shared_ptr<GameObject>& GetChildBillboard()
 		{
 			return childBillboard;
 		}
