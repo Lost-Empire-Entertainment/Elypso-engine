@@ -16,13 +16,23 @@ if [[ ! -f "$COPY_SH" ]]; then
     read -r -p "Press enter to exit..."
     exit 1
 fi
-if [[ ! -f "$RELEASE_SH" ]]; then
-    echo "[ERROR] Release shell script does not exist: $RELEASE_SH"
+if [[ ! -f "$ENGINE_RELEASE_SH" ]]; then
+    echo "[ERROR] Release shell script does not exist: $ENGINE_RELEASE_SH"
     read -r -p "Press enter to exit..."
     exit 1
 fi
-if [[ ! -f "$DEBUG_SH" ]]; then
-    echo "[ERROR] Debug shell script does not exist: $DEBUG_SH"
+if [[ ! -f "$ENGINE_DEBUG_SH" ]]; then
+    echo "[ERROR] Debug shell script does not exist: $ENGINE_DEBUG_SH"
+    read -r -p "Press enter to exit..."
+    exit 1
+fi
+if [[ ! -f "$ENGINE_LIB_RELEASE_SH" ]]; then
+    echo "[ERROR] Release shell script does not exist: $ENGINE_LIB_RELEASE_SH"
+    read -r -p "Press enter to exit..."
+    exit 1
+fi
+if [[ ! -f "$ENGINE_LIB_DEBUG_SH" ]]; then
+    echo "[ERROR] Debug shell script does not exist: $ENGINE_LIB_DEBUG_SH"
     read -r -p "Press enter to exit..."
     exit 1
 fi

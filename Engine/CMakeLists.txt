@@ -57,6 +57,18 @@ set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
 set(EXT_PHYSICS_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/KalaPhysics")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/KalaCrashHandler")
 
+if (UNIX)
+	find_package(PkgConfig REQUIRED)
+
+	# Zenity is required for platform ui outside of the program
+	find_program(ZENITY_EXECUTABLE zenity)
+	if (NOT ZENITY_EXECUTABLE)
+		message(FATAL_ERROR "Zenity is not installed! Please install it with 'sudo apt install zenity'")
+	else()
+		message(STATUS "Zenity found at: ${ZENITY_EXECUTABLE}")
+	endif()
+endif()
+
 # Add GLAD
 add_library(glad STATIC ${EXT_GLAD_DIR}/glad.c)
 target_include_directories(glad PUBLIC ${EXT_GLAD_DIR}/..)
@@ -69,7 +81,8 @@ if (WIN32)
 		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/debug/glfw3dll.lib")
 	endif()
 else()
-	find_package(glfw3 REQUIRED)
+	pkg_check_modules(GLFW3 REQUIRED glfw3)
+	message(STATUS "Found GLFW via pkg-config")
 endif()
 
 # Add Assimp
@@ -82,7 +95,8 @@ if (WIN32)
 		set(ASSIMP_LIBRARY_PATH2 "${EXT_ASSIMP_DIR}/debug/zlibstaticd.lib")
 	endif()
 else()
-	find_package(assimp REQUIRED)
+	pkg_check_modules(ASSIMP REQUIRED assimp)
+	message(STATUS "Found Assimp via pkg-config")
 endif()
 
 # Add KalaPhysics

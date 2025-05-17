@@ -161,6 +161,7 @@ namespace Utils
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
 #elif __linux__
+        string parentPath = path(exePath).parent_path().string();
         pid_t pid = fork();
         if (pid < 0)
         {
