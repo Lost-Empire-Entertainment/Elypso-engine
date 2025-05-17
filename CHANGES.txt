@@ -86,4 +86,4 @@
 - fixed audio files not being deletable in project hierarchy audio folder
 - fixed volume slider in audio component in inspector not being draggable like min and max range while 3D audio is enabled
 - fixed audio, camera, point, spot and dir light gameobject staying after deleting it - billboard was deleted but the gameobject stayed and trying to save caused a crash
-- fixed cursor dissapearing when right-clicking any gameobjects in scene hierarchy, cursor would also permanently dissapear while focused in engine, it only reappeared after reopening engine
+- engine, engine library, game and hub no longer need to be rebuilt every time
