@@ -189,6 +189,13 @@ namespace Graphics::Shape
 		}
 		void RemoveChildBillboard()
 		{
+			shared_ptr<MaterialComponent> mc = childBillboard->GetComponent<MaterialComponent>();
+			GLuint* bbtex = mc->GetTextureID(MaterialComponent::TextureType::diffuse);
+			if (bbtex != nullptr)
+			{
+				*bbtex = 0;
+			}
+
 			childBillboard = nullptr;
 		}
 
@@ -266,10 +273,6 @@ namespace Graphics::Shape
 		{
 			transparentObjects.push_back(obj);
 		}
-		static void AddCamera(const shared_ptr<GameObject>& obj)
-		{
-			cameras.push_back(obj);
-		}
 		static void AddPointLight(const shared_ptr<GameObject>& obj)
 		{
 			pointLights.push_back(obj);
@@ -282,14 +285,6 @@ namespace Graphics::Shape
 		{
 			directionalLight = newDirectionalLight;
 		}
-		static void SetActionTex(const shared_ptr<GameObject>& newActionTex)
-		{
-			actionTex = newActionTex;
-		}
-		static void SetBorder(const shared_ptr<GameObject>& newBorder)
-		{
-			border = newBorder;
-		}
 		static void AddBillboard(const shared_ptr<GameObject>& obj)
 		{
 			billboards.push_back(obj);
@@ -297,6 +292,18 @@ namespace Graphics::Shape
 		static void AddBillboardUI(const shared_ptr<GameObject>& obj)
 		{
 			billboardUI.push_back(obj);
+		}
+		static void AddCamera(const shared_ptr<GameObject>& obj)
+		{
+			cameras.push_back(obj);
+		}
+		static void SetActionTex(const shared_ptr<GameObject>& newActionTex)
+		{
+			actionTex = newActionTex;
+		}
+		static void SetBorder(const shared_ptr<GameObject>& newBorder)
+		{
+			border = newBorder;
 		}
 		static void SetSkybox(const shared_ptr<GameObject>& obj)
 		{
@@ -346,10 +353,7 @@ namespace Graphics::Shape
 		{
 			return transparentObjects;
 		}
-		static vector<shared_ptr<GameObject>>& GetCameras()
-		{
-			return cameras;
-		}
+
 		static const vector<shared_ptr<GameObject>> GetPointLights()
 		{
 			return pointLights;
@@ -362,14 +366,6 @@ namespace Graphics::Shape
 		{
 			return directionalLight;
 		}
-		static const shared_ptr<GameObject> GetActionTex()
-		{
-			return actionTex;
-		}
-		static const shared_ptr<GameObject> GetBorder()
-		{
-			return border;
-		}
 		static const vector<shared_ptr<GameObject>> GetBillboards()
 		{
 			return billboards;
@@ -377,6 +373,18 @@ namespace Graphics::Shape
 		static const vector<shared_ptr<GameObject>> GetBillboardUI()
 		{
 			return billboardUI;
+		}
+		static vector<shared_ptr<GameObject>>& GetCameras()
+		{
+			return cameras;
+		}
+		static const shared_ptr<GameObject> GetActionTex()
+		{
+			return actionTex;
+		}
+		static const shared_ptr<GameObject> GetBorder()
+		{
+			return border;
 		}
 		static const shared_ptr<GameObject> GetSkybox()
 		{
@@ -396,14 +404,14 @@ namespace Graphics::Shape
 		static inline vector<shared_ptr<GameObject>> objects;
 		static inline vector<shared_ptr<GameObject>> opaqueObjects;
 		static inline vector<shared_ptr<GameObject>> transparentObjects;
-		static inline vector<shared_ptr<GameObject>> cameras;
 		static inline vector<shared_ptr<GameObject>> pointLights;
 		static inline vector<shared_ptr<GameObject>> spotLights;
 		static inline shared_ptr<GameObject> directionalLight;
-		static inline shared_ptr<GameObject> actionTex;
-		static inline shared_ptr<GameObject> border;
 		static inline vector<shared_ptr<GameObject>> billboards;
 		static inline vector<shared_ptr<GameObject>> billboardUI;
+		static inline vector<shared_ptr<GameObject>> cameras;
+		static inline shared_ptr<GameObject> actionTex;
+		static inline shared_ptr<GameObject> border;
 		static inline shared_ptr<GameObject> skybox;
 	};
 }

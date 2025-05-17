@@ -207,7 +207,7 @@ namespace Graphics::Shape
 
 			//bind diffuse map
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::diffuse));
+			glBindTexture(GL_TEXTURE_2D, *mat->GetTextureID(MaterialComponent::TextureType::diffuse));
 
 			shader.SetMat4("model", model);
 			auto mesh = obj->GetComponent<MeshComponent>();
@@ -250,7 +250,7 @@ namespace Graphics::Shape
 
 			//bind diffuse map
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::diffuse));
+			glBindTexture(GL_TEXTURE_2D, *mat->GetTextureID(MaterialComponent::TextureType::diffuse));
 
 			shader.SetMat4("model", model);
 			auto mesh = obj->GetComponent<MeshComponent>();

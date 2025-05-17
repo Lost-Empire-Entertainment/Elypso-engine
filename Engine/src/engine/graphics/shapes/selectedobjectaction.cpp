@@ -229,19 +229,19 @@ namespace Graphics::Shape
 		glActiveTexture(GL_TEXTURE0);
 		if (Input::objectAction == Input::ObjectAction::none)
 		{
-			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_blank));
+			glBindTexture(GL_TEXTURE_2D, *mat->GetTextureID(MaterialComponent::TextureType::misc_icon_blank));
 		}
 		else if (Input::objectAction == Input::ObjectAction::move)
 		{
-			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_move));
+			glBindTexture(GL_TEXTURE_2D, *mat->GetTextureID(MaterialComponent::TextureType::misc_icon_move));
 		}
 		else if (Input::objectAction == Input::ObjectAction::rotate)
 		{
-			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_rotate));
+			glBindTexture(GL_TEXTURE_2D, *mat->GetTextureID(MaterialComponent::TextureType::misc_icon_rotate));
 		}
 		else if (Input::objectAction == Input::ObjectAction::scale)
 		{
-			glBindTexture(GL_TEXTURE_2D, mat->GetTextureID(MaterialComponent::TextureType::misc_icon_scale));
+			glBindTexture(GL_TEXTURE_2D, *mat->GetTextureID(MaterialComponent::TextureType::misc_icon_scale));
 		}
 
 		shader.SetMat4("model", model);

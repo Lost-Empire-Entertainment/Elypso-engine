@@ -441,7 +441,7 @@ namespace Graphics::Shape
 			}
 
 			//bind diffuse texture
-			unsigned int diffuseTextureID = mat->GetTextureID(MaterialComponent::TextureType::diffuse);
+			unsigned int diffuseTextureID = *mat->GetTextureID(MaterialComponent::TextureType::diffuse);
 			if (diffuseTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE0);
@@ -449,7 +449,7 @@ namespace Graphics::Shape
 			}
 
 			//bind specular texture
-			unsigned int specularTextureID = mat->GetTextureID(MaterialComponent::TextureType::specular);
+			unsigned int specularTextureID = *mat->GetTextureID(MaterialComponent::TextureType::specular);
 			if (specularTextureID != 0)
 			{
 				glActiveTexture(GL_TEXTURE1);

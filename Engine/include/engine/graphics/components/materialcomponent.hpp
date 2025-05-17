@@ -67,20 +67,18 @@ namespace Graphics::Components
             shader = newShader;
         }
 
-        const unsigned int& GetTextureID(const TextureType& type) const
+        unsigned int* GetTextureID(const TextureType& type)
         {
-            static unsigned int none = 0;
-
             auto it = textures.find(type);
             if (it != textures.end())
             {
-                const auto& textureMap = it->second;
+                auto& textureMap = it->second;
                 if (!textureMap.empty())
                 {
-                    return textureMap.begin()->second;
+                    return &textureMap.begin()->second;
                 }
             }
-            return none;
+            return nullptr;
         }
 
         const string& GetTextureName(const TextureType& type) const

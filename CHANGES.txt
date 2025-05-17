@@ -76,3 +76,10 @@
 - decreased minimum allowed window scale for engine and game
 - increased max and decreased min compiler window allowed scale in engine
 - returned back to old gameobject.txt for each gameobject txt file name instead of naming each gameobject txt file name as the name of the actual gameobject
+
+0.1.3.0008:
+- fixed mesh component height in inspector for empty gameobject
+- fixed light component height in inspector for point, spot and directional lights
+- added mesh type to mesh component in inspector for all gameobjects
+- fixed light type icon not updating correctly if light type was changed from inspector
+- fixed light icon type staying after light component was removed from gameobject from inspector

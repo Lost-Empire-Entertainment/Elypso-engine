@@ -595,11 +595,16 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = mesh->GetMeshType() == MeshComponent::MeshType::model ? 3 : 1;
+		int numLines = mesh->GetMeshType() == MeshComponent::MeshType::camera ? 1 : 3;
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Mesh", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 
 		ImGui::Text("Mesh");
+
+		MeshComponent::MeshType type = mesh->GetMeshType();
+		string meshType = string(magic_enum::enum_name(type));
+		ImGui::SameLine();
+		ImGui::Text(("|  Type: " + meshType).c_str());
 
 		ImGui::Separator();
 
@@ -819,7 +824,16 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int numLines = 9;
+		int pointlightLines = 9;
+		int spotlightLines = 13;
+		int dirLightLines = 6;
+		int numLines{};
+
+		MeshComponent::MeshType type = mesh->GetMeshType();
+		if (type == MeshComponent::MeshType::point_light) numLines = pointlightLines;
+		else if (type == MeshComponent::MeshType::spot_light) numLines = spotlightLines;
+		else if (type == MeshComponent::MeshType::directional_light) numLines = dirLightLines;
+		
 		float dynamicHeight = ImGui::GetTextLineHeightWithSpacing() * numLines + 40.0f;
 		ImGui::BeginChild("Light", ImVec2(ImGui::GetWindowWidth() - 20, dynamicHeight), true, childWindowFlags);
 		
@@ -1005,16 +1019,13 @@ namespace Graphics::GUI
 
 					string value = lightTypes[i];
 					
-					MeshType type = Select::selectedObj->GetComponent<MeshComponent>()->GetMeshType();
-					vec3 oldPos = Select::selectedObj->GetComponent<TransformComponent>()->GetPosition();
-					vec3 oldRot = Select::selectedObj->GetComponent<TransformComponent>()->GetRotation();
-					vec3 oldScale = Select::selectedObj->GetComponent<TransformComponent>()->GetScale();
+					shared_ptr<GameObject> oldLight = Select::selectedObj;
+					MeshType type = oldLight->GetComponent<MeshComponent>()->GetMeshType();
 
-					auto& obj = Select::selectedObj;
-					string oldTxtPath = obj->GetTxtFilePath();
-					auto& oldBillboard = obj->GetChildBillboard();
-					vec3 oldBillboardPos = obj->GetComponent<TransformComponent>()->GetPosition();
-					unsigned int oldBillboardID = Select::selectedObj->GetChildBillboard()->GetID();
+					string oldName = oldLight->GetName();
+					vec3 oldPos = oldLight->GetComponent<TransformComponent>()->GetPosition();
+					vec3 oldRot = oldLight->GetComponent<TransformComponent>()->GetRotation();
+					vec3 oldScale = oldLight->GetComponent<TransformComponent>()->GetScale();
 
 					if (value == "Point light")
 					{
@@ -1029,111 +1040,47 @@ namespace Graphics::GUI
 						{
 							if (type == MeshType::spot_light)
 							{
-								GameObjectManager::RemoveSpotlight(Select::selectedObj);
+								GameObjectManager::RemoveSpotlight(oldLight);
 							}
 							else if (type == MeshType::directional_light)
 							{
 								GameObjectManager::SetDirectionalLight(nullptr);
 							}
 
-							float vertices[] =
-							{
-								//edges of the cube
-								-0.5f, -0.5f, -0.5f,
-								 0.5f, -0.5f, -0.5f,
+							GameObjectManager::DestroyGameObject(oldLight, false);
+							Select::selectedObj = nullptr;
+							Select::isObjectSelected = false;
 
-								 0.5f, -0.5f, -0.5f,
-								 0.5f,  0.5f, -0.5f,
+							string targetPath = File::AddIndex(Engine::currentGameobjectsPath, oldName, "");
+							string targetName = path(targetPath).stem().string();
+							string targetNameAndExtension = targetName + ".txt";
+							File::CreateNewFolder(targetPath);
 
-								 0.5f,  0.5f, -0.5f,
-								-0.5f,  0.5f, -0.5f,
+							string scenePath = path(Engine::scenePath).parent_path().filename().string();
+							string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-								-0.5f,  0.5f, -0.5f,
-								-0.5f, -0.5f, -0.5f,
+							unsigned int nextID = ++GameObject::nextID;
+							unsigned int nextID2 = ++GameObject::nextID;
 
-								-0.5f, -0.5f,  0.5f,
-								 0.5f, -0.5f,  0.5f,
+							shared_ptr<GameObject> obj =
+								PointLight::InitializePointLight(
+									oldPos,
+									oldRot,
+									oldScale,
+									finalTxtPath,
+									vec3(1),
+									1.0f,
+									1.0f,
+									targetName,
+									nextID,
+									true,
 
-								 0.5f, -0.5f,  0.5f,
-								 0.5f,  0.5f,  0.5f,
+									//billboard values
+									nextID2,
+									true);
 
-								 0.5f,  0.5f,  0.5f,
-								-0.5f,  0.5f,  0.5f,
-
-								-0.5f,  0.5f,  0.5f,
-								-0.5f, -0.5f,  0.5f,
-
-								//connecting edges
-								-0.5f, -0.5f, -0.5f,
-								-0.5f, -0.5f,  0.5f,
-
-								 0.5f, -0.5f, -0.5f,
-								 0.5f, -0.5f,  0.5f,
-
-								 0.5f,  0.5f, -0.5f,
-								 0.5f,  0.5f,  0.5f,
-
-								-0.5f,  0.5f, -0.5f,
-								-0.5f,  0.5f,  0.5f,
-							};
-
-							GLuint vao, vbo, ebo;
-
-							glGenVertexArrays(1, &vao);
-							glGenBuffers(1, &vbo);
-							glBindVertexArray(vao);
-							glBindBuffer(GL_ARRAY_BUFFER, vbo);
-							glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-							glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-							glEnableVertexAttribArray(0);
-
-							glBindVertexArray(0);
-
-							auto mesh = Select::selectedObj->AddComponent<MeshComponent>(
-								MeshType::point_light,
-								vao,
-								vbo,
-								ebo);
-
-							mesh->SetOwner(Select::selectedObj);
-
-							string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
-							string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
-
-							if (!exists(vert)
-								|| !exists(frag))
-							{
-								Engine::CreateErrorPopup("One of the shader paths for point light is invalid!");
-							}
-
-							Shader pointLightShader = Shader::LoadShader(vert, frag);
-
-							auto mat = Select::selectedObj->AddComponent<MaterialComponent>();
-							mat->SetOwner(Select::selectedObj);
-							mat->AddShader(vert, frag, pointLightShader);
-
-							auto pointLight = Select::selectedObj->AddComponent<LightComponent>(LightComponent::LightType::Point);
-							pointLight->SetOwner(Select::selectedObj);
-
-							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();
-							auto billboard = Billboard::InitializeBillboard(
-								false,
-								oldBillboardPos,
-								vec3(0),
-								vec3(1),
-								billboardDiffTexture,
-								oldBillboardID,
-								true);
-
-							billboard->SetParentBillboardHolder(Select::selectedObj);
-							Select::selectedObj->SetChildBillboard(billboard);
-
-							Select::selectedObj->SetTxtFilePath(oldTxtPath);
-
-							GameObjectManager::AddPointLight(Select::selectedObj);
-
-							GameObjectManager::DestroyGameObject(oldBillboard, false);
+							Select::selectedObj = obj;
+							Select::isObjectSelected = true;
 						}
 					}
 					else if (value == "Spotlight")
@@ -1149,101 +1096,49 @@ namespace Graphics::GUI
 						{
 							if (type == MeshType::point_light)
 							{
-								GameObjectManager::RemovePointLight(Select::selectedObj);
+								GameObjectManager::RemovePointLight(oldLight);
 							}
 							else if (type == MeshType::directional_light)
 							{
 								GameObjectManager::SetDirectionalLight(nullptr);
 							}
 
-							float vertices[] =
-							{
-								//four corner edges
-								0.0f,  0.5f,  0.0f,
-							   -0.5f, -0.5f, -0.5f,
+							GameObjectManager::DestroyGameObject(oldLight, false);
+							Select::selectedObj = nullptr;
+							Select::isObjectSelected = false;
 
-								0.0f,  0.5f,  0.0f,
-								0.5f, -0.5f, -0.5f,
+							string targetPath = File::AddIndex(Engine::currentGameobjectsPath, oldName, "");
+							string targetName = path(targetPath).stem().string();
+							string targetNameAndExtension = targetName + ".txt";
+							File::CreateNewFolder(targetPath);
 
-								0.0f,  0.5f,  0.0f,
-							   -0.5f, -0.5f,  0.5f,
+							string scenePath = path(Engine::scenePath).parent_path().filename().string();
+							string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-								0.0f,  0.5f,  0.0f,
-								0.5f, -0.5f,  0.5f,
+							unsigned int nextID = ++GameObject::nextID;
+							unsigned int nextID2 = ++GameObject::nextID;
 
-								//four bottom edges
-								0.5f, -0.5f,  0.5f,
-							   -0.5f, -0.5f,  0.5f,
+							shared_ptr<GameObject> obj =
+								SpotLight::InitializeSpotLight(
+									oldPos,
+									oldRot,
+									oldScale,
+									finalTxtPath,
+									vec3(1),
+									1.0f,
+									1.0f,
+									12.5f,
+									17.5f,
+									targetName,
+									nextID,
+									true,
 
-								0.5f, -0.5f, -0.5f,
-							   -0.5f, -0.5f, -0.5f,
+									//billboard values
+									nextID2,
+									true);
 
-							   -0.5f, -0.5f, -0.5f,
-							   -0.5f, -0.5f,  0.5f,
-
-								0.5f, -0.5f, -0.5f,
-								0.5f, -0.5f,  0.5f
-							};
-
-							GLuint vao, vbo, ebo;
-
-							glGenVertexArrays(1, &vao);
-							glGenBuffers(1, &vbo);
-							glBindVertexArray(vao);
-							glBindBuffer(GL_ARRAY_BUFFER, vbo);
-							glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-							glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-							glEnableVertexAttribArray(0);
-
-							glBindVertexArray(0);
-
-							auto mesh = obj->AddComponent<MeshComponent>(
-								MeshType::spot_light,
-								vao,
-								vbo,
-								ebo);
-							mesh->SetOwner(obj);
-
-							string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
-							string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
-
-							if (!exists(vert)
-								|| !exists(frag))
-							{
-								Engine::CreateErrorPopup("One of the shader paths for spotlight is invalid!");
-							}
-
-							Shader spotlightShader = Shader::LoadShader(
-								(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-								(path(Engine::filesPath) / "shaders" / "Basic.frag").string());
-
-							auto mat = obj->AddComponent<MaterialComponent>();
-							mat->SetOwner(obj);
-							mat->AddShader(
-								(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
-								(path(Engine::filesPath) / "shaders" / "Basic.frag").string(),
-								spotlightShader);
-
-							auto spotlight = obj->AddComponent<LightComponent>(LightComponent::LightType::Spot);
-							spotlight->SetOwner(obj);
-
-							string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "spotLight.png").string();
-							shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
-								false,
-								oldBillboardPos,
-								vec3(0),
-								vec3(1),
-								billboardDiffTexture,
-								oldBillboardID,
-								true);
-
-							billboard->SetParentBillboardHolder(obj);
-							obj->SetChildBillboard(billboard);
-
-							GameObjectManager::AddSpotLight(Select::selectedObj);
-
-							GameObjectManager::DestroyGameObject(oldBillboard, false);
+							Select::selectedObj = obj;
+							Select::isObjectSelected = true;
 						}
 					}
 					else if (value == "Directional light")
@@ -1268,96 +1163,46 @@ namespace Graphics::GUI
 							{
 								if (type == MeshType::point_light)
 								{
-									GameObjectManager::RemovePointLight(Select::selectedObj);
+									GameObjectManager::RemovePointLight(oldLight);
 								}
 								else if (type == MeshType::spot_light)
 								{
-									GameObjectManager::RemoveSpotlight(Select::selectedObj);
+									GameObjectManager::RemoveSpotlight(oldLight);
 								}
 
-								float vertices[] =
-								{
-									//four corner edges
-									0.0f,  0.5f,  0.0f,
-								   -0.5f, -0.5f, -0.5f,
+								GameObjectManager::DestroyGameObject(oldLight, false);
+								Select::selectedObj = nullptr;
+								Select::isObjectSelected = false;
 
-									0.0f,  0.5f,  0.0f,
-									0.5f, -0.5f, -0.5f,
+								string targetPath = File::AddIndex(Engine::currentGameobjectsPath, oldName, "");
+								string targetName = path(targetPath).stem().string();
+								string targetNameAndExtension = targetName + ".txt";
+								File::CreateNewFolder(targetPath);
 
-									0.0f,  0.5f,  0.0f,
-								   -0.5f, -0.5f,  0.5f,
+								string scenePath = path(Engine::scenePath).parent_path().filename().string();
+								string finalTxtPath = (path("scenes") / scenePath / "gameobjects" / path(targetPath).filename().string() / targetNameAndExtension).string();
 
-									0.0f,  0.5f,  0.0f,
-									0.5f, -0.5f,  0.5f,
+								unsigned int nextID = ++GameObject::nextID;
+								unsigned int nextID2 = ++GameObject::nextID;
 
-									//four bottom edges
-									0.5f, -0.5f,  0.5f,
-								   -0.5f, -0.5f,  0.5f,
+								shared_ptr<GameObject> obj =
+									DirectionalLight::InitializeDirectionalLight(
+										oldPos,
+										oldRot,
+										oldScale,
+										finalTxtPath,
+										vec3(1),
+										1.0f,
+										targetName,
+										nextID,
+										true,
 
-									0.5f, -0.5f, -0.5f,
-								   -0.5f, -0.5f, -0.5f,
+										//billboard values
+										nextID2,
+										true);
 
-								   -0.5f, -0.5f, -0.5f,
-								   -0.5f, -0.5f,  0.5f,
-
-									0.5f, -0.5f, -0.5f,
-									0.5f, -0.5f,  0.5f
-								};
-
-								GLuint vao, vbo, ebo;
-
-								glGenVertexArrays(1, &vao);
-								glGenBuffers(1, &vbo);
-								glBindVertexArray(vao);
-								glBindBuffer(GL_ARRAY_BUFFER, vbo);
-								glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-								glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-								glEnableVertexAttribArray(0);
-
-								glBindVertexArray(0);
-
-								auto mesh = obj->AddComponent<MeshComponent>(
-									MeshType::directional_light,
-									vao,
-									vbo,
-									ebo);
-								mesh->SetOwner(obj);
-
-								string vert = (path(Engine::filesPath) / "shaders" / "Basic_model.vert").string();
-								string frag = (path(Engine::filesPath) / "shaders" / "Basic.frag").string();
-
-								if (!exists(vert)
-									|| !exists(frag))
-								{
-									Engine::CreateErrorPopup("One of the shader paths for spotlight is invalid!");
-								}
-
-								Shader directionalLightShader = Shader::LoadShader(vert, frag);
-
-								auto mat = obj->AddComponent<MaterialComponent>();
-								mat->SetOwner(obj);
-								mat->AddShader(vert, frag, directionalLightShader);
-
-								auto dirlight = obj->AddComponent<LightComponent>(LightComponent::LightType::Directional);
-								dirlight->SetOwner(obj);
-
-								string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "directionalLight.png").string();
-								shared_ptr<GameObject> billboard = Billboard::InitializeBillboard(
-									false,
-									oldBillboardPos,
-									vec3(0),
-									vec3(1),
-									billboardDiffTexture,
-									oldBillboardID,
-									true);
-
-								billboard->SetParentBillboardHolder(obj);
-								obj->SetChildBillboard(billboard);
-
-								GameObjectManager::SetDirectionalLight(Select::selectedObj);
-
-								GameObjectManager::DestroyGameObject(oldBillboard, false);
+								Select::selectedObj = obj;
+								Select::isObjectSelected = true;
 							}
 						}
 					}
