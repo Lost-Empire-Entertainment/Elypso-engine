@@ -203,8 +203,7 @@ namespace Core
 		else if (parentFolder == "Engine")
 		{
 			engineRootFolder = current_path().string();
-			gameRootFolder = (current_path()
-				.parent_path() / "Game").string();
+			gameRootFolder = Engine::gameRootFolder;
 		}
 
 		if (gameRootFolder == ""
