@@ -160,6 +160,30 @@ namespace Core
         }
         return true;
     }
+
+    bool Audio::IsPlaying(const string& name, const shared_ptr<GameObject>& obj)
+    {
+        if (!isInitialized)
+        {
+            ConsoleManager::WriteConsoleMessage(
+                Caller::FILE,
+                Type::EXCEPTION,
+                "Error: Cannot play audio file '" + name + "' because Miniaudio has not been initialized!\n");
+            return false;
+        }
+
+        string fullPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path() / name).string();
+
+        if (!IsImported(name, obj))
+        {
+            return false;
+        }
+
+        auto it = soundMap.find(fullPath);
+
+        return ma_sound_is_playing(it->second.get()) == MA_TRUE;
+    }
+
     bool Audio::Stop(const string& name, const shared_ptr<GameObject>& obj)
     {
         if (!isInitialized)

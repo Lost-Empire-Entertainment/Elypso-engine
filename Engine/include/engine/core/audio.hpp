@@ -35,6 +35,10 @@ namespace Core
 		/// </summary>
 		static bool Play(const string& path, const shared_ptr<GameObject>& obj);
 		/// <summary>
+		/// Returns true if the audio source is currently playing.
+		/// </summary>
+		static bool IsPlaying(const string& path, const shared_ptr<GameObject>& obj);
+		/// <summary>
 		/// Stop playing audio file and reset its position to beginning.
 		/// </summary>
 		static bool Stop(const string& path, const shared_ptr<GameObject>& obj);

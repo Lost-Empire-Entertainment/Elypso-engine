@@ -686,9 +686,6 @@ namespace Graphics::GUI
 			//assign diffuse texture
 			ImGui::Text("Diffuse texture");
 			ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
-			path diff_texturePath = path(
-				Engine::filesPath
-				+ mat->GetTextureName(MaterialComponent::TextureType::diffuse));
 			string diff_assign = "Add##diff_assign";
 			if (ImGui::Button(diff_assign.c_str()))
 			{
@@ -729,9 +726,6 @@ namespace Graphics::GUI
 			//assign specular texture
 			ImGui::Text("Specular texture");
 			ImGui::SameLine(ImGui::GetWindowWidth() - 225.0f);
-			path spec_texturePath = path(
-				Engine::filesPath
-				+ mat->GetTextureName(MaterialComponent::TextureType::specular));
 			string spec_assign = "Add##spec_assign";
 			if (ImGui::Button(spec_assign.c_str()))
 			{

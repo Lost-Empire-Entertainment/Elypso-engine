@@ -328,7 +328,7 @@ namespace Graphics::GUI
 				string fileAndExtension = path(selectedPath).stem().string() + path(selectedPath).extension().string();
 
 				string originPath = (path(Engine::projectPath) / "textures" / fileAndExtension).string();
-				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).string() / fileAndExtension).string();
+				string targetPath = (path(Engine::projectPath) / path(obj->GetTxtFilePath()).parent_path().string() / fileAndExtension).string();
 				
 				File::CopyTarget(originPath, targetPath);
 
