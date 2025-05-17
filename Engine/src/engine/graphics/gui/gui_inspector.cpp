@@ -1075,6 +1075,8 @@ namespace Graphics::GUI
 
 							Select::selectedObj = obj;
 							Select::isObjectSelected = true;
+
+							if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 						}
 					}
 					else if (value == "Spotlight")
@@ -1133,6 +1135,8 @@ namespace Graphics::GUI
 
 							Select::selectedObj = obj;
 							Select::isObjectSelected = true;
+
+							if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 						}
 					}
 					else if (value == "Directional light")
@@ -1197,6 +1201,8 @@ namespace Graphics::GUI
 
 								Select::selectedObj = obj;
 								Select::isObjectSelected = true;
+
+								if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 							}
 						}
 					}
@@ -1402,7 +1408,7 @@ namespace Graphics::GUI
 		}
 
 		float currVolume = audioPlayer->GetVolume();
-		if (ImGui::SliderFloat("Volume##apc", &currVolume, 0.0f, 100.0f))
+		if (ImGui::DragFloat("Volume##apc", &currVolume, 0.1f, 0.0f, 100.0f))
 		{
 			audioPlayer->SetVolume(currVolume);
 

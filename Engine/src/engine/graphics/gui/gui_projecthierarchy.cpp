@@ -251,6 +251,16 @@ namespace Graphics::GUI
                             File::DeleteTarget(path(entry).string());
                         }
                     }
+                    else if (path(entry).extension().string() == ".wav"
+                             || path(entry).extension().string() == ".flac"
+                             || path(entry).extension().string() == ".mp3")
+                    {
+                        if (path(thisParentFolder).stem().string() == "audio"
+                            && ImGui::MenuItem("Delete audio file"))
+                        {
+                            File::DeleteTarget(path(entry).string());
+                        }
+                    }
 
                     ImGui::EndPopup();
                 }

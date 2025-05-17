@@ -83,3 +83,5 @@
 - added mesh type to mesh component in inspector for all gameobjects
 - fixed light type icon not updating correctly if light type was changed from inspector
 - fixed light icon type staying after light component was removed from gameobject from inspector
+- fixed audio files not being deletable in project hierarchy audio folder
+- fixed volume slider in audio component in inspector not being draggable like min and max range while 3D audio is enabled
