@@ -277,9 +277,9 @@ namespace Core
 		case InstallerType::reset:
 		{
 #ifdef _WIN32
-			command = "cmd /c \"" + gameBuilder + " reset\"";
+			command = "cmd /c \"" + gameBuilder + " clean\"";
 #elif __linux__
-			command = "bash \"" + gameBuilder + "\" reset";
+			command = "bash \"" + gameBuilder + "\" clean";
 #endif
 			break;
 		}

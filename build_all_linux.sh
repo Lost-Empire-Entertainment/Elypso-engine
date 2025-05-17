@@ -3,6 +3,11 @@
 # Set root folder
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+CLEAN_ARG=""
+if [[ "$1" == "clean" ]]; then
+    CLEAN_ARG="clean"
+fi
+
 # Set shell script paths
 ENGINE_RELEASE_SH="${ROOT_DIR}/Engine/build_linux_release.sh"
 ENGINE_DEBUG_SH="${ROOT_DIR}/Engine/build_linux_debug.sh"
@@ -54,7 +59,7 @@ echo "[INFO] Building Elypso engine in Release mode..."
 echo "====================================="
 echo ""
 
-if ! bash "${ENGINE_RELEASE_SH}"; then
+if ! bash "${ENGINE_RELEASE_SH}" $CLEAN_ARG; then
     echo "[ERROR] Engine Release build failed!"
     read -r -p "Press enter to exit..."
     exit 1
@@ -65,7 +70,7 @@ echo "[INFO] Building Elypso engine in Debug mode..."
 echo "====================================="
 echo ""
 
-if ! bash "${ENGINE_DEBUG_SH}"; then
+if ! bash "${ENGINE_DEBUG_SH}" $CLEAN_ARG; then
     echo "[ERROR] Engine Debug build failed!"
     read -r -p "Press enter to exit..."
     exit 1
@@ -76,7 +81,7 @@ echo "[INFO] Building Elypso engine library in Release mode..."
 echo "====================================="
 echo ""
 
-if ! bash "${ENGINE_LIB_RELEASE_SH}"; then
+if ! bash "${ENGINE_LIB_RELEASE_SH}" $CLEAN_ARG; then
     echo "[ERROR] Engine Library Release build failed!"
     read -r -p "Press enter to exit..."
     exit 1
@@ -87,7 +92,7 @@ echo "[INFO] Building Elypso engine library in Debug mode..."
 echo "====================================="
 echo ""
 
-if ! bash "${ENGINE_LIB_DEBUG_SH}"; then
+if ! bash "${ENGINE_LIB_DEBUG_SH}" $CLEAN_ARG; then
     echo "[ERROR] Engine Library Debug build failed!"
     read -r -p "Press enter to exit..."
     exit 1
