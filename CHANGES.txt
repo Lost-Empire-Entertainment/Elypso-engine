@@ -85,3 +85,4 @@
 - fixed light icon type staying after light component was removed from gameobject from inspector
 - fixed audio files not being deletable in project hierarchy audio folder
 - fixed volume slider in audio component in inspector not being draggable like min and max range while 3D audio is enabled
+- fixed audio, camera, point, spot and dir light gameobject staying after deleting it - billboard was deleted but the gameobject stayed and trying to save caused a crash
