@@ -13,7 +13,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
 #include "glad.h"
 #include "type_ptr.hpp"
 
@@ -128,7 +127,6 @@ namespace Graphics::GUI
 		isSceneSelected = ImGui::IsWindowFocused();
 		if (isSceneSelected)
 		{
-			ImGui::GetIO().WantCaptureMouse = false;
 			Input::SceneWindowInput();
 
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))

@@ -26,7 +26,7 @@ echo.
 
 :: Then build engine
 cd "%PROJECT_ROOT%\Engine"
-cmd /c "build_windows_release.bat" %CLEAN_ARG%
+cmd /c "build_windows_release.bat %CLEAN_ARG%"
 if errorlevel 1 (
     echo [ERROR] Release build failed.
     pause
@@ -39,7 +39,7 @@ echo [INFO] Building Elypso engine in Debug mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_debug.bat" %CLEAN_ARG%
+cmd /c "build_windows_debug.bat %CLEAN_ARG%"
 if errorlevel 1 (
     echo [ERROR] Debug build failed.
     pause
@@ -52,8 +52,8 @@ echo =====================================
 echo.
 
 :: Then build engine library
-cd "%PROJECT_ROOT%\Engine library" %CLEAN_ARG%
-cmd /c "build_windows_release.bat"
+cd "%PROJECT_ROOT%\Engine library"
+cmd /c "build_windows_release.bat %CLEAN_ARG%"
 if errorlevel 1 (
     echo [ERROR] Release build failed.
     pause
@@ -66,7 +66,7 @@ echo [INFO] Building Elypso engine library in Debug mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_debug.bat" %CLEAN_ARG%
+cmd /c "build_windows_debug.bat %CLEAN_ARG%"
 if errorlevel 1 (
     echo [ERROR] Debug build failed.
     pause

@@ -45,6 +45,7 @@ set(EXT_GLAD_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Glad")
 set(EXT_GLFW_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLFW")
 set(EXT_GLM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/GLM")
 set(EXT_IMGUI_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGui")
+set(EXT_IMGUIZMO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/ImGuizmo")
 set(EXT_MAGIC_ENUM_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/magic_enum")
 set(EXT_STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/Stb_image")
 set(EXT_MINIAUDIO_DIR "${CMAKE_SOURCE_DIR}/../_external_shared/miniaudio")
@@ -134,13 +135,14 @@ set(SOURCE_FILES
 # Add external source files
 list(APPEND SOURCE_FILES
 	${EXT_GLAD_DIR}/glad.c
+	${EXT_STB_IMAGE_DIR}/stb_image.cpp
 	${EXT_IMGUI_DIR}/imgui.cpp
 	${EXT_IMGUI_DIR}/imgui_draw.cpp
 	${EXT_IMGUI_DIR}/imgui_impl_glfw.cpp
 	${EXT_IMGUI_DIR}/imgui_impl_opengl3.cpp
 	${EXT_IMGUI_DIR}/imgui_tables.cpp
 	${EXT_IMGUI_DIR}/imgui_widgets.cpp
-	${EXT_STB_IMAGE_DIR}/stb_image.cpp
+	${EXT_IMGUIZMO_DIR}/ImGuizmo.cpp
 )
 
 # Build as static library
@@ -177,6 +179,7 @@ target_include_directories(Elypso_engine PRIVATE
 		${EXT_GLM_DIR}/simd
 		${EXT_MAGIC_ENUM_DIR}
 		${EXT_IMGUI_DIR}
+		${EXT_IMGUIZMO_DIR}
 		${EXT_STB_IMAGE_DIR}
 		${EXT_MINIAUDIO_DIR}
 		${EXT_PHYSICS_DIR}

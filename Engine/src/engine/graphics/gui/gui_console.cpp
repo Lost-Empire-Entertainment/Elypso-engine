@@ -9,7 +9,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "imgui_internal.h"
 #include "glfw3.h"
 
 //engine
@@ -21,6 +20,7 @@
 #include "configFile.hpp"
 
 using std::cout;
+using std::min;
 
 using Graphics::Render;
 using Core::Engine;
@@ -148,7 +148,7 @@ namespace Graphics::GUI
 							//insert clipboard text into the input buffer
 							int textLength = static_cast<int>(strlen(clipboardText));
 							int availableSpace = data->BufSize - data->BufTextLen;
-							int copyLength = ImMin(textLength, availableSpace - 1); //leave space for null terminator
+							int copyLength = min(textLength, availableSpace - 1); //leave space for null terminator
 							if (copyLength > 0)
 							{
 								memcpy(data->Buf + data->CursorPos, clipboardText, copyLength);
