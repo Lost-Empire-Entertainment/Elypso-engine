@@ -90,3 +90,4 @@
 
 0.1.3.0009:
 - added imguizmo
+- fixed a small with compiling in clean mode on windows
