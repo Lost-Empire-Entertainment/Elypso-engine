@@ -1,6 +1,6 @@
 # Elypso engine
 
-![License](https://img.shields.io/badge/license-Proprietary-blue)](LICENSE.md)
+[![License](https://img.shields.io/badge/license-Proprietary-blue)](LICENSE.md)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-brightgreen)
 ![Development Stage](https://img.shields.io/badge/development-Alpha-yellow)
 
