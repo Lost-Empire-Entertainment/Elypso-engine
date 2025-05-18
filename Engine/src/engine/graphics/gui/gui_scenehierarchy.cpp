@@ -78,7 +78,6 @@ namespace Graphics::GUI
 			auto mesh = obj->GetComponent<MeshComponent>();
 			if (!mesh
 				|| (mesh
-				&& mesh->GetMeshType() != MeshComponent::MeshType::actionTex
 				&& mesh->GetMeshType() != MeshComponent::MeshType::border
 				&& mesh->GetMeshType() != MeshComponent::MeshType::billboard
 				&& mesh->GetMeshType() != MeshComponent::MeshType::skybox))
@@ -102,12 +101,6 @@ namespace Graphics::GUI
 				{
 					Select::selectedObj = obj;
 					Select::isObjectSelected = true;
-
-					if (Input::objectAction == Input::ObjectAction::none)
-					{
-						Input::objectAction = Input::ObjectAction::move;
-					}
-					if (Input::axis == "") Input::axis = "X";
 				}
 
 				if (isSelected) ImGui::PopStyleColor();

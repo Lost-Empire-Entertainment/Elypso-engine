@@ -60,7 +60,6 @@ namespace Graphics::Components
             directional_light, //Gameobject with a light component switched to directional light and its billboard icon
             billboard,         //Internal billboard gameobject attached to light gameobjects, camera and audio object
             border,            //Internal gameobject used to render the border for selected gameobject
-            actionTex,         //Internal gameobject used to render textures for axis and interaction type for selected gameobject
             skybox             //Internal gameobject used for rendering the skybox
         };
 

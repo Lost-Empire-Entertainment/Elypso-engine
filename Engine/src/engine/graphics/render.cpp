@@ -34,7 +34,6 @@
 #if ENGINE_MODE
 #include "compile.hpp"
 #include "grid.hpp"
-#include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "gui_engine.hpp"
 #else
@@ -73,7 +72,6 @@ using Graphics::Shape::Billboard;
 using Core::Compilation;
 using Graphics::Grid;
 using Graphics::Shape::Border;
-using Graphics::Shape::ActionTex;
 using Graphics::GUI::EngineGUI;
 #else
 using Graphics::GUI::GameGUI;
@@ -280,7 +278,6 @@ namespace Graphics
 
 		shared_ptr<GameObject> border = Border::InitializeBorder();
 
-		shared_ptr<GameObject> actionTex = ActionTex::InitializeActionTex();
 #endif
 		shared_ptr<GameObject> skybox = Skybox::InitializeSkybox();
 

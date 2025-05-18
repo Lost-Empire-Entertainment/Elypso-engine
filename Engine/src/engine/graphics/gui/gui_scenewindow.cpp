@@ -15,6 +15,8 @@
 #include "imgui_impl_opengl3.h"
 #include "glad.h"
 #include "type_ptr.hpp"
+#include "imguizmo.h"
+#include "glm.hpp"
 
 //engine
 #include "gui_scenewindow.hpp"
@@ -37,6 +39,8 @@ using std::vector;
 using std::cout;
 using std::to_string;
 using std::find;
+using glm::mat4_cast;
+using glm::quat;
 
 using Core::Input;
 using Graphics::Render;
@@ -59,6 +63,9 @@ namespace Graphics::GUI
 {
 	int framebufferWidth = 1280;
 	int framebufferHeight = 720;
+
+	static ImGuizmo::OPERATION currentOp = ImGuizmo::TRANSLATE;
+	static ImGuizmo::MODE currentMode = ImGuizmo::WORLD;
 
 	void GUISceneWindow::RenderSceneWindow()
 	{
@@ -168,6 +175,27 @@ namespace Graphics::GUI
 			ImVec2(0, 1), 
 			ImVec2(1, 0));
 
+		if (Select::selectedObj != nullptr
+			&& Select::isObjectSelected)
+		{
+			ImVec2 windowPos = ImGui::GetWindowPos();
+			ImVec2 imageOffset = ImVec2(
+				contentRegionMin.x + padding.x,
+				contentRegionMin.y + padding.y);
+			ImVec2 scenePos = ImVec2(
+				windowPos.x + imageOffset.x,
+				windowPos.y + imageOffset.y);
+
+			RenderSize rs
+			{
+				scenePos.x,
+				scenePos.y,
+				renderSize.x, 
+				renderSize.y 
+			};
+			RenderGizmo(rs);
+		}
+
 		//makes sure none of the interactable scene window buttons are displayed
 		//while game is being compiled
 		if (!Compilation::renderBuildingWindow)
@@ -255,6 +283,93 @@ namespace Graphics::GUI
 					RenderSceneWindowActionButtons();
 				}
 			}
+		}
+	}
+
+	void GUISceneWindow::RenderGizmo(RenderSize rs)
+	{
+		ImGuizmo::BeginFrame();
+		ImGuizmo::SetDrawlist();
+		ImGuizmo::SetRect(
+			rs.x,
+			rs.y,
+			rs.z,
+			rs.w);
+
+		auto transform = Select::selectedObj->GetComponent<TransformComponent>();
+		mat4 model =
+			translate(mat4(1.0f), transform->GetPosition())
+			* mat4_cast(quat(radians(transform->GetRotation())))
+			* scale(mat4(1.0f), transform->GetScale());
+
+		mat4 view = Render::view;
+		mat4 projection = Render::projection;
+
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Right))
+		{
+			if (ImGui::IsKeyPressed(ImGuiKey_W))
+			{
+				if (currentOp != ImGuizmo::TRANSLATE)
+				{
+					currentOp = ImGuizmo::TRANSLATE;
+				}
+				else
+				{
+					currentMode = (currentMode == ImGuizmo::WORLD)
+						? ImGuizmo::LOCAL
+						: ImGuizmo::WORLD;
+				}
+			}
+			if (ImGui::IsKeyPressed(ImGuiKey_E))
+			{
+				if (currentOp != ImGuizmo::SCALE)
+				{
+					currentOp = ImGuizmo::SCALE;
+				}
+				else
+				{
+					currentMode = (currentMode == ImGuizmo::WORLD)
+						? ImGuizmo::LOCAL
+						: ImGuizmo::WORLD;
+				}
+			}
+			if (ImGui::IsKeyPressed(ImGuiKey_R))
+			{
+				if (currentOp != ImGuizmo::ROTATE)
+				{
+					currentOp = ImGuizmo::ROTATE;
+				}
+				else
+				{
+					currentMode = (currentMode == ImGuizmo::WORLD)
+						? ImGuizmo::LOCAL
+						: ImGuizmo::WORLD;
+				}
+			}
+		}
+
+		bool manipulated = ImGuizmo::Manipulate(
+			value_ptr(view),
+			value_ptr(projection),
+			currentOp,
+			currentMode,
+			value_ptr(model));
+
+		if (manipulated)
+		{
+			vec3 pos{};
+			vec3 rot{};
+			vec3 scale{};
+
+			ImGuizmo::DecomposeMatrixToComponents(
+				value_ptr(model),
+				value_ptr(pos),
+				value_ptr(rot),
+				value_ptr(scale));
+
+			transform->SetPosition(pos);
+			transform->SetRotation(rot);
+			transform->SetScale(scale);
 		}
 	}
 
@@ -560,70 +675,41 @@ namespace Graphics::GUI
 		ImVec2 actionButtonSize = ImVec2(80, 30);
 		ImVec2 axisButtonSize = ImVec2(30, 30);
 
+		bool isSelected = Select::selectedObj != nullptr && Select::isObjectSelected;
+
+		if (isSelected)
 		{
-			bool isSelected = (Input::objectAction == Input::ObjectAction::move);
-			if (isSelected)
-			{
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-			}
-			if (ImGui::Button("Move", actionButtonSize))
-			{
-				Input::objectAction = Input::ObjectAction::move;
-			}
-			if (isSelected)
-			{
-				ImGui::PopStyleColor();
-			}
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
+		}
+
+		bool isMove = currentOp == ImGuizmo::TRANSLATE;
+		if (isMove) ImGui::BeginDisabled();
+		if (ImGui::Button("Move", actionButtonSize))
+		{
+			currentOp = ImGuizmo::TRANSLATE;
+		}
+		if (isMove) ImGui::EndDisabled();
+
+		if (isSelected)
+		{
+			ImGui::PopStyleColor();
 		}
 
 		ImGui::SameLine();
 		{
-			bool isSelected = (Input::objectAction == Input::ObjectAction::rotate);
 			if (isSelected)
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
 			}
-			if (ImGui::Button("Rotate", actionButtonSize))
-			{
-				Input::objectAction = Input::ObjectAction::rotate;
-			}
-			if (isSelected)
-			{
-				ImGui::PopStyleColor();
-			}
-		}
 
-		ImGui::SameLine();
-		{
-			bool isSelected = (Input::objectAction == Input::ObjectAction::scale);
-			if (isSelected)
-			{
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-			}
+			bool isScale = currentOp == ImGuizmo::SCALE;
+			if (isScale) ImGui::BeginDisabled();
 			if (ImGui::Button("Scale", actionButtonSize))
 			{
-				Input::objectAction = Input::ObjectAction::scale;
+				currentOp = ImGuizmo::SCALE;
 			}
-			if (isSelected)
-			{
-				ImGui::PopStyleColor();
-			}
-		}
+			if (isScale) ImGui::EndDisabled();
 
-		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(20.0f, 0.0f));
-
-		ImGui::SameLine();
-		{
-			bool isSelected = (Input::axis == "X");
-			if (isSelected)
-			{
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
-			}
-			if (ImGui::Button("X##axis", axisButtonSize))
-			{
-				Input::axis = "X";
-			}
 			if (isSelected)
 			{
 				ImGui::PopStyleColor();
@@ -632,15 +718,19 @@ namespace Graphics::GUI
 
 		ImGui::SameLine();
 		{
-			bool isSelected = (Input::axis == "Y");
 			if (isSelected)
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
 			}
-			if (ImGui::Button("Y##axis", axisButtonSize))
+
+			bool isRotate = currentOp == ImGuizmo::ROTATE;
+			if (isRotate) ImGui::BeginDisabled();
+			if (ImGui::Button("Rotate", actionButtonSize))
 			{
-				Input::axis = "Y";
+				currentOp = ImGuizmo::ROTATE;
 			}
+			if (isRotate) ImGui::EndDisabled();
+
 			if (isSelected)
 			{
 				ImGui::PopStyleColor();
@@ -649,14 +739,19 @@ namespace Graphics::GUI
 
 		ImGui::SameLine();
 		{
-			bool isSelected = (Input::axis == "Z");
 			if (isSelected)
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.5f, 1.0f));
 			}
-			if (ImGui::Button("Z##axis", axisButtonSize))
+
+			bool isWorld = currentMode == ImGuizmo::WORLD;
+			string currentModeText = isWorld ? "World##switchMode" : "Local##switchMode";
+
+			if (ImGui::Button(currentModeText.c_str(), actionButtonSize))
 			{
-				Input::axis = "Z";
+				currentMode = (currentMode == ImGuizmo::WORLD)
+					? ImGuizmo::LOCAL
+					: ImGuizmo::WORLD;
 			}
 			if (isSelected)
 			{

@@ -39,16 +39,6 @@ namespace Core
         /// </summary>
         static inline bool allowMovement = true;
 
-        static inline string axis = "";
-        enum class ObjectAction
-        {
-            none,
-            move,
-            rotate,
-            scale
-        };
-        static inline ObjectAction objectAction = ObjectAction::none;
-
         static void ProcessKeyboardInput(GLFWwindow* window);
 
         static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);

@@ -201,10 +201,6 @@ namespace Graphics
 				&& textureName.find("pointLight.png") == string::npos
 				&& textureName.find("spotLight.png") == string::npos
 				&& textureName.find("directionalLight.png") == string::npos
-				&& textureName.find("blank.png") == string::npos
-				&& textureName.find("move.png") == string::npos
-				&& textureName.find("rotate.png") == string::npos
-				&& textureName.find("scale.png") == string::npos
 				&& textureName.find("audio.png") == string::npos
 				&& textureName.find("camera.png") == string::npos
 				&& textureName.find("DEFAULTDIFF") == string::npos

@@ -107,53 +107,6 @@ namespace Core
 
     void Input::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     {
-#if ENGINE_MODE
-        if (!Compilation::renderBuildingWindow
-            && !ImGui::GetIO().WantCaptureMouse)
-        {
-            //ignore all scroll callback if no camera is active
-            if (Render::activeCamera == nullptr) return;
-
-            float combinedOffset = increment * static_cast<float>(yoffset);
-
-            auto cc = Render::activeCamera->GetComponent<CameraComponent>();
-            if (!cc->IsEnabled())
-            {
-                if (Select::selectedObj != nullptr)
-                {
-                    if (objectAction == ObjectAction::move)
-                    {
-                        vec3 pos = Select::selectedObj->GetComponent<TransformComponent>()->GetPosition();
-                        if (axis == "X") pos = vec3(pos.x + combinedOffset, pos.y, pos.z);
-                        else if (axis == "Y") pos = vec3(pos.x, pos.y + combinedOffset, pos.z);
-                        else if (axis == "Z") pos = vec3(pos.x, pos.y, pos.z + combinedOffset);
-
-                        Select::selectedObj->GetComponent<TransformComponent>()->SetPosition(pos);
-                        if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-                    }
-                    else if (objectAction == ObjectAction::rotate)
-                    {
-                        vec3 rot = Select::selectedObj->GetComponent<TransformComponent>()->GetRotation();
-                        if (axis == "X") rot = vec3(rot.x + combinedOffset * 10, rot.y, rot.z);
-                        else if (axis == "Y") rot = vec3(rot.x, rot.y + combinedOffset * 10, rot.z);
-                        else if (axis == "Z") rot = vec3(rot.x, rot.y, rot.z + combinedOffset * 10);
-                        Select::selectedObj->GetComponent<TransformComponent>()->SetRotation(rot);
-                        if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-                    }
-                    else if (objectAction == ObjectAction::scale)
-                    {
-                        vec3 scale = Select::selectedObj->GetComponent<TransformComponent>()->GetScale();
-                        if (axis == "X") scale = vec3(scale.x + combinedOffset, scale.y, scale.z);
-                        else if (axis == "Y") scale = vec3(scale.x, scale.y + combinedOffset, scale.z);
-                        else if (axis == "Z") scale = vec3(scale.x, scale.y, scale.z + combinedOffset);
-
-                        Select::selectedObj->GetComponent<TransformComponent>()->SetScale(scale);
-                        if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-                    }
-                }
-            }
-        }
-#endif
     }
 
     void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -194,53 +147,6 @@ namespace Core
                     && Select::selectedObj != nullptr)
                 {
                     GameObjectManager::DestroyGameObject(Select::selectedObj, false);
-                }
-
-                if (Select::selectedObj != nullptr)
-                {
-                    //switch to X axis
-                    if (key == GLFW_KEY_X
-                        && action == GLFW_PRESS
-                        && axis != "X")
-                    {
-                        axis = "X";
-                    }
-                    //switch to Y axis
-                    if (key == GLFW_KEY_Y
-                        && action == GLFW_PRESS
-                        && axis != "Y")
-                    {
-                        axis = "Y";
-                    }
-                    //switch to Z axis
-                    if (key == GLFW_KEY_Z
-                        && action == GLFW_PRESS
-                        && axis != "Z")
-                    {
-                        axis = "Z";
-                    }
-
-                    //switch to move action
-                    if (key == GLFW_KEY_W
-                        && action == GLFW_PRESS
-                        && objectAction != ObjectAction::move)
-                    {
-                        objectAction = ObjectAction::move;
-                    }
-                    //switch to rotate action
-                    if (key == GLFW_KEY_E
-                        && action == GLFW_PRESS
-                        && objectAction != ObjectAction::rotate)
-                    {
-                        objectAction = ObjectAction::rotate;
-                    }
-                    //switch to scale action
-                    if (key == GLFW_KEY_R
-                        && action == GLFW_PRESS
-                        && objectAction != ObjectAction::scale)
-                    {
-                        objectAction = ObjectAction::scale;
-                    }
                 }
             }
 
@@ -829,20 +735,11 @@ namespace Core
             {
                 Select::isObjectSelected = false;
                 Select::selectedObj = nullptr;
-
-                objectAction = ObjectAction::none;
-                axis = "";
             }
             else
             {
                 Select::selectedObj = objects[index];
                 Select::isObjectSelected = true;
-
-                if (objectAction == ObjectAction::none)
-                {
-                    objectAction = ObjectAction::move;
-                }
-                if (axis == "") axis = "X";
             }
         }
 #endif

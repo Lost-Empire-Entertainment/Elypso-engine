@@ -38,7 +38,6 @@
 #include "stringutils.hpp"
 #include "fileutils.hpp"
 #if ENGINE_MODE
-#include "selectedobjectaction.hpp"
 #include "selectedobjectborder.hpp"
 #include "gui_scenewindow.hpp"
 #include "gui_settings.hpp"
@@ -76,7 +75,6 @@ using Graphics::Components::CameraComponent;
 using Utils::String;
 using Utils::File;
 #if ENGINE_MODE
-using Graphics::Shape::ActionTex;
 using Graphics::Shape::Border;
 using Graphics::GUI::GUISceneWindow;
 using Graphics::GUI::GUISettings;
@@ -185,9 +183,7 @@ namespace Graphics::Shape
 			glDepthFunc(GL_ALWAYS);
 			glDepthMask(GL_FALSE);
 			glDisable(GL_CULL_FACE);
-#if ENGINE_MODE
-			ActionTex::RenderActionTex(actionTex, view, projection);
-#endif
+
 			for (const auto& obj : transparentObjects)
 			{
 				if (obj->GetName() == "") obj->SetName(".");

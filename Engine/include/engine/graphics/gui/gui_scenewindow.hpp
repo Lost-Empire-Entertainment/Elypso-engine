@@ -4,7 +4,9 @@
 //Read LICENSE.md for more information.
 
 #pragma once
+
 #if ENGINE_MODE
+
 #include <map>
 #include <string>
 
@@ -12,6 +14,14 @@ namespace Graphics::GUI
 {
 	using std::map;
 	using std::string;
+
+	struct RenderSize
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
 
 	class GUISceneWindow
 	{
@@ -41,8 +51,11 @@ namespace Graphics::GUI
 		static void UpdateFrameBuffer();
 
 		static void RenderSceneWindowMainContent();
+		static void RenderGizmo(RenderSize renderSize);
+
 		static void RenderSceneWindowLeftContent();
 		static void RenderSceneWindowRightContent();
+
 		static void RenderSceneWindowActionButtons();
 		static void RenderCameraSelection();
 	};
