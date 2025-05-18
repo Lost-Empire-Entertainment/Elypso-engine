@@ -82,7 +82,7 @@ namespace Core
 	{
 		ConsoleManager::AddCommands();
 
-		version = "Pre-release 0.1.3.0008";
+		version = "Pre-release 0.1.3.0009";
 #ifdef NDEBUG
 #else
 		//always enable debug messages by default in engine or game debug version
