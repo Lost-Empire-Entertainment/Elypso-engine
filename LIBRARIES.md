@@ -11,6 +11,7 @@ Full list of libraries:
 - [GLM - Simplifies vector and matrix calculations and handles shader files](https://github.com/g-truc/glm)
 - [GLFW - Creates the engine window and handles User input](https://github.com/glfw/glfw)
 - [ImGui - Handles all the engine GUI](https://github.com/ocornut/imgui)
+- [ImGuizmo - 3D gizmo for scene editing based on Imgui](https://github.com/CedricGuillemet/ImGuizmo)
 - [stb_image - Imports images](https://github.com/nothings/stb/blob/master/stb_image.h)
 - [magic_enum - Simplifies enum-string operations](https://github.com/Neargye/magic_enum)
 
@@ -18,7 +19,7 @@ Full list of libraries:
 Libraries created by Lost Empire Entertainment
 ==================================================
 
-The following libraries are exceptions and are made and are actively managed by Lost Empire Entertainment.
+The following libraries are developed and actively maintained by Lost Empire Entertainment or its affiliated project, KalaKit.
 
-- [Elypso Physics - Handles physics in Elypso engine and game template](https://github.com/Lost-Empire-Entertainment/Elypso-physics)
-- [CrashHandler - Displays error popup and generates minidump and log files](https://github.com/Lost-Empire-Entertainment/CrashHandler)
+- [KalaPhysics - Handles physics in Elypso engine and game template](https://github.com/KalaKit/KalaPhysics)
+- [KalaCrashHandler - Displays error popup and generates minidump and log files](https://github.com/KalaKit/KalaCrashHandler)

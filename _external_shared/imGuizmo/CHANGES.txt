@@ -1,0 +1,5 @@
+Original repository link:
+https://github.com/CedricGuillemet/ImGuizmo
+
+Changes:
+- removed all files and folders except the license file and the cpp and h files

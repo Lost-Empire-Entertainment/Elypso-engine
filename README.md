@@ -1,6 +1,6 @@
 # Elypso engine
 
-[![License](https://img.shields.io/badge/license-Proprietary-blue)](LICENSE.md)
+![License](https://img.shields.io/badge/license-Proprietary-blue)](LICENSE.md)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-brightgreen)
 ![Development Stage](https://img.shields.io/badge/development-Alpha-yellow)
 
@@ -8,14 +8,11 @@
 
 **Elypso engine** is an OpenGL C++ 20 game development engine. It runs natively on Windows and Linux (tested on Ubuntu-based distros and Arch) and it uses several libraries listed in [the library file](LIBRARIES.md).
 
-**Elypso engine** is in early alpha development and will be heavily modified during alpha development. Beta is aimed for winter 2025, full release is aimed for winter 2026.
+**Elypso engine** is in early alpha development and will be heavily modified during alpha development. Beta is aimed for early 2026, full release is aimed for 2027.
 
 The documentation for **Elypso engine** will be found at the [official website](https://elypsoengine.com)  in the near future so please look there for information, this README file will not cover how to install or use this program.
 
-If you intend to download the source code and compile from source then please also download [Elypso hub](https://github.com/Lost-Empire-Entertainment/Elypso-hub)
- and [Elypso compiler](https://github.com/Lost-Empire-Entertainment/Elypso-compiler), they are not included in this repository. Once they are downloaded make sure they are all under the same parent folder or else they may not compile correctly.
-
-The release version already has Hub, Engine and Game folders, you do not need to download Hub or Compiler, the Compiler is only used for compiling Hub, Engine and Engine library from source and the Release version already provides functional 0.1.2 and previous versions of the Hub, Engine and Game that are ready for use out of the box with all the required prerequisite information. 
+[Elypso hub](https://github.com/Lost-Empire-Entertainment/Elypso-hub) is not included in this repository, it is required for normal engine operation, but the [releases](https://github.com/Lost-Empire-Entertainment/Elypso-engine/releases) provide it in its latest functioning format. So if you want to compile from source you have to also download Elypso Hub from its own repository.
  
 ---
 
@@ -39,8 +36,6 @@ If this is your first time running the program then Windows may throw false posi
 
 [Official Youtube channel](https://youtube.com/greenlaser)
 
-[Official Twitch channel](https://www.twitch.tv/greenlaseer)
-
 [Official website](https://elypsoengine.com)
 
 [Track development on the Trello board](https://trello.com/b/hbt6ebCZ/elypso-engine)
@@ -51,4 +46,4 @@ If this is your first time running the program then Windows may throw false posi
 
 * [Greenlaser](https://github.com/greeenlaser) - *Lead developer*
 
-* [tkpmonke](https://github.com/tkpmonke) - *Tester, Linux maintainer*
+* [tkpmonke](https://github.com/tkpmonke) - *Tester*

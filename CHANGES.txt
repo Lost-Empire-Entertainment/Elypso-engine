@@ -87,3 +87,6 @@
 - fixed volume slider in audio component in inspector not being draggable like min and max range while 3D audio is enabled
 - fixed audio, camera, point, spot and dir light gameobject staying after deleting it - billboard was deleted but the gameobject stayed and trying to save caused a crash
 - engine, engine library, game and hub no longer need to be rebuilt every time
+
+0.1.3.0009:
+- added imguizmo
