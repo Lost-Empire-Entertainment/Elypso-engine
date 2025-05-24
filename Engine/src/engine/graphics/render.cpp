@@ -80,7 +80,9 @@ using Graphics::GUI::GameGUI;
 namespace Graphics
 {
 #if ENGINE_MODE
-	unsigned int framebuffer;
+#else
+	int screenWidth{};
+	int screenHeight{};
 #endif
 
 	void Render::RenderSetup()
@@ -432,8 +434,8 @@ namespace Graphics
 		{
 			mat4 nonConstView = view;
 			Skybox::RenderSkybox(
-				GameObjectManager::GetSkybox(), 
-				nonConstView, 
+				GameObjectManager::GetSkybox(),
+				nonConstView,
 				projection);
 
 #if ENGINE_MODE
@@ -458,8 +460,6 @@ namespace Graphics
 		GameGUI::Render();
 		Input::SceneWindowInput();
 
-		int screenWidth{};
-		int screenHeight{};
 		glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
 
 		mat4 uiProjection = ortho(

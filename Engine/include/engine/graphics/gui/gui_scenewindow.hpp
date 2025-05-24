@@ -40,6 +40,9 @@ namespace Graphics::GUI
 		};
 		static inline int currentIndex = 0;
 
+		static inline int framebufferWidth = 1280;
+		static inline int framebufferHeight = 720;
+
 		static void RenderSceneWindow();
 		static void UpdateCounts();
 	private:

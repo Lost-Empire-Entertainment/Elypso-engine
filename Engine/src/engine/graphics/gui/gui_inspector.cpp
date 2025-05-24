@@ -679,6 +679,67 @@ namespace Graphics::GUI
 
 		if (objType == MeshType::model)
 		{
+			//
+			// SHADOWS
+			//
+
+			ImGui::Text("Can cast shadows");
+			bool canCastShadows = mat->CanCastShadows();
+			string shadowCastButtonName = canCastShadows ? "True##castShadow" : "False##castShadow";
+			if (ImGui::Button(shadowCastButtonName.c_str()))
+			{
+				mat->SetCastShadows(!canCastShadows);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			//
+			// TRANSPARENCY
+			//
+
+			ImGui::Text("Is transparent");
+			bool isTransparent = mat->IsTransparent();
+			string transparentButtonName = isTransparent ? "True##isTransparent" : "False##isTransparent";
+			if (ImGui::Button(transparentButtonName.c_str()))
+			{
+				mat->SetTransparent(!isTransparent);
+
+				vector<shared_ptr<GameObject>>& opaqueObjects = GameObjectManager::GetOpaqueObjects();
+				vector<shared_ptr<GameObject>>& transparentObjects = GameObjectManager::GetTransparentObjects();
+				if (mat->IsTransparent())
+				{
+					auto it = find(opaqueObjects.begin(), opaqueObjects.end(), obj);
+
+					if (it != opaqueObjects.end())
+					{
+						transparentObjects.push_back(*it);
+						opaqueObjects.erase(it);
+					}
+				}
+				else
+				{
+					auto it = find(transparentObjects.begin(), transparentObjects.end(), obj);
+
+					if (it != transparentObjects.end())
+					{
+						opaqueObjects.push_back(*it);
+						transparentObjects.erase(it);
+					}
+				}
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::Text("Set transparency strength");
+			float transparencyValue = mat->GetTransparentValue();
+			if (ImGui::DragFloat("##transparencyValue", &transparencyValue, 0.001f, 0.0f, 1.0f))
+			{
+				mat->SetTransparentValue(transparencyValue);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			//
+			// TEXTURES
+			//
+
 			const string& diffTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
 			const string& specTexture = mat->GetTextureName(MaterialComponent::TextureType::specular);
 
@@ -762,45 +823,6 @@ namespace Graphics::GUI
 			if (ImGui::DragFloat("##shininess", &shininess, 0.1f, 0.5f, 256.0f))
 			{
 				mat->SetShininessValue(shininess);
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-
-			ImGui::Text("Toggle transparency");
-			bool isTransparent = mat->IsTransparent();
-			string transparentButtonName = isTransparent ? "Disable" : "Enable";
-			if (ImGui::Button(transparentButtonName.c_str()))
-			{
-				mat->SetTransparent(!isTransparent);
-
-				vector<shared_ptr<GameObject>>& opaqueObjects = GameObjectManager::GetOpaqueObjects();
-				vector<shared_ptr<GameObject>>& transparentObjects = GameObjectManager::GetTransparentObjects();
-				if (mat->IsTransparent())
-				{
-					auto it = find(opaqueObjects.begin(), opaqueObjects.end(), obj);
-
-					if (it != opaqueObjects.end())
-					{
-						transparentObjects.push_back(*it);
-						opaqueObjects.erase(it);
-					}
-				}
-				else
-				{
-					auto it = find(transparentObjects.begin(), transparentObjects.end(), obj);
-
-					if (it != transparentObjects.end())
-					{
-						opaqueObjects.push_back(*it);
-						transparentObjects.erase(it);
-					}
-				}
-				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
-			}
-			ImGui::Text("Set transparency strength");
-			float transparencyValue = mat->GetTransparentValue();
-			if (ImGui::DragFloat("##transparencyValue", &transparencyValue, 0.001f, 0.0f, 1.0f))
-			{
-				mat->SetTransparentValue(transparencyValue);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 		}

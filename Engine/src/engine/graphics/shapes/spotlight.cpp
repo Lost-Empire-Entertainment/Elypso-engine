@@ -136,6 +136,7 @@ namespace Graphics::Shape
 		mat->AddShader(
 			(path(Engine::filesPath) / "shaders" / "Basic_model.vert").string(),
 			(path(Engine::filesPath) / "shaders" / "Basic.frag").string(), 
+			"",
 			spotlightShader);
 
 		auto spotlight = obj->AddComponent<LightComponent>(

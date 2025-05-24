@@ -134,7 +134,7 @@ namespace Graphics::Shape
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, borderShader);
+		mat->AddShader(vert, frag, "", borderShader);
 
 		GameObjectManager::SetBorder(obj);
 

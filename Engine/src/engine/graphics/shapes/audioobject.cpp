@@ -144,7 +144,7 @@ namespace Graphics::Shape
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, audioObjectShader);
+		mat->AddShader(vert, frag, "", audioObjectShader);
 
 		auto apc = obj->AddComponent<AudioPlayerComponent>(
 			isPlaying,

@@ -137,7 +137,7 @@ namespace Graphics::Shape
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, emptyShader);
+		mat->AddShader(vert, frag, "", emptyShader);
 
 		obj->SetTxtFilePath(txtFilePath);
 

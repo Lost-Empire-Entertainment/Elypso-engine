@@ -15,6 +15,7 @@
 #include "console.hpp"
 #include "shader.hpp"
 #include "stringutils.hpp"
+#include "core.hpp"
 
 using std::cout;
 using std::endl;
@@ -25,18 +26,42 @@ using std::to_string;
 using std::vector;
 using std::filesystem::absolute;
 using std::filesystem::path;
+using std::filesystem::exists;
 
 using Core::ConsoleManager;
 using Caller = Core::ConsoleManager::Caller;
 using Type = Core::ConsoleManager::Type;
 using Utils::String;
+using Core::Engine;
 
 namespace Graphics
 {
     unordered_map<string, unsigned int> Shader::shaders;
 
-    Shader Shader::LoadShader(const string& vertexPath, const string& fragmentPath)
+    Shader Shader::LoadShader(
+        const string& vertexPath, 
+        const string& fragmentPath,
+        const string& geometryPath)
     {
+        if (vertexPath == ""
+            || !exists(vertexPath))
+        {
+            string errorMessage = "Vertex shader path '" + vertexPath + "' does not exist or is empty!";
+            Engine::CreateErrorPopup(errorMessage.c_str());
+        }
+        if (fragmentPath == ""
+            || !exists(fragmentPath))
+        {
+            string errorMessage = "Fragment shader path '" + fragmentPath + "' does not exist or is empty!";
+            Engine::CreateErrorPopup(errorMessage.c_str());
+        }
+        if (geometryPath != ""
+            && !exists(geometryPath))
+        {
+            string errorMessage = "Geometry shader path '" + geometryPath + "' does not exist or is empty!";
+            Engine::CreateErrorPopup(errorMessage.c_str());
+        }
+
         Shader shader{};
 
         path vertexStemPath = vertexPath;
@@ -47,7 +72,15 @@ namespace Graphics
         string fragmentStemExtension = fragmentStemPath.extension().string();
         fragmentStemPath = fragmentStemPath.stem();
 
+        path geometryStemPath = geometryPath;
+        string geometryStemExtension = geometryStemPath.extension().string();
+        geometryStemPath = geometryStemPath.stem();
+
         string shaderKey = absolute(vertexPath).string() + "|" + absolute(fragmentPath).string();
+        if (!geometryPath.empty())
+        {
+            shaderKey += "|" + absolute(geometryPath).string();
+        }
 
         auto it = shaders.find(shaderKey);
         if (it != shaders.end())
@@ -56,36 +89,57 @@ namespace Graphics
             return shader;
         }
 
-        if (vertexPath != ""
-            && fragmentPath != "")
+        vector<string> vertSplit = String::Split(vertexPath, '/');
+        vector<string> fragSplit = String::Split(fragmentPath, '/');
+
+        string vertexCode;
+        string fragmentCode;
+        string geometryCode;
+        ifstream vShaderFile;
+        ifstream fShaderFile;
+        ifstream gShaderFile;
+        //ensure ifstream objects can throw exceptions:
+        vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+        fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+        gShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+        try
         {
-            vector<string> vertSplit = String::Split(vertexPath, '/');
-            vector<string> fragSplit = String::Split(fragmentPath, '/');
-
-            string vertexCode;
-            string fragmentCode;
-            ifstream vShaderFile;
-            ifstream fShaderFile;
-            //ensure ifstream objects can throw exceptions:
-            vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
-            fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
-            try
+            //open files
+            vShaderFile.open(absolute(vertexPath).string());
+            fShaderFile.open(absolute(fragmentPath).string());
+            if (!geometryPath.empty())
             {
-                //open files
-                vShaderFile.open(absolute(vertexPath).string());
-                fShaderFile.open(absolute(fragmentPath).string());
+                gShaderFile.open(absolute(geometryPath).string());
+            }
 
-                if (!vShaderFile.is_open()
-                    || !fShaderFile.is_open())
-                {
-                    ConsoleManager::WriteConsoleMessage(
-                        Caller::FILE,
-                        Type::EXCEPTION,
-                        "Shader error: \nVertex: " + absolute(vertexPath).string() +
-                        "\nFragment: " + absolute(fragmentPath).string() + "\n\n");
-                    return shader;
-                }
+            if (!vShaderFile.is_open())
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Shader error: \nVertex: " + absolute(vertexPath).string() + "\n\n");
+                return shader;
+            }
+            if (!fShaderFile.is_open())
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Shader error: \nFragment: " + absolute(fragmentPath).string() + "\n\n");
+                return shader;
+            }
+            if (!geometryPath.empty()
+                && !gShaderFile.is_open())
+            {
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Shader error: \nGeometry: " + absolute(geometryPath).string() + "\n\n");
+                return shader;
+            }
 
+            if (geometryPath.empty())
+            {
                 stringstream vShaderStream, fShaderStream;
                 //read file's buffer contents into streams
                 vShaderStream << vShaderFile.rdbuf();
@@ -97,7 +151,29 @@ namespace Graphics
                 vertexCode = vShaderStream.str();
                 fragmentCode = fShaderStream.str();
             }
-            catch (const ios_base::failure& e)
+            else
+            {
+                stringstream 
+                    vShaderStream, 
+                    fShaderStream,
+                    gShaderStream;
+                //read file's buffer contents into streams
+                vShaderStream << vShaderFile.rdbuf();
+                fShaderStream << fShaderFile.rdbuf();
+                gShaderStream << gShaderFile.rdbuf();
+                //close file handlers
+                vShaderFile.close();
+                fShaderFile.close();
+                gShaderFile.close();
+                //convert stream into string
+                vertexCode = vShaderStream.str();
+                fragmentCode = fShaderStream.str();
+                geometryCode = gShaderStream.str();
+            }
+        }
+        catch (const ios_base::failure& e)
+        {
+            if (geometryPath.empty())
             {
                 ConsoleManager::WriteConsoleMessage(
                     Caller::FILE,
@@ -107,31 +183,49 @@ namespace Graphics
                     "\nVertex: " + absolute(vertexPath).string() +
                     "\nFragment: " + absolute(fragmentPath).string() + "\n\n");
             }
-            const char* vShaderCode = vertexCode.c_str();
-            const char* fShaderCode = fragmentCode.c_str();
-
-            unsigned int vertex, fragment;
-
-            //vertex shader
-            vertex = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertex, 1, &vShaderCode, NULL);
-            glCompileShader(vertex);
-            if (!shader.CheckCompileErrors(vertex, "VERTEX"))
+            else
             {
-                shader.ID = 0;
-                return shader;
+                ConsoleManager::WriteConsoleMessage(
+                    Caller::FILE,
+                    Type::EXCEPTION,
+                    "Error: File not successfully read: " +
+                    to_string(e.code().value()) +
+                    "\nVertex: " + absolute(vertexPath).string() +
+                    "\nFragment: " + absolute(fragmentPath).string() +
+                    "\nGeometry: " + absolute(geometryPath).string() + "\n\n");
             }
+        }
 
-            //fragment shader
-            fragment = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragment, 1, &fShaderCode, NULL);
-            glCompileShader(fragment);
-            if (!shader.CheckCompileErrors(fragment, "FRAGMENT"))
-            {
-                shader.ID = 0;
-                return shader;
-            }
+        const char* vShaderCode = vertexCode.c_str();
+        const char* fShaderCode = fragmentCode.c_str();
+        const char* gShaderCode = geometryCode.c_str();
 
+        unsigned int vertex{};
+        unsigned int fragment{};
+        unsigned int geometry{};
+
+        //vertex shader
+        vertex = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex, 1, &vShaderCode, NULL);
+        glCompileShader(vertex);
+        if (!shader.CheckCompileErrors(vertex, "VERTEX"))
+        {
+            shader.ID = 0;
+            return shader;
+        }
+
+        //fragment shader
+        fragment = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragment, 1, &fShaderCode, NULL);
+        glCompileShader(fragment);
+        if (!shader.CheckCompileErrors(fragment, "FRAGMENT"))
+        {
+            shader.ID = 0;
+            return shader;
+        }
+
+        if (geometryPath.empty())
+        {
             //shader program
             shader.ID = glCreateProgram();
             glAttachShader(shader.ID, vertex);
@@ -142,17 +236,56 @@ namespace Graphics
                 shader.ID = 0;
                 return shader;
             }
+        }
+        else
+        {
+            //geometry shader
+            geometry = glCreateShader(GL_GEOMETRY_SHADER);
+            glShaderSource(geometry, 1, &gShaderCode, NULL);
+            glCompileShader(geometry);
+            if (!shader.CheckCompileErrors(geometry, "GEOMETRY"))
+            {
+                shader.ID = 0;
+                return shader;
+            }
 
-            //delete shaders as they are no longer needed
-            glDeleteShader(vertex);
-            glDeleteShader(fragment);
-
-            shaders.emplace(shaderKey, shader.ID);
-
-            return shader;
+            //shader program
+            shader.ID = glCreateProgram();
+            glAttachShader(shader.ID, vertex);
+            glAttachShader(shader.ID, fragment);
+            glAttachShader(shader.ID, geometry);
+            glLinkProgram(shader.ID);
+            if (!shader.CheckCompileErrors(shader.ID, "PROGRAM"))
+            {
+                shader.ID = 0;
+                return shader;
+            }
         }
 
-        shader.ID = 0;
+        //delete shaders as they are no longer needed
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+        if (!geometryPath.empty())
+        {
+            glDeleteShader(geometry);
+        }
+
+        shaders.emplace(shaderKey, shader.ID);
+
+        string vertStem = path(vertexPath).filename().string();
+        string fragStem = path(fragmentPath).filename().string();
+        string geometryStem = path(geometryPath).filename().string();
+        string message = geometryPath.empty()
+            ? "Successfully loaded shader with vertex '" + vertStem
+                + "' and fragment '" + fragStem + "'!\n"
+            : "Successfully loaded shader with vertex '" + vertStem
+                + "', fragment '" + fragStem
+                + "' and geometry '" + geometryStem + "'!\n";
+        ConsoleManager::WriteConsoleMessage(
+            Caller::FILE,
+            Type::DEBUG,
+            message);
+
         return shader;
     }
 

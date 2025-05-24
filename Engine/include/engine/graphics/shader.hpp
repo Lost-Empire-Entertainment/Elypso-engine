@@ -28,7 +28,10 @@ namespace Graphics
 	public:
 		unsigned int ID{};
 
-		static Shader LoadShader(const string& vertexPath = "", const string& fragmentPath = "");
+		static Shader LoadShader(
+			const string& vertexPath = "", 
+			const string& fragmentPath = "",
+			const string& geometryPath = "");
 
 		void Use() const;
 

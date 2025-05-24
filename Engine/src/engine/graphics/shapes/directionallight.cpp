@@ -128,7 +128,7 @@ namespace Graphics::Shape
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, directionalLightShader);
+		mat->AddShader(vert, frag, "", directionalLightShader);
 
 		auto dirlight = obj->AddComponent<LightComponent>(
 			LightComponent::LightType::Directional,

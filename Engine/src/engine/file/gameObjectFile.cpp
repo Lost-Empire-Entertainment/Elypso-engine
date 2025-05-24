@@ -938,7 +938,7 @@ namespace EngineFile
 			Shader modelShader = Shader::LoadShader(vert, frag);
 			auto mat = foundObj->AddComponent<MaterialComponent>();
 			mat->SetOwner(foundObj);
-			mat->AddShader(vert, frag, modelShader);
+			mat->AddShader(vert, frag, "", modelShader);
 
 			Texture::LoadTexture(foundObj, diffuseTexture, MaterialComponent::TextureType::diffuse, false);
 			Texture::LoadTexture(foundObj, specularTexture, MaterialComponent::TextureType::specular, false);

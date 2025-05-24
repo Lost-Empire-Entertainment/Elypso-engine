@@ -29,17 +29,17 @@ namespace Graphics::Components
             diffuse,
             specular,
             normal,
-            height,
-            misc_icon_blank,
-            misc_icon_move,
-            misc_icon_rotate,
-            misc_icon_scale
+            height
         };
 
         MaterialComponent(
+            bool castShadows = true,
+            bool receiveShadows = true,
             bool isTransparent = false,
             float transparentValue = 1.0f,
             float shininessValue = 0.5f) :
+            castShadows(castShadows),
+            receiveShadows(receiveShadows),
             isTransparent(isTransparent),
             transparentValue(transparentValue),
             shininessValue(shininessValue) {}
@@ -60,10 +60,12 @@ namespace Graphics::Components
         void AddShader(
             const string& vertShader, 
             const string& fragShader, 
+            const string& geomShader,
             const Shader& newShader)
         {
             shaderNames.push_back(vertShader);
             shaderNames.push_back(fragShader);
+            shaderNames.push_back(geomShader);
             shader = newShader;
         }
 
@@ -135,14 +137,20 @@ namespace Graphics::Components
 
         type_index GetType() const override { return typeid(MaterialComponent); }
 
-        void SetShininessValue(float newShininessValue) { shininessValue = newShininessValue; }
+        void SetCastShadows(bool newCastShadows) { castShadows = newCastShadows; }
+        void SetReceiveShadows(bool newReceiveShadows) { receiveShadows = newReceiveShadows; }
         void SetTransparent(bool newTransparent) { isTransparent = newTransparent; }
+        void SetShininessValue(float newShininessValue) { shininessValue = newShininessValue; }
         void SetTransparentValue(float newTransparentValue) { transparentValue = newTransparentValue; }
 
-        const float& GetShininessValue() const { return shininessValue; }
+        const bool& CanCastShadows() const { return castShadows; }
+        const bool& CanReceiveShadows() const { return receiveShadows; }
         const bool& IsTransparent() const { return isTransparent; }
+        const float& GetShininessValue() const { return shininessValue; }
         const float& GetTransparentValue() const { return transparentValue; }
     private:
+        bool castShadows;
+        bool receiveShadows;
         bool isTransparent;
         float shininessValue;
         float transparentValue;

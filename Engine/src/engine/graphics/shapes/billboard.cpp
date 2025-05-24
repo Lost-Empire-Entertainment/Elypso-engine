@@ -122,7 +122,7 @@ namespace Graphics::Shape
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, billboardShader);
+		mat->AddShader(vert, frag, "", billboardShader);
 
 		Texture::LoadTexture(obj, diffTexture, MaterialComponent::TextureType::diffuse, true);
 

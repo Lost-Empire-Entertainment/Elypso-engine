@@ -91,7 +91,10 @@
 0.1.3.0009:
 - completely scrapped all old object interaction and added imguizmo
 - deleted old object interaction textures
-- removed x, y, z buttons  in the top of the scene window
+- removed x, y, z buttons in the top of the scene window
 - added world/local button next to move, scale and rotate
-- pressing key of currently selected mode toggles between world and local
-- fixed a small with compiling in clean mode on windows
+- pressing key of currently selected mode toggles between world and local object move/rotate/scale
+- fixed a small issue with compiling in clean mode on windows
+- all models can now cast shadows
+- added shadow cast toggle to inspector to the top material component
+- moved transparency toggle and strength above texture assign slots and below shadow cast toggle in inspector for material component

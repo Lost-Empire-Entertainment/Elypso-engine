@@ -61,9 +61,6 @@ using Utils::String;
 
 namespace Graphics::GUI
 {
-	int framebufferWidth = 1280;
-	int framebufferHeight = 720;
-
 	static ImGuizmo::OPERATION currentOp = ImGuizmo::TRANSLATE;
 	static ImGuizmo::MODE currentMode = ImGuizmo::WORLD;
 

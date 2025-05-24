@@ -138,7 +138,7 @@ namespace Graphics::Shape
 
         auto mat = obj->AddComponent<MaterialComponent>();
         mat->SetOwner(obj);
-        mat->AddShader(vert, frag, skyboxShader);
+        mat->AddShader(vert, frag, "", skyboxShader);
 
         GameObjectManager::SetSkybox(obj);
 

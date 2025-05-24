@@ -220,6 +220,13 @@ namespace Graphics
 			mat->AddTexture(finalTexturePath, texture, type);
 
 			textures[finalTexturePath] = texture;
+
+			string texStem = path(texturePath).filename().string();
+			string message = "Successfully loaded texture '" + texStem + "'!\n";
+			ConsoleManager::WriteConsoleMessage(
+				Caller::FILE,
+				Type::DEBUG,
+				message);
 		}
 		else
 		{

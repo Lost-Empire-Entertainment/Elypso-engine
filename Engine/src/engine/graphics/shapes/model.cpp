@@ -167,7 +167,7 @@ namespace Graphics::Shape
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, modelShader);
+		mat->AddShader(vert, frag, "", modelShader);
 
 		mesh->SetVertices(vertices);
 		mesh->SetIndices(indices);

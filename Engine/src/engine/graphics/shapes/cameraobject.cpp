@@ -137,7 +137,7 @@ namespace Graphics::Shape
 
 		auto mat = obj->AddComponent<MaterialComponent>();
 		mat->SetOwner(obj);
-		mat->AddShader(vert, frag, cameraObjectShader);
+		mat->AddShader(vert, frag, "", cameraObjectShader);
 
 		auto cc = obj->AddComponent<CameraComponent>();
 		cc->SetOwner(obj);
