@@ -25,13 +25,18 @@
 #include "sceneFile.hpp"
 #include "configFile.hpp"
 #include "input.hpp"
-#include "shader.hpp"
 #include "selectobject.hpp"
 #include "skybox.hpp"
 #include "cameraobject.hpp"
 #include "cameracomponent.hpp"
 #include "billboard.hpp"
+#include "meshcomponent.hpp"
+#include "transformcomponent.hpp"
+#include "lightcomponent.hpp"
+#include "materialcomponent.hpp"
+#include "model.hpp"
 #if ENGINE_MODE
+#include "gui_scenewindow.hpp"
 #include "compile.hpp"
 #include "grid.hpp"
 #include "selectedobjectborder.hpp"
@@ -52,6 +57,8 @@ using std::to_string;
 using std::filesystem::path;
 using std::vector;
 using glm::ortho;
+using glm::lookAt;
+using glm::quat;
 
 using Core::Input;
 using Core::TimeManager;
@@ -68,7 +75,13 @@ using Core::Select;
 using Graphics::Shape::CameraObject;
 using Graphics::Components::CameraComponent;
 using Graphics::Shape::Billboard;
+using Graphics::Components::MeshComponent;
+using Graphics::Components::TransformComponent;
+using Graphics::Components::LightComponent;
+using Graphics::Components::MaterialComponent;
+using Graphics::Shape::Model;
 #if ENGINE_MODE
+using Graphics::GUI::GUISceneWindow;
 using Core::Compilation;
 using Graphics::Grid;
 using Graphics::Shape::Border;
@@ -93,6 +106,8 @@ namespace Graphics
 #if ENGINE_MODE
 		FramebufferSetup();
 #endif
+		ShadowSetup();
+
 		ContentSetup();
 
 #if ENGINE_MODE
@@ -262,6 +277,60 @@ namespace Graphics
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 #endif
+
+	void Render::ShadowSetup()
+	{
+		//
+		// POINT LIGHT SHADOWS
+		//
+
+		//
+		// SPOTLIGHT SHADOWS
+		//
+
+		glGenFramebuffers(1, &spotShadowFBO);
+
+		glGenTextures(1, &spotShadowMap);
+		glBindTexture(GL_TEXTURE_2D, spotShadowMap);
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_DEPTH_COMPONENT,
+			shadowWidth,
+			shadowHeight,
+			0,
+			GL_DEPTH_COMPONENT,
+			GL_FLOAT,
+			nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, spotShadowFBO);
+		glFramebufferTexture2D(
+			GL_FRAMEBUFFER, 
+			GL_DEPTH_ATTACHMENT, 
+			GL_TEXTURE_2D,
+			spotShadowMap,
+			0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		string vert = (path(Engine::filesPath) / "shaders" / "Shadow_Spot.vert").string();
+		string frag = (path(Engine::filesPath) / "shaders" / "Shadow_Spot.frag").string();
+		spotShader = Shader::LoadShader(vert, frag);
+
+		//
+		// DIRECTIONAL LIGHT SHADOWS
+		//
+	}
+
 	void Render::ContentSetup()
 	{
 		//enable face culling
@@ -392,9 +461,110 @@ namespace Graphics
 
 	void Render::WindowLoop()
 	{
+		RenderDepth();
+		RenderContent();
+	}
+
+	void Render::RenderDepth()
+	{
+		glViewport(0, 0, shadowWidth, shadowHeight);
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+		for (const auto& obj : GameObjectManager::GetObjects())
+		{
+			auto objectTransformComp = obj->GetComponent<TransformComponent>();
+			auto objectMeshComp = obj->GetComponent<MeshComponent>();
+			auto objectMeshType = objectMeshComp->GetMeshType();
+
+			if (objectMeshType == MeshComponent::MeshType::point_light)
+			{
+				auto objectLightComp = obj->GetComponent<LightComponent>();
+			}
+			else if (objectMeshType == MeshComponent::MeshType::spot_light)
+			{
+				auto objectLightComp = obj->GetComponent<LightComponent>();
+				float outerAngle = objectLightComp->GetOuterAngle();
+				float distance = objectLightComp->GetDistance();
+				vec3 pos = objectTransformComp->GetPosition();
+
+				vec3 rotationDegrees = objectTransformComp->GetRotation();
+				quat rotQuat = quat(radians(rotationDegrees));
+				vec3 initialForward = vec3(0.0f, -1.0f, 0.0f);
+				vec3 dir = normalize(rotQuat * initialForward);
+
+				mat4 lightProjection = perspective(radians(outerAngle), 1.0f, 1.0f, distance);
+				mat4 lightView = lookAt(pos, pos + dir, vec3(0, 1, 0));
+				spotLightSpaceMatrix = lightProjection * lightView;
+
+				spotShader.Use();
+				spotShader.SetMat4("lightSpaceMatrix", spotLightSpaceMatrix);
+
+				glBindFramebuffer(GL_FRAMEBUFFER, spotShadowFBO);
+				glClear(GL_DEPTH_BUFFER_BIT);
+
+				/*
+				cout << "LightMatrix: ";
+				for (int row = 0; row < 4; ++row)
+				{
+					cout << "  ";
+					for (int col = 0; col < 4; ++col)
+					{
+						cout << to_string(spotLightSpaceMatrix[col][row]) << " ";
+					}
+					cout << "\n";
+				}
+
+				cout << "SpotLight Pos: " 
+					<< to_string(dir.x) << ", "
+					<< to_string(dir.y) << ", "
+					<< to_string(dir.z)
+					<< ", Dir: " 
+					<< to_string(dir.x) << ", "
+					<< to_string(dir.y) << ", "
+					<< to_string(dir.z)
+					<< "\n";
+				*/
+
+				for (const auto& target : GameObjectManager::GetObjects())
+				{
+					auto targetMeshComp = target->GetComponent<MeshComponent>();
+					auto targetType = targetMeshComp->GetMeshType();
+					auto targetMatComp = target->GetComponent<MaterialComponent>();
+
+					if (targetType != MeshComponent::MeshType::model
+						|| (targetType == MeshComponent::MeshType::model
+						&& !targetMatComp->CanCastShadows()))
+					{
+						continue;
+					}
+
+					Model::RenderDepth(target, spotShader);
+				}
+
+				glBindFramebuffer(GL_DEPTH_BUFFER_BIT, 0);
+			}
+			else if (objectMeshType == MeshComponent::MeshType::directional_light)
+			{
+				auto objectLightComp = obj->GetComponent<LightComponent>();
+			}
+		}
+
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	}
+
+	void Render::RenderContent()
+	{
 #if	ENGINE_MODE
+		glViewport(0, 0, GUISceneWindow::framebufferWidth, GUISceneWindow::framebufferHeight);
+
 		if (Render::activeCamera == nullptr) InitializeSceneCamera();
 #else
+		//glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
+		//glViewport(0, 0, screenWidth, screenHeight);
+
 		if (Render::activeCamera == nullptr
 			&& !failedToAssignPlayerCamera)
 		{

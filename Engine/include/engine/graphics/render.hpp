@@ -16,6 +16,7 @@
 
 //engine
 #include "gameobject.hpp"
+#include "shader.hpp"
 
 namespace Graphics
 {
@@ -50,6 +51,13 @@ namespace Graphics
 		static inline unsigned int rbo;
 		
 		static inline unsigned int framebuffer;
+		static inline unsigned int spotShadowFBO;
+		static inline unsigned int spotShadowMap;
+		static inline int shadowWidth = 1024;
+		static inline int shadowHeight = 1024;
+
+		static inline Shader spotShader;
+		static inline mat4 spotLightSpaceMatrix;
 
 		//default color applied to all models in the scene
 		static inline vec3 globalAmbientColor = vec3(0.3f, 0.4f, 0.5f);
@@ -64,7 +72,17 @@ namespace Graphics
 		static void GLFWSetup();
 		static void WindowSetup();
 		static void GladSetup();
+		static void ShadowSetup();
 		static void ContentSetup();
+
+		/// <summary>
+		/// First pass - depth.
+		/// </summary>
+		static void RenderDepth();
+		/// <summary>
+		/// Second pass - scene content.
+		/// </summary>
+		static void RenderContent();
 
 #if ENGINE_MODE
 		/// <summary>

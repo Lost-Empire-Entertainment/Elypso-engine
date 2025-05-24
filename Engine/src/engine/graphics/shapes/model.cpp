@@ -228,6 +228,12 @@ namespace Graphics::Shape
 			Shader shader = mat->GetShader();
 
 			shader.Use();
+
+			shader.SetMat4("lightSpaceMatrix", Render::spotLightSpaceMatrix);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, Render::spotShadowMap);
+			shader.SetInt("spotShadowMap", 2);
+
 			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 			shader.SetVec3("viewPos", tc->GetPosition());
 			shader.SetFloat("material.shininess", mat->GetShininessValue());
@@ -469,5 +475,37 @@ namespace Graphics::Shape
 
 			glActiveTexture(GL_TEXTURE0);
 		}
+	}
+
+	void Model::RenderDepth(
+		const shared_ptr<GameObject>& obj,
+		Shader& shader)
+	{
+		if (!obj
+			|| !obj->IsEnabled())
+		{
+			return;
+		}
+
+		auto mesh = obj->GetComponent<MeshComponent>();
+		auto transform = obj->GetComponent<TransformComponent>();
+
+		mat4 model = mat4(1.0f);
+		model = translate(model, transform->GetPosition());
+
+		quat rotQuat = quat(radians(transform->GetRotation()));
+		model *= mat4_cast(rotQuat);
+
+		model = scale(model, transform->GetScale());
+
+		shader.SetMat4("model", model);
+
+		glBindVertexArray(mesh->GetVAO());
+		glDrawElements(
+			GL_TRIANGLES,
+			static_cast<unsigned int>(mesh->GetIndices().size()),
+			GL_UNSIGNED_INT,
+			0);
+		glBindVertexArray(0);
 	}
 }

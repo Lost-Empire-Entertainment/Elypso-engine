@@ -16,6 +16,7 @@
 #include "gameobject.hpp"
 #include "core.hpp"
 #include "meshcomponent.hpp"
+#include "shader.hpp"
 
 namespace Graphics::Shape
 {
@@ -28,6 +29,7 @@ namespace Graphics::Shape
 	using Graphics::Shape::GameObject;
 	using Core::Engine;
 	using Graphics::Components::AssimpVertex;
+	using Graphics::Shader;
 
 	class Model
 	{
@@ -58,5 +60,9 @@ namespace Graphics::Shape
 			const shared_ptr<GameObject>& obj,
 			const mat4& view,
 			const mat4& projection);
+
+		static void RenderDepth(
+			const shared_ptr<GameObject>& obj,
+			Shader& shader);
 	};
 }
