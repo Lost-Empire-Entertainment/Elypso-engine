@@ -307,7 +307,6 @@ namespace Graphics
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-
 		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
@@ -486,8 +485,8 @@ namespace Graphics
 			else if (objectMeshType == MeshComponent::MeshType::spot_light)
 			{
 				auto objectLightComp = obj->GetComponent<LightComponent>();
-				float outerAngle = objectLightComp->GetOuterAngle();
-				float distance = objectLightComp->GetDistance();
+				float outerAngle = objectLightComp->GetOuterAngle() * 2.0f;
+				float distance = objectLightComp->GetDistance() * 2.0f;
 				vec3 pos = objectTransformComp->GetPosition();
 
 				vec3 rotationDegrees = objectTransformComp->GetRotation();
@@ -505,29 +504,6 @@ namespace Graphics
 				glBindFramebuffer(GL_FRAMEBUFFER, spotShadowFBO);
 				glClear(GL_DEPTH_BUFFER_BIT);
 
-				/*
-				cout << "LightMatrix: ";
-				for (int row = 0; row < 4; ++row)
-				{
-					cout << "  ";
-					for (int col = 0; col < 4; ++col)
-					{
-						cout << to_string(spotLightSpaceMatrix[col][row]) << " ";
-					}
-					cout << "\n";
-				}
-
-				cout << "SpotLight Pos: " 
-					<< to_string(dir.x) << ", "
-					<< to_string(dir.y) << ", "
-					<< to_string(dir.z)
-					<< ", Dir: " 
-					<< to_string(dir.x) << ", "
-					<< to_string(dir.y) << ", "
-					<< to_string(dir.z)
-					<< "\n";
-				*/
-
 				for (const auto& target : GameObjectManager::GetObjects())
 				{
 					auto targetMeshComp = target->GetComponent<MeshComponent>();
@@ -544,7 +520,7 @@ namespace Graphics
 					Model::RenderDepth(target, spotShader);
 				}
 
-				glBindFramebuffer(GL_DEPTH_BUFFER_BIT, 0);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			}
 			else if (objectMeshType == MeshComponent::MeshType::directional_light)
 			{
@@ -558,18 +534,18 @@ namespace Graphics
 	void Render::RenderContent()
 	{
 #if	ENGINE_MODE
-		glViewport(0, 0, GUISceneWindow::framebufferWidth, GUISceneWindow::framebufferHeight);
-
 		if (Render::activeCamera == nullptr) InitializeSceneCamera();
-#else
-		//glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
-		//glViewport(0, 0, screenWidth, screenHeight);
 
+		glViewport(0, 0, GUISceneWindow::framebufferWidth, GUISceneWindow::framebufferHeight);
+#else
 		if (Render::activeCamera == nullptr
 			&& !failedToAssignPlayerCamera)
 		{
 			AssignGameCamera();
 		}
+
+		glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
+		glViewport(0, 0, screenWidth, screenHeight);
 #endif
 
 		//camera transformation

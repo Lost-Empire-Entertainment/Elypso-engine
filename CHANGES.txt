@@ -98,3 +98,4 @@
 - all models can now cast shadows
 - added shadow cast toggle to inspector to the top material component
 - moved transparency toggle and strength above texture assign slots and below shadow cast toggle in inspector for material component
+- critical shader and texture errors now show an error popup which closes the engine right after pressing ok

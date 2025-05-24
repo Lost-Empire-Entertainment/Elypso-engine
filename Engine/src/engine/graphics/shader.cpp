@@ -357,10 +357,10 @@ namespace Graphics
             if (!success)
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::FILE,
-                    Type::EXCEPTION,
-                    "Shader compilation error (" + type + "): " + infoLog + "\n\n");
+
+                string message = "Shader compilation error (" + type + "): " + infoLog;
+                Engine::CreateErrorPopup(message.c_str());
+
                 return false;
             }
         }
@@ -370,10 +370,10 @@ namespace Graphics
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                ConsoleManager::WriteConsoleMessage(
-                    Caller::FILE,
-                    Type::EXCEPTION,
-                    "Shader linking error (" + type + "): " + infoLog + "\n\n");
+
+                string message = "Shader linking error (" + type + "): " + infoLog;
+                Engine::CreateErrorPopup(message.c_str());
+
                 return false;
             }
         }
