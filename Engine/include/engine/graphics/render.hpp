@@ -48,6 +48,8 @@ namespace Graphics
 
 		static inline unsigned int textureColorbuffer;
 		static inline unsigned int rbo;
+		
+		static inline unsigned int framebuffer;
 
 		//default color applied to all models in the scene
 		static inline vec3 globalAmbientColor = vec3(0.3f, 0.4f, 0.5f);
