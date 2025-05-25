@@ -219,6 +219,7 @@ namespace Graphics::GUI
 									vec3(1.0f),
 									1.0f,
 									1.0f,
+									0.5f,
 									name,
 									ID,
 									true);
@@ -839,8 +840,8 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int pointlightLines = 9;
-		int spotlightLines = 13;
+		int pointlightLines = 11;
+		int spotlightLines = 15;
 		int dirLightLines = 6;
 		int numLines{};
 
@@ -911,17 +912,43 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			float pointDistance = light->GetDistance();
-			ImGui::Text("Point light distance");
-			if (ImGui::DragFloat("##pointdist", &pointDistance, 0.1f, 0.0f, 100.0f))
+			float pointFarPlane = light->GetFarPlane();
+			ImGui::Text("Point light far plane");
+			if (ImGui::DragFloat("##pointdist", &pointFarPlane, 0.1f, 0.0f, 100.0f))
 			{
-				light->SetDistance(pointDistance);
+				if (light->GetNearPlane() >= pointFarPlane)
+				{
+					light->SetNearPlane(pointFarPlane - 0.1f);
+				}
+				light->SetFarPlane(pointFarPlane);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##pointdist"))
+			if (ImGui::Button("Reset##pointFarPlane"))
 			{
-				light->SetDistance(1.0f);
+				if (light->GetNearPlane() >= 1.0f)
+				{
+					light->SetNearPlane(0.99f);
+				}
+				light->SetFarPlane(1.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			float pointNearPlane = light->GetNearPlane();
+			ImGui::Text("Point light near plane");
+			if (ImGui::DragFloat("##pointNearPlane", &pointNearPlane, 0.1f, 0.1f, 10.0f))
+			{
+				if (pointNearPlane >= light->GetFarPlane())
+				{
+					pointNearPlane = light->GetFarPlane() - 0.1f;
+				}
+				light->SetFarPlane(pointNearPlane);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##pointNearPlane"))
+			{
+				light->SetNearPlane(0.5f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 		}
@@ -949,17 +976,43 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			float spotDistance = light->GetDistance();
-			ImGui::Text("Spotlight distance");
-			if (ImGui::DragFloat("##spotdist", &spotDistance, 0.1f, 0.0f, 100.0f))
+			float spotFarPlane = light->GetFarPlane();
+			ImGui::Text("Spotlight far plane");
+			if (ImGui::DragFloat("##spotFarPlane", &spotFarPlane, 0.1f, 0.0f, 100.0f))
 			{
-				light->SetDistance(spotDistance);
+				if (light->GetNearPlane() >= spotFarPlane)
+				{
+					light->SetNearPlane(spotFarPlane - 0.1f);
+				}
+				light->SetFarPlane(spotFarPlane);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##spotdist"))
+			if (ImGui::Button("Reset##spotFarPlane"))
 			{
-				light->SetDistance(1.0f);
+				if (light->GetNearPlane() >= 1.0f)
+				{
+					light->SetNearPlane(0.99f);
+				}
+				light->SetFarPlane(1.0f);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
+			float spotNearPlane = light->GetNearPlane();
+			ImGui::Text("Spotlight near plane");
+			if (ImGui::DragFloat("##spotNearPlane", &spotNearPlane, 0.1f, 0.1f, 10.0f))
+			{
+				if (spotNearPlane >= light->GetFarPlane())
+				{
+					spotNearPlane = light->GetFarPlane() - 0.1f;
+				}
+				light->SetNearPlane(spotNearPlane);
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##spotNearPlane"))
+			{
+				light->SetNearPlane(0.5f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
@@ -1086,6 +1139,7 @@ namespace Graphics::GUI
 									vec3(1),
 									1.0f,
 									1.0f,
+									0.5f,
 									targetName,
 									nextID,
 									true,
@@ -1144,6 +1198,7 @@ namespace Graphics::GUI
 									vec3(1),
 									1.0f,
 									1.0f,
+									0.5f,
 									12.5f,
 									17.5f,
 									targetName,

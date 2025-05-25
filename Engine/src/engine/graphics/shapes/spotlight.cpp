@@ -51,7 +51,8 @@ namespace Graphics::Shape
 		const string& txtFilePath,
 		const vec3& diffuse,
 		const float& intensity,
-		const float& distance,
+		const float& farPlane,
+		const float& nearPlane,
 		const float& innerAngle,
 		const float& outerAngle,
 		string& name,
@@ -143,7 +144,8 @@ namespace Graphics::Shape
 			LightComponent::LightType::Spot,
 			diffuse,
 			intensity,
-			distance,
+			farPlane,
+			nearPlane,
 			innerAngle,
 			outerAngle);
 		spotlight->SetOwner(obj);

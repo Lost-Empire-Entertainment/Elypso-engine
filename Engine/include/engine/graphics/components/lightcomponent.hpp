@@ -32,25 +32,29 @@ namespace Graphics::Components
             LightType type,
             const vec3& diffuse = vec3(1.0f),
             float intensity = 1.0f, 
-            float distance = 1.0f, 
+            float farPlane = 1.0f,
+            float nearPlane = 0.5f,
             float innerAngle = 12.5f, 
             float outerAngle = 37.5f) : 
             lightType(type),
             diffuse(diffuse), 
             intensity(intensity), 
-            distance(distance), 
+            farPlane(farPlane),
+            nearPlane(nearPlane),
             innerAngle(innerAngle), 
             outerAngle(outerAngle) {}
 
         void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
         void SetIntensity(float newIntensity) { intensity = newIntensity; }
-        void SetDistance(float newDistance) { distance = newDistance; }
+        void SetFarPlane(float newFarPlane) { farPlane = newFarPlane; }
+        void SetNearPlane(float newNearPlane) { nearPlane = newNearPlane; }
         void SetInnerAngle(float newInnerAngle) { innerAngle = newInnerAngle; }
         void SetOuterAngle(float newOuterAngle) { outerAngle = newOuterAngle; }
 
         const vec3& GetDiffuse() const { return diffuse; }
         float GetIntensity() const { return intensity; }
-        float GetDistance() const { return distance; }
+        float GetFarPlane() const { return farPlane; }
+        float GetNearPlane() const { return nearPlane; }
         float GetInnerAngle() const { return innerAngle; }
         float GetOuterAngle() const { return outerAngle; }
         LightType GetLightType() const { return lightType; }
@@ -64,7 +68,8 @@ namespace Graphics::Components
         float intensity;
 
         //point and spotlight properties
-        float distance;
+        float farPlane;
+        float nearPlane;
 
         //spotlight properties
         float innerAngle;

@@ -347,7 +347,8 @@ namespace Core
                 + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().y) + ","
                 + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().z);
             copiedObject["intensity"] = to_string(selectedObj->GetComponent<LightComponent>()->GetIntensity());
-            copiedObject["distance"] = to_string(selectedObj->GetComponent<LightComponent>()->GetDistance());
+            copiedObject["farPlane"] = to_string(selectedObj->GetComponent<LightComponent>()->GetFarPlane());
+            copiedObject["nearPlane"] = to_string(selectedObj->GetComponent<LightComponent>()->GetNearPlane());
         }
 
         else if (type == MeshComponent::MeshType::spot_light)
@@ -359,7 +360,8 @@ namespace Core
                 + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().y) + ","
                 + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().z);
             copiedObject["intensity"] = to_string(selectedObj->GetComponent<LightComponent>()->GetIntensity());
-            copiedObject["distance"] = to_string(selectedObj->GetComponent<LightComponent>()->GetDistance());
+            copiedObject["farPlane"] = to_string(selectedObj->GetComponent<LightComponent>()->GetFarPlane());
+            copiedObject["nearPlane"] = to_string(selectedObj->GetComponent<LightComponent>()->GetNearPlane());
             copiedObject["innerAngle"] = to_string(selectedObj->GetComponent<LightComponent>()->GetInnerAngle());
             copiedObject["outerAngle"] = to_string(selectedObj->GetComponent<LightComponent>()->GetOuterAngle());
         }
@@ -552,7 +554,8 @@ namespace Core
                 filePath,
                 diff,
                 stof(copiedObject["intensity"]),
-                stof(copiedObject["distance"]),
+                stof(copiedObject["farPlane"]),
+                stof(copiedObject["nearPlane"]),
                 targetName,
                 nextID,
                 true,
@@ -582,7 +585,8 @@ namespace Core
                 filePath,
                 diff,
                 stof(copiedObject["intensity"]),
-                stof(copiedObject["distance"]),
+                stof(copiedObject["farPlane"]),
+                stof(copiedObject["nearPlane"]),
                 stof(copiedObject["innerAngle"]),
                 stof(copiedObject["outerAngle"]),
                 targetName,

@@ -54,7 +54,8 @@ namespace Graphics::Shape
 		const string& txtFilePath,
 		const vec3& diffuse,
 		const float& intensity,
-		const float& distance,
+		const float& farPlane,
+		const float& nearPlane,
 		string& name,
 		unsigned int& id,
 		const bool& isEnabled,
@@ -150,7 +151,8 @@ namespace Graphics::Shape
 			LightComponent::LightType::Point,
 			diffuse, 
 			intensity, 
-			distance);
+			farPlane,
+			nearPlane);
 		pointLight->SetOwner(obj);
 
 		string billboardDiffTexture = (path(Engine::filesPath) / "icons" / "pointLight.png").string();

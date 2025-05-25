@@ -304,7 +304,7 @@ namespace Graphics::Shape
 						shader.SetFloat(lightPrefix + "linear", 0.09f);
 						shader.SetFloat(lightPrefix + "quadratic", 0.032f);
 						shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
-						shader.SetFloat(lightPrefix + "distance", light->GetDistance());
+						shader.SetFloat(lightPrefix + "distance", light->GetFarPlane());
 					}
 					else
 					{
@@ -342,7 +342,7 @@ namespace Graphics::Shape
 						shader.SetVec3(lightPrefix + "direction", rotatedDirection);
 
 						shader.SetFloat(lightPrefix + "intensity", light->GetIntensity());
-						shader.SetFloat(lightPrefix + "distance", light->GetDistance());
+						shader.SetFloat(lightPrefix + "distance", light->GetFarPlane());
 						shader.SetVec3(lightPrefix + "ambient", 0.0f, 0.0f, 0.0f);
 						shader.SetVec3(lightPrefix + "diffuse", light->GetDiffuse());
 						shader.SetVec3(lightPrefix + "specular", 1.0f, 1.0f, 1.0f);

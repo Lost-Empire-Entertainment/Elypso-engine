@@ -229,7 +229,8 @@ namespace EngineFile
 
 					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+					data.push_back("farPlane= " + to_string(light->GetFarPlane()) + "\n");
+					data.push_back("nearPlane= " + to_string(light->GetNearPlane()) + "\n");
 				}
 				else if (meshType == MeshComponent::MeshType::spot_light)
 				{
@@ -247,7 +248,8 @@ namespace EngineFile
 
 					data.push_back("intensity= " + to_string(light->GetIntensity()) + "\n");
 
-					data.push_back("distance= " + to_string(light->GetDistance()) + "\n");
+					data.push_back("farPlane= " + to_string(light->GetFarPlane()) + "\n");
+					data.push_back("nearPlane= " + to_string(light->GetNearPlane()) + "\n");
 
 					data.push_back("inner angle= " + to_string(light->GetInnerAngle()) + "\n");
 
@@ -1562,7 +1564,8 @@ namespace EngineFile
 
 					|| key == "diffuse"
 					|| key == "intensity"
-					|| key == "distance"
+					|| key == "farPlane"
+					|| key == "nearPlane"
 
 					|| key == "billboard id"
 					|| key == "billboard enabled")
@@ -1588,7 +1591,8 @@ namespace EngineFile
 
 		vec3 diffuse{};
 		float intensity{};
-		float distance{};
+		float farPlane{};
+		float nearPlane{};
 
 		unsigned int billboardID{};
 		bool isBillboardEnabled{};
@@ -1641,7 +1645,8 @@ namespace EngineFile
 				diffuse = newDiffuse;
 			}
 			else if (key == "intensity") intensity = stof(value);
-			else if (key == "distance") distance = stof(value);
+			else if (key == "farPlane") farPlane = stof(value);
+			else if (key == "nearPlane") nearPlane = stof(value);
 
 			else if (key == "billboard id")
 			{
@@ -1669,7 +1674,8 @@ namespace EngineFile
 			file,
 			diffuse,
 			intensity,
-			distance,
+			farPlane,
+			nearPlane,
 			name,
 			ID,
 			isEnabled,
@@ -1729,7 +1735,8 @@ namespace EngineFile
 
 					|| key == "diffuse"
 					|| key == "intensity"
-					|| key == "distance"
+					|| key == "farPlane"
+					|| key == "nearPlane"
 					|| key == "inner angle"
 					|| key == "outer angle"
 
@@ -1757,7 +1764,8 @@ namespace EngineFile
 
 		vec3 diffuse{};
 		float intensity{};
-		float distance{};
+		float farPlane{};
+		float nearPlane{};
 		float innerAngle{};
 		float outerAngle{};
 
@@ -1812,7 +1820,8 @@ namespace EngineFile
 				diffuse = newDiffuse;
 			}
 			else if (key == "intensity") intensity = stof(value);
-			else if (key == "distance") distance = stof(value);
+			else if (key == "farPlane") farPlane = stof(value);
+			else if (key == "nearPlane") nearPlane = stof(value);
 			else if (key == "inner angle") innerAngle = stof(value);
 			else if (key == "outer angle") outerAngle = stof(value);
 
@@ -1842,7 +1851,8 @@ namespace EngineFile
 			file,
 			diffuse,
 			intensity,
-			distance,
+			farPlane,
+			nearPlane,
 			innerAngle,
 			outerAngle,
 			name,

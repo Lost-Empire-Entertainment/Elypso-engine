@@ -485,16 +485,20 @@ namespace Graphics
 			else if (objectMeshType == MeshComponent::MeshType::spot_light)
 			{
 				auto objectLightComp = obj->GetComponent<LightComponent>();
-				float outerAngle = objectLightComp->GetOuterAngle() * 2.0f;
-				float distance = objectLightComp->GetDistance() * 2.0f;
+				
 				vec3 pos = objectTransformComp->GetPosition();
-
 				vec3 rotationDegrees = objectTransformComp->GetRotation();
 				quat rotQuat = quat(radians(rotationDegrees));
 				vec3 initialForward = vec3(0.0f, -1.0f, 0.0f);
 				vec3 dir = normalize(rotQuat * initialForward);
 
-				mat4 lightProjection = perspective(radians(outerAngle), 1.0f, 1.0f, distance);
+				float aspect = 1.0f;                                        //square shadow map
+				float farPlane = objectLightComp->GetFarPlane() * 2.0f;     //maximum shadow distance
+				float nearPlane = objectLightComp->GetNearPlane();          //minimum shadow distance
+				float outerAngle = objectLightComp->GetOuterAngle() * 2.0f; //full cone angle
+				float fovY = radians(outerAngle);                           //spotlight cone angle
+
+				mat4 lightProjection = perspective(fovY, aspect, nearPlane, farPlane);
 				mat4 lightView = lookAt(pos, pos + dir, vec3(0, 1, 0));
 				spotLightSpaceMatrix = lightProjection * lightView;
 
