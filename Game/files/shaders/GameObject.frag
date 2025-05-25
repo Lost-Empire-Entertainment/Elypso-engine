@@ -104,7 +104,8 @@ vec3 CalcSpotLight(
 	vec3 normal, 
 	vec3 fragPos, 
 	vec3 viewDir,
-	vec4 fragPosLightSpace);
+	vec4 fragPosLightSpace,
+	int shadowIndex);
 
 float CalcSpotShadow(int index, vec4 fragPosLightSpace);
 
@@ -152,7 +153,8 @@ void main()
 					norm, 
 					FragPos, 
 					viewDir,
-					FragPosLightSpace[i]);
+					FragPosLightSpace[i],
+					i);
             }
         }
     }
@@ -243,7 +245,8 @@ vec3 CalcSpotLight(
 	vec3 normal, 
 	vec3 fragPos, 
 	vec3 viewDir,
-	vec4 fragPosLightSpace)
+	vec4 fragPosLightSpace,
+	int shadowIndex)
 {
     vec3 lightDir = normalize(light.position - fragPos);
 	
@@ -265,12 +268,7 @@ vec3 CalcSpotLight(
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
     intensity *= light.intensity;
 	
-	float shadowSum = 0.0;
-	for (int i = 0; i< shadowCastingSpotCount; ++i)
-	{
-		shadowSum += CalcSpotShadow(i, FragPosLightSpace[i]);
-	}
-	float avgShadow = shadowCastingSpotCount > 0 ? shadowSum / shadowCastingSpotCount : 0.0;
+	float shadow = CalcSpotShadow(shadowIndex, fragPosLightSpace);
 	
     //combine results
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
@@ -281,7 +279,7 @@ vec3 CalcSpotLight(
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
 	
-    return ambient + (1.0 - avgShadow) * (diffuse + specular);
+    return ambient + (1.0 - shadow) * (diffuse + specular);
 }
 
 float CalcSpotShadow(int index, vec4 fragPosLightSpace)
