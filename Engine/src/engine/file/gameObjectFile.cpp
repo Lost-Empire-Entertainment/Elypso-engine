@@ -175,6 +175,8 @@ namespace EngineFile
 				auto mat = obj->GetComponent<MaterialComponent>();
 				if (meshType == MeshComponent::MeshType::model)
 				{
+					data.push_back("receiveShadows= " + to_string(mat->CanReceiveShadows()) + "\n");
+
 					string diffuseTexture = mat->GetTextureName(MaterialComponent::TextureType::diffuse);
 					diffuseTexture = path(diffuseTexture).filename().string();
 					if (diffuseTexture == "diff_default.png") diffuseTexture = "DEFAULTDIFF";
@@ -222,6 +224,7 @@ namespace EngineFile
 					float pointDiffuseX = light->GetDiffuse().x;
 					float pointDiffuseY = light->GetDiffuse().y;
 					float pointDiffuseZ = light->GetDiffuse().z;
+					data.push_back("castShadows= " + to_string(light->CanCastShadows()) + "\n");
 					data.push_back(
 						"diffuse= " + to_string(pointDiffuseX) + ", "
 						+ to_string(pointDiffuseY) + ", "
@@ -628,6 +631,7 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
+					|| key == "receiveShadows"
 					|| key == "textures"
 					|| key == "isTransparent"
 					|| key == "transparencyValue"
@@ -662,6 +666,7 @@ namespace EngineFile
 		vec3 rot{};
 		vec3 scale{};
 
+		bool receiveShadows{};
 		vector<string> textures{};
 		bool isTransparent{};
 		float transparencyValue{};
@@ -718,6 +723,10 @@ namespace EngineFile
 				scale = newScale;
 			}
 
+			else if (key == "receiveShadows")
+			{
+				receiveShadows = stoi(value);
+			}
 			else if (key == "textures")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1562,6 +1571,7 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
+					|| key == "castShadows"
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "farPlane"
@@ -1589,6 +1599,7 @@ namespace EngineFile
 		vec3 rot{};
 		vec3 scale{};
 
+		bool castShadows{};
 		vec3 diffuse{};
 		float intensity{};
 		float farPlane{};
@@ -1638,6 +1649,10 @@ namespace EngineFile
 				scale = newScale;
 			}
 
+			else if (key == "castShadows")
+			{
+				castShadows = stoi(value);
+			}
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1672,6 +1687,7 @@ namespace EngineFile
 			rot,
 			scale,
 			file,
+			castShadows,
 			diffuse,
 			intensity,
 			farPlane,
@@ -1733,6 +1749,7 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
+					|| key == "castShadows"
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "farPlane"
@@ -1762,6 +1779,7 @@ namespace EngineFile
 		vec3 rot{};
 		vec3 scale{};
 
+		bool castShadows{};
 		vec3 diffuse{};
 		float intensity{};
 		float farPlane{};
@@ -1813,6 +1831,10 @@ namespace EngineFile
 				scale = newScale;
 			}
 
+			else if (key == "castShadows")
+			{
+				castShadows = stoi(value);
+			}
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -1849,6 +1871,7 @@ namespace EngineFile
 			rot,
 			scale,
 			file,
+			castShadows,
 			diffuse,
 			intensity,
 			farPlane,
@@ -1912,6 +1935,7 @@ namespace EngineFile
 					|| key == "rotation"
 					|| key == "scale"
 
+					|| key == "castShadows"
 					|| key == "diffuse"
 					|| key == "intensity"
 					|| key == "distance"
@@ -1938,6 +1962,7 @@ namespace EngineFile
 		vec3 rot{};
 		vec3 scale{};
 
+		bool castShadows{};
 		vec3 diffuse{};
 		float intensity{};
 
@@ -1985,6 +2010,10 @@ namespace EngineFile
 				scale = newScale;
 			}
 
+			else if (key == "castShadows")
+			{
+				castShadows = stoi(value);
+			}
 			else if (key == "diffuse")
 			{
 				vector<string> split = String::Split(value, ',');
@@ -2017,6 +2046,7 @@ namespace EngineFile
 			rot,
 			scale,
 			file,
+			castShadows,
 			diffuse,
 			intensity,
 			name,

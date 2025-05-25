@@ -52,6 +52,7 @@ namespace Graphics::Shape
 		const vec3& rot,
 		const vec3& scale,
 		const string& txtFilePath,
+		const bool& canCastShadows,
 		const vec3& diffuse,
 		const float& intensity,
 		const float& farPlane,
@@ -149,6 +150,7 @@ namespace Graphics::Shape
 
 		auto pointLight = obj->AddComponent<LightComponent>(
 			LightComponent::LightType::Point,
+			canCastShadows,
 			diffuse, 
 			intensity, 
 			farPlane,

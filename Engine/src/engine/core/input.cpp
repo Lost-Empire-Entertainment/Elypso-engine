@@ -301,6 +301,7 @@ namespace Core
             }
             copiedObject["model"] = modelPath;
 
+            copiedObject["receiveShadows"] = to_string(selectedObj->GetComponent<MaterialComponent>()->CanReceiveShadows());
             copiedObject["diffuseTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::diffuse);
             copiedObject["specularTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::specular);
             copiedObject["normalTexture"] = selectedObj->GetComponent<MaterialComponent>()->GetTextureName(MaterialComponent::TextureType::normal);
@@ -342,6 +343,7 @@ namespace Core
         {
             copiedObject["type"] = "point";
 
+            copiedObject["castShadows"] = to_string(selectedObj->GetComponent<LightComponent>()->CanCastShadows());
             copiedObject["diffuse"] =
                 to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().x) + ","
                 + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().y) + ","
@@ -355,6 +357,7 @@ namespace Core
         {
             copiedObject["type"] = "spot";
 
+            copiedObject["castShadows"] = to_string(selectedObj->GetComponent<LightComponent>()->CanCastShadows());
             copiedObject["diffuse"] =
                 to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().x) + ","
                 + to_string(selectedObj->GetComponent<LightComponent>()->GetDiffuse().y) + ","
@@ -456,6 +459,8 @@ namespace Core
             string destinationPath = (path(targetPath) / targetNameAndExtension).string();
             File::CopyTarget(originPath, destinationPath);
             
+            bool receiveShadows = stoi(copiedObject["receiveShadows"]);
+
             string diffTexturePath = copiedObject["diffuseTexture"];
             if (diffTexturePath != "DEFAULTDIFF")
             {
@@ -498,7 +503,10 @@ namespace Core
             if (copiedObject.find("colliderType") != copiedObject.end())
             {
                 auto newObj = GameObjectManager::GetGameObjectByID(nextID);
+                auto objmc = newObj->GetComponent<MaterialComponent>();
                 auto rb = newObj->AddComponent<RigidBodyComponent>(newObj);
+
+                objmc->SetReceieveShadows(receiveShadows);
 
                 rb->SetColliderType(copiedObject["colliderType"] == "Box" ? ColliderType::BOX : ColliderType::SPHERE);
                 rb->SetDynamic(stof(copiedObject["isDynamic"]));
@@ -552,6 +560,7 @@ namespace Core
                 rot,
                 scale,
                 filePath,
+                stoi(copiedObject["castShadows"]),
                 diff,
                 stof(copiedObject["intensity"]),
                 stof(copiedObject["farPlane"]),
@@ -583,6 +592,7 @@ namespace Core
                 rot,
                 scale,
                 filePath,
+                stoi(copiedObject["castShadows"]),
                 diff,
                 stof(copiedObject["intensity"]),
                 stof(copiedObject["farPlane"]),

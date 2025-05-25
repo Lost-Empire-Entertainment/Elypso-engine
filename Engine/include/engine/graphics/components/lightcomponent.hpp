@@ -30,6 +30,7 @@ namespace Graphics::Components
 
         LightComponent(
             LightType type,
+            bool canCastShadows = true,
             const vec3& diffuse = vec3(1.0f),
             float intensity = 1.0f, 
             float farPlane = 1.0f,
@@ -37,6 +38,7 @@ namespace Graphics::Components
             float innerAngle = 12.5f, 
             float outerAngle = 37.5f) : 
             lightType(type),
+            canCastShadows(canCastShadows),
             diffuse(diffuse), 
             intensity(intensity), 
             farPlane(farPlane),
@@ -45,6 +47,7 @@ namespace Graphics::Components
             outerAngle(outerAngle) {}
 
         void SetDiffuse(const vec3& newDiffuse) { diffuse = newDiffuse; }
+        void SetCastShadows(float newCastShadows) { canCastShadows = newCastShadows; }
         void SetIntensity(float newIntensity) { intensity = newIntensity; }
         void SetFarPlane(float newFarPlane) { farPlane = newFarPlane; }
         void SetNearPlane(float newNearPlane) { nearPlane = newNearPlane; }
@@ -52,6 +55,7 @@ namespace Graphics::Components
         void SetOuterAngle(float newOuterAngle) { outerAngle = newOuterAngle; }
 
         const vec3& GetDiffuse() const { return diffuse; }
+        bool CanCastShadows() const { return canCastShadows; }
         float GetIntensity() const { return intensity; }
         float GetFarPlane() const { return farPlane; }
         float GetNearPlane() const { return nearPlane; }
@@ -65,6 +69,7 @@ namespace Graphics::Components
 
         //common properties
         vec3 diffuse;
+        bool canCastShadows;
         float intensity;
 
         //point and spotlight properties

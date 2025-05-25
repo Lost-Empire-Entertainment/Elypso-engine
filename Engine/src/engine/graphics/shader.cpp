@@ -208,7 +208,12 @@ namespace Graphics
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
-        if (!shader.CheckCompileErrors(vertex, "VERTEX"))
+        if (!shader.CheckCompileErrors(
+            vertexPath,
+            fragmentPath,
+            geometryPath,
+            vertex, 
+            "VERTEX"))
         {
             shader.ID = 0;
             return shader;
@@ -218,7 +223,12 @@ namespace Graphics
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
-        if (!shader.CheckCompileErrors(fragment, "FRAGMENT"))
+        if (!shader.CheckCompileErrors(
+            vertexPath,
+            fragmentPath,
+            geometryPath,
+            fragment, 
+            "FRAGMENT"))
         {
             shader.ID = 0;
             return shader;
@@ -231,7 +241,12 @@ namespace Graphics
             glAttachShader(shader.ID, vertex);
             glAttachShader(shader.ID, fragment);
             glLinkProgram(shader.ID);
-            if (!shader.CheckCompileErrors(shader.ID, "PROGRAM"))
+            if (!shader.CheckCompileErrors(
+                vertexPath,
+                fragmentPath,
+                geometryPath,
+                shader.ID, 
+                "PROGRAM"))
             {
                 shader.ID = 0;
                 return shader;
@@ -243,7 +258,12 @@ namespace Graphics
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(geometry, 1, &gShaderCode, NULL);
             glCompileShader(geometry);
-            if (!shader.CheckCompileErrors(geometry, "GEOMETRY"))
+            if (!shader.CheckCompileErrors(
+                vertexPath,
+                fragmentPath,
+                geometryPath,
+                geometry, 
+                "GEOMETRY"))
             {
                 shader.ID = 0;
                 return shader;
@@ -255,7 +275,12 @@ namespace Graphics
             glAttachShader(shader.ID, fragment);
             glAttachShader(shader.ID, geometry);
             glLinkProgram(shader.ID);
-            if (!shader.CheckCompileErrors(shader.ID, "PROGRAM"))
+            if (!shader.CheckCompileErrors(
+                vertexPath,
+                fragmentPath,
+                geometryPath,
+                shader.ID, 
+                "PROGRAM"))
             {
                 shader.ID = 0;
                 return shader;
@@ -347,8 +372,17 @@ namespace Graphics
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
-    bool Shader::CheckCompileErrors(GLuint shader, const string& type)
+    bool Shader::CheckCompileErrors(
+        string vertexPath,
+        string fragmentPath,
+        string geometryPath,
+        GLuint shader, 
+        const string& type)
     {
+        string vertStem = path(vertexPath).filename().string();
+        string fragStem = path(fragmentPath).filename().string();
+        string geomStem = path(geometryPath).filename().string();
+
         GLint success;
         GLchar infoLog[1024];
         if (type != "PROGRAM")
@@ -358,7 +392,12 @@ namespace Graphics
             {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
 
-                string message = "Shader compilation error (" + type + "): " + infoLog;
+                string message = "Shader compilation error (" + type + "): " + infoLog
+                    + "====================\n\n"
+                    + "vertex shader: " + vertStem + "\n"
+                    + "fragment shader: " + fragStem + "\n"
+                    + "geometry shader: " + geomStem;
+
                 Engine::CreateErrorPopup(message.c_str());
 
                 return false;
@@ -371,7 +410,12 @@ namespace Graphics
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
 
-                string message = "Shader linking error (" + type + "): " + infoLog;
+                string message = "Shader linking error (" + type + "): " + infoLog 
+                    + "====================\n\n" 
+                    + "vertex shader: " + vertStem + "\n"
+                    + "fragment shader: " + fragStem + "\n"
+                    + "geometry shader: " + geomStem;
+
                 Engine::CreateErrorPopup(message.c_str());
 
                 return false;

@@ -60,7 +60,10 @@ struct SpotLight
 uniform vec3 globalAmbientColor;
 uniform float globalAmbientIntensity;
 
-uniform sampler2D spotShadowMap;
+#define MAX_SPOT_SHADOWS 16
+in vec4 FragPosLightSpace[MAX_SPOT_SHADOWS];
+uniform int shadowCastingSpotCount;
+uniform sampler2D spotShadowMaps[MAX_SPOT_SHADOWS];
 
 #define MAX_POINT_LIGHTS 16
 uniform int pointLightCount;
@@ -74,8 +77,7 @@ uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform int dirLightCount;
 uniform DirLight dirLights[MAX_DIR_LIGHTS];
 
-in vec3 FragPos;  
-in vec4 FragPosLightSpace;
+in vec3 FragPos;
 in vec3 Normal;  
 in vec2 TexCoords;
   
@@ -104,7 +106,7 @@ vec3 CalcSpotLight(
 	vec3 viewDir,
 	vec4 fragPosLightSpace);
 
-float CalcSpotShadow(vec4 fragPosLightSpace);
+float CalcSpotShadow(int index, vec4 fragPosLightSpace);
 
 void main()
 {
@@ -150,7 +152,7 @@ void main()
 					norm, 
 					FragPos, 
 					viewDir,
-					FragPosLightSpace);
+					FragPosLightSpace[i]);
             }
         }
     }
@@ -263,7 +265,12 @@ vec3 CalcSpotLight(
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
     intensity *= light.intensity;
 	
-	float shadow = CalcSpotShadow(fragPosLightSpace);
+	float shadowSum = 0.0;
+	for (int i = 0; i< shadowCastingSpotCount; ++i)
+	{
+		shadowSum += CalcSpotShadow(i, FragPosLightSpace[i]);
+	}
+	float avgShadow = shadowCastingSpotCount > 0 ? shadowSum / shadowCastingSpotCount : 0.0;
 	
     //combine results
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
@@ -274,10 +281,10 @@ vec3 CalcSpotLight(
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
 	
-    return ambient + (1.0 - shadow) * (diffuse + specular);
+    return ambient + (1.0 - avgShadow) * (diffuse + specular);
 }
 
-float CalcSpotShadow(vec4 fragPosLightSpace)
+float CalcSpotShadow(int index, vec4 fragPosLightSpace)
 {
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	projCoords = projCoords * 0.5 + 0.5;
@@ -292,7 +299,7 @@ float CalcSpotShadow(vec4 fragPosLightSpace)
 		return 0.0;
 	}
 	
-	float closestDepth = texture(spotShadowMap, projCoords.xy).r;
+	float closestDepth = texture(spotShadowMaps[index], projCoords.xy).r;
 	float currentDepth = projCoords.z;
 	
 	float bias = 0.005;

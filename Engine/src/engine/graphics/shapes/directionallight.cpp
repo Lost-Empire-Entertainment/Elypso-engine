@@ -50,6 +50,7 @@ namespace Graphics::Shape
 		const vec3& rot,
 		const vec3& scale,
 		const string& txtFilePath,
+		const bool& canCastShadows,
 		const vec3& diffuse,
 		const float& intensity,
 		string& name,
@@ -132,6 +133,7 @@ namespace Graphics::Shape
 
 		auto dirlight = obj->AddComponent<LightComponent>(
 			LightComponent::LightType::Directional,
+			canCastShadows,
 			diffuse,
 			intensity);
 		dirlight->SetOwner(obj);

@@ -106,8 +106,6 @@ namespace Graphics
 #if ENGINE_MODE
 		FramebufferSetup();
 #endif
-		ShadowSetup();
-
 		ContentSetup();
 
 #if ENGINE_MODE
@@ -278,60 +276,12 @@ namespace Graphics
 	}
 #endif
 
-	void Render::ShadowSetup()
+	void Render::ContentSetup()
 	{
-		//
-		// POINT LIGHT SHADOWS
-		//
-
-		//
-		// SPOTLIGHT SHADOWS
-		//
-
-		glGenFramebuffers(1, &spotShadowFBO);
-
-		glGenTextures(1, &spotShadowMap);
-		glBindTexture(GL_TEXTURE_2D, spotShadowMap);
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			GL_DEPTH_COMPONENT,
-			shadowWidth,
-			shadowHeight,
-			0,
-			GL_DEPTH_COMPONENT,
-			GL_FLOAT,
-			nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, spotShadowFBO);
-		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, 
-			GL_DEPTH_ATTACHMENT, 
-			GL_TEXTURE_2D,
-			spotShadowMap,
-			0);
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 		string vert = (path(Engine::filesPath) / "shaders" / "Shadow_Spot.vert").string();
 		string frag = (path(Engine::filesPath) / "shaders" / "Shadow_Spot.frag").string();
 		spotShader = Shader::LoadShader(vert, frag);
 
-		//
-		// DIRECTIONAL LIGHT SHADOWS
-		//
-	}
-
-	void Render::ContentSetup()
-	{
 		//enable face culling
 		glEnable(GL_CULL_FACE);
 		//cull back faces
@@ -472,65 +422,81 @@ namespace Graphics
 		glDepthFunc(GL_LESS);
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-		for (const auto& obj : GameObjectManager::GetObjects())
+		//
+		// POINT LIGHT DEPTH
+		//
+
+		//
+		// SPOTLIGHT DEPTH
+		//
+
+		const auto& spotlights = GameObjectManager::GetSpotLights();
+		spotLightSpaceMatrices.clear();
+
+		for (int i = 0; i < spotlights.size(); ++i)
 		{
+			auto& obj = spotlights[i];
+			if (!obj->IsEnabled()) continue;
+
 			auto objectTransformComp = obj->GetComponent<TransformComponent>();
-			auto objectMeshComp = obj->GetComponent<MeshComponent>();
-			auto objectMeshType = objectMeshComp->GetMeshType();
+			auto objectLightComp = obj->GetComponent<LightComponent>();
 
-			if (objectMeshType == MeshComponent::MeshType::point_light)
+			vec3 pos = objectTransformComp->GetPosition();
+			vec3 rotationDegrees = objectTransformComp->GetRotation();
+			quat rotQuat = quat(radians(rotationDegrees));
+			vec3 initialForward = vec3(0.0f, -1.0f, 0.0f);
+			vec3 dir = normalize(rotQuat * initialForward);
+
+			float aspect = 1.0f;                                        //square shadow map
+			float farPlane = objectLightComp->GetFarPlane() * 2.0f;     //maximum shadow distance
+			float nearPlane = objectLightComp->GetNearPlane();          //minimum shadow distance
+			float outerAngle = objectLightComp->GetOuterAngle() * 2.0f; //full cone angle
+			float fovY = radians(outerAngle);                           //spotlight cone angle
+
+			mat4 lightProjection = perspective(fovY, aspect, nearPlane, farPlane);
+			mat4 lightView = lookAt(pos, pos + dir, vec3(0, 1, 0));
+			mat4 lightSpaceMatrix = lightProjection * lightView;
+
+			spotLightSpaceMatrices[obj] = lightSpaceMatrix;
+
+			spotShader.Use();
+			spotShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+			auto fboIt = Render::spotShadowFBOs.find(obj);
+			if (fboIt == spotShadowFBOs.end())
 			{
-				auto objectLightComp = obj->GetComponent<LightComponent>();
+				string message = "Failed to find spotlight fbo! (render.cpp, RenderDepth, spotShadowFBOs)";
+				Engine::CreateErrorPopup(message.c_str());
+				continue;
 			}
-			else if (objectMeshType == MeshComponent::MeshType::spot_light)
+
+			glBindFramebuffer(GL_FRAMEBUFFER, fboIt->second);
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+			for (const auto& target : GameObjectManager::GetObjects())
 			{
-				auto objectLightComp = obj->GetComponent<LightComponent>();
-				
-				vec3 pos = objectTransformComp->GetPosition();
-				vec3 rotationDegrees = objectTransformComp->GetRotation();
-				quat rotQuat = quat(radians(rotationDegrees));
-				vec3 initialForward = vec3(0.0f, -1.0f, 0.0f);
-				vec3 dir = normalize(rotQuat * initialForward);
+				auto targetMeshComp = target->GetComponent<MeshComponent>();
+				auto targetType = targetMeshComp->GetMeshType();
+				auto targetMatComp = target->GetComponent<MaterialComponent>();
 
-				float aspect = 1.0f;                                        //square shadow map
-				float farPlane = objectLightComp->GetFarPlane() * 2.0f;     //maximum shadow distance
-				float nearPlane = objectLightComp->GetNearPlane();          //minimum shadow distance
-				float outerAngle = objectLightComp->GetOuterAngle() * 2.0f; //full cone angle
-				float fovY = radians(outerAngle);                           //spotlight cone angle
-
-				mat4 lightProjection = perspective(fovY, aspect, nearPlane, farPlane);
-				mat4 lightView = lookAt(pos, pos + dir, vec3(0, 1, 0));
-				spotLightSpaceMatrix = lightProjection * lightView;
-
-				spotShader.Use();
-				spotShader.SetMat4("lightSpaceMatrix", spotLightSpaceMatrix);
-
-				glBindFramebuffer(GL_FRAMEBUFFER, spotShadowFBO);
-				glClear(GL_DEPTH_BUFFER_BIT);
-
-				for (const auto& target : GameObjectManager::GetObjects())
+				if (targetType != MeshComponent::MeshType::model
+					|| (targetType == MeshComponent::MeshType::model
+					&& !targetMatComp->CanReceiveShadows()))
 				{
-					auto targetMeshComp = target->GetComponent<MeshComponent>();
-					auto targetType = targetMeshComp->GetMeshType();
-					auto targetMatComp = target->GetComponent<MaterialComponent>();
-
-					if (targetType != MeshComponent::MeshType::model
-						|| (targetType == MeshComponent::MeshType::model
-						&& !targetMatComp->CanCastShadows()))
-					{
-						continue;
-					}
-
-					Model::RenderDepth(target, spotShader);
+					continue;
 				}
 
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				Model::RenderDepth(target, spotShader);
 			}
-			else if (objectMeshType == MeshComponent::MeshType::directional_light)
-			{
-				auto objectLightComp = obj->GetComponent<LightComponent>();
-			}
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
+
+		//
+		// DIRECTIONAL LIGHT DEPTH
+		//
+
+
 
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	}

@@ -54,6 +54,11 @@ namespace Graphics
 	private:
 		static unordered_map<string, unsigned int> shaders;
 
-		bool CheckCompileErrors(GLuint shader, const string& type);
+		bool CheckCompileErrors(
+			string vertexPath,
+			string fragmentPath,
+			string geometryPath,
+			GLuint shader,
+			const string& type);
 	};
 }

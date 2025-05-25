@@ -98,5 +98,8 @@
 - all models can now cast shadows
 - added shadow cast toggle to inspector to the top material component
 - moved transparency toggle and strength above texture assign slots and below shadow cast toggle in inspector for material component
+- added support for geometry shaders in shader.cpp
 - critical shader and texture errors now show an error popup which closes the engine right after pressing ok
+- shader error popup displays vertex, fragment and geometry shader paths
 - replaced distance value for point light and spotlight with far and near plane for shadows, this does not affect directional lights, they still only use distance
+- added cast shadow toggle for all light types in light component, added receive shadow toggle for all models in material component

@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 //external
 #include "glad.h"
@@ -25,6 +26,7 @@ namespace Graphics
 	using std::map;
 	using std::string;
 	using std::shared_ptr;
+	using std::unordered_map;
 
 	using Graphics::Shape::GameObject;
 
@@ -49,15 +51,16 @@ namespace Graphics
 
 		static inline unsigned int textureColorbuffer;
 		static inline unsigned int rbo;
-		
 		static inline unsigned int framebuffer;
-		static inline unsigned int spotShadowFBO;
-		static inline unsigned int spotShadowMap;
+
 		static inline int shadowWidth = 1024;
 		static inline int shadowHeight = 1024;
 
 		static inline Shader spotShader;
-		static inline mat4 spotLightSpaceMatrix;
+
+		static inline unordered_map<shared_ptr<GameObject>, unsigned int> spotShadowFBOs;
+		static inline unordered_map<shared_ptr<GameObject>, unsigned int> spotShadowMaps;
+		static inline unordered_map<shared_ptr<GameObject>, mat4> spotLightSpaceMatrices;
 
 		//default color applied to all models in the scene
 		static inline vec3 globalAmbientColor = vec3(0.3f, 0.4f, 0.5f);
@@ -72,7 +75,6 @@ namespace Graphics
 		static void GLFWSetup();
 		static void WindowSetup();
 		static void GladSetup();
-		static void ShadowSetup();
 		static void ContentSetup();
 
 		/// <summary>

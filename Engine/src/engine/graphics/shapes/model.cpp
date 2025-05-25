@@ -229,10 +229,40 @@ namespace Graphics::Shape
 
 			shader.Use();
 
-			shader.SetMat4("lightSpaceMatrix", Render::spotLightSpaceMatrix);
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, Render::spotShadowMap);
-			shader.SetInt("spotShadowMap", 2);
+			static int maxShadowCount = 16;
+			int shadowIndex = 0;
+
+			const auto& spotlights = GameObjectManager::GetSpotLights();
+			for (const auto& spotLight : spotlights)
+			{
+				if (shadowIndex >= maxShadowCount
+					|| !spotLight->IsEnabled())
+				{
+					break;
+				}
+
+				auto itMap = Render::spotShadowMaps.find(spotLight);
+				auto itMat = Render::spotLightSpaceMatrices.find(spotLight);
+				if (itMap == Render::spotShadowMaps.end()
+					|| itMat == Render::spotLightSpaceMatrices.end())
+				{
+					string message = "Failed to find spotlight map or matrice! (model.cpp, Render)";
+					Engine::CreateErrorPopup(message.c_str());
+					continue;
+				}
+
+				const unsigned int shadowTex = itMap->second;
+				const mat4& shadowMatrix = itMat->second;
+
+				shader.SetMat4("spotLightSpaceMatrices[" + to_string(shadowIndex) + "]", shadowMatrix);
+
+				glActiveTexture(GL_TEXTURE2 + shadowIndex);
+				glBindTexture(GL_TEXTURE_2D, shadowTex);
+				shader.SetInt("spotShadowMaps[" + to_string(shadowIndex) + "]", 2 + shadowIndex);
+
+				shadowIndex++;
+			}
+			shader.SetInt("shadowCastingSpotCount", shadowIndex);
 
 			auto tc = Render::activeCamera->GetComponent<TransformComponent>();
 			shader.SetVec3("viewPos", tc->GetPosition());

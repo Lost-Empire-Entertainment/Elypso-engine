@@ -216,6 +216,7 @@ namespace Graphics::GUI
 									rot,
 									scale,
 									"",
+									true,
 									vec3(1.0f),
 									1.0f,
 									1.0f,
@@ -684,12 +685,12 @@ namespace Graphics::GUI
 			// SHADOWS
 			//
 
-			ImGui::Text("Can cast shadows");
-			bool canCastShadows = mat->CanCastShadows();
-			string shadowCastButtonName = canCastShadows ? "True##castShadow" : "False##castShadow";
-			if (ImGui::Button(shadowCastButtonName.c_str()))
+			ImGui::Text("Can receive shadows");
+			bool canReceiveShadows = mat->CanReceiveShadows();
+			string shadowReceieveButtonName = canReceiveShadows ? "True##receiveShadow" : "False##receiveShadow";
+			if (ImGui::Button(shadowReceieveButtonName.c_str()))
 			{
-				mat->SetCastShadows(!canCastShadows);
+				mat->SetReceieveShadows(!canReceiveShadows);
 
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
@@ -840,9 +841,9 @@ namespace Graphics::GUI
 
 		ImGuiChildFlags childWindowFlags{};
 
-		int pointlightLines = 11;
-		int spotlightLines = 15;
-		int dirLightLines = 6;
+		int pointlightLines = 13;
+		int spotlightLines = 17;
+		int dirLightLines = 8;
 		int numLines{};
 
 		MeshComponent::MeshType type = mesh->GetMeshType();
@@ -890,8 +891,18 @@ namespace Graphics::GUI
 		MeshComponent::MeshType objType = mesh->GetMeshType();
 		if (objType == MeshType::point_light)
 		{
+			ImGui::Text("Can cast shadows");
+			bool canCastShadows = light->CanCastShadows();
+			string shadowCastButtonName = canCastShadows ? "True##pointshadow" : "False##pointshadow";
+			if (ImGui::Button(shadowCastButtonName.c_str()))
+			{
+				light->SetCastShadows(!canCastShadows);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			vec3 pointDiffuse = light->GetDiffuse();
-			ImGui::Text("Point light diffuse");
+			ImGui::Text("Color");
 			if (ImGui::ColorEdit3("##pointdiff", value_ptr(pointDiffuse)))
 			{
 				light->SetDiffuse(pointDiffuse);
@@ -899,7 +910,7 @@ namespace Graphics::GUI
 			}
 
 			float pointIntensity = light->GetIntensity();
-			ImGui::Text("Point light intensity");
+			ImGui::Text("Intensity");
 			if (ImGui::DragFloat("##pointint", &pointIntensity, 0.01f, 0.0f, 10.0f))
 			{
 				light->SetIntensity(pointIntensity);
@@ -913,8 +924,8 @@ namespace Graphics::GUI
 			}
 
 			float pointFarPlane = light->GetFarPlane();
-			ImGui::Text("Point light far plane");
-			if (ImGui::DragFloat("##pointdist", &pointFarPlane, 0.1f, 0.0f, 100.0f))
+			ImGui::Text("Far plane");
+			if (ImGui::DragFloat("##pointfar", &pointFarPlane, 0.1f, 0.0f, 100.0f))
 			{
 				if (light->GetNearPlane() >= pointFarPlane)
 				{
@@ -924,7 +935,7 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##pointFarPlane"))
+			if (ImGui::Button("Reset##pointfar"))
 			{
 				if (light->GetNearPlane() >= 1.0f)
 				{
@@ -935,8 +946,8 @@ namespace Graphics::GUI
 			}
 
 			float pointNearPlane = light->GetNearPlane();
-			ImGui::Text("Point light near plane");
-			if (ImGui::DragFloat("##pointNearPlane", &pointNearPlane, 0.1f, 0.1f, 10.0f))
+			ImGui::Text("Near plane");
+			if (ImGui::DragFloat("##pointnear", &pointNearPlane, 0.1f, 0.1f, 10.0f))
 			{
 				if (pointNearPlane >= light->GetFarPlane())
 				{
@@ -946,7 +957,7 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##pointNearPlane"))
+			if (ImGui::Button("Reset##pointnear"))
 			{
 				light->SetNearPlane(0.5f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -954,8 +965,18 @@ namespace Graphics::GUI
 		}
 		else if (objType == MeshType::spot_light)
 		{
+			ImGui::Text("Can cast shadows");
+			bool canCastShadows = light->CanCastShadows();
+			string shadowCastButtonName = canCastShadows ? "True##castspotshadow" : "False##castspotshadow";
+			if (ImGui::Button(shadowCastButtonName.c_str()))
+			{
+				light->SetCastShadows(!canCastShadows);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			vec3 spotDiffuse = light->GetDiffuse();
-			ImGui::Text("Spotlight diffuse");
+			ImGui::Text("Color");
 			if (ImGui::ColorEdit3("##spotdiff", value_ptr(spotDiffuse)))
 			{
 				light->SetDiffuse(spotDiffuse);
@@ -963,7 +984,7 @@ namespace Graphics::GUI
 			}
 
 			float spotIntensity = light->GetIntensity();
-			ImGui::Text("Spotlight intensity");
+			ImGui::Text("Intensity");
 			if (ImGui::DragFloat("##spotint", &spotIntensity, 0.01f, 0.0f, 10.0f))
 			{
 				light->SetIntensity(spotIntensity);
@@ -977,8 +998,8 @@ namespace Graphics::GUI
 			}
 
 			float spotFarPlane = light->GetFarPlane();
-			ImGui::Text("Spotlight far plane");
-			if (ImGui::DragFloat("##spotFarPlane", &spotFarPlane, 0.1f, 0.0f, 100.0f))
+			ImGui::Text("Far plane");
+			if (ImGui::DragFloat("##spotfar", &spotFarPlane, 0.1f, 0.0f, 100.0f))
 			{
 				if (light->GetNearPlane() >= spotFarPlane)
 				{
@@ -988,7 +1009,7 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##spotFarPlane"))
+			if (ImGui::Button("Reset##spotfar"))
 			{
 				if (light->GetNearPlane() >= 1.0f)
 				{
@@ -999,8 +1020,8 @@ namespace Graphics::GUI
 			}
 
 			float spotNearPlane = light->GetNearPlane();
-			ImGui::Text("Spotlight near plane");
-			if (ImGui::DragFloat("##spotNearPlane", &spotNearPlane, 0.1f, 0.1f, 10.0f))
+			ImGui::Text("Near plane");
+			if (ImGui::DragFloat("##spotnear", &spotNearPlane, 0.1f, 0.1f, 10.0f))
 			{
 				if (spotNearPlane >= light->GetFarPlane())
 				{
@@ -1010,7 +1031,7 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##spotNearPlane"))
+			if (ImGui::Button("Reset##spotnear"))
 			{
 				light->SetNearPlane(0.5f);
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
@@ -1019,7 +1040,7 @@ namespace Graphics::GUI
 			float spotInnerAngle = light->GetInnerAngle();
 			float spotOuterAngle = light->GetOuterAngle();
 
-			ImGui::Text("Spotlight inner angle");
+			ImGui::Text("Inner angle");
 			if (ImGui::DragFloat("##spotinnerangle", &spotInnerAngle, 0.1f, 0.0f, spotOuterAngle - 0.01f))
 			{
 				light->SetInnerAngle(spotInnerAngle);
@@ -1032,7 +1053,7 @@ namespace Graphics::GUI
 				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
 			}
 
-			ImGui::Text("Spotlight outer angle");
+			ImGui::Text("Outer angle");
 			if (ImGui::DragFloat("##spotouterangle", &spotOuterAngle, 0.1f, spotInnerAngle + 0.01f, 180.0f))
 			{
 				light->SetOuterAngle(spotOuterAngle);
@@ -1047,8 +1068,18 @@ namespace Graphics::GUI
 		}
 		else if (objType == MeshType::directional_light)
 		{
+			ImGui::Text("Can cast shadows");
+			bool canCastShadows = light->CanCastShadows();
+			string shadowCastButtonName = canCastShadows ? "True##dirshadow" : "False##dirshadow";
+			if (ImGui::Button(shadowCastButtonName.c_str()))
+			{
+				light->SetCastShadows(!canCastShadows);
+
+				if (!SceneFile::unsavedChanges) Render::SetWindowNameAsUnsaved(true);
+			}
+
 			vec3 dirDiffuse = light->GetDiffuse();
-			ImGui::Text("Directional light diffuse");
+			ImGui::Text("Color");
 			if (ImGui::ColorEdit3("##dirdiff", value_ptr(dirDiffuse)))
 			{
 				light->SetDiffuse(dirDiffuse);
@@ -1056,7 +1087,7 @@ namespace Graphics::GUI
 			}
 
 			float dirIntensity = light->GetIntensity();
-			ImGui::Text("Directional light intensity");
+			ImGui::Text("Intensity");
 			if (ImGui::DragFloat("##dirint", &dirIntensity, 0.01f, 0.0f, 10.0f))
 			{
 				light->SetIntensity(dirIntensity);
@@ -1136,6 +1167,7 @@ namespace Graphics::GUI
 									oldRot,
 									oldScale,
 									finalTxtPath,
+									true,
 									vec3(1),
 									1.0f,
 									1.0f,
@@ -1195,6 +1227,7 @@ namespace Graphics::GUI
 									oldRot,
 									oldScale,
 									finalTxtPath,
+									true,
 									vec3(1),
 									1.0f,
 									1.0f,
@@ -1265,6 +1298,7 @@ namespace Graphics::GUI
 										oldRot,
 										oldScale,
 										finalTxtPath,
+										true,
 										vec3(1),
 										1.0f,
 										targetName,

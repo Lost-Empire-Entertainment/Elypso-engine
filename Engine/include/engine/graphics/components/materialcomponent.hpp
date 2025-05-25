@@ -33,13 +33,11 @@ namespace Graphics::Components
         };
 
         MaterialComponent(
-            bool castShadows = true,
-            bool receiveShadows = true,
+            bool canReceiveShadows = true,
             bool isTransparent = false,
             float transparentValue = 1.0f,
             float shininessValue = 0.5f) :
-            castShadows(castShadows),
-            receiveShadows(receiveShadows),
+            canReceiveShadows(canReceiveShadows),
             isTransparent(isTransparent),
             transparentValue(transparentValue),
             shininessValue(shininessValue) {}
@@ -137,20 +135,17 @@ namespace Graphics::Components
 
         type_index GetType() const override { return typeid(MaterialComponent); }
 
-        void SetCastShadows(bool newCastShadows) { castShadows = newCastShadows; }
-        void SetReceiveShadows(bool newReceiveShadows) { receiveShadows = newReceiveShadows; }
+        void SetReceieveShadows(bool newReceiveShadows) { canReceiveShadows = newReceiveShadows; }
         void SetTransparent(bool newTransparent) { isTransparent = newTransparent; }
         void SetShininessValue(float newShininessValue) { shininessValue = newShininessValue; }
         void SetTransparentValue(float newTransparentValue) { transparentValue = newTransparentValue; }
 
-        const bool& CanCastShadows() const { return castShadows; }
-        const bool& CanReceiveShadows() const { return receiveShadows; }
+        const bool& CanReceiveShadows() const { return canReceiveShadows; }
         const bool& IsTransparent() const { return isTransparent; }
         const float& GetShininessValue() const { return shininessValue; }
         const float& GetTransparentValue() const { return transparentValue; }
     private:
-        bool castShadows;
-        bool receiveShadows;
+        bool canReceiveShadows;
         bool isTransparent;
         float shininessValue;
         float transparentValue;

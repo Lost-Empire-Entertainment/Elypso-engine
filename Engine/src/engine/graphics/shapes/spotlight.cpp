@@ -49,6 +49,7 @@ namespace Graphics::Shape
 		const vec3& rot,
 		const vec3& scale,
 		const string& txtFilePath,
+		const bool& canCastShadows,
 		const vec3& diffuse,
 		const float& intensity,
 		const float& farPlane,
@@ -142,6 +143,7 @@ namespace Graphics::Shape
 
 		auto spotlight = obj->AddComponent<LightComponent>(
 			LightComponent::LightType::Spot,
+			canCastShadows,
 			diffuse,
 			intensity,
 			farPlane,
@@ -168,6 +170,55 @@ namespace Graphics::Shape
 		GameObjectManager::AddGameObject(obj);
 		GameObjectManager::AddOpaqueObject(obj);
 		GameObjectManager::AddSpotLight(obj);
+
+		//
+		// SPOT SHADOW START
+		//
+
+		const auto& spotLights = GameObjectManager::GetSpotLights();
+
+		unsigned int fbo{};
+		unsigned int texture{};
+
+		glGenFramebuffers(1, &fbo);
+		glGenTextures(1, &texture);
+
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_DEPTH_COMPONENT,
+			Render::shadowWidth,
+			Render::shadowHeight,
+			0,
+			GL_DEPTH_COMPONENT,
+			GL_FLOAT,
+			nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glFramebufferTexture2D(
+			GL_FRAMEBUFFER,
+			GL_DEPTH_ATTACHMENT,
+			GL_TEXTURE_2D,
+			texture,
+			0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		Render::spotShadowFBOs[obj] = fbo;
+		Render::spotShadowMaps[obj] = texture;
+
+		//
+		// SPOT SHADOW END
+		//
 
 #if ENGINE_MODE
 		GUISceneWindow::UpdateCounts();

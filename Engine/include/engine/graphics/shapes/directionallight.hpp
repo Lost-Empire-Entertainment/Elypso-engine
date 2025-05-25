@@ -38,6 +38,7 @@ namespace Graphics::Shape
 			const vec3& rot = vec3(0),
 			const vec3& scale = vec3(1),
 			const string& txtFilePath = "",
+			const bool& canCastShadows = true,
 			const vec3& diffuse = vec3(1),
 			const float& intensity = 1.0f,
 			string& name = tempName,
