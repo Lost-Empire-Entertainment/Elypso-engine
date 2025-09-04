@@ -6,13 +6,13 @@
 
 ![Engine screenshot](image.png)
 
-**Elypso engine** is an OpenGL C++ 20 game development engine. It runs natively on Windows and Linux (tested on Ubuntu-based distros and Arch) and it uses several libraries listed in [the library file](LIBRARIES.md).
+**Elypso engine** is an OpenGL C++ 20 game development engine and it uses several libraries listed in [the library file](LIBRARIES.md).
 
-**Elypso engine** is in early alpha development and will be heavily modified during alpha development. Beta is aimed for early 2026, full release is aimed for 2027.
+**Elypso engine** is in early alpha development. The current codebase is heavily outdated and focus is currently on other projects. Elypso Engine will be fresly remade once [KalaWindow 0.3](https://github.com/kalakit/kalawindow) and [Circuit Chan](https://github.com/lost-empire-entertainment/circuit-chan) have released.
 
 All changes will be listed at the [trello page](https://trello.com/b/hbt6ebCZ/elypso-engine) for each engine version, look at the pre-release task cards to see details for each pre-release.
 
-The documentation for **Elypso engine** will be found at the [official website](https://elypsoengine.com)  in the near future so please look there for information, this README file will not cover how to install or use this program.
+The documentation for **Elypso engine** will be found at the [official website](https://elypsoengine.com) in the near future so please look there for information, this README file will not cover how to install or use this program.
 
 [Elypso hub](https://github.com/Lost-Empire-Entertainment/Elypso-hub) is not included in this repository, it is required for normal engine operation, but the [releases](https://github.com/Lost-Empire-Entertainment/Elypso-engine/releases) provide it in its latest functioning format. So if you want to compile from source you have to also download Elypso Hub from its own repository.
  
