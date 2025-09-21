@@ -1,2 +1,27 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Force GitHub Linguist to treat headers as C++
+*.h linguist-language=C++
+*.hpp linguist-language=C++
+
+# Detect build system
+CMakeLists.txt linguist-detectable=true
+*.cmake linguist-detectable=true
+
+# Misc tools are counted as docs
+*.bat linguist-documentation
+*.rc linguist-documentation
+docs/* linguist-documentation
+
+# Exclude vendored libraries from stats
+Assimp/* linguist-vendored
+glm/* linguist-vendored
+imgui/* linguist-vendored
+KalaHeaders/* linguist-vendored
+KalaWindow/* linguist-vendored
+miniaudio/* linguist-vendored
+OpenGL/* linguist-vendored
+stb/* linguist-vendored
+PawnIO/* linguist-vendored
+Vulkan/* linguist-vendored
