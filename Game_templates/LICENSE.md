@@ -3,7 +3,7 @@ https://github.com/Lost-Empire-Entertainment/Elypso-engine/tree/indev/Game_templ
 
 ---
 
-This directory and all of its subdirectories are licensed under a modified zlib/libpng License, except for content created by end users that does not exist in this repository:
+This directory and all of its subdirectories are licensed under a modified zlib/libpng License, except for content created by end users that does not exist in this directory in the Elypso Engine repository:
 
 This collection of source code, binaries, and assets is provided 'as-is', without any express or implied warranty.  
 In no event will the authors be held liable for any damages arising from the use of this collection.  
