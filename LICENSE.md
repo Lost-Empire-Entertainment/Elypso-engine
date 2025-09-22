@@ -38,7 +38,7 @@ Commercial distribution is only permitted for **User-Created Works**.
 
 You may modify the **Repository** for personal or internal use.  
 If you share modified versions of the **Repository** (including forks or public distributions), you must:  
-- Include clear attribution to the **Engine** as the game engine and the **Company** as the developer of the game engine.  
+- Include clear attribution to the **Engine** and the **Company** as the developer of the **Engine**.  
 - Retain all copyright and license notices.  
 - Make clear that your version is modified and not the official **Engine**.
 
