@@ -6,7 +6,7 @@
 
 ![Engine screenshot](image.png)
 
-# **Elypso engine** is in early alpha development. The current codebase is heavily outdated and focus is currently on other projects. Elypso Engine will be fresly remade once [KalaWindow 0.3](https://github.com/kalakit/kalawindow) and [Circuit Chan](https://github.com/lost-empire-entertainment/circuit-chan) have released.
+# This branch is heavily outdated and **Elypso engine** is being remade on the _remake branch. Follow that if you want to latest currently unstable changes. This branch will be removed once the remake is ready to replace the contents of this branch.
 
 **Elypso engine** is an OpenGL C++ 20 game development engine and it uses several libraries listed in [the library file](LIBRARIES.md).
 
