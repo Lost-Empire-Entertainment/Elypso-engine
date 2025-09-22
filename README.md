@@ -6,7 +6,7 @@
 
 ![Engine screenshot](image.png)
 
-# This branch is heavily outdated and **Elypso engine** is being remade on the _remake branch. Follow that if you want to latest currently unstable changes. This branch will be removed once the remake is ready to replace the contents of this branch.
+# This branch is heavily outdated and **Elypso engine** is being remade on the _remake branch. Follow that if you want to see the latest currently unstable changes. This branch will be removed once the remake is ready to replace the contents of this branch.
 
 **Elypso engine** is an OpenGL C++ 20 game development engine and it uses several libraries listed in [the library file](LIBRARIES.md).
 
