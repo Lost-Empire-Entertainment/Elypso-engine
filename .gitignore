@@ -1,24 +1,7 @@
-# Elypso engine ignored files and folders
-Engine/build-release/
-Engine/build-debug/
-Engine/.vs/
+/debug
+/release
+/.vs
+*.pdb 
 
-# Engine library ignored files and folders
-Engine library/build-release/
-Engine library/build-debug/
-Engine library/.vs/
-
-# Game ignored files and folders
-Game/build-release/
-Game/build-debug/
-Game/.vs/
-
-# Ignored binaries
-Engine/Elypso engine.lib
-Engine/Elypso engineD.lib
-Engine/libElypso engine.a
-Engine/libElypso engineD.a
-Game/Elypso engine.lib
-Game/Elypso engineD.lib
-Game/libElypso engine.a
-Game/libElypso engineD.a
+//ignore vulkan shader spv files
+*.spv
