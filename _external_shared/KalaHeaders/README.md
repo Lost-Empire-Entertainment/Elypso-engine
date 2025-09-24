@@ -102,15 +102,44 @@ Comprehensive logger header for any logging needs - sends cout, cerr and clog me
 
 Provides various string helpers to improve workflow with string operations
 
-| Function         | Description                                           |
-|------------------|-------------------------------------------------------|
-| SplitString      | Split origin into a vector of chunks between each splitter |
-| TrimString       | Remove leading and trailing whitespace characters from origin |
-| RemoveFromString | Remove all occurrences of target from origin          |
-| ToUpperString    | Set all letters of this string to uppercase letters   |
-| ToLowerString    | Set all letters of this string to lowercase letters   |
-| StartsWith       | Check if origin starts with target                    |
-| EndsWith         | Check if origin ends with target                      |
+| Function             | Description                                                         |
+|----------------------|---------------------------------------------------------------------|
+| CompareStrings       | Compare origin to target with optional case sensitivity toggle      |
+| SplitString          | Split origin into a vector of chunks between each splitter          |
+| JoinString           | Join all elements of a vector into a single string with a delimiter |
+| TrimString           | Remove leading and trailing whitespace characters from origin       |
+| RemoveAllFromString  | Remove all occurrences of target from origin                        |
+| ReplaceAllFromString | Replace all occurrences of target from origin with replacement      |
+| ToUpperString        | Set all letters of this string to uppercase letters                 |
+| ToLowerString        | Set all letters of this string to lowercase letters                 |
+| StartsWith           | Check if origin starts with target                                  |
+| EndsWith             | Check if origin ends with target                                    |
+
+---
+
+### file_helpers.hpp
+
+Provides various filesystem and fstream helpers to improve workflow with file operations
+
+| Function              | Description |
+|-----------------------|-------------|
+| GetPathName           | Get the filename of the target (with extension) |
+| GetPathStem           | Get the stem (filename without extension) of the target |
+| SetPathExtension      | Set the extension of the target |
+| GetPathExtension      | Get the extension of the target |
+| GetPathParent         | Get the parent directory of the target |
+| CopyPath              | Copy file or folder from origin to target, with optional overwrite flag |
+| MovePath              | Move file or folder from origin to target, target is always overwritten if it already exists |
+| DeletePath            | Delete file or folder in target path (recursive for directories) |
+| RenamePath            | Rename file or folder in its current directory |
+| GetFileSize           | Get the size of the target in bytes |
+| WriteTextToFile       | Write all text from a string to a text file, with optional append flag. A new file is created at target path if it doesn't already exist |
+| ReadTextFromFile      | Read all text from a file into a string |
+| WriteLinesToFile      | Write all lines from a vector to a text file, with optional append flag. A new file is created at target path if it doesn't already exist |
+| ReadLinesFromFile     | Read all lines from a file into a vector of strings |
+| ListDirectoryContents | List all the contents of a folder, with optional recursive flag |
+
+---
 
 ## EXPERIMENTAL HEADERS
 

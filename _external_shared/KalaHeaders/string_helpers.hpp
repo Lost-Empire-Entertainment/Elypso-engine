@@ -20,20 +20,61 @@ namespace KalaHeaders
 {
 	using std::string;
 	using std::vector;
+	using std::search;
 	using std::transform;
 	using std::toupper;
 	using std::tolower;	
 
-	//Compare origin to target with optional case sensitivity toggle
+	//Check if origin contains target, with optional case sensitivity flag
+	inline bool ContainsString(
+		const string& origin,
+		const string& target,
+		bool ignoreCase = true)
+	{
+		//return false if origin or target is empty
+		if (origin.empty()
+			|| target.empty())
+		{
+			return false;
+		}
+
+		//can't contain something longer than itself
+		if (target.size() > origin.size()) return false;
+
+		//case-sensitive search
+		if (!ignoreCase) return origin.find(target) != string::npos;
+
+		//case-insensitive search
+		auto it = search(
+			origin.begin(), 
+			origin.end(),
+			target.begin(), 
+			target.end(),
+			[](unsigned char char1, unsigned char char2)
+			{
+				return tolower(char1) == tolower(char2);
+			});
+
+		return it != origin.end();
+	}
+
+	//Check if origin is the same as target, with optional case sensitivity flag
 	inline bool CompareStrings(
 		const string& origin,
 		const string& target,
 		bool ignoreCase = true)
 	{
-		//case sensitive compare
+		//return false if origin or target is empty
+		if (origin.empty()
+			|| target.empty())
+		{
+			return false;
+		}
+
+		//case-sensitive compare
 		if (!ignoreCase) return origin == target;
 
-		//case insensitive compare
+		//case-insensitive compare
 		if (origin.size() != target.size()) return false;
 
 		for (size_t i = 0; i < origin.size(); ++i)
@@ -110,7 +151,7 @@ namespace KalaHeaders
 		return origin.substr(start, end - start + 1);
 	}
 
-	//Remove all occurences of target from origin
+	//Remove all occurrences of target from origin
 	inline string RemoveAllFromString(
 		const string& origin,
 		const string& target)
@@ -129,7 +170,7 @@ namespace KalaHeaders
 		return result;
 	}
 
-	//Replace all occurences of target from origin with replacement
+	//Replace all occurrences of target from origin with replacement
 	inline string ReplaceAllFromString(
 		const string& origin,
 		const string& target,
