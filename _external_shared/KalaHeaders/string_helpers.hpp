@@ -24,6 +24,30 @@ namespace KalaHeaders
 	using std::toupper;
 	using std::tolower;	
 
+	//Compare origin to target with optional case sensitivity toggle
+	inline bool CompareStrings(
+		const string& origin,
+		const string& target,
+		bool ignoreCase = true)
+	{
+		//case sensitive compare
+		if (!ignoreCase) return origin == target;
+
+		//case insensitive compare
+		if (origin.size() != target.size()) return false;
+
+		for (size_t i = 0; i < origin.size(); ++i)
+		{
+			if (static_cast<char>(tolower(static_cast<unsigned char>(origin[i])))
+				!= static_cast<char>(tolower(static_cast<unsigned char>(target[i]))))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	//Split origin into a vector of chunks between each splitter
 	inline vector<string> SplitString(
 		const string& origin,
@@ -48,6 +72,33 @@ namespace KalaHeaders
 		return result;
 	}
 
+	//Join all chunks in parts vector together into a single string
+	//and add delimiter after each chunk except the last one
+	inline string JoinString(
+		const vector<string>& parts,
+		const string& delimiter)
+	{
+		//return nothing if parts vector is empty
+		if (parts.empty()) return "";
+
+		size_t totalSize{};
+
+		//reserve space to avoid many reallocations
+		for (const auto& part : parts) totalSize += part.size();
+		totalSize += delimiter.size() * (parts.size() - 1);
+
+		string result{};
+		result.reserve(totalSize);
+
+		for (size_t i = 0; i < parts.size(); ++i)
+		{
+			result += parts[i];
+			if (i + 1 < parts.size()) result += delimiter;
+		}
+
+		return result;
+	}
+
 	//Remove leading and trailing whitespace characters from origin
 	inline string TrimString(const string& origin)
 	{
@@ -60,7 +111,7 @@ namespace KalaHeaders
 	}
 
 	//Remove all occurences of target from origin
-	inline string RemoveFromString(
+	inline string RemoveAllFromString(
 		const string& origin,
 		const string& target)
 	{
@@ -73,6 +124,27 @@ namespace KalaHeaders
 		while ((pos = result.find(target, pos)) != string::npos)
 		{
 			result.erase(pos, target.length());
+		}
+
+		return result;
+	}
+
+	//Replace all occurences of target from origin with replacement
+	inline string ReplaceAllFromString(
+		const string& origin,
+		const string& target,
+		const string& replacement)
+	{
+		//return origin if target is empty
+		if (target.empty()) return origin;
+
+		string result = origin;
+		size_t pos{};
+
+		while ((pos = result.find(target, pos)) != string::npos)
+		{
+			result.replace(pos, target.length(), replacement);
+			pos += replacement.length();
 		}
 
 		return result;
