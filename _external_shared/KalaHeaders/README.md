@@ -119,25 +119,48 @@ Provides various string helpers to improve workflow with string operations
 
 ### file_helpers.hpp
 
-Provides various filesystem and fstream helpers to improve workflow with file operations
+Provides file management, file metadata, text I/O and binary I/O helper functions
+
+#### File management
 
 | Function              | Description |
 |-----------------------|-------------|
-| GetPathName           | Get the filename of the target (with extension) |
-| GetPathStem           | Get the stem (filename without extension) of the target |
-| SetPathExtension      | Set the extension of the target |
-| GetPathExtension      | Get the extension of the target |
-| GetPathParent         | Get the parent directory of the target |
 | CopyPath              | Copy file or folder from origin to target, with optional overwrite flag |
 | MovePath              | Move file or folder from origin to target, target is always overwritten if it already exists |
 | DeletePath            | Delete file or folder in target path (recursive for directories) |
 | RenamePath            | Rename file or folder in its current directory |
-| GetFileSize           | Get the size of the target in bytes |
+| ListDirectoryContents | List all the contents of a folder, with optional recursive flag |
+
+#### File metadata
+
+| Function              | Description |
+|-----------------------|-------------|
+| GetFileSize           | Get the size of the target file in bytes |
+| GetDirectorySize      | Get the size of the target directory in bytes |
+| GetTextFileLineCount  | Get the count of lines in a text file |
+| GetPathName           | Get the filename of the target (with extension) |
+| GetPathStem           | Get the stem (filename without extension) of the target |
+| GetPathParent         | Get the parent directory of the target |
+| SetPathExtension      | Set the extension of the target |
+| GetPathExtension      | Get the extension of the target |
+
+#### Text I/O
+
+| Function              | Description |
+|-----------------------|-------------|
 | WriteTextToFile       | Write all text from a string to a text file, with optional append flag. A new file is created at target path if it doesn't already exist |
 | ReadTextFromFile      | Read all text from a file into a string |
 | WriteLinesToFile      | Write all lines from a vector to a text file, with optional append flag. A new file is created at target path if it doesn't already exist |
-| ReadLinesFromFile     | Read all lines from a file into a vector of strings |
-| ListDirectoryContents | List all the contents of a folder, with optional recursive flag |
+| ReadLinesFromFile     | Read all lines from a file into a vector of strings with optional lineStart and lineEnd values to avoid placing all lines to memory. If lineEnd is 0 and lineStart isnt, then this function defaults end to EOF |
+
+#### Binary I/O
+
+| Function              | Description |
+|-----------------------|-------------|
+| WriteBinaryBufferToFile      | Write raw binary buffer (pointer + size) to a file, with optional append flag. A new file is created at target path if it doesn't already exist |
+| ReadBinaryBufferFromFile     | Read raw binary data from a file into a buffer (up to bufferSize bytes). OutBytesRead returns the number of bytes read |
+| WriteBinaryLinesToFile       | Write all binary data from a vector<uint8_t> to a file, with optional append flag. A new file is created at target path if it doesn't already exist |
+| ReadBinaryLinesFromFile      | Read all binary data from a file into a vector<uint8_t> with optional rangeStart and rangeEnd values to avoid placing whole binary file to memory. If rangeEnd is 0 and rangeStart isnt, then this function defaults end to EOF |
 
 ---
 
