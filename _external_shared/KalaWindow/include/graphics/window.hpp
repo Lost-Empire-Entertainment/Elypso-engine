@@ -8,6 +8,7 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <array>
 
 #include "KalaHeaders/core_utils.hpp"
 
@@ -18,6 +19,7 @@ namespace KalaWindow::Graphics
 	using std::string;
 	using std::function;
 	using std::vector;
+	using std::array;
 
 	enum class DpiContext
 	{
@@ -93,22 +95,6 @@ namespace KalaWindow::Graphics
 		PROGRESS_PAUSED,        //yellow bar
 		PROGRESS_ERROR          //red bar
 	};
-
-	enum class LabelType
-	{
-		LABEL_LEAF,  //Clickable with required function, can't have children
-		LABEL_BRANCH //Not clickable, won't work if function is added, can have children
-	};
-	struct MenuBarEvent
-	{
-		string parentLabel{};        //Name of parent label, leave empty if root
-
-		string label{};              //Name of this label
-		u32 labelID{};               //ID assigned to leaves, used for interaction
-		function<void()> function{}; //Function assigned to leaves
-
-		uintptr_t hMenu{};           //Branch HMENU handle for fast lookup
-	};
 #else
 	struct WindowData
 	{
@@ -117,15 +103,6 @@ namespace KalaWindow::Graphics
 		uintptr_t visual{};
 	};
 #endif
-
-	//OpenGL data reusable across this window context
-	struct OpenGLData
-	{
-		uintptr_t hglrc{};      //OPENGL CONTEXT VIA WGL, ONLY USED FOR WINDOWS
-		uintptr_t hdc{};        //OPENGL HANDLE TO DEVICE CONTEXT, ONLY USED FOR WINDOWS
-		uintptr_t glxContext{}; //OPENGL CONTEXT VIA GLX, ONLY USED FOR X11
-		unsigned int lastProgramID{};
-	};
 
 	class LIB_API Window
 	{
@@ -326,11 +303,14 @@ namespace KalaWindow::Graphics
 		}
 		inline const WindowData& GetWindowData() const { return window_x11; }
 #endif
-		inline void SetOpenGLData(const OpenGLData& newOpenGLData)
-		{
-			openglData = newOpenGLData;
-		}
-		inline const OpenGLData& GetOpenGLData() const { return openglData; }
+		inline void SetOpenGLID(u32 newValue) { glID = newValue; }
+		inline const u32 GetOpenGLID() const { return glID; }
+
+		inline void SetInputID(u32 newValue) { inputID = newValue; }
+		inline const u32 GetInputID() const { return inputID; }
+
+		inline void SetDebugUIID(u32 newValue) { debugUIID = newValue; }
+		inline const u32 GetDebugUIID() const { return debugUIID; }
 
 		//Do not destroy manually, erase from containers.hpp instead
 		~Window();
@@ -347,18 +327,18 @@ namespace KalaWindow::Graphics
 		vec2 maxSize = vec2{ 7680, 4320 }; //The maximum size this window can become
 		vec2 minSize = vec2{ 400, 300 };   //The minimum size this window can become
 
-		vec2 oldPos{};                     //Stored pre-fullscreen window pos
-		vec2 oldSize{};                    //Stored pre-fullscreen window size
+		vec2 oldPos{};        //Stored pre-fullscreen window pos
+		vec2 oldSize{};       //Stored pre-fullscreen window size
 		//0 - WS_CAPTION
 		//1 - WS_THICKFRAME
 		//2 - WS_MINIMIZEBOX
 		//3 - WS_MAXIMIZEBOX
 		//4 - WS_SYSMENU
-		u8 oldStyle{};                     //Stored pre-fullscreen window style (Windows-only)
+		u8 oldStyle{};        //Stored pre-fullscreen window style (Windows-only)
 
-		u32 ID{};            //The ID of this window
-		u32 iconID{};        //The ID of this window icon
-		u32 overlayIconID{}; //The ID of the toolbar overlay icon
+		u32 ID{};            //ID for this window
+		u32 iconID{};        //ID for this window icon
+		u32 overlayIconID{}; //ID for this window toolbar overlay icon
 
 		vector<string> lastDraggedFiles{}; //The path of the last files which were dragged onto this window
 
@@ -367,15 +347,35 @@ namespace KalaWindow::Graphics
 #ifdef _WIN32
 		WindowData window_windows{}; //The windows data of this window
 #else
-		WindowData window_x11{};         //The X11 data of this window
+		WindowData window_x11{};     //The X11 data of this window
 #endif
 
-		//vendor-specific variables
-
-		OpenGLData openglData{}; //The OpenGL data of this window
+		u32 glID{};      //ID for this window opengl context
+		u32 inputID{};   //ID for this window input
+		u32 debugUIID{}; //ID for this window imgui context
 
 		function<void()> resizeCallback{}; //Called whenever the window needs to be resized
 		function<void()> redrawCallback{}; //Called whenever the window needs to be redrawn
+	};
+
+	//
+	// MENU BAR CONTENT
+	//
+
+	enum class LabelType
+	{
+		LABEL_LEAF,  //Clickable with required function, can't have children
+		LABEL_BRANCH //Not clickable, won't work if function is added, can have children
+	};
+	struct MenuBarEvent
+	{
+		string parentLabel{};        //Name of parent label, leave empty if root
+
+		string label{};              //Name of this label
+		u32 labelID{};               //ID assigned to leaves, used for interaction
+		function<void()> function{}; //Function assigned to leaves
+
+		uintptr_t hMenu{};           //Branch HMENU handle for fast lookup
 	};
 
 	//Windows-only native menu bar. All leaf and and branch interactions are handled by the message loop.
@@ -386,8 +386,8 @@ namespace KalaWindow::Graphics
 	public:
 		//Create a new empty menu bar at the top of the window.
 		//Only one menu bar can be added to a window
-		static void CreateMenuBar(Window* windowRef);
-		static bool IsInitialized(Window* windowRef);
+		static void CreateMenuBar(Window* window);
+		static bool IsInitialized(Window* window);
 
 		//If true, then menu bar is shown
 		static void SetMenuBarState(
