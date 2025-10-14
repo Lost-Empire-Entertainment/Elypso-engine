@@ -6,7 +6,7 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <array>
 
 #include "KalaHeaders/core_utils.hpp"
 
@@ -15,58 +15,49 @@
 namespace KalaWindow::Graphics::OpenGL
 {
 	using std::string;
-	using std::vector;
+	using std::array;
 
 	enum class ShaderType
 	{
-		Shader_Vertex,
-		Shader_Fragment,
-		Shader_Geometry,
+		SHADER_NONE,
+		SHADER_VERTEX,
+		SHADER_FRAGMENT,
+		SHADER_GEOMETRY
 	};
 
-	struct ShaderStage
+	struct ShaderData
 	{
-		ShaderType shaderType;
-
-		//path to external shader file,
-		//use this if you have a shader file you want to read
+		//either fill shader data or shader path,
+		//it picks data by default if both are filled
 		string shaderPath{};
 
-		//raw string data to shader code,
-		//use this if you want to skip loading external shader files
-		//and you have a string ready for reading
-		string shaderText{};
+		//either fill shader data or shader path,
+		//it picks data by default if both are filled
+		string shaderData{};
 
-		u32 shaderID;
+		//assign to something else than the default 'SHADER_NONE'
+		ShaderType type = ShaderType::SHADER_NONE;
+
+		//ID of the shader, does not need to be filled by user
+		u32 ID{};
 	};
 
 	class LIB_API OpenGL_Shader
 	{
 	public:
+		//Create a new shader with up to three types of shader files.
+		//Geometry shaders are optional but vert and frag shader must always be filled
 		static OpenGL_Shader* CreateShader(
 			u32 windowID,
 			const string& shaderName,
-			const vector<ShaderStage>& shaderStages);
+			const array<ShaderData, 3>& shaderData);
+
+		inline bool IsInitialized() const { return isInitialized; }
 
 		//Toggle verbose logging. If true, then usually frequently updated runtime values like
 		//vertex, fragment and geometry shader compilation messages will dump their logs into the console.
 		static inline void SetVerboseLoggingState(bool newState) { isVerboseLoggingEnabled = newState; }
 		static inline bool IsVerboseLoggingEnabled() { return isVerboseLoggingEnabled; }
-
-		static inline string GetShaderTypeName(ShaderType type)
-		{
-			switch (type)
-			{
-			case ShaderType::Shader_Vertex:
-				return "vertex";
-			case ShaderType::Shader_Fragment:
-				return "fragment";
-			case ShaderType::Shader_Geometry:
-				return "geometry";
-			}
-
-			return "";
-		}
 
 		inline const string& GetName() const { return name; }
 		inline void SetName(const string& newName);
@@ -75,80 +66,76 @@ namespace KalaWindow::Graphics::OpenGL
 
 		inline u32 GetProgramID() const { return programID; }
 
-		inline const vector<ShaderStage>& GetAllShaders() const { return shaders; }
-
-		inline u32 GetShaderID(ShaderType type) const
+		//Returns true if this shader is loaded
+		inline bool IsShaderLoaded(ShaderType targetType) const
 		{
-			for (const auto& stage : shaders)
+			if (programID == 0) return false;
+
+			switch (targetType)
 			{
-				if (stage.shaderType == type)
-				{
-					return stage.shaderID;
-				}
+			case ShaderType::SHADER_VERTEX: return vertData.ID != 0;
+			case ShaderType::SHADER_FRAGMENT: return fragData.ID != 0;
+			case ShaderType::SHADER_GEOMETRY: return geomData.ID != 0;
 			}
 
-			string typeStr = GetShaderTypeName(type);
+			return false;
+		}
+
+		//Returns shader data assigned to shader type
+		inline const string& GetShaderData(ShaderType targetType) const
+		{
+			static const string empty{};
+
+			if (programID == 0) return empty;
+
+			switch (targetType)
+			{
+			case ShaderType::SHADER_VERTEX: return vertData.shaderData;
+			case ShaderType::SHADER_FRAGMENT: return fragData.shaderData;
+			case ShaderType::SHADER_GEOMETRY: return geomData.shaderData;
+			}
+
+			return empty;
+		}
+		//Returns shader path assigned to shader type
+		inline const string& GetShaderPath(ShaderType targetType) const
+		{
+			static const string empty{};
+
+			if (programID == 0) return empty;
+
+			switch (targetType)
+			{
+			case ShaderType::SHADER_VERTEX: return vertData.shaderPath;
+			case ShaderType::SHADER_FRAGMENT: return fragData.shaderPath;
+			case ShaderType::SHADER_GEOMETRY: return geomData.shaderPath;
+			}
+
+			return empty;
+		}
+		inline u32 GetShaderID(ShaderType targetType) const
+		{
+			if (programID == 0) return 0;
+
+			switch (targetType)
+			{
+			case ShaderType::SHADER_VERTEX: return vertData.ID;
+			case ShaderType::SHADER_FRAGMENT: return fragData.ID;
+			case ShaderType::SHADER_GEOMETRY: return geomData.ID;
+			}
 
 			return 0;
 		}
-		inline const string& GetShaderPath(ShaderType type) const
+
+		inline const array<ShaderData, 3>& GetAllShaders() const
 		{
-			static string shaderPath{};
+			static array<ShaderData, 3> dataOut{};
 
-			for (const auto& stage : shaders)
-			{
-				if (stage.shaderType == type)
-				{
-					return stage.shaderPath;
-					break;
-				}
-			}
+			dataOut[0] = vertData;
+			dataOut[1] = fragData;
+			dataOut[2] = geomData;
 
-			string typeStr = GetShaderTypeName(type);
-
-			return shaderPath;
-		}
-
-		//Returns true if this shader is loaded
-		inline bool IsShaderLoaded(ShaderType targetType)
-		{
-			if (shaders.empty()
-				|| programID == 0)
-			{
-				return false;
-			}
-
-			for (const auto& stage : shaders)
-			{
-				if (stage.shaderType == targetType
-					&& !stage.shaderPath.empty()
-					&& stage.shaderID != 0)
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-		//Returns true if the shader path of this shader type exists
-		inline bool ShaderExists(ShaderType targetType)
-		{
-			if (shaders.empty()
-				|| programID == 0)
-			{
-				return false;
-			}
-
-			for (const auto& stage : shaders)
-			{
-				if (stage.shaderType == targetType
-					&& !stage.shaderPath.empty())
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return dataOut;
 		}
 
 		bool Bind() const;
@@ -172,6 +159,8 @@ namespace KalaWindow::Graphics::OpenGL
 	private:
 		static inline bool isVerboseLoggingEnabled{};
 
+		bool isInitialized{};
+
 		string name{};
 		u32 ID{};
 
@@ -179,6 +168,8 @@ namespace KalaWindow::Graphics::OpenGL
 
 		u32 programID{};
 
-		vector<ShaderStage> shaders{};
+		ShaderData vertData{};
+		ShaderData fragData{};
+		ShaderData geomData{};
 	};
 }
