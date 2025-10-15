@@ -11,11 +11,14 @@
 #include "KalaHeaders/core_utils.hpp"
 
 #include "core/glm_global.hpp"
+#include "core/registry.hpp"
 
 namespace KalaWindow::Graphics::OpenGL
 {
 	using std::string;
 	using std::array;
+
+	using KalaWindow::Core::Registry;
 
 	enum class ShaderType
 	{
@@ -45,6 +48,8 @@ namespace KalaWindow::Graphics::OpenGL
 	class LIB_API OpenGL_Shader
 	{
 	public:
+		static inline Registry<OpenGL_Shader> registry{};
+
 		//Create a new shader with up to three types of shader files.
 		//Geometry shaders are optional but vert and frag shader must always be filled
 		static OpenGL_Shader* CreateShader(
@@ -60,9 +65,21 @@ namespace KalaWindow::Graphics::OpenGL
 		static inline bool IsVerboseLoggingEnabled() { return isVerboseLoggingEnabled; }
 
 		inline const string& GetName() const { return name; }
-		inline void SetName(const string& newName);
+		inline bool SetName(const string& newName)
+		{
+			if (newName.empty()
+				|| newName.size() > 50)
+			{
+				return false;
+			}
+
+			name = newName;
+
+			return true;
+		}
 
 		inline u32 GetID() const { return ID; }
+		inline u32 GetWindowID() const { return windowID; }
 
 		inline u32 GetProgramID() const { return programID; }
 
@@ -140,7 +157,7 @@ namespace KalaWindow::Graphics::OpenGL
 
 		bool Bind() const;
 
-		void HotReload();
+		bool HotReload();
 
 		void SetBool(u32 programID, const string& name, bool value) const;
 		void SetInt(u32 programID, const string& name, i32 value) const;
@@ -162,8 +179,8 @@ namespace KalaWindow::Graphics::OpenGL
 		bool isInitialized{};
 
 		string name{};
-		u32 ID{};
 
+		u32 ID{};
 		u32 windowID{};
 
 		u32 programID{};
