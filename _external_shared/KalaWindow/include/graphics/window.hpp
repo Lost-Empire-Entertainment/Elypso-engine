@@ -40,15 +40,14 @@ namespace KalaWindow::Graphics
 		DPI_UNAWARE
 	};
 
+	//Use the target type enum to access IDs of this window
 	enum class TargetType
 	{
-		TYPE_INPUT,
-		TYPE_GL_CONTEXT,
-		TYPE_MENU_BAR,
-		TYPE_MENU_BAR_EVENT,
-		TYPE_AUDIO_PLAYER,
-		TYPE_CAMERA,
-		TYPE_WIDGET
+		TYPE_INPUT,        //single instance ID
+		TYPE_GL_CONTEXT,   //single instance ID
+		TYPE_MENU_BAR,     //single instance ID
+		TYPE_CAMERA,       //vector of IDs
+		TYPE_WIDGET        //vector of IDs
 	};
 
 	//Supported states the window can go to
@@ -301,15 +300,23 @@ namespace KalaWindow::Graphics
 		// WINDOW CONTAINER
 		//
 
-		inline vector<u32> GetValue(TargetType targetType) const
+		inline u32 GetSingleValue(TargetType targetType) const
 		{
 			switch (targetType)
 			{
-			case TargetType::TYPE_INPUT:          return { inputID }; break;
-			case TargetType::TYPE_GL_CONTEXT:     return { glContextID }; break;
-			case TargetType::TYPE_MENU_BAR:       return { menuBarID }; break;
-			case TargetType::TYPE_MENU_BAR_EVENT: return menuBarEvents; break;
-			case TargetType::TYPE_AUDIO_PLAYER:   return audioPlayers; break;
+			default: return{};
+			case TargetType::TYPE_INPUT:      return inputID; break;
+			case TargetType::TYPE_GL_CONTEXT: return glContextID; break;
+			case TargetType::TYPE_MENU_BAR:   return menuBarID; break;
+			}
+
+			return{};
+		}
+		inline const vector<u32> GetContainer(TargetType targetType) const
+		{
+			switch (targetType)
+			{
+			default: return{};
 			case TargetType::TYPE_CAMERA:         return cameras; break;
 			case TargetType::TYPE_WIDGET:         return widgets; break;
 			}
@@ -357,14 +364,6 @@ namespace KalaWindow::Graphics
 			case TargetType::TYPE_MENU_BAR:
 			{
 				return AddSingleValue(targetValue, menuBarID);
-			}
-			case TargetType::TYPE_MENU_BAR_EVENT:
-			{
-				return AddContainerValue(targetValue, menuBarEvents);
-			}
-			case TargetType::TYPE_AUDIO_PLAYER:
-			{
-				return AddContainerValue(targetValue, audioPlayers);
 			}
 			case TargetType::TYPE_CAMERA:
 			{
@@ -421,14 +420,6 @@ namespace KalaWindow::Graphics
 			{
 				return RemoveSingleValue(targetValue, menuBarID);
 			}
-			case TargetType::TYPE_MENU_BAR_EVENT:
-			{
-				return RemoveContainerValue(targetValue, menuBarEvents);
-			}
-			case TargetType::TYPE_AUDIO_PLAYER:
-			{
-				return RemoveContainerValue(targetValue, audioPlayers);
-			}
 			case TargetType::TYPE_CAMERA:
 			{
 				return RemoveContainerValue(targetValue, cameras);
@@ -451,8 +442,6 @@ namespace KalaWindow::Graphics
 			{
 				break;
 			}
-			case TargetType::TYPE_MENU_BAR_EVENT: menuBarEvents.clear(); break;
-			case TargetType::TYPE_AUDIO_PLAYER:   audioPlayers.clear(); break;
 			case TargetType::TYPE_CAMERA:         cameras.clear(); break;
 			case TargetType::TYPE_WIDGET:         widgets.clear(); break;
 			}
@@ -656,11 +645,10 @@ namespace KalaWindow::Graphics
 
 		Window* parentWindow{};
 		vector<Window*> childWindows{};
+
 		u32 inputID{};
 		u32 glContextID{};
 		u32 menuBarID{};
-		vector<u32> menuBarEvents{};
-		vector<u32> audioPlayers{};
 		vector<u32> cameras{};
 		vector<u32> widgets{};
 
