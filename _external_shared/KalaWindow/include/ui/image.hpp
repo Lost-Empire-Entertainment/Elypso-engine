@@ -6,9 +6,12 @@
 #pragma once
 
 #include "ui/widget.hpp"
+#include "core/registry.hpp"
 
 namespace KalaWindow::UI
 {
+	using KalaWindow::Core::Registry;
+
 	class LIB_API Image : public Widget
 	{
 	public:
@@ -20,21 +23,17 @@ namespace KalaWindow::UI
 		static Image* Initialize(
 			const string& name,
 			u32 windowID,
-			const vec3& pos,
-			const vec3& rot,
-			const vec3& size,
+			const vec2 pos,
+			const float rot,
+			const vec2 size,
 			Widget* parentWidget,
 			OpenGL_Texture* texture,
 			OpenGL_Shader* shader);
 
-		//Core render function for all widget systems, must be overridden per inherited widget.
-		//Pass mat4(1.0f) to view and pass 2D projection as ortho(0.0f, windowWidth, windowHeight, 0.0f)
-		//if you want 2D UI, otherwise this widget element is drawn in 3D space
-		virtual bool Render(
-			const mat4& view,
-			const mat4& projection) override;
+		//Core render function for all widget systems, must be overridden per inherited widget
+		virtual bool Render(const mat3& projection) override;
 
-		//Do not destroy manually, erase from containers.hpp instead
-		virtual ~Image();
+		//Do not destroy manually, erase from registry instead
+		virtual ~Image() override;
 	};
 }

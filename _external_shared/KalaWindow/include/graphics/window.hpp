@@ -275,11 +275,11 @@ namespace KalaWindow::Graphics
 			u8 maxProgress) const;
 
 		//Correctly handle aspect ratio during window resize for camera
-		inline void TriggerResize() const { if (resizeCallback) resizeCallback(); }
+		inline void TriggerResize() { if (resizeCallback) resizeCallback(); }
 		inline void SetResizeCallback(const function<void()>& callback) { resizeCallback = callback; }
 
 		//Ensure content is redrawn while window is being resized
-		inline void TriggerRedraw() const { if (redrawCallback) redrawCallback(); }
+		inline void TriggerRedraw() { if (redrawCallback) redrawCallback(); }
 		inline void SetRedrawCallback(const function<void()>& callback) { redrawCallback = callback; }
 
 #ifdef _WIN32
@@ -317,8 +317,8 @@ namespace KalaWindow::Graphics
 			switch (targetType)
 			{
 			default: return{};
-			case TargetType::TYPE_CAMERA:         return cameras; break;
-			case TargetType::TYPE_WIDGET:         return widgets; break;
+			case TargetType::TYPE_CAMERA: return cameras; break;
+			case TargetType::TYPE_WIDGET: return widgets; break;
 			}
 
 			return{};
@@ -442,8 +442,8 @@ namespace KalaWindow::Graphics
 			{
 				break;
 			}
-			case TargetType::TYPE_CAMERA:         cameras.clear(); break;
-			case TargetType::TYPE_WIDGET:         widgets.clear(); break;
+			case TargetType::TYPE_CAMERA: cameras.clear(); break;
+			case TargetType::TYPE_WIDGET: widgets.clear(); break;
 			}
 		}
 
@@ -555,7 +555,8 @@ namespace KalaWindow::Graphics
 			bool recursive = false)
 		{
 			if (!targetWindow
-				|| this == targetWindow)
+				|| this == targetWindow
+				|| parentWindow == this)
 			{
 				return false;
 			}
@@ -590,12 +591,11 @@ namespace KalaWindow::Graphics
 		{
 			if (!targetWindow
 				|| this == targetWindow
-				|| parentWindow == targetWindow)
+				|| parentWindow == targetWindow
+				|| targetWindow->parentWindow != this)
 			{
 				return false;
 			}
-
-			if (targetWindow->parentWindow) targetWindow->parentWindow = nullptr;
 
 			childWindows.erase(remove(
 				childWindows.begin(),
@@ -603,17 +603,22 @@ namespace KalaWindow::Graphics
 				targetWindow),
 				childWindows.end());
 
+			targetWindow->CloseWindow();
+
 			return true;
 		}
 
 		inline const vector<Window*>& GetAllChildWindows() { return childWindows; }
 		inline void RemoveAllChildWindows()
 		{
-			for (auto* c : childWindows) c->parentWindow = nullptr;
+			for (auto* c : childWindows) c->CloseWindow();
 			childWindows.clear();
 		}
 
-		//Do not destroy manually, erase from containers.hpp instead
+		//Clear the content of this window and erase it from its registry
+		inline void CloseWindow();
+
+		//Do not destroy manually, erase from registry instead
 		~Window();
 	private:
 		bool isInitialized = false;        //Cannot use this window if it is not yet initialized
