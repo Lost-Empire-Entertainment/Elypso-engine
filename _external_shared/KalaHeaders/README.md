@@ -158,3 +158,29 @@ Comprehensive logger header for any logging needs - sends stdout and stderr mess
 | DATE_TEXT_MDY     | Month Day, Year                   | December 31, 2025   |
 | DATE_FILENAME_DMY | Filename-safe (day-month-year)    | 31-12-2025          |
 | DATE_FILENAME_MDY | Filename-safe (month-day-year)    | 12-31-2025          |
+
+---
+
+## Hierarchy utils
+
+Provides parent-child hierarchy management and fast lookup through recursive traversal across parents, children and siblings
+
+ Requirements: 
+- You must name each Hierarchy struct as 'hierarchy', this is a limit of C++ templates so there is no way around it
+- You must assign 'thisObject' as the class this struct is attached to
+
+### Available date format types
+
+| Function          | Description              |
+|-------------------|--------------------------|
+| GetRoot           | Gets the top-most parent |
+| HasTarget         | Returns true if A has B, can check recursively |
+| IsParent          | Returns true if B is the parent of A, can check recursively |
+| GetParent         | Returns the parent of A |
+| SetParent         | Sets the parent of A |
+| RemoveParent      | Removes the parent from A |
+| IsChild           | Returns true if B is a child of A, can check recursively |
+| AddChild          | Adds new child to A |
+| RemoveChild       | Removes child B from A |
+| GetAllChildren    | Returns all children of A |
+| RemoveAllChildren | Removes all children of A |

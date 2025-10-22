@@ -57,120 +57,83 @@ using glm::length2;
 using glm::normalize;
 using glm::cross;
 using glm::angleAxis;
+using glm::inverse;
 
-//GLM version of clamp for vector math, not compatible with std::clamp
-template <typename T, typename U, typename V>
-inline T clampGLM(const T& x, const U& minVal, const V& maxVal)
+//Return projection in 2D orthographic space based off of window client rect size.
+//Positions 2D objects in top-left origin like UI
+inline mat3 Projection2D(vec2 viewportSize)
 {
-	return glm::clamp(x, minVal, maxVal);
-}
+	vec2 vp = clamp(viewportSize, vec2(1.0f), vec2(10000.0f));
 
-//Return projection in 2D orthographic space based on a viewport region.
-//Positions 2D objects in top-left origin like UI.
-//Use base height to adjust how UI scales depending on window size
-inline mat3 Projection2D(
-	const vec2 viewportSize, 
-	const float baseHeight)
-{
-	float w = viewportSize.x;
-	float h = viewportSize.y;
-	float scale = h / baseHeight;
+	float w = vp.x;
+	float h = vp.y;
 
 	mat3 proj(1.0f);
 
-	//scale pixels into clip space [-1, 1]
-	proj[0][0] = 2.0f / (w / scale);  //X scale
-	proj[1][1] = -2.0f / (h / scale); //Y scale (flipped)
-
-	//move origin to top-left instead of center
-	proj[2][0] = -1.0f;
-	proj[2][1] = 1.0;
+	proj[0][0] = 2.0f / w;  //X scale
+	proj[1][1] = -2.0f / h; //Y scale (flip Y so 0 is top)
+	proj[2][0] = -1.0f;     //move X origin to left edge
+	proj[2][1] = 1.0f;      //move Y origin to top edge
 
 	return proj;
 }
 
-//Translate model in 2D orthographic space
-inline mat3 Translate2D(mat3& model, vec2 pos)
+//Return projection in 2D orthographic space based off of custom viewport size.
+//Positions 2D objects in top-left origin like UI
+inline mat3 Projection2D(
+	float left,
+	float right,
+	float top,
+	float bottom)
 {
-	mat3 trans(1.0f);
-	trans[2][0] = pos.x;
-	trans[2][1] = pos.y;
-	return model * trans;
+	mat3 proj(1.0f);
+
+	proj[0][0] = 2.0f / (right - left);
+	proj[1][1] = 2.0f / (top - bottom); //flip Y
+	proj[2][0] = -(right + left) / (right - left);
+	proj[2][1] = -(top + bottom) / (top - bottom);
+
+	return proj;
 }
 
-//Rotate model in 2D orthographic space with degrees
-inline mat3 Rotate2D(mat3& model, float degrees)
+//Translate model in 2D orthographic space,
+//should be first above Rotate2D and Scale2D
+inline mat3 Translate2D(mat3& model, vec2 pos)
 {
-	float r = radians(degrees);
-	float c = cos(r);
-	float s = sin(r);
+	vec2 pc = clamp(pos, vec2(-10000.0f), vec2(10000.0f));
 
-	mat3 rot(
+	mat3 posMat(1.0f);
+	posMat[2] = vec3(pc, 1.0f);
+	return model * posMat;
+}
+
+//Rotate model in 2D orthographic space,
+//should be between Translate2D and Scale2D
+inline mat3 Rotate2D(mat3& model, float rot)
+{
+	float rc = radians(fmod(rot, 360));
+
+	float c = cos(rc);
+	float s = sin(rc);
+
+	mat3 rotMat(
 		c, s, 0.0f,
 		-s, c, 0.0f,
 		0.0f, 0.0f, 1.0f);
 
-	return model * rot;
+	return model * rotMat;
 }
 
-//Scale model in 2D orthographic space
-inline mat3 Scale2D(mat3& model, const vec2& scale)
+//Scale model in 2D orthographic space,
+//should be last after Translate2D and Rotate2D
+inline mat3 Scale2D(mat3& model, vec2 size)
 {
-	mat3 sc(
-		scale.x, 0.0f, 0.0f,
-		0.0f, scale.y, 0.0f,
+	vec2 sc = clamp(size, vec2(1.0f), vec2(10000.0f));
+
+	mat3 sizeMat(
+		sc.x, 0.0f, 0.0f,
+		0.0f, sc.y, 0.0f,
 		0.0f, 0.0f, 1.0f);
 
-	return model * sc;
-}
-
-//Returns true if all values in a quat are not Nan and not Inf
-inline bool IsFiniteQuat(const quat& q)
-{
-	return
-		isfinite(q.x)
-		&& isfinite(q.y)
-		&& isfinite(q.z)
-		&& isfinite(q.w);
-}
-//Returns true if all values in a vec2 are not Nan and not Inf
-inline bool IsFiniteVec2(const vec2& v)
-{
-	return
-		isfinite(v.x)
-		&& isfinite(v.y);
-}
-//Returns true if all values in a vec3 are not Nan and not Inf
-inline bool IsFiniteVec3(const vec3& v)
-{
-	return
-		isfinite(v.x)
-		&& isfinite(v.y)
-		&& isfinite(v.z);
-}
-//Returns true if all values in a vec4 are not Nan and not Inf
-inline bool IsFiniteVec4(const vec4& v)
-{
-	return
-		isfinite(v.x)
-		&& isfinite(v.y)
-		&& isfinite(v.z)
-		&& isfinite(v.w);
-}
-//Returns true if all values in a mat3 are not Nan and not Inf
-inline bool IsFiniteMat3(const mat3& m)
-{
-	return
-		IsFiniteVec3(m[0])
-		&& IsFiniteVec3(m[1])
-		&& IsFiniteVec3(m[2]);
-}
-//Returns true if all values in a mat4 are not Nan and not Inf
-inline bool IsFiniteMat4(const mat4& m)
-{
-	return
-		IsFiniteVec4(m[0])
-		&& IsFiniteVec4(m[1])
-		&& IsFiniteVec4(m[2])
-		&& IsFiniteVec4(m[3]);
+	return model * sizeMat;
 }
