@@ -7,12 +7,12 @@ These libraries are used for various purposes, their licenses are included in th
 | Library                                                         | Use case                                                                     |
 |-----------------------------------------------------------------|------------------------------------------------------------------------------|
 | [KalaWindow](https://github.com/KalaKit/KalaWindow)             | Windowing, input, graphics and crash handler.                                |
+| [KalaHeaders](https://github.com/KalaKit/KalaHeaders)           | Lightweight, independent header-only scripts for various uses. |
 
 ## Not owned by Lost Empire Entertainment
 
 | Library                                                              | Use case                                             |
 |----------------------------------------------------------------------|------------------------------------------------------|
-| [GLM](https://github.com/icaven/glm)                                 | Math library for vectors, matrices, and 3D graphics. |
 | [stb](https://github.com/nothings/stb)                               | Various image and text editing headers and others.   |
 | [MiniAudio](https://github.com/mackron/miniaudio)                    | Plays and records audio on multiple platforms.       |
 | [OpenGL headers](https://github.com/KhronosGroup/OpenGL-Registry)    | Headers used for OpenGL functionality                |
