@@ -3,10 +3,6 @@ out/
 .vs/
 build/
 
-# CMake build targets
-debug/
-release/
-
 # Large files
 *.pdb
 *.obj
