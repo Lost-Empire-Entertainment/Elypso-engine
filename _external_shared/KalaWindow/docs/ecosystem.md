@@ -7,8 +7,6 @@ the clis:
 - kalamove
 - kaladata
 - kalafont
-- kalaglyph
-- kalamodel
 
 Note: All clis follow the same original cli template which means all clis follow the same cli command system and can also accept system commands through the run command.
 
@@ -101,29 +99,11 @@ Uses FreeType to help with font parsing.
 
 ---
 
-## KalaGlyph
-
-Compiles .png, .jpg and .jpeg images into .kgm (kalaglyph map) - a runtime-ready glyph map binary of vertices, indices, uvs and other relevant data related to the original images that were passed. Locks to one base height and strips out all metadata of the original image files.
-
-Uses stb_image to help with image parsing.
-
-Note: This is a concept, it has not yet started development.
-
----
-
-## KalaModel
-
-Compiles .fbx, .obj and .gltf models into .kmm (kalamodel map) - a runtime-ready model map binary of vertices, indices and other relevant data related to the original models that were passed.
-
-Uses Assimp to help with font parsing.
-
-Note: This is a concept, it has not yet started development.
-
----
-
 ## KalaServer
 
-A single .lib and .dll that can be attached to any executable or cli. Provides the networking stack required for sending and receiving packets for any server-related needs. Can autoban spammers, obvious bots trying to reach sensitive files etc.
+A single .lib and .dll with no runtime of its own that can be attached to any executable or cli. Does not depend on KalaWindow, runs completely standalone from it. 
+
+Provides the networking stack required for sending and receiving packets for any server-related needs. Can autoban spammers, obvious bots trying to reach sensitive files etc.
 
 Also provides a framework for hosting websites. Can route root path to any path inside its own root so the original path is unreachable by the end user if they try to look what files are accessible.
 
@@ -133,8 +113,11 @@ Uses completely original code with help from WinSock and CloudFlare Tunnel, does
 
 ## KalaWindow
 
-A single .lib and .dll that can be attached to any executable or cli. Provides the multimedia framework library stack required for running executables with graphics on Windows and Linux. Locked to OpenGL 3.3 and Vulkan 1.3. Linux and Vulkan support have not yet been added but will be added in a future release.
+A single .lib and .dll with no runtime of its own that can be attached to any executable or cli.
 
+Provides the multimedia framework library stack required for running executables with graphics on Windows and Linux. Locked to OpenGL 3.3 and Vulkan 1.3. Linux and Vulkan support have not yet been added but will be added in a future release.
+
+Can be ran headless, does not require a window to run any executable as a CLI if needed.
 
 Provides:
   - windowing with message loop
