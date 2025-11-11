@@ -25,6 +25,7 @@ namespace KalaGraphics::Core
 	class LIB_API KalaGraphicsCore
 	{
 	public:
+		//The ID that is bumped by every object in KalaWindow when it needs a new ID
 		static inline u32 globalID{};
 	
 		static inline function<void()> errorCallback{};

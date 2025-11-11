@@ -9,11 +9,16 @@
 #include <unordered_map>
 
 #include "KalaHeaders/core_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 namespace KalaGraphics::Graphics::OpenGL
 {
 	using std::string;
+	using std::to_string;
 	using std::unordered_map;
+	
+	using KalaHeaders::Log;
+	using KalaHeaders::LogType;
 	
 	using u32 = uint32_t;
 	
@@ -30,8 +35,8 @@ namespace KalaGraphics::Graphics::OpenGL
 		u32 lastProgramID{};
 		
 #ifdef _WIN32
-		uintptr_t hglrc{}; //OpenGL context wia WGL
-		uintptr_t hdc{};   //OpenGL handle to device context
+		uintptr_t hglrc{};       //OpenGL context wia WGL
+		uintptr_t parentHglrc{}; //OpenGL shared parent context wia WGL
 #else
 		uintptr_t glxContext{}; //OpenGL context via glx
 #endif
@@ -40,9 +45,17 @@ namespace KalaGraphics::Graphics::OpenGL
 	class LIB_API OpenGL_Core
 	{
 	public:
-		static void SwapOpenGLBuffers(u32 windowID);
+		//Called at the end of each frame, requires handle (HDC) from your window
+		static void SwapOpenGLBuffers(
+			u32 windowID,
+			uintptr_t handle);
 
-		static void MakeContextCurrent(u32 windowID);
+		//Make the GL context correct for the current window, requires handle (HDC) from your window
+		static void MakeContextCurrent(
+			u32 windowID,
+			uintptr_t handle);
+			
+		//Confirms that the GL context is the same as the stored context for this window
 		static bool IsContextValid(u32 windowID);
 	
 		static void SetOpenGLLibrary();
@@ -52,9 +65,6 @@ namespace KalaGraphics::Graphics::OpenGL
 
 			return openGL32Lib;
 		}
-	
-		static inline void SetGlobalContext(uintptr_t newValue) { hglrc = newValue; }
-		static inline uintptr_t GetGlobalContext() { return hglrc; }
 		
 		static inline bool GetWindowGLContext(
 			u32 windowID,
@@ -63,30 +73,6 @@ namespace KalaGraphics::Graphics::OpenGL
 			if (!windowContexts.contains(windowID)) return false;
 			
 			target = windowContexts[windowID];
-			return true;
-		}
-		
-		//Assign HDC
-		static inline void SetHandle(
-			u32 windowID,
-			uintptr_t newValue)
-		{
-			if (!windowContexts.contains(windowID)) windowContexts[windowID] = {};
-			
-			windowContexts[windowID].hdc = newValue;
-		}
-		//Get HDC
-		static inline bool GetHandle(
-			u32 windowID,
-			uintptr_t& target)
-		{
-			if (!windowContexts.contains(windowID)
-				|| windowContexts[windowID].hdc == NULL)
-			{
-				return false;
-			}
-			
-			target = windowContexts[windowID].hdc;
 			return true;
 		}
 		
@@ -111,6 +97,30 @@ namespace KalaGraphics::Graphics::OpenGL
 			}
 			
 			target = windowContexts[windowID].hglrc;
+			return true;
+		}
+		
+		//Assign parent HGLRC for shared resources
+		static inline void SetParentContext(
+			u32 windowID,
+			uintptr_t newValue)
+		{
+			if (!windowContexts.contains(windowID)) windowContexts[windowID] = {};
+			
+			windowContexts[windowID].parentHglrc = newValue;
+		}
+		//Get parent HGLRC for shared resources
+		static inline bool GetParentContext(
+			u32 windowID,
+			uintptr_t& target)
+		{
+			if (!windowContexts.contains(windowID)
+				|| windowContexts[windowID].parentHglrc == NULL)
+			{
+				return false;
+			}
+			
+			target = windowContexts[windowID].parentHglrc;
 			return true;
 		}
 	

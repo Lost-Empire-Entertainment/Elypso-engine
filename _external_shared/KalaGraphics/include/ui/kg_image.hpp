@@ -29,9 +29,10 @@ namespace KalaGraphics::UI
 			OpenGL_Texture* texture,
 			OpenGL_Shader* shader);
 
-		//Render the image
+		//Render this image widget. Requires handle (HDC) from your window
 		virtual bool Render(
 			u32 windowID,
+			uintptr_t handle,
 			const mat4& projection) override;
 
 		//Do not destroy manually, erase from registry instead

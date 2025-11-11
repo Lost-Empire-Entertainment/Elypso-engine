@@ -137,8 +137,10 @@ namespace KalaGraphics::UI
 
 		inline bool IsInitialized() const { return isInitialized; }
 
+		//Render this widget. Requires handle (HDC) from your window
 		virtual bool Render(
 			u32 windowID,
+			uintptr_t handle,
 			const mat4& projection) = 0;
 
 		//Adjusts widget position relative to viewport size and offset,
@@ -164,6 +166,7 @@ namespace KalaGraphics::UI
 		}
 
 		inline u32 GetID() const { return ID; }
+		inline u32 GetWindowID() const { return windowID; }
 
 		//Skips rendering if set to false without needing to
 		//encapsulate the render function in its own render toggle
@@ -526,6 +529,7 @@ namespace KalaGraphics::UI
 		string name = "NO_NAME_ADDED";
 
 		u32 ID{};
+		u32 windowID{};
 
 		bool isHovered{};
 

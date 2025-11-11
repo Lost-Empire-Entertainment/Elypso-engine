@@ -161,7 +161,10 @@ namespace KalaGraphics::Graphics::OpenGL
 			return dataOut;
 		}
 
-		bool Bind(u32 windowID);
+		//Bind current shader, requires handle (HDC) from your window
+		bool Bind(
+			u32 windowID,
+			uintptr_t handle);
 
 		bool HotReload(u32 windowID);
 

@@ -32,9 +32,10 @@ namespace KalaGraphics::UI
 			OpenGL_Texture* texture,
 			OpenGL_Shader* shader);
 			
-		//Render the text
+		//Render this text widget. Requires handle (HDC) from your window
 		virtual bool Render(
 			u32 windowID,
+			uintptr_t handle,
 			const mat4& projection) override;
 
 		inline void AddChar(u32 newValue) { text.push_back(newValue); }
