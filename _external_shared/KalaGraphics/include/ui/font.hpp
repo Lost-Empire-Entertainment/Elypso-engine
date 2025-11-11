@@ -23,12 +23,12 @@ namespace KalaGraphics::UI
 	using KalaHeaders::GlyphTable;
 	using KalaHeaders::GlyphBlock;
 	
-	using KalaGraphics::Utils::Registry;
+	using KalaGraphics::Utils::KalaGraphicsRegistry;
 
 	class LIB_API Font
 	{
 	public:
-		static inline Registry<Font> registry{};
+		static inline KalaGraphicsRegistry<Font> registry{};
 
 		//Loads a font from disk
 		static Font* LoadFont(

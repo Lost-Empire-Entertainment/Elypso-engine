@@ -28,12 +28,12 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::angleaxis;
 	using KalaHeaders::wrap;
 	
-	using KalaGraphics::Utils::Registry;
+	using KalaGraphics::Utils::KalaGraphicsRegistry;
 
 	class LIB_API Camera
 	{
 	public:
-		static inline Registry<Camera> registry{};
+		static inline KalaGraphicsRegistry<Camera> registry{};
 
 		static Camera* Initialize(
 			const string& cameraName,

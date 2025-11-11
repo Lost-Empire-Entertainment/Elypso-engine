@@ -25,7 +25,7 @@ namespace KalaGraphics::Graphics::OpenGL
 	using KalaHeaders::mat3;
 	using KalaHeaders::mat4;
 	
-	using KalaGraphics::Utils::Registry;
+	using KalaGraphics::Utils::KalaGraphicsRegistry;
 
 	enum class ShaderType
 	{
@@ -55,7 +55,7 @@ namespace KalaGraphics::Graphics::OpenGL
 	class LIB_API OpenGL_Shader
 	{
 	public:
-		static inline Registry<OpenGL_Shader> registry{};
+		static inline KalaGraphicsRegistry<OpenGL_Shader> registry{};
 
 		//Create a new shader with up to three types of shader files.
 		//Geometry shaders are optional but vert and frag shader must always be filled

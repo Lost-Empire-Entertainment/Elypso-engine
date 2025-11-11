@@ -28,7 +28,7 @@ namespace KalaGraphics::Utils
 	using KalaHeaders::wrap;
 	using KalaHeaders::kclamp;
 	
-	using KalaGraphics::Utils::Registry;
+	using KalaGraphics::Utils::KalaGraphicsRegistry;
 	using KalaGraphics::Core::KalaGraphicsCore;
 
 	enum class PosTarget
@@ -56,7 +56,7 @@ namespace KalaGraphics::Utils
 	class Transform2D
 	{
 	public:
-		static inline Registry<Transform2D> registry{};
+		static inline KalaGraphicsRegistry<Transform2D> registry{};
 
 		static inline Transform2D* Initialize()
 		{

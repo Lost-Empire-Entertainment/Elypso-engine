@@ -21,12 +21,12 @@ namespace KalaGraphics::Graphics::OpenGL
 
 	using KalaHeaders::vec2;
 	
-	using KalaGraphics::Utils::Registry;
+	using KalaGraphics::Utils::KalaGraphicsRegistry;
 
 	class LIB_API OpenGL_Texture : public Texture
 	{
 	public:
-		static inline Registry<OpenGL_Texture> registry{};
+		static inline KalaGraphicsRegistry<OpenGL_Texture> registry{};
 
 		//Load a new texture from an external file.
 		//Depth is always clamped to 1 for Type_2D,

@@ -45,7 +45,7 @@ namespace KalaGraphics::UI
 	using KalaGraphics::Utils::PosTarget;
 	using KalaGraphics::Utils::RotTarget;
 	using KalaGraphics::Utils::SizeTarget;
-	using KalaGraphics::Utils::Registry;
+	using KalaGraphics::Utils::KalaGraphicsRegistry;
 
 	constexpr u16 MAX_Z_ORDER = 1024;
 
@@ -126,7 +126,7 @@ namespace KalaGraphics::UI
 	class LIB_API Widget
 	{
 	public:
-		static inline Registry<Widget> registry{};
+		static inline KalaGraphicsRegistry<Widget> registry{};
 	
 		//Returns all hit widgets at mouse position sorted by highest Z first
 		static vector<Widget*> GetHitWidgets(vec2 mousePos);

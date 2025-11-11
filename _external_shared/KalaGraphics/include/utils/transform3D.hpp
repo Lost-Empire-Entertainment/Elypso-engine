@@ -33,7 +33,7 @@ namespace KalaGraphics::Utils
 	using KalaHeaders::toquat;
 	using KalaHeaders::normalize;
 	
-	using KalaGraphics::Utils::Registry;
+	using KalaGraphics::Utils::KalaGraphicsRegistry;
 	using KalaGraphics::Core::KalaGraphicsCore;
 
 	enum class PosTarget
@@ -61,7 +61,7 @@ namespace KalaGraphics::Utils
 	class Transform3D
 	{
 	public:
-		static inline Registry<Transform3D> registry{};
+		static inline KalaGraphicsRegistry<Transform3D> registry{};
 
 		static inline Transform3D* Initialize()
 		{

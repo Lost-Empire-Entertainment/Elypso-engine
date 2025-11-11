@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-namespace KalaWindow::Graphics::OpenGL::Shader
+namespace KalaGraphics::Graphics::OpenGL::Shader
 {
 	using std::string_view;
 
