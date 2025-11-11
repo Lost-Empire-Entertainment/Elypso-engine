@@ -5,9 +5,12 @@
 
 #pragma once
 
-#include "KalaHeaders/core_utils.hpp"
+#include <string>
+
 #include "OpenGL/glcorearb.h" //core opengl
 #include "OpenGL/glext.h"     //extension tokens, enums and extra function pointers
+
+#include "KalaHeaders/core_utils.hpp"
 
 namespace KalaWindow::Graphics::OpenGLFunctions
 {
@@ -192,13 +195,13 @@ namespace KalaWindow::Graphics::OpenGLFunctions
 	//Sets a vec4 uniform from an array of values
 	LIB_API extern PFNGLUNIFORM4FVPROC glUniform4fv;
 
-	//Sets a 2×2 matrix uniform from an array of floats
+	//Sets a 2ï¿½2 matrix uniform from an array of floats
 	LIB_API extern PFNGLUNIFORMMATRIX2FVPROC glUniformMatrix2fv;
 
-	//Sets a 3×3 matrix uniform from an array of floats
+	//Sets a 3ï¿½3 matrix uniform from an array of floats
 	LIB_API extern PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv;
 
-	//Sets a 4×4 matrix uniform from an array of floats
+	//Sets a 4ï¿½4 matrix uniform from an array of floats
 	LIB_API extern PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 
 	//
