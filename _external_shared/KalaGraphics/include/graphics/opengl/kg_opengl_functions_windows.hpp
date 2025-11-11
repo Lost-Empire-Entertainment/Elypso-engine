@@ -14,28 +14,28 @@
 namespace KalaGraphics::Graphics::OpenGLFunctions
 {
 	//Creates an OpenGL rendering context with specific attributes (version, profile)
-	extern PFNWGLCREATECONTEXTATTRIBSARBPROC   wglCreateContextAttribsARB;
+	LIB_API extern PFNWGLCREATECONTEXTATTRIBSARBPROC   wglCreateContextAttribsARB;
 
 	//Chooses a pixel format that matches specified attributes
-	extern PFNWGLCHOOSEPIXELFORMATARBPROC      wglChoosePixelFormatARB;
+	LIB_API extern PFNWGLCHOOSEPIXELFORMATARBPROC      wglChoosePixelFormatARB;
 
 	//Sets the swap interval for buffer swaps (vsync control)
-	extern PFNWGLSWAPINTERVALEXTPROC           wglSwapIntervalEXT;
+	LIB_API extern PFNWGLSWAPINTERVALEXTPROC           wglSwapIntervalEXT;
 
 	//Retrieves float pixel format attributes for a given pixel format
-	extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC wglGetPixelFormatAttribfvARB;
+	LIB_API extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC wglGetPixelFormatAttribfvARB;
 
 	//Retrieves integer pixel format attributes for a given pixel format
-	extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
+	LIB_API extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
 
 	class LIB_API OpenGL_Functions_Windows
 	{
 	public:
 		//Load all OpenGL Windows functions that are provided
-		static void LoadAllWinFunctions();
+		static void LoadAllWindowsFunctions();
 
 		//Load a specific function, this won't be loaded again with LoadAllFunctions
-		static void LoadWinFunction(const char* name);
+		static void LoadWindowsFunction(const char* name);
 	};
 }
 
