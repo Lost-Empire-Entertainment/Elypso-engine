@@ -10,7 +10,7 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
 
-#include "utils/registry.hpp"
+#include "utils/kg_registry.hpp"
 
 namespace KalaGraphics::Graphics
 {

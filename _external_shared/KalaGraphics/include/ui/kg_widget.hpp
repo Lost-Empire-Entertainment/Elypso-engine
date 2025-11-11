@@ -14,10 +14,10 @@
 #include "KalaHeaders/math_utils.hpp"
 #include "KalaHeaders/key_standards.hpp"
 
-#include "graphics/opengl/opengl_shader.hpp"
-#include "graphics/opengl/opengl_texture.hpp"
-#include "utils/transform2d.hpp"
-#include "utils/registry.hpp"
+#include "graphics/opengl/kg_opengl_shader.hpp"
+#include "graphics/opengl/kg_opengl_texture.hpp"
+#include "utils/kg_transform2d.hpp"
+#include "utils/kg_registry.hpp"
 
 namespace KalaGraphics::UI
 {

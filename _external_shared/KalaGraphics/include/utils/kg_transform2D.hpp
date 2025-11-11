@@ -7,8 +7,8 @@
 
 #include "KalaHeaders/math_utils.hpp"
 
-#include "utils/registry.hpp"
-#include "core/core.hpp"
+#include "utils/kg_registry.hpp"
+#include "core/kg_core.hpp"
 
 constexpr f32 MAX_POS = 10000.0f;
 constexpr f32 MIN_POS = -10000.0f;

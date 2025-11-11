@@ -7,7 +7,7 @@
 
 #include "KalaHeaders/math_utils.hpp"
 
-#include "ui/widget.hpp"
+#include "ui/kg_widget.hpp"
 
 namespace KalaGraphics::UI
 {

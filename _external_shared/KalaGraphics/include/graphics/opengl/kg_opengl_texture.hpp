@@ -11,8 +11,8 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
 
-#include "utils/registry.hpp"
-#include "graphics/texture.hpp"
+#include "utils/kg_registry.hpp"
+#include "graphics/kg_texture.hpp"
 
 namespace KalaGraphics::Graphics::OpenGL
 {
