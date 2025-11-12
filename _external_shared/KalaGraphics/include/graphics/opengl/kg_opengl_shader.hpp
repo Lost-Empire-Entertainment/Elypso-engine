@@ -60,7 +60,7 @@ namespace KalaGraphics::Graphics::OpenGL
 		//Create a new shader with up to three types of shader files.
 		//Geometry shaders are optional but vert and frag shader must always be filled
 		static OpenGL_Shader* CreateShader(
-			u32 windowID,
+			u32 glID,
 			const string& shaderName,
 			const array<ShaderData, 3>& shaderData);
 
@@ -85,9 +85,12 @@ namespace KalaGraphics::Graphics::OpenGL
 			return true;
 		}
 
+		//Returns the global ID of this shader
 		inline u32 GetID() const { return ID; }
-
+		//Returns the OpenGL program ID of this shader
 		inline u32 GetProgramID() const { return programID; }
+		//Returns the OpenGL context ID of this shader
+		inline u32 GetGLID() const { return glID; }
 
 		//Returns true if this shader is loaded
 		inline bool IsShaderLoaded(ShaderType targetType) const
@@ -163,7 +166,7 @@ namespace KalaGraphics::Graphics::OpenGL
 
 		//Bind current shader, requires handle (HDC) from your window
 		bool Bind(
-			u32 windowID,
+			u32 glID,
 			uintptr_t handle);
 
 		bool HotReload(u32 windowID);
@@ -191,8 +194,8 @@ namespace KalaGraphics::Graphics::OpenGL
 		string name{};
 
 		u32 ID{};
-
 		u32 programID{};
+		u32 glID{};
 
 		ShaderData vertData{};
 		ShaderData fragData{};

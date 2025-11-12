@@ -21,6 +21,7 @@ namespace KalaGraphics::UI
 		//Parent widget is optional
 		static Image* Initialize(
 			u32 windowID,
+			u32 glID,
 			const string& name,
 			const vec2 pos,
 			const float rot,
@@ -31,7 +32,6 @@ namespace KalaGraphics::UI
 
 		//Render this image widget. Requires handle (HDC) from your window
 		virtual bool Render(
-			u32 windowID,
 			uintptr_t handle,
 			const mat4& projection) override;
 

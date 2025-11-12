@@ -22,6 +22,7 @@ namespace KalaGraphics::UI
 		//Parent widget and texture are optional
 		static Text* Initialize(
 			u32 windowID,
+			u32 glID,
 			const string& name,
 			u32 glyphIndex,
 			u32 fontID,
@@ -34,7 +35,6 @@ namespace KalaGraphics::UI
 			
 		//Render this text widget. Requires handle (HDC) from your window
 		virtual bool Render(
-			u32 windowID,
 			uintptr_t handle,
 			const mat4& projection) override;
 

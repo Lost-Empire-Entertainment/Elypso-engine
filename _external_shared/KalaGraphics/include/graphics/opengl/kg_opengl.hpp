@@ -29,7 +29,7 @@ namespace KalaGraphics::Graphics::OpenGL
 	};
 	
 	//Per-window GL context
-	struct LIB_API WindowGLContext
+	struct LIB_API GLContext
 	{
 		VSyncState vsyncState{};
 		u32 lastProgramID{};
@@ -47,111 +47,212 @@ namespace KalaGraphics::Graphics::OpenGL
 	public:
 		//Called at the end of each frame, requires handle (HDC) from your window
 		static void SwapOpenGLBuffers(
-			u32 windowID,
+			u32 glID,
 			uintptr_t handle);
 
 		//Make the GL context correct for the current window, requires handle (HDC) from your window
 		static void MakeContextCurrent(
-			u32 windowID,
+			u32 glID,
 			uintptr_t handle);
 			
 		//Confirms that the GL context is the same as the stored context for this window
-		static bool IsContextValid(u32 windowID);
+		static bool IsContextValid(u32 glID);
 	
 		static void SetOpenGLLibrary();
 		static inline uintptr_t GetOpenGLLibrary()
 		{
-			if (openGL32Lib == NULL) SetOpenGLLibrary();
+			if (!openGL32Lib) SetOpenGLLibrary();
 
 			return openGL32Lib;
 		}
 		
-		static inline bool GetWindowGLContext(
-			u32 windowID,
-			WindowGLContext& target)
+		static inline bool AssignGLContext(u32 glID)
 		{
-			if (!windowContexts.contains(windowID)) return false;
+			if (glContexts.contains(glID))
+			{
+				Log::Print(
+					"Cannot set new gl context struct with gl ID '" + to_string(glID) + "' because the ID is already assigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+				
+				return false;
+			}
 			
-			target = windowContexts[windowID];
+			glContexts[glID] = {};
+		
+			return true;
+		}
+		static inline bool GetGLContext(
+			u32 glID,
+			GLContext& target)
+		{
+			if (!glContexts.contains(glID))
+			{
+				Log::Print(
+					"Cannot get gl context struct with gl ID '" + to_string(glID) + "' because the ID is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+			
+				return false;
+			}
+			
+			target = glContexts[glID];
+			
 			return true;
 		}
 		
 		//Assign HGLRC
-		static inline void SetContext(
-			u32 windowID,
+		static inline bool SetContext(
+			u32 glID,
 			uintptr_t newValue)
 		{
-			if (!windowContexts.contains(windowID)) windowContexts[windowID] = {};
-			
-			windowContexts[windowID].hglrc = newValue;
-		}
-		//Get HGLRC
-		static inline bool GetContext(
-			u32 windowID,
-			uintptr_t& target)
-		{
-			if (!windowContexts.contains(windowID)
-				|| windowContexts[windowID].hglrc == NULL)
+			if (!glContexts.contains(glID))
 			{
+				Log::Print(
+					"Cannot set gl context with gl ID '" + to_string(glID) + "' because the ID is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+			
 				return false;
 			}
 			
-			target = windowContexts[windowID].hglrc;
+			glContexts[glID].hglrc = newValue;
+			
+			return true;
+		}
+		//Get HGLRC
+		static inline bool GetContext(
+			u32 glID,
+			uintptr_t& target)
+		{
+			if (!glContexts.contains(glID))
+			{
+				Log::Print(
+					"Cannot get gl context with gl ID '" + to_string(glID) + "' because the ID is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+			
+				return false;
+			}
+			if (!glContexts[glID].hglrc)
+			{
+				Log::Print(
+					"Cannot get gl context with gl ID '" + to_string(glID) + "' because the context is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+			
+				return false;	
+			}
+			
+			target = glContexts[glID].hglrc;
+			
 			return true;
 		}
 		
 		//Assign parent HGLRC for shared resources
-		static inline void SetParentContext(
-			u32 windowID,
+		static inline bool SetParentContext(
+			u32 glID,
 			uintptr_t newValue)
 		{
-			if (!windowContexts.contains(windowID)) windowContexts[windowID] = {};
-			
-			windowContexts[windowID].parentHglrc = newValue;
-		}
-		//Get parent HGLRC for shared resources
-		static inline bool GetParentContext(
-			u32 windowID,
-			uintptr_t& target)
-		{
-			if (!windowContexts.contains(windowID)
-				|| windowContexts[windowID].parentHglrc == NULL)
+			if (!glContexts.contains(glID))
 			{
+				Log::Print(
+					"Cannot set parent gl context with gl ID '" + to_string(glID) + "' because the ID is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+			
 				return false;
 			}
 			
-			target = windowContexts[windowID].parentHglrc;
+			glContexts[glID].parentHglrc = newValue;
+			
+			return true;
+		}
+		//Get parent HGLRC for shared resources
+		static inline bool GetParentContext(
+			u32 glID,
+			uintptr_t& target)
+		{
+			if (!glContexts.contains(glID))
+			{
+				Log::Print(
+					"Cannot get parent gl context with gl ID '" + to_string(glID) + "' because the ID is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+			
+				return false;
+			}
+			if (!glContexts[glID].parentHglrc)
+			{
+				Log::Print(
+					"Cannot get parent gl context with gl ID '" + to_string(glID) + "' because the parent context is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
+			
+				return false;	
+			}
+			
+			target = glContexts[glID].parentHglrc;
+			
 			return true;
 		}
 	
-		static void SetVSyncState(
-			u32 windowID,
+		static bool SetVSyncState(
+			u32 glID,
 			VSyncState newValue);
 		static inline bool GetVSyncState(
-			u32 windowID,
+			u32 glID,
 			VSyncState& target)
 		{
-			if (!windowContexts.contains(windowID)) return false;
+			if (!glContexts.contains(glID))
+			{
+				Log::Print(
+					"Cannot get vsync state with gl ID '" + to_string(glID) + "' because the ID is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
 			
-			target = windowContexts[windowID].vsyncState;
+				return false;
+			}
+			
+			target = glContexts[glID].vsyncState;
+			
 			return true;
 		}
 		
 		static void SetLastProgramID(
-			u32 windowID,
+			u32 glID,
 			u32 newValue)
 		{
-			if (!windowContexts.contains(windowID)) windowContexts[windowID] = {};
+			if (!glContexts.contains(glID)) glContexts[glID] = {};
 			
-			windowContexts[windowID].lastProgramID = newValue;
+			glContexts[glID].lastProgramID = newValue;
 		}
 		static inline bool GetLastProgramID(
-			u32 windowID,
+			u32 glID,
 			u32& target)
 		{
-			if (!windowContexts.contains(windowID)) return false;
+			if (!glContexts.contains(glID))
+			{
+				Log::Print(
+					"Cannot get last program ID with gl ID '" + to_string(glID) + "' because the ID is unassigned!",
+					"OPENGL",
+					LogType::LOG_ERROR,
+					2);
 			
-			target = windowContexts[windowID].lastProgramID;
+				return false;
+			}
+			
+			target = glContexts[glID].lastProgramID;
+			
 			return true;
 		}
 		
@@ -162,6 +263,6 @@ namespace KalaGraphics::Graphics::OpenGL
 		static inline uintptr_t openGL32Lib{};
 		static inline uintptr_t hglrc{}; //master context for shared resources
 		
-		static inline unordered_map<u32, WindowGLContext> windowContexts{};
+		static inline unordered_map<u32, GLContext> glContexts{};
 	};
 }

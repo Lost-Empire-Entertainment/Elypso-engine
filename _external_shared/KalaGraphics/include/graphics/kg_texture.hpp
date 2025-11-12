@@ -109,6 +109,7 @@ namespace KalaGraphics::Graphics
 
 		inline const string& GetPath() const { return filePath; }
 
+		//Returns the global ID of this shader
 		inline u32 GetID() const { return ID; }
 
 		inline vec2 GetSize() const { return size; }
@@ -149,6 +150,7 @@ namespace KalaGraphics::Graphics
 
 		string name{};
 		string filePath{};
+		
 		u32 ID{};
 
 		vec2 size{};

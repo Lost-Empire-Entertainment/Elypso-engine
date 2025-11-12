@@ -139,7 +139,6 @@ namespace KalaGraphics::UI
 
 		//Render this widget. Requires handle (HDC) from your window
 		virtual bool Render(
-			u32 windowID,
 			uintptr_t handle,
 			const mat4& projection) = 0;
 
@@ -167,6 +166,7 @@ namespace KalaGraphics::UI
 
 		inline u32 GetID() const { return ID; }
 		inline u32 GetWindowID() const { return windowID; }
+		inline u32 GetGLID() const { return glID; }
 
 		//Skips rendering if set to false without needing to
 		//encapsulate the render function in its own render toggle
@@ -530,6 +530,7 @@ namespace KalaGraphics::UI
 
 		u32 ID{};
 		u32 windowID{};
+		u32 glID{};
 
 		bool isHovered{};
 
