@@ -28,7 +28,7 @@ namespace KalaGraphics::UI
 			u32 fontID,
 			const vec2 pos,
 			const float rot,
-			const vec2 size,
+			float sizeMultiplier,
 			Widget* parentWidget,
 			OpenGL_Texture* texture,
 			OpenGL_Shader* shader);

@@ -514,14 +514,14 @@ namespace KalaGraphics::UI
 			vec2 pos = transform->GetPos(PosTarget::POS_COMBINED);
 			vec2 size = transform->GetSize(SizeTarget::SIZE_COMBINED);
 
-			f32 tempHeight = 1080.0f;
+			//f32 tempHeight = 1080.0f;
 
-			vec2 offset = vec2(0.0f, -(size.y * 0.7f * tempHeight));
+			//vec2 offset = vec2(0.0f, -(size.y * 0.7f * tempHeight));
 
 			vec2 half = size * 0.5f;
 
-			render.aabb[0] = pos - half + offset; //min
-			render.aabb[1] = pos + half + offset; //max
+			render.aabb[0] = pos - half; //+ offset; //min
+			render.aabb[1] = pos + half; //+ offset; //max
 		}
 
 		bool isInitialized{};
@@ -539,6 +539,10 @@ namespace KalaGraphics::UI
 		u16 zOrder{};
 
 		bool isInteractable = true;
+
+		vec2 lastPos{};
+		f32 lastRot{};
+		vec2 lastSize{};
 
 		Transform2D* transform{};
 		Widget_Render render{};
