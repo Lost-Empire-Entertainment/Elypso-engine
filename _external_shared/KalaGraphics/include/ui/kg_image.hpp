@@ -33,9 +33,12 @@ namespace KalaGraphics::UI
 		//Render this image widget. Requires handle (HDC) from your window
 		virtual bool Render(
 			uintptr_t handle,
-			const mat4& projection) override;
+			const mat4& projection,
+			f32 viewportHeight) override;
 
 		//Do not destroy manually, erase from registry instead
 		virtual ~Image() override;
+	protected:
+		virtual void UpdateAABB(f32 viewportHeight);
 	};
 }

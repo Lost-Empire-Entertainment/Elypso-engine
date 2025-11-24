@@ -36,7 +36,8 @@ namespace KalaGraphics::UI
 		//Render this text widget. Requires handle (HDC) from your window
 		virtual bool Render(
 			uintptr_t handle,
-			const mat4& projection) override;
+			const mat4& projection,
+			f32 viewportHeight) override;
 
 		inline void AddChar(u32 newValue) { text.push_back(newValue); }
 		inline void AddTab()
@@ -51,6 +52,9 @@ namespace KalaGraphics::UI
 		
 		inline void SetText(const vector<u32>& newValue) { text = newValue; }
 		inline vector<u32>& GetText() { return text; }
+		
+		inline void SetLetters(const vector<GlyphBlock*>& newValue) { letters = newValue; }
+		inline vector<GlyphBlock*> GetLetters() const { return letters; }
 		
 		inline void SetColor(const vec3& newValue) 
 		{ 
@@ -77,6 +81,8 @@ namespace KalaGraphics::UI
 
 		//Do not destroy manually, erase from registry instead
 		virtual ~Text() override;
+	protected:
+		virtual void UpdateAABB(f32 viewportHeight);
 	private:
 		vector<u32> text{};            //the text typed by the user
 		vector<GlyphBlock*> letters{}; //all the letters that have been typed to this text

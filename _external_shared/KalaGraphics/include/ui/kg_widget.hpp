@@ -140,7 +140,8 @@ namespace KalaGraphics::UI
 		//Render this widget. Requires handle (HDC) from your window
 		virtual bool Render(
 			uintptr_t handle,
-			const mat4& projection) = 0;
+			const mat4& projection,
+			f32 viewportHeight) = 0;
 
 		//Adjusts widget position relative to viewport size and offset,
 		//offset at {1.0f, 1.0f} means the widget is centered, {0.0f, 0.0f} moves it to the bottom left corner
@@ -207,9 +208,9 @@ namespace KalaGraphics::UI
 		inline const vector<u32>& GetIndices() const { return render.indices; }
 
 		inline Transform2D* GetTransform() { return transform; }
-		inline const array<vec2, 2>& GetAABB()
+		inline const array<vec2, 2>& GetAABB(f32 viewportHeight)
 		{ 
-			UpdateAABB();
+			UpdateAABB(viewportHeight);
 			return render.aabb; 
 		}
 
@@ -509,20 +510,7 @@ namespace KalaGraphics::UI
 		//Do not destroy manually, erase from registry instead
 		virtual ~Widget() = 0;
 	protected:
-		inline void UpdateAABB()
-		{
-			vec2 pos = transform->GetPos(PosTarget::POS_COMBINED);
-			vec2 size = transform->GetSize(SizeTarget::SIZE_COMBINED);
-
-			//f32 tempHeight = 1080.0f;
-
-			//vec2 offset = vec2(0.0f, -(size.y * 0.7f * tempHeight));
-
-			vec2 half = size * 0.5f;
-
-			render.aabb[0] = pos - half; //+ offset; //min
-			render.aabb[1] = pos + half; //+ offset; //max
-		}
+		virtual void UpdateAABB(f32 viewportHeight) = 0;
 
 		bool isInitialized{};
 
@@ -539,10 +527,6 @@ namespace KalaGraphics::UI
 		u16 zOrder{};
 
 		bool isInteractable = true;
-
-		vec2 lastPos{};
-		f32 lastRot{};
-		vec2 lastSize{};
 
 		Transform2D* transform{};
 		Widget_Render render{};
