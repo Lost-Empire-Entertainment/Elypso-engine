@@ -10,7 +10,7 @@
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
-#include "KalaHeaders/import_ktf.hpp"
+#include "KalaHeaders/import_kfd.hpp"
 
 #include "utils/kg_registry.hpp"
 

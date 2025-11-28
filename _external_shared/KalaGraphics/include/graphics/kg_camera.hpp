@@ -142,12 +142,7 @@ namespace KalaGraphics::Graphics
 
 		inline void SetPos(const vec3& newPos)
 		{
-			pos =
-			{
-				clamp(newPos.x, -10000.0f, 10000.0f),
-				clamp(newPos.y, -10000.0f, 10000.0f),
-				clamp(newPos.z, -10000.0f, 10000.0f)
-			};
+			pos = kclamp(newPos, vec3(-10000.0f), vec3(10000.0f));
 		}
 		inline const vec3& GetPos() const { return pos; }
 
