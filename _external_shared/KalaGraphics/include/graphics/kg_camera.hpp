@@ -12,6 +12,8 @@
 
 #include "utils/kg_registry.hpp"
 
+//TODO: upgrade to use kg_transform3D.hpp
+
 namespace KalaGraphics::Graphics
 {
 	using std::string;
@@ -23,7 +25,7 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::cross;
 	using KalaHeaders::radians;
 	using KalaHeaders::normalize;
-	using KalaHeaders::lookat;
+	using KalaHeaders::view;
 	using KalaHeaders::toeuler3;
 	using KalaHeaders::angleaxis;
 	using KalaHeaders::wrap;
@@ -87,7 +89,7 @@ namespace KalaGraphics::Graphics
 			quat qy = angleaxis(radians(rotVec.y), vec3(0, 1, 0));
 			quat qz = angleaxis(radians(rotVec.z), vec3(0, 0, 1));
 
-			rotquat = normalize(qz * qy * qx);
+			rotquat = normalize_q(qz * qy * qx);
 		}
 
 		inline void SetFOV(f32 newFOV)
@@ -129,7 +131,7 @@ namespace KalaGraphics::Graphics
 
 		mat4 GetViewMatrix() const
 		{
-			return lookat(pos, pos + front, up);
+			return view(pos, pos + front, up);
 		};
 
 		inline const vec3& GetUp() const { return up; }
