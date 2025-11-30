@@ -12,8 +12,6 @@
 
 #include "utils/kg_registry.hpp"
 
-//TODO: upgrade to use kg_transform3D.hpp
-
 namespace KalaGraphics::Graphics
 {
 	using std::string;
@@ -22,12 +20,19 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::vec3;
 	using KalaHeaders::mat4;
 	using KalaHeaders::quat;
-	using KalaHeaders::cross;
-	using KalaHeaders::radians;
-	using KalaHeaders::normalize;
+	using KalaHeaders::Transform3D;
+	using KalaHeaders::PosTarget;
+	using KalaHeaders::RotTarget;
+	using KalaHeaders::addpos;
+	using KalaHeaders::setpos;
+	using KalaHeaders::addrot;
+	using KalaHeaders::setrot;
+	using KalaHeaders::getroteuler;
+	using KalaHeaders::getrotquat;
+	using KalaHeaders::getdirfront;
+	using KalaHeaders::getdirright;
+	using KalaHeaders::getdirup;
 	using KalaHeaders::view;
-	using KalaHeaders::toeuler3;
-	using KalaHeaders::angleaxis;
 	using KalaHeaders::wrap;
 	
 	using KalaGraphics::Utils::KalaGraphicsRegistry;
@@ -65,31 +70,16 @@ namespace KalaGraphics::Graphics
 		//Handle camera rotation based off of mouse movement
 		void UpdateCameraRotation(vec2 delta)
 		{
-			rotVec.y += delta.x * sensitivity; //yaw
-			rotVec.x -= delta.y * sensitivity; //pitch
-
-			//prevent absurdly high positive or negative numbers
-			rotVec.y = wrap(rotVec.y);
-
-			//clamp to avoid flipping
-			rotVec.x = clamp(rotVec.x, -89.99f, 89.99f);
-
-			//calculate front from euler
-
-			front.x = cos(radians(rotVec.y)) * cos(radians(rotVec.x));
-			front.y = sin(radians(rotVec.x));
-			front.z = sin(radians(rotVec.y)) * cos(radians(rotVec.x));
-			front = normalize(front);
-
-			right = normalize(cross(front, vec3(0.0f, 1.0f, 0.0f)));
-
-			//update quat after euler stuff is done
-
-			quat qx = angleaxis(radians(rotVec.x), vec3(1, 0, 0));
-			quat qy = angleaxis(radians(rotVec.y), vec3(0, 1, 0));
-			quat qz = angleaxis(radians(rotVec.z), vec3(0, 0, 1));
-
-			rotquat = normalize_q(qz * qy * qx);
+			vec3 e = getroteuler(transform, RotTarget::ROT_WORLD);
+			
+			e.x = 0.0f; //roll should never be modified
+			e.z += delta.x * sensitivity; //yaw
+			e.y += delta.y * sensitivity; //pitch
+			
+			e.z = wrap(e.z);
+			e.y = clamp(e.y, -89.99f, 89.99f);
+			
+			setrot(transform, {}, RotTarget::ROT_WORLD, e);
 		}
 
 		inline void SetFOV(f32 newFOV)
@@ -128,78 +118,76 @@ namespace KalaGraphics::Graphics
 			sensitivity = clamp(newSens, 0.001f, 10.0f);
 		}
 		inline f32 GetSensitivity() const { return sensitivity; }
-
-		mat4 GetViewMatrix() const
-		{
-			return view(pos, pos + front, up);
-		};
-
-		inline const vec3& GetUp() const { return up; }
-
-		inline void SetFront(const vec3& newFront) { front = newFront; }
-		inline const vec3& GetFront() const { return front; }
-
-		inline void SetRight(const vec3& newRight) { right = newRight; }
-		inline const vec3& GetRight() const { return right; }
+		
+		inline vec3 GetFront() { return getdirfront(transform); }
+		inline vec3 GetRight() { return getdirright(transform); }
+		inline vec3 GetUp() { return getdirup(transform); }
 
 		inline void SetPos(const vec3& newPos)
 		{
-			pos = kclamp(newPos, vec3(-10000.0f), vec3(10000.0f));
+			setpos(
+				transform,
+				{},
+				PosTarget::POS_WORLD,
+				newPos);
 		}
-		inline const vec3& GetPos() const { return pos; }
-
-		inline void SetRotVec(const vec3& newRot)
-		{
-			vec3 clamped = newRot;
-			clamped.x = wrap(clamped.x);
-			clamped.y = wrap(clamped.y);
-			clamped.z = wrap(clamped.z);
-
-			rotVec = clamped;
-
-			quat qx = angleaxis(radians(clamped.x), vec3(1, 0, 0));
-			quat qy = angleaxis(radians(clamped.y), vec3(0, 1, 0));
-			quat qz = angleaxis(radians(clamped.z), vec3(0, 0, 1));
-
-			rotquat = qz * qy * qx;
+		inline vec3 GetPos() 
+		{ 
+			return getpos(
+				transform,
+				PosTarget::POS_WORLD); 
 		}
-		inline const vec3& GetRotVec() const { return rotVec; }
 
-		inline void Setrotquat(const quat& newRot)
-		{
-			vec3 eulerDeg = degrees(toeuler3(newRot));
-
-			vec3 clamped = eulerDeg;
-			clamped.x = wrap(clamped.x);
-			clamped.y = wrap(clamped.y);
-			clamped.z = wrap(clamped.z);
-
-			rotVec = clamped;
-
-			quat qx = angleaxis(radians(clamped.x), vec3(1, 0, 0));
-			quat qy = angleaxis(radians(clamped.y), vec3(0, 1, 0));
-			quat qz = angleaxis(radians(clamped.z), vec3(0, 0, 1));
-
-			rotquat = qz * qy * qx;
-		}
-		inline const quat& Getrotquat() const { return rotquat; }
-
-		//Safely wraps within allowed bounds
+		//Increments rotation over time
 		inline void AddRot(const vec3& deltaRot)
 		{
-			rotVec =
-			{
-				wrap(rotVec.x + deltaRot.x),
-				wrap(rotVec.y + deltaRot.y),
-				wrap(rotVec.z + deltaRot.z),
-			};
-
-			quat qx = angleaxis(radians(rotVec.x), vec3(1, 0, 0));
-			quat qy = angleaxis(radians(rotVec.y), vec3(0, 1, 0));
-			quat qz = angleaxis(radians(rotVec.z), vec3(0, 0, 1));
-
-			rotquat = qz * qy * qx;
+			addrot(
+				transform,
+				{},
+				RotTarget::ROT_WORLD,
+				deltaRot);
 		}
+
+		//Snaps to given rotation
+		inline void SetRot(const vec3& newRot)
+		{
+			setrot(
+				transform,
+				{},
+				RotTarget::ROT_WORLD,
+				newRot);
+		}
+		inline vec3 GetRotEuler() 
+		{ 
+			return getroteuler(
+				transform,
+				RotTarget::ROT_WORLD); 
+		}
+
+		//Snaps to given rotation
+		inline void SetRot(const quat& newRot)
+		{
+			setrot(
+				transform,
+				{},
+				RotTarget::ROT_WORLD,
+				newRot);
+		}
+		inline quat GetRotQuat()
+		{ 
+			return getrotquat(
+				transform,
+				RotTarget::ROT_WORLD); 
+		}
+		
+		mat4 GetViewMatrix()
+		{
+			vec3 pos = GetPos();
+			vec3 front = GetFront();
+			vec3 up = GetUp();
+			
+			return view(pos, pos + front, up);
+		};
 
 		~Camera();
 	private:
@@ -218,12 +206,6 @@ namespace KalaGraphics::Graphics
 		f32 farClip = 512.0;
 		f32 sensitivity = 0.1f;
 
-		vec3 up = vec3(0.0f, 1.0f, 0.0f);
-		vec3 front = vec3(0.0f, 0.0f, -1.0f);
-		vec3 right = vec3(1.0f, 0.0f, 0.0f);
-
-		vec3 pos{};
-		vec3 rotVec{};
-		quat rotquat{};
+		Transform3D transform{};
 	};
 }
