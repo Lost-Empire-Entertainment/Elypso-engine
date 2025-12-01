@@ -11,7 +11,7 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
 
-#include "utils/kg_registry.hpp"
+#include "core/kg_registry.hpp"
 #include "graphics/kg_texture.hpp"
 
 namespace KalaGraphics::Graphics::OpenGL
@@ -21,7 +21,7 @@ namespace KalaGraphics::Graphics::OpenGL
 
 	using KalaHeaders::vec2;
 	
-	using KalaGraphics::Utils::KalaGraphicsRegistry;
+	using KalaGraphics::Core::KalaGraphicsRegistry;
 
 	class LIB_API OpenGL_Texture : public Texture
 	{

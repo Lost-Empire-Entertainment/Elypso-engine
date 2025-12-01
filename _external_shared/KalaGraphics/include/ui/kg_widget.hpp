@@ -16,8 +16,7 @@
 
 #include "graphics/opengl/kg_opengl_shader.hpp"
 #include "graphics/opengl/kg_opengl_texture.hpp"
-#include "utils/kg_transform2d.hpp"
-#include "utils/kg_registry.hpp"
+#include "core/kg_registry.hpp"
 
 namespace KalaGraphics::UI
 {
@@ -28,24 +27,22 @@ namespace KalaGraphics::UI
 
 	using KalaHeaders::vec2;
 	using KalaHeaders::vec3;
-	using KalaHeaders::mat2;
-	using KalaHeaders::mat3;
 	using KalaHeaders::mat4;
-	using KalaHeaders::radians;
-	using KalaHeaders::wrap;
-	using KalaHeaders::createumodel;
 	using KalaHeaders::kclamp;
-	using KalaHeaders::tomat4;
+	using KalaHeaders::setpos;
+	using KalaHeaders::setrot;
+	using KalaHeaders::setsize;
+	using KalaHeaders::wrap;
+	using KalaHeaders::Transform2D;
+	using KalaHeaders::PosTarget;
+	using KalaHeaders::RotTarget;
+	using KalaHeaders::SizeTarget;
 	using KalaHeaders::MouseButton;
 	using KalaHeaders::KeyboardButton;
 
 	using KalaGraphics::Graphics::OpenGL::OpenGL_Shader;
 	using KalaGraphics::Graphics::OpenGL::OpenGL_Texture;
-	using KalaGraphics::Utils::Transform2D;
-	using KalaGraphics::Utils::PosTarget;
-	using KalaGraphics::Utils::RotTarget;
-	using KalaGraphics::Utils::SizeTarget;
-	using KalaGraphics::Utils::KalaGraphicsRegistry;
+	using KalaGraphics::Core::KalaGraphicsRegistry;
 
 	constexpr u16 MAX_Z_ORDER = 1024;
 
@@ -149,20 +146,18 @@ namespace KalaGraphics::UI
 			vec2 viewportSize,
 			vec2 offset = vec2(1.0f))
 		{
-			if (!transform
-				|| viewportSize <= vec2(1.0f))
-			{
-				return;
-			}
+			if (viewportSize <= vec2(1.0f)) return;
 
 			vec2 offsetClamped = kclamp(
 				offset, 
 				vec2(-0.5f), 
 				vec2(2.5f));
 
-			transform->SetPos(
-				vec2(viewportSize * offsetClamped * 0.5f), 
-				PosTarget::POS_WORLD);
+			setpos(
+				transform,
+				{},
+				PosTarget::POS_WORLD,
+				vec2(viewportSize * offsetClamped * 0.5f));
 		}
 
 		inline u32 GetID() const { return ID; }
@@ -196,9 +191,9 @@ namespace KalaGraphics::UI
 		//to ensure this widget local values are refreshed
 		inline void ResetWidgetAfterHierarchyUpdate()
 		{
-			transform->SetPos(vec2(0.0f), PosTarget::POS_LOCAL);
-			transform->SetRot(0.0f, RotTarget::ROT_LOCAL);
-			transform->SetSize(0.0f, SizeTarget::SIZE_LOCAL);
+			setpos(transform, {}, PosTarget::POS_LOCAL, vec2(0.0f));
+			setrot(transform, {}, RotTarget::ROT_LOCAL, 0.0f);
+			setsize(transform, {}, SizeTarget::SIZE_LOCAL, 1.0f);
 		}
 		
 		inline void SetVertices(const vector<vec2>& newVertices) { render.vertices = newVertices; }
@@ -207,11 +202,105 @@ namespace KalaGraphics::UI
 		inline const vector<vec2>& GetVertices() const { return render.vertices; };
 		inline const vector<u32>& GetIndices() const { return render.indices; }
 
-		inline Transform2D* GetTransform() { return transform; }
 		inline const array<vec2, 2>& GetAABB(f32 viewportHeight)
 		{ 
 			UpdateAABB(viewportHeight);
 			return render.aabb; 
+		}
+		
+		//
+		// TRANSFORM
+		//
+		
+		//Increments position over time
+		inline void AddPos(
+			PosTarget type,
+			const vec2 deltaPos)
+		{
+			addpos(
+				transform,
+				{},
+				type,
+				deltaPos);
+		}
+		//Snaps to given position
+		inline void SetPos(
+			PosTarget type,
+			const vec2 newPos)
+		{
+			setpos(
+				transform,
+				{},
+				type,
+				newPos);
+		}
+		inline vec2 GetPos(PosTarget type) 
+		{ 
+			return getpos(
+				transform,
+				type); 
+		}
+		
+		//Increments rotation over time
+		inline void AddRot(
+			RotTarget type,
+			const f32 deltaRot)
+		{
+			f32 safeRot = wrap(deltaRot);
+			
+			addrot(
+				transform,
+				{},
+				type,
+				safeRot);
+		}
+		//Snaps to given rotation
+		inline void SetRot(
+			RotTarget type,
+			f32 newRot)
+		{
+			f32 safeRot = wrap(newRot);
+			
+			setrot(
+				transform,
+				{},
+				type,
+				safeRot);
+		}
+		inline f32 GetRot(RotTarget type) 
+		{ 
+			return getrot(
+				transform,
+				type);
+		}
+		
+		//Increments size over time
+		inline void AddSize(
+			SizeTarget type,
+			const vec2 deltaSize)
+		{
+			addsize(
+				transform,
+				{},
+				type,
+				deltaSize);
+		}
+		//Snaps to size position
+		inline void SetSize(
+			SizeTarget type,
+			const vec2 newSize)
+		{
+			setsize(
+				transform,
+				{},
+				type,
+				newSize);
+		}
+		inline vec2 GetSize(SizeTarget type) 
+		{ 
+			return getsize(
+				transform,
+				type); 
 		}
 
 		//
@@ -528,7 +617,7 @@ namespace KalaGraphics::UI
 
 		bool isInteractable = true;
 
-		Transform2D* transform{};
+		Transform2D transform{};
 		Widget_Render render{};
 		Widget_Event event{};
 

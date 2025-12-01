@@ -29,7 +29,7 @@ namespace KalaGraphics::Core
 	//Stores local non-owning pointers per T instance inside the Registry struct
 	template<typename T>
 		requires is_class_v<T>
-	struct LIB_API Hierarchy
+	struct LIB_API KalaGraphicsHierarchy
 	{
 		T* thisObject{};
 		T* parent{};
@@ -240,17 +240,17 @@ namespace KalaGraphics::Core
 	};
 
 	//Stores unique_ptrs and non-owning pointers of class T for ID-based lookups,
-	//should always be stored as 'static inline Registry<T> registry'
+	//should always be stored as 'static inline KalaGraphicsRegistry<T> registry'
 	template<typename T>
 		requires is_class_v<T>
-	struct LIB_API Registry
+	struct LIB_API KalaGraphicsRegistry
 	{
 		//Owner registry with ID as key
 		static inline unordered_map<u32, unique_ptr<T>> createdContent{};
 		//Runtime non-owning pointers
 		static inline vector<T*> runtimeContent{};
 		//Hierarchy content for storing parent-child relations per instance of this class
-		static inline unordered_map<T*, Hierarchy<T>> hierarchy{};
+		static inline unordered_map<T*, KalaGraphicsHierarchy<T>> hierarchy{};
 
 		//Get non-owning value by ID
 		static inline T* GetContent(u32 targetID)
@@ -278,7 +278,7 @@ namespace KalaGraphics::Core
 			runtimeContent.push_back(raw);
 			
 			//add hierarchy node
-			hierarchy[raw] = Hierarchy<T>{};
+			hierarchy[raw] = KalaGraphicsHierarchy<T>{};
 			hierarchy[raw].thisObject = raw;
 
 			return true;
@@ -373,6 +373,74 @@ namespace KalaGraphics::Core
 			hierarchy.clear();
 			createdContent.clear();
 			runtimeContent.clear();
+		}
+		
+		//
+		// WINDOW-RELATED ACTIONS
+		//
+		
+		//Returns true if the window owns the ID
+		//Requires target class inside createdContent and runtimeContent
+		//to have the 'u32 GetWindowID()' function.
+		//Should not be used for externally created registries
+		//because the Window class does not accept new IDs
+		template<typename U = T>
+			requires requires(U& u) { u.GetWindowID(); }
+		static inline bool IsOwner(
+			u32 windowID,
+			u32 targetID)
+		{
+			auto it = createdContent.find(targetID);
+			if (it == createdContent.end()) return false;
+
+			return it->second
+				&& it->second->GetWindowID() == windowID;
+		}
+			
+		//Get all content as non-owning pointers by window ID from containers.
+		//Requires target class inside createdContent and runtimeContent
+		//to have the 'u32 GetWindowID()' function.
+		//Should not be used for externally created registries
+		//because the Window class does not accept new IDs
+		template<typename U = T>
+			requires requires(U& u) { u.GetWindowID(); }
+		static inline vector<T*> GetAllWindowContent(u32 windowID)
+		{
+			vector<T*> out{};
+
+			for (const auto& v : runtimeContent)
+			{
+				if (v->GetWindowID() == windowID) out.push_back(v);
+			}
+				
+			return out;
+		}
+
+		//Remove all content by window ID from containers.
+		//Requires target class inside createdContent and runtimeContent
+		//to have the 'u32 GetWindowID()' function.
+		//Should not be used for externally created registries
+		//because the Window class does not accept new IDs
+		template<typename U = T>
+			requires requires(U& u) { u.GetWindowID(); }
+		static inline void RemoveAllWindowContent(u32 windowID)
+		{
+			runtimeContent.erase(remove_if(
+				runtimeContent.begin(),
+				runtimeContent.end(),
+				[&](T* c)
+				{
+					return c && c->GetWindowID() == windowID;
+				}), runtimeContent.end());
+					
+			for (auto it = createdContent.begin(); it != createdContent.end();)
+			{
+				if (it->second->GetWindowID() == windowID)
+				{
+					it = createdContent.erase(it);
+				}
+				else ++it;
+			}
 		}
 	};
 }

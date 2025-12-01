@@ -12,7 +12,7 @@
 #include "KalaHeaders/math_utils.hpp"
 #include "KalaHeaders/import_kfd.hpp"
 
-#include "utils/kg_registry.hpp"
+#include "core/kg_registry.hpp"
 
 namespace KalaGraphics::UI
 {
@@ -23,7 +23,7 @@ namespace KalaGraphics::UI
 	using KalaHeaders::GlyphTable;
 	using KalaHeaders::GlyphBlock;
 	
-	using KalaGraphics::Utils::KalaGraphicsRegistry;
+	using KalaGraphics::Core::KalaGraphicsRegistry;
 
 	class LIB_API Font
 	{

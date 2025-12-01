@@ -10,7 +10,7 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
 
-#include "utils/kg_registry.hpp"
+#include "core/kg_registry.hpp"
 
 namespace KalaGraphics::Graphics
 {
@@ -35,7 +35,7 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::wrap;
 	using KalaHeaders::isnear;
 	
-	using KalaGraphics::Utils::KalaGraphicsRegistry;
+	using KalaGraphics::Core::KalaGraphicsRegistry;
 
 	class LIB_API Camera
 	{
@@ -128,6 +128,16 @@ namespace KalaGraphics::Graphics
 		inline vec3 GetRight() { return getdirright(transform); }
 		inline vec3 GetUp() { return getdirup(transform); }
 
+		//Increments position over time
+		inline void AddPos(const vec3& deltaPos)
+		{
+			addpos(
+				transform,
+				{},
+				PosTarget::POS_WORLD,
+				deltaPos);
+		}
+		//Snaps to given position
 		inline void SetPos(const vec3& newPos)
 		{
 			setpos(

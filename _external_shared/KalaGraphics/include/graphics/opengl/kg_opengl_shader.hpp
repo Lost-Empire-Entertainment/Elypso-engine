@@ -11,7 +11,7 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
 
-#include "utils/kg_registry.hpp"
+#include "core/kg_registry.hpp"
 
 namespace KalaGraphics::Graphics::OpenGL
 {
@@ -25,7 +25,7 @@ namespace KalaGraphics::Graphics::OpenGL
 	using KalaHeaders::mat3;
 	using KalaHeaders::mat4;
 	
-	using KalaGraphics::Utils::KalaGraphicsRegistry;
+	using KalaGraphics::Core::KalaGraphicsRegistry;
 
 	enum class ShaderType
 	{

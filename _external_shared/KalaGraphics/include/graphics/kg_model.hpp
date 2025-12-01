@@ -12,7 +12,7 @@
 #include "KalaHeaders/math_utils.hpp"
 #include "KalaHeaders/import_kmd.hpp"
 
-#include "utils/kg_registry.hpp"
+#include "core/kg_registry.hpp"
 
 namespace KalaGraphics::Graphics
 {
@@ -25,7 +25,7 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::quat;
 	using KalaHeaders::toquat;
 	
-	using KalaGraphics::Utils::KalaGraphicsRegistry;
+	using KalaGraphics::Core::KalaGraphicsRegistry;
 	
 	class LIB_API Model
 	{
