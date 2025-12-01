@@ -28,12 +28,12 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::addrot;
 	using KalaHeaders::setrot;
 	using KalaHeaders::getroteuler;
-	using KalaHeaders::getrotquat;
 	using KalaHeaders::getdirfront;
 	using KalaHeaders::getdirright;
 	using KalaHeaders::getdirup;
 	using KalaHeaders::view;
 	using KalaHeaders::wrap;
+	using KalaHeaders::isnear;
 	
 	using KalaGraphics::Utils::KalaGraphicsRegistry;
 
@@ -47,8 +47,8 @@ namespace KalaGraphics::Graphics
 			vec2 framebufferSize,
 			f32 fov,
 			f32 speed,
-			const vec3& pos = vec3(0),
-			const vec3& rot = vec3(0, 0, 90.0f));
+			const vec3& pos = {},
+			const vec3& rot = {});
 
 		inline bool IsInitialized() const { return isInitialized; }
 
@@ -70,16 +70,21 @@ namespace KalaGraphics::Graphics
 		//Handle camera rotation based off of mouse movement
 		void UpdateCameraRotation(vec2 delta)
 		{
-			vec3 e = getroteuler(transform, RotTarget::ROT_WORLD);
+			vec3 inc{};
 			
-			e.x = 0.0f; //roll should never be modified
-			e.z += delta.x * sensitivity; //yaw
-			e.y += delta.y * sensitivity; //pitch
+			//clamped pitch
+			inc.x = clamp(-delta.y * sensitivity, -89.99f, 89.99f);
+			//reglar yaw, already wrapped internally
+			inc.y = delta.x * sensitivity;
+			//hard-locked roll
+			inc.z = 0.0f;
 			
-			e.z = wrap(e.z);
-			e.y = clamp(e.y, -89.99f, 89.99f);
+			//flattens axes to 0 if any of them are near 0
+			if (isnear(inc.x)) inc.x = 0.0f;
+			if (isnear(inc.y)) inc.y = 0.0f;
+			if (isnear(inc.z)) inc.z = 0.0f;
 			
-			setrot(transform, {}, RotTarget::ROT_WORLD, e);
+			addrot(transform, {}, RotTarget::ROT_WORLD, inc);
 		}
 
 		inline void SetFOV(f32 newFOV)
@@ -141,43 +146,41 @@ namespace KalaGraphics::Graphics
 		//Increments rotation over time
 		inline void AddRot(const vec3& deltaRot)
 		{
+			vec3 safeRot = vec3(
+				clamp(deltaRot.x, -90.0f, 90.0f), //clamped pitch
+				deltaRot.y,                       //regular yaw, already wrapped internally
+				0.0f);                            //hard-locked roll
+			
 			addrot(
 				transform,
 				{},
 				RotTarget::ROT_WORLD,
-				deltaRot);
+				safeRot);
 		}
-
 		//Snaps to given rotation
 		inline void SetRot(const vec3& newRot)
 		{
+			vec3 safeRot = vec3(
+				clamp(newRot.x, -90.0f, 90.0f), //clamped pitch
+				newRot.y,                       //regular yaw, already wrapped internally
+				0.0f);                          //hard-locked roll
+			
 			setrot(
 				transform,
 				{},
 				RotTarget::ROT_WORLD,
-				newRot);
+				safeRot);
 		}
-		inline vec3 GetRotEuler() 
+		inline vec3 GetRot() 
 		{ 
-			return getroteuler(
+			vec3 internalRot = getroteuler(
 				transform,
-				RotTarget::ROT_WORLD); 
-		}
-
-		//Snaps to given rotation
-		inline void SetRot(const quat& newRot)
-		{
-			setrot(
-				transform,
-				{},
-				RotTarget::ROT_WORLD,
-				newRot);
-		}
-		inline quat GetRotQuat()
-		{ 
-			return getrotquat(
-				transform,
-				RotTarget::ROT_WORLD); 
+				RotTarget::ROT_WORLD);
+				
+			return vec3(
+				clamp(internalRot.x, -90.0f, 90.0f), //clamped pitch
+				internalRot.y,                       //regular yaw, already wrapped internally
+				0.0f);                               //hard-locked roll
 		}
 		
 		mat4 GetViewMatrix()
