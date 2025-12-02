@@ -18,23 +18,23 @@ namespace KalaGraphics::Core
 {
 	using std::string;
 	
-	using KalaHeaders::vec2;
-	using KalaHeaders::vec3;
-	using KalaHeaders::mat4;
-	using KalaHeaders::quat;
-	using KalaHeaders::Transform3D;
-	using KalaHeaders::PosTarget;
-	using KalaHeaders::RotTarget;
-	using KalaHeaders::addpos;
-	using KalaHeaders::setpos;
-	using KalaHeaders::getpos;
-	using KalaHeaders::addrot;
-	using KalaHeaders::setrot;
-	using KalaHeaders::getroteuler;
-	using KalaHeaders::getdirfront;
-	using KalaHeaders::getdirright;
-	using KalaHeaders::getdirup;
-	using KalaHeaders::view;
+	using KalaHeaders::KalaMath::vec2;
+	using KalaHeaders::KalaMath::vec3;
+	using KalaHeaders::KalaMath::mat4;
+	using KalaHeaders::KalaMath::quat;
+	using KalaHeaders::KalaMath::Transform3D;
+	using KalaHeaders::KalaMath::PosTarget;
+	using KalaHeaders::KalaMath::RotTarget;
+	using KalaHeaders::KalaMath::addpos;
+	using KalaHeaders::KalaMath::setpos;
+	using KalaHeaders::KalaMath::getpos;
+	using KalaHeaders::KalaMath::addrot;
+	using KalaHeaders::KalaMath::setrot;
+	using KalaHeaders::KalaMath::getroteuler;
+	using KalaHeaders::KalaMath::getdirfront;
+	using KalaHeaders::KalaMath::getdirright;
+	using KalaHeaders::KalaMath::getdirup;
+	using KalaHeaders::KalaMath::view;
 
 	class LIB_API Camera
 	{

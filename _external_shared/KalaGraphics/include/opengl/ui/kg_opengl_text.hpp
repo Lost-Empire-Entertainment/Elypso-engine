@@ -12,7 +12,7 @@
 
 namespace KalaGraphics::OpenGL::UI
 {
-	using KalaHeaders::kclamp;
+	using KalaHeaders::KalaMath::kclamp;
 	using KalaHeaders::KalaFontData::GlyphBlock;
 
 	class LIB_API OpenGL_Text : public OpenGL_Widget

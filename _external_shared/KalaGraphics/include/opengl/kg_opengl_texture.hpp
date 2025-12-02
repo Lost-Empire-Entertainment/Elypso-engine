@@ -22,7 +22,7 @@ namespace KalaGraphics::OpenGL
 	using std::array;
 	using std::function;
 
-	using KalaHeaders::vec2;
+	using KalaHeaders::KalaMath::vec2;
 	
 	//Texture internal data type
 	enum class OpenGL_TextureType

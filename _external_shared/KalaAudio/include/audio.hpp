@@ -25,7 +25,7 @@ namespace KalaAudio
 	using std::filesystem::path;
 	using std::filesystem::is_regular_file;
 
-	using KalaHeaders::vec3;
+	using KalaHeaders::KalaMath::vec3;
 
 	//Stores data for managing directional audio hearing/playback
 	struct LIB_API AudioCone

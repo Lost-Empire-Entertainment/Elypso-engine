@@ -25,18 +25,18 @@ namespace KalaGraphics::OpenGL::UI
 	using std::array;
 	using std::function;
 
-	using KalaHeaders::vec2;
-	using KalaHeaders::vec3;
-	using KalaHeaders::mat4;
-	using KalaHeaders::kclamp;
-	using KalaHeaders::setpos;
-	using KalaHeaders::setrot;
-	using KalaHeaders::setsize;
-	using KalaHeaders::wrap;
-	using KalaHeaders::Transform2D;
-	using KalaHeaders::PosTarget;
-	using KalaHeaders::RotTarget;
-	using KalaHeaders::SizeTarget;
+	using KalaHeaders::KalaMath::vec2;
+	using KalaHeaders::KalaMath::vec3;
+	using KalaHeaders::KalaMath::mat4;
+	using KalaHeaders::KalaMath::kclamp;
+	using KalaHeaders::KalaMath::setpos;
+	using KalaHeaders::KalaMath::setrot;
+	using KalaHeaders::KalaMath::setsize;
+	using KalaHeaders::KalaMath::wrap;
+	using KalaHeaders::KalaMath::Transform2D;
+	using KalaHeaders::KalaMath::PosTarget;
+	using KalaHeaders::KalaMath::RotTarget;
+	using KalaHeaders::KalaMath::SizeTarget;
 	using KalaHeaders::KalaKeyStandards::MouseButton;
 	using KalaHeaders::KalaKeyStandards::KeyboardButton;
 

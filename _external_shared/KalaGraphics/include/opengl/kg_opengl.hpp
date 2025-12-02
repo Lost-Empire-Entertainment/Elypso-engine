@@ -17,8 +17,8 @@ namespace KalaGraphics::OpenGL
 	using std::to_string;
 	using std::unordered_map;
 	
-	using KalaHeaders::Log;
-	using KalaHeaders::LogType;
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
 	
 	using u32 = uint32_t;
 	

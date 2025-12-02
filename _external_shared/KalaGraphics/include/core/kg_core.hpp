@@ -19,8 +19,8 @@ namespace KalaGraphics::Core
 	
 	using u32 = uint32_t;
 	
-	using KalaHeaders::Log;
-	using KalaHeaders::LogType;
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
 
 	class LIB_API KalaGraphicsCore
 	{

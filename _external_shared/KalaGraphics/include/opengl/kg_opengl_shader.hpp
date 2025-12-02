@@ -18,12 +18,12 @@ namespace KalaGraphics::OpenGL
 	using std::string;
 	using std::array;
 
-	using KalaHeaders::vec2;
-	using KalaHeaders::vec3;
-	using KalaHeaders::vec4;
-	using KalaHeaders::mat2;
-	using KalaHeaders::mat3;
-	using KalaHeaders::mat4;
+	using KalaHeaders::KalaMath::vec2;
+	using KalaHeaders::KalaMath::vec3;
+	using KalaHeaders::KalaMath::vec4;
+	using KalaHeaders::KalaMath::mat2;
+	using KalaHeaders::KalaMath::mat3;
+	using KalaHeaders::KalaMath::mat4;
 	
 	using KalaGraphics::Core::KalaGraphicsRegistry;
 

@@ -11,8 +11,8 @@
 
 namespace KalaGraphics::OpenGL::UI
 {
-	using KalaHeaders::vec2;
-	using KalaHeaders::mat3;
+	using KalaHeaders::KalaMath::vec2;
+	using KalaHeaders::KalaMath::mat3;
 
 	class LIB_API OpenGL_Image : public OpenGL_Widget
 	{
