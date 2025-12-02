@@ -11,7 +11,7 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/log_utils.hpp"
 
-namespace KalaGraphics::Graphics::OpenGL
+namespace KalaGraphics::OpenGL
 {
 	using std::string;
 	using std::to_string;
@@ -22,7 +22,7 @@ namespace KalaGraphics::Graphics::OpenGL
 	
 	using u32 = uint32_t;
 	
-	enum VSyncState
+	enum OpenGL_VSyncState
 	{
 		VSYNC_ON, //Framerate is capped to monitor refresh rate.
 		VSYNC_OFF //Framerate is uncapped, runs as fast as render loop allows, introduces tearing.
@@ -31,7 +31,7 @@ namespace KalaGraphics::Graphics::OpenGL
 	//Per-window GL context
 	struct LIB_API GLContext
 	{
-		VSyncState vsyncState{};
+		OpenGL_VSyncState vsyncState{};
 		u32 lastProgramID{};
 		
 #ifdef _WIN32
@@ -207,10 +207,10 @@ namespace KalaGraphics::Graphics::OpenGL
 	
 		static bool SetVSyncState(
 			u32 glID,
-			VSyncState newValue);
+			OpenGL_VSyncState newValue);
 		static inline bool GetVSyncState(
 			u32 glID,
-			VSyncState& target)
+			OpenGL_VSyncState& target)
 		{
 			if (!glContexts.contains(glID))
 			{

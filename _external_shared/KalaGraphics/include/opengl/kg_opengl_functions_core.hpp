@@ -12,7 +12,7 @@
 
 #include "KalaHeaders/core_utils.hpp"
 
-namespace KalaGraphics::Graphics::OpenGLFunctions
+namespace KalaGraphics::OpenGL::OpenGLFunctions
 {
 	using std::string;
 

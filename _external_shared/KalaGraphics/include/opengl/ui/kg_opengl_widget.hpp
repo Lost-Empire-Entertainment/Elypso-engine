@@ -14,11 +14,11 @@
 #include "KalaHeaders/math_utils.hpp"
 #include "KalaHeaders/key_standards.hpp"
 
-#include "graphics/opengl/kg_opengl_shader.hpp"
-#include "graphics/opengl/kg_opengl_texture.hpp"
+#include "opengl/kg_opengl_shader.hpp"
+#include "opengl/kg_opengl_texture.hpp"
 #include "core/kg_registry.hpp"
 
-namespace KalaGraphics::UI
+namespace KalaGraphics::OpenGL::UI
 {
 	using std::string;
 	using std::vector;
@@ -37,11 +37,11 @@ namespace KalaGraphics::UI
 	using KalaHeaders::PosTarget;
 	using KalaHeaders::RotTarget;
 	using KalaHeaders::SizeTarget;
-	using KalaHeaders::MouseButton;
-	using KalaHeaders::KeyboardButton;
+	using KalaHeaders::KalaKeyStandards::MouseButton;
+	using KalaHeaders::KalaKeyStandards::KeyboardButton;
 
-	using KalaGraphics::Graphics::OpenGL::OpenGL_Shader;
-	using KalaGraphics::Graphics::OpenGL::OpenGL_Texture;
+	using KalaGraphics::OpenGL::OpenGL_Shader;
+	using KalaGraphics::OpenGL::OpenGL_Texture;
 	using KalaGraphics::Core::KalaGraphicsRegistry;
 
 	constexpr u16 MAX_Z_ORDER = 1024;
@@ -66,7 +66,7 @@ namespace KalaGraphics::UI
 		ACTION_SCROLLED  //used scrollwheel
 	};
 
-	struct Widget_Render
+	struct OpenGL_Widget_Render
 	{
 		bool canUpdate = true;
 
@@ -99,7 +99,7 @@ namespace KalaGraphics::UI
 		OpenGL_Texture* texture{};
 	};
 
-	struct Widget_Event
+	struct OpenGL_Widget_Event
 	{
 		function<void()> function_button_pressed{};
 		KeyboardButton keyPressed{};
@@ -120,13 +120,13 @@ namespace KalaGraphics::UI
 		function<void()> function_mouse_scrolled{};
 	};
 
-	class LIB_API Widget
+	class LIB_API OpenGL_Widget
 	{
 	public:
-		static inline KalaGraphicsRegistry<Widget> registry{};
+		static inline KalaGraphicsRegistry<OpenGL_Widget> registry{};
 	
 		//Returns all hit widgets at mouse position sorted by highest Z first
-		static vector<Widget*> GetHitWidgets(vec2 mousePos);
+		static vector<OpenGL_Widget*> GetHitWidgets(vec2 mousePos);
 
 		//
 		// CORE
@@ -178,12 +178,12 @@ namespace KalaGraphics::UI
 
 		inline void SetName(const string& newName)
 		{
-			if (!newName.empty()
-				&& newName.length() <= 50
-				&& newName != name)
-			{
-				name = newName;
-			}
+			//skip if name is empty, same as existing or too long
+			if (newName.empty()
+				|| newName == name
+				|| newName.length() > 50) return;
+
+			name = newName;
 		}
 		inline const string& GetName() const { return name; }
 
@@ -199,7 +199,7 @@ namespace KalaGraphics::UI
 		inline void SetVertices(const vector<vec2>& newVertices) { render.vertices = newVertices; }
 		inline void SetIndices(const vector<u32>& newIndices) { render.indices = newIndices; }
 
-		inline const vector<vec2>& GetVertices() const { return render.vertices; };
+		inline const vector<vec2>& GetVertices() const { return render.vertices; }
 		inline const vector<u32>& GetIndices() const { return render.indices; }
 
 		inline const array<vec2, 2>& GetAABB(f32 viewportHeight)
@@ -308,7 +308,7 @@ namespace KalaGraphics::UI
 		//
 
 		//Makes this widget Z order 1 unit higher than target widget
-		inline void MoveAbove(Widget* targetWidget)
+		inline void MoveAbove(OpenGL_Widget* targetWidget)
 		{
 			if (!targetWidget
 				|| targetWidget == this
@@ -324,7 +324,7 @@ namespace KalaGraphics::UI
 			zOrder = newZOrder;
 		}
 		//Makes this widget Z order 1 unit lower than target widget
-		inline void MoveBelow(Widget* targetWidget)
+		inline void MoveBelow(OpenGL_Widget* targetWidget)
 		{
 			if (!targetWidget
 				|| targetWidget == this
@@ -597,7 +597,7 @@ namespace KalaGraphics::UI
 		inline const OpenGL_Texture* GetTexture() const { return render.texture; }
 
 		//Do not destroy manually, erase from registry instead
-		virtual ~Widget() = 0;
+		virtual ~OpenGL_Widget() = 0;
 	protected:
 		virtual void UpdateAABB(f32 viewportHeight) = 0;
 
@@ -618,8 +618,8 @@ namespace KalaGraphics::UI
 		bool isInteractable = true;
 
 		Transform2D transform{};
-		Widget_Render render{};
-		Widget_Event event{};
+		OpenGL_Widget_Render render{};
+		OpenGL_Widget_Event event{};
 
 		static void CreateWidgetGeometry(
 			const vector<vec2>& vertices,

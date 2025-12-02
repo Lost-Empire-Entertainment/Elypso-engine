@@ -8,30 +8,30 @@
 #include "KalaHeaders/math_utils.hpp"
 #include "KalaHeaders/import_kfd.hpp"
 
-#include "ui/kg_widget.hpp"
+#include "opengl/ui/kg_opengl_widget.hpp"
 
-namespace KalaGraphics::UI
+namespace KalaGraphics::OpenGL::UI
 {
 	using KalaHeaders::kclamp;
-	using KalaHeaders::GlyphBlock;
+	using KalaHeaders::KalaFontData::GlyphBlock;
 
-	class LIB_API Text : public Widget
+	class LIB_API OpenGL_Text : public OpenGL_Widget
 	{
 	public:
 		//Initialize a new Text widget.
 		//Parent widget and texture are optional
-		static Text* Initialize(
+		static OpenGL_Text* Initialize(
+			const string& name,
 			u32 windowID,
 			u32 glID,
-			const string& name,
 			u32 glyphIndex,
 			u32 fontID,
 			const vec2 pos,
 			const float rot,
 			float sizeMultiplier,
-			Widget* parentWidget,
 			OpenGL_Texture* texture,
-			OpenGL_Shader* shader);
+			OpenGL_Shader* shader,
+			OpenGL_Widget* parentWidget = {});
 			
 		//Render this text widget. Requires handle (HDC) from your window
 		virtual bool Render(
@@ -80,7 +80,7 @@ namespace KalaGraphics::UI
 		inline u32 GetFontID() const { return fontID; }
 
 		//Do not destroy manually, erase from registry instead
-		virtual ~Text() override;
+		virtual ~OpenGL_Text() override;
 	protected:
 		virtual void UpdateAABB(f32 viewportHeight);
 	private:

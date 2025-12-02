@@ -14,14 +14,14 @@
 
 #include "core/kg_registry.hpp"
 
-namespace KalaGraphics::UI
+namespace KalaGraphics::Core
 {
 	using std::string;
 	using std::vector;
 
-	using KalaHeaders::GlyphHeader;
-	using KalaHeaders::GlyphTable;
-	using KalaHeaders::GlyphBlock;
+	using KalaHeaders::KalaFontData::GlyphHeader;
+	using KalaHeaders::KalaFontData::GlyphTable;
+	using KalaHeaders::KalaFontData::GlyphBlock;
 	
 	using KalaGraphics::Core::KalaGraphicsRegistry;
 

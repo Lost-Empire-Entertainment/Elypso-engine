@@ -12,10 +12,12 @@
 
 #include "core/kg_registry.hpp"
 
-namespace KalaGraphics::Graphics
+//TODO: figure out orthographic camera settings
+
+namespace KalaGraphics::Core
 {
 	using std::string;
-
+	
 	using KalaHeaders::vec2;
 	using KalaHeaders::vec3;
 	using KalaHeaders::mat4;
@@ -25,6 +27,7 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::RotTarget;
 	using KalaHeaders::addpos;
 	using KalaHeaders::setpos;
+	using KalaHeaders::getpos;
 	using KalaHeaders::addrot;
 	using KalaHeaders::setrot;
 	using KalaHeaders::getroteuler;
@@ -32,10 +35,6 @@ namespace KalaGraphics::Graphics
 	using KalaHeaders::getdirright;
 	using KalaHeaders::getdirup;
 	using KalaHeaders::view;
-	using KalaHeaders::wrap;
-	using KalaHeaders::isnear;
-	
-	using KalaGraphics::Core::KalaGraphicsRegistry;
 
 	class LIB_API Camera
 	{
@@ -44,24 +43,24 @@ namespace KalaGraphics::Graphics
 
 		static Camera* Initialize(
 			const string& cameraName,
+			u32 windowID,
+			const vec3& pos,
+			const vec3& rot,
 			vec2 framebufferSize,
 			f32 fov,
-			f32 speed,
-			const vec3& pos = {},
-			const vec3& rot = {});
+			f32 speed);
 
 		inline bool IsInitialized() const { return isInitialized; }
 
 		inline u32 GetID() const { return ID; }
+		inline u32 GetWindowID() const { return windowID; }
 
 		inline void SetName(const string& newName)
 		{
-			//skip if name is empty
-			if (newName.empty()) return;
-			//skip if name is too long
-			if (newName.length() > 50) return;
-			//skip if name is already same
-			if (newName == name) return;
+			//skip if name is empty, same as existing or too long
+			if (newName.empty()
+				|| newName == name
+				|| newName.length() > 50) return;
 
 			name = newName;
 		}
@@ -78,11 +77,6 @@ namespace KalaGraphics::Graphics
 			inc.y = delta.x * sensitivity;
 			//hard-locked roll
 			inc.z = 0.0f;
-			
-			//flattens axes to 0 if any of them are near 0
-			if (isnear(inc.x)) inc.x = 0.0f;
-			if (isnear(inc.y)) inc.y = 0.0f;
-			if (isnear(inc.z)) inc.z = 0.0f;
 			
 			addrot(transform, {}, RotTarget::ROT_WORLD, inc);
 		}
@@ -209,6 +203,7 @@ namespace KalaGraphics::Graphics
 		string name{};
 
 		u32 ID{};
+		u32 windowID{};
 
 		f32 fov{};
 		f32 speed{};

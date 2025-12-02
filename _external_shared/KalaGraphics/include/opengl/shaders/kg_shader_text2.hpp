@@ -7,11 +7,11 @@
 
 #include <string_view>
 
-namespace KalaGraphics::Graphics::OpenGL::Shader
+namespace KalaGraphics::OpenGL::OpenGL_Shaders
 {
 	using std::string_view;
 
-	inline constexpr string_view shader_quad_vertex = 
+	inline constexpr string_view shader_text_vertex2 = 
 	R"(
 		#version 330 core
 
@@ -34,14 +34,14 @@ namespace KalaGraphics::Graphics::OpenGL::Shader
 		}
 	)";
 
-	inline constexpr string_view shader_quad_fragment =
+	inline constexpr string_view shader_text_fragment2 =
 	R"(
 		#version 330 core
 
 		in vec2 TexCoord;
 		out vec4 FragColor;
 
-		uniform sampler2D uTexture;
+		uniform sampler2D uTexture0;
 		uniform bool uUseTexture = false; //mark as true if you want to pass a texture
 
 		uniform vec3 uColor;    //blended with texture or non-texture base color
@@ -55,7 +55,11 @@ namespace KalaGraphics::Graphics::OpenGL::Shader
 			if (safeOpacity < 0.1) discard;
 
 			vec4 texColor = vec4(1.0);
-			if (uUseTexture) texColor = texture(uTexture, TexCoord);
+			if (uUseTexture)
+			{
+				float alpha = texture(uTexture0, TexCoord).r; //glyph intensity
+				texColor = vec4(1.0, 1.0, 1.0, alpha);        //treat red as alpha
+			}
 
 			FragColor = vec4(texColor.rgb * safeColor, texColor.a * safeOpacity);
 		}

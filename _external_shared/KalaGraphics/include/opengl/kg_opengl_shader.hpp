@@ -13,7 +13,7 @@
 
 #include "core/kg_registry.hpp"
 
-namespace KalaGraphics::Graphics::OpenGL
+namespace KalaGraphics::OpenGL
 {
 	using std::string;
 	using std::array;
@@ -27,7 +27,7 @@ namespace KalaGraphics::Graphics::OpenGL
 	
 	using KalaGraphics::Core::KalaGraphicsRegistry;
 
-	enum class ShaderType
+	enum class OpenGL_ShaderType
 	{
 		SHADER_NONE,
 		SHADER_VERTEX,
@@ -35,7 +35,7 @@ namespace KalaGraphics::Graphics::OpenGL
 		SHADER_GEOMETRY
 	};
 
-	struct LIB_API ShaderData
+	struct LIB_API OpenGL_ShaderData
 	{
 		//either fill shader data or shader path,
 		//it picks data by default if both are filled
@@ -46,7 +46,7 @@ namespace KalaGraphics::Graphics::OpenGL
 		string shaderData{};
 
 		//assign to something else than the default 'SHADER_NONE'
-		ShaderType type = ShaderType::SHADER_NONE;
+		OpenGL_ShaderType type = OpenGL_ShaderType::SHADER_NONE;
 
 		//ID of the shader, does not need to be filled by user
 		u32 ID{};
@@ -62,7 +62,7 @@ namespace KalaGraphics::Graphics::OpenGL
 		static OpenGL_Shader* CreateShader(
 			u32 glID,
 			const string& shaderName,
-			const array<ShaderData, 3>& shaderData);
+			const array<OpenGL_ShaderData, 3>& shaderData);
 
 		inline bool IsInitialized() const { return isInitialized; }
 
@@ -93,22 +93,22 @@ namespace KalaGraphics::Graphics::OpenGL
 		inline u32 GetGLID() const { return glID; }
 
 		//Returns true if this shader is loaded
-		inline bool IsShaderLoaded(ShaderType targetType) const
+		inline bool IsShaderLoaded(OpenGL_ShaderType targetType) const
 		{
 			if (programID == 0) return false;
 
 			switch (targetType)
 			{
-			case ShaderType::SHADER_VERTEX: return vertData.ID != 0;
-			case ShaderType::SHADER_FRAGMENT: return fragData.ID != 0;
-			case ShaderType::SHADER_GEOMETRY: return geomData.ID != 0;
+			case OpenGL_ShaderType::SHADER_VERTEX: return vertData.ID != 0;
+			case OpenGL_ShaderType::SHADER_FRAGMENT: return fragData.ID != 0;
+			case OpenGL_ShaderType::SHADER_GEOMETRY: return geomData.ID != 0;
 			}
 
 			return false;
 		}
 
 		//Returns shader data assigned to shader type
-		inline const string& GetShaderData(ShaderType targetType) const
+		inline const string& GetShaderData(OpenGL_ShaderType targetType) const
 		{
 			static const string empty{};
 
@@ -116,15 +116,15 @@ namespace KalaGraphics::Graphics::OpenGL
 
 			switch (targetType)
 			{
-			case ShaderType::SHADER_VERTEX: return vertData.shaderData;
-			case ShaderType::SHADER_FRAGMENT: return fragData.shaderData;
-			case ShaderType::SHADER_GEOMETRY: return geomData.shaderData;
+			case OpenGL_ShaderType::SHADER_VERTEX: return vertData.shaderData;
+			case OpenGL_ShaderType::SHADER_FRAGMENT: return fragData.shaderData;
+			case OpenGL_ShaderType::SHADER_GEOMETRY: return geomData.shaderData;
 			}
 
 			return empty;
 		}
 		//Returns shader path assigned to shader type
-		inline const string& GetShaderPath(ShaderType targetType) const
+		inline const string& GetShaderPath(OpenGL_ShaderType targetType) const
 		{
 			static const string empty{};
 
@@ -132,30 +132,30 @@ namespace KalaGraphics::Graphics::OpenGL
 
 			switch (targetType)
 			{
-			case ShaderType::SHADER_VERTEX: return vertData.shaderPath;
-			case ShaderType::SHADER_FRAGMENT: return fragData.shaderPath;
-			case ShaderType::SHADER_GEOMETRY: return geomData.shaderPath;
+			case OpenGL_ShaderType::SHADER_VERTEX: return vertData.shaderPath;
+			case OpenGL_ShaderType::SHADER_FRAGMENT: return fragData.shaderPath;
+			case OpenGL_ShaderType::SHADER_GEOMETRY: return geomData.shaderPath;
 			}
 
 			return empty;
 		}
-		inline u32 GetShaderID(ShaderType targetType) const
+		inline u32 GetShaderID(OpenGL_ShaderType targetType) const
 		{
 			if (programID == 0) return 0;
 
 			switch (targetType)
 			{
-			case ShaderType::SHADER_VERTEX: return vertData.ID;
-			case ShaderType::SHADER_FRAGMENT: return fragData.ID;
-			case ShaderType::SHADER_GEOMETRY: return geomData.ID;
+			case OpenGL_ShaderType::SHADER_VERTEX: return vertData.ID;
+			case OpenGL_ShaderType::SHADER_FRAGMENT: return fragData.ID;
+			case OpenGL_ShaderType::SHADER_GEOMETRY: return geomData.ID;
 			}
 
 			return 0;
 		}
 
-		inline const array<ShaderData, 3>& GetAllShaders() const
+		inline const array<OpenGL_ShaderData, 3>& GetAllShaders() const
 		{
-			static array<ShaderData, 3> dataOut{};
+			static array<OpenGL_ShaderData, 3> dataOut{};
 
 			dataOut[0] = vertData;
 			dataOut[1] = fragData;
@@ -197,8 +197,8 @@ namespace KalaGraphics::Graphics::OpenGL
 		u32 programID{};
 		u32 glID{};
 
-		ShaderData vertData{};
-		ShaderData fragData{};
-		ShaderData geomData{};
+		OpenGL_ShaderData vertData{};
+		OpenGL_ShaderData fragData{};
+		OpenGL_ShaderData geomData{};
 	};
 }

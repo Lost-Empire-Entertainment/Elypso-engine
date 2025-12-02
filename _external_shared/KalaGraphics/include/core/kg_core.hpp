@@ -21,15 +21,22 @@ namespace KalaGraphics::Core
 	
 	using KalaHeaders::Log;
 	using KalaHeaders::LogType;
-	
+
 	class LIB_API KalaGraphicsCore
 	{
 	public:
 		//The ID that is bumped by every object in KalaWindow when it needs a new ID
 		static inline u32 globalID{};
-	
-		static inline function<void()> errorCallback{};
 		
+		//Run when you want all KalaGraphics resources freed relative to a window ID,
+		//fonts, shaders and textures are not related to one window, they are shared across all windows
+		static void CleanAllWindowResources(u32 windowID);
+		
+		//Run when you want all KalaGraphics resources to be freed
+		static void CleanAllResources();
+	
+		//Attach a function that is called when you call ForceClose,
+		//great for ensuring you clean KalaGraphics resources when you intend the program to close
 		static inline void SetErrorCallback(function<void()> newCallback)
 		{
 			if (!newCallback) return;
@@ -37,6 +44,7 @@ namespace KalaGraphics::Core
 			errorCallback = newCallback;
 		}
 		
+		//Force-close the program right this very moment with no cleanups
 		[[noreturn]] static inline void ForceClose(
 			const string& target,
 			const string& reason)
@@ -57,5 +65,7 @@ namespace KalaGraphics::Core
 #endif
 			}
 		}
+	private:
+		static inline function<void()> errorCallback{};
 	};
 }

@@ -11,7 +11,7 @@
 
 #include "OpenGL/glxext.h" //Linux-only OpenGL extension header
 
-namespace KalaGraphics::Graphics::OpenGL
+namespace KalaGraphics::OpenGL::OpenGLFunctions
 {
 	//add functions here...
 
