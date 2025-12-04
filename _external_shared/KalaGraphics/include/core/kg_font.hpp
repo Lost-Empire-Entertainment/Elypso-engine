@@ -31,7 +31,7 @@ namespace KalaGraphics::Core
 		static inline KalaGraphicsRegistry<Font> registry{};
 
 		//Loads a font from disk
-		static Font* LoadFont(
+		static Font* Initialize(
 			const string& name,
 			const string& fontPath);
 

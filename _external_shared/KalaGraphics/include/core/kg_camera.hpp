@@ -6,9 +6,11 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 #include "core/kg_registry.hpp"
 
@@ -17,7 +19,10 @@
 namespace KalaGraphics::Core
 {
 	using std::string;
+	using std::ostringstream;
 	
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
 	using KalaHeaders::KalaMath::vec2;
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::mat4;
@@ -35,6 +40,7 @@ namespace KalaGraphics::Core
 	using KalaHeaders::KalaMath::getdirright;
 	using KalaHeaders::KalaMath::getdirup;
 	using KalaHeaders::KalaMath::view;
+	using KalaHeaders::KalaMath::DIR_UP;
 
 	class LIB_API Camera
 	{
@@ -74,7 +80,7 @@ namespace KalaGraphics::Core
 			//clamped pitch
 			inc.x = clamp(-delta.y * sensitivity, -89.99f, 89.99f);
 			//reglar yaw, already wrapped internally
-			inc.y = delta.x * sensitivity;
+			inc.y = -delta.x * sensitivity;
 			//hard-locked roll
 			inc.z = 0.0f;
 			
@@ -98,13 +104,6 @@ namespace KalaGraphics::Core
 			farClip = clamp(newFarClip, nearClip + 0.1f, 1000.0f);
 		}
 		inline f32 GetFarClip() const { return farClip; }
-
-		//Called inside resize callback to ensure camera aspect ratio always stays valid
-		inline void SetAspectRatio(f32 size)
-		{
-			aspectRatio = clamp(size, 0.001f, 10.0f);
-		}
-		inline f32 GetAspectRatio() const { return aspectRatio; }
 
 		inline void SetSpeed(f32 newSpeed)
 		{
@@ -191,10 +190,50 @@ namespace KalaGraphics::Core
 		{
 			vec3 pos = GetPos();
 			vec3 front = GetFront();
-			vec3 up = GetUp();
+			vec3 up = DIR_UP;
+			
+			ostringstream ss;
+
+			ss  << "pos:   " << pos.x << ", " << pos.y << ", " << pos.z << "\n"
+				<< "front: " << front.x << ", " << front.y << ", " << front.z << "\n"
+				<< "up:    " << up.x << ", " << up.y << ", " << up.z << "\n";
+
+			Log::Print(
+				ss.str(),
+				"VIEW_MATRIX_IN",
+				LogType::LOG_DEBUG);
 			
 			return view(pos, pos + front, up);
 		};
+		//Returns aspect-ratio-correct ortographic matrix based off of inserted viewport
+		mat4 GetOrthographicMatrix(vec2 viewportSize)
+		{
+			f32 nc = GetNearClip();
+			f32 fc = GetFarClip();
+			
+			return ortho(viewportSize, nc, fc);
+		}
+		//Returns aspect-ratio-correct perspective matrix based off of inserted viewport
+		mat4 GetPerspectiveMatrix(vec2 viewportSize)
+		{
+			f32 fov = GetFOV();
+			f32 nc = GetNearClip();
+			f32 fc = GetFarClip();
+			
+			ostringstream ss;
+
+			ss  << "viewport:  " << viewportSize.x << ", " << viewportSize.y << "\n"
+				<< "fov:       " << fov << "\n"
+				<< "near clip: " << nc << "\n"
+				<< "far clip:  " << fc << "\n";
+
+			Log::Print(
+				ss.str(),
+				"PERSP_MATRIX_IN",
+				LogType::LOG_DEBUG);
+			
+			return perspective(viewportSize, fov, nc, fc);
+		}
 
 		~Camera();
 	private:
@@ -208,10 +247,8 @@ namespace KalaGraphics::Core
 		f32 fov{};
 		f32 speed{};
 
-		f32 aspectRatio{};
-
 		f32 nearClip = 0.01f;
-		f32 farClip = 512.0;
+		f32 farClip = 512.0f;
 		f32 sensitivity = 0.1f;
 
 		Transform3D transform{};

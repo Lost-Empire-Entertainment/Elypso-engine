@@ -99,7 +99,7 @@ namespace KalaGraphics::OpenGL
 		//Mipmap levels are clamped internally through Texture::GetMaxMipMapLevels.
 		//Returns a fallback texture if loading fails.
 		//Only supports Type_2D and Type_3D.
-		static OpenGL_Texture* LoadTexture(
+		static OpenGL_Texture* Initialize(
 			u32 glID,
 			const string& name,
 			const string& path,
@@ -114,7 +114,7 @@ namespace KalaGraphics::OpenGL
 		//Returns a fallback texture if loading fails. Depth is always 6 for cube map textures.
 		//Size for each texture must match and be 1:1 aspect ratio.
 		//Only supports Type_Cube
-		static OpenGL_Texture* LoadCubeMapTexture(
+		static OpenGL_Texture* InitializeCubeMap(
 			u32 glID,
 			const string& name,
 			const array<string, 6>& texturePaths,
@@ -127,7 +127,7 @@ namespace KalaGraphics::OpenGL
 		//Returns a fallback texture if loading fails. Depth is always size of texturePaths vector.
 		//Size for each texture must match and be 1:1 aspect ratio.
 		//Only supports Type_2DArray
-		static OpenGL_Texture* Load2DArrayTexture(
+		static OpenGL_Texture* Initialize2DArray(
 			u32 glID,
 			const string& name,
 			const vector<string>& texturePaths,

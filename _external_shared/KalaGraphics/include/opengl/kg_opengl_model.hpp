@@ -35,6 +35,7 @@ namespace KalaGraphics::OpenGL
 	using KalaHeaders::KalaMath::addrot;
 	using KalaHeaders::KalaMath::setrot;
 	using KalaHeaders::KalaMath::getroteuler;
+	using KalaHeaders::KalaMath::getrotquat;
 	using KalaHeaders::KalaMath::addsize;
 	using KalaHeaders::KalaMath::setsize;
 	using KalaHeaders::KalaMath::getsize;
@@ -42,7 +43,6 @@ namespace KalaGraphics::OpenGL
 	using KalaHeaders::KalaMath::getdirright;
 	using KalaHeaders::KalaMath::getdirup;
 	using KalaHeaders::KalaModelData::ModelTable;
-	using KalaHeaders::KalaModelData::ModelBlock;
 	using KalaHeaders::KalaModelData::Vertex;
 	
 	using KalaGraphics::OpenGL::OpenGL_Shader;
@@ -107,6 +107,7 @@ namespace KalaGraphics::OpenGL
 			const mat4& projection);
 
 		inline u32 GetID() const { return ID; }
+		inline u32 GetGLID() const { return glID; }
 
 		inline void SetName(const string& newName)
 		{
@@ -187,6 +188,12 @@ namespace KalaGraphics::OpenGL
 				transform,
 				type);
 		}
+		inline quat GetRotQuat(RotTarget type) 
+		{ 
+			return getrotquat(
+				transform,
+				type);
+		}
 		
 		//Increments size over time
 		inline void AddSize(
@@ -217,15 +224,80 @@ namespace KalaGraphics::OpenGL
 				type); 
 		}
 		
-		~OpenGL_Model() {};
+		//
+		// GRAPHICS
+		//
+
+		inline void SetNormalizedColor(const vec3& newValue)
+		{
+			f32 clampX = clamp(newValue.x, 0.0f, 1.0f);
+			f32 clampY = clamp(newValue.y, 0.0f, 1.0f);
+			f32 clampZ = clamp(newValue.z, 0.0f, 1.0f);
+
+			render.color = vec3(clampX, clampY, clampZ);
+		}
+		inline void SetRGBColor(const vec3& newValue)
+		{
+			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
+			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
+			int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+
+			f32 normalizedX = static_cast<f32>(clampX) / 255;
+			f32 normalizedY = static_cast<f32>(clampY) / 255;
+			f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+
+			render.color = vec3(normalizedX, normalizedY, normalizedZ);
+		}
+
+		inline const vec3& GetNormalizedColor() const { return render.color; }
+		inline vec3 GetRGBColor() const
+		{
+			int rgbX = static_cast<int>(render.color.x * 255);
+			int rgbY = static_cast<int>(render.color.y * 255);
+			int rgbZ = static_cast<int>(render.color.z * 255);
+
+			return vec3(rgbX, rgbY, rgbZ);
+		}
+
+		inline void SetOpacity(f32 newValue)
+		{
+			f32 clamped = clamp(newValue, 0.0f, 1.0f);
+			render.opacity = clamped;
+		}
+		inline f32 GetOpacity() const { return render.opacity; }
+
+		inline u32 GetVAO() const { return render.VAO; }
+		inline u32 GetVBO() const { return render.VBO; }
+		inline u32 GetEBO() const { return render.EBO; }
+
+		inline const OpenGL_Shader* GetShader() const { return render.shader; }
+
+		inline void SetTexture(OpenGL_Texture* newTexture)
+		{
+			if (newTexture
+				&& render.texture != newTexture)
+			{
+				render.texture = newTexture;
+			}
+		}
+		inline void ClearTexture() { render.texture = nullptr; }
+		inline const OpenGL_Texture* GetTexture() const { return render.texture; }
+		
+		~OpenGL_Model();
 	private:
+		static OpenGL_Model* Initialize(
+			string name,
+			vector<Vertex> vertices,
+			vector<u32> indices,
+			u32 glID,
+			OpenGL_Shader* shader);
+	
 		bool isInitialized{};
 
 		string name{};
 		
 		u32 ID{};
-		
-		ModelBlock modelData{};
+		u32 glID{};
 		
 		OpenGL_Model_Render render{};
 		Transform3D transform{};

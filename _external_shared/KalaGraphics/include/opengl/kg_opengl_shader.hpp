@@ -59,7 +59,7 @@ namespace KalaGraphics::OpenGL
 
 		//Create a new shader with up to three types of shader files.
 		//Geometry shaders are optional but vert and frag shader must always be filled
-		static OpenGL_Shader* CreateShader(
+		static OpenGL_Shader* Initialize(
 			u32 glID,
 			const string& shaderName,
 			const array<OpenGL_ShaderData, 3>& shaderData);
