@@ -68,15 +68,31 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		
 		void main()
 		{
-			float safeOpacity = clamp(uOpacity, 0.0, 1.0);
-			vec3 safeColor = clamp(uColor, 0.0, 1.0);
+			float opacity = clamp(uOpacity, 0.0, 1.0);
+			vec3 color = clamp(uColor, 0.0, 1.0);
 
-			if (safeOpacity < 0.1) discard;
+			if (opacity < 0.001) discard;
+			
+			vec3 finalColor;
+			float finalAlpha;
 
-			vec4 texColor = vec4(1.0);
-			if (uUseTexture) texColor = texture(uTexture, vTexCoord);
+			if (uUseTexture)
+			{
+				//tint texture
+				
+				vec4 texColor = texture(uTexture, vTexCoord);
+				finalColor = texColor.rgb * color; 
+				finalAlpha = texColor.a * opacity;
+			}
+			else
+			{
+				//set color
+				
+				finalColor = color;
+				finalAlpha = opacity;
+			}
 
-			FragColor = vec4(texColor.rgb * safeColor, texColor.a * safeOpacity);
+			FragColor = vec4(finalColor, finalAlpha);
 		}
 	)";
 }

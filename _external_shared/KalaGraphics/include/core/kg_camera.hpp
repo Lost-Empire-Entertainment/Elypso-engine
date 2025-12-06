@@ -40,6 +40,7 @@ namespace KalaGraphics::Core
 	using KalaHeaders::KalaMath::getdirright;
 	using KalaHeaders::KalaMath::getdirup;
 	using KalaHeaders::KalaMath::view;
+	using KalaHeaders::KalaMath::perspective;
 	using KalaHeaders::KalaMath::DIR_UP;
 
 	class LIB_API Camera
@@ -49,7 +50,6 @@ namespace KalaGraphics::Core
 
 		static Camera* Initialize(
 			const string& cameraName,
-			u32 windowID,
 			const vec3& pos,
 			const vec3& rot,
 			vec2 framebufferSize,
@@ -59,7 +59,6 @@ namespace KalaGraphics::Core
 		inline bool IsInitialized() const { return isInitialized; }
 
 		inline u32 GetID() const { return ID; }
-		inline u32 GetWindowID() const { return windowID; }
 
 		inline void SetName(const string& newName)
 		{
@@ -192,6 +191,7 @@ namespace KalaGraphics::Core
 			vec3 front = GetFront();
 			vec3 up = DIR_UP;
 			
+			/*
 			ostringstream ss;
 
 			ss  << "pos:   " << pos.x << ", " << pos.y << ", " << pos.z << "\n"
@@ -202,6 +202,7 @@ namespace KalaGraphics::Core
 				ss.str(),
 				"VIEW_MATRIX_IN",
 				LogType::LOG_DEBUG);
+			*/
 			
 			return view(pos, pos + front, up);
 		};
@@ -220,6 +221,7 @@ namespace KalaGraphics::Core
 			f32 nc = GetNearClip();
 			f32 fc = GetFarClip();
 			
+			/*
 			ostringstream ss;
 
 			ss  << "viewport:  " << viewportSize.x << ", " << viewportSize.y << "\n"
@@ -231,6 +233,7 @@ namespace KalaGraphics::Core
 				ss.str(),
 				"PERSP_MATRIX_IN",
 				LogType::LOG_DEBUG);
+			*/
 			
 			return perspective(viewportSize, fov, nc, fc);
 		}
@@ -242,12 +245,11 @@ namespace KalaGraphics::Core
 		string name{};
 
 		u32 ID{};
-		u32 windowID{};
 
 		f32 fov{};
 		f32 speed{};
 
-		f32 nearClip = 0.01f;
+		f32 nearClip = 0.001f;
 		f32 farClip = 512.0f;
 		f32 sensitivity = 0.1f;
 

@@ -18,7 +18,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		layout (location = 0) in vec2 aPos;
 		layout (location = 1) in vec2 aTexCoord;
 
-		out vec2 TexCoord;
+		out vec2 vTexCoord;
 
 		uniform mat4 uModel;
 		uniform mat4 uProjection;
@@ -30,7 +30,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 			vec4 worldPos = uProjection * uModel * vec4(aPos, 0.0, 1.0);
 			gl_Position = vec4(worldPos);
 
-			TexCoord = aTexCoord;
+			vTexCoord = aTexCoord;
 		}
 	)";
 
@@ -38,10 +38,11 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 	R"(
 		#version 330 core
 
-		in vec2 TexCoord;
+		in vec2 vTexCoord;
+		
 		out vec4 FragColor;
-
-		uniform sampler2D uTexture0;
+	
+		uniform sampler2D uTexture;
 		uniform bool uUseTexture = false; //mark as true if you want to pass a texture
 
 		uniform vec3 uColor;    //blended with texture or non-texture base color
@@ -49,19 +50,30 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		
 		void main()
 		{
-			float safeOpacity = clamp(uOpacity, 0.0, 1.0);
-			vec3 safeColor = clamp(uColor, 0.0, 1.0);
+			float opacity = clamp(uOpacity, 0.0, 1.0);
+			vec3 color = clamp(uColor, 0.0, 1.0);
 
-			if (safeOpacity < 0.1) discard;
+			if (opacity < 0.001) discard;
+			
+			vec3 finalColor;
+			float finalAlpha;
 
-			vec4 texColor = vec4(1.0);
 			if (uUseTexture)
 			{
-				float alpha = texture(uTexture0, TexCoord).r; //glyph intensity
-				texColor = vec4(1.0, 1.0, 1.0, alpha);        //treat red as alpha
+				//tint base white color
+				
+				finalColor = vec3(1.0, 1.0, 1.0) * color;
+				finalAlpha = texture(uTexture, vTexCoord).r; //treat red as alpha
 			}
-
-			FragColor = vec4(texColor.rgb * safeColor, texColor.a * safeOpacity);
+			else
+			{
+				//set color
+				
+				finalColor = color;
+				finalAlpha = opacity;
+			}
+			
+			FragColor = vec4(finalColor, finalAlpha);
 		}
 	)";
 }
