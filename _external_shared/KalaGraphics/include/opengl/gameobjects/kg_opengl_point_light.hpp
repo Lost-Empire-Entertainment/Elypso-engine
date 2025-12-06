@@ -6,29 +6,27 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <string>
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
-#include "KalaHeaders/import_kmd.hpp"
 
-#include "opengl/kg_opengl_shader.hpp"
-#include "opengl/kg_opengl_texture.hpp"
 #include "core/kg_registry.hpp"
+#include "opengl/kg_opengl_shader.hpp"
 
-namespace KalaGraphics::OpenGL
+namespace KalaGraphics::OpenGL::GameObject
 {
 	using std::vector;
+	using std::array;
 	using std::string;
 	
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::mat4;
 	using KalaHeaders::KalaMath::quat;
-	using KalaHeaders::KalaMath::toquat;
 	using KalaHeaders::KalaMath::Transform3D;
 	using KalaHeaders::KalaMath::PosTarget;
 	using KalaHeaders::KalaMath::RotTarget;
-	using KalaHeaders::KalaMath::SizeTarget;
 	using KalaHeaders::KalaMath::addpos;
 	using KalaHeaders::KalaMath::setpos;
 	using KalaHeaders::KalaMath::getpos;
@@ -36,20 +34,55 @@ namespace KalaGraphics::OpenGL
 	using KalaHeaders::KalaMath::setrot;
 	using KalaHeaders::KalaMath::getroteuler;
 	using KalaHeaders::KalaMath::getrotquat;
-	using KalaHeaders::KalaMath::addsize;
-	using KalaHeaders::KalaMath::setsize;
-	using KalaHeaders::KalaMath::getsize;
 	using KalaHeaders::KalaMath::getdirfront;
 	using KalaHeaders::KalaMath::getdirright;
 	using KalaHeaders::KalaMath::getdirup;
-	using KalaHeaders::KalaModelData::ModelTable;
-	using KalaHeaders::KalaModelData::Vertex;
 	
-	using KalaGraphics::OpenGL::OpenGL_Shader;
-	using KalaGraphics::OpenGL::OpenGL_Texture;
 	using KalaGraphics::Core::KalaGraphicsRegistry;
+	using KalaGraphics::OpenGL::OpenGL_Shader;
 	
-	struct LIB_API OpenGL_Model_Render
+	//Light settings for this light source
+	struct LIB_API OpenGL_PointLight_Data
+	{
+		//how bright is this point light, defaults to 1
+		f32 intensity = 1.0f;
+		//how far can this point light render, defaults to 50
+		f32 maxRange = 50.0f;
+		//the color of this point light, defaults to white
+		vec3 color = 1.0f;
+		
+		//can this point light cast shadows, defaults to false
+		bool canCastShadows{};
+		//what is the current chosen shadow resolution, defaults to 1024x1024
+		vec2 shadowResolution = 1024.0f;
+		//how strong is the shadow, defaults to 1.0f
+		f32 shadowStrength = 1.0f;
+		//determines how large the sampling kernel for shadow sharpness is,
+		//small radius - sharper shadows, large radius - softer shadows
+		f32 filterRadius = 1.5f;
+		//applies a small offset to the shadow map depth comparison
+		//to prevent "grid" shadows
+		f32 bias = 0.005f;
+		//same as bias, but for angled non-flat surfaces
+		f32 slopeBias = 0.01f;
+		//minimum shadow render distance
+		f32 nearPlane = 0.1f;
+		//maximum shadow render distance, should be same as max range
+		f32 farPlane = 50.0f;
+		//prevents the denominator from becoming 0 when distance is 0,
+		//usually 1 and never changed
+		f32 constant = 1.0f;
+		//controls linear falloff with distance,
+		//high linear - light dies quickly, low linear - light reaches farther,
+		//usually calculated from distance
+		f32 linear = 0.09f;
+		//controls exponential falloff (inverse square law),
+		//usually calculated from distance
+		f32 quadratic = 0.032f;
+	};
+	
+	//Debug renderer settings for this light source
+	struct LIB_API OpenGL_PointLight_Render
 	{
 		bool canUpdate = true;
 		
@@ -58,49 +91,38 @@ namespace KalaGraphics::OpenGL
 		
 		u32 VAO{};
 		u32 VBO{};
-		u32 EBO{};
 
-		vector<Vertex> vertices{};
+		vector<vec3> vertices{};
 		vector<u32> indices{};
 		
 		OpenGL_Shader* shader{};
-		OpenGL_Texture* texture{};
 	};
 	
-	class LIB_API OpenGL_Model
+	class LIB_API OpenGL_PointLight
 	{
 	public:
-		static inline KalaGraphicsRegistry<OpenGL_Model> registry{};
+		static inline KalaGraphicsRegistry<OpenGL_PointLight> registry{};
+		
+		static constexpr array<vec2, 5> availableShadowResolutions
+		{
+			128.0f,
+			256.0f,
+			512.0f,
+			1024.0f,
+			2048.0f
+		};
 		
 		//
 		// CORE
 		//
 		
-		//Create a single model from basic data
-		static OpenGL_Model* InitializeSingle(
+		//Create a new point light
+		static OpenGL_PointLight* Initialize(
 			const string& name,
 			u32 glID,
-			const vector<Vertex>& vertices,
-			const vector<u32>& indices,
 			OpenGL_Shader* shader);
-		
-		//Initialize all models from a .kmd file. Returns a vector of non-owning pointers
-		//because a .kmd file may hold more than one model
-		static vector<OpenGL_Model*> InitializeAll(
-			const string& modelPath,
-			u32 glID,
-			OpenGL_Shader* shader);
-		
-		//Stream models based off of the provided tables
-		static vector<OpenGL_Model*> StreamModels(
-			const string& modelPath,
-			const vector<ModelTable>& modelTables,
-			u32 glID,
-			OpenGL_Shader* shader);
-		
-		inline bool IsInitialized() const { return isInitialized; }
-		
-		///Render this model. Requires handle (HDC) from your window
+			
+		//Render this model. Requires handle (HDC) from your window
 		bool Render(
 			uintptr_t handle,
 			const mat4& view,
@@ -120,9 +142,9 @@ namespace KalaGraphics::OpenGL
 		}
 		inline const string& GetName() { return name; }
 		
-		inline const vector<Vertex>& GetVertices() const { return render.vertices; }
+		inline const vector<vec3>& GetVertices() const { return render.vertices; }
 		inline const vector<u32>& GetIndices() const { return render.indices; }
-		
+			
 		//
 		// TRANSFORM
 		//
@@ -195,40 +217,11 @@ namespace KalaGraphics::OpenGL
 				type);
 		}
 		
-		//Increments size over time
-		inline void AddSize(
-			SizeTarget type,
-			const vec3& deltaPos)
-		{
-			addsize(
-				transform,
-				{},
-				type,
-				deltaPos);
-		}
-		//Snaps to given size
-		inline void SetSize(
-			SizeTarget type,
-			const vec3& newPos)
-		{
-			setsize(
-				transform,
-				{},
-				type,
-				newPos);
-		}
-		inline vec3 GetSize(SizeTarget type) 
-		{ 
-			return getsize(
-				transform,
-				type); 
-		}
-		
 		//
 		// GRAPHICS
 		//
 
-		inline void SetNormalizedColor(const vec3& newValue)
+		inline void SetNormalizedDebugColor(const vec3& newValue)
 		{
 			f32 clampX = clamp(newValue.x, 0.0f, 1.0f);
 			f32 clampY = clamp(newValue.y, 0.0f, 1.0f);
@@ -236,7 +229,7 @@ namespace KalaGraphics::OpenGL
 
 			render.color = vec3(clampX, clampY, clampZ);
 		}
-		inline void SetRGBColor(const vec3& newValue)
+		inline void SetDebugRGBColor(const vec3& newValue)
 		{
 			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
 			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
@@ -249,8 +242,8 @@ namespace KalaGraphics::OpenGL
 			render.color = vec3(normalizedX, normalizedY, normalizedZ);
 		}
 
-		inline const vec3& GetNormalizedColor() const { return render.color; }
-		inline vec3 GetRGBColor() const
+		inline const vec3& GetNormalizedDebugColor() const { return render.color; }
+		inline vec3 GetDebugRGBColor() const
 		{
 			int rgbX = static_cast<int>(render.color.x * 255);
 			int rgbY = static_cast<int>(render.color.y * 255);
@@ -268,30 +261,11 @@ namespace KalaGraphics::OpenGL
 
 		inline u32 GetVAO() const { return render.VAO; }
 		inline u32 GetVBO() const { return render.VBO; }
-		inline u32 GetEBO() const { return render.EBO; }
-
-		inline const OpenGL_Shader* GetShader() const { return render.shader; }
-
-		inline void SetTexture(OpenGL_Texture* newTexture)
-		{
-			if (newTexture
-				&& render.texture != newTexture)
-			{
-				render.texture = newTexture;
-			}
-		}
-		inline void ClearTexture() { render.texture = nullptr; }
-		inline const OpenGL_Texture* GetTexture() const { return render.texture; }
 		
-		~OpenGL_Model();
+		inline const OpenGL_Shader* GetShader() const { return render.shader; }
+		
+		~OpenGL_PointLight();
 	private:
-		static OpenGL_Model* Initialize(
-			string name,
-			vector<Vertex> vertices,
-			vector<u32> indices,
-			u32 glID,
-			OpenGL_Shader* shader);
-	
 		bool isInitialized{};
 
 		string name{};
@@ -299,7 +273,8 @@ namespace KalaGraphics::OpenGL
 		u32 ID{};
 		u32 glID{};
 		
-		OpenGL_Model_Render render{};
+		OpenGL_PointLight_Data data{};
+		OpenGL_PointLight_Render render{};
 		Transform3D transform{};
 	};
 }

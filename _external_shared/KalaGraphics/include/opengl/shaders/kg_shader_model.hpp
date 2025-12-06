@@ -24,6 +24,8 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		out vec3 vTangent;
 		out vec3 vBitangent;
 		out vec2 vTexCoord;
+		
+		out vec3 FragPos;
 
 		uniform mat4 uModel;
 		uniform mat4 uView;
@@ -31,6 +33,9 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		
 		void main()
 		{
+			vec4 worldPos = uModel * vec4(aPos, 1.0);
+			FragPos = worldPos.xyz;
+			
 			mat3 normalMatrix = mat3(uModel);
 			
 			vec3 N = normalize(normalMatrix * aNormal);
@@ -51,48 +56,247 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 	R"(
 		#version 330 core
 
+		in vec2 vTexCoord;
+		
 		in vec3 vNormal;
 		in vec3 vTangent;
 		in vec3 vBitangent;
-		in vec2 vTexCoord;
+		
+		in vec3 vFragPos;
 		
 		out vec4 FragColor;
-
-		uniform sampler2D uTexture;
-		uniform sampler2D uNormalMap;
-		uniform bool uUseTexture   = false; //mark as true if you want to pass a texture
-		uniform bool uUseNormalMap = false; //mark as true if you want to pass a normalmap
-
-		uniform vec3 uColor;    //blended with texture or non-texture base color
-		uniform float uOpacity; //makes this transparent if below 1.0
+		
+		//
+		// MATERIAL
+		//
+		
+		uniform vec3 uViewPos;    //camera position
+		uniform float uShininess; //affects how much light something reflects
+		uniform float uOpacity;   //makes the model transparent if below 1.0
+		uniform bool uTwoSided;   //set to true for flat models and planes
+		
+		uniform vec3 uDiffuseColor; //base color of the model
+		uniform bool uHasDiffuseTex;
+		uniform sampler2D uDiffuseTex;
+		
+		uniform bool uHasNormalTex;
+		uniform sampler2D uNormalTex;
+		
+		uniform vec3 uSpecularColor;
+		uniform bool uHasSpecularTex;
+		uniform sampler2D uSpecularTex;
+		
+		uniform vec3 uEmissiveColor;
+		uniform bool uHasEmissiveTex;
+		uniform sampler2D uEmissiveTex;
+	
+		//
+		// POINT LIGHT
+		//
+		
+		#define MAX_PL_COUNT 128
+		uniform int uCount_PL;
+		
+		uniform vec3 uPosition_PL[MAX_PL_COUNT];
+		uniform bool uCanRender_PL[MAX_PL_COUNT];
+		uniform float uIntensity_PL[MAX_PL_COUNT];
+		uniform float uMaxRange_PL[MAX_PL_COUNT];
+		uniform vec3 uColor_PL[MAX_PL_COUNT];
+		
+		uniform bool uCastShadows_PL[MAX_PL_COUNT];
+		uniform int uShadowResolution_PL[MAX_PL_COUNT];
+		uniform float uShadowStrength_PL[MAX_PL_COUNT];
+		uniform float uFilterRadius_PL[MAX_PL_COUNT];
+		uniform float uBias_PL[MAX_PL_COUNT];
+		uniform float uSlopeBias_PL[MAX_PL_COUNT];
+		uniform float uNearPlane_PL[MAX_PL_COUNT];
+		uniform float uFarPlane_PL[MAX_PL_COUNT];
+		uniform float uConstant_PL[MAX_PL_COUNT];
+		uniform float uLinear_PL[MAX_PL_COUNT];
+		uniform float uQuadratic_PL[MAX_PL_COUNT];
+		
+		vec3 ComputePointLight(
+			vec3 baseColor,
+			vec3 specularMap,
+			vec3 worldNormal,
+			vec3 viewDir,
+			vec3 vFragPos,
+			int i);
 		
 		void main()
 		{
+			//
+			// BASE COLOR
+			//
+			
 			float opacity = clamp(uOpacity, 0.0, 1.0);
-			vec3 color = clamp(uColor, 0.0, 1.0);
+			vec3 color = clamp(uDiffuseColor, 0.0, 1.0);
 
 			if (opacity < 0.001) discard;
 			
-			vec3 finalColor;
-			float finalAlpha;
+			vec3 baseColor;
+			float alpha;
 
-			if (uUseTexture)
+			if (uHasDiffuseTex)
 			{
 				//tint texture
 				
-				vec4 texColor = texture(uTexture, vTexCoord);
-				finalColor = texColor.rgb * color; 
-				finalAlpha = texColor.a * opacity;
+				vec4 texColor = texture(uDiffuseTex, vTexCoord);
+				baseColor = texColor.rgb * color; 
+				alpha = texColor.a * opacity;
 			}
 			else
 			{
 				//set color
 				
-				finalColor = color;
-				finalAlpha = opacity;
+				baseColor = color;
+				alpha = opacity;
 			}
+			
+			//
+			// NORMALS
+			//
+			
+			vec3 worldNormal = normalize(vNormal);
+			
+			if (uHasNormalTex)
+			{
+				vec3 tangentNormal = texture(uNormalTex, vTexCoord).xyz;
+				
+				//convert to correct range
+				tangentNormal = tangentNormal * 2.0 - 1.0;
+				
+				//build TBN matrix
+				mat3 TBN = mat3(vTangent, vBitangent, vNormal);
+				
+				//transform to world space
+				worldNormal = normalize(TBN * tangentNormal);
+			}
+			
+			//
+			// SPECULAR MAPS
+			//
+			
+			vec3 specularMap = vec3(1.0);
+			
+			if (uHasSpecularTex)
+			{
+				specularMap = texture(uSpecularTex, vTexCoord).xyz;
+			}
+			
+			//
+			// EMISSIVE AND AMBIENT
+			//
+			
+			vec3 ambient = baseColor * 0.01;
+			
+			vec3 emissive = vec3(0.0);
+			if (uHasEmissiveTex) emissive = texture(uEmissiveTex, vTexCoord).rgb;
+			else emissive = uEmissiveColor;
+			
+			vec3 result = ambient + emissive;
+			
+			//
+			// POINT LIGHTS
+			//
+			
+			//direction from fragment to camera,
+			//used for specular highlights, reflection and shadow bias
+			vec3 viewDir = normalize(uViewPos - vFragPos);
+			
+			for (int i = 0; i < uCount_PL; i++)
+			{					
+				result += ComputePointLight(
+					baseColor,
+					specularMap,
+					worldNormal,
+					viewDir,
+					vFragPos,
+					i);
+			}
+		
+			//
+			// END RESULT
+			//
 
-			FragColor = vec4(finalColor, finalAlpha);
+			FragColor = vec4(baseColor, alpha);
+		}
+		
+		vec3 ComputePointLight(
+			vec3 baseColor,
+			vec3 specularMap,
+			vec3 worldNormal,
+			vec3 viewDir,
+			vec3 vFragPos,
+			int i)
+		{
+			//future ideas to consider:
+			//  - fake Fresnel rim lighting
+			//  - tone-mapped specular highlights
+			//  - two-sided lighting for planes (uTwoSided)
+			//  - soft shadow injection per-light
+			//  - energy conversation clamp
+			//  - highlight softening for low shininess
+			
+			//skip if disabled
+			if (!uCanRender_PL[i]) return vec3(0.0);
+			
+			vec3 toLight = uPosition_PL[i] - vFragPos;
+			
+			//skip if too far to render meaningfully
+			float distance = length(toLight);
+			if (distance > uMaxRange_PL[i]) return vec3(0.0);
+			
+			vec3 lightDir = normalize(toLight);
+			
+			//
+			// DIFFUSE
+			//
+			
+			float diff = max(dot(worldNormal, lightDir), 0.0);
+			vec3 diffuse = diff * baseColor * uColor_PL[i];
+			
+			//
+			// SPECULAR
+			//
+			
+			vec3 halfDir = normalize(lightDir + viewDir);
+				
+			float spec = pow(max(dot(worldNormal, halfDir), 0.0), uShininess);
+			spec = max(spec, 1e-4);
+			
+			vec3 specular = 
+				spec
+				* specularMap
+				* uSpecularColor
+				* uColor_PL[i];
+			
+			//
+			// ATTENUATION
+			//
+			
+			float attenuation = 1.0 / (
+				uConstant_PL[i]
+				+ uLinear_PL[i] * distance
+				+ uQuadratic_PL[i] * (distance * distance));
+				
+			attenuation = max(attenuation, 1e-4);
+			
+			//fade near max range
+			float fade = 1.0 - smoothstep(
+				uMaxRange_PL[i] * 0.5,
+				uMaxRange_PL[i],
+				distance);
+				
+			fade = max(fade, 0.01);
+			
+			attenuation *= fade;
+			
+			//
+			// RESULT
+			//
+				
+			return (diffuse + specular) * attenuation * uIntensity_PL[i];
 		}
 	)";
 }
