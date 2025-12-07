@@ -37,7 +37,8 @@ namespace KalaGraphics::Core
 		
 		//Calls the force close callback which handles what happens at runtime,
 		//always calls __debugbreak in debug, calls abort if no force close callback is assigned
-		static inline void SetForceCloseCallback(function<void()> newCallback)
+		static inline void SetForceCloseCallback(
+			function<void(const string& target, const string& reason)> newCallback)
 		{
 			if (!newCallback) return;
 			
@@ -58,11 +59,11 @@ namespace KalaGraphics::Core
 #ifdef _DEBUG
 			__debugbreak();
 #else
-			if (forceCloseCallback) forceCloseCallback();
+			if (forceCloseCallback) forceCloseCallback(target, reason);
 			else quick_exit(EXIT_FAILURE);
 #endif
 		}
 	private:
-		static inline function<void()> forceCloseCallback{};
+		static inline function<void(const string& target, const string& reason)> forceCloseCallback{};
 	};
 }

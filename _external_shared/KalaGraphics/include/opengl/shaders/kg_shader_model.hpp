@@ -25,7 +25,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		out vec3 vBitangent;
 		out vec2 vTexCoord;
 		
-		out vec3 FragPos;
+		out vec3 vFragPos;
 
 		uniform mat4 uModel;
 		uniform mat4 uView;
@@ -34,7 +34,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		void main()
 		{
 			vec4 worldPos = uModel * vec4(aPos, 1.0);
-			FragPos = worldPos.xyz;
+			vFragPos = worldPos.xyz;
 			
 			mat3 normalMatrix = mat3(uModel);
 			
@@ -95,26 +95,42 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		//
 		
 		#define MAX_PL_COUNT 128
-		uniform int uCount_PL;
 		
-		uniform vec3 uPosition_PL[MAX_PL_COUNT];
-		uniform bool uCanRender_PL[MAX_PL_COUNT];
-		uniform float uIntensity_PL[MAX_PL_COUNT];
-		uniform float uMaxRange_PL[MAX_PL_COUNT];
-		uniform vec3 uColor_PL[MAX_PL_COUNT];
+		struct PointLight
+		{
+			vec4 position;
+			
+			int canRender;
+			float intensity;
+			float maxRange;
+			float _pad1;
+			
+			vec4 color;
+			
+			float constant;
+			float linear;
+			float quadratic;
+			float _pad2;
+			
+			//+ canCastShadows in z, w unused
+			vec4 shadowResolution;
+			
+			float shadowStrength;
+			float filterRadius;
+			
+			float bias;
+			float slopeBias;
+			
+			float nearPlane;
+			float farPlane;
+			float _pad3[2];
+		};
 		
-		uniform float uConstant_PL[MAX_PL_COUNT];
-		uniform float uLinear_PL[MAX_PL_COUNT];
-		uniform float uQuadratic_PL[MAX_PL_COUNT];
-		
-		uniform bool uCastShadows_PL[MAX_PL_COUNT];
-		uniform int uShadowResolution_PL[MAX_PL_COUNT];
-		uniform float uShadowStrength_PL[MAX_PL_COUNT];
-		uniform float uFilterRadius_PL[MAX_PL_COUNT];
-		uniform float uBias_PL[MAX_PL_COUNT];
-		uniform float uSlopeBias_PL[MAX_PL_COUNT];
-		uniform float uNearPlane_PL[MAX_PL_COUNT];
-		uniform float uFarPlane_PL[MAX_PL_COUNT];
+		uniform PointLightBlock
+		{
+			PointLight uPointLights[MAX_PL_COUNT];
+		};
+		uniform int uPointLightCount;
 		
 		vec3 ComputePointLight(
 			vec3 baseColor,
@@ -150,7 +166,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 			{
 				//set color
 				
-				baseColor = color;
+				baseColor = color.rgb;
 				alpha = opacity;
 			}
 			
@@ -205,7 +221,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 			//used for specular highlights, reflection and shadow bias
 			vec3 viewDir = normalize(uViewPos - vFragPos);
 			
-			for (int i = 0; i < uCount_PL; i++)
+			for (int i = 0; i < uPointLightCount; i++)
 			{					
 				result += ComputePointLight(
 					baseColor,
@@ -240,13 +256,13 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 			//  - highlight softening for low shininess
 			
 			//skip if disabled
-			if (!uCanRender_PL[i]) return vec3(0.0);
+			if (uPointLights[i].canRender == 0) return vec3(0.0);
 			
-			vec3 toLight = uPosition_PL[i] - vFragPos;
+			vec3 toLight = uPointLights[i].position.xyz - vFragPos;
 			
 			//skip if too far to render meaningfully
 			float distance = length(toLight);
-			if (distance > uMaxRange_PL[i]) return vec3(0.0);
+			if (distance > uPointLights[i].maxRange) return vec3(0.0);
 			
 			vec3 lightDir = normalize(toLight);
 			
@@ -255,7 +271,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 			//
 			
 			float diff = max(dot(worldNormal, lightDir), 0.0);
-			vec3 diffuse = diff * baseColor * uColor_PL[i];
+			vec3 diffuse = diff * baseColor * uPointLights[i].color.rgb;
 			
 			//
 			// SPECULAR
@@ -270,23 +286,23 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 				spec
 				* specularMap
 				* uSpecularColor
-				* uColor_PL[i];
+				* uPointLights[i].color.rgb;
 			
 			//
 			// ATTENUATION
 			//
 			
 			float attenuation = 1.0 / (
-				uConstant_PL[i]
-				+ uLinear_PL[i] * distance
-				+ uQuadratic_PL[i] * (distance * distance));
+				uPointLights[i].constant
+				+ uPointLights[i].linear * distance
+				+ uPointLights[i].quadratic * (distance * distance));
 				
 			attenuation = max(attenuation, 1e-4);
 			
 			//fade near max range
 			float fade = 1.0 - smoothstep(
-				uMaxRange_PL[i] * 0.5,
-				uMaxRange_PL[i],
+				uPointLights[i].maxRange * 0.5,
+				uPointLights[i].maxRange,
 				distance);
 				
 			fade = max(fade, 0.01);
@@ -297,7 +313,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 			// RESULT
 			//
 				
-			return (diffuse + specular) * attenuation * uIntensity_PL[i];
+			return (diffuse + specular) * attenuation * uPointLights[i].intensity;
 		}
 	)";
 }

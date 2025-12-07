@@ -46,15 +46,24 @@ namespace KalaGraphics::OpenGL::GameObject
 	using KalaGraphics::Core::KalaGraphicsRegistry;
 	using KalaGraphics::OpenGL::OpenGL_Shader;
 	
+	constexpr u8 MAX_PL_COUNT = 128;
+	
 	//Light settings for this light source
 	struct LIB_API OpenGL_PointLight_Data
 	{
+		//combined pos from transform, w unused
+		vec4 pos{};
+		
+		//canUpdate copy from OpenGL_PointLight_Render
+		int canRender = 1;
 		//how bright is this point light, defaults to 1
 		f32 intensity = 1.0f;
 		//how far can this point light render, defaults to 50
 		f32 maxRange = 50.0f;
-		//the color of this point light, defaults to white
-		vec3 color = 1.0f;
+		f32 _pad1{};
+		
+		//the color of this point light, defaults to white, w unused
+		vec4 color = 1.0f;
 		
 		//prevents the denominator from becoming 0 when distance is 0,
 		//usually 1 and never changed
@@ -66,25 +75,29 @@ namespace KalaGraphics::OpenGL::GameObject
 		//controls exponential falloff (inverse square law),
 		//usually calculated from distance
 		f32 quadratic = 0.032f;
+		f32 _pad2{};
 		
-		//can this point light cast shadows, defaults to false
-		bool canCastShadows{};
-		//what is the current chosen shadow resolution, defaults to 1024x1024
-		vec2 shadowResolution = 1024.0f;
+		//shadow resolution in x and y, defaults to 1024x1024,
+		//canCastShadows in z, w unused
+		vec4 shadowResolution = vec4(1024.0f, 1024.0f, 0.0f, 0.0f);
+		
 		//how strong is the shadow, defaults to 1.0f
 		f32 shadowStrength = 1.0f;
 		//determines how large the sampling kernel for shadow sharpness is,
 		//small radius - sharper shadows, large radius - softer shadows
 		f32 filterRadius = 1.5f;
+		
 		//applies a small offset to the shadow map depth comparison
 		//to prevent "grid" shadows
 		f32 bias = 0.005f;
 		//same as bias, but for angled non-flat surfaces
 		f32 slopeBias = 0.01f;
+		
 		//minimum shadow render distance
 		f32 nearPlane = 0.1f;
 		//maximum shadow render distance, should be same as max range
 		f32 farPlane = 50.0f;
+		f32 _pad3[2];
 	};
 	
 	//Debug renderer settings for this light source
@@ -151,8 +164,18 @@ namespace KalaGraphics::OpenGL::GameObject
 		}
 		inline const string& GetName() { return name; }
 		
-		inline void SetUpdateState(bool newValue) { render.canUpdate = newValue; }
-		inline bool CanUpdate() const { return render.canUpdate; }
+		inline void SetRenderDebugShapeState(bool newValue) 
+		{ 
+			render.canUpdate = newValue;
+			data.canRender = newValue;
+		}
+		inline bool CanRenderDebugShape() const { return render.canUpdate; }
+		
+		inline void SetRenderLightState(bool newValue) 
+		{ 
+			data.canRender = newValue;
+		}
+		inline bool CanRenderLight() const { return data.canRender; }
 		
 		inline const vector<vec3>& GetVertices() const { return render.vertices; }
 		inline const vector<u32>& GetIndices() const { return render.indices; }
@@ -175,6 +198,10 @@ namespace KalaGraphics::OpenGL::GameObject
 				{},
 				type,
 				deltaPos);
+				
+			data.pos = getpos(
+				transform,
+				PosTarget::POS_COMBINED); 
 		}
 		//Snaps to given position
 		inline void SetPos(
@@ -186,6 +213,10 @@ namespace KalaGraphics::OpenGL::GameObject
 				{},
 				type,
 				newPos);
+				
+			data.pos = getpos(
+				transform,
+				PosTarget::POS_COMBINED); 
 		}
 		inline vec3 GetPos(PosTarget type) 
 		{ 
@@ -203,7 +234,7 @@ namespace KalaGraphics::OpenGL::GameObject
 				transform,
 				{},
 				type,
-				deltaRot);
+				deltaRot); 
 		}
 		//Snaps to given rotation
 		inline void SetRot(
@@ -337,7 +368,7 @@ namespace KalaGraphics::OpenGL::GameObject
 			data.color = vec3(normalizedX, normalizedY, normalizedZ);
 		}
 
-		inline const vec3& GetNormalizedColor() const { return data.color; }
+		inline vec3 GetNormalizedColor() const { return data.color; }
 		inline vec3 GetRGBColor() const
 		{
 			int rgbX = static_cast<int>(data.color.x * 255);
@@ -367,6 +398,8 @@ namespace KalaGraphics::OpenGL::GameObject
 			data.quadratic = clamped;
 		}
 		inline f32 GetQuadratic() const { return data.quadratic; }
+		
+		inline const OpenGL_PointLight_Data* GetDataPtr() const { return &data; }
 		
 		~OpenGL_PointLight();
 	private:

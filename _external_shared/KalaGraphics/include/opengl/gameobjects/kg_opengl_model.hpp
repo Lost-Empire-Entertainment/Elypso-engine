@@ -50,9 +50,6 @@ namespace KalaGraphics::OpenGL::GameObject
 	using KalaGraphics::OpenGL::OpenGL_Texture;
 	using KalaGraphics::Core::KalaGraphicsRegistry;
 	
-	//Limits max allowed renderable point lights by distance to camera
-	constexpr u8 MAX_PL_COUNT = 128;
-	
 	struct LIB_API OpenGL_Model_Render
 	{
 		bool canUpdate = true;
@@ -89,6 +86,9 @@ namespace KalaGraphics::OpenGL::GameObject
 	{
 	public:
 		static inline KalaGraphicsRegistry<OpenGL_Model> registry{};
+		
+		//get global point light UBO
+		static inline u32 GetPointLightUBO() { return plUBO; }
 		
 		//
 		// CORE
@@ -303,12 +303,18 @@ namespace KalaGraphics::OpenGL::GameObject
 		
 		~OpenGL_Model();
 	private:
+		//Initialize global point light UBO
+		static void InitializePointLightUBO(OpenGL_Shader* shader);
+	
 		static OpenGL_Model* Initialize(
 			string name,
 			vector<Vertex> vertices,
 			vector<u32> indices,
 			u32 glID,
 			OpenGL_Shader* shader);
+			
+		//point light UBO reused by all models
+		static inline u32 plUBO{};
 	
 		bool isInitialized{};
 
