@@ -21,6 +21,7 @@ namespace KalaGraphics::OpenGL::GameObject
 	using std::vector;
 	using std::string;
 	
+	using KalaHeaders::KalaMath::kclamp;
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::mat4;
 	using KalaHeaders::KalaMath::quat;
@@ -49,12 +50,19 @@ namespace KalaGraphics::OpenGL::GameObject
 	using KalaGraphics::OpenGL::OpenGL_Texture;
 	using KalaGraphics::Core::KalaGraphicsRegistry;
 	
+	//Limits max allowed renderable point lights by distance to camera
+	constexpr u8 MAX_PL_COUNT = 128;
+	
 	struct LIB_API OpenGL_Model_Render
 	{
 		bool canUpdate = true;
 		
-		vec3 color = vec3(1.0f);
+		//the transparency of this model
 		f32 opacity = 1.0f;
+		//the reflectiveness of this model
+		f32 shininess = 32.0f;
+		//can this model render on both sides of each face
+		bool twoSided{};
 		
 		u32 VAO{};
 		u32 VBO{};
@@ -64,7 +72,17 @@ namespace KalaGraphics::OpenGL::GameObject
 		vector<u32> indices{};
 		
 		OpenGL_Shader* shader{};
-		OpenGL_Texture* texture{};
+		
+		OpenGL_Texture* diffuseTex{};
+		vec3 diffuseColor = 1.0f;
+		
+		OpenGL_Texture* normalTex{};
+		
+		OpenGL_Texture* specularTex{};
+		vec3 specularColor = 1.0f;
+		
+		OpenGL_Texture* emissiveTex{};
+		vec3 emissiveColor = {};
 	};
 	
 	class LIB_API OpenGL_Model
@@ -102,6 +120,7 @@ namespace KalaGraphics::OpenGL::GameObject
 		
 		///Render this model. Requires handle (HDC) from your window
 		bool Render(
+			const vec3& activeCameraPos,
 			uintptr_t handle,
 			const mat4& view,
 			const mat4& projection);
@@ -119,6 +138,9 @@ namespace KalaGraphics::OpenGL::GameObject
 			name = newName;
 		}
 		inline const string& GetName() { return name; }
+		
+		inline void SetUpdateState(bool newValue) { render.canUpdate = newValue; }
+		inline bool CanUpdate() const { return render.canUpdate; }
 		
 		inline const vector<Vertex>& GetVertices() const { return render.vertices; }
 		inline const vector<u32>& GetIndices() const { return render.indices; }
@@ -198,24 +220,24 @@ namespace KalaGraphics::OpenGL::GameObject
 		//Increments size over time
 		inline void AddSize(
 			SizeTarget type,
-			const vec3& deltaPos)
+			const vec3& deltaSize)
 		{
 			addsize(
 				transform,
 				{},
 				type,
-				deltaPos);
+				deltaSize);
 		}
 		//Snaps to given size
 		inline void SetSize(
 			SizeTarget type,
-			const vec3& newPos)
+			const vec3& newSize)
 		{
 			setsize(
 				transform,
 				{},
 				type,
-				newPos);
+				newSize);
 		}
 		inline vec3 GetSize(SizeTarget type) 
 		{ 
@@ -228,15 +250,11 @@ namespace KalaGraphics::OpenGL::GameObject
 		// GRAPHICS
 		//
 
-		inline void SetNormalizedColor(const vec3& newValue)
+		inline void SetNormalizedDiffuseColor(const vec3& newValue)
 		{
-			f32 clampX = clamp(newValue.x, 0.0f, 1.0f);
-			f32 clampY = clamp(newValue.y, 0.0f, 1.0f);
-			f32 clampZ = clamp(newValue.z, 0.0f, 1.0f);
-
-			render.color = vec3(clampX, clampY, clampZ);
+			render.diffuseColor = kclamp(newValue, 0.0f, 1.0f);
 		}
-		inline void SetRGBColor(const vec3& newValue)
+		inline void SetDiffuseRGBColor(const vec3& newValue)
 		{
 			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
 			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
@@ -246,15 +264,15 @@ namespace KalaGraphics::OpenGL::GameObject
 			f32 normalizedY = static_cast<f32>(clampY) / 255;
 			f32 normalizedZ = static_cast<f32>(clampZ) / 255;
 
-			render.color = vec3(normalizedX, normalizedY, normalizedZ);
+			render.diffuseColor = vec3(normalizedX, normalizedY, normalizedZ);
 		}
 
-		inline const vec3& GetNormalizedColor() const { return render.color; }
-		inline vec3 GetRGBColor() const
+		inline const vec3& GetNormalizedDiffuseColor() const { return render.diffuseColor; }
+		inline vec3 GetDiffuseRGBColor() const
 		{
-			int rgbX = static_cast<int>(render.color.x * 255);
-			int rgbY = static_cast<int>(render.color.y * 255);
-			int rgbZ = static_cast<int>(render.color.z * 255);
+			int rgbX = static_cast<int>(render.diffuseColor.x * 255);
+			int rgbY = static_cast<int>(render.diffuseColor.y * 255);
+			int rgbZ = static_cast<int>(render.diffuseColor.z * 255);
 
 			return vec3(rgbX, rgbY, rgbZ);
 		}
@@ -272,16 +290,16 @@ namespace KalaGraphics::OpenGL::GameObject
 
 		inline const OpenGL_Shader* GetShader() const { return render.shader; }
 
-		inline void SetTexture(OpenGL_Texture* newTexture)
+		inline void SetDiffuseTexture(OpenGL_Texture* newTexture)
 		{
 			if (newTexture
-				&& render.texture != newTexture)
+				&& render.diffuseTex != newTexture)
 			{
-				render.texture = newTexture;
+				render.diffuseTex = newTexture;
 			}
 		}
-		inline void ClearTexture() { render.texture = nullptr; }
-		inline const OpenGL_Texture* GetTexture() const { return render.texture; }
+		inline void ClearDiffuseTexture() { render.diffuseTex = nullptr; }
+		inline const OpenGL_Texture* GetDiffuseTexture() const { return render.diffuseTex; }
 		
 		~OpenGL_Model();
 	private:

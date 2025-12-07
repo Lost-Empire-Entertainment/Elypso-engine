@@ -21,12 +21,14 @@ namespace KalaGraphics::OpenGL::GameObject
 	using std::array;
 	using std::string;
 	
+	using KalaHeaders::KalaMath::kclamp;
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::mat4;
 	using KalaHeaders::KalaMath::quat;
 	using KalaHeaders::KalaMath::Transform3D;
 	using KalaHeaders::KalaMath::PosTarget;
 	using KalaHeaders::KalaMath::RotTarget;
+	using KalaHeaders::KalaMath::SizeTarget;
 	using KalaHeaders::KalaMath::addpos;
 	using KalaHeaders::KalaMath::setpos;
 	using KalaHeaders::KalaMath::getpos;
@@ -34,6 +36,9 @@ namespace KalaGraphics::OpenGL::GameObject
 	using KalaHeaders::KalaMath::setrot;
 	using KalaHeaders::KalaMath::getroteuler;
 	using KalaHeaders::KalaMath::getrotquat;
+	using KalaHeaders::KalaMath::addsize;
+	using KalaHeaders::KalaMath::setsize;
+	using KalaHeaders::KalaMath::getsize;
 	using KalaHeaders::KalaMath::getdirfront;
 	using KalaHeaders::KalaMath::getdirright;
 	using KalaHeaders::KalaMath::getdirup;
@@ -50,6 +55,17 @@ namespace KalaGraphics::OpenGL::GameObject
 		f32 maxRange = 50.0f;
 		//the color of this point light, defaults to white
 		vec3 color = 1.0f;
+		
+		//prevents the denominator from becoming 0 when distance is 0,
+		//usually 1 and never changed
+		f32 constant = 1.0f;
+		//controls linear falloff with distance,
+		//high linear - light dies quickly, low linear - light reaches farther,
+		//usually calculated from distance
+		f32 linear = 0.09f;
+		//controls exponential falloff (inverse square law),
+		//usually calculated from distance
+		f32 quadratic = 0.032f;
 		
 		//can this point light cast shadows, defaults to false
 		bool canCastShadows{};
@@ -69,16 +85,6 @@ namespace KalaGraphics::OpenGL::GameObject
 		f32 nearPlane = 0.1f;
 		//maximum shadow render distance, should be same as max range
 		f32 farPlane = 50.0f;
-		//prevents the denominator from becoming 0 when distance is 0,
-		//usually 1 and never changed
-		f32 constant = 1.0f;
-		//controls linear falloff with distance,
-		//high linear - light dies quickly, low linear - light reaches farther,
-		//usually calculated from distance
-		f32 linear = 0.09f;
-		//controls exponential falloff (inverse square law),
-		//usually calculated from distance
-		f32 quadratic = 0.032f;
 	};
 	
 	//Debug renderer settings for this light source
@@ -91,6 +97,7 @@ namespace KalaGraphics::OpenGL::GameObject
 		
 		u32 VAO{};
 		u32 VBO{};
+		u32 EBO{};
 
 		vector<vec3> vertices{};
 		vector<u32> indices{};
@@ -119,10 +126,12 @@ namespace KalaGraphics::OpenGL::GameObject
 		//Create a new point light
 		static OpenGL_PointLight* Initialize(
 			const string& name,
-			u32 glID,
-			OpenGL_Shader* shader);
+			vector<vec3> vertices = {},
+			vector<u32> indices = {},
+			u32 glID = {},
+			OpenGL_Shader* shader = {});
 			
-		//Render this model. Requires handle (HDC) from your window
+		//Render this point light. Requires handle (HDC) from your window
 		bool Render(
 			uintptr_t handle,
 			const mat4& view,
@@ -141,6 +150,9 @@ namespace KalaGraphics::OpenGL::GameObject
 			name = newName;
 		}
 		inline const string& GetName() { return name; }
+		
+		inline void SetUpdateState(bool newValue) { render.canUpdate = newValue; }
+		inline bool CanUpdate() const { return render.canUpdate; }
 		
 		inline const vector<vec3>& GetVertices() const { return render.vertices; }
 		inline const vector<u32>& GetIndices() const { return render.indices; }
@@ -217,17 +229,42 @@ namespace KalaGraphics::OpenGL::GameObject
 				type);
 		}
 		
+		//Increments size over time
+		inline void AddSize(
+			SizeTarget type,
+			const vec3& deltaSize)
+		{
+			addsize(
+				transform,
+				{},
+				type,
+				deltaSize);
+		}
+		//Snaps to given size
+		inline void SetSize(
+			SizeTarget type,
+			const vec3& newSize)
+		{
+			setsize(
+				transform,
+				{},
+				type,
+				newSize);
+		}
+		inline vec3 GetSize(SizeTarget type) 
+		{ 
+			return getsize(
+				transform,
+				type); 
+		}
+		
 		//
 		// GRAPHICS
 		//
 
 		inline void SetNormalizedDebugColor(const vec3& newValue)
 		{
-			f32 clampX = clamp(newValue.x, 0.0f, 1.0f);
-			f32 clampY = clamp(newValue.y, 0.0f, 1.0f);
-			f32 clampZ = clamp(newValue.z, 0.0f, 1.0f);
-
-			render.color = vec3(clampX, clampY, clampZ);
+			render.color = kclamp(newValue, 0.0f, 1.0f);
 		}
 		inline void SetDebugRGBColor(const vec3& newValue)
 		{
@@ -261,8 +298,75 @@ namespace KalaGraphics::OpenGL::GameObject
 
 		inline u32 GetVAO() const { return render.VAO; }
 		inline u32 GetVBO() const { return render.VBO; }
+		inline u32 GetEBO() const { return render.EBO; }
 		
 		inline const OpenGL_Shader* GetShader() const { return render.shader; }
+		
+		//
+		// LIGHT DATA
+		//
+		
+		inline void SetIntensity(f32 newValue)
+		{
+			f32 clamped = clamp(newValue, 0.0f, 5.0f);
+			data.intensity = clamped;
+		}
+		inline f32 GetIntensity() const { return data.intensity; }
+		
+		inline void SetMaxRange(f32 newValue)
+		{
+			f32 clamped = clamp(newValue, 0.0f, 1000.0f);
+			data.maxRange = clamped;
+		}
+		inline f32 GetMaxRange() const { return data.maxRange; }
+		
+		inline void SetNormalizedColor(const vec3& newValue)
+		{
+			data.color = kclamp(newValue, 0.0f, 1.0f);
+		}
+		inline void SetRGBColor(const vec3& newValue)
+		{
+			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
+			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
+			int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+
+			f32 normalizedX = static_cast<f32>(clampX) / 255;
+			f32 normalizedY = static_cast<f32>(clampY) / 255;
+			f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+
+			data.color = vec3(normalizedX, normalizedY, normalizedZ);
+		}
+
+		inline const vec3& GetNormalizedColor() const { return data.color; }
+		inline vec3 GetRGBColor() const
+		{
+			int rgbX = static_cast<int>(data.color.x * 255);
+			int rgbY = static_cast<int>(data.color.y * 255);
+			int rgbZ = static_cast<int>(data.color.z * 255);
+
+			return vec3(rgbX, rgbY, rgbZ);
+		}
+		
+		inline void SetConstant(f32 newValue)
+		{
+			f32 clamped = clamp(newValue, 0.0f, 5.0f);
+			data.constant = clamped;
+		}
+		inline f32 GetConstant() const { return data.constant; }
+		
+		inline void SetLinear(f32 newValue)
+		{
+			f32 clamped = clamp(newValue, 0.0f, 1.0f);
+			data.linear = clamped;
+		}
+		inline f32 GetLinear() const { return data.linear; }
+		
+		inline void SetQuadratic(f32 newValue)
+		{
+			f32 clamped = clamp(newValue, 0.0f, 1.0f);
+			data.quadratic = clamped;
+		}
+		inline f32 GetQuadratic() const { return data.quadratic; }
 		
 		~OpenGL_PointLight();
 	private:

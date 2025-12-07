@@ -103,6 +103,10 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		uniform float uMaxRange_PL[MAX_PL_COUNT];
 		uniform vec3 uColor_PL[MAX_PL_COUNT];
 		
+		uniform float uConstant_PL[MAX_PL_COUNT];
+		uniform float uLinear_PL[MAX_PL_COUNT];
+		uniform float uQuadratic_PL[MAX_PL_COUNT];
+		
 		uniform bool uCastShadows_PL[MAX_PL_COUNT];
 		uniform int uShadowResolution_PL[MAX_PL_COUNT];
 		uniform float uShadowStrength_PL[MAX_PL_COUNT];
@@ -111,9 +115,6 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 		uniform float uSlopeBias_PL[MAX_PL_COUNT];
 		uniform float uNearPlane_PL[MAX_PL_COUNT];
 		uniform float uFarPlane_PL[MAX_PL_COUNT];
-		uniform float uConstant_PL[MAX_PL_COUNT];
-		uniform float uLinear_PL[MAX_PL_COUNT];
-		uniform float uQuadratic_PL[MAX_PL_COUNT];
 		
 		vec3 ComputePointLight(
 			vec3 baseColor,
@@ -219,7 +220,7 @@ namespace KalaGraphics::OpenGL::OpenGL_Shaders
 			// END RESULT
 			//
 
-			FragColor = vec4(baseColor, alpha);
+			FragColor = vec4(result, alpha);
 		}
 		
 		vec3 ComputePointLight(

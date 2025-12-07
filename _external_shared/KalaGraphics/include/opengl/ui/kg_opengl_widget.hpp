@@ -164,11 +164,7 @@ namespace KalaGraphics::OpenGL::UI
 		inline u32 GetWindowID() const { return windowID; }
 		inline u32 GetGLID() const { return glID; }
 
-		//Skips rendering if set to false without needing to
-		//encapsulate the render function in its own render toggle
 		inline void SetUpdateState(bool newValue) { render.canUpdate = newValue; }
-		//Skips rendering if set to false without needing to
-		//encapsulate the render function in its own render toggle
 		inline bool CanUpdate() const { return render.canUpdate; }
 
 		//No children render past this widget size if true

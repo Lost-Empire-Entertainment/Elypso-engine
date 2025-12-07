@@ -34,14 +34,14 @@ namespace KalaGraphics::Core
 		
 		//Run when you want all KalaGraphics resources to be freed
 		static void CleanAllResources();
-	
-		//Attach a function that is called when you call ForceClose,
-		//great for ensuring you clean KalaGraphics resources when you intend the program to close
-		static inline void SetErrorCallback(function<void()> newCallback)
+		
+		//Calls the force close callback which handles what happens at runtime,
+		//always calls __debugbreak in debug, calls abort if no force close callback is assigned
+		static inline void SetForceCloseCallback(function<void()> newCallback)
 		{
 			if (!newCallback) return;
 			
-			errorCallback = newCallback;
+			forceCloseCallback = newCallback;
 		}
 		
 		//Force-close the program right this very moment with no cleanups
@@ -55,17 +55,14 @@ namespace KalaGraphics::Core
 				LogType::LOG_ERROR,
 				2);
 			
-			if (errorCallback) errorCallback();
-			else
-			{
 #ifdef _DEBUG
 			__debugbreak();
 #else
-			abort();	
+			if (forceCloseCallback) forceCloseCallback();
+			else quick_exit(EXIT_FAILURE);
 #endif
-			}
 		}
 	private:
-		static inline function<void()> errorCallback{};
+		static inline function<void()> forceCloseCallback{};
 	};
 }
