@@ -1,0 +1,328 @@
+================================================================================================
+
+Custom terminology used in this document
+
+================================================================================================
+
+ambidirectional:
+	- unconstrained direction
+	- could be one or multiple directions
+	- could be opposite directions, or any direction at all or directions change over time
+	- independent of object motion
+	
+instant raycasting:
+	- happens at the current frame, no delay factors
+	- doesnt care if the target mesh is static or in motion
+
+delayed raycasting:
+	- the ray is affected by one or more factors and takes time to reach its target
+	- splits into static and dynamic mesh collision
+	
+half mesh:
+	- volumetric geometry that does not enclose a full 3D volume
+	- does not have an "interior"
+	- disqualifiers (not a true full mesh):
+		- one or more faces missing - not truly enclosed
+		- edges poking through faces
+		- faces overlapping at non-manifold angles
+		- twisted or inverted geometry
+		- vertices welded incorrectly causing face inversion
+	- examples:
+		- line segments
+		- triangles
+		- quads
+		- ribbon or strip meshes
+
+full mesh:
+	- a closed volumetric 3D geometry with no missing faces
+	- a full mesh can be convex or concave as long as it encloses a fully connected mesh
+	- separates interior from exterior
+	- examples:
+		- cubes,
+		- spheres,
+		- convex hulls
+		- bounding volumes
+	
+================================================================================================
+
+Codebase structure
+
+================================================================================================
+
+Collider and ray classes return non-owning pointers, their true owner pointer is stored in their registry.
+
+PhysicsWorld is the main management class of KalaPhysics.
+
+struct CollisionLayer
+{
+    string_view name;
+    bool state;
+};
+static inline array<CollisionLayer, 100> collisionLayers{};
+	- map for all physics layers
+	- must be filled by user, true means layer is enabled
+	- can be used to filter collisions and raycasting at runtime
+	- states and content can be mutated at runtime
+
+PhysicsWorld::Update(u32 deltaTime);
+	- used for calling all raycasting and collision logic over time
+	- has friend access to all target classes whose update functions it needs to call
+	
+The instant Ray class handles rays that are cast this frame
+
+	Collider* Ray::HitAnyMesh(
+		const vec3& origin,
+		const vec3& direction,
+		f32 speed);
+		- local to each instant ray
+		- returns any mesh collider that it hit, otherwise returns nullptr if none was hit
+		
+	bool Ray::HitTargetMesh(
+		const vec3& origin,
+		const vec3& direction,
+		f32 speed,
+		u32 targetID);
+		- local to each instant ray
+		- returns true if target mesh was hit
+	
+The DelayedRay class handles rays that take time to reach their target
+
+	DelayedRay* dr = DelayedRay::Cast(
+		const vec3& origin,
+		const vec3& direction,
+		f32 speed);
+		- used for creating a regular ray which moves over time with the given velocity
+
+	DelayedRay* dr = DelayedRay::DetachedCast(
+		const vec3& origin,
+		const vec3& direction,
+		f32 speed,
+		const function<void()> targetAction);
+		- used for creating a self-managing detached ray which does the desired action upon hit
+	
+	Collider* HitAnyMesh();
+		- local to each detached ray
+		- returns any mesh collider that it hit, otherwise returns nullptr if none was hit
+		
+	bool HitTargetMesh(u32 targetID);
+		- local to each detached ray
+		- returns true if target mesh was hit
+			
+	void DestroyAfter(u32 seconds);
+		- local to each detached ray
+		- used usually after creating any delayed ray to define lifetime
+		
+	void DestroyIfHit(u32 targetID);
+		- local to each detached ray
+		- used to define if this ray should be destroyed after hitting a specific target
+		
+	void DestroyIfHit(ColliderType type);
+		- local to each detached ray
+		- used to define if this ray should be destroyed after hitting a collider with a specific type
+
+	void Destroy();
+		- local to each detached ray
+		- destroys this ray right now
+	
+The Collider class is the root class for all colliders created by the user
+		
+	const vec3& GetHitPos() const;
+		- local to each hit collider
+		- returns the position that collider was hit at
+		
+================================================================================================
+
+Bounding volumes 
+
+================================================================================================
+
+Bounding volumes are various closed shapes used to enclose more complex geometry
+
+	shapes:
+		BSP:
+			- bounding sphere
+			- broadphase only
+			- rotation doesnt matter
+			- least accurate
+			- fastest performance
+		AABB:
+			- axis-aligned bounding box (any rectangle)
+			- broadphase only
+			- fixed orientation
+			- same accuracy as OBB unless the mesh rotates away from its axis-aligned shape
+			- slightly slower than a BSP but still ultra fast
+		OBB:
+			- oriented bounding box (any rectangle)
+			- broadphase and narrowphase
+			- fully rotatable
+			- more accurate than AABB, can rotate with the mesh
+			- slightly more expensive than an AABB
+		BCP:
+			- bounding capsule
+			- broadphase and narrowphase
+			- only height and radius are tweakable
+			- more accurate than BSP, AABB and OBB
+			- moderate performance
+		KDOP:
+			- discrete oriented polytope
+			- broadphase only
+			- multi-plane volume, more planes = more accurate but more expensive
+			- can be 10_X, 10_Y, 10_Z, 18 or 26
+			- variable performance, affected by plane count
+		BCH:
+			- bounding convex hull
+			- narrowphase only
+			- the most accurate, fits closely to the true mesh shape
+			- very expensive
+
+================================================================================================
+
+Ray–object intersections
+
+================================================================================================
+
+	bounding:
+		- ray vs BSP (bounding sphere)
+		- ray vs AABB
+		- ray vs OBB
+		- ray vs BCP (bounding capsule)
+		- ray vs KDOP
+		- ray vs BCH (bounding convex hull)
+	
+	half mesh:
+		- ray vs line (edge between two points)
+		- ray vs line segment (connection of lines)
+		- ray vs triangle (three points that form a triangle and have a filled surface)
+		- ray vs quad (four points that form a face and have a filled surface)
+		
+	full mesh:
+		- ray vs mesh (regular user-submitted mesh of any kind, via triangle batches or BVH/AABB trees)
+		- ray vs heightmap (raw data of a heightmap or the heightmap picture pixels themselves)
+		- ray vs terrain (real terrain mesh, unlike a heightmap)
+		
+	instant ray:
+		- no lifetime, happens instantly at the current frame
+		- straight or curved
+		- no velocity, no acceleration
+		
+	delayed ray:
+		- lives until collision or for how long the lifetime has been set
+		- can be given a speed
+		- can accelerate and decelerate over time
+		- can be given a curve unaffected by gravity, weight, wind
+		- can be affected by gravity
+		- can be affected by weight (downward force multiplier affected by gravity strength)
+		- can be affected by wind (ambidirectional force multiplier)
+		- can be affected by drag (opposes motion against moving direction)
+		- can be affected by friction (opposes motion against moving direction along surfaces (surface-bound drag))
+		
+	delayed ray hit target type matters:
+		- static target - only ray has a trajectory, only track the position of the ray over time, mesh stays fixed in space
+		- moving target - both ray and mesh have a trajectory, also track the position of the mesh over time
+		- swept target - both ray and mesh have a trajectory, also track the entire space the mesh occupies over time
+
+================================================================================================
+
+Broadphase collision
+
+================================================================================================
+
+find potential collision pairs without doing real collision math,
+which objects are close enough that we should bother testing them for real
+	
+broadphase:
+	- cheap, inaccurate, detects overlap regions
+	- runs on thousands of objects
+	- often runs every frame
+	- drops more than 95% of potential pairs to be ignored
+	
+real world use cases:
+	- large multiplayer open worlds
+	- projectile collision filtering
+	- culling unnecessary collision checks
+	- early rejection in raycasts
+	
+algorithms:
+	- BVH (bounding volume hierarchy) tree construction
+	- quadtrees/octrees
+	- uniform grids
+	- sweep and prune
+	- spatial hashing (hash grid broadphase)
+	- layer-based broadphase (collision masks, layers, groups, filters)
+	- cell-based broadphase
+	- hybrid broadphase (use two or more systems broadphase together)
+
+================================================================================================
+
+Narrowphase collision
+
+================================================================================================
+
+compute the actual collision exactly between objects identified by broadphase
+
+narrowphase:
+	- slow, expensive, high precision collision
+	- runs only on filtered pairs
+	- determines physical response
+	- often uses real geometry
+
+real world use cases:
+	- bullet exact impacts
+	- rigidbody stacking
+	- vehicle collision
+	- detailed world geometry
+	- melee hitboxes
+	
+algorithms:
+	- penetration depth
+	- convex vs convex (GJK, EPA, SAT)
+	- distance between convex shapes (GJK)
+	- separating axis theorem (pure collision detection)
+	- triangle mesh tests (triangle-level detection)
+	- segment intersection
+	- line–quad intersections
+	- CCD sweeping (narrowphase contact generation)
+	- barycentric coords, triangle area
+	- surface normals (narrowphase returns normals to the solver)
+
+================================================================================================
+
+Post-narrowphase helpers
+
+================================================================================================
+
+the following should *always* be handled after narrowphase collision
+
+collision response, impulse solve:
+	- impulses
+	- bounces (restitution)
+	- friction
+	- constraints (ragdolls, hinge, slider, 6-DOF etc)
+	- constraint limits and motors
+	- contact softness/stiffness
+	- resting contact stabilization
+	- momentum
+	- mass
+	- inertia
+	
+damping:
+	- linear and angular damping
+	- drag
+	- stabilizing large impulses
+	- smoothing jitter
+	- reducing simulation energy buildup
+	- micro-damping (prevent jitter in very small movements)
+	- sleep-threshold softening (stop forever-jitter near the sleep threshold)
+	
+stability, safety systems:
+	- penetration correction
+	- prevent joint/constraint drift
+	- cap forces/velocities
+	- numerical safety clamps
+	- positional stabilization
+	- CCD fixup
+	
+integration:
+	- linear and angular velocity
+	- updating position
+	- updating orientation
