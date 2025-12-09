@@ -7,16 +7,17 @@
 
 #include <string>
 #include <filesystem>
+#include <algorithm>
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
 
-#include "registry.hpp"
+#include "core/ka_registry.hpp"
 
 //min is 1MB
-static constexpr u64 MIN_STREAM_SIZE = static_cast<size_t>(1 * 1024) * 1024; 
+static constexpr u32 MIN_STREAM_SIZE = 1048576u; 
 //max is 20MB
-static constexpr u64 MAX_STREAM_SIZE = static_cast<size_t>(20 * 1024) * 1024;
+static constexpr u32 MAX_STREAM_SIZE = 20971520u;
 
 namespace KalaAudio
 {
@@ -24,6 +25,7 @@ namespace KalaAudio
 	using std::filesystem::exists;
 	using std::filesystem::path;
 	using std::filesystem::is_regular_file;
+	using std::clamp;
 
 	using KalaHeaders::KalaMath::vec3;
 
@@ -92,11 +94,14 @@ namespace KalaAudio
 
 		//Set threshold where audio files will be streamed instead of loaded to memory in full.
 		//Only affects newly imported audio files.
-		static inline void SetStreamThreshold(u64 newThreshold)
+		static inline void SetStreamThreshold(u32 newThreshold)
 		{
-			streamThreshold = clamp(newThreshold, MIN_STREAM_SIZE, MAX_STREAM_SIZE);
+			streamThreshold = clamp(
+				newThreshold,
+				MIN_STREAM_SIZE,
+				MAX_STREAM_SIZE);
 		};
-		static inline u64 GetStreamThreshold() { return streamThreshold; }
+		static inline u32 GetStreamThreshold() { return streamThreshold; }
 
 		//Shut down Miniaudio
 		static void Shutdown();
@@ -104,7 +109,8 @@ namespace KalaAudio
 		static inline bool isInitialized;
 		static inline bool isVerboseLoggingEnabled;
 
-		static inline u64 streamThreshold = static_cast<size_t>(5 * 1024) * 1024; //default is 5MB
+		//default is 5MB
+		static inline u32 streamThreshold = 5242880u; 
 	};
 
 	//
@@ -160,7 +166,7 @@ namespace KalaAudio
 	class LIB_API AudioPlayer
 	{
 	public:
-		static inline Registry<AudioPlayer> registry{};
+		static inline KalaAudioRegistry<AudioPlayer> registry{};
 
 		//Create a new audio player. If file size is less than or equal to 10MB
 		//then file is loaded into memory in full, otherwise it is streamed.

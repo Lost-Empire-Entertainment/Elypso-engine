@@ -11,7 +11,7 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/log_utils.hpp"
 
-namespace KalaPhysics::Core
+namespace KalaAudio::Core
 {
 	using std::function;
 	using std::string;
@@ -20,17 +20,17 @@ namespace KalaPhysics::Core
 	
 	using KalaHeaders::KalaLog::Log;
 	using KalaHeaders::KalaLog::LogType;
-
-	class LIB_API KalaPhysicsCore
+	
+	class LIB_API KalaAudioCore
 	{
 	public:
 		//The ID that is bumped by every object when it needs a new ID
 		static inline u32 globalID{};
 		
-		//Run when you want all KalaPhysics resources freed relative to a window ID
+		//Run when you want all KalaAudio resources freed relative to a window ID
 		static void CleanAllWindowResources(u32 windowID);
 		
-		//Run when you want all KalaPhysics resources to be freed
+		//Run when you want all KalaAudio resources to be freed
 		static void CleanAllResources();
 		
 		//Calls the force close callback which handles what happens at runtime,
