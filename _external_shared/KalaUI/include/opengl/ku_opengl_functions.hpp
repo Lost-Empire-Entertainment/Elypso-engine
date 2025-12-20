@@ -17,66 +17,66 @@
 // their ownership must come from another library, for example KalaWindow
 //
 
-namespace KalaUI::OpenGL::OpenGL_Functions
+namespace KalaUI::OpenGL::OpenGLFunctions
 {
 	//general stuff
 		
-	LIB_API inline PFNGLENABLEPROC             glEnable{};
-	LIB_API inline PFNGLDISABLEPROC            glDisable{};
-	LIB_API inline PFNGLBLENDFUNCPROC          glBlendFunc{};
-	LIB_API inline PFNGLDEPTHMASKPROC          glDepthMask{};
-	LIB_API inline PFNGLBUFFERDATAPROC         glBufferData{};
-	LIB_API inline PFNGLDRAWELEMENTSPROC       glDrawElements{};
-	LIB_API inline PFNGLGENVERTEXARRAYSPROC    glGenVertexArrays{};
-	LIB_API inline PFNGLGENBUFFERSPROC         glGenBuffers{};
-	LIB_API inline PFNGLBINDBUFFERPROC         glBindBuffer{};
-	LIB_API inline PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays{};
-	LIB_API inline PFNGLDELETEBUFFERSPROC      glDeleteBuffers{};
-	LIB_API inline PFNGLGETERRORPROC           glGetError{};
+	LIB_API extern PFNGLENABLEPROC             glEnable;
+	LIB_API extern PFNGLDISABLEPROC            glDisable;
+	LIB_API extern PFNGLBLENDFUNCPROC          glBlendFunc;
+	LIB_API extern PFNGLDEPTHMASKPROC          glDepthMask;
+	LIB_API extern PFNGLBUFFERDATAPROC         glBufferData;
+	LIB_API extern PFNGLDRAWELEMENTSPROC       glDrawElements;
+	LIB_API extern PFNGLGENVERTEXARRAYSPROC    glGenVertexArrays;
+	LIB_API extern PFNGLGENBUFFERSPROC         glGenBuffers;
+	LIB_API extern PFNGLBINDBUFFERPROC         glBindBuffer;
+	LIB_API extern PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays;
+	LIB_API extern PFNGLDELETEBUFFERSPROC      glDeleteBuffers;
+	LIB_API extern PFNGLGETERRORPROC           glGetError;
 		
 	//shader stuff
 		
-	LIB_API inline PFNGLCREATESHADERPROC       glCreateShader{};
-	LIB_API inline PFNGLCREATEPROGRAMPROC      glCreateProgram{};
-	LIB_API inline PFNGLVALIDATEPROGRAMPROC    glValidateProgram{};
-	LIB_API inline PFNGLATTACHSHADERPROC       glAttachShader{};
-	LIB_API inline PFNGLLINKPROGRAMPROC        glLinkProgram{};
-	LIB_API inline PFNGLGETPROGRAMIVPROC       glGetProgramiv{};
-	LIB_API inline PFNGLGETPROGRAMINFOLOGPROC  glGetProgramInfoLog{};
-	LIB_API inline PFNGLGETSHADERINFOLOGPROC  glGetShaderInfoLog{};
-	LIB_API inline PFNGLISPROGRAMPROC          glIsProgram{};
-	LIB_API inline PFNGLUSEPROGRAMPROC         glUseProgram{};
-	LIB_API inline PFNGLSHADERSOURCEPROC       glShaderSource{};
-	LIB_API inline PFNGLCOMPILESHADERPROC      glCompileShader{};
-	LIB_API inline PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation{};
-	LIB_API inline PFNGLGETINTEGERVPROC        glGetIntegerv{};
-	LIB_API inline PFNGLGETSHADERIVPROC        glGetShaderiv{};
-	LIB_API inline PFNGLUNIFORM1IPROC          glUniform1i{};
-	LIB_API inline PFNGLUNIFORM1FPROC          glUniform1f{};
-	LIB_API inline PFNGLUNIFORM1FVPROC         glUniform1fv{};
-	LIB_API inline PFNGLUNIFORM2FVPROC         glUniform2fv{};
-	LIB_API inline PFNGLUNIFORM3FVPROC         glUniform3fv{};
-	LIB_API inline PFNGLUNIFORM4FVPROC         glUniform4fv{};
-	LIB_API inline PFNGLUNIFORMMATRIX2FVPROC   glUniformMatrix2fv{};
-	LIB_API inline PFNGLUNIFORMMATRIX3FVPROC   glUniformMatrix3fv{};
-	LIB_API inline PFNGLUNIFORMMATRIX4FVPROC   glUniformMatrix4fv{};
-	LIB_API inline PFNGLDETACHSHADERPROC       glDetachShader{};
-	LIB_API inline PFNGLDELETESHADERPROC       glDeleteShader{};
-	LIB_API inline PFNGLDELETEPROGRAMPROC      glDeleteProgram{};
+	LIB_API extern PFNGLCREATESHADERPROC       glCreateShader;
+	LIB_API extern PFNGLCREATEPROGRAMPROC      glCreateProgram;
+	LIB_API extern PFNGLVALIDATEPROGRAMPROC    glValidateProgram;
+	LIB_API extern PFNGLATTACHSHADERPROC       glAttachShader;
+	LIB_API extern PFNGLLINKPROGRAMPROC        glLinkProgram;
+	LIB_API extern PFNGLGETPROGRAMIVPROC       glGetProgramiv;
+	LIB_API extern PFNGLGETPROGRAMINFOLOGPROC  glGetProgramInfoLog;
+	LIB_API extern PFNGLGETSHADERINFOLOGPROC  glGetShaderInfoLog;
+	LIB_API extern PFNGLISPROGRAMPROC          glIsProgram;
+	LIB_API extern PFNGLUSEPROGRAMPROC         glUseProgram;
+	LIB_API extern PFNGLSHADERSOURCEPROC       glShaderSource;
+	LIB_API extern PFNGLCOMPILESHADERPROC      glCompileShader;
+	LIB_API extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
+	LIB_API extern PFNGLGETINTEGERVPROC        glGetIntegerv;
+	LIB_API extern PFNGLGETSHADERIVPROC        glGetShaderiv;
+	LIB_API extern PFNGLUNIFORM1IPROC          glUniform1i;
+	LIB_API extern PFNGLUNIFORM1FPROC          glUniform1f;
+	LIB_API extern PFNGLUNIFORM1FVPROC         glUniform1fv;
+	LIB_API extern PFNGLUNIFORM2FVPROC         glUniform2fv;
+	LIB_API extern PFNGLUNIFORM3FVPROC         glUniform3fv;
+	LIB_API extern PFNGLUNIFORM4FVPROC         glUniform4fv;
+	LIB_API extern PFNGLUNIFORMMATRIX2FVPROC   glUniformMatrix2fv;
+	LIB_API extern PFNGLUNIFORMMATRIX3FVPROC   glUniformMatrix3fv;
+	LIB_API extern PFNGLUNIFORMMATRIX4FVPROC   glUniformMatrix4fv;
+	LIB_API extern PFNGLDETACHSHADERPROC       glDetachShader;
+	LIB_API extern PFNGLDELETESHADERPROC       glDeleteShader;
+	LIB_API extern PFNGLDELETEPROGRAMPROC      glDeleteProgram;
 		
 	//texture stuff
 		
-	LIB_API inline PFNGLACTIVETEXTUREPROC           glActiveTexture{};
-	LIB_API inline PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray{};
-	LIB_API inline PFNGLVERTEXATTRIBPOINTERPROC     glVertexAttribPointer{};
-	LIB_API inline PFNGLBINDTEXTUREPROC             glBindTexture{};
-	LIB_API inline PFNGLBINDVERTEXARRAYPROC         glBindVertexArray{};
-	LIB_API inline PFNGLGENTEXTURESPROC             glGenTextures{};
-	LIB_API inline PFNGLTEXPARAMETERIPROC           glTexParameteri{};
-	LIB_API inline PFNGLPIXELSTOREIPROC             glPixelStorei{};
-	LIB_API inline PFNGLTEXIMAGE2DPROC              glTexImage2D{};
-	LIB_API inline PFNGLTEXSUBIMAGE2DPROC           glTexSubImage2D{};
-	LIB_API inline PFNGLTEXSTORAGE2DPROC            glTexStorage2D{};
-	LIB_API inline PFNGLGENERATEMIPMAPPROC          glGenerateMipmap{};
-	LIB_API inline PFNGLDELETETEXTURESPROC          glDeleteTextures{};
+	LIB_API extern PFNGLACTIVETEXTUREPROC           glActiveTexture;
+	LIB_API extern PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
+	LIB_API extern PFNGLVERTEXATTRIBPOINTERPROC     glVertexAttribPointer;
+	LIB_API extern PFNGLBINDTEXTUREPROC             glBindTexture;
+	LIB_API extern PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
+	LIB_API extern PFNGLGENTEXTURESPROC             glGenTextures;
+	LIB_API extern PFNGLTEXPARAMETERIPROC           glTexParameteri;
+	LIB_API extern PFNGLPIXELSTOREIPROC             glPixelStorei;
+	LIB_API extern PFNGLTEXIMAGE2DPROC              glTexImage2D;
+	LIB_API extern PFNGLTEXSUBIMAGE2DPROC           glTexSubImage2D;
+	LIB_API extern PFNGLTEXSTORAGE2DPROC            glTexStorage2D;
+	LIB_API extern PFNGLGENERATEMIPMAPPROC          glGenerateMipmap;
+	LIB_API extern PFNGLDELETETEXTURESPROC          glDeleteTextures;
 }

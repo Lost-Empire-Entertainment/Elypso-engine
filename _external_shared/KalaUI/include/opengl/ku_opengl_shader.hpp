@@ -93,21 +93,6 @@ namespace KalaUI::OpenGL
 		//Returns the OpenGL context of this shader
 		inline const uintptr_t* GetGLContext() const { return glContext; }
 
-		//Returns true if this shader is loaded
-		inline bool IsShaderLoaded(OpenGL_ShaderType targetType) const
-		{
-			if (programID == 0) return false;
-
-			switch (targetType)
-			{
-			case OpenGL_ShaderType::SHADER_VERTEX: return vertData.ID != 0;
-			case OpenGL_ShaderType::SHADER_FRAGMENT: return fragData.ID != 0;
-			case OpenGL_ShaderType::SHADER_GEOMETRY: return geomData.ID != 0;
-			}
-
-			return false;
-		}
-
 		//Returns shader data assigned to shader type
 		inline const string& GetShaderData(OpenGL_ShaderType targetType) const
 		{
@@ -154,33 +139,22 @@ namespace KalaUI::OpenGL
 			return 0;
 		}
 
-		inline const array<OpenGL_ShaderData, 3>& GetAllShaders() const
-		{
-			static array<OpenGL_ShaderData, 3> dataOut{};
+		//Bind current shader
+		bool Bind();
 
-			dataOut[0] = vertData;
-			dataOut[1] = fragData;
-			dataOut[2] = geomData;
+		bool HotReload();
 
-			return dataOut;
-		}
+		void SetBool(const string& name, bool value) const;
+		void SetInt(const string& name, i32 value) const;
+		void SetFloat(const string& name, f32 value) const;
 
-		//Bind current shader, requires handle (HDC) from your window
-		bool Bind(const uintptr_t* externalGLContext);
+		void SetVec2(const string& name, const vec2& value) const;
+		void SetVec3(const string& name, const vec3& value) const;
+		void SetVec4(const string& name, const vec4& value) const;
 
-		bool HotReload(const uintptr_t* glContext);
-
-		void SetBool(u32 programID, const string& name, bool value) const;
-		void SetInt(u32 programID, const string& name, i32 value) const;
-		void SetFloat(u32 programID, const string& name, f32 value) const;
-
-		void SetVec2(u32 programID, const string& name, const vec2& value) const;
-		void SetVec3(u32 programID, const string& name, const vec3& value) const;
-		void SetVec4(u32 programID, const string& name, const vec4& value) const;
-
-		void SetMat2(u32 programID, const string& name, const mat2& mat) const;
-		void SetMat3(u32 programID, const string& name, const mat3& mat) const;
-		void SetMat4(u32 programID, const string& name, const mat4& mat) const;
+		void SetMat2(const string& name, const mat2& mat) const;
+		void SetMat3(const string& name, const mat3& mat) const;
+		void SetMat4(const string& name, const mat4& mat) const;
 
 		//Do not destroy manually, erase from registry instead
 		~OpenGL_Shader();

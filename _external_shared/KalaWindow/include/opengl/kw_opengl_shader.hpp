@@ -11,9 +11,10 @@
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
 
-#include "core/ku_registry.hpp"
+#include "opengl/kw_opengl.hpp"
+#include "core/kw_registry.hpp"
 
-namespace KalaUI::OpenGL
+namespace KalaWindow::OpenGL
 {
 	using std::string;
 	using std::array;
@@ -25,7 +26,8 @@ namespace KalaUI::OpenGL
 	using KalaHeaders::KalaMath::mat3;
 	using KalaHeaders::KalaMath::mat4;
 	
-	using KalaUI::Core::KalaUIRegistry;
+	using KalaWindow::OpenGL::OpenGL_Context;
+	using KalaWindow::Core::KalaWindowRegistry;
 
 	enum class OpenGL_ShaderType
 	{
@@ -55,12 +57,12 @@ namespace KalaUI::OpenGL
 	class LIB_API OpenGL_Shader
 	{
 	public:
-		static inline KalaUIRegistry<OpenGL_Shader> registry{};
+		static inline KalaWindowRegistry<OpenGL_Shader> registry{};
 
 		//Create a new shader with up to three types of shader files.
 		//Geometry shaders are optional but vert and frag shader must always be filled
 		static OpenGL_Shader* Initialize(
-			const uintptr_t* glContext,
+			OpenGL_Context* glContext,
 			const string& shaderName,
 			const array<OpenGL_ShaderData, 3>& shaderData);
 
@@ -91,22 +93,7 @@ namespace KalaUI::OpenGL
 		inline u32 GetProgramID() const { return programID; }
 		
 		//Returns the OpenGL context of this shader
-		inline u32 GetGLContext() const { return glContext; }
-
-		//Returns true if this shader is loaded
-		inline bool IsShaderLoaded(OpenGL_ShaderType targetType) const
-		{
-			if (programID == 0) return false;
-
-			switch (targetType)
-			{
-			case OpenGL_ShaderType::SHADER_VERTEX: return vertData.ID != 0;
-			case OpenGL_ShaderType::SHADER_FRAGMENT: return fragData.ID != 0;
-			case OpenGL_ShaderType::SHADER_GEOMETRY: return geomData.ID != 0;
-			}
-
-			return false;
-		}
+		inline OpenGL_Context* GetGLContext() const { return glContext; }
 
 		//Returns shader data assigned to shader type
 		inline const string& GetShaderData(OpenGL_ShaderType targetType) const
@@ -154,35 +141,22 @@ namespace KalaUI::OpenGL
 			return 0;
 		}
 
-		inline const array<OpenGL_ShaderData, 3>& GetAllShaders() const
-		{
-			static array<OpenGL_ShaderData, 3> dataOut{};
+		//Bind current shader
+		bool Bind();
 
-			dataOut[0] = vertData;
-			dataOut[1] = fragData;
-			dataOut[2] = geomData;
+		bool HotReload();
 
-			return dataOut;
-		}
+		void SetBool(const string& name, bool value) const;
+		void SetInt(const string& name, i32 value) const;
+		void SetFloat(const string& name, f32 value) const;
 
-		//Bind current shader, requires handle (HDC) from your window
-		bool Bind(
-			u32 glID,
-			uintptr_t handle);
+		void SetVec2(const string& name, const vec2& value) const;
+		void SetVec3(const string& name, const vec3& value) const;
+		void SetVec4(const string& name, const vec4& value) const;
 
-		bool HotReload(u32 windowID);
-
-		void SetBool(u32 programID, const string& name, bool value) const;
-		void SetInt(u32 programID, const string& name, i32 value) const;
-		void SetFloat(u32 programID, const string& name, f32 value) const;
-
-		void SetVec2(u32 programID, const string& name, const vec2& value) const;
-		void SetVec3(u32 programID, const string& name, const vec3& value) const;
-		void SetVec4(u32 programID, const string& name, const vec4& value) const;
-
-		void SetMat2(u32 programID, const string& name, const mat2& mat) const;
-		void SetMat3(u32 programID, const string& name, const mat3& mat) const;
-		void SetMat4(u32 programID, const string& name, const mat4& mat) const;
+		void SetMat2(const string& name, const mat2& mat) const;
+		void SetMat3(const string& name, const mat3& mat) const;
+		void SetMat4(const string& name, const mat4& mat) const;
 
 		//Do not destroy manually, erase from registry instead
 		~OpenGL_Shader();
@@ -196,7 +170,7 @@ namespace KalaUI::OpenGL
 		u32 ID{};
 		u32 programID{};
 		
-		const uintptr_t* glContext{};
+		OpenGL_Context* glContext{};
 
 		OpenGL_ShaderData vertData{};
 		OpenGL_ShaderData fragData{};

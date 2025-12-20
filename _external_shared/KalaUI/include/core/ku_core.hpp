@@ -21,6 +21,8 @@ namespace KalaUI::Core
 	
 	using KalaHeaders::KalaLog::Log;
 	using KalaHeaders::KalaLog::LogType;
+	using KalaHeaders::KalaLog::TimeFormat;
+	using KalaHeaders::KalaLog::DateFormat;
 
 	class LIB_API KalaUICore
 	{
@@ -54,7 +56,10 @@ namespace KalaUI::Core
 				reason,
 				target,
 				LogType::LOG_ERROR,
-				2);
+				2,
+				true,
+				TimeFormat::TIME_NONE,
+				DateFormat::DATE_NONE);
 			
 #ifdef _DEBUG
 			__debugbreak();
