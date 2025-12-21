@@ -1,6 +1,6 @@
 # KalaAudio
 
-This is a binary for audio playback and streaming.
+**KalaAudio** provides a simple wrapper with self-owned lifetime for MiniAudio. It supports up to 4 audio listeners, as many players as you want and covers most toggles that MiniAudio provides for audio listeners and players.
 
 ---
 
