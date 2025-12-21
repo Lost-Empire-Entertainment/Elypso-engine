@@ -1,8 +1,8 @@
 # KalaUI
 
-**KalaUI** is a retained mode production ready UI library for OpenGL 3.3 that does not own or create a window or the GL context. It is recommended to use [KalaWindow](https://github.com/kalakit/kalawindow) to get the GL context and the handle (HDC) but theoretically any other window context initializer and GL library like GLFW should work out of the box.
+**KalaUI** is a retained mode production ready UI library for OpenGL 3.3 and it provides a fully self made UI framework, with a widget system where Image and Text are the root widgets that does not own or create a window or the GL context.
 
-**KalaUI** provides a fully self made in-house UI framework, with a widget system where Image and Text are the root widgets.
+It is recommended to use [KalaWindow](https://github.com/kalakit/kalawindow) to get the GL context and the GL functions but any other window context initializer and GL library like GLFW should work as well.
 
 ---
 
