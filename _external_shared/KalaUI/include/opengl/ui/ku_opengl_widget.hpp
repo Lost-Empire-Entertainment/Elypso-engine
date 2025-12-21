@@ -75,7 +75,7 @@ namespace KalaUI::OpenGL::UI
 	{
 		bool canUpdate = true;
 		
-		const uintptr_t* glContext{};
+		uintptr_t glContext{};
 
 		//no children render past this widget size if true
 		bool isClipping{};
@@ -169,7 +169,7 @@ namespace KalaUI::OpenGL::UI
 		inline u32 GetID() const { return ID; }
 		inline u32 GetWindowID() const { return windowID; }
 		
-		inline const uintptr_t* GetGLContext() const { return render.glContext; }
+		inline uintptr_t GetGLContext() const { return render.glContext; }
 
 		inline void SetUpdateState(bool newValue) { render.canUpdate = newValue; }
 		inline bool CanUpdate() const { return render.canUpdate; }
@@ -237,7 +237,7 @@ namespace KalaUI::OpenGL::UI
 				type,
 				newPos);
 		}
-		inline vec2 GetPos(PosTarget type) 
+		inline vec2 GetPos(PosTarget type) const
 		{ 
 			return getpos(
 				transform,
@@ -270,7 +270,7 @@ namespace KalaUI::OpenGL::UI
 				type,
 				safeRot);
 		}
-		inline f32 GetRot(RotTarget type) 
+		inline f32 GetRot(RotTarget type) const
 		{ 
 			return getrot(
 				transform,
@@ -299,7 +299,7 @@ namespace KalaUI::OpenGL::UI
 				type,
 				newSize);
 		}
-		inline vec2 GetSize(SizeTarget type) 
+		inline vec2 GetSize(SizeTarget type) const
 		{ 
 			return getsize(
 				transform,

@@ -24,7 +24,7 @@ namespace KalaUI::OpenGL
 		//Loops through all errors so that all errors at that point are printed, not just the first one.
 		static string GetError();
 	
-		static bool IsContextValid(const uintptr_t* glContext);
+		static bool IsContextValid(uintptr_t glContext);
 	
 		static void Update(
 			const mat4& projection,

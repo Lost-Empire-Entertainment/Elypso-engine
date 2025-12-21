@@ -60,7 +60,7 @@ namespace KalaUI::OpenGL
 		//Create a new shader with up to three types of shader files.
 		//Geometry shaders are optional but vert and frag shader must always be filled
 		static OpenGL_Shader* Initialize(
-			const uintptr_t* glContext,
+			uintptr_t glContext,
 			const string& shaderName,
 			const array<OpenGL_ShaderData, 3>& shaderData);
 
@@ -91,7 +91,7 @@ namespace KalaUI::OpenGL
 		inline u32 GetProgramID() const { return programID; }
 		
 		//Returns the OpenGL context of this shader
-		inline const uintptr_t* GetGLContext() const { return glContext; }
+		inline uintptr_t GetGLContext() const { return glContext; }
 
 		//Returns shader data assigned to shader type
 		inline const string& GetShaderData(OpenGL_ShaderType targetType) const
@@ -140,7 +140,7 @@ namespace KalaUI::OpenGL
 		}
 
 		//Bind current shader
-		bool Bind();
+		bool Bind() const;
 
 		bool HotReload();
 
@@ -168,7 +168,7 @@ namespace KalaUI::OpenGL
 		u32 ID{};
 		u32 programID{};
 		
-		const uintptr_t* glContext{};
+		uintptr_t glContext{};
 
 		OpenGL_ShaderData vertData{};
 		OpenGL_ShaderData fragData{};

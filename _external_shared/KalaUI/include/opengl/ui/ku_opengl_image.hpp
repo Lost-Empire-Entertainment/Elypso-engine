@@ -28,7 +28,7 @@ namespace KalaUI::OpenGL::UI
 		static OpenGL_Image* Initialize(
 			const string& name,
 			u32 windowID,
-			const uintptr_t* glContext,
+			uintptr_t glContext,
 			const vec2 pos,
 			const float rot,
 			const vec2 size,

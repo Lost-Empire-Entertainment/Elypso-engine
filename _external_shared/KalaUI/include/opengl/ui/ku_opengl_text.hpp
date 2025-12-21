@@ -29,7 +29,7 @@ namespace KalaUI::OpenGL::UI
 		static OpenGL_Text* Initialize(
 			const string& name,
 			u32 windowID,
-			const uintptr_t* glContext,
+			uintptr_t glContext,
 			u32 glyphIndex,
 			u32 fontID,
 			const vec2 pos,

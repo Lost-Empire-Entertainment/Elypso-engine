@@ -45,7 +45,7 @@ namespace KalaUI::OpenGL
 		//Mipmap levels are clamped internally through Texture::GetMaxMipMapLevels.
 		//Returns a fallback texture if loading fails.
 		static OpenGL_Texture* Initialize(
-			const uintptr_t* glContext,
+			uintptr_t glContext,
 			const string& name,
 			const string& path,
 			TextureFormat format = TextureFormat::Format_Auto,
@@ -77,7 +77,7 @@ namespace KalaUI::OpenGL
 		inline u32 GetTextureID() const { return textureID; }
 		
 		//Returns the OpenGL context of this texture
-		inline const uintptr_t* GetGLContext() const { return glContext; }
+		inline uintptr_t GetGLContext() const { return glContext; }
 		
 		inline vec2 GetSize() const { return size; }
 		inline u8 GetMipMapLevels() const { return mipMapLevels; }
@@ -97,7 +97,7 @@ namespace KalaUI::OpenGL
 		~OpenGL_Texture();
 	private:
 		static OpenGL_Texture* TextureBody(
-			const uintptr_t* glContext,
+			uintptr_t glContext,
 			const string& name,
 			const vector<string>& texturePaths,
 			TextureFormat format,
@@ -117,7 +117,7 @@ namespace KalaUI::OpenGL
 		
 		u32 ID{};
 		u32 textureID{};
-		const uintptr_t* glContext{};
+		uintptr_t glContext{};
 
 		vec2 size{};
 		u8 mipMapLevels = 1;
