@@ -6,20 +6,22 @@
 #pragma once
 
 #include <string>
-#include <functional>
+#include <csignal>
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/log_utils.hpp"
 
 namespace KalaPhysics::Core
 {
-	using std::function;
 	using std::string;
+	using std::raise;
 	
 	using u32 = uint32_t;
 	
 	using KalaHeaders::KalaLog::Log;
 	using KalaHeaders::KalaLog::LogType;
+	using KalaHeaders::KalaLog::TimeFormat;
+	using KalaHeaders::KalaLog::DateFormat;
 
 	class LIB_API KalaPhysicsCore
 	{
@@ -33,39 +35,31 @@ namespace KalaPhysics::Core
 		//Run when you want all KalaPhysics resources to be freed
 		static void CleanAllResources();
 		
-		//Calls the force close callback which handles what happens at runtime,
-		//always calls __debugbreak in debug, calls quick_exit if no force close callback is assigned
-		static inline void SetForceCloseCallback(
-			function<void(const string& target,
-			const string& reason)> newCallback)
-		{
-			if (!newCallback) return;
-			
-			forceCloseCallback = newCallback;
-		}
-		
 		//Force-close the program right this very moment with no cleanups
 		[[noreturn]] static inline void ForceClose(
 			const string& target,
 			const string& reason)
 		{
 			Log::Print(
+				"\n================"
+				"\nFORCE CLOSE"
+				"\n================\n",
+				true);
+
+			Log::Print(
 				reason,
 				target,
 				LogType::LOG_ERROR,
-				2);
+				2,
+				true,
+				TimeFormat::TIME_NONE,
+				DateFormat::DATE_NONE);
 			
-#ifdef _DEBUG
+#ifdef _WIN32
 			__debugbreak();
 #else
-			if (forceCloseCallback) forceCloseCallback(target, reason);
-			else quick_exit(EXIT_FAILURE);
+			raise(SIGTRAP);
 #endif
 		}
-	private:
-		static inline function<void(
-			const string& target, 
-			const string& reason)>
-			forceCloseCallback{};
 	};
 }

@@ -1,6 +1,6 @@
 # KalaPhysics
 
-...
+**KalaPhysics** aims to cover most physics needs for ray casting, collision with most popular shapes in broadphase and narrowphase and will experiment with many various other things like **instant vs delayed rays**.
 
 ---
 
