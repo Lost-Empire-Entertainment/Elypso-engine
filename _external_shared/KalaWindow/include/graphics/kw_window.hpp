@@ -117,8 +117,7 @@ namespace KalaWindow::Graphics
 	public:
 		static inline KalaWindowRegistry<Window> registry{};
 
-		//Create a new window that is always hidden by default, call the appropriate functions to show it,
-		//this avoids common issues with flashing, weird sizes and other things that may occur during the init stage.
+		//Create a new window that is always hidden by default, you must manually make it visible.
 		//Assign a parent window to display this window as a child of that window.
 		//Set the context to your preferred dpi state to modify how
 		//window dpi state affects performance and quality of the framebuffer

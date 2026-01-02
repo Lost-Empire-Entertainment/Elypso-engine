@@ -87,7 +87,7 @@ Provides the networking stack required for sending and receiving packets for any
 
 Also provides a framework for hosting websites. Can route root path to any path inside its own root so the original path is unreachable by the end user if they try to look what files are accessible.
 
-Uses completely original code with help from WinSock and CloudFlare Tunnel, does not rely on any external server stacks.
+Uses completely original code with help from WinSock and Cloudflare Tunnel, does not rely on any external server stacks.
 
 ---
 
