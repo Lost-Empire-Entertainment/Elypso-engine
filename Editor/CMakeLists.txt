@@ -82,9 +82,11 @@ target_include_directories(ElypsoEditor PRIVATE
 )
 
 # Preprocessor Defines
-target_compile_definitions(ElypsoEditor PRIVATE 
-    WIN32_LEAN_AND_MEAN
-    NOMINMAX
+target_compile_definitions(ElypsoEditor PRIVATE
+	WIN32_LEAN_AND_MEAN # cleaner windows.h
+	NOMINMAX            # skips min/max windows macros in favor of the std variants
+	UNICODE             # selects wide api variants over ansi for UTF16 windows functions
+	_UNICODE            # uses wide text types in the C runtime layer
 )
 
 # Link libraries
@@ -94,6 +96,26 @@ target_link_libraries(ElypsoEditor PRIVATE
 	${UI_LIBRARY_PATH}
 	${LUA_LIBRARY_PATH}
 )
+
+# Hide console in release mode
+# if(IS_RELEASE)
+#     set_target_properties(ElypsoEditor PROPERTIES WIN32_EXECUTABLE TRUE)
+#     if (MSVC)
+#         set_target_properties(ElypsoEditor PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+#     endif()
+# endif()
+
+# Set Windows Details tab data
+# set(ICON_DIR "${CMAKE_SOURCE_DIR}/files/icon.ico")
+
+# Expose version string
+add_compile_definitions(
+	PROGRAM_VERSION="${PROGRAM_VERSION}"
+)
+
+# Installation
+set(CMAKE_INSTALL_BINDIR bin)
+install(TARGETS ElypsoEditor DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Copy external binaries
 if(IS_RELEASE)

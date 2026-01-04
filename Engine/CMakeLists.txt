@@ -91,9 +91,11 @@ target_include_directories(ElypsoEngine PRIVATE
 
 # Preprocessor Defines
 target_compile_definitions(ElypsoEngine PRIVATE 
-	LIB_EXPORT
-    WIN32_LEAN_AND_MEAN
-    NOMINMAX
+	LIB_EXPORT          # dll import/export
+	WIN32_LEAN_AND_MEAN # cleaner windows.h
+	NOMINMAX            # skips min/max windows macros in favor of the std variants
+	UNICODE             # selects wide api variants over ansi for UTF16 windows functions
+	_UNICODE            # uses wide text types in the C runtime layer
 )
 
 # Link libraries
@@ -103,14 +105,6 @@ target_link_libraries(ElypsoEngine PRIVATE
 	${UI_LIBRARY_PATH}
 	${LUA_LIBRARY_PATH}
 )
-
-# Hide console in release mode
-# if(IS_RELEASE)
-#     set_target_properties(ElypsoEngine PROPERTIES WIN32_EXECUTABLE TRUE)
-#     if (MSVC)
-#         set_target_properties(ElypsoEngine PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
-#     endif()
-# endif()
 
 # Expose version string
 add_compile_definitions(
