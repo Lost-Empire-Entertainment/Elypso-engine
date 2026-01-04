@@ -3,9 +3,13 @@ out/
 build/
 .vs/
 
-# Release and Debug in root folder
-/release/
-/debug/
+# Release and Debug in editor folder
+/Editor/release/
+/Editor/debug/
+
+# Release and Debug in engine folder
+/Engine/release/
+/Engine/debug/
 
 # Large files
 *.pdb
