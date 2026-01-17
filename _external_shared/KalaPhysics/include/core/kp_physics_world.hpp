@@ -10,117 +10,66 @@
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 namespace KalaPhysics::Core
 {
 	using std::array;
 	using std::string;
-	
-	using u8 = uint8_t;
+	using std::to_string;
 	
 	using KalaHeaders::KalaMath::vec3;
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
+
+	//total max allowed substeps
+	constexpr u8 MAX_SUBSTEPS = 12;
+	//how fast substeps grow exponentially
+	constexpr f32 SUBSTEP_GROWTH_FACTOR = 1.25f;
+	//at how many registered collisions do we start increasing substeps
+	constexpr u8 COLLISION_THRESHOLD = 10;
 	
-	//64 layers fit in a 64-bit bitmask for uint64_t for bitmasking collisions and colliders
-	constexpr u8 MAX_LAYERS = 64;
-	constexpr u8 MAX_LAYER_LENGTH = 50;
-	
-	const vec3 GRAVITY = vec3(0.0f, -9.81f, 0.0f);
+	//32 layers fit in a 32-bit bitmask for uint32_t for bitmasking collisions and colliders
+	constexpr u8 MAX_LAYERS = 32;
+	constexpr u8 MAX_LAYER_NAME_LENGTH = 50;
+
+	inline const vec3 MAX_GRAVITY = 100.0f;
 	
 	class LIB_API PhysicsWorld
 	{
 	public:
+		//The main physics update function that handles a
+		//single simulation step per call based off of the passed deltaTime variable.
+		//Substeps are adjusted internally dynamically based off of registered collisions per update call,
+		//modify MAX_SUBSTEPS, SUBSTEP_GROWTH_FACTOR and COLLISION_THRESHOLD to adjust substep growth
+		static void Update(f32 deltaTime);
+
+		//Returns count of currently used layers
+		static u64 GetLayerCount();
+
 		//Add a new layer
-		static inline void AddLayer(const string& layer)
-		{
-			//skip if max layer count was reached
-			if (layerCount >= MAX_LAYERS
-				|| layer == "NONE")
-			{
-				return;
-			}
-			
-			//cannot add what already exists
-			for (u8 i = 0; i < layerCount; i++)
-			{
-				if (layers[i] == layer) return;
-			}
-			
-			string clamped = layer;
-			if (clamped.size() > MAX_LAYER_LENGTH) clamped.resize(MAX_LAYER_LENGTH);
-			
-			layers[layerCount++] = clamped;
-		}
+		static void AddLayer(const string& layer);
 		//Remove an existing layer
-		static inline void RemoveLayer(const string& layer)
-		{
-			for (u8 i = 0; i < layerCount; i++)
-			{
-				if (layers[i] == layer)
-				{
-					layers[i] = layers[--layerCount];
-					return;
-				}
-			}
-		}
+		static void RemoveLayer(const string& layer);
 		//Reset layers
-		static inline void RemoveAllLayers()
-		{ 
-			for (auto& l : layers) l.clear();
-			layerCount = 0;
-		}
+		static void RemoveAllLayers();
 		
 		//Get layer name (or "NONE" if not found)
-		static inline const string& GetLayer(u8 layer)
-		{
-			static string none = "NONE";
-			
-			if (layer >= layerCount) return none;
-			
-			return layers[layer];
-		}
+		static const string& GetLayer(u8 layer);
 		//Get layer index (or 255 if not found)
-		static inline u8 GetLayer(const string& layer)
-		{
-			for (u8 i = 0; i < layerCount; i++)
-			{
-				if (layers[i] == layer) return i;
-			}
-			
-			return 255;
-		}
+		static u8 GetLayer(const string& layer);
 		
 		//Enable/disable collision between layers
-		static inline void SetCollisionRule(
+		static void SetCollisionRule(
 			u8 a,
 			u8 b,
-			bool value)
-		{
-			if (a >= layerCount
-				|| b >= layerCount)
-			{
-				return;
-			}
-			
-			collisionMatrix[a][b] = value;
-			collisionMatrix[b][a] = value;
-		}
+			bool value);
 		//Check if both layers can collide
-		static inline bool CanCollide(
+		static bool CanCollide(
 			u8 a,
-			u8 b)
-		{
-			if (a >= layerCount
-				|| b >= layerCount)
-			{
-				return false;
-			}
-			
-			return collisionMatrix[a][b];
-		}
-	private:
-		static inline array<string, MAX_LAYERS> layers{};
-		static inline u8 layerCount{};
-		
-		static inline bool collisionMatrix[MAX_LAYERS][MAX_LAYERS]{};
+			u8 b);
+
+		static const vec3& GetGravity();
+		static void SetGravity(const vec3& newValue);
 	};
 }

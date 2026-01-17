@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -80,37 +80,25 @@ namespace KalaAudio
 	class LIB_API Audio
 	{
 	public:
+		//Toggle verbose logging. If true, then usually frequently updated runtime values like
+		//SetPlayerPosition, SetListenerPosition will dump their debug logs into the console.
+		static void SetVerboseLoggingState(bool newState);
+		static bool IsVerboseLoggingEnabled();
+
 		//Initialize Miniaudio.
 		//Listener count is internally clamped from 1 to 4.
 		static bool Initialize(
 			u32 listeners = 1,
 			SampleRate sampleRate = SampleRate::SAMPLE_DEFAULT);
-		static inline bool IsInitialized() { return isInitialized; }
-
-		//Toggle verbose logging. If true, then usually frequently updated runtime values like
-		//SetPlayerPosition, SetListenerPosition will dump their debug logs into the console.
-		static inline void SetVerboseLoggingState(bool newState) { isVerboseLoggingEnabled = newState; }
-		static inline bool IsVerboseLoggingEnabled() { return isVerboseLoggingEnabled; }
+		static bool IsInitialized();
 
 		//Set threshold where audio files will be streamed instead of loaded to memory in full.
 		//Only affects newly imported audio files.
-		static inline void SetStreamThreshold(u32 newThreshold)
-		{
-			streamThreshold = clamp(
-				newThreshold,
-				MIN_STREAM_SIZE,
-				MAX_STREAM_SIZE);
-		};
-		static inline u32 GetStreamThreshold() { return streamThreshold; }
+		static void SetStreamThreshold(u32 newThreshold);
+		static u32 GetStreamThreshold();
 
 		//Shut down Miniaudio
 		static void Shutdown();
-	private:
-		static inline bool isInitialized;
-		static inline bool isVerboseLoggingEnabled;
-
-		//default is 5MB
-		static inline u32 streamThreshold = 5242880u; 
 	};
 
 	//
@@ -166,7 +154,7 @@ namespace KalaAudio
 	class LIB_API AudioPlayer
 	{
 	public:
-		static inline KalaAudioRegistry<AudioPlayer> registry{};
+		static KalaAudioRegistry<AudioPlayer>& GetRegistry();
 
 		//Create a new audio player. If file size is less than or equal to 10MB
 		//then file is loaded into memory in full, otherwise it is streamed.
@@ -176,11 +164,11 @@ namespace KalaAudio
 
 		//Assign a new name to this audio player
 		void SetName(const string& newName);
-		inline const string& GetName() const { return name; }
+		const string& GetName() const;
 
-		inline const string& GetPath() const { return filePath; }
+		const string& GetPath() const;
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 
 		//Start playing this audio player from the start
 		void Play() const;
@@ -195,7 +183,7 @@ namespace KalaAudio
 		void Pause() const;
 		//Continue playing this paused audio player
 		void Continue() const;
-		inline bool IsPaused() const { return isPaused; };
+		bool IsPaused() const;
 
 		//Set the loop state of this audio player. If true, then this audio player
 		//starts again from the beginning after it finishes playing.

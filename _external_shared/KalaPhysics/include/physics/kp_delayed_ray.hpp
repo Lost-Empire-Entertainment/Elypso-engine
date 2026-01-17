@@ -9,9 +9,15 @@
 #include <string>
 
 #include "KalaHeaders/core_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 #include "core/kp_registry.hpp"
 #include "core/kp_physics_world.hpp"
+
+namespace KalaPhysics::Core
+{
+	class PhysicsWorld;
+}
 
 namespace KalaPhysics::Physics
 {
@@ -19,76 +25,50 @@ namespace KalaPhysics::Physics
 	using std::string;
 	
 	using u8 = uint8_t;
-	using u64 = uint64_t;
+	using u32 = uint32_t;
 	using f32 = float;
+
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
 	
 	using KalaPhysics::Core::KalaPhysicsRegistry;
-	using KalaPhysics::Core::PhysicsWorld;
 	using KalaPhysics::Core::MAX_LAYERS;
 	
 	class LIB_API DelayedRay
 	{
-		friend class PhysicsWorld;
+		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
-		static inline KalaPhysicsRegistry<DelayedRay> registry{};
+		static KalaPhysicsRegistry<DelayedRay>& GetRegistry();
 		
 		//Create a new mask from multiple layers
-		static inline u64 MakeMaskFromLayers(initializer_list<u8> layers)
-		{
-			u64 m = 0ULL;
-			for (u8 l : layers)
-			{
-				if (l < MAX_LAYERS) m |= (1ULL << l);
-			}
-			
-			return m;
-		}
+		static u32 MakeMaskFromLayers(initializer_list<u8> layers);
 		
 		static DelayedRay* Initialize();
+
+		bool IsInitialized() const;
+
+		u32 GetID() const;
 		
 		//Set mask directly
-		inline void SetMask(u64 m) { mask = m; }
+		void SetMask(u32 m);
 		//Reset mask (no collisions)
-		inline void ClearMask() { mask = 0ULL; }
-		
-		//Include layer by index
-		inline void AddLayerToMask(u8 layer)
-		{
-			if (PhysicsWorld::GetLayer(layer) == "NONE") return;
-			
-			mask |= (1ULL << layer);
-		}
-		//Exclude layer by index
-		inline void RemoveLayerFromMask(u8 layer)
-		{
-			if (PhysicsWorld::GetLayer(layer) == "NONE") return;
-			
-			mask &= ~(1ULL << layer);
-		}
+		void ClearMask();
 		
 		//Include layer by name
-		inline void AddLayerToMask(const string& layer)
-		{
-			u8 foundLayer = PhysicsWorld::GetLayer(layer);
-			if (foundLayer == 255) return;
-			
-			mask |= (1ULL << foundLayer);
-		}
+		void AddLayerToMask(const string& layer);
 		//Exclude layer by name
-		inline void RemoveLayerFromMask(const string& layer)
-		{
-			u8 foundLayer = PhysicsWorld::GetLayer(layer);
-			if (foundLayer == 255) return;
-			
-			mask &= ~(1ULL << foundLayer);
-		}
+		void RemoveLayerFromMask(const string& layer);
 		
-		inline u64 GetMask() const { return mask; }
+		u32 GetMask() const;
 		
 		~DelayedRay();
 	private:
 		void Update(f32 deltaTime);
+
+		bool isInitialized{};
+
+		u32 ID{};
 	
-		u64 mask = ~0ULL; //default - collide with everything
+		u32 mask = ~0ULL; //default - collide with everything
 	};
 }

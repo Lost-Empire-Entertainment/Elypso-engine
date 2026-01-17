@@ -26,33 +26,25 @@ namespace KalaUI::Core
 	class LIB_API Font
 	{
 	public:
-		static inline KalaUIRegistry<Font> registry{};
+		static KalaUIRegistry<Font>& GetRegistry();
 
 		//Loads a font from disk
 		static Font* Initialize(
 			const string& name,
 			const string& fontPath);
 
-		inline bool IsInitialized() const { return isInitialized; }
+		bool IsInitialized() const;
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 
-		inline void SetName(const string& newName)
-		{
-			if (!newName.empty()
-				&& newName.length() <= 50
-				&& newName != name)
-			{
-				name = newName;
-			}
-		}
-		inline const string& GetName() const { return name; }
+		void SetName(const string& newName);
+		const string& GetName() const;
 
-		inline const string& GetPath() const { return fontPath; }
+		const string& GetPath() const;
 		
-		inline const GlyphHeader& GetGlyphHeader() const { return header; }
-		inline const vector<GlyphTable>& GetGlyphTables() const { return tables; }
-		inline const vector<GlyphBlock>& GetGlyphBlocks() const { return blocks; }
+		const GlyphHeader& GetGlyphHeader() const;
+		const vector<GlyphTable>& GetGlyphTables() const;
+		const vector<GlyphBlock>& GetGlyphBlocks() const;
 
 		//Do not destroy manually, erase from registry instead
 		~Font();

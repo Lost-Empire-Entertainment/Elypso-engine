@@ -6,28 +6,20 @@
 #pragma once
 
 #include <string>
-#include <csignal>
 
 #include "KalaHeaders/core_utils.hpp"
-#include "KalaHeaders/log_utils.hpp"
 
 namespace KalaUI::Core
 {
 	using std::string;
-	using std::raise;
-	
+
 	using u32 = uint32_t;
-	
-	using KalaHeaders::KalaLog::Log;
-	using KalaHeaders::KalaLog::LogType;
-	using KalaHeaders::KalaLog::TimeFormat;
-	using KalaHeaders::KalaLog::DateFormat;
 
 	class LIB_API KalaUICore
 	{
 	public:
-		//The ID that is bumped by every object in KalaWindow when it needs a new ID
-		static inline u32 globalID{};
+		static u32 GetGlobalID();
+		static void SetGlobalID(u32 newID);
 		
 		//Run when you want all KalaUI resources freed relative to a window ID,
 		//fonts, shaders and textures are not related to one window, they are shared across all windows
@@ -37,30 +29,8 @@ namespace KalaUI::Core
 		static void CleanAllResources();
 		
 		//Force-close the program right this very moment with no cleanups
-		[[noreturn]] static inline void ForceClose(
+		[[noreturn]] static void ForceClose(
 			const string& target,
-			const string& reason)
-		{
-			Log::Print(
-				"\n================"
-				"\nFORCE CLOSE"
-				"\n================\n",
-				true);
-
-			Log::Print(
-				reason,
-				target,
-				LogType::LOG_ERROR,
-				2,
-				true,
-				TimeFormat::TIME_NONE,
-				DateFormat::DATE_NONE);
-
-#ifdef _WIN32
-			__debugbreak();
-#else
-			raise(SIGTRAP);
-#endif
-		}
+			const string& reason);
 	};
 }

@@ -131,7 +131,7 @@ namespace KalaUI::OpenGL::UI
 	{
 		friend class OpenGL_Manager; //friend-include the manager
 	public:
-		static inline KalaUIRegistry<OpenGL_Widget> registry{};
+		static KalaUIRegistry<OpenGL_Widget>& GetRegistry();
 	
 		//Returns all hit widgets at mouse position sorted by highest Z first
 		static vector<OpenGL_Widget*> GetHitWidgets(vec2 mousePos);
@@ -140,7 +140,7 @@ namespace KalaUI::OpenGL::UI
 		// CORE
 		//
 
-		inline bool IsInitialized() const { return isInitialized; }
+		bool IsInitialized() const;
 		
 		virtual bool Render(
 			const mat4& projection,
@@ -148,220 +148,92 @@ namespace KalaUI::OpenGL::UI
 
 		//Adjusts widget position relative to viewport size and offset,
 		//offset at {1.0f, 1.0f} means the widget is centered, {0.0f, 0.0f} moves it to the bottom left corner
-		inline void MoveWidget(
+		void MoveWidget(
 			vec2 viewportSize,
-			vec2 offset = vec2(1.0f))
-		{
-			if (viewportSize <= vec2(1.0f)) return;
+			vec2 offset = vec2(1.0f));
 
-			vec2 offsetClamped = kclamp(
-				offset, 
-				vec2(-0.5f), 
-				vec2(2.5f));
-
-			setpos(
-				transform,
-				{},
-				PosTarget::POS_WORLD,
-				vec2(viewportSize * offsetClamped * 0.5f));
-		}
-
-		inline u32 GetID() const { return ID; }
-		inline u32 GetWindowID() const { return windowID; }
+		u32 GetID() const;
+		u32 GetWindowID() const;
 		
-		inline uintptr_t GetGLContext() const { return render.glContext; }
+		uintptr_t GetGLContext() const;
 
-		inline void SetUpdateState(bool newValue) { render.canUpdate = newValue; }
-		inline bool CanUpdate() const { return render.canUpdate; }
+		void SetUpdateState(bool newValue);
+		bool CanUpdate() const;
 
 		//No children render past this widget size if true
-		inline void SetClippingState(bool newValue) { render.isClipping = newValue; }
+		void SetClippingState(bool newValue);
 		//No children render past this widget size if true
-		inline bool IsClipping() const { return render.isClipping; }
+		bool IsClipping() const;
 
-		inline void SetName(const string& newName)
-		{
-			//skip if name is empty, same as existing or too long
-			if (newName.empty()
-				|| newName == name
-				|| newName.length() > 50) return;
-
-			name = newName;
-		}
-		inline const string& GetName() const { return name; }
+		void SetName(const string& newName);
+		const string& GetName() const;
 
 		//Should be called whenever a parent or child is added or removed from this widget
 		//to ensure this widget local values are refreshed
-		inline void ResetWidgetAfterHierarchyUpdate()
-		{
-			setpos(transform, {}, PosTarget::POS_LOCAL, vec2(0.0f));
-			setrot(transform, {}, RotTarget::ROT_LOCAL, 0.0f);
-			setsize(transform, {}, SizeTarget::SIZE_LOCAL, 1.0f);
-		}
+		void ResetWidgetAfterHierarchyUpdate();
 		
-		inline void SetVertices(const vector<vec2>& newVertices) { render.vertices = newVertices; }
-		inline void SetIndices(const vector<u32>& newIndices) { render.indices = newIndices; }
+		void SetVertices(const vector<vec2>& newVertices);
+		void SetIndices(const vector<u32>& newIndices);
 
-		inline const vector<vec2>& GetVertices() const { return render.vertices; }
-		inline const vector<u32>& GetIndices() const { return render.indices; }
+		const vector<vec2>& GetVertices() const;
+		const vector<u32>& GetIndices() const;
 
-		inline const array<vec2, 2>& GetAABB(f32 viewportHeight)
-		{ 
-			UpdateAABB(viewportHeight);
-			return render.aabb; 
-		}
+		const array<vec2, 2>& GetAABB(f32 viewportHeight);
 		
 		//
 		// TRANSFORM
 		//
 		
 		//Increments position over time
-		inline void AddPos(
+		void AddPos(
 			PosTarget type,
-			const vec2 deltaPos)
-		{
-			addpos(
-				transform,
-				{},
-				type,
-				deltaPos);
-		}
+			const vec2 deltaPos);
 		//Snaps to given position
-		inline void SetPos(
+		void SetPos(
 			PosTarget type,
-			const vec2 newPos)
-		{
-			setpos(
-				transform,
-				{},
-				type,
-				newPos);
-		}
-		inline vec2 GetPos(PosTarget type) const
-		{ 
-			return getpos(
-				transform,
-				type); 
-		}
+			const vec2 newPos);
+		vec2 GetPos(PosTarget type) const;
 		
 		//Increments rotation over time
-		inline void AddRot(
+		void AddRot(
 			RotTarget type,
-			const f32 deltaRot)
-		{
-			f32 safeRot = wrap(deltaRot);
-			
-			addrot(
-				transform,
-				{},
-				type,
-				safeRot);
-		}
+			const f32 deltaRot);
 		//Snaps to given rotation
-		inline void SetRot(
+		void SetRot(
 			RotTarget type,
-			f32 newRot)
-		{
-			f32 safeRot = wrap(newRot);
-			
-			setrot(
-				transform,
-				{},
-				type,
-				safeRot);
-		}
-		inline f32 GetRot(RotTarget type) const
-		{ 
-			return getrot(
-				transform,
-				type);
-		}
+			f32 newRot);
+		f32 GetRot(RotTarget type) const;
 		
 		//Increments size over time
-		inline void AddSize(
+		void AddSize(
 			SizeTarget type,
-			const vec2 deltaSize)
-		{
-			addsize(
-				transform,
-				{},
-				type,
-				deltaSize);
-		}
+			const vec2 deltaSize);
 		//Snaps to size position
-		inline void SetSize(
+		void SetSize(
 			SizeTarget type,
-			const vec2 newSize)
-		{
-			setsize(
-				transform,
-				{},
-				type,
-				newSize);
-		}
-		inline vec2 GetSize(SizeTarget type) const
-		{ 
-			return getsize(
-				transform,
-				type); 
-		}
+			const vec2 newSize);
+		vec2 GetSize(SizeTarget type) const;
 
 		//
 		// Z ORDER
 		//
 
 		//Makes this widget Z order 1 unit higher than target widget
-		inline void MoveAbove(OpenGL_Widget* targetWidget)
-		{
-			if (!targetWidget
-				|| targetWidget == this
-				|| !targetWidget->isInitialized)
-			{
-				return;
-			}
-
-			u16 targetZOrder = targetWidget->zOrder;
-
-			u16 newZOrder = clamp(++targetZOrder, static_cast<u16>(0), MAX_Z_ORDER);
-
-			zOrder = newZOrder;
-		}
+		void MoveAbove(OpenGL_Widget* targetWidget);
 		//Makes this widget Z order 1 unit lower than target widget
-		inline void MoveBelow(OpenGL_Widget* targetWidget)
-		{
-			if (!targetWidget
-				|| targetWidget == this
-				|| !targetWidget->isInitialized)
-			{
-				return;
-			}
+		void MoveBelow(OpenGL_Widget* targetWidget);
 
-			u16 targetZOrder = targetWidget->zOrder;
-
-			//skip if target z order already is 0
-			if (targetZOrder == 0) return;
-
-			u16 newZOrder = clamp(--targetZOrder, static_cast<u16>(0), MAX_Z_ORDER);
-
-			zOrder = newZOrder;
-		}
-
-		inline void SetZOrder(u16 newZOrder)
-		{
-			u16 clamped = clamp(newZOrder, static_cast<u16>(0), MAX_Z_ORDER);
-
-			zOrder = clamped;
-		}
-		inline u16 GetZOrder() const { return zOrder; }
+		void SetZOrder(u16 newZOrder);
+		u16 GetZOrder() const;
 
 		//
 		// INTERACTION
 		//
 
 		//Skip hit testing and event polling if true
-		inline void SetInteractableState(bool newValue) { isInteractable = newValue; }
+		void SetInteractableState(bool newValue);
 		//Skip hit testing and event polling if true
-		inline bool IsInteractable() const { return isInteractable; }
+		bool IsInteractable() const;
 
 		//If the cursor is over this widget and this widget is not
 		//covered entirely or partially by another widget then this returns true
@@ -369,172 +241,29 @@ namespace KalaUI::OpenGL::UI
 
 		//Accepts mouse buttons for pressed, released, held and dragged events.
 		//Use 'SetMouseHoverEvent()' and 'SetMouseScrollEvent()' to assign those events
-		inline void SetMouseEvent(
+		void SetMouseEvent(
 			const function<void()>& newValue,
 			MouseButton mouseButton,
-			ActionTarget actionTarget)
-		{
-			if (!newValue
-				|| mouseButton == MouseButton::M_INVALID)
-			{
-				return;
-			}
-
-			switch (actionTarget)
-			{
-			case ActionTarget::ACTION_PRESSED:
-			{
-				event.keyPressed = KeyboardButton::K_INVALID;
-				event.mousePressed = mouseButton;
-
-				event.function_button_pressed = newValue;
-				break;
-			}
-			case ActionTarget::ACTION_RELEASED:
-			{
-				event.keyReleased = KeyboardButton::K_INVALID;
-				event.mouseReleased = mouseButton;
-
-				event.function_button_released = newValue;
-				break;
-			}
-			case ActionTarget::ACTION_HELD:
-			{
-				event.keyHeld = KeyboardButton::K_INVALID;
-				event.mouseHeld = mouseButton;
-
-				event.function_button_held = newValue;
-				break;
-			}
-			case ActionTarget::ACTION_DRAGGED:
-			{
-				event.mouseDragged = mouseButton;
-
-				event.function_mouse_dragged = newValue;
-				break;
-			}
-			}
-		}
+			ActionTarget actionTarget);
 		//Assigns mouse hovered event
-		inline void SetMouseHoverEvent(const function<void()>& newValue)
-		{
-			if (!newValue) return;
-			event.function_mouse_hovered = newValue;
-		}
+		void SetMouseHoverEvent(const function<void()>& newValue);
 		//Assigns mouse scrolled event
-		inline void SetMouseScrollEvent(const function<void()>& newValue)
-		{
-			if (!newValue) return;
-			event.function_mouse_scrolled = newValue;
-		}
+		void SetMouseScrollEvent(const function<void()>& newValue);
 		//Returns which mouse button is attached to what event, ignores hovered and scrolled events
-		inline MouseButton GetMouseEventButton(ActionTarget actionTarget) const
-		{
-			switch (actionTarget)
-			{
-			case ActionTarget::ACTION_PRESSED:  return event.mousePressed;
-			case ActionTarget::ACTION_RELEASED: return event.mouseReleased;
-			case ActionTarget::ACTION_HELD:     return event.mouseHeld;
-			case ActionTarget::ACTION_DRAGGED:  return event.mouseDragged;
-			}
-
-			return MouseButton::M_INVALID;
-		}
+		MouseButton GetMouseEventButton(ActionTarget actionTarget) const;
 
 		//Accepts keyboard keys for pressed, released and held events, ignores all other events
-		inline void SetKeyEvent(
+		void SetKeyEvent(
 			const function<void()>& newValue,
 			KeyboardButton key,
-			ActionTarget actionTarget)
-		{
-			if (!newValue
-				|| key == KeyboardButton::K_INVALID)
-			{
-				return;
-			}
-
-			switch (actionTarget)
-			{
-			case ActionTarget::ACTION_PRESSED: 	event.function_button_pressed = newValue; break;
-			case ActionTarget::ACTION_RELEASED: event.function_button_released = newValue; break;
-			case ActionTarget::ACTION_HELD:     event.function_button_held = newValue; break;
-			}
-		}
+			ActionTarget actionTarget);
 		//Returns which key is attached to what key event, ignores dragged, hovered and scrolled events
-		inline KeyboardButton GetKeyEventButton(ActionTarget actionTarget) const
-		{
-			switch (actionTarget)
-			{
-			case ActionTarget::ACTION_PRESSED:  return event.keyPressed;
-			case ActionTarget::ACTION_RELEASED: return event.keyReleased;
-			case ActionTarget::ACTION_HELD:     return event.keyHeld;
-			}
-
-			return KeyboardButton::K_INVALID;
-		}
+		KeyboardButton GetKeyEventButton(ActionTarget actionTarget) const;
 
 		//Clears target event function and its buttons
-		inline void ClearEvent(ActionTarget actionTarget)
-		{
-			switch (actionTarget)
-			{
-			case ActionTarget::ACTION_PRESSED:
-			{
-				event.keyPressed = KeyboardButton::K_INVALID;
-				event.mousePressed = MouseButton::M_INVALID;
-				event.function_button_pressed = nullptr;
-
-				break;
-			}
-			case ActionTarget::ACTION_RELEASED:
-			{
-				event.keyReleased = KeyboardButton::K_INVALID;
-				event.mouseReleased = MouseButton::M_INVALID;
-				event.function_button_released = nullptr;
-
-				break;
-			}
-			case ActionTarget::ACTION_HELD:
-			{
-				event.keyHeld = KeyboardButton::K_INVALID;
-				event.mouseHeld = MouseButton::M_INVALID;
-				event.function_button_held = nullptr;
-
-				break;
-			}
-			case ActionTarget::ACTION_DRAGGED:
-			{
-				event.mouseDragged = MouseButton::M_INVALID;
-				event.function_mouse_dragged = nullptr;
-
-				break;
-			}
-			case ActionTarget::ACTION_HOVERED:  event.function_mouse_hovered = nullptr; break;
-			case ActionTarget::ACTION_SCROLLED: event.function_mouse_scrolled = nullptr; break;
-			}
-		}
+		void ClearEvent(ActionTarget actionTarget);
 		//Removes all event functions and resets their attached buttons
-		inline void ClearAllEvents()
-		{
-			event.keyPressed = KeyboardButton::K_INVALID;
-			event.mousePressed = MouseButton::M_INVALID;
-			event.function_button_pressed = nullptr;
-
-			event.keyReleased = KeyboardButton::K_INVALID;
-			event.mouseReleased = MouseButton::M_INVALID;
-			event.function_button_released = nullptr;
-
-			event.keyHeld = KeyboardButton::K_INVALID;
-			event.mouseHeld = MouseButton::M_INVALID;
-			event.function_button_held = nullptr;
-
-			event.mouseDragged = MouseButton::M_INVALID;
-			event.function_mouse_dragged = nullptr;
-
-			event.function_mouse_hovered = nullptr;
-
-			event.function_mouse_scrolled = nullptr;
-		}
+		void ClearAllEvents();
 
 		//Poll the events that have attached functions once this frame,
 		//skipped internally if 'isInteractable' is false
@@ -544,69 +273,41 @@ namespace KalaUI::OpenGL::UI
 		// GRAPHICS
 		//
 
-		inline void SetNormalizedColor(const vec3& newValue)
-		{
-			f32 clampX = clamp(newValue.x, 0.0f, 1.0f);
-			f32 clampY = clamp(newValue.y, 0.0f, 1.0f);
-			f32 clampZ = clamp(newValue.z, 0.0f, 1.0f);
+		void SetNormalizedColor(const vec3& newValue);
+		void SetRGBColor(const vec3& newValue);
 
-			render.color = vec3(clampX, clampY, clampZ);
-		}
-		inline void SetRGBColor(const vec3& newValue)
-		{
-			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
-			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
-			int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+		const vec3& GetNormalizedColor() const;
+		vec3 GetRGBColor() const;
 
-			f32 normalizedX = static_cast<f32>(clampX) / 255;
-			f32 normalizedY = static_cast<f32>(clampY) / 255;
-			f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+		void SetOpacity(f32 newValue);
+		f32 GetOpacity() const;
 
-			render.color = vec3(normalizedX, normalizedY, normalizedZ);
-		}
+		u32 GetVAO() const;
+		u32 GetVBO() const;
+		u32 GetEBO() const;
 
-		inline const vec3& GetNormalizedColor() const { return render.color; }
-		inline vec3 GetRGBColor() const
-		{
-			int rgbX = static_cast<int>(render.color.x * 255);
-			int rgbY = static_cast<int>(render.color.y * 255);
-			int rgbZ = static_cast<int>(render.color.z * 255);
+		const OpenGL_Shader* GetShader() const;
 
-			return vec3(rgbX, rgbY, rgbZ);
-		}
-
-		inline void SetOpacity(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 1.0f);
-			render.opacity = clamped;
-		}
-		inline f32 GetOpacity() const { return render.opacity; }
-
-		inline u32 GetVAO() const { return render.VAO; }
-		inline u32 GetVBO() const { return render.VBO; }
-		inline u32 GetEBO() const { return render.EBO; }
-
-		inline const OpenGL_Shader* GetShader() const { return render.shader; }
-
-		inline void SetTexture(OpenGL_Texture* newTexture)
-		{
-			if (newTexture
-				&& render.texture != newTexture)
-			{
-				render.texture = newTexture;
-			}
-		}
-		inline void ClearTexture() { render.texture = nullptr; }
-		inline const OpenGL_Texture* GetTexture() const { return render.texture; }
+		void SetTexture(OpenGL_Texture* newTexture);
+		void ClearTexture();
+		const OpenGL_Texture* GetTexture() const;
 
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Widget() = 0;
 	protected:
+		static void CreateWidgetGeometry(
+			const vector<vec2>& vertices,
+			const vector<u32>& indices,
+			const vector<u32>& uvs,
+			u32& vaoOut,
+			u32& vboOut,
+			u32& eboOut);
+
 		virtual void UpdateAABB(f32 viewportHeight) = 0;
 
 		bool isInitialized{};
 
-		string name = "NO_NAME_ADDED";
+		string name = "NEW_WIDGET";
 
 		u32 ID{};
 		u32 windowID{};
@@ -622,13 +323,5 @@ namespace KalaUI::OpenGL::UI
 		Transform2D transform{};
 		OpenGL_Widget_Render render{};
 		OpenGL_Widget_Event event{};
-
-		static void CreateWidgetGeometry(
-			const vector<vec2>& vertices,
-			const vector<u32>& indices,
-			const vector<u32>& uvs,
-			u32& vaoOut,
-			u32& vboOut,
-			u32& eboOut);
 	};
 }

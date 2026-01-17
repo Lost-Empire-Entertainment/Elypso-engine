@@ -59,7 +59,7 @@ namespace KalaUI::Core
 				if (c == targetObject) return true;
 
 				if (recursive
-					&& T::registry.hierarchy[c].HasTarget(targetObject, true))
+					&& T::GetRegistry().hierarchy[c].HasTarget(targetObject, true))
 				{
 					return true;
 				}
@@ -71,7 +71,7 @@ namespace KalaUI::Core
 				if (parent == targetObject) return true;
 
 				if (recursive
-					&& T::registry.hierarchy[parent].HasTarget(targetObject, true))
+					&& T::GetRegistry().hierarchy[parent].HasTarget(targetObject, true))
 				{
 					return true;
 				}
@@ -106,14 +106,16 @@ namespace KalaUI::Core
 		inline T* GetParent() { return parent; }
 		inline bool SetParent(T* targetObject)
 		{
+			auto& r = T::GetRegistry();
+
 			if (!thisObject
 				|| !targetObject
 				|| targetObject == thisObject
 				|| HasTarget(targetObject, true)
-				|| T::registry.hierarchy[targetObject].HasTarget(thisObject, true)
+				|| r.hierarchy[targetObject].HasTarget(thisObject, true)
 				|| (parent
 				&& (parent == targetObject
-				|| T::registry.hierarchy[parent].HasTarget(thisObject, true))))
+				|| r.hierarchy[parent].HasTarget(thisObject, true))))
 			{
 				return false;
 			}
@@ -124,7 +126,7 @@ namespace KalaUI::Core
 			//set this target parent
 			parent = targetObject;
 			//add this as new child to parent
-			T::registry.hierarchy[parent].children.push_back(thisObject);
+			r.hierarchy[parent].children.push_back(thisObject);
 
 			return true;
 		}
@@ -137,7 +139,7 @@ namespace KalaUI::Core
 				return false;
 			}
 
-			vector<T*>& parentChildren = T::registry.hierarchy[parent].children;
+			vector<T*>& parentChildren = T::GetRegistry().hierarchy[parent].children;
 
 			parentChildren.erase(remove(
 				parentChildren.begin(),

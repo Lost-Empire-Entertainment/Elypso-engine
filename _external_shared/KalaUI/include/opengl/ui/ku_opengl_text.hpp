@@ -43,45 +43,31 @@ namespace KalaUI::OpenGL::UI
 			const mat4& projection,
 			f32 viewportHeight) override;
 
-		inline void AddChar(u32 newValue) { text.push_back(newValue); }
-		inline void AddTab()
-		{ 
-			for (int i = 0; i < 4; ++i)
-			{
-				text.push_back(static_cast<u32>(' '));
-			}
-		}
-		inline void AddNewLine() { text.push_back(static_cast<u32>('\n')); }
-		inline void RemoveCharFromBack() { if (!text.empty()) text.pop_back(); }
+		void AddChar(u32 newValue);
+		void AddTab();
+		void AddNewLine();
+		void RemoveCharFromBack();
 		
-		inline void SetText(const vector<u32>& newValue) { text = newValue; }
-		inline vector<u32>& GetText() { return text; }
+		void SetText(const vector<u32>& newValue);
+		vector<u32>& GetText();
 		
-		inline void SetLetters(const vector<GlyphBlock*>& newValue) { letters = newValue; }
-		inline vector<GlyphBlock*> GetLetters() const { return letters; }
+		void SetLetters(const vector<GlyphBlock*>& newValue);
+		vector<GlyphBlock*> GetLetters() const;
 		
-		inline void SetColor(const vec3& newValue) 
-		{ 
-			vec3 clamped = kclamp(newValue, vec3(0), vec3(1));
-			color = clamped;
-		}
-		inline const vec3& GetColor() const { return color; }
+		void SetColor(const vec3& newValue);
+		const vec3& GetColor() const;
 		
-		inline void SetOpacity(float newValue) 
-		{ 
-			f32 clamped = clamp(newValue, 0.0f, 1.0f);
-			opacity = clamped;
-		}
-		inline f32 GetOpacity() const { return opacity; }
+		void SetOpacity(float newValue);
+		f32 GetOpacity() const;
 		
-		inline void SetUnderline(bool newValue) { underline = newValue; }
-		inline bool IsUnderlineEnabled() const { return underline; }
+		void SetUnderline(bool newValue);
+		bool IsUnderlineEnabled() const;
 		
-		inline void SetStrikethrough(bool newValue) { strikethrough = newValue; }
-		inline bool IsStrikethroughEnabled() const { return strikethrough; }
+		void SetStrikethrough(bool newValue);
+		bool IsStrikethroughEnabled() const;
 
 		void SetFontID(u32 newValue);
-		inline u32 GetFontID() const { return fontID; }
+		u32 GetFontID() const;
 
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Text() override;

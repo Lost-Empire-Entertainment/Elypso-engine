@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -6,15 +6,12 @@
 #pragma once
 
 #include <string>
-#include <csignal>
 
 #include "KalaHeaders/core_utils.hpp"
-#include "KalaHeaders/log_utils.hpp"
 
 namespace KalaAudio::Core
 {
 	using std::string;
-	using std::raise;
 	
 	using u32 = uint32_t;
 	
@@ -26,8 +23,8 @@ namespace KalaAudio::Core
 	class LIB_API KalaAudioCore
 	{
 	public:
-		//The ID that is bumped by every object when it needs a new ID
-		static inline u32 globalID{};
+		static void SetGlobalID(u32 newID);
+		static u32 GetGlobalID();
 		
 		//Run when you want all KalaAudio resources freed relative to a window ID
 		static void CleanAllWindowResources(u32 windowID);
@@ -36,30 +33,8 @@ namespace KalaAudio::Core
 		static void CleanAllResources();
 		
 		//Force-close the program right this very moment with no cleanups
-		[[noreturn]] static inline void ForceClose(
+		[[noreturn]] static void ForceClose(
 			const string& target,
-			const string& reason)
-		{
-			Log::Print(
-				"\n================"
-				"\nFORCE CLOSE"
-				"\n================\n",
-				true);
-
-			Log::Print(
-				reason,
-				target,
-				LogType::LOG_ERROR,
-				2,
-				true,
-				TimeFormat::TIME_NONE,
-				DateFormat::DATE_NONE);
-			
-#ifdef _WIN32
-			__debugbreak();
-#else
-			raise(SIGTRAP);
-#endif
-		}
+			const string& reason);
 	};
 }

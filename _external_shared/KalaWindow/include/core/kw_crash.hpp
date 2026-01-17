@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 #include <functional>
 
 #include "KalaHeaders/core_utils.hpp"
@@ -13,7 +14,14 @@
 namespace KalaWindow::Core
 {
 	using std::string;
+	using std::string_view;
+	using std::array;
 	using std::function;
+
+	using u16 = uint16_t;
+
+	//Max allowed crash log buffer message length
+	constexpr u16 MAX_MESSAGE_LENGTH = 2000;
 
 	class LIB_API CrashHandler
 	{
@@ -27,5 +35,13 @@ namespace KalaWindow::Core
 			const string& programName,
 			const function<void()>& shutdownFunction = nullptr,
 			bool createDump = false);
+
+		//Pushes a string of up to max allowed characters characters to the crash log ring buffer.
+		//Stores up to 10 messages and overwrites the oldest entries as new ones arrive.
+		//Safe for multithreaded pushing.
+		static void AppendToCrashLog(string_view message);
+
+		//Returns crash log content so that oldest is at the top and newest at the bottom
+		static array<string_view, 10> GetCrashLogContent();
 	};
 }

@@ -10,8 +10,14 @@
 
 #include "KalaHeaders/core_utils.hpp"
 #include "KalaHeaders/math_utils.hpp"
+#include "KalaHeaders/log_utils.hpp"
 
 #include "core/kp_physics_world.hpp"
+
+namespace KalaPhysics::Core
+{
+	class PhysicsWorld;
+}
 
 namespace KalaPhysics::Physics
 {
@@ -19,8 +25,9 @@ namespace KalaPhysics::Physics
 	using std::string;
 
 	using KalaHeaders::KalaMath::vec3;
+	using KalaHeaders::KalaLog::Log;
+	using KalaHeaders::KalaLog::LogType;
 	
-	using KalaPhysics::Core::PhysicsWorld;
 	using KalaPhysics::Core::MAX_LAYERS;
 	
 	constexpr f32 MAX_DISTANCE = 10000.0f;
@@ -29,19 +36,10 @@ namespace KalaPhysics::Physics
 	
 	class LIB_API Ray
 	{
-		friend class PhysicsWorld;
+		friend class KalaPhysics::Core::PhysicsWorld;
 	public:
 		//Create a new mask from multiple layers
-		static inline u64 MakeMaskFromLayers(initializer_list<u8> layers)
-		{
-			u64 m = 0ULL;
-			for (u8 l : layers)
-			{
-				if (l < MAX_LAYERS) m |= (1ULL << l);
-			}
-			
-			return m;
-		}
+		static u32 MakeMaskFromLayers(initializer_list<u8> layers);
 		
 		//Returns true if this ray hit any collider with the valid layer,
 		//a maxDistance of 0.0f means ray max distance is 10000 units
@@ -58,44 +56,17 @@ namespace KalaPhysics::Physics
 			f32 maxDistance = 0.0f);
 		
 		//Set mask directly
-		inline void SetMask(u64 m) { mask = m; }
+		void SetMask(u32 m);
 		//Reset mask (no collisions)
-		inline void ClearMask() { mask = 0ULL; }
-		
-		//Include layer by index
-		inline void AddLayerToMask(u8 layer)
-		{
-			if (PhysicsWorld::GetLayer(layer) == "NONE") return;
-			
-			mask |= (1ULL << layer);
-		}
-		//Exclude layer by index
-		inline void RemoveLayerFromMask(u8 layer)
-		{
-			if (PhysicsWorld::GetLayer(layer) == "NONE") return;
-			
-			mask &= ~(1ULL << layer);
-		}
+		void ClearMask();
 		
 		//Include layer by name
-		inline void AddLayerToMask(const string& layer)
-		{
-			u8 foundLayer = PhysicsWorld::GetLayer(layer);
-			if (foundLayer == 255) return;
-			
-			mask |= (1ULL << foundLayer);
-		}
+		void AddLayerToMask(const string& layer);
 		//Exclude layer by name
-		inline void RemoveLayerFromMask(const string& layer)
-		{
-			u8 foundLayer = PhysicsWorld::GetLayer(layer);
-			if (foundLayer == 255) return;
-			
-			mask &= ~(1ULL << foundLayer);
-		}
+		void RemoveLayerFromMask(const string& layer);
 		
-		inline u64 GetMask() const { return mask; }
+		u32 GetMask() const;
 	private:
-		u64 mask = ~0ULL; //default - collide with everything
+		u32 mask = ~0ULL; //default - collide with everything
 	};
 }

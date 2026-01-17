@@ -36,16 +36,22 @@ set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(EXT_SHARED_DIR "${CMAKE_SOURCE_DIR}/../_external_shared")
 set(EXT_WINDOW_DIR "${EXT_SHARED_DIR}/Kalawindow")
 set(EXT_UI_DIR "${EXT_SHARED_DIR}/KalaUI")
+set(EXT_PHYSICS_DIR "${EXT_SHARED_DIR}/KalaPhysics")
+set(EXT_AUDIO_DIR "${EXT_SHARED_DIR}/KalaAudio")
 set(EXT_LUA_DIR "${EXT_SHARED_DIR}/KalaLua")
 
 # Library Paths
 if(IS_RELEASE)
 	set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/KalaWindow1.lib")
 	set(UI_LIBRARY_PATH "${EXT_UI_DIR}/release/KalaUI1.lib")
+	set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/release/KalaPhysics1.lib")
+	set(AUDIO_LIBRARY_PATH "${EXT_AUDIO_DIR}/release/KalaAudio1.lib")
     set(LUA_LIBRARY_PATH "${EXT_LUA_DIR}/release/KalaLua1.lib")
 else()
 	set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/KalaWindow1d.lib")
 	set(UI_LIBRARY_PATH "${EXT_UI_DIR}/debug/KalaUI1d.lib")
+	set(PHYSICS_LIBRARY_PATH "${EXT_PHYSICS_DIR}/debug/KalaPhysics1d.lib")
+	set(AUDIO_LIBRARY_PATH "${EXT_AUDIO_DIR}/debug/KalaAudio1d.lib")
     set(LUA_LIBRARY_PATH "${EXT_LUA_DIR}/debug/KalaLua1d.lib")
 endif()
 
@@ -86,11 +92,14 @@ target_include_directories(ElypsoEngine PRIVATE
 	"${EXT_SHARED_DIR}"
 	"${EXT_SHARED_DIR}/KalaWindow/include"
 	"${EXT_SHARED_DIR}/KalaUI/include"
+	"${EXT_SHARED_DIR}/KalaPhysics/include"
+	"${EXT_SHARED_DIR}/KalaAudio/include"
 	"${EXT_SHARED_DIR}/KalaLua/include"
 )
 
 # Preprocessor Defines
 target_compile_definitions(ElypsoEngine PRIVATE 
+	opengl32
 	LIB_EXPORT          # dll import/export
 	WIN32_LEAN_AND_MEAN # cleaner windows.h
 	NOMINMAX            # skips min/max windows macros in favor of the std variants
@@ -103,6 +112,8 @@ target_link_libraries(ElypsoEngine PRIVATE
 	opengl32
 	${WINDOW_LIBRARY_PATH}
 	${UI_LIBRARY_PATH}
+	${PHYSICS_LIBRARY_PATH}
+	${AUDIO_LIBRARY_PATH}
 	${LUA_LIBRARY_PATH}
 )
 
@@ -123,29 +134,39 @@ add_custom_command(TARGET ElypsoEngine POST_BUILD
 
 # Copy external binaries
 if(IS_RELEASE)
-	set(BIN_WINDOW "${EXT_WINDOW_DIR}/release")
-	set(BIN_UI "${EXT_UI_DIR}/release")
-	set(BIN_LUA "${EXT_LUA_DIR}/release")
+	set(BIN_KALAWINDOW "${EXT_WINDOW_DIR}/release")
+	set(BIN_KALAUI "${EXT_UI_DIR}/release")
+	set(BIN_KALAPHYSICS "${EXT_PHYSICS_DIR}/release")
+	set(BIN_KALAAUDIO "${EXT_AUDIO_DIR}/release")
+	set(BIN_KALALUA "${EXT_LUA_DIR}/release")
 else()
-	set(BIN_WINDOW "${EXT_WINDOW_DIR}/debug")
-	set(BIN_UI "${EXT_UI_DIR}/debug")
-	set(BIN_LUA "${EXT_LUA_DIR}/debug")
+	set(BIN_KALAWINDOW "${EXT_WINDOW_DIR}/debug")
+	set(BIN_KALAUI "${EXT_UI_DIR}/debug")
+	set(BIN_KALAPHYSICS "${EXT_PHYSICS_DIR}/debug")
+	set(BIN_KALAAUDIO "${EXT_AUDIO_DIR}/debug")
+	set(BIN_KALALUA "${EXT_LUA_DIR}/debug")
 endif()
 
 if (IS_RELEASE)
 	file(GLOB BIN_FILES
-		"${BIN_WINDOW}/*.dll"
-		"${BIN_UI}/*.dll"
-		"${BIN_LUA}/*.dll"
+		"${BIN_KALAWINDOW}/*.dll"
+		"${BIN_KALAUI}/*.dll"
+		"${BIN_KALAPHYSICS}/*.dll"
+		"${BIN_KALAAUDIO}/*.dll"
+		"${BIN_KALALUA}/*.dll"
 	)
 else()
 	file(GLOB BIN_FILES
-		"${BIN_WINDOW}/*.dll"
-		"${BIN_WINDOW}/*.pdb"
-		"${BIN_UI}/*.dll"
-		"${BIN_UI}/*.pdb"
-		"${BIN_LUA}/*.dll"
-		"${BIN_LUA}/*.pdb"
+		"${BIN_KALAWINDOW}/*.dll"
+		"${BIN_KALAWINDOW}/*.pdb"
+		"${BIN_KALAUI}/*.dll"
+		"${BIN_KALAUI}/*.pdb"
+		"${BIN_KALAPHYSICS}/*.dll"
+		"${BIN_KALAPHYSICS}/*.pdb"
+		"${BIN_KALAAUDIO}/*.dll"
+		"${BIN_KALAAUDIO}/*.pdb"
+		"${BIN_KALALUA}/*.dll"
+		"${BIN_KALALUA}/*.pdb"
 	)
 endif()
 
