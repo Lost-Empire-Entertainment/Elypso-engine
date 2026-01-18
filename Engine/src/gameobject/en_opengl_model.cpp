@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -15,10 +15,11 @@
 
 #include "core/kw_core.hpp"
 #include "opengl/kw_opengl.hpp"
-#include "opengl/kw_opengl_functions_core.hpp"
 
 #include "gameobject/en_opengl_model.hpp"
 #include "gameobject/en_opengl_point_light.hpp"
+#include "core/en_core.hpp"
+#include "graphics/en_opengl_functions.hpp"
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
@@ -32,7 +33,6 @@ using KalaHeaders::KalaModelData::ImportResult;
 using KalaHeaders::KalaModelData::ResultToString;
 
 using KalaWindow::Core::KalaWindowCore;
-using namespace KalaWindow::OpenGL::OpenGLFunctions;
 using KalaWindow::OpenGL::OpenGL_Global;
 
 using ElypsoEngine::GameObject::OpenGL_Model;
@@ -40,6 +40,25 @@ using ElypsoEngine::GameObject::OpenGL_PointLight;
 using ElypsoEngine::GameObject::OpenGL_PointLight_Data;
 using ElypsoEngine::GameObject::MAX_PL_COUNT;
 using ElypsoEngine::Graphics::TextureFormat;
+using ElypsoEngine::Core::EngineCore;
+using ElypsoEngine::Graphics::OpenGLFunctions::OpenGL_Functions_Engine;
+using ElypsoEngine::Graphics::OpenGLFunctions::GL_Engine;
+
+using KalaHeaders::KalaMath::kclamp;
+using KalaHeaders::KalaMath::toquat;
+using KalaHeaders::KalaMath::addpos;
+using KalaHeaders::KalaMath::setpos;
+using KalaHeaders::KalaMath::getpos;
+using KalaHeaders::KalaMath::addrot;
+using KalaHeaders::KalaMath::setrot;
+using KalaHeaders::KalaMath::getroteuler;
+using KalaHeaders::KalaMath::getrotquat;
+using KalaHeaders::KalaMath::addsize;
+using KalaHeaders::KalaMath::setsize;
+using KalaHeaders::KalaMath::getsize;
+using KalaHeaders::KalaMath::getdirfront;
+using KalaHeaders::KalaMath::getdirright;
+using KalaHeaders::KalaMath::getdirup;
 
 using std::string;
 using std::to_string;
@@ -58,6 +77,15 @@ static void CreateModelGeometry(
 
 namespace ElypsoEngine::GameObject
 {	
+	static EngineRegistry<OpenGL_Model> registry{};
+
+	//point light UBO reused by all point lights
+	static u32 plUBO{};
+
+	EngineRegistry<OpenGL_Model>& OpenGL_Model::GetRegistry() { return registry; }
+
+	u32 OpenGL_Model::GetPointLightUBO() { return plUBO; }
+
 	OpenGL_Model* OpenGL_Model::InitializeSingle(
 		const string& name,
 		OpenGL_Context* context,
@@ -208,7 +236,9 @@ namespace ElypsoEngine::GameObject
 		OpenGL_Context* context,
 		OpenGL_Shader* shader)
 	{
-		u32 newID = ++KalaWindowCore::globalID;
+		u32 newID = EngineCore::GetGlobalID() + 1;
+		EngineCore::SetGlobalID(newID);
+
 		unique_ptr<OpenGL_Model> newModel = make_unique<OpenGL_Model>();
 		OpenGL_Model* modelPtr = newModel.get();
 		
@@ -247,6 +277,8 @@ namespace ElypsoEngine::GameObject
 
 		return modelPtr;
 	}
+
+	bool OpenGL_Model::IsInitialized() const { return isInitialized; }
 	
 	bool OpenGL_Model::Render(
 		const vec3& activeCameraPos,
@@ -309,11 +341,13 @@ namespace ElypsoEngine::GameObject
 			!isOpaque 
 			|| isTransparentDiffuseTex;
 
+		const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
 		if (isAlpha)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDepthMask(GL_FALSE);
+			enFunc->glEnable(GL_BLEND);
+			enFunc->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			enFunc->glDepthMask(GL_FALSE);
 		}
 
 		//diffuse data
@@ -321,8 +355,8 @@ namespace ElypsoEngine::GameObject
 		render.shader->SetVec3("uDiffuseColor", kclamp(render.diffuseColor, 0.0f, 1.0f));
 		if (render.diffuseTex)
 		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, render.diffuseTex->GetTextureID());
+			enFunc->glActiveTexture(GL_TEXTURE0);
+			enFunc->glBindTexture(GL_TEXTURE_2D, render.diffuseTex->GetTextureID());
 			render.shader->SetInt("uDiffuseTex", 0);
 			render.shader->SetBool("uHasDiffuseTex", true);
 		}
@@ -332,8 +366,8 @@ namespace ElypsoEngine::GameObject
 		
 		if (render.normalTex)
 		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, render.normalTex->GetTextureID());
+			enFunc->glActiveTexture(GL_TEXTURE1);
+			enFunc->glBindTexture(GL_TEXTURE_2D, render.normalTex->GetTextureID());
 			render.shader->SetInt("uNormalTex", 1);
 			render.shader->SetBool("uHasNormalTex", true);
 		}
@@ -344,8 +378,8 @@ namespace ElypsoEngine::GameObject
 		render.shader->SetVec3("uSpecularColor", kclamp(render.specularColor, 0.0f, 1.0f));
 		if (render.specularTex)
 		{
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, render.specularTex->GetTextureID());
+			enFunc->glActiveTexture(GL_TEXTURE2);
+			enFunc->glBindTexture(GL_TEXTURE_2D, render.specularTex->GetTextureID());
 			render.shader->SetInt("uSpecularTex", 2);
 			render.shader->SetBool("uHasSpecularTex", true);
 		}
@@ -356,8 +390,8 @@ namespace ElypsoEngine::GameObject
 		render.shader->SetVec3( "uEmissiveColor", kclamp(render.emissiveColor, 0.0f, 1.0f));
 		if (render.emissiveTex)
 		{
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, render.emissiveTex->GetTextureID());
+			enFunc->glActiveTexture(GL_TEXTURE3);
+			enFunc->glBindTexture(GL_TEXTURE_2D, render.emissiveTex->GetTextureID());
 			render.shader->SetInt("uEmissiveTex", 3);
 			render.shader->SetBool("uHasEmissiveTex", true);
 		}
@@ -368,15 +402,15 @@ namespace ElypsoEngine::GameObject
 		render.shader->SetFloat("uShininess", clamp(render.shininess, 1.0f, 64.0f));
 		render.shader->SetBool("uTwoSided",   render.twoSided);
 		
-		u8 plCount = (u8)OpenGL_PointLight::registry.runtimeContent.size();
+		u8 plCount = (u8)OpenGL_PointLight::GetRegistry().runtimeContent.size();
 		
 		if (plUBO != 0)
 		{
-			glBindBuffer(GL_UNIFORM_BUFFER, plUBO);
+			enFunc->glBindBuffer(GL_UNIFORM_BUFFER, plUBO);
 
 			for (u8 i = 0; i < plCount; i++)
 			{
-				OpenGL_PointLight* pl = OpenGL_PointLight::registry.runtimeContent[i];
+				OpenGL_PointLight* pl = OpenGL_PointLight::GetRegistry().runtimeContent[i];
 
 				//skip invalid lights
 				if (!pl
@@ -387,7 +421,7 @@ namespace ElypsoEngine::GameObject
 					OpenGL_PointLight_Data data{};
 					data.canRender = 0;
 
-					glBufferSubData(
+					enFunc->glBufferSubData(
 						GL_UNIFORM_BUFFER,
 						sizeof(OpenGL_PointLight_Data) * i,
 						sizeof(OpenGL_PointLight_Data),
@@ -396,35 +430,198 @@ namespace ElypsoEngine::GameObject
 					continue;
 				}
 
-				glBufferSubData(
+				enFunc->glBufferSubData(
 					GL_UNIFORM_BUFFER,
 					sizeof(OpenGL_PointLight_Data) * i,
 					sizeof(OpenGL_PointLight_Data),
 					pl->GetDataPtr());
 			}
 
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			enFunc->glBindBuffer(GL_UNIFORM_BUFFER, 0);
 			render.shader->SetInt("uPointLightCount", plCount);
 		}
 		else render.shader->SetInt("uPointLightCount", 0);
 
-		glBindVertexArray(render.VAO);
-		glDrawElements(
+		enFunc->glBindVertexArray(render.VAO);
+		enFunc->glDrawElements(
 			GL_TRIANGLES,
 			render.indices.size(),
 			GL_UNSIGNED_INT,
 			0);
-		glBindVertexArray(0);
+		enFunc->glBindVertexArray(0);
 
 		if (isAlpha)
 		{
-			glDisable(GL_BLEND);
-			glDepthMask(GL_TRUE);
+			enFunc->glDisable(GL_BLEND);
+			enFunc->glDepthMask(GL_TRUE);
 		}
 
 		return true;
 	}
+
+	u32 OpenGL_Model::GetID() const { return ID; }
+
+	OpenGL_Context* OpenGL_Model::GetContext() const { return context; }
+
+	void OpenGL_Model::SetName(const string& newName)
+	{
+		//skip if name is empty, same as existing or too long
+		if (newName.empty()
+			|| newName == name
+			|| newName.length() > 50) return;
+
+		name = newName;
+	}
+	const string& OpenGL_Model::GetName() { return name; }
+
+	void OpenGL_Model::SetUpdateState(bool newValue) { render.canUpdate = newValue; }
+	bool OpenGL_Model::CanUpdate() const { return render.canUpdate; }
+
+	const vector<Vertex>& OpenGL_Model::GetVertices() const { return render.vertices; }
+	const vector<u32>& OpenGL_Model::GetIndices() const { return render.indices; }
 	
+	vec3 OpenGL_Model::GetFront() { return getdirfront(transform); }
+	vec3 OpenGL_Model::GetRight() { return getdirright(transform); }
+	vec3 OpenGL_Model::GetUp() { return getdirup(transform); }
+
+	void OpenGL_Model::AddPos(
+		PosTarget type,
+		const vec3& deltaPos)
+	{
+		addpos(
+			transform,
+			{},
+			type,
+			deltaPos);
+	}
+	void OpenGL_Model::SetPos(
+		PosTarget type,
+		const vec3& newPos)
+	{
+		setpos(
+			transform,
+			{},
+			type,
+			newPos);
+	}
+	vec3 OpenGL_Model::GetPos(PosTarget type)
+	{
+		return getpos(
+			transform,
+			type);
+	}
+
+	void OpenGL_Model::AddRot(
+		RotTarget type,
+		const vec3& deltaRot)
+	{
+		addrot(
+			transform,
+			{},
+			type,
+			deltaRot);
+	}
+	void OpenGL_Model::SetRot(
+		RotTarget type,
+		const vec3& newRot)
+	{
+		setrot(
+			transform,
+			{},
+			type,
+			newRot);
+	}
+	vec3 OpenGL_Model::GetRot(RotTarget type)
+	{
+		return getroteuler(
+			transform,
+			type);
+	}
+	quat OpenGL_Model::GetRotQuat(RotTarget type)
+	{
+		return getrotquat(
+			transform,
+			type);
+	}
+
+	void OpenGL_Model::AddSize(
+		SizeTarget type,
+		const vec3& deltaSize)
+	{
+		addsize(
+			transform,
+			{},
+			type,
+			deltaSize);
+	}
+	void OpenGL_Model::SetSize(
+		SizeTarget type,
+		const vec3& newSize)
+	{
+		setsize(
+			transform,
+			{},
+			type,
+			newSize);
+	}
+	vec3 OpenGL_Model::GetSize(SizeTarget type)
+	{
+		return getsize(
+			transform,
+			type);
+	}
+
+	void OpenGL_Model::SetNormalizedDiffuseColor(const vec3& newValue)
+	{
+		render.diffuseColor = kclamp(newValue, 0.0f, 1.0f);
+	}
+	void OpenGL_Model::SetDiffuseRGBColor(const vec3& newValue)
+	{
+		int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
+		int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
+		int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+
+		f32 normalizedX = static_cast<f32>(clampX) / 255;
+		f32 normalizedY = static_cast<f32>(clampY) / 255;
+		f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+
+		render.diffuseColor = vec3(normalizedX, normalizedY, normalizedZ);
+	}
+
+	const vec3& OpenGL_Model::GetNormalizedDiffuseColor() const { return render.diffuseColor; }
+	vec3 OpenGL_Model::GetDiffuseRGBColor() const
+	{
+		int rgbX = static_cast<int>(render.diffuseColor.x * 255);
+		int rgbY = static_cast<int>(render.diffuseColor.y * 255);
+		int rgbZ = static_cast<int>(render.diffuseColor.z * 255);
+
+		return vec3(rgbX, rgbY, rgbZ);
+	}
+
+	void OpenGL_Model::SetOpacity(f32 newValue)
+	{
+		f32 clamped = clamp(newValue, 0.0f, 1.0f);
+		render.opacity = clamped;
+	}
+	f32 OpenGL_Model::GetOpacity() const { return render.opacity; }
+
+	u32 OpenGL_Model::GetVAO() const { return render.VAO; }
+	u32 OpenGL_Model::GetVBO() const { return render.VBO; }
+	u32 OpenGL_Model::GetEBO() const { return render.EBO; }
+
+	const OpenGL_Shader* OpenGL_Model::GetShader() const { return render.shader; }
+
+	void OpenGL_Model::SetDiffuseTexture(OpenGL_Texture* newTexture)
+	{
+		if (newTexture
+			&& render.diffuseTex != newTexture)
+		{
+			render.diffuseTex = newTexture;
+		}
+	}
+	void OpenGL_Model::ClearDiffuseTexture() { render.diffuseTex = nullptr; }
+	const OpenGL_Texture* OpenGL_Model::GetDiffuseTexture() const { return render.diffuseTex; }
+
 	OpenGL_Model::~OpenGL_Model()
 	{
 		if (!isInitialized)
@@ -443,19 +640,21 @@ namespace ElypsoEngine::GameObject
 			"OPENGL_MODEL",
 			LogType::LOG_INFO);
 
+		const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
 		if (render.VAO != 0)
 		{
-			glDeleteVertexArrays(1, &render.VAO);
+			enFunc->glDeleteVertexArrays(1, &render.VAO);
 			render.VAO = 0;
 		}
 		if (render.VBO != 0)
 		{
-			glDeleteBuffers(1, &render.VBO);
+			enFunc->glDeleteBuffers(1, &render.VBO);
 			render.VBO = 0;
 		}
 		if (render.EBO != 0)
 		{
-			glDeleteBuffers(1, &render.EBO);
+			enFunc->glDeleteBuffers(1, &render.EBO);
 			render.EBO = 0;
 		}
 	}
@@ -479,26 +678,28 @@ namespace ElypsoEngine::GameObject
 
 		u32 programID = shader->GetProgramID();
 
-		glGenBuffers(1, &plUBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, plUBO);
+		const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
 
-		glBufferData(
+		enFunc->glGenBuffers(1, &plUBO);
+		enFunc->glBindBuffer(GL_UNIFORM_BUFFER, plUBO);
+
+		enFunc->glBufferData(
 			GL_UNIFORM_BUFFER,
 			sizeof(OpenGL_PointLight_Data) * MAX_PL_COUNT,
 			nullptr,
 			GL_DYNAMIC_DRAW);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		enFunc->glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		GLuint blockIndex = glGetUniformBlockIndex(
+		GLuint blockIndex = enFunc->glGetUniformBlockIndex(
 			programID,
 			"PointLightBlock");
-		glUniformBlockBinding(
+		enFunc->glUniformBlockBinding(
 			programID,
 			blockIndex,
 			0);
 
-		glBindBufferBase(
+		enFunc->glBindBufferBase(
 			GL_UNIFORM_BUFFER,
 			0,
 			plUBO);
@@ -519,56 +720,58 @@ void CreateModelGeometry(
 			"OpenGL model error",
 			"Failed to create model geometry because vertices or indices were empty");
 	}
+
+	const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
 	
-	glGenVertexArrays(1, &outVAO);
-	glGenBuffers(1, &outVBO);
-	glGenBuffers(1, &outEBO);
+	enFunc->glGenVertexArrays(1, &outVAO);
+	enFunc->glGenBuffers(1, &outVBO);
+	enFunc->glGenBuffers(1, &outEBO);
 	
-	glBindVertexArray(outVAO);
+	enFunc->glBindVertexArray(outVAO);
 	
 	//VBO
-	glBindBuffer(GL_ARRAY_BUFFER, outVBO);
-	glBufferData(
+	enFunc->glBindBuffer(GL_ARRAY_BUFFER, outVBO);
+	enFunc->glBufferData(
 		GL_ARRAY_BUFFER,
 		vertices.size() * sizeof(Vertex),
 		vertices.data(),
 		GL_STATIC_DRAW);
 		
 	//EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, outEBO);
-	glBufferData(
+	enFunc->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, outEBO);
+	enFunc->glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER,
 		indices.size() * sizeof(u32),
 		indices.data(),
 		GL_STATIC_DRAW);
 		
 	//position - layout 0
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
+	enFunc->glEnableVertexAttribArray(0);
+	enFunc->glVertexAttribPointer(
 		0, 3, GL_FLOAT, GL_FALSE,
 		sizeof(Vertex),
 		(void*)offsetof(Vertex, position));
 		
 	//normal - layout 1
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
+	enFunc->glEnableVertexAttribArray(1);
+	enFunc->glVertexAttribPointer(
 		1, 3, GL_FLOAT, GL_FALSE,
 		sizeof(Vertex),
 		(void*)offsetof(Vertex, normal));
 		
 	//texcoord - layout 2
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(
+	enFunc->glEnableVertexAttribArray(2);
+	enFunc->glVertexAttribPointer(
 		2, 2, GL_FLOAT, GL_FALSE,
 		sizeof(Vertex),
 		(void*)offsetof(Vertex, texCoord));
 		
 	//tangent - layout 3
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(
+	enFunc->glEnableVertexAttribArray(3);
+	enFunc->glVertexAttribPointer(
 		3, 4, GL_FLOAT, GL_FALSE,
 		sizeof(Vertex),
 		(void*)offsetof(Vertex, tangent));
 		
-	glBindVertexArray(0);
+	enFunc->glBindVertexArray(0);
 }

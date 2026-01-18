@@ -13,13 +13,13 @@
 //
 // IMPORTANT NOTE:
 //
-// KalaUI does not own these functions,
+// Elypso Engine does not own these functions,
 // their ownership must come from another library, for example KalaWindow
 //
 
-namespace KalaUI::OpenGL::OpenGLFunctions
+namespace ElypsoEngine::Graphics::OpenGLFunctions
 {
-	struct GL_UI
+	struct GL_Engine
 	{
 		//state
 
@@ -32,10 +32,12 @@ namespace KalaUI::OpenGL::OpenGLFunctions
 
 		//buffers / VAOs
 
-		PFNGLGENBUFFERSPROC      glGenBuffers;
-		PFNGLDELETEBUFFERSPROC   glDeleteBuffers;
-		PFNGLBINDBUFFERPROC      glBindBuffer;
-		PFNGLBUFFERDATAPROC      glBufferData;
+		PFNGLGENBUFFERSPROC     glGenBuffers;
+		PFNGLDELETEBUFFERSPROC  glDeleteBuffers;
+		PFNGLBINDBUFFERPROC     glBindBuffer;
+		PFNGLBUFFERDATAPROC     glBufferData;
+		PFNGLBUFFERSUBDATAPROC  glBufferSubData;
+		PFNGLBINDBUFFERBASEPROC glBindBufferBase;
 
 		PFNGLGENVERTEXARRAYSPROC    glGenVertexArrays;
 		PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays;
@@ -79,6 +81,9 @@ namespace KalaUI::OpenGL::OpenGLFunctions
 		PFNGLUNIFORMMATRIX3FVPROC   glUniformMatrix3fv;
 		PFNGLUNIFORMMATRIX4FVPROC   glUniformMatrix4fv;
 
+		PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex;
+		PFNGLUNIFORMBLOCKBINDINGPROC  glUniformBlockBinding;
+
 		//textures
 
 		PFNGLACTIVETEXTUREPROC  glActiveTexture;
@@ -93,10 +98,10 @@ namespace KalaUI::OpenGL::OpenGLFunctions
 		PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
 	};
 
-	class LIB_API OpenGL_Functions_UI
+	class LIB_API OpenGL_Functions_Engine
 	{
 	public:
-		static void SetGLUI(const GL_UI* gl);
-		static const GL_UI* GetGLUI();
+		static void SetGLEngine(const GL_Engine* gl);
+		static const GL_Engine* GetGLEngine();
 	};
 }

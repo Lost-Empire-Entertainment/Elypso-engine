@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -21,10 +21,11 @@
 #include "KalaHeaders/log_utils.hpp"
 
 #include "opengl/ku_opengl_manager.hpp"
-#include "opengl/ku_opengl_functions.hpp"
 #include "core/ku_core.hpp"
 
 #include "graphics/en_opengl_texture.hpp"
+#include "core/en_core.hpp"
+#include "graphics/en_opengl_functions.hpp"
 
 using KalaHeaders::KalaMath::vec2;
 using KalaHeaders::KalaLog::Log;
@@ -32,10 +33,12 @@ using KalaHeaders::KalaLog::LogType;
 
 using KalaUI::Core::KalaUICore;
 using KalaUI::OpenGL::OpenGL_Manager;
-using namespace KalaUI::OpenGL::OpenGLFunctions;
 
 using ElypsoEngine::Graphics::OpenGL_Texture;
 using ElypsoEngine::Graphics::TextureFormat;
+using ElypsoEngine::Core::EngineCore;
+using ElypsoEngine::Graphics::OpenGLFunctions::OpenGL_Functions_Engine;
+using ElypsoEngine::Graphics::OpenGLFunctions::GL_Engine;
 
 using std::string;
 using std::string_view;
@@ -143,6 +146,10 @@ static GLFormatInfo ToGLFormat(TextureFormat fmt);
 
 namespace ElypsoEngine::Graphics
 {
+	static EngineRegistry<OpenGL_Texture> registry{};
+
+	EngineRegistry<OpenGL_Texture>& OpenGL_Texture::GetRegistry() { return registry; }
+
 	OpenGL_Texture* OpenGL_Texture::Initialize(
 		OpenGL_Context* glContext,
 		const string& name,
@@ -184,25 +191,27 @@ namespace ElypsoEngine::Graphics
 				// BIND TEXTURE
 				//
 
-				glGenTextures(1, &newTextureID);
+				const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
+				enFunc->glGenTextures(1, &newTextureID);
 
 				GLenum target = GL_TEXTURE_2D;
 				GLFormatInfo fmt = ToGLFormat(newFormat);
 
-				glBindTexture(target, newTextureID);
+				enFunc->glBindTexture(target, newTextureID);
 
-				glTexParameteri(
+				enFunc->glTexParameteri(
 					target,
 					GL_TEXTURE_WRAP_S,
 					GL_REPEAT);
-				glTexParameteri(
+				enFunc->glTexParameteri(
 					target,
 					GL_TEXTURE_WRAP_T,
 					GL_REPEAT);
 
 				if (target == GL_TEXTURE_3D)
 				{
-					glTexParameteri(
+					enFunc->glTexParameteri(
 						target,
 						GL_TEXTURE_WRAP_R,
 						GL_REPEAT);
@@ -212,13 +221,13 @@ namespace ElypsoEngine::Graphics
 				// FILTERING
 				//
 
-				glTexParameteri(
+				enFunc->glTexParameteri(
 					target,
 					GL_TEXTURE_MIN_FILTER,
 					mipMapLevels > 1
 					? GL_LINEAR_MIPMAP_LINEAR
 					: GL_LINEAR);
-				glTexParameteri(
+				enFunc->glTexParameteri(
 					target,
 					GL_TEXTURE_MAG_FILTER,
 					GL_LINEAR);
@@ -232,33 +241,37 @@ namespace ElypsoEngine::Graphics
 			});
 	}
 
+	bool OpenGL_Texture::IsInitialized() const { return isInitialized; }
+
 	OpenGL_Texture* OpenGL_Texture::GetFallbackTexture()
 	{
 		if (!fallbackTexture)
 		{
-			while (glGetError() != GL_NO_ERROR) {} //clear old errors
+			const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
+			while (enFunc->glGetError() != GL_NO_ERROR) {} //clear old errors
 
 			unsigned int newTextureID{};
-			glGenTextures(1, &newTextureID);
+			enFunc->glGenTextures(1, &newTextureID);
 
-			glBindTexture(GL_TEXTURE_2D, newTextureID);
+			enFunc->glBindTexture(GL_TEXTURE_2D, newTextureID);
 
 			//reset state
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			enFunc->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			enFunc->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			enFunc->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			enFunc->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			enFunc->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-			glTexStorage2D(
+			enFunc->glTexStorage2D(
 				GL_TEXTURE_2D,
 				1,
 				GL_RGBA8,
 				32,
 				32);
 
-			glTexSubImage2D(
+			enFunc->glTexSubImage2D(
 				GL_TEXTURE_2D,
 				0,
 				0,
@@ -269,9 +282,11 @@ namespace ElypsoEngine::Graphics
 				GL_UNSIGNED_BYTE,
 				GetFallbackPixels().data());
 
-			glGenerateMipmap(GL_TEXTURE_2D);
+			enFunc->glGenerateMipmap(GL_TEXTURE_2D);
 
-			u32 newID = ++KalaUICore::globalID;
+			u32 newID = EngineCore::GetGlobalID() + 1;
+			EngineCore::SetGlobalID(newID);
+
 			unique_ptr<OpenGL_Texture> newTexture = make_unique<OpenGL_Texture>();
 			OpenGL_Texture* texturePtr = newTexture.get();
 
@@ -308,6 +323,38 @@ namespace ElypsoEngine::Graphics
 		return fallbackTexture;
 	}
 
+	void OpenGL_Texture::SetName(const string& newName)
+	{
+		//skip if name is empty, same as existing or too long
+		if (newName.empty()
+			|| newName == name
+			|| newName.length() > 50) return;
+
+		name = newName;
+	}
+	const string& OpenGL_Texture::GetName() const { return name; }
+
+	const string& OpenGL_Texture::GetPath() const { return filePath; }
+
+	u32 OpenGL_Texture::GetID() const { return ID; }
+	u32 OpenGL_Texture::GetTextureID() const { return textureID; }
+
+	OpenGL_Context* OpenGL_Texture::GetGLContext() const { return glContext; }
+
+	vec2 OpenGL_Texture::GetSize() const { return size; }
+	u8 OpenGL_Texture::GetMipMapLevels() const { return mipMapLevels; }
+
+	const vector<u8>& OpenGL_Texture::GetPixels() const { return pixels; }
+
+	u32 OpenGL_Texture::GetTexelCount() const
+	{
+		return static_cast<u32>(size.x)
+			* static_cast<u32>(size.y)
+			* static_cast<u32>(1);
+	}
+
+	TextureFormat OpenGL_Texture::GetFormat() const { return format; }
+
 	OpenGL_Texture* OpenGL_Texture::TextureBody(
 		OpenGL_Context* glContext,
 		const string& name,
@@ -331,7 +378,9 @@ namespace ElypsoEngine::Graphics
 			return nullptr;
 		}
 
-		u32 newID = ++KalaUICore::globalID;
+		u32 newID = EngineCore::GetGlobalID() + 1;
+		EngineCore::SetGlobalID(newID);
+
 		unique_ptr<OpenGL_Texture> newTexture = make_unique<OpenGL_Texture>();
 		OpenGL_Texture* texturePtr = newTexture.get();
 
@@ -408,21 +457,23 @@ namespace ElypsoEngine::Graphics
 		{
 			GLenum targetType = GL_TEXTURE_2D;
 		
-			glBindTexture(targetType, newTextureID);
+			const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
+			enFunc->glBindTexture(targetType, newTextureID);
 
 			GLFormatInfo fmt = ToGLFormat(format);
 
 			string target{};
 
 			//allocate all mip levels up front
-			glTexStorage2D(
+			enFunc->glTexStorage2D(
 				GL_TEXTURE_2D,
 				mipMapLevels,
 				fmt.internalFormat,
 				static_cast<GLsizei>(newSize.x),
 				static_cast<GLsizei>(newSize.y));
 
-			glTexSubImage2D(
+			enFunc->glTexSubImage2D(
 				GL_TEXTURE_2D,
 				0,
 				0,
@@ -433,7 +484,7 @@ namespace ElypsoEngine::Graphics
 				fmt.type,
 				texturePtr->pixels.data());
 
-			if (mipMapLevels > 1) glGenerateMipmap(targetType);
+			if (mipMapLevels > 1) enFunc->glGenerateMipmap(targetType);
 
 			string errorVal = OpenGL_Manager::GetError();
 			if (!errorVal.empty())
@@ -467,7 +518,9 @@ namespace ElypsoEngine::Graphics
 
 		if (textureID != 0)
 		{
-			glDeleteTextures(1, &textureID);
+			const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
+			enFunc->glDeleteTextures(1, &textureID);
 			textureID = 0;
 		}
 	}
@@ -641,8 +694,10 @@ bool CheckTextureData(
 	//clamp to gpu texture resolution upper bound
 	if (TEXTURE_MAX_SIZE == 0)
 	{
+		const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
 		GLint maxSize{};
-		glGetIntegerv(
+		enFunc->glGetIntegerv(
 			GL_MAX_TEXTURE_SIZE,
 			&maxSize);
 

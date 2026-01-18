@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -40,7 +40,7 @@ namespace ElypsoEngine::Graphics
 	class OpenGL_Texture
 	{
 	public:
-		static inline EngineRegistry<OpenGL_Texture> registry{};
+		static EngineRegistry<OpenGL_Texture>& GetRegistry();
 
 		//Load a new texture from an external file.
 		//Depth is always clamped to 1 for Type_2D,
@@ -53,47 +53,34 @@ namespace ElypsoEngine::Graphics
 			TextureFormat format = TextureFormat::Format_Auto,
 			bool flipVertically = false,
 			u8 mipMapLevels = 1);
-			
-		inline bool IsInitialized() const { return isInitialized; }
+
+		bool IsInitialized() const;
 
 		//Returns the fallback texture,
 		//used when a texture fails to load through OpenGL_Texture::LoadTexture
 		static OpenGL_Texture* GetFallbackTexture();
-		
-		inline void SetName(const string& newName)
-		{
-			//skip if name is empty, same as existing or too long
-			if (newName.empty()
-				|| newName == name
-				|| newName.length() > 50) return;
+			
+		void SetName(const string& newName);
+		const string& GetName() const;
 
-			name = newName;
-		}
-		inline const string& GetName() const { return name; }
-
-		inline const string& GetPath() const { return filePath; }
+		const string& GetPath() const;
 
 		//Returns the global ID of this shader
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 		//Returns the OpenGL texture ID of this texture
-		inline u32 GetTextureID() const { return textureID; }
+		u32 GetTextureID() const;
 		
 		//Returns the OpenGL context of this texture
-		inline OpenGL_Context* GetGLContext() const { return glContext; }
+		OpenGL_Context* GetGLContext() const;
 		
-		inline vec2 GetSize() const { return size; }
-		inline u8 GetMipMapLevels() const { return mipMapLevels; }
+		vec2 GetSize() const;
+		u8 GetMipMapLevels() const;
 
-		inline const vector<u8>& GetPixels() const { return pixels; }
+		const vector<u8>& GetPixels() const;
 
-		inline u32 GetTexelCount() const
-		{
-			return static_cast<u32>(size.x)
-				* static_cast<u32>(size.y)
-				* static_cast<u32>(1);
-		}
+		u32 GetTexelCount() const;
 
-		inline TextureFormat GetFormat() const { return format; }
+		TextureFormat GetFormat() const;
 
 		//Do not destroy manually, erase from registry instead
 		~OpenGL_Texture();

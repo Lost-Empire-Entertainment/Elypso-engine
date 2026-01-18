@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -12,19 +12,37 @@
 
 #include "core/kw_core.hpp"
 #include "opengl/kw_opengl.hpp"
-#include "opengl/kw_opengl_functions_core.hpp"
 
 #include "gameobject/en_opengl_point_light.hpp"
+#include "core/en_core.hpp"
+#include "graphics/en_opengl_functions.hpp"
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 using KalaHeaders::KalaMath::vec3;
 using KalaHeaders::KalaMath::mat4;
 using KalaHeaders::KalaMath::isnear;
+using KalaHeaders::KalaMath::kclamp;
+using KalaHeaders::KalaMath::addpos;
+using KalaHeaders::KalaMath::setpos;
+using KalaHeaders::KalaMath::getpos;
+using KalaHeaders::KalaMath::addrot;
+using KalaHeaders::KalaMath::setrot;
+using KalaHeaders::KalaMath::getroteuler;
+using KalaHeaders::KalaMath::getrotquat;
+using KalaHeaders::KalaMath::addsize;
+using KalaHeaders::KalaMath::setsize;
+using KalaHeaders::KalaMath::getsize;
+using KalaHeaders::KalaMath::getdirfront;
+using KalaHeaders::KalaMath::getdirright;
+using KalaHeaders::KalaMath::getdirup;
 
 using KalaWindow::Core::KalaWindowCore;
-using namespace KalaWindow::OpenGL::OpenGLFunctions;
 using KalaWindow::OpenGL::OpenGL_Global;
+
+using ElypsoEngine::Core::EngineCore;
+using ElypsoEngine::Graphics::OpenGLFunctions::OpenGL_Functions_Engine;
+using ElypsoEngine::Graphics::OpenGLFunctions::GL_Engine;
 
 using std::string;
 using std::to_string;
@@ -42,6 +60,10 @@ static void CreateLightGeometry(
 
 namespace ElypsoEngine::GameObject
 {
+	static EngineRegistry<OpenGL_PointLight> registry{};
+
+	EngineRegistry<OpenGL_PointLight>& OpenGL_PointLight::GetRegistry() { return registry; }
+
 	OpenGL_PointLight* OpenGL_PointLight::Initialize(
 		const string& name,
 		OpenGL_Context* context,
@@ -77,7 +99,9 @@ namespace ElypsoEngine::GameObject
 			}		
 		}
 		
-		u32 newID = ++KalaWindowCore::globalID;
+		u32 newID = EngineCore::GetGlobalID() + 1;
+		EngineCore::SetGlobalID(newID);
+
 		unique_ptr<OpenGL_PointLight> newLight = make_unique<OpenGL_PointLight>();
 		OpenGL_PointLight* lightPtr = newLight.get();
 		
@@ -117,6 +141,8 @@ namespace ElypsoEngine::GameObject
 
 		return lightPtr;
 	}
+
+	bool OpenGL_PointLight::IsInitialized() const { return isInitialized; }
 	
 	bool OpenGL_PointLight::Render(
 		const mat4& view,
@@ -176,32 +202,268 @@ namespace ElypsoEngine::GameObject
 
 		bool isAlpha = isnear(render.opacity, 1.0f);
 
+		const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
 		if (isAlpha)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDepthMask(GL_FALSE);
+			enFunc->glEnable(GL_BLEND);
+			enFunc->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			enFunc->glDepthMask(GL_FALSE);
 		}
 
 		render.shader->SetVec3("uColor", render.color);
 		render.shader->SetFloat("uOpacity", render.opacity);
 
-		glBindVertexArray(render.VAO);
-		glDrawElements(
+		enFunc->glBindVertexArray(render.VAO);
+		enFunc->glDrawElements(
 			GL_TRIANGLES,
 			render.indices.size(),
 			GL_UNSIGNED_INT,
 			0);
-		glBindVertexArray(0);
+		enFunc->glBindVertexArray(0);
 
 		if (isAlpha)
 		{
-			glDisable(GL_BLEND);
-			glDepthMask(GL_TRUE);
+			enFunc->glDisable(GL_BLEND);
+			enFunc->glDepthMask(GL_TRUE);
 		}
 
 		return true;
 	}
+
+	u32 OpenGL_PointLight::GetID() const { return ID; }
+
+	OpenGL_Context* OpenGL_PointLight::GetContext() const { return context; }
+
+	void OpenGL_PointLight::SetName(const string& newName)
+	{
+		//skip if name is empty, same as existing or too long
+		if (newName.empty()
+			|| newName == name
+			|| newName.length() > 50) return;
+
+		name = newName;
+	}
+	const string& OpenGL_PointLight::GetName() { return name; }
+
+	void OpenGL_PointLight::SetRenderDebugShapeState(bool newValue)
+	{
+		render.canUpdate = newValue;
+		data.canRender = newValue;
+	}
+	bool OpenGL_PointLight::CanRenderDebugShape() const { return render.canUpdate; }
+
+	void OpenGL_PointLight::SetRenderLightState(bool newValue)
+	{
+		data.canRender = newValue;
+	}
+	bool OpenGL_PointLight::CanRenderLight() const { return data.canRender; }
+
+	const vector<vec3>& OpenGL_PointLight::GetVertices() const { return render.vertices; }
+	const vector<u32>& OpenGL_PointLight::GetIndices() const { return render.indices; }
+
+	vec3 OpenGL_PointLight::GetFront() { return getdirfront(transform); }
+	vec3 OpenGL_PointLight::GetRight() { return getdirright(transform); }
+	vec3 OpenGL_PointLight::GetUp() { return getdirup(transform); }
+
+	void OpenGL_PointLight::AddPos(
+		PosTarget type,
+		const vec3& deltaPos)
+	{
+		addpos(
+			transform,
+			{},
+			type,
+			deltaPos);
+
+		data.pos = getpos(
+			transform,
+			PosTarget::POS_COMBINED);
+	}
+	void OpenGL_PointLight::SetPos(
+		PosTarget type,
+		const vec3& newPos)
+	{
+		setpos(
+			transform,
+			{},
+			type,
+			newPos);
+
+		data.pos = getpos(
+			transform,
+			PosTarget::POS_COMBINED);
+	}
+	vec3 OpenGL_PointLight::GetPos(PosTarget type)
+	{
+		return getpos(
+			transform,
+			type);
+	}
+
+	void OpenGL_PointLight::AddRot(
+		RotTarget type,
+		const vec3& deltaRot)
+	{
+		addrot(
+			transform,
+			{},
+			type,
+			deltaRot);
+	}
+	void OpenGL_PointLight::SetRot(
+		RotTarget type,
+		const vec3& newRot)
+	{
+		setrot(
+			transform,
+			{},
+			type,
+			newRot);
+	}
+	vec3 OpenGL_PointLight::GetRot(RotTarget type)
+	{
+		return getroteuler(
+			transform,
+			type);
+	}
+	quat OpenGL_PointLight::GetRotQuat(RotTarget type)
+	{
+		return getrotquat(
+			transform,
+			type);
+	}
+
+	void OpenGL_PointLight::AddSize(
+		SizeTarget type,
+		const vec3& deltaSize)
+	{
+		addsize(
+			transform,
+			{},
+			type,
+			deltaSize);
+	}
+	void OpenGL_PointLight::SetSize(
+		SizeTarget type,
+		const vec3& newSize)
+	{
+		setsize(
+			transform,
+			{},
+			type,
+			newSize);
+	}
+	vec3 OpenGL_PointLight::GetSize(SizeTarget type)
+	{
+		return getsize(
+			transform,
+			type);
+	}
+
+	void OpenGL_PointLight::SetNormalizedDebugColor(const vec3& newValue)
+	{
+		render.color = kclamp(newValue, 0.0f, 1.0f);
+	}
+	void OpenGL_PointLight::SetDebugRGBColor(const vec3& newValue)
+	{
+		int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
+		int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
+		int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+
+		f32 normalizedX = static_cast<f32>(clampX) / 255;
+		f32 normalizedY = static_cast<f32>(clampY) / 255;
+		f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+
+		render.color = vec3(normalizedX, normalizedY, normalizedZ);
+	}
+
+	const vec3& OpenGL_PointLight::GetNormalizedDebugColor() const { return render.color; }
+	vec3 OpenGL_PointLight::GetDebugRGBColor() const
+	{
+		int rgbX = static_cast<int>(render.color.x * 255);
+		int rgbY = static_cast<int>(render.color.y * 255);
+		int rgbZ = static_cast<int>(render.color.z * 255);
+
+		return vec3(rgbX, rgbY, rgbZ);
+	}
+
+	void OpenGL_PointLight::SetOpacity(f32 newValue)
+	{
+		f32 clamped = clamp(newValue, 0.0f, 1.0f);
+		render.opacity = clamped;
+	}
+	f32 OpenGL_PointLight::GetOpacity() const { return render.opacity; }
+
+	u32 OpenGL_PointLight::GetVAO() const { return render.VAO; }
+	u32 OpenGL_PointLight::GetVBO() const { return render.VBO; }
+	u32 OpenGL_PointLight::GetEBO() const { return render.EBO; }
+
+	const OpenGL_Shader* OpenGL_PointLight::GetShader() const { return render.shader; }
+
+	void OpenGL_PointLight::SetIntensity(f32 newValue)
+	{
+		f32 clamped = clamp(newValue, 0.0f, 5.0f);
+		data.intensity = clamped;
+	}
+	f32 OpenGL_PointLight::GetIntensity() const { return data.intensity; }
+
+	void OpenGL_PointLight::SetMaxRange(f32 newValue)
+	{
+		f32 clamped = clamp(newValue, 0.0f, 1000.0f);
+		data.maxRange = clamped;
+	}
+	f32 OpenGL_PointLight::GetMaxRange() const { return data.maxRange; }
+
+	void OpenGL_PointLight::SetNormalizedColor(const vec3& newValue)
+	{
+		data.color = kclamp(newValue, 0.0f, 1.0f);
+	}
+	void OpenGL_PointLight::SetRGBColor(const vec3& newValue)
+	{
+		int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
+		int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
+		int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+
+		f32 normalizedX = static_cast<f32>(clampX) / 255;
+		f32 normalizedY = static_cast<f32>(clampY) / 255;
+		f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+
+		data.color = vec3(normalizedX, normalizedY, normalizedZ);
+	}
+
+	vec3 OpenGL_PointLight::GetNormalizedColor() const { return data.color; }
+	vec3 OpenGL_PointLight::GetRGBColor() const
+	{
+		int rgbX = static_cast<int>(data.color.x * 255);
+		int rgbY = static_cast<int>(data.color.y * 255);
+		int rgbZ = static_cast<int>(data.color.z * 255);
+
+		return vec3(rgbX, rgbY, rgbZ);
+	}
+
+	void OpenGL_PointLight::SetConstant(f32 newValue)
+	{
+		f32 clamped = clamp(newValue, 0.0f, 5.0f);
+		data.constant = clamped;
+	}
+	f32 OpenGL_PointLight::GetConstant() const { return data.constant; }
+
+	void OpenGL_PointLight::SetLinear(f32 newValue)
+	{
+		f32 clamped = clamp(newValue, 0.0f, 1.0f);
+		data.linear = clamped;
+	}
+	f32 OpenGL_PointLight::GetLinear() const { return data.linear; }
+
+	void OpenGL_PointLight::SetQuadratic(f32 newValue)
+	{
+		f32 clamped = clamp(newValue, 0.0f, 1.0f);
+		data.quadratic = clamped;
+	}
+	f32 OpenGL_PointLight::GetQuadratic() const { return data.quadratic; }
+
+	const OpenGL_PointLight_Data* OpenGL_PointLight::GetDataPtr() const { return &data; }
 	
 	OpenGL_PointLight::~OpenGL_PointLight()
 	{
@@ -221,19 +483,21 @@ namespace ElypsoEngine::GameObject
 			"OPENGL_POINT_LIGHT",
 			LogType::LOG_INFO);
 
+		const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
 		if (render.VAO != 0)
 		{
-			glDeleteVertexArrays(1, &render.VAO);
+			enFunc->glDeleteVertexArrays(1, &render.VAO);
 			render.VAO = 0;
 		}
 		if (render.VBO != 0)
 		{
-			glDeleteBuffers(1, &render.VBO);
+			enFunc->glDeleteBuffers(1, &render.VBO);
 			render.VBO = 0;
 		}
 		if (render.EBO != 0)
 		{
-			glDeleteBuffers(1, &render.EBO);
+			enFunc->glDeleteBuffers(1, &render.EBO);
 			render.EBO = 0;
 		}
 	}
@@ -254,34 +518,36 @@ void CreateLightGeometry(
 			"Failed to create point light geometry because vertices or indices were empty");
 	}
 	
-	glGenVertexArrays(1, &outVAO);
-	glGenBuffers(1, &outVBO);
-	glGenBuffers(1, &outEBO);
+	const GL_Engine* enFunc = OpenGL_Functions_Engine::GetGLEngine();
+
+	enFunc->glGenVertexArrays(1, &outVAO);
+	enFunc->glGenBuffers(1, &outVBO);
+	enFunc->glGenBuffers(1, &outEBO);
 	
-	glBindVertexArray(outVAO);
+	enFunc->glBindVertexArray(outVAO);
 	
 	//VBO
-	glBindBuffer(GL_ARRAY_BUFFER, outVBO);
-	glBufferData(
+	enFunc->glBindBuffer(GL_ARRAY_BUFFER, outVBO);
+	enFunc->glBufferData(
 		GL_ARRAY_BUFFER,
 		vertices.size() * sizeof(vec3),
 		vertices.data(),
 		GL_STATIC_DRAW);
 		
 	//EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, outEBO);
-	glBufferData(
+	enFunc->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, outEBO);
+	enFunc->glBufferData(
 		GL_ELEMENT_ARRAY_BUFFER,
 		indices.size() * sizeof(u32),
 		indices.data(),
 		GL_STATIC_DRAW);
 		
 	//position - layout 0
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
+	enFunc->glEnableVertexAttribArray(0);
+	enFunc->glVertexAttribPointer(
 		0, 3, GL_FLOAT, GL_FALSE,
 		sizeof(vec3),
 		(void*)0);
 		
-	glBindVertexArray(0);
+	enFunc->glBindVertexArray(0);
 }

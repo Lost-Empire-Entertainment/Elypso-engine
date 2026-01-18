@@ -128,8 +128,11 @@ install(TARGETS ElypsoEngine DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # Copy files directory
 add_custom_command(TARGET ElypsoEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:ElypsoEngine>/files"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/files" "$<TARGET_FILE_DIR:ElypsoEngine>/files"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory 
+		"$<TARGET_FILE_DIR:ElypsoEngine>/files"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory 
+		"${CMAKE_SOURCE_DIR}/../files"
+		"$<TARGET_FILE_DIR:ElypsoEngine>/files"
 )
 
 # Copy external binaries

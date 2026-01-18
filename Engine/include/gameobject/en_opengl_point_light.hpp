@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -22,7 +22,6 @@ namespace ElypsoEngine::GameObject
 	using std::array;
 	using std::string;
 	
-	using KalaHeaders::KalaMath::kclamp;
 	using KalaHeaders::KalaMath::vec2;
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::vec4;
@@ -32,19 +31,6 @@ namespace ElypsoEngine::GameObject
 	using KalaHeaders::KalaMath::PosTarget;
 	using KalaHeaders::KalaMath::RotTarget;
 	using KalaHeaders::KalaMath::SizeTarget;
-	using KalaHeaders::KalaMath::addpos;
-	using KalaHeaders::KalaMath::setpos;
-	using KalaHeaders::KalaMath::getpos;
-	using KalaHeaders::KalaMath::addrot;
-	using KalaHeaders::KalaMath::setrot;
-	using KalaHeaders::KalaMath::getroteuler;
-	using KalaHeaders::KalaMath::getrotquat;
-	using KalaHeaders::KalaMath::addsize;
-	using KalaHeaders::KalaMath::setsize;
-	using KalaHeaders::KalaMath::getsize;
-	using KalaHeaders::KalaMath::getdirfront;
-	using KalaHeaders::KalaMath::getdirright;
-	using KalaHeaders::KalaMath::getdirup;
 	
 	using KalaWindow::OpenGL::OpenGL_Context;
 	using KalaWindow::OpenGL::OpenGL_Shader;
@@ -122,20 +108,20 @@ namespace ElypsoEngine::GameObject
 		
 		OpenGL_Shader* shader{};
 	};
+
+	static constexpr array<vec2, 5> availableShadowResolutions
+	{
+		128.0f,
+		256.0f,
+		512.0f,
+		1024.0f,
+		2048.0f
+	};
 	
 	class OpenGL_PointLight
 	{
 	public:
-		static inline EngineRegistry<OpenGL_PointLight> registry{};
-		
-		static constexpr array<vec2, 5> availableShadowResolutions
-		{
-			128.0f,
-			256.0f,
-			512.0f,
-			1024.0f,
-			2048.0f
-		};
+		static EngineRegistry<OpenGL_PointLight>& GetRegistry();
 		
 		//
 		// CORE
@@ -148,263 +134,113 @@ namespace ElypsoEngine::GameObject
 			vector<vec3> vertices = {},
 			vector<u32> indices = {},
 			OpenGL_Shader* shader = {});
+
+		bool IsInitialized() const;
 			
-		//Render this point light. Requires handle (HDC) from your window
 		bool Render(
 			const mat4& view,
 			const mat4& projection);
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 
-		inline OpenGL_Context* GetContext() const { return context; }
+		OpenGL_Context* GetContext() const;
 
-		inline void SetName(const string& newName)
-		{
-			//skip if name is empty, same as existing or too long
-			if (newName.empty()
-				|| newName == name
-				|| newName.length() > 50) return;
-
-			name = newName;
-		}
-		inline const string& GetName() { return name; }
+		void SetName(const string& newName);
+		const string& GetName();
 		
-		inline void SetRenderDebugShapeState(bool newValue) 
-		{ 
-			render.canUpdate = newValue;
-			data.canRender = newValue;
-		}
-		inline bool CanRenderDebugShape() const { return render.canUpdate; }
+		void SetRenderDebugShapeState(bool newValue);
+		bool CanRenderDebugShape() const;
 		
-		inline void SetRenderLightState(bool newValue) 
-		{ 
-			data.canRender = newValue;
-		}
-		inline bool CanRenderLight() const { return data.canRender; }
+		void SetRenderLightState(bool newValue);
+		bool CanRenderLight() const;
 		
-		inline const vector<vec3>& GetVertices() const { return render.vertices; }
-		inline const vector<u32>& GetIndices() const { return render.indices; }
+		const vector<vec3>& GetVertices() const;
+		const vector<u32>& GetIndices() const;
 			
 		//
 		// TRANSFORM
 		//
 		
-		inline vec3 GetFront() { return getdirfront(transform); }
-		inline vec3 GetRight() { return getdirright(transform); }
-		inline vec3 GetUp() { return getdirup(transform); }
+		vec3 GetFront();
+		vec3 GetRight();
+		vec3 GetUp();
 
 		//Increments position over time
-		inline void AddPos(
+		void AddPos(
 			PosTarget type,
-			const vec3& deltaPos)
-		{
-			addpos(
-				transform,
-				{},
-				type,
-				deltaPos);
-				
-			data.pos = getpos(
-				transform,
-				PosTarget::POS_COMBINED); 
-		}
+			const vec3& deltaPos);
 		//Snaps to given position
-		inline void SetPos(
+		void SetPos(
 			PosTarget type,
-			const vec3& newPos)
-		{
-			setpos(
-				transform,
-				{},
-				type,
-				newPos);
-				
-			data.pos = getpos(
-				transform,
-				PosTarget::POS_COMBINED); 
-		}
-		inline vec3 GetPos(PosTarget type) 
-		{ 
-			return getpos(
-				transform,
-				type); 
-		}
+			const vec3& newPos);
+		vec3 GetPos(PosTarget type);
 
 		//Increments rotation over time
-		inline void AddRot(
+		void AddRot(
 			RotTarget type,
-			const vec3& deltaRot)
-		{
-			addrot(
-				transform,
-				{},
-				type,
-				deltaRot); 
-		}
+			const vec3& deltaRot);
 		//Snaps to given rotation
-		inline void SetRot(
+		void SetRot(
 			RotTarget type,
-			const vec3& newRot)
-		{
-			setrot(
-				transform,
-				{},
-				type,
-				newRot);
-		}
-		inline vec3 GetRot(RotTarget type) 
-		{ 
-			return getroteuler(
-				transform,
-				type);
-		}
-		inline quat GetRotQuat(RotTarget type) 
-		{ 
-			return getrotquat(
-				transform,
-				type);
-		}
+			const vec3& newRot);
+		vec3 GetRot(RotTarget type);
+		quat GetRotQuat(RotTarget type);
 		
 		//Increments size over time
-		inline void AddSize(
+		void AddSize(
 			SizeTarget type,
-			const vec3& deltaSize)
-		{
-			addsize(
-				transform,
-				{},
-				type,
-				deltaSize);
-		}
+			const vec3& deltaSize);
 		//Snaps to given size
-		inline void SetSize(
+		void SetSize(
 			SizeTarget type,
-			const vec3& newSize)
-		{
-			setsize(
-				transform,
-				{},
-				type,
-				newSize);
-		}
-		inline vec3 GetSize(SizeTarget type) 
-		{ 
-			return getsize(
-				transform,
-				type); 
-		}
+			const vec3& newSize);
+		vec3 GetSize(SizeTarget type);
 		
 		//
 		// GRAPHICS
 		//
 
-		inline void SetNormalizedDebugColor(const vec3& newValue)
-		{
-			render.color = kclamp(newValue, 0.0f, 1.0f);
-		}
-		inline void SetDebugRGBColor(const vec3& newValue)
-		{
-			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
-			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
-			int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+		void SetNormalizedDebugColor(const vec3& newValue);
+		void SetDebugRGBColor(const vec3& newValue);
 
-			f32 normalizedX = static_cast<f32>(clampX) / 255;
-			f32 normalizedY = static_cast<f32>(clampY) / 255;
-			f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+		const vec3& GetNormalizedDebugColor() const;
+		vec3 GetDebugRGBColor() const;
 
-			render.color = vec3(normalizedX, normalizedY, normalizedZ);
-		}
+		void SetOpacity(f32 newValue);
+		f32 GetOpacity() const;
 
-		inline const vec3& GetNormalizedDebugColor() const { return render.color; }
-		inline vec3 GetDebugRGBColor() const
-		{
-			int rgbX = static_cast<int>(render.color.x * 255);
-			int rgbY = static_cast<int>(render.color.y * 255);
-			int rgbZ = static_cast<int>(render.color.z * 255);
-
-			return vec3(rgbX, rgbY, rgbZ);
-		}
-
-		inline void SetOpacity(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 1.0f);
-			render.opacity = clamped;
-		}
-		inline f32 GetOpacity() const { return render.opacity; }
-
-		inline u32 GetVAO() const { return render.VAO; }
-		inline u32 GetVBO() const { return render.VBO; }
-		inline u32 GetEBO() const { return render.EBO; }
+		u32 GetVAO() const;
+		u32 GetVBO() const;
+		u32 GetEBO() const;
 		
-		inline const OpenGL_Shader* GetShader() const { return render.shader; }
+		const OpenGL_Shader* GetShader() const;
 		
 		//
 		// LIGHT DATA
 		//
 		
-		inline void SetIntensity(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 5.0f);
-			data.intensity = clamped;
-		}
-		inline f32 GetIntensity() const { return data.intensity; }
+		void SetIntensity(f32 newValue);
+		f32 GetIntensity() const;
 		
-		inline void SetMaxRange(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 1000.0f);
-			data.maxRange = clamped;
-		}
-		inline f32 GetMaxRange() const { return data.maxRange; }
+		void SetMaxRange(f32 newValue);
+		f32 GetMaxRange() const;
 		
-		inline void SetNormalizedColor(const vec3& newValue)
-		{
-			data.color = kclamp(newValue, 0.0f, 1.0f);
-		}
-		inline void SetRGBColor(const vec3& newValue)
-		{
-			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
-			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
-			int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+		void SetNormalizedColor(const vec3& newValue);
+		void SetRGBColor(const vec3& newValue);
 
-			f32 normalizedX = static_cast<f32>(clampX) / 255;
-			f32 normalizedY = static_cast<f32>(clampY) / 255;
-			f32 normalizedZ = static_cast<f32>(clampZ) / 255;
-
-			data.color = vec3(normalizedX, normalizedY, normalizedZ);
-		}
-
-		inline vec3 GetNormalizedColor() const { return data.color; }
-		inline vec3 GetRGBColor() const
-		{
-			int rgbX = static_cast<int>(data.color.x * 255);
-			int rgbY = static_cast<int>(data.color.y * 255);
-			int rgbZ = static_cast<int>(data.color.z * 255);
-
-			return vec3(rgbX, rgbY, rgbZ);
-		}
+		vec3 GetNormalizedColor() const;
+		vec3 GetRGBColor() const;
 		
-		inline void SetConstant(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 5.0f);
-			data.constant = clamped;
-		}
-		inline f32 GetConstant() const { return data.constant; }
+		void SetConstant(f32 newValue);
+		f32 GetConstant() const;
 		
-		inline void SetLinear(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 1.0f);
-			data.linear = clamped;
-		}
-		inline f32 GetLinear() const { return data.linear; }
+		void SetLinear(f32 newValue);
+		f32 GetLinear() const;
 		
-		inline void SetQuadratic(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 1.0f);
-			data.quadratic = clamped;
-		}
-		inline f32 GetQuadratic() const { return data.quadratic; }
+		void SetQuadratic(f32 newValue);
+		f32 GetQuadratic() const;
 		
-		inline const OpenGL_PointLight_Data* GetDataPtr() const { return &data; }
+		const OpenGL_PointLight_Data* GetDataPtr() const;
 		
 		~OpenGL_PointLight();
 	private:

@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -6,46 +6,26 @@
 #pragma once
 
 #include <string>
-#include <sstream>
 
 #include "KalaHeaders/math_utils.hpp"
-#include "KalaHeaders/log_utils.hpp"
 
 #include "core/en_registry.hpp"
 
 namespace ElypsoEngine::GameObject
 {
 	using std::string;
-	using std::ostringstream;
-	
-	using KalaHeaders::KalaLog::Log;
-	using KalaHeaders::KalaLog::LogType;
+
 	using KalaHeaders::KalaMath::vec2;
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::mat4;
-	using KalaHeaders::KalaMath::quat;
 	using KalaHeaders::KalaMath::Transform3D;
-	using KalaHeaders::KalaMath::PosTarget;
-	using KalaHeaders::KalaMath::RotTarget;
-	using KalaHeaders::KalaMath::addpos;
-	using KalaHeaders::KalaMath::setpos;
-	using KalaHeaders::KalaMath::getpos;
-	using KalaHeaders::KalaMath::addrot;
-	using KalaHeaders::KalaMath::setrot;
-	using KalaHeaders::KalaMath::getroteuler;
-	using KalaHeaders::KalaMath::getdirfront;
-	using KalaHeaders::KalaMath::getdirright;
-	using KalaHeaders::KalaMath::getdirup;
-	using KalaHeaders::KalaMath::view;
-	using KalaHeaders::KalaMath::perspective;
-	using KalaHeaders::KalaMath::DIR_UP;
 
 	using ElypsoEngine::Core::EngineRegistry;
 
 	class Camera
 	{
 	public:
-		static inline EngineRegistry<Camera> registry{};
+		static EngineRegistry<Camera>& GetRegistry();
 
 		static Camera* Initialize(
 			const string& cameraName,
@@ -55,160 +35,52 @@ namespace ElypsoEngine::GameObject
 			f32 fov,
 			f32 speed);
 
-		inline bool IsInitialized() const { return isInitialized; }
+		bool IsInitialized() const;
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 
-		inline void SetName(const string& newName)
-		{
-			//skip if name is empty, same as existing or too long
-			if (newName.empty()
-				|| newName == name
-				|| newName.length() > 50) return;
-
-			name = newName;
-		}
-		inline const string& GetName() { return name; }
+		void SetName(const string& newName);
+		const string& GetName();
 
 		//Handle camera rotation based off of mouse movement
-		void UpdateCameraRotation(vec2 delta)
-		{
-			vec3 inc{};
-			
-			//clamped pitch
-			inc.x = clamp(-delta.y * sensitivity, -89.99f, 89.99f);
-			//reglar yaw, already wrapped internally
-			inc.y = -delta.x * sensitivity;
-			//hard-locked roll
-			inc.z = 0.0f;
-			
-			addrot(transform, {}, RotTarget::ROT_WORLD, inc);
-		}
+		void UpdateCameraRotation(vec2 delta);
 
-		inline void SetFOV(f32 newFOV)
-		{
-			fov = clamp(newFOV, 70.0f, 110.0f);
-		}
-		inline f32 GetFOV() const { return fov; }
+		void SetFOV(f32 newFOV);
+		f32 GetFOV() const;
 
-		inline void SetNearClip(f32 newNearClip)
-		{
-			nearClip = clamp(newNearClip, 0.001f, farClip - 0.1f);
-		}
-		inline f32 GetNearClip() const { return nearClip; }
+		void SetNearClip(f32 newNearClip);
+		f32 GetNearClip() const;
 
-		inline void SetFarClip(f32 newFarClip)
-		{
-			farClip = clamp(newFarClip, nearClip + 0.1f, 1000.0f);
-		}
-		inline f32 GetFarClip() const { return farClip; }
+		void SetFarClip(f32 newFarClip);
+		f32 GetFarClip() const;
 
-		inline void SetSpeed(f32 newSpeed)
-		{
-			speed = clamp(newSpeed, 0.01f, 25.0f);
-		}
-		inline f32 GetSpeed() const { return speed; }
+		void SetSpeed(f32 newSpeed);
+		f32 GetSpeed() const;
 
-		inline void SetSensitivity(f32 newSens)
-		{
-			sensitivity = clamp(newSens, 0.001f, 10.0f);
-		}
-		inline f32 GetSensitivity() const { return sensitivity; }
+		void SetSensitivity(f32 newSens);
+		f32 GetSensitivity() const;
 		
-		inline vec3 GetFront() { return getdirfront(transform); }
-		inline vec3 GetRight() { return getdirright(transform); }
-		inline vec3 GetUp() { return getdirup(transform); }
+		vec3 GetFront();
+		vec3 GetRight();
+		vec3 GetUp();
 
 		//Increments position over time
-		inline void AddPos(const vec3& deltaPos)
-		{
-			addpos(
-				transform,
-				{},
-				PosTarget::POS_WORLD,
-				deltaPos);
-		}
+		void AddPos(const vec3& deltaPos);
 		//Snaps to given position
-		inline void SetPos(const vec3& newPos)
-		{
-			setpos(
-				transform,
-				{},
-				PosTarget::POS_WORLD,
-				newPos);
-		}
-		inline vec3 GetPos() 
-		{ 
-			return getpos(
-				transform,
-				PosTarget::POS_WORLD); 
-		}
+		void SetPos(const vec3& newPos);
+		vec3 GetPos();
 
 		//Increments rotation over time
-		inline void AddRot(const vec3& deltaRot)
-		{
-			vec3 safeRot = vec3(
-				clamp(deltaRot.x, -90.0f, 90.0f), //clamped pitch
-				deltaRot.y,                       //regular yaw, already wrapped internally
-				0.0f);                            //hard-locked roll
-			
-			addrot(
-				transform,
-				{},
-				RotTarget::ROT_WORLD,
-				safeRot);
-		}
+		void AddRot(const vec3& deltaRot);
 		//Snaps to given rotation
-		inline void SetRot(const vec3& newRot)
-		{
-			vec3 safeRot = vec3(
-				clamp(newRot.x, -90.0f, 90.0f), //clamped pitch
-				newRot.y,                       //regular yaw, already wrapped internally
-				0.0f);                          //hard-locked roll
-			
-			setrot(
-				transform,
-				{},
-				RotTarget::ROT_WORLD,
-				safeRot);
-		}
-		inline vec3 GetRot() 
-		{ 
-			vec3 internalRot = getroteuler(
-				transform,
-				RotTarget::ROT_WORLD);
-				
-			return vec3(
-				clamp(internalRot.x, -90.0f, 90.0f), //clamped pitch
-				internalRot.y,                       //regular yaw, already wrapped internally
-				0.0f);                               //hard-locked roll
-		}
+		void SetRot(const vec3& newRot);
+		vec3 GetRot();
 		
-		mat4 GetViewMatrix()
-		{
-			vec3 pos = GetPos();
-			vec3 front = GetFront();
-			vec3 up = DIR_UP;
-			
-			return view(pos, pos + front, up);
-		};
+		mat4 GetViewMatrix();
 		//Returns aspect-ratio-correct ortographic matrix based off of inserted viewport
-		mat4 GetOrthographicMatrix(vec2 viewportSize)
-		{
-			f32 nc = GetNearClip();
-			f32 fc = GetFarClip();
-			
-			return ortho(viewportSize, nc, fc);
-		}
+		mat4 GetOrthographicMatrix(vec2 viewportSize);
 		//Returns aspect-ratio-correct perspective matrix based off of inserted viewport
-		mat4 GetPerspectiveMatrix(vec2 viewportSize)
-		{
-			f32 fov = GetFOV();
-			f32 nc = GetNearClip();
-			f32 fc = GetFarClip();
-			
-			return perspective(viewportSize, fov, nc, fc);
-		}
+		mat4 GetPerspectiveMatrix(vec2 viewportSize);
 
 		~Camera();
 	private:

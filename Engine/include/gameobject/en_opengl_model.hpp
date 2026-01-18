@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+//Copyright(C) 2026 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -22,28 +22,14 @@ namespace ElypsoEngine::GameObject
 	using std::vector;
 	using std::string;
 	
-	using KalaHeaders::KalaMath::kclamp;
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::mat4;
 	using KalaHeaders::KalaMath::quat;
-	using KalaHeaders::KalaMath::toquat;
 	using KalaHeaders::KalaMath::Transform3D;
 	using KalaHeaders::KalaMath::PosTarget;
 	using KalaHeaders::KalaMath::RotTarget;
 	using KalaHeaders::KalaMath::SizeTarget;
-	using KalaHeaders::KalaMath::addpos;
-	using KalaHeaders::KalaMath::setpos;
-	using KalaHeaders::KalaMath::getpos;
-	using KalaHeaders::KalaMath::addrot;
-	using KalaHeaders::KalaMath::setrot;
-	using KalaHeaders::KalaMath::getroteuler;
-	using KalaHeaders::KalaMath::getrotquat;
-	using KalaHeaders::KalaMath::addsize;
-	using KalaHeaders::KalaMath::setsize;
-	using KalaHeaders::KalaMath::getsize;
-	using KalaHeaders::KalaMath::getdirfront;
-	using KalaHeaders::KalaMath::getdirright;
-	using KalaHeaders::KalaMath::getdirup;
+
 	using KalaHeaders::KalaModelData::ModelTable;
 	using KalaHeaders::KalaModelData::Vertex;
 
@@ -88,10 +74,10 @@ namespace ElypsoEngine::GameObject
 	class OpenGL_Model
 	{
 	public:
-		static inline EngineRegistry<OpenGL_Model> registry{};
+		static EngineRegistry<OpenGL_Model>& GetRegistry();
 
 		//get global point light UBO
-		static inline u32 GetPointLightUBO() { return plUBO; }
+		static u32 GetPointLightUBO();
 		
 		//
 		// CORE
@@ -119,190 +105,87 @@ namespace ElypsoEngine::GameObject
 			OpenGL_Context* context,
 			OpenGL_Shader* shader);
 		
-		inline bool IsInitialized() const { return isInitialized; }
+		bool IsInitialized() const;
 		
-		///Render this model. Requires handle (HDC) from your window
 		bool Render(
 			const vec3& activeCameraPos,
 			const mat4& view,
 			const mat4& projection);
 
-		inline u32 GetID() const { return ID; }
+		u32 GetID() const;
 
-		inline OpenGL_Context* GetContext() const { return context; }
+		OpenGL_Context* GetContext() const;
 
-		inline void SetName(const string& newName)
-		{
-			//skip if name is empty, same as existing or too long
-			if (newName.empty()
-				|| newName == name
-				|| newName.length() > 50) return;
-
-			name = newName;
-		}
-		inline const string& GetName() { return name; }
+		void SetName(const string& newName);
+		const string& GetName();
 		
-		inline void SetUpdateState(bool newValue) { render.canUpdate = newValue; }
-		inline bool CanUpdate() const { return render.canUpdate; }
+		void SetUpdateState(bool newValue);
+		bool CanUpdate() const;
 		
-		inline const vector<Vertex>& GetVertices() const { return render.vertices; }
-		inline const vector<u32>& GetIndices() const { return render.indices; }
+		const vector<Vertex>& GetVertices() const;
+		const vector<u32>& GetIndices() const;
 		
 		//
 		// TRANSFORM
 		//
 		
-		inline vec3 GetFront() { return getdirfront(transform); }
-		inline vec3 GetRight() { return getdirright(transform); }
-		inline vec3 GetUp() { return getdirup(transform); }
+		vec3 GetFront();
+		vec3 GetRight();
+		vec3 GetUp();
 
 		//Increments position over time
-		inline void AddPos(
+		void AddPos(
 			PosTarget type,
-			const vec3& deltaPos)
-		{
-			addpos(
-				transform,
-				{},
-				type,
-				deltaPos);
-		}
+			const vec3& deltaPos);
 		//Snaps to given position
-		inline void SetPos(
+		void SetPos(
 			PosTarget type,
-			const vec3& newPos)
-		{
-			setpos(
-				transform,
-				{},
-				type,
-				newPos);
-		}
-		inline vec3 GetPos(PosTarget type) 
-		{ 
-			return getpos(
-				transform,
-				type); 
-		}
+			const vec3& newPos);
+		vec3 GetPos(PosTarget type);
 
 		//Increments rotation over time
-		inline void AddRot(
+		void AddRot(
 			RotTarget type,
-			const vec3& deltaRot)
-		{
-			addrot(
-				transform,
-				{},
-				type,
-				deltaRot);
-		}
+			const vec3& deltaRot);
 		//Snaps to given rotation
-		inline void SetRot(
+		void SetRot(
 			RotTarget type,
-			const vec3& newRot)
-		{
-			setrot(
-				transform,
-				{},
-				type,
-				newRot);
-		}
-		inline vec3 GetRot(RotTarget type) 
-		{ 
-			return getroteuler(
-				transform,
-				type);
-		}
-		inline quat GetRotQuat(RotTarget type) 
-		{ 
-			return getrotquat(
-				transform,
-				type);
-		}
+			const vec3& newRot);
+		vec3 GetRot(RotTarget type);
+		quat GetRotQuat(RotTarget type);
 		
 		//Increments size over time
-		inline void AddSize(
+		void AddSize(
 			SizeTarget type,
-			const vec3& deltaSize)
-		{
-			addsize(
-				transform,
-				{},
-				type,
-				deltaSize);
-		}
+			const vec3& deltaSize);
 		//Snaps to given size
-		inline void SetSize(
+		void SetSize(
 			SizeTarget type,
-			const vec3& newSize)
-		{
-			setsize(
-				transform,
-				{},
-				type,
-				newSize);
-		}
-		inline vec3 GetSize(SizeTarget type) 
-		{ 
-			return getsize(
-				transform,
-				type); 
-		}
+			const vec3& newSize);
+		vec3 GetSize(SizeTarget type);
 		
 		//
 		// GRAPHICS
 		//
 
-		inline void SetNormalizedDiffuseColor(const vec3& newValue)
-		{
-			render.diffuseColor = kclamp(newValue, 0.0f, 1.0f);
-		}
-		inline void SetDiffuseRGBColor(const vec3& newValue)
-		{
-			int clampX = clamp(static_cast<int>(newValue.x), 0, 255);
-			int clampY = clamp(static_cast<int>(newValue.y), 0, 255);
-			int clampZ = clamp(static_cast<int>(newValue.z), 0, 255);
+		void SetNormalizedDiffuseColor(const vec3& newValue);
+		void SetDiffuseRGBColor(const vec3& newValue);
 
-			f32 normalizedX = static_cast<f32>(clampX) / 255;
-			f32 normalizedY = static_cast<f32>(clampY) / 255;
-			f32 normalizedZ = static_cast<f32>(clampZ) / 255;
+		const vec3& GetNormalizedDiffuseColor() const;
+		vec3 GetDiffuseRGBColor() const;
 
-			render.diffuseColor = vec3(normalizedX, normalizedY, normalizedZ);
-		}
+		void SetOpacity(f32 newValue);
+		f32 GetOpacity() const;
 
-		inline const vec3& GetNormalizedDiffuseColor() const { return render.diffuseColor; }
-		inline vec3 GetDiffuseRGBColor() const
-		{
-			int rgbX = static_cast<int>(render.diffuseColor.x * 255);
-			int rgbY = static_cast<int>(render.diffuseColor.y * 255);
-			int rgbZ = static_cast<int>(render.diffuseColor.z * 255);
+		u32 GetVAO() const;
+		u32 GetVBO() const;
+		u32 GetEBO() const;
 
-			return vec3(rgbX, rgbY, rgbZ);
-		}
+		const OpenGL_Shader* GetShader() const;
 
-		inline void SetOpacity(f32 newValue)
-		{
-			f32 clamped = clamp(newValue, 0.0f, 1.0f);
-			render.opacity = clamped;
-		}
-		inline f32 GetOpacity() const { return render.opacity; }
-
-		inline u32 GetVAO() const { return render.VAO; }
-		inline u32 GetVBO() const { return render.VBO; }
-		inline u32 GetEBO() const { return render.EBO; }
-
-		inline const OpenGL_Shader* GetShader() const { return render.shader; }
-
-		inline void SetDiffuseTexture(OpenGL_Texture* newTexture)
-		{
-			if (newTexture
-				&& render.diffuseTex != newTexture)
-			{
-				render.diffuseTex = newTexture;
-			}
-		}
-		inline void ClearDiffuseTexture() { render.diffuseTex = nullptr; }
-		inline const OpenGL_Texture* GetDiffuseTexture() const { return render.diffuseTex; }
+		void SetDiffuseTexture(OpenGL_Texture* newTexture);
+		void ClearDiffuseTexture();
+		const OpenGL_Texture* GetDiffuseTexture() const;
 		
 		~OpenGL_Model();
 	private:	
@@ -315,9 +198,6 @@ namespace ElypsoEngine::GameObject
 
 		//Initialize global point light UBO
 		static void InitializePointLightUBO(OpenGL_Shader* shader);
-
-		//point light UBO reused by all point lights
-		static inline u32 plUBO{};
 	
 		bool isInitialized{};
 
