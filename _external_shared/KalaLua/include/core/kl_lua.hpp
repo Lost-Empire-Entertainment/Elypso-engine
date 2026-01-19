@@ -68,11 +68,11 @@ namespace KalaLua::Core
 		//Initialize KalaLua, does not load scripts or functions
 		static bool Initialize();
 
-		static inline bool IsInitialized() { return isInitialized; };
+		static bool IsInitialized();
 
 		//Get the pointer to lua state stored within KalaLua
 		//after it has initialized, recommended only for advanced users
-		static inline lua_State* GetLuaState() { return isInitialized ? state : nullptr; }
+		static lua_State* GetLuaState();
 
 		//Load and compile a lua script for use via CallFunction
 		static bool LoadScript(const string& script);

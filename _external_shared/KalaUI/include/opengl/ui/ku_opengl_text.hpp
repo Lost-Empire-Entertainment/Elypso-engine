@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "KalaHeaders/math_utils.hpp"
-#include "KalaHeaders/import_kfd.hpp"
+#include "KalaHeaders/core_utils.hpp"
 
 #include "opengl/ui/ku_opengl_widget.hpp"
+#include "core/ku_font.hpp"
 
 namespace KalaUI::OpenGL
 {
@@ -17,9 +17,10 @@ namespace KalaUI::OpenGL
 
 namespace KalaUI::OpenGL::UI
 {
-	using KalaHeaders::KalaMath::kclamp;
-	using KalaHeaders::KalaFontData::GlyphBlock;
-	
+	using KalaUI::Core::Letter;
+
+	constexpr f32 downscale = 0.01f;
+
 	class LIB_API OpenGL_Text : public OpenGL_Widget
 	{
 		friend class OpenGL_Manager; //friend-include the manager
@@ -30,12 +31,11 @@ namespace KalaUI::OpenGL::UI
 			const string& name,
 			u32 windowID,
 			uintptr_t glContext,
-			u32 glyphIndex,
+			const vector<u32>& charCodes,
 			u32 fontID,
 			const vec2 pos,
-			const float rot,
-			float sizeMultiplier,
-			OpenGL_Texture* texture,
+			const f32 rot,
+			const f32 size,
 			OpenGL_Shader* shader,
 			OpenGL_Widget* parentWidget = {});
 			
@@ -43,16 +43,18 @@ namespace KalaUI::OpenGL::UI
 			const mat4& projection,
 			f32 viewportHeight) override;
 
-		void AddChar(u32 newValue);
+		void AddLetter(
+			u32 newCharCode, 
+			u32 slot = UINT32_MAX);
 		void AddTab();
 		void AddNewLine();
-		void RemoveCharFromBack();
+		void RemoveLetterFromSlot(u32 slot);
 		
 		void SetText(const vector<u32>& newValue);
 		vector<u32>& GetText();
 		
-		void SetLetters(const vector<GlyphBlock*>& newValue);
-		vector<GlyphBlock*> GetLetters() const;
+		void SetLetters(const vector<const Letter*>& newValue);
+		const vector<const Letter*>& GetLetters() const;
 		
 		void SetColor(const vec3& newValue);
 		const vec3& GetColor() const;
@@ -74,8 +76,8 @@ namespace KalaUI::OpenGL::UI
 	protected:
 		virtual void UpdateAABB(f32 viewportHeight);
 	private:	
-		vector<u32> text{};            //the text typed by the user
-		vector<GlyphBlock*> letters{}; //all the letters that have been typed to this text
+		vector<u32> text{};              //the text typed by the user
+		vector<const Letter*> letters{}; //all the letters that have been typed to this text
 		
 		vec3 color{};         //what color the visible letters are
 		f32 opacity{};        //how see-through the visible letters are
@@ -83,6 +85,5 @@ namespace KalaUI::OpenGL::UI
 		bool strikethrough{}; //should this text be striked through
 		
 		u32 fontID{};
-		u32 textureID{};
 	};
 }

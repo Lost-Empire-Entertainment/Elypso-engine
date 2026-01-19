@@ -41,13 +41,23 @@ namespace KalaUI::OpenGL
 		static KalaUIRegistry<OpenGL_Texture>& GetRegistry();
 
 		//Load a new texture from an external file.
-		//Depth is always clamped to 1 for Type_2D,
 		//Mipmap levels are clamped internally through Texture::GetMaxMipMapLevels.
 		//Returns a fallback texture if loading fails.
 		static OpenGL_Texture* Initialize(
 			uintptr_t glContext,
 			const string& name,
 			const string& path,
+			TextureFormat format = TextureFormat::Format_Auto,
+			bool flipVertically = false,
+			u8 mipMapLevels = 1);
+
+		//Load a new texture from pixel data.
+		//Mipmap levels are clamped internally through Texture::GetMaxMipMapLevels.
+		//Returns a fallback texture if loading fails.
+		static OpenGL_Texture* Initialize(
+			uintptr_t glContext,
+			const string& name,
+			const vector<u8>& rawPixels,
 			TextureFormat format = TextureFormat::Format_Auto,
 			bool flipVertically = false,
 			u8 mipMapLevels = 1);

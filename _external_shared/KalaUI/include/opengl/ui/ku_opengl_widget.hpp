@@ -18,6 +18,10 @@
 #include "opengl/ku_opengl_texture.hpp"
 #include "core/ku_registry.hpp"
 
+namespace KalaUI::Core
+{
+	class Font; //forward-declare the font class
+}
 namespace KalaUI::OpenGL
 {
 	class OpenGL_Manager; //forward-declare the manager
@@ -33,15 +37,11 @@ namespace KalaUI::OpenGL::UI
 	using KalaHeaders::KalaMath::vec2;
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::mat4;
-	using KalaHeaders::KalaMath::kclamp;
-	using KalaHeaders::KalaMath::setpos;
-	using KalaHeaders::KalaMath::setrot;
-	using KalaHeaders::KalaMath::setsize;
-	using KalaHeaders::KalaMath::wrap;
 	using KalaHeaders::KalaMath::Transform2D;
 	using KalaHeaders::KalaMath::PosTarget;
 	using KalaHeaders::KalaMath::RotTarget;
 	using KalaHeaders::KalaMath::SizeTarget;
+
 	using KalaHeaders::KalaKeyStandards::MouseButton;
 	using KalaHeaders::KalaKeyStandards::KeyboardButton;
 
@@ -83,27 +83,9 @@ namespace KalaUI::OpenGL::UI
 		vec3 color = vec3(1.0f);
 		f32 opacity = 1.0f;
 
-		u32 VAO{};
-		u32 VBO{};
-		u32 EBO{};
-
-		vector<vec2> vertices =
-		{
-			vec2(-0.5f,  0.5f), //top-left
-			vec2(0.5f,  0.5f),  //top-right
-			vec2(0.5f, -0.5f),  //bottom-right
-			vec2(-0.5f, -0.5f)  //bottom-left
-		};
-		vector<u32> indices =
-		{
-			0, 1, 2,
-			2, 3, 0
-		};
-
 		array<vec2, 2> aabb{};
 
 		OpenGL_Shader* shader{};
-		OpenGL_Texture* texture{};
 	};
 
 	struct OpenGL_Widget_Event
@@ -129,7 +111,8 @@ namespace KalaUI::OpenGL::UI
 
 	class LIB_API OpenGL_Widget
 	{
-		friend class OpenGL_Manager; //friend-include the manager
+		friend class KalaUI::Core::Font; //friend-include the font class
+		friend class OpenGL_Manager;     //friend-include the manager
 	public:
 		static KalaUIRegistry<OpenGL_Widget>& GetRegistry();
 	
@@ -171,12 +154,6 @@ namespace KalaUI::OpenGL::UI
 		//Should be called whenever a parent or child is added or removed from this widget
 		//to ensure this widget local values are refreshed
 		void ResetWidgetAfterHierarchyUpdate();
-		
-		void SetVertices(const vector<vec2>& newVertices);
-		void SetIndices(const vector<u32>& newIndices);
-
-		const vector<vec2>& GetVertices() const;
-		const vector<u32>& GetIndices() const;
 
 		const array<vec2, 2>& GetAABB(f32 viewportHeight);
 		
@@ -282,15 +259,7 @@ namespace KalaUI::OpenGL::UI
 		void SetOpacity(f32 newValue);
 		f32 GetOpacity() const;
 
-		u32 GetVAO() const;
-		u32 GetVBO() const;
-		u32 GetEBO() const;
-
 		const OpenGL_Shader* GetShader() const;
-
-		void SetTexture(OpenGL_Texture* newTexture);
-		void ClearTexture();
-		const OpenGL_Texture* GetTexture() const;
 
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Widget() = 0;
