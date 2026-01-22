@@ -51,7 +51,6 @@ namespace KalaUI::OpenGL::OpenGL_Shaders
 		void main()
 		{
 			float opacity = clamp(uOpacity, 0.0, 1.0);
-			vec3 color = clamp(uColor, 0.0, 1.0);
 
 			if (opacity < 0.001) discard;
 			
@@ -63,14 +62,14 @@ namespace KalaUI::OpenGL::OpenGL_Shaders
 				//tint texture
 				
 				vec4 texColor = texture(uTexture, vTexCoord);
-				finalColor = texColor.rgb * color; 
+				finalColor = texColor.rgb * uColor; 
 				finalAlpha = texColor.a * opacity;
 			}
 			else
 			{
 				//set color
 				
-				finalColor = color;
+				finalColor = uColor;
 				finalAlpha = opacity;
 			}
 

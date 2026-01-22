@@ -51,6 +51,26 @@ namespace KalaUI::OpenGL::UI
 
 	constexpr u16 MAX_Z_ORDER = 1024;
 
+	static const vector<vec2> vertices =
+	{
+		vec2(-0.5f,  0.5f), //top-left
+		vec2(0.5f,  0.5f),  //top-right
+		vec2(0.5f, -0.5f),  //bottom-right
+		vec2(-0.5f, -0.5f)  //bottom-left
+	};
+	static const vector<u32> indices =
+	{
+		0, 1, 2,
+		2, 3, 0
+	};
+	static const vector<u32> uvs =
+	{
+		0, 0,
+		1, 0,
+		1, 1,
+		0, 1
+	};
+
 	enum class HitTarget
 	{
 		//uses the widgets own size and vertices to calculate hit testing
@@ -264,14 +284,6 @@ namespace KalaUI::OpenGL::UI
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Widget() = 0;
 	protected:
-		static void CreateWidgetGeometry(
-			const vector<vec2>& vertices,
-			const vector<u32>& indices,
-			const vector<u32>& uvs,
-			u32& vaoOut,
-			u32& vboOut,
-			u32& eboOut);
-
 		virtual void UpdateAABB(f32 viewportHeight) = 0;
 
 		bool isInitialized{};

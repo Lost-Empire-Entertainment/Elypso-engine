@@ -40,51 +40,20 @@ namespace KalaUI::OpenGL::UI
 			const mat4& projection,
 			f32 viewportHeight) override;
 
-		u32 GetVAO() const;
-		u32 GetVBO() const;
-		u32 GetEBO() const;
-
-		void SetVertices(const vector<vec2>& newVertices);
-		void SetIndices(const vector<u32>& newIndices);
-		void SetUVs(const vector<u32>& newUVs);
-
-		const vector<vec2>& GetVertices() const;
-		const vector<u32>& GetIndices() const;
-		const vector<u32>& GetUVs() const;
-
 		void SetTextureID(u32 newTexture);
 		void ClearTextureID();
 		const u32 GetTextureID() const;
+
+		//Cleans VAO, VBO and EBO, should be called just before gl context shutdown
+		static void CleanStaticResources();
 
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Image() override;
 	protected:
 		virtual void UpdateAABB(f32 viewportHeight);
 
-		u32 VAO{};
-		u32 VBO{};
-		u32 EBO{};
-
-		vector<vec2> vertices =
-		{
-			vec2(-0.5f,  0.5f), //top-left
-			vec2(0.5f,  0.5f),  //top-right
-			vec2(0.5f, -0.5f),  //bottom-right
-			vec2(-0.5f, -0.5f)  //bottom-left
-		};
-		vector<u32> indices =
-		{
-			0, 1, 2,
-			2, 3, 0
-		};
-		vector<u32> uvs =
-		{
-			0, 1,
-			1, 1,
-			1, 0,
-			0, 0
-		};
-
 		u32 textureID{};
+	private:
+		static void CreateImageGeometry();
 	};
 }

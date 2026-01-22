@@ -17,8 +17,10 @@ namespace KalaUI::OpenGL::OpenGL_Shaders
 
 		layout (location = 0) in vec2 aPos;
 		layout (location = 1) in vec2 aTexCoord;
+		layout (location = 2) in int aTexIndex; //texture array layer index
 
 		out vec2 vTexCoord;
+		flat out int vTexIndex;
 
 		uniform mat4 uModel;
 		uniform mat4 uProjection;
@@ -31,6 +33,7 @@ namespace KalaUI::OpenGL::OpenGL_Shaders
 			gl_Position = vec4(worldPos);
 
 			vTexCoord = aTexCoord;
+			vTexIndex = aTexIndex;
 		}
 	)";
 
@@ -39,41 +42,31 @@ namespace KalaUI::OpenGL::OpenGL_Shaders
 		#version 330 core
 
 		in vec2 vTexCoord;
+		flat in int vTexIndex;
 		
 		out vec4 FragColor;
 	
-		uniform sampler2D uTexture;
-		uniform bool uUseTexture = false; //mark as true if you want to pass a texture
+		uniform sampler2DArray uTextures;
+		uniform int uLayerCount;
 
-		uniform vec3 uColor;    //blended with texture or non-texture base color
+		uniform vec3 uColor;    //blended with texture base color
 		uniform float uOpacity; //makes this transparent if below 1.0
 		
 		void main()
 		{
 			float opacity = clamp(uOpacity, 0.0, 1.0);
-			vec3 color = clamp(uColor, 0.0, 1.0);
 
 			if (opacity < 0.001) discard;
-			
-			vec3 finalColor;
-			float finalAlpha;
 
-			if (uUseTexture)
-			{
-				//tint base white color
-				
-				finalColor = vec3(1.0, 1.0, 1.0) * color;
-				finalAlpha = texture(uTexture, vTexCoord).r; //treat red as alpha
-			}
-			else
-			{
-				//set color
-				
-				finalColor = color;
-				finalAlpha = opacity;
-			}
+			if (vTexIndex < 0 || vTexIndex >= uLayerCount) discard;
 			
-			FragColor = vec4(finalColor, finalAlpha);
+			//treat red as alpha
+			float coverage = texture(uTextures, vec3(vTexCoord, vTexIndex)).r;
+			float alpha = coverage * opacity;
+
+			if (alpha < 0.001) discard;
+
+			FragColor = vec4(uColor, alpha);
 		}
 	)";
 }

@@ -19,8 +19,6 @@ namespace KalaUI::OpenGL::UI
 {
 	using KalaUI::Core::Letter;
 
-	constexpr f32 downscale = 0.01f;
-
 	class LIB_API OpenGL_Text : public OpenGL_Widget
 	{
 		friend class OpenGL_Manager; //friend-include the manager
@@ -53,8 +51,12 @@ namespace KalaUI::OpenGL::UI
 		void SetText(const vector<u32>& newValue);
 		vector<u32>& GetText();
 		
-		void SetLetters(const vector<const Letter*>& newValue);
 		const vector<const Letter*>& GetLetters() const;
+
+		//Set the font metrics upscale value for all font and per-glyph values,
+		//clamped internally from 0.01f to 10.0f
+		void SetUpscale(f32 newValue);
+		f32 GetUpscale() const;
 		
 		void SetColor(const vec3& newValue);
 		const vec3& GetColor() const;
@@ -71,13 +73,20 @@ namespace KalaUI::OpenGL::UI
 		void SetFontID(u32 newValue);
 		u32 GetFontID() const;
 
+		//Cleans VAO, VBO and EBO, should be called just before gl context shutdown
+		static void CleanStaticResources();
+
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Text() override;
 	protected:
 		virtual void UpdateAABB(f32 viewportHeight);
 	private:	
+		static void CreateTextGeometry();
+
 		vector<u32> text{};              //the text typed by the user
 		vector<const Letter*> letters{}; //all the letters that have been typed to this text
+
+		f32 fontMetricsUpscale = 2.0f;
 		
 		vec3 color{};         //what color the visible letters are
 		f32 opacity{};        //how see-through the visible letters are
