@@ -7,11 +7,11 @@
 // Read LICENSE.md for more information.
 //
 // Provides:
-//   - Detailed logger - time, date, log type, origin tag
-//   - Simple logger - just a fwrite to the console with a single string parameter
-//   - Log types - info (no log type stamp), debug (skipped in release), success, warning, error
-//   - Time stamp, date stamp accurate to system clock
-//   - LogHook - user-defined function that allows emitting logs to another target like the crash log storage in kalawindow
+//   - detailed logger - time, date, log type, origin tag
+//   - simple logger - just a fwrite to the console with a single string parameter
+//   - log types - info (no log type stamp), debug (skipped in release), success, warning, error
+//   - time stamp, date stamp accurate to system clock
+//   - logHook - user-defined function that allows emitting logs to another target like the crash log storage in kalawindow
 //------------------------------------------------------------------------------
 
 #pragma once
@@ -24,13 +24,12 @@
 #include <array>
 #include <algorithm>
 
-//static_cast
-#ifndef scast
-	#define scast static_cast
-#endif	
-
 namespace KalaHeaders::KalaLog
 {
+#ifndef scast
+	#define scast static_cast
+#endif
+
 	using std::string;
 	using std::string_view;
 	using std::chrono::system_clock;
