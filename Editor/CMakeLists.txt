@@ -16,9 +16,11 @@ endif()
 
 # Platform Detection
 if (WIN32)
-    message(STATUS "[ELYPSO_EXE] Platform = Windows")
+    message(STATUS "[EDITOR] Platform = Windows")
+elseif(UNIX)
+	message(STATUS "[EDITOR] Platform = Unix")
 else()
-    message(FATAL_ERROR "[ELYPSO_EXE] Unsupported platform. Only Windows is supported.")
+    message(FATAL_ERROR "[EDITOR] Unsupported platform. Only Windows and Unix are supported.")
 endif()
 
 # Build Type Detection

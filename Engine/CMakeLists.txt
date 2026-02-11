@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.29.2)
 
 set(PROGRAM_VERSION "Elypso engine 2026.1.0")
-set(PROGRAM_VERSION_NUMBER 1.0.0.0)
+set(PROGRAM_VERSION_NUMBER 2026.1.0.0)
 
 project("Elypso engine" VERSION ${PROGRAM_VERSION_NUMBER} LANGUAGES C CXX)
 
@@ -9,11 +9,18 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Runtime lib handling for MSVC
+if (MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+endif()
+
 # Platform Detection
 if (WIN32)
-    message(STATUS "[ELYPSO_ENGINE] Platform = Windows")
+    message(STATUS "[ENGINE] Platform = Windows")
+elseif(UNIX)
+	message(STATUS "[ENGINE] Platform = Unix")
 else()
-    message(FATAL_ERROR "[ELYPSO_ENGINE] Unsupported platform. Only Windows is supported.")
+    message(FATAL_ERROR "[ENGINE] Unsupported platform. Only Windows and Unix are supported.")
 endif()
 
 # Build Type Detection
@@ -23,11 +30,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWith
     set(IS_RELEASE TRUE)
 else()
     message(FATAL_ERROR "Unknown CMAKE_BUILD_TYPE: '${CMAKE_BUILD_TYPE}'! Must be Debug, Release, or RelWithDebInfo.")
-endif()
-
-# Runtime lib handling for MSVC
-if (MSVC)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
 # Directory Setup
