@@ -1,18 +1,10 @@
-# Default IDE stuff
+# IDE stuff
 out/
 build/
 .vs/
 .vscode/
 .cache/
 compile_commands.json
-
-# Release and Debug in editor folder
-/Editor/release/
-/Editor/debug/
-
-# Release and Debug in engine folder
-/Engine/release/
-/Engine/debug/
 
 # Large files
 *.pdb
@@ -24,3 +16,7 @@ compile_commands.json
 *.exe
 *.ilk
 *.log
+
+# This project
+/Editor/build/
+/Engine/build/
