@@ -21,7 +21,7 @@ namespace KalaUI::OpenGL::UI
 
 	class LIB_API OpenGL_Image : public OpenGL_Widget
 	{
-		friend class OpenGL_Manager; //friend-include the manager
+		friend class KalaUI::OpenGL::OpenGL_Manager; //friend-include the manager
 	public:
 		//Initialize a new Image widget.
 		//Parent widget is optional
@@ -50,7 +50,7 @@ namespace KalaUI::OpenGL::UI
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Image() override;
 	protected:
-		virtual void UpdateAABB(f32 viewportHeight);
+		virtual void UpdateAABB(f32 viewportHeight) override;
 
 		u32 textureID{};
 	private:

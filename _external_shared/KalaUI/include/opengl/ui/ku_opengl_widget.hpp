@@ -132,7 +132,7 @@ namespace KalaUI::OpenGL::UI
 	class LIB_API OpenGL_Widget
 	{
 		friend class KalaUI::Core::Font; //friend-include the font class
-		friend class OpenGL_Manager;     //friend-include the manager
+		friend class KalaUI::OpenGL::OpenGL_Manager;     //friend-include the manager
 	public:
 		static KalaUIRegistry<OpenGL_Widget>& GetRegistry();
 	

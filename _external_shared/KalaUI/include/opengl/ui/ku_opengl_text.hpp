@@ -21,7 +21,7 @@ namespace KalaUI::OpenGL::UI
 
 	class LIB_API OpenGL_Text : public OpenGL_Widget
 	{
-		friend class OpenGL_Manager; //friend-include the manager
+		friend class KalaUI::OpenGL::OpenGL_Manager; //friend-include the manager
 	public:
 		//Initialize a new Text widget.
 		//Parent widget and texture are optional
@@ -79,7 +79,7 @@ namespace KalaUI::OpenGL::UI
 		//Do not destroy manually, erase from registry instead
 		virtual ~OpenGL_Text() override;
 	protected:
-		virtual void UpdateAABB(f32 viewportHeight);
+		virtual void UpdateAABB(f32 viewportHeight) override;
 	private:	
 		static void CreateTextGeometry();
 

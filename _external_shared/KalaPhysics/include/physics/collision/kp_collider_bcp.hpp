@@ -18,6 +18,8 @@ namespace KalaPhysics::Physics::Collision
 {
 	using KalaHeaders::KalaMath::kclamp;
 
+	using f32 = float;
+
 	inline const vec3 MIN_BCP_POS = vec3(-10000.0f);
 	inline const vec3 MAX_BCP_POS = vec3(10000.0f);
 

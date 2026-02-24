@@ -67,6 +67,6 @@ namespace KalaPhysics::Physics
 		
 		u32 GetMask() const;
 	private:
-		u32 mask = ~0ULL; //default - collide with everything
+		u32 mask = ~0u; //default - collide with everything
 	};
 }

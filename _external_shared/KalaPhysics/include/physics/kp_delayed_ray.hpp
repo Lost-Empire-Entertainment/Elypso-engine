@@ -69,6 +69,6 @@ namespace KalaPhysics::Physics
 
 		u32 ID{};
 	
-		u32 mask = ~0ULL; //default - collide with everything
+		u32 mask = ~0u; //default - collide with everything
 	};
 }

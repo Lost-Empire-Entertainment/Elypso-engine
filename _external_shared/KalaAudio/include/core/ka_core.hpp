@@ -15,11 +15,6 @@ namespace KalaAudio::Core
 	
 	using u32 = uint32_t;
 	
-	using KalaHeaders::KalaLog::Log;
-	using KalaHeaders::KalaLog::LogType;
-	using KalaHeaders::KalaLog::TimeFormat;
-	using KalaHeaders::KalaLog::DateFormat;
-	
 	class LIB_API KalaAudioCore
 	{
 	public:
@@ -33,7 +28,7 @@ namespace KalaAudio::Core
 		static void CleanAllResources();
 		
 		//Force-close the program right this very moment with no cleanups
-		[[noreturn]] static void ForceClose(
+		static void ForceClose(
 			const string& target,
 			const string& reason);
 	};

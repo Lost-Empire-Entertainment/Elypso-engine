@@ -26,6 +26,9 @@ namespace KalaPhysics::Physics::Collision
 	using std::string;
 	using std::function;
 
+	using u8 = uint8_t;
+	using u32 = uint32_t;
+
 	using KalaHeaders::KalaMath::vec3;
 	using KalaHeaders::KalaMath::quat;
 	using KalaHeaders::KalaMath::Transform3D;

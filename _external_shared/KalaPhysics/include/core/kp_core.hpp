@@ -28,7 +28,7 @@ namespace KalaPhysics::Core
 		static void CleanAllResources();
 		
 		//Force-close the program right this very moment with no cleanups
-		[[noreturn]] static void ForceClose(
+		static void ForceClose(
 			const string& target,
 			const string& reason);
 	};

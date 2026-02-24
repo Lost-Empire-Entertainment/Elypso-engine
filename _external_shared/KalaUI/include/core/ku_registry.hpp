@@ -276,7 +276,7 @@ namespace KalaUI::Core
 			}
 
 			T* raw = targetContent.get();
-			createdContent[targetID] = move(targetContent);
+			createdContent[targetID] = std::move(targetContent);
 			runtimeContent.push_back(raw);
 			
 			//add hierarchy node
