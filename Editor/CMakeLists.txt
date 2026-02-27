@@ -16,11 +16,11 @@ endif()
 
 # Platform Detection
 if (WIN32)
-    message(STATUS "[EDITOR] Platform = Windows")
+    message(STATUS "[ELYPSO_EDITOR] Platform = Windows")
 elseif(UNIX)
-	message(STATUS "[EDITOR] Platform = Unix")
+	message(STATUS "[ELYPSO_EDITOR] Platform = Unix")
 else()
-    message(FATAL_ERROR "[EDITOR] Unsupported platform. Only Windows and Unix are supported.")
+    message(FATAL_ERROR "[ELYPSO_EDITOR] Unsupported platform. Only Windows and Unix are supported.")
 endif()
 
 # Build Type Detection
@@ -147,37 +147,52 @@ else()
 	)
 endif()
 
-set(BIN_TARGET_DIR "$<TARGET_FILE_DIR:ElypsoEditor>")
+set(RUNTIME_DIR "${CMAKE_BINARY_DIR}/runtime")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${RUNTIME_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${RUNTIME_DIR}")
+set(BIN_TARGET_DIR "${RUNTIME_DIR}")
 
 foreach(BIN_FILE ${BIN_FILES})
-    get_filename_component(BIN_NAME ${BIN_FILE} NAME)
-    add_custom_command(TARGET ElypsoEditor POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy 
-			"${BIN_FILE}"
-			"${BIN_TARGET_DIR}/${BIN_NAME}"
-    )
+    if(EXISTS "${BIN_FILE}")
+        file(COPY
+            "${BIN_FILE}"
+            DESTINATION "${BIN_TARGET_DIR}"
+        )
+    endif()
 endforeach()
 
 # Copy important files
-set(COPY_TARGETS README.md LICENSE.md)
-foreach(FILE ${COPY_TARGETS})
-add_custom_command(TARGET ElypsoEditor POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E rm -f 
-		"$<TARGET_FILE_DIR:ElypsoEditor>/${FILE}"
-    COMMAND ${CMAKE_COMMAND} -E copy
-		"${CMAKE_SOURCE_DIR}/${FILE}"
-		"$<TARGET_FILE_DIR:ElypsoEditor>/${FILE}"
+set(COPY_TARGETS
+    README.md
+    LICENSE.md
+    logo.png
 )
+
+foreach(FILE ${COPY_TARGETS})
+    if(EXISTS "${CMAKE_SOURCE_DIR}/${FILE}")
+        file(COPY
+            "${CMAKE_SOURCE_DIR}/${FILE}"
+            DESTINATION "${BIN_TARGET_DIR}"
+        )
+    endif()
 endforeach()
 
-# Copy entire docs folder
-add_custom_command(TARGET ElypsoEditor POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E rm -rf
-		"$<TARGET_FILE_DIR:ElypsoEditor>/docs"
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-		"${CMAKE_SOURCE_DIR}/docs"
-		"$<TARGET_FILE_DIR:ElypsoEditor>/docs"
-)
+set(RESOURCE_DIRS docs files)
 
-# Package
-include(CPack)
+foreach(DIR ${RESOURCE_DIRS})
+    if(EXISTS "${CMAKE_SOURCE_DIR}/${DIR}")
+        file(REMOVE_RECURSE "${BIN_TARGET_DIR}/${DIR}")
+        file(COPY
+            "${CMAKE_SOURCE_DIR}/${DIR}"
+            DESTINATION "${BIN_TARGET_DIR}"
+        )
+    endif()
+endforeach()
+
+if(EXISTS "${CMAKE_BINARY_DIR}/compile_commands.json")
+    file(COPY
+        "${CMAKE_BINARY_DIR}/compile_commands.json"
+        DESTINATION "${CMAKE_SOURCE_DIR}"
+    )
+endif()
