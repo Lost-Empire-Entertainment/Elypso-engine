@@ -10,7 +10,9 @@
 
 #include "KalaHeaders/core_utils.hpp"
 #include "core/kw_core.hpp"
+#include "core/kw_messageloop_x11.hpp"
 #include "graphics/kw_window.hpp"
+#include "opengl/kw_opengl.hpp"
 
 namespace KalaWindow::Graphics
 {
@@ -75,6 +77,10 @@ namespace KalaWindow::Graphics
 	{
 		uintptr_t display{};
 		uintptr_t window_root{};
+
+		uintptr_t atom_utf8{};
+		uintptr_t atom_net_wm_name{};
+		uintptr_t atom_net_wm_pid{};
 		uintptr_t atom_wmDelete{};
 	};
 #endif
@@ -83,6 +89,8 @@ namespace KalaWindow::Graphics
 	{
 	friend ProcessWindow;
 	friend KalaWindow::Core::KalaWindowCore;
+	friend KalaWindow::Core::MessageLoop;
+	friend KalaWindow::OpenGL::OpenGL_Global;
 	public:
 		//Toggle verbose logging. If true, then global window context 
 		//and all windows will dump their logs into the console.
