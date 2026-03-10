@@ -2,42 +2,4 @@
 
 #version 1.0
 
-#include
-kh: "../_external_shared"
-kw: "../_external_shared/KalaWindow/include"
-
-#global
-binaryname: template_basic
-standard: c++20
-binarytype: shared
-sources: "src"
-headers: "include", #kw, #kh
-warninglevel: normal
-
-#profile debug-windows
-compiler: clang-cl
-buildtype: debug
-buildpath: "build/debug-windows"
-links: "../_external_shared/KalaWindow/debug/KalaWindow1.lib"
-defines: KW_USE_X11, KW_USE_GL
-
-#profile release-windows
-compiler: clang-cl
-buildtype: minsizerel
-buildpath: "build/release-windows"
-links: "../_external_shared/KalaWindow/release/KalaWindow1.lib"
-defines: KW_USE_X11, KW_USE_GL
-
-#profile debug-linux
-compiler: clang++
-buildtype: debug
-buildpath: "build/debug-linux"
-links: "../_external_shared/KalaWindow/debug/libKalaWindow1d.so"
-defines: KW_USE_X11, KW_USE_GL
-
-#profile release-linux
-compiler: clang++
-buildtype: minsizerel
-buildpath: "build/release-linux"
-links: "../_external_shared/KalaWindow/release/libKalaWindow1.so"
-defines: KW_USE_X11, KW_USE_GL
+//this will be filled later...

@@ -2,42 +2,49 @@
 
 #version 1.0
 
-#include
-kh: "../_external_shared"
-kw: "../_external_shared/KalaWindow/include"
+#references
+name_bin: Elypso Engine
+dir_release: build/release-
+dir_debug: build/debug-
+name_ee: ElypsoEngine
+dir_ee_rel: _external_shared/ElypsoEngine/release
+dir_ee_deb: _external_shared/ElypsoEngine/debug
+defs: KW_USE_X11, KW_USE_GL
 
 #global
+compilerlauncher: ccache
 binaryname: Elypso Engine
 standard: c++20
 binarytype: executable
 sources: "src"
-headers: "include", #kw, #kh
+headers: "include", "_external_shared//ElypsoEngine/include"
 warninglevel: normal
+customflags: export-compile-commands
 
 #profile debug-windows
 compiler: clang-cl
 buildtype: debug
-buildpath: "build/debug-windows"
-links: "../_external_shared/KalaWindow/debug/KalaWindow1.lib"
-defines: KW_USE_X11, KW_USE_GL
+buildpath: "${dir_debug}windows"
+links: "${dir_ee_deb}/${name_ee}d.lib"
+defines: ${defs}
 
 #profile release-windows
 compiler: clang-cl
 buildtype: minsizerel
-buildpath: "build/release-windows"
-links: "../_external_shared/KalaWindow/release/KalaWindow1.lib"
-defines: KW_USE_X11, KW_USE_GL
+buildpath: "${dir_release}windows"
+links: "${dir_ee_rel}/${name_ee}.lib"
+defines: ${defs}
 
 #profile debug-linux
 compiler: clang++
 buildtype: debug
-buildpath: "build/debug-linux"
-links: "../_external_shared/KalaWindow/debug/libKalaWindow1d.so"
-defines: KW_USE_X11, KW_USE_GL
+buildpath: "${dir_debug}linux"
+links: "${dir_ee_deb}/lib${name_ee}d.so"
+defines: ${defs}
 
 #profile release-linux
 compiler: clang++
 buildtype: minsizerel
-buildpath: "build/release-linux"
-links: "../_external_shared/KalaWindow/release/libKalaWindow1.so"
-defines: KW_USE_X11, KW_USE_GL
+buildpath: "${dir_release}linux"
+links: "${dir_ee_rel}/lib${name_ee}.so"
+defines: ${defs}

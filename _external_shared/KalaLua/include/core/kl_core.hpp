@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "KalaHeaders/core_utils.hpp"
+#include "core_utils.hpp"
 
 namespace KalaLua::Core
 {

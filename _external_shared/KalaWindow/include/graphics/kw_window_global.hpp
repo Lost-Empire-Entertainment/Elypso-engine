@@ -8,7 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "KalaHeaders/core_utils.hpp"
+#include "core_utils.hpp"
+
 #include "core/kw_core.hpp"
 #include "core/kw_messageloop_x11.hpp"
 #include "graphics/kw_window.hpp"
@@ -91,6 +92,7 @@ namespace KalaWindow::Graphics
 	friend KalaWindow::Core::KalaWindowCore;
 	friend KalaWindow::Core::MessageLoop;
 	friend KalaWindow::OpenGL::OpenGL_Global;
+	friend KalaWindow::OpenGL::OpenGL_Context;
 	public:
 		//Toggle verbose logging. If true, then global window context 
 		//and all windows will dump their logs into the console.
