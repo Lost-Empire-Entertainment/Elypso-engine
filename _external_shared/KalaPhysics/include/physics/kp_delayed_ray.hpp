@@ -8,8 +8,8 @@
 #include <initializer_list>
 #include <string>
 
-#include "KalaHeaders/core_utils.hpp"
-#include "KalaHeaders/log_utils.hpp"
+#include "core_utils.hpp"
+#include "log_utils.hpp"
 
 #include "core/kp_registry.hpp"
 #include "core/kp_physics_world.hpp"

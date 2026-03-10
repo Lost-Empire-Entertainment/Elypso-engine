@@ -8,9 +8,9 @@
 #include <array>
 #include <string>
 
-#include "KalaHeaders/core_utils.hpp"
-#include "KalaHeaders/math_utils.hpp"
-#include "KalaHeaders/log_utils.hpp"
+#include "core_utils.hpp"
+#include "math_utils.hpp"
+#include "log_utils.hpp"
 
 namespace KalaPhysics::Core
 {

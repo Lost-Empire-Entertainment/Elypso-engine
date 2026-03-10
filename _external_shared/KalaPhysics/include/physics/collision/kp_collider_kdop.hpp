@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "KalaHeaders/core_utils.hpp"
+#include "core_utils.hpp"
 
 #include "physics/collision/kp_collider.hpp"
 
