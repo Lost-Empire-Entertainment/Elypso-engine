@@ -38,7 +38,7 @@ namespace KalaWindow::Graphics
 		WINDOWMODE_BORDERLESS,
 		//Window will go fullscreen and will hide decorations and top bar,
 		//flashes when alt-tabbing and uses full gpu, best for high-performance applications and games,
-		//uses WINDOWMODE_BORDERLESS on x11 and wayland
+		//uses WINDOWMODE_BORDERLESS on x11
 		WINDOWMODE_EXCLUSIVE
 	};
 
@@ -49,7 +49,7 @@ namespace KalaWindow::Graphics
 		WINDOW_MAXIMIZE,      //Maximize window to full monitor size
 		WINDOW_MINIMIZE,      //Minimize window to taskbar
 		WINDOW_HIDE,          //Hide the window, including from taskbar
-		WINDOW_SHOWNOACTIVATE //Display the window without focusing to it, uses WINDOW_NORMAL on x11 and wayland
+		WINDOW_SHOWNOACTIVATE //Display the window without focusing to it, uses WINDOW_NORMAL on x11
 	};
 
 	enum class DpiContext
@@ -103,13 +103,11 @@ namespace KalaWindow::Graphics
 		PROGRESS_ERROR          //red bar
 	};
 #else
-#if defined(KW_USE_X11)
 	struct LIB_API WindowData
 	{
 		uintptr_t window{};
+		uintptr_t xic{};
 	};
-#elif defined(KW_USE_WAYLAND)
-#endif
 #endif
 
 	class LIB_API ProcessWindow
@@ -177,12 +175,12 @@ namespace KalaWindow::Graphics
 		void SetClientRectSize(vec2 newSize);
 		vec2 GetClientRectSize() const;
 
-		//Set full window size (including borders)
+		//Set full window size (including borders), maps to client rect size on X11
 		void SetOuterSize(vec2 newSize);
 		vec2 GetOuterSize() const;
 
 		//Set window position
-		void SetPosition(vec2 newPos) const;
+		void SetPosition(vec2 newPos);
 		vec2 GetPosition();
 
 		void SetMaxSize(vec2 newMaxSize);
@@ -191,17 +189,12 @@ namespace KalaWindow::Graphics
 		void SetMinSize(vec2 newMinSize);
 		vec2 GetMinSize() const;
 
-		//If true, then this window is gonna go idle and reduces cpu and gpu
-		//cycles by waiting for messageloop messages before updating the exe.
-		void SetFocusRequired(bool newFocusRequired);
-		bool IsFocusRequired() const;
-
 		//If true, then this window is always on top of other windows
-		void SetAlwaysOnTopState(bool state) const;
+		void SetAlwaysOnTopState(bool state);
 		bool IsAlwaysOnTop() const;
 
 		//If true, then this shows the outer frame and can be resized
-		void SetResizableState(bool state) const;
+		void SetResizableState(bool state);
 		bool IsResizable() const;
 
 #ifdef _WIN32
@@ -240,13 +233,15 @@ namespace KalaWindow::Graphics
 		//  - not visible
 		bool IsIdle() const;
 
-		//Returns true if this window is in the front
+		//Returns true if this window is being hovered over by the cursor
+		bool IsHovered() const;
+		//Returns true if this window is in the front, maps to IsFocused on X11
 		bool IsForegroundWindow() const;
 		//Returns true if this window is currently receiving keyboard input
 		bool IsFocused() const;
 		//Returns true if this window is undecorated and its size matches the monitor size
 		bool IsFullscreen();
-		//Returns true if this window is not open, but exists
+		//Returns true if this window is not open, but exists, maps to opposite of IsVisible on X11
 		bool IsMinimized() const;
 		//Returns false if this window is not rendered but also not minimized
 		bool IsVisible() const;
@@ -324,14 +319,24 @@ namespace KalaWindow::Graphics
 
 		bool isInitialized = false;        //Cannot use this window if it is not yet initialized
 
+		bool isWindowHovered = false;      //If true, then this window is currently being hovered by the cursor.
 		bool isWindowFocusRequired = true; //If true, then this window will not update unless selected.
 		bool isIdle = false;               //Toggled dynamically by isfocused, isminimized and isvisible checks.
 		bool isResizing = false;           //If true, then this window is currently being resized
 		bool shutdownBlockState = false;   //Prevents Windows from shutting off or logging off if this is true so you can save your data
 
-#if __linux__
-		friend void SetFocused(bool state);
+#ifdef __linux__
 		bool isFocused = false;
+		bool isVisible = false;
+		
+		void UpdateFullscreenState();
+		bool isFullscreen = false;
+
+		vec2 pos{};
+		vec2 size{};
+
+		WindowMode windowMode{};
+		WindowState windowState{};
 #endif
 
 		vec2 maxSize = vec2{ 7680, 4320 }; //The maximum size this window can become

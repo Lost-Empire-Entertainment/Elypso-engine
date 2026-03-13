@@ -11,6 +11,7 @@
 #include "core_utils.hpp"
 
 #include "core/kw_core.hpp"
+#include "core/kw_input.hpp"
 #include "core/kw_messageloop_x11.hpp"
 #include "graphics/kw_window.hpp"
 #include "opengl/kw_opengl.hpp"
@@ -73,22 +74,35 @@ namespace KalaWindow::Graphics
 		SOUND_ERROR
 	};
 
-#if defined(__linux__) && defined(KW_USE_X11)
+#ifdef __linux__
 	struct X11GlobalData
 	{
 		uintptr_t display{};
 		uintptr_t window_root{};
 
+		uintptr_t xim{};
+
+		int xiOpcode{};
+
 		uintptr_t atom_utf8{};
+
 		uintptr_t atom_net_wm_name{};
 		uintptr_t atom_net_wm_pid{};
-		uintptr_t atom_wmDelete{};
+
+		uintptr_t atom_net_wm_state{};
+		uintptr_t atom_net_wm_state_fullscreen{};
+		uintptr_t atom_net_wm_state_vertical{};
+		uintptr_t atom_net_wm_state_horizontal{};
+		uintptr_t atom_net_wm_state_above{};
+
+		uintptr_t atom_wm_delete{};
 	};
 #endif
 
 	class LIB_API Window_Global
 	{
 	friend ProcessWindow;
+	friend KalaWindow::Core::Input;
 	friend KalaWindow::Core::KalaWindowCore;
 	friend KalaWindow::Core::MessageLoop;
 	friend KalaWindow::OpenGL::OpenGL_Global;
@@ -140,7 +154,7 @@ namespace KalaWindow::Graphics
 		//Returns string from clipboard
 		static string GetClipboardText();
 	private:
-#if defined(__linux__) && defined(KW_USE_X11)
+#ifdef __linux__
 		static const X11GlobalData& GetGlobalData();
 #endif
 	};
