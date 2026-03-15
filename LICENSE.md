@@ -1,6 +1,6 @@
 # Elypso Engine Free License 3.0
 
-Copyright (c) 2025 **Lost Empire Entertainment**  
+Copyright (c) 2026 **Lost Empire Entertainment**  
 
 ## Definitions
 - **The Company** refers to **Lost Empire Entertainment**.  
