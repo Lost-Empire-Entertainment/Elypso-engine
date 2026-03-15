@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "KalaHeaders/core_utils.hpp"
-#include "KalaHeaders/math_utils.hpp"
+#include "core_utils.hpp"
+#include "math_utils.hpp"
 
 namespace KalaUI::OpenGL
 {

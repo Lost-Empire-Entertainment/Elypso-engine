@@ -3,13 +3,12 @@
 #version 1.0
 
 #references
-name_bin: ElypsoEngine
+name_bin: elypsoengine
 dir_release: build/release-
 dir_debug: build/debug-
-name_kw: KalaWindow1
+name_kw: kalawindow
 dir_kw_rel: _external_shared/KalaWindow/release
 dir_kw_deb: _external_shared/KalaWindow/debug
-defs: KW_USE_X11, KW_USE_GL
 
 #global
 compilerlauncher: ccache
@@ -18,33 +17,31 @@ standard: c++20
 binarytype: shared
 sources: "src"
 headers: "include", "_external_shared/KalaHeaders", "_external_shared/KalaWindow/include"
+defines: LIB_STATIC
 warninglevel: normal
-customflags: export-compile-commands
+customflags: export-compile-commands, export-vscode-sln
 
 #profile debug-windows
 compiler: clang-cl
 buildtype: debug
 buildpath: "${dir_debug}windows"
 links: "${dir_kw_deb}/${name_kw}d.lib"
-defines: ${defs}
 
 #profile release-windows
 compiler: clang-cl
 buildtype: minsizerel
 buildpath: "${dir_release}windows"
 links: "${dir_kw_rel}/${name_kw}.lib"
-defines: ${defs}
 
 #profile debug-linux
 compiler: clang++
 buildtype: debug
 buildpath: "${dir_debug}linux"
-links: "${dir_kw_deb}/lib${name_kw}d.so"
-defines: ${defs}
+links: "${dir_kw_deb}/lib${name_kw}d.a"
 
 #profile release-linux
 compiler: clang++
 buildtype: minsizerel
 buildpath: "${dir_release}linux"
-links: "${dir_kw_rel}/lib${name_kw}.so"
-defines: ${defs}
+links: "${dir_kw_rel}/lib${name_kw}.a"
+postbuildaction: strip --strip-unneeded ${dir_release}linux/${name_bin}.a

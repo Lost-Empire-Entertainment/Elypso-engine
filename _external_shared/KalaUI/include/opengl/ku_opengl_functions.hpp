@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "OpenGL/glcorearb.h" //core opengl
+#include "glcorearb.h" //core opengl
 
-#include "KalaHeaders/core_utils.hpp"
+#include "core_utils.hpp"
 
 //
 // IMPORTANT NOTE:

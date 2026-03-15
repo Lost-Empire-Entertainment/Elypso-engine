@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "KalaHeaders/core_utils.hpp"
+#include "core_utils.hpp"
 
 #include "opengl/ui/ku_opengl_widget.hpp"
 #include "core/ku_font.hpp"

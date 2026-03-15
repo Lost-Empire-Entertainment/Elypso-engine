@@ -6,10 +6,9 @@
 name_bin: Elypso Engine
 dir_release: build/release-
 dir_debug: build/debug-
-name_ee: ElypsoEngine
+name_ee: elypsoengine
 dir_ee_rel: _external_shared/ElypsoEngine/release
 dir_ee_deb: _external_shared/ElypsoEngine/debug
-defs: KW_USE_X11, KW_USE_GL
 
 #global
 compilerlauncher: ccache
@@ -18,33 +17,34 @@ standard: c++20
 binarytype: executable
 sources: "src"
 headers: "include", "_external_shared//ElypsoEngine/include"
+defines: LIB_STATIC
 warninglevel: normal
-customflags: export-compile-commands
+customflags: export-compile-commands, export-vscode-sln
 
 #profile debug-windows
 compiler: clang-cl
 buildtype: debug
 buildpath: "${dir_debug}windows"
 links: "${dir_ee_deb}/${name_ee}d.lib"
-defines: ${defs}
 
 #profile release-windows
 compiler: clang-cl
-buildtype: minsizerel
+buildtype: release
 buildpath: "${dir_release}windows"
 links: "${dir_ee_rel}/${name_ee}.lib"
-defines: ${defs}
 
 #profile debug-linux
 compiler: clang++
 buildtype: debug
 buildpath: "${dir_debug}linux"
-links: "${dir_ee_deb}/lib${name_ee}d.so"
-defines: ${defs}
+links: "${dir_ee_deb}/lib${name_ee}d.a"
+//strips stupid avx requirements that cachyos seems to add for no reason
+postbuildaction: ${comm_objcopy} ${dir_debug}linux/${name_bin}
 
 #profile release-linux
 compiler: clang++
-buildtype: minsizerel
+buildtype: release
 buildpath: "${dir_release}linux"
-links: "${dir_ee_rel}/lib${name_ee}.so"
-defines: ${defs}
+links: "${dir_ee_rel}/lib${name_ee}.a"
+//strips stupid avx requirements that cachyos seems to add for no reason
+postbuildaction: ${comm_objcopy} ${dir_release}linux/${name_bin}

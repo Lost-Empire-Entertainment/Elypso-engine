@@ -10,9 +10,9 @@
 #include <functional>
 #include <array>
 
-#include "KalaHeaders/core_utils.hpp"
-#include "KalaHeaders/math_utils.hpp"
-#include "KalaHeaders/key_standards.hpp"
+#include "core_utils.hpp"
+#include "math_utils.hpp"
+#include "key_standards.hpp"
 
 #include "opengl/ku_opengl_shader.hpp"
 #include "opengl/ku_opengl_texture.hpp"

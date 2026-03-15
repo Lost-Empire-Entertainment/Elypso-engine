@@ -7,3 +7,9 @@ These libraries are used for various purposes, their licenses are included in th
 | Library                                                         | Use case                                                       |
 |-----------------------------------------------------------------|----------------------------------------------------------------|
 | [KalaHeaders](https://github.com/KalaKit/KalaHeaders)           | Lightweight, independent header-only scripts for various uses. |
+
+## Not owned by Lost Empire Entertainment
+
+| Library                                                              | Use case                                             |
+|----------------------------------------------------------------------|------------------------------------------------------|
+| [MiniAudio](https://github.com/mackron/miniaudio)                    | Plays and records audio on multiple platforms.       |

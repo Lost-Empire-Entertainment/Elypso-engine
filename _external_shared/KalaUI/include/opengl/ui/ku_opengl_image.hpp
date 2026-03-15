@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "KalaHeaders/math_utils.hpp"
+#include "math_utils.hpp"
 
 #include "opengl/ui/ku_opengl_widget.hpp"
 
