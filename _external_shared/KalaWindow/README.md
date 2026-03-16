@@ -1,8 +1,8 @@
 # KalaWindow
 
-**KalaWindow** is a C++20 window library for Windows and Linux, used for making software and applications.
+**KalaWindow** is a C++20 window library for Windows and Linux, it is used for making software and games.
 
-**KalaWindow** creates and owns the OpenGL 3.3 context and Vulkan 1.3 context, manages the message loop, handles crashes safely through the crash handler and handles all inputs through the input framework. Glad or any other opengl function loaders are not required because **KalaWindow** already provides most common ones for what you would need for OpenGL or Vulkan.
+**KalaWindow** creates and owns the OpenGL 3.3 and Vulkan 1.3 context, manages the message loop, handles crashes safely through the crash handler and handles all inputs through the input framework. **KalaWindow** owns the GL and VK functions so Glad or other similar ones are not needed.
 
 ---
 

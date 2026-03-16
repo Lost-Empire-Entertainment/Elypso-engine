@@ -16,3 +16,4 @@ These libraries are used for various purposes, their licenses are included in th
 |----------------------------------------------------------------------|------------------------------------------------------|
 | [stb](https://github.com/nothings/stb)                               | Various image and text editing headers and others.   |
 | [OpenGL headers](https://github.com/KhronosGroup/OpenGL-Registry)    | Headers used for OpenGL functionality                |
+| [lua](https://github.com/lua/lua)                                    | Runtime executable modification via scripts.         |

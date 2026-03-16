@@ -16,7 +16,7 @@ binaryname: ${name_bin}
 standard: c++20
 binarytype: shared
 sources: "src"
-headers: "include", "_external_shared/KalaHeaders", "_external_shared/KalaWindow/include"
+headers: "include", "_external_shared/KalaHeaders", "_external_shared/KalaWindow/include", "_external_shared/KalaLua/include", "_external_shared/lua/include"
 defines: LIB_STATIC
 warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln

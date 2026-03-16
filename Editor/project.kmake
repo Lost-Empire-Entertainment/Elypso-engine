@@ -9,6 +9,7 @@ dir_debug: build/debug-
 name_ee: elypsoengine
 dir_ee_rel: _external_shared/ElypsoEngine/release
 dir_ee_deb: _external_shared/ElypsoEngine/debug
+comm_objcopy: objcopy --remove-section .note.gnu.property
 
 #global
 compilerlauncher: ccache
@@ -16,7 +17,7 @@ binaryname: Elypso Engine
 standard: c++20
 binarytype: executable
 sources: "src"
-headers: "include", "_external_shared//ElypsoEngine/include"
+headers: "include", "../ElypsoEngine/include", "_external_shared/KalaWindow/include", "../_external_shared/KalaLua/include", "../_external_shared/lua/include"
 defines: LIB_STATIC
 warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln
