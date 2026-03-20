@@ -1,4 +1,4 @@
-[KalaWindow source repository](https://github.com/KalaKit/KalaWindow)
+[KalaGraphics source repository](https://github.com/KalaKit/KalaGraphics)
 
 ---
 

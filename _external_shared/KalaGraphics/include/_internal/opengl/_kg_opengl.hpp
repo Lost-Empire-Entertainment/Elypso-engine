@@ -17,12 +17,17 @@ namespace KalaGraphics::Internal::OpenGL
 		VSYNC_OFF //Framerate is uncapped, runs as fast as render loop allows, introduces tearing.
 	};
 
-    class LIB_API OpenGL
+    class LIB_API OpenGL_Core
     {
     public:
         static void AddWindow(
             u32 windowID,
             VSyncState vsyncState);
+
+        //Main draw call
+        static void Update(u32 windowID);
+        //Actions that occur only when the window size changes
+        static void ResizeUpdate(u32 windowID);
     
         static void SetVSyncState(
             u32 windowID,
@@ -31,5 +36,8 @@ namespace KalaGraphics::Internal::OpenGL
 
         //Called at the end of each frame
 		static void SwapOpenGLBuffers(u32 windowID);
+
+        //Clean all resources
+        static void Shutdown(u32 windowID);
     };
 }

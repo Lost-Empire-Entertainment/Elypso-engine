@@ -5,6 +5,17 @@
 
 #pragma once
 
+#include "core_utils.hpp"
+
+namespace KalaGraphics::Internal::OpenGL
+{
+    class LIB_API OpenGL_Shader
+    {
+    public:
+        
+    };
+}
+
 /*
 #include <string>
 #include <array>
