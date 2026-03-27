@@ -10,45 +10,45 @@ dir_debug: build/debug-
 // KALAWINDOW
 //
 name_kw: kalawindow
-dir_kw_rel: ../_external_shared/KalaWindow/release
-dir_kw_deb: ../_external_shared/KalaWindow/debug
+dir_kw_rel: ../../external-shared/KalaWindow/release
+dir_kw_deb: ../../external-shared/KalaWindow/debug
 //
 // KALAGRAPHICS
 //
 name_kg: kalagraphics
-dir_kg_rel: ../_external_shared/KalaGraphics/release
-dir_kg_deb: ../_external_shared/KalaGraphics/debug
+dir_kg_rel: ../../external-shared/KalaGraphics/release
+dir_kg_deb: ../../external-shared/KalaGraphics/debug
 //
 // KALAPHYSICS
 //
 name_kp: kalaphysics
-dir_kp_rel: ../_external_shared/KalaPhysics/release
-dir_kp_deb: ../_external_shared/KalaPhysics/debug
+dir_kp_rel: ../../external-shared/KalaPhysics/release
+dir_kp_deb: ../../external-shared/KalaPhysics/debug
 //
 // KALAAUDIO
 //
 name_ka: kalaaudio
-dir_ka_rel: ../_external_shared/KalaAudio/release
-dir_ka_deb: ../_external_shared/KalaAudio/debug
+dir_ka_rel: ../../external-shared/KalaAudio/release
+dir_ka_deb: ../../external-shared/KalaAudio/debug
 //
 // KALALUA
 //
 name_kl: kalalua
-dir_kl_rel: ../_external_shared/KalaLua/release
-dir_kl_deb: ../_external_shared/KalaLua/debug
+dir_kl_rel: ../../external-shared/KalaLua/release
+dir_kl_deb: ../../external-shared/KalaLua/debug
 //
 // LUA
 //
 name_l: lua
-dir_l_rel: ../_external_shared/lua/release
-dir_l_deb: ../_external_shared/lua/debug
+dir_l_rel: ../../external-shared/lua/release
+dir_l_deb: ../../external-shared/lua/debug
 
 #global
 compilerlauncher: ccache
 standard: c++20
 binarytype: static
 sources: "src"
-headers: "include", "../_external_shared/KalaHeaders", "../_external_shared/KalaWindow/include", "../_external_shared/KalaGraphics/include", "../_external_shared/KalaPhysics/include", "../_external_shared/KalaAudio/include", "../_external_shared/KalaLua/include", "../_external_shared/lua/include"
+headers: "include", "../../external-shared/KalaHeaders", "../../external-shared/KalaWindow/include", "../../external-shared/KalaGraphics/include", "../../external-shared/KalaPhysics/include", "../../external-shared/KalaAudio/include", "../../external-shared/KalaLua/include", "../../external-shared/lua/include"
 defines: LIB_STATIC
 warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln
