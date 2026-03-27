@@ -6,42 +6,78 @@
 name_bin: elypsoengine
 dir_release: build/release-
 dir_debug: build/debug-
+//
+// KALAWINDOW
+//
 name_kw: kalawindow
-dir_kw_rel: _external_shared/KalaWindow/release
-dir_kw_deb: _external_shared/KalaWindow/debug
+dir_kw_rel: ../_external_shared/KalaWindow/release
+dir_kw_deb: ../_external_shared/KalaWindow/debug
+//
+// KALAGRAPHICS
+//
+name_kg: kalagraphics
+dir_kg_rel: ../_external_shared/KalaGraphics/release
+dir_kg_deb: ../_external_shared/KalaGraphics/debug
+//
+// KALAPHYSICS
+//
+name_kp: kalaphysics
+dir_kp_rel: ../_external_shared/KalaPhysics/release
+dir_kp_deb: ../_external_shared/KalaPhysics/debug
+//
+// KALAAUDIO
+//
+name_ka: kalaaudio
+dir_ka_rel: ../_external_shared/KalaAudio/release
+dir_ka_deb: ../_external_shared/KalaAudio/debug
+//
+// KALALUA
+//
+name_kl: kalalua
+dir_kl_rel: ../_external_shared/KalaLua/release
+dir_kl_deb: ../_external_shared/KalaLua/debug
+//
+// LUA
+//
+name_l: lua
+dir_l_rel: ../_external_shared/lua/release
+dir_l_deb: ../_external_shared/lua/debug
 
 #global
 compilerlauncher: ccache
-binaryname: ${name_bin}
 standard: c++20
-binarytype: shared
+binarytype: static
 sources: "src"
-headers: "include", "_external_shared/KalaHeaders", "_external_shared/KalaWindow/include", "_external_shared/KalaLua/include", "_external_shared/lua/include"
+headers: "include", "../_external_shared/KalaHeaders", "../_external_shared/KalaWindow/include", "../_external_shared/KalaGraphics/include", "../_external_shared/KalaPhysics/include", "../_external_shared/KalaAudio/include", "../_external_shared/KalaLua/include", "../_external_shared/lua/include"
 defines: LIB_STATIC
 warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln
 
 #profile debug-windows
+binaryname: ${name_bin}d
 compiler: clang-cl
 buildtype: debug
 buildpath: "${dir_debug}windows"
-links: "${dir_kw_deb}/${name_kw}d.lib"
+links: "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib"
 
 #profile release-windows
+binaryname: ${name_bin}
 compiler: clang-cl
 buildtype: minsizerel
 buildpath: "${dir_release}windows"
-links: "${dir_kw_rel}/${name_kw}.lib"
+links: "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib"
 
 #profile debug-linux
+binaryname: lib${name_bin}d
 compiler: clang++
 buildtype: debug
 buildpath: "${dir_debug}linux"
-links: "${dir_kw_deb}/lib${name_kw}d.a"
+links: "${dir_kw_deb}/lib${name_kw}d.a", "${dir_kg_deb}/lib${name_kg}d.a", "${dir_kp_deb}/lib${name_kp}d.a", "${dir_ka_deb}/lib${name_ka}d.a", "${dir_kl_deb}/lib${name_kl}d.a", "${dir_l_deb}/lib${name_l}d.a"
 
 #profile release-linux
+binaryname: lib${name_bin}
 compiler: clang++
 buildtype: minsizerel
 buildpath: "${dir_release}linux"
-links: "${dir_kw_rel}/lib${name_kw}.a"
-postbuildaction: strip --strip-unneeded ${dir_release}linux/${name_bin}.a
+links: "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a"
+postbuildaction: strip --strip-unneeded ${dir_release}linux/lib${name_bin}.a
