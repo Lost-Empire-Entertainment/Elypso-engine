@@ -8,43 +8,34 @@
 
 //copy readme
 origin: ..@README.md
-target: ..@..@_games@_external_shared@ElypsoEngine@README.md
+target: ..@..@external-shared@ElypsoEngine@README.md
 action: forcecopy
 
 //copy license
 origin: ..@LICENSE.md
-target: ..@..@_games@_external_shared@ElypsoEngine@LICENSE.md
+target: ..@..@external-shared@ElypsoEngine@LICENSE.md
 action: forcecopy
 
 //copy include files
 origin: include
-target: ..@..@_games@_external_shared@ElypsoEngine@include
+target: ..@..@external-shared@ElypsoEngine@include
 action: forcecopy
 
 //copy docs
 origin: ..@docs
-target: ..@..@_games@_external_shared@ElypsoEngine@docs
+target: ..@..@external-shared@ElypsoEngine@docs
 action: forcecopy
 
 //
 // BINARIES
 //
 
-//copy debug a
-origin: build@debug-linux@elypsoengined.lib
-target: ..@..@_games@_external_shared@ElypsoEngine@debug@elypsoengined.lib
+//copy debug
+origin: build@debug-windows@elypsoengined.lib
+target: ..@..@external-shared@ElypsoEngine@debug@elypsoengined.lib
 action: forcecopy
 
-//copy release a
-origin: build@release-linux@elypsoengine.lib
-target: ..@..@_games@_external_shared@ElypsoEngine@release@elypsoengine.lib
+//copy release
+origin: build@release-windows@elypsoengine.lib
+target: ..@..@external-shared@ElypsoEngine@release@elypsoengine.lib
 action: forcecopy
-
-//
-// EXTERNAL LIBRARIES
-//
-
-//KalaHeaders
-origin: ..@_external_shared@KalaHeaders
-target: ..@..@_games@_external_shared@KalaHeaders
-action: copy
