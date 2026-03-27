@@ -51,7 +51,7 @@ namespace ElypsoEngine::Graphics
             vec2 size = 800,
             WindowState state = WindowState::WINDOW_NORMAL,
             WindowMode mode = WindowMode::WINDOWMODE_WINDOWED,
-            const vector<GraphicsFeature>& gfxFeatures = { GraphicsFeature::GF_FORCE_OPENGL });
+            const vector<GraphicsFeature>& gfxFeatures = {});
 
         u32 GetID() const;
 

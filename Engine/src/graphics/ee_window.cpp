@@ -43,39 +43,40 @@ using ElypsoEngine::Graphics::Render;
 using ElypsoEngine::Core::EngineCore;
 
 using std::string;
+using std::to_string;
 using std::unique_ptr;
 using std::make_unique;
 using std::vector;
-
-static bool PreferSoftware(const vector<GraphicsFeature> gfxFeatures)
-{
-    return (!Render::AllowGL()
-        && !Render::AllowVK()
-        && gfxFeatures.empty())
-        || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_SOFTWARE);
-}
-static bool PreferOpenGL(const vector<GraphicsFeature> gfxFeatures)
-{
-    return (Render::AllowGL()
-        && gfxFeatures.empty())
-        || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_OPENGL);
-}
-static bool PreferVulkan(const vector<GraphicsFeature> gfxFeatures)
-{
-    return (!Render::AllowGL()
-        && Render::AllowVK()
-        && gfxFeatures.empty())
-        || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_VULKAN)
-        || ContainsValue(gfxFeatures, GraphicsFeature::GF_COMPUTE_SHADERS)
-        || ContainsValue(gfxFeatures, GraphicsFeature::GF_RAY_TRACING)
-        || ContainsValue(gfxFeatures, GraphicsFeature::GF_PATH_TRACING);
-}
 
 namespace ElypsoEngine::Graphics
 {
     static VkInstance vkInstance{};
 
 	static ElypsoRegistry<EngineWindow> registry{};
+
+    static void ShutdownCallback(u32 windowID)
+    {
+        EngineWindow* enwin = registry.GetContent(windowID);
+
+        if (enwin == nullptr)
+        {
+            Log::Print("There is no engine window to close because the ID is invalid!",
+                "ELYPSO_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return;
+        }
+
+        Log::Print(
+            "Closing Elypso Engine window '" + enwin->GetProcessWindow()->GetTitle() + "'.",
+            "ELYPSO_WINDOW",
+            LogType::LOG_INFO);
+
+        enwin->GetKGContext()->Shutdown();
+
+        registry.RemoveContent(enwin->GetID());
+    }
 
 	ElypsoRegistry<EngineWindow>& EngineWindow::GetRegistry() { return registry; }
 
@@ -87,11 +88,6 @@ namespace ElypsoEngine::Graphics
         WindowMode mode,
         const vector<GraphicsFeature>& gfxFeatures)
     {
-        Log::Print(
-            "Initializing Elypso Engine window.",
-            "ELYPSO_WINDOW",
-            LogType::LOG_INFO);
-
         if (windowTitle.empty())
         {
             KalaWindowCore::ForceClose(
@@ -116,14 +112,27 @@ namespace ElypsoEngine::Graphics
 
         u32 windowID = windowPtr->window->GetID();
 
-        //set shutdown callback here somehow...
-
         windowPtr->input = Input::Initialize(windowID);
 
-        if (!PreferSoftware(gfxFeatures))
+        if (!ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_SOFTWARE)
+            && !ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_VULKAN)
+            && Render::AllowGL()
+            && (gfxFeatures.empty()
+            || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_OPENGL)))
         {
-            if (PreferOpenGL(gfxFeatures)) windowPtr->glCont = OpenGL_Context::Initialize(windowID);
-            else if (PreferVulkan(gfxFeatures)) windowPtr->vkCont = Vulkan_Context::Initialize(windowID);
+            windowPtr->glCont = OpenGL_Context::Initialize(windowID);
+        }
+        if (!ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_SOFTWARE)
+            && !ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_OPENGL)
+            && !windowPtr->glCont
+            && Render::AllowVK()
+            && (gfxFeatures.empty()
+            || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_VULKAN)
+            || ContainsValue(gfxFeatures, GraphicsFeature::GF_COMPUTE_SHADERS)
+            || ContainsValue(gfxFeatures, GraphicsFeature::GF_RAY_TRACING)
+            || ContainsValue(gfxFeatures, GraphicsFeature::GF_PATH_TRACING)))
+        {
+            windowPtr->vkCont = Vulkan_Context::Initialize(windowID);
         }
 
         const WindowData& wData = windowPtr->window->GetWindowData();
@@ -154,7 +163,7 @@ namespace ElypsoEngine::Graphics
         //get kg id up to date with kw id
         EngineCore::SyncID();
 
-        windowPtr->kgCont = WindowContext::Initialize(kgCtx);
+        windowPtr->kgCont = WindowContext::Initialize(kgCtx, gfxFeatures);
 
         windowPtr->window->SetRedrawCallback([windowPtr](){ windowPtr->kgCont->Update(); });
         windowPtr->window->SetResizeCallback([windowPtr](){ windowPtr->kgCont->ResizeUpdate(); });
@@ -162,7 +171,7 @@ namespace ElypsoEngine::Graphics
         windowPtr->window->SetWindowState(state);
         windowPtr->window->SetWindowMode(mode);
 
-        //get kgtest id up to date with kw id
+        //get engine id up to date with kw id
         EngineCore::SyncID();
 
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
@@ -170,10 +179,12 @@ namespace ElypsoEngine::Graphics
 
         windowPtr->ID = newID;
 
+        windowPtr->window->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
+
         registry.AddContent(newID, std::move(newWindow));
 
         Log::Print(
-			"Created new window '" + string(windowTitle) + "'!",
+			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
 			"ELYPSO_WINDOW",
 			LogType::LOG_SUCCESS);
 
@@ -247,11 +258,5 @@ namespace ElypsoEngine::Graphics
         input->EndFrameUpdate();
     }
 
-    void EngineWindow::Shutdown()
-    {
-        Log::Print(
-            "Closing Elypso Engine window '" + window->GetTitle() + "'.",
-            "ELYPSO_WINDOW",
-            LogType::LOG_INFO);
-    }
+    void EngineWindow::Shutdown() { window->CloseWindow(); }
 }

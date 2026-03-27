@@ -47,11 +47,6 @@ namespace ElypsoEngine::Core
             return;
         }
 
-        Log::Print(
-            "Initializing Elypso Engine core structure.",
-            "ELYPSO_CORE",
-            LogType::LOG_INFO);
-
         if (programName.empty())
         {
             KalaWindowCore::ForceClose(
@@ -67,10 +62,10 @@ namespace ElypsoEngine::Core
         
         CrashHandler::Initialize(programName, Shutdown);
 
-        KalaWindowCore::SetUserShutdownFunction(Shutdown);
+        KalaWindowCore::SetUserShutdownCallback(Shutdown);
 
         Log::Print(
-            "Elypso Engine core structure initialization succeeded!",
+            "Initialized core!",
             "ELYPSO_CORE",
             LogType::LOG_SUCCESS);
 

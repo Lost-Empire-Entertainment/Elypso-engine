@@ -48,11 +48,6 @@ namespace ElypsoEngine::Graphics
             return;
         }
 
-        Log::Print(
-            "Initializing Elypso Engine render structure.",
-            "ELYPSO_RENDER",
-            LogType::LOG_INFO);
-
         allowGL = newAllowGL;
         allowVK = newAllowVK;
 
@@ -67,7 +62,7 @@ namespace ElypsoEngine::Graphics
         }
 
         Log::Print(
-            "Elypso Engine render structure initialization succeeded!",
+            "Initialized render!",
             "ELYPSO_RENDER",
             LogType::LOG_SUCCESS);
     }
