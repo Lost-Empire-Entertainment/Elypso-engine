@@ -27,9 +27,6 @@ namespace ElypsoEngine::Core
         //Synchronizes all library IDs
         static void SyncID();
         
-        //Core engine update loop
-        static void Update();
-        
         //Shut down engine
         static void Shutdown();  
     };

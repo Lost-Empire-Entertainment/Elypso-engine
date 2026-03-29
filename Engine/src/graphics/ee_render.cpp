@@ -74,20 +74,15 @@ namespace ElypsoEngine::Graphics
 
     void Render::Update()
     {
-        static bool sentWarning{};
         if (EngineWindow::GetRegistry().runtimeContent.empty())
         {
-            if (!sentWarning)
-            {
-                Log::Print(
-                    "There are no windows to render! Did you forget to initialize a window?",
-                    "ELYPSO_RENDER",
-                    LogType::LOG_WARNING);
+            Log::Print(
+                "There are no windows to render! Did you forget to initialize a window?",
+                "ELYPSO_RENDER",
+                LogType::LOG_WARNING);
 
-                sentWarning = true;
-            }
+            return;
         }
-        else { if (sentWarning) sentWarning = false; }
 
 #ifdef __linux__
         MessageLoop::Update();

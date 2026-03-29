@@ -13,7 +13,6 @@
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "core/kg_context.hpp"
-#include "opengl/kw_opengl.hpp"
 #include "vulkan/kw_vulkan.hpp"
 #ifdef __linux__
 #include "graphics/kw_window_global.hpp"
@@ -256,6 +255,8 @@ namespace ElypsoEngine::Graphics
         }
 
         input->EndFrameUpdate();
+
+
     }
 
     void EngineWindow::Shutdown() { window->CloseWindow(); }

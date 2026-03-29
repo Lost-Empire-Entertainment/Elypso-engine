@@ -95,15 +95,6 @@ namespace ElypsoEngine::Core
         KalaWindowCore::SetGlobalID(highest);
     }
 
-    void EngineCore::Update()
-    {
-        while (true)
-        {
-            KalaWindowCore::UpdateDeltaTime();
-            Render::Update();
-        }
-    }
-
     void EngineCore::Shutdown()
     {
         Log::Print(
