@@ -13,9 +13,6 @@
 
 #include "core/ee_registry.hpp"
 #include "graphics/kw_window.hpp"
-#include "core/kw_input.hpp"
-#include "opengl/kw_opengl.hpp"
-#include "vulkan/kw_vulkan.hpp"
 #include "core/kg_context.hpp"
 
 namespace ElypsoEngine::Graphics
@@ -23,14 +20,9 @@ namespace ElypsoEngine::Graphics
     using KalaHeaders::KalaMath::vec2;
 
     using ElypsoEngine::Core::ElypsoRegistry;
-    using KalaWindow::Core::Input;
-    using KalaWindow::Graphics::ProcessWindow;
     using KalaWindow::Graphics::WindowMode;
     using KalaWindow::Graphics::WindowState;
-    using KalaWindow::OpenGL::OpenGL_Context;
-    using KalaWindow::Vulkan::Vulkan_Context;
     using KalaGraphics::Core::GraphicsFeature;
-    using KalaGraphics::Core::WindowContext;
 
     using std::string_view;
     using std::vector;
@@ -39,10 +31,6 @@ namespace ElypsoEngine::Graphics
     {
     public:
         static ElypsoRegistry<EngineWindow>& GetRegistry();
-
-        //Assign a global Vulkan instance
-        static void SetVKInstance(VkInstance instance);
-        static VkInstance GetVKInstance();
 
         //Create a new window
         static EngineWindow* Initialize(
@@ -54,17 +42,10 @@ namespace ElypsoEngine::Graphics
             const vector<GraphicsFeature>& gfxFeatures = {});
 
         u32 GetID() const;
-
-        //Get the OS-level window
-        ProcessWindow* GetProcessWindow();
-        //Get the input context for this window
-        Input* GetInput();
-        //Get the graphics window context to manage its data
-        WindowContext* GetKGContext();
-        //Get the OpenGL context of this window
-        OpenGL_Context* GetGLContext();
-        //Get the Vulkan context of this window
-        Vulkan_Context* GetVKContext();
+        //Returns the KalaWindow process window ID
+        u32 GetWindowID() const;
+        //Returns the KalaGraphics context ID
+        u32 GetContextID() const;
         
         //Single window update
         void Update();
@@ -73,12 +54,7 @@ namespace ElypsoEngine::Graphics
         void Shutdown();
     private:
         u32 ID{};
-
-        ProcessWindow* window{};
-		Input* input{};
-
-        WindowContext* kgCont{};
-		OpenGL_Context* glCont{};
-        Vulkan_Context* vkCont{};
+        u32 windowID{};
+        u32 contextID{};
     };
 }

@@ -13,6 +13,7 @@
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "core/kg_context.hpp"
+#include "opengl/kw_opengl.hpp"
 #include "vulkan/kw_vulkan.hpp"
 #ifdef __linux__
 #include "graphics/kw_window_global.hpp"
@@ -30,7 +31,10 @@ using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
+using KalaWindow::OpenGL::OpenGL_Context;
+using KalaWindow::Vulkan::Vulkan_Context;
 using KalaGraphics::Core::GraphicsFeature;
+using KalaGraphics::Core::WindowContext;
 using KalaGraphics::Core::WindowContextData;
 using KalaGraphics::Core::FramebufferSize;
 #ifdef __linux__
@@ -49,17 +53,26 @@ using std::vector;
 
 namespace ElypsoEngine::Graphics
 {
-    static VkInstance vkInstance{};
-
 	static ElypsoRegistry<EngineWindow> registry{};
 
     static void ShutdownCallback(u32 windowID)
     {
         EngineWindow* enwin = registry.GetContent(windowID);
-
         if (enwin == nullptr)
         {
-            Log::Print("There is no engine window to close because the ID is invalid!",
+            Log::Print("Failed to call shutdown callback because the engine window ID was not found!",
+                "ELYPSO_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return;
+        }
+        
+        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(enwin->GetWindowID());
+        if (!pw)
+        {
+            Log::Print(
+                "Failed to call shutdown callback because the window ID was not found!",
                 "ELYPSO_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -68,11 +81,23 @@ namespace ElypsoEngine::Graphics
         }
 
         Log::Print(
-            "Closing Elypso Engine window '" + enwin->GetProcessWindow()->GetTitle() + "'.",
+            "Closing Elypso Engine window '" + pw->GetTitle() + "'.",
             "ELYPSO_WINDOW",
             LogType::LOG_INFO);
 
-        enwin->GetKGContext()->Shutdown();
+        WindowContext* kgctx = WindowContext::GetRegistry().GetContent(enwin->GetContextID());
+        if (!kgctx)
+        {
+            Log::Print(
+                "Failed to call shutdown callback because the context ID was not found!",
+                "ELYPSO_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return;
+        }
+
+        kgctx->Shutdown();
 
         registry.RemoveContent(enwin->GetID());
     }
@@ -105,13 +130,16 @@ namespace ElypsoEngine::Graphics
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
         EngineWindow* windowPtr = newWindow.get();
 
-        windowPtr->window = ProcessWindow::Initialize(windowTitle);
-        windowPtr->window->SetClientRectSize(size);
-        windowPtr->window->SetPosition(pos);
+        ProcessWindow* pw = ProcessWindow::Initialize(windowTitle);
+        pw->SetClientRectSize(size);
+        pw->SetPosition(pos);
 
-        u32 windowID = windowPtr->window->GetID();
+        u32 windowID = pw->GetID();
 
-        windowPtr->input = Input::Initialize(windowID);
+        Input::Initialize(windowID);
+
+        OpenGL_Context* glctx{};
+        Vulkan_Context* vkctx{};
 
         if (!ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_SOFTWARE)
             && !ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_VULKAN)
@@ -119,11 +147,11 @@ namespace ElypsoEngine::Graphics
             && (gfxFeatures.empty()
             || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_OPENGL)))
         {
-            windowPtr->glCont = OpenGL_Context::Initialize(windowID);
+            glctx = OpenGL_Context::Initialize(windowID);
         }
         if (!ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_SOFTWARE)
             && !ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_OPENGL)
-            && !windowPtr->glCont
+            && !glctx
             && Render::AllowVK()
             && (gfxFeatures.empty()
             || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_VULKAN)
@@ -131,12 +159,12 @@ namespace ElypsoEngine::Graphics
             || ContainsValue(gfxFeatures, GraphicsFeature::GF_RAY_TRACING)
             || ContainsValue(gfxFeatures, GraphicsFeature::GF_PATH_TRACING)))
         {
-            windowPtr->vkCont = Vulkan_Context::Initialize(windowID);
+            vkctx = Vulkan_Context::Initialize(windowID);
         }
 
-        const WindowData& wData = windowPtr->window->GetWindowData();
+        const WindowData& wData = pw->GetWindowData();
 #ifdef _WIN32
-        WindowContextData kgCtx =
+        WindowContextData kgData =
         {
             .windowID = windowID,
             .isFramebufferDynamic = true,
@@ -146,7 +174,7 @@ namespace ElypsoEngine::Graphics
 #else
         const X11GlobalData& data = Window_Global::GetGlobalData();
 
-        WindowContextData kgCtx =
+        WindowContextData kgData =
         {
             .windowID = windowID,
             .isFramebufferDynamic = true,
@@ -156,29 +184,31 @@ namespace ElypsoEngine::Graphics
         };
 #endif
 
-        if (windowPtr->glCont) kgCtx.context_gl = windowPtr->glCont->GetContext();
-        if (windowPtr->vkCont) kgCtx.context_vk_surface = windowPtr->vkCont->GetSurface();
+        if (glctx) kgData.context_gl = glctx->GetContext();
+        if (vkctx) kgData.context_vk_surface = vkctx->GetSurface();
 
-        //get kg id up to date with kw id
+        //pre-sync to ensure kg gets the highest id
         EngineCore::SyncID();
 
-        windowPtr->kgCont = WindowContext::Initialize(kgCtx, gfxFeatures);
+        WindowContext* kgctx = WindowContext::Initialize(kgData, gfxFeatures);
 
-        windowPtr->window->SetRedrawCallback([windowPtr](){ windowPtr->kgCont->Update(); });
-        windowPtr->window->SetResizeCallback([windowPtr](){ windowPtr->kgCont->ResizeUpdate(); });
+        pw->SetRedrawCallback([kgctx](){ kgctx->Update(); });
+        pw->SetResizeCallback([kgctx](){ kgctx->ResizeUpdate(); });
 
-        windowPtr->window->SetWindowState(state);
-        windowPtr->window->SetWindowMode(mode);
+        pw->SetWindowState(state);
+        pw->SetWindowMode(mode);
 
-        //get engine id up to date with kw id
+        //post-sync to ensure ee gets the highest id from kw
         EngineCore::SyncID();
 
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
         KalaWindowCore::SetGlobalID(newID);
 
         windowPtr->ID = newID;
+        windowPtr->windowID = windowID;
+        windowPtr->contextID = kgctx->GetID();
 
-        windowPtr->window->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
+        pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
         registry.AddContent(newID, std::move(newWindow));
 
@@ -190,74 +220,65 @@ namespace ElypsoEngine::Graphics
         return windowPtr;
     }
 
-    void EngineWindow::SetVKInstance(VkInstance instance)
-    {
-        if (!instance)
-        {
-            Log::Print(
-                "Cannot set instance to an empty one!", 
-                "ELYPSO_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-
-        vkInstance = instance;
-    }
-    VkInstance EngineWindow::GetVKInstance()
-    {
-        if (!vkInstance)
-        {
-            Log::Print(
-                "Cannot get VK instance because it is not assigned!", 
-                "ELYPSO_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return {};
-        }
-
-        return vkInstance;
-    }
-
     u32 EngineWindow::GetID() const { return ID; }
-
-    ProcessWindow* EngineWindow::GetProcessWindow() { return window; }
-    Input* EngineWindow::GetInput() { return input; }
-    WindowContext* EngineWindow::GetKGContext() { return kgCont; }
-    OpenGL_Context* EngineWindow::GetGLContext() { return glCont; }
-    Vulkan_Context* EngineWindow::GetVKContext() { return vkCont; }
+    u32 EngineWindow::GetWindowID() const { return windowID; }
+    u32 EngineWindow::GetContextID() const { return contextID; }
 
     void EngineWindow::Update()
     {
-        if (!window)
+        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowID);
+        if (!pw)
         {
             KalaWindowCore::ForceClose(
-                "Elypso Engine window update error",
-                "Failed to update window because the window is invalid!");
+                "Engine window error",
+                "Failed to update engine window because its window ID was not found!");
 
             return;
         }
-        if (!kgCont)
+        Input* input = Input::GetRegistry().GetContent(pw->GetInputID());
+        if (!input)
         {
             KalaWindowCore::ForceClose(
-                "Elypso Engine window update error",
-                "Failed to update window '" + string(window->GetTitle()) + "' because the window has no KalaGraphics window context!");
+                "Engine window error",
+                "Failed to update engine window because its process window input ID was not found!");
+
+            return;
+        }
+        WindowContext* kgctx = WindowContext::GetRegistry().GetContent(contextID);
+        if (!kgctx)
+        {
+            KalaWindowCore::ForceClose(
+                "Engine window error",
+                "Failed to update engine window because its context ID was not found!");
+
+            return;
         }
 
-        window->Update();
+        pw->Update();
 
-        if (!window->IsIdle()
-            && !window->IsResizing())
+        if (!pw->IsIdle()
+            && !pw->IsResizing())
         {
-            kgCont->Update();
+            kgctx->Update();
         }
 
         input->EndFrameUpdate();
-
-
     }
 
-    void EngineWindow::Shutdown() { window->CloseWindow(); }
+    void EngineWindow::Shutdown()
+    { 
+        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowID);
+        if (!pw)
+        {
+            Log::Print(
+                "Failed to shut down engine window because its window ID was not found!",
+                "ELYPSO_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return;
+        }
+
+        pw->CloseWindow();
+    }
 }
