@@ -54,7 +54,7 @@ namespace ElypsoEngine::Graphics
         {
             Log::Print(
                 "Cannot initialize Elypso Engine render structure more than once!",
-                "ELYPSO_RENDER",
+                "EE_RENDER",
                 LogType::LOG_ERROR,
                 2);
 
@@ -154,7 +154,7 @@ namespace ElypsoEngine::Graphics
 
         Log::Print(
             "Initialized render!",
-            "ELYPSO_RENDER",
+            "EE_RENDER",
             LogType::LOG_SUCCESS);
     }
 
@@ -169,7 +169,7 @@ namespace ElypsoEngine::Graphics
         {
             Log::Print(
                 "There are no windows to render! Did you forget to initialize a window?",
-                "ELYPSO_RENDER",
+                "EE_RENDER",
                 LogType::LOG_WARNING);
 
             return;
@@ -189,7 +189,7 @@ namespace ElypsoEngine::Graphics
     {
         Log::Print(
             "Shutting down Elypso Engine render structure.",
-            "ELYPSO_RENDER",
+            "EE_RENDER",
             LogType::LOG_INFO);
 
         for (const auto& w : EngineWindow::GetRegistry().runtimeContent)

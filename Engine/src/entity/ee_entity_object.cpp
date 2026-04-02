@@ -24,22 +24,15 @@ using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::EngineWindow;
 using KalaWindow::Core::KalaWindowCore;
 using KalaGraphics::Core::WindowContext;
-using KalaGraphics::Core::WindowContextData;
-using KalaGraphics::Object::Model;
 using KalaGraphics::Object::Model_Primitive;
 using KalaGraphics::Internal::OpenGL::shader_name;
 using KalaGraphics::Internal::OpenGL::OpenGL_Shader;
 using KalaGraphics::Internal::OpenGL::OpenGL_ShaderType;
 using KalaGraphics::Internal::OpenGL::OpenGL_ShaderData;
 
-using std::to_string;
 using std::unique_ptr;
 using std::make_unique;
-
-static bool WindowExists(u32 windowID)
-{
-    return EngineWindow::GetRegistry().createdContent.contains(windowID);
-} 
+using std::to_string;
 
 namespace ElypsoEngine::Entity
 {
@@ -61,7 +54,7 @@ namespace ElypsoEngine::Entity
         {
             Log::Print(
                 "Failed to create primitive of type 'cube' because the window ID was not found!",
-                "OBJECT",
+                "EE_OBJECT",
                 LogType::LOG_ERROR,
                 2);
 
@@ -73,7 +66,7 @@ namespace ElypsoEngine::Entity
         {
             Log::Print(
                 "Failed to create primitive of type 'cube' because the window did not contain a valid KalaGraphics context!",
-                "OBJECT",
+                "EE_OBJECT",
                 LogType::LOG_ERROR,
                 2);
 
@@ -170,6 +163,11 @@ namespace ElypsoEngine::Entity
 
         Object::GetRegistry().AddContent(newID, std::move(newObject));
 
+        Log::Print(
+            "Created new object '" + string(modelName) + "' with ID '" + to_string(newID) + "'!",
+            "EE_OBJECT",
+            LogType::LOG_SUCCESS);
+
         return objectPtr;
     }
 
@@ -239,13 +237,11 @@ namespace ElypsoEngine::Entity
 
     bool Object::SetName(string_view newName)
     {
-        string name = string(newName);
-
         if (newName.empty())
         {
             Log::Print(
                 "Failed to set new model name because it was empty!",
-                "OBJECT",
+                "EE_OBJECT",
                 LogType::LOG_ERROR,
                 2);
 
@@ -255,18 +251,18 @@ namespace ElypsoEngine::Entity
         {
             Log::Print(
                 "Failed to set new model name because it was too long!",
-                "OBJECT",
+                "EE_OBJECT",
                 LogType::LOG_ERROR,
                 2);
 
             return false;
         }
 
-        modelName = name;
+        name = newName;
 
         return true;
     }
-    const string& Object::GetName() const { return modelName; }
+    const string& Object::GetName() const { return name; }
 
     u32 Object::GetID() const { return ID; }
     u32 Object::GetContextID() const { return contextID; }
@@ -279,6 +275,9 @@ namespace ElypsoEngine::Entity
 
     Object::~Object()
     {
-
+        Log::Print(
+            "Destroying model '" + name + "' with ID '" + to_string(ID) + "'.",
+            "EE_OBJECT",
+            LogType::LOG_INFO);
     }
 }

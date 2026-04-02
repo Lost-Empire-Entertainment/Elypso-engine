@@ -40,7 +40,7 @@ namespace ElypsoEngine::Core
         {
             Log::Print(
                 "Cannot initialize Elypso Engine core structure more than once!",
-                "ELYPSO_CORE",
+                "EE_CORE",
                 LogType::LOG_ERROR,
                 2);
 
@@ -66,7 +66,7 @@ namespace ElypsoEngine::Core
 
         Log::Print(
             "Initialized core!",
-            "ELYPSO_CORE",
+            "EE_CORE",
             LogType::LOG_SUCCESS);
 
         Render::Initialize(allowGL, allowVK);
@@ -99,7 +99,7 @@ namespace ElypsoEngine::Core
     {
         Log::Print(
             "Shutting down Elypso Engine.",
-            "ELYPSO_CORE",
+            "EE_CORE",
             LogType::LOG_INFO);
 
         Render::Shutdown();

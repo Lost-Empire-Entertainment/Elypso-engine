@@ -61,7 +61,7 @@ namespace ElypsoEngine::Graphics
         if (enwin == nullptr)
         {
             Log::Print("Failed to call shutdown callback because the engine window ID was not found!",
-                "ELYPSO_WINDOW",
+                "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
 
@@ -73,7 +73,7 @@ namespace ElypsoEngine::Graphics
         {
             Log::Print(
                 "Failed to call shutdown callback because the window ID was not found!",
-                "ELYPSO_WINDOW",
+                "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
 
@@ -82,7 +82,7 @@ namespace ElypsoEngine::Graphics
 
         Log::Print(
             "Closing Elypso Engine window '" + pw->GetTitle() + "'.",
-            "ELYPSO_WINDOW",
+            "EE_WINDOW",
             LogType::LOG_INFO);
 
         WindowContext* kgctx = WindowContext::GetRegistry().GetContent(enwin->GetContextID());
@@ -90,7 +90,7 @@ namespace ElypsoEngine::Graphics
         {
             Log::Print(
                 "Failed to call shutdown callback because the context ID was not found!",
-                "ELYPSO_WINDOW",
+                "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
 
@@ -214,7 +214,7 @@ namespace ElypsoEngine::Graphics
 
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
-			"ELYPSO_WINDOW",
+			"EE_WINDOW",
 			LogType::LOG_SUCCESS);
 
         return windowPtr;
@@ -272,7 +272,7 @@ namespace ElypsoEngine::Graphics
         {
             Log::Print(
                 "Failed to shut down engine window because its window ID was not found!",
-                "ELYPSO_WINDOW",
+                "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
 

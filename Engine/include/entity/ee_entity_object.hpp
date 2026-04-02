@@ -92,7 +92,7 @@ namespace ElypsoEngine::Entity
 
         ~Object();
     private:
-        string modelName{};
+        string name{};
 
         u32 ID{};
         u32 contextID{};
