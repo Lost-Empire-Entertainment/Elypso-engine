@@ -12,8 +12,8 @@
 #include "core/ee_core.hpp"
 #include "core/kw_core.hpp"
 #include "core/kg_context.hpp"
-#include "objects/models/kg_model.hpp"
-#include "objects/models/kg_model_primitive.hpp"
+#include "graphics/models/kg_model.hpp"
+#include "graphics/models/kg_model_primitive.hpp"
 #include "_internal/opengl/_kg_opengl_model.hpp"
 #include "_internal/opengl/_kg_opengl_shader.hpp"
 
@@ -24,7 +24,7 @@ using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::EngineWindow;
 using KalaWindow::Core::KalaWindowCore;
 using KalaGraphics::Core::WindowContext;
-using KalaGraphics::Object::Model_Primitive;
+using KalaGraphics::Graphics::Model_Primitive;
 using KalaGraphics::Internal::OpenGL::shader_name;
 using KalaGraphics::Internal::OpenGL::OpenGL_Shader;
 using KalaGraphics::Internal::OpenGL::OpenGL_ShaderType;

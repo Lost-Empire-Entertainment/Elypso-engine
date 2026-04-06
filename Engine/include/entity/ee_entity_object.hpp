@@ -12,7 +12,7 @@
 #include "math_utils.hpp"
 
 #include "core/ee_registry.hpp"
-#include "objects/models/kg_model_primitive.hpp"
+#include "graphics/models/kg_model_primitive.hpp"
 
 namespace ElypsoEngine::Entity
 {
@@ -20,10 +20,10 @@ namespace ElypsoEngine::Entity
 
     using ElypsoEngine::Core::ElypsoRegistry;
 
-    using KalaGraphics::Object::CubeDetails;
-    using KalaGraphics::Object::PyramidDetails;
-    using KalaGraphics::Object::SphereDetails;
-    using KalaGraphics::Object::TorusDetails;
+    using KalaGraphics::Graphics::CubeDetails;
+    using KalaGraphics::Graphics::PyramidDetails;
+    using KalaGraphics::Graphics::SphereDetails;
+    using KalaGraphics::Graphics::TorusDetails;
 
     using std::filesystem::path;
     using std::string;
