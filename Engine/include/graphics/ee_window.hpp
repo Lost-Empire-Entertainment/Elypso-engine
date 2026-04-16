@@ -13,7 +13,6 @@
 
 #include "core/ee_registry.hpp"
 #include "graphics/kw_window.hpp"
-#include "core/kg_context.hpp"
 
 namespace ElypsoEngine::Graphics
 {
@@ -22,7 +21,6 @@ namespace ElypsoEngine::Graphics
     using ElypsoEngine::Core::ElypsoRegistry;
     using KalaWindow::Graphics::WindowMode;
     using KalaWindow::Graphics::WindowState;
-    using KalaGraphics::Core::GraphicsFeature;
 
     using std::string_view;
     using std::vector;
@@ -38,8 +36,7 @@ namespace ElypsoEngine::Graphics
             vec2 pos = 800,
             vec2 size = 800,
             WindowState state = WindowState::WINDOW_NORMAL,
-            WindowMode mode = WindowMode::WINDOWMODE_WINDOWED,
-            const vector<GraphicsFeature>& gfxFeatures = {});
+            WindowMode mode = WindowMode::WINDOWMODE_WINDOWED);
 
         u32 GetID() const;
         //Returns the KalaWindow process window ID

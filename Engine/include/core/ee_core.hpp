@@ -17,10 +17,7 @@ namespace ElypsoEngine::Core
     {
     public:
         //Core engine initialization
-        static void Initialize(
-            string_view programName = "Elypso Engine",
-            bool allowGL = true,
-            bool allowVK = false);
+        static void Initialize(string_view programName);
 
         static bool IsInitialized();
 

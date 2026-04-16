@@ -14,8 +14,6 @@
 #include "core/kg_context.hpp"
 #include "graphics/models/kg_model.hpp"
 #include "graphics/models/kg_model_primitive.hpp"
-#include "_internal/opengl/_kg_opengl_model.hpp"
-#include "_internal/opengl/_kg_opengl_shader.hpp"
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
@@ -25,10 +23,6 @@ using ElypsoEngine::Graphics::EngineWindow;
 using KalaWindow::Core::KalaWindowCore;
 using KalaGraphics::Core::WindowContext;
 using KalaGraphics::Graphics::Model_Primitive;
-using KalaGraphics::Internal::OpenGL::shader_name;
-using KalaGraphics::Internal::OpenGL::OpenGL_Shader;
-using KalaGraphics::Internal::OpenGL::OpenGL_ShaderType;
-using KalaGraphics::Internal::OpenGL::OpenGL_ShaderData;
 
 using std::unique_ptr;
 using std::make_unique;
@@ -49,6 +43,7 @@ namespace ElypsoEngine::Entity
         const vec3& size,
         CubeDetails cDet)
     {
+        /*
         EngineWindow* ew = EngineWindow::GetRegistry().createdContent[windowID].get();
         if (!ew)
         {
@@ -169,6 +164,8 @@ namespace ElypsoEngine::Entity
             LogType::LOG_SUCCESS);
 
         return objectPtr;
+        */
+        return nullptr;
     }
 
     Object* Object::Initialize(

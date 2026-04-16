@@ -13,14 +13,9 @@ namespace ElypsoEngine::Graphics
     {
     public:
         //Initialize graphics system
-		static void Initialize(
-            bool allowGL = true,
-            bool allowVK = false);
+		static void Initialize();
 
         static bool IsInitialized();
-
-        static bool AllowGL();
-        static bool AllowVK();
 
 		//Main graphics draw call
 		static void Update();

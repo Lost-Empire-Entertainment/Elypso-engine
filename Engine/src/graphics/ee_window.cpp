@@ -13,8 +13,8 @@
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "core/kg_context.hpp"
-#include "opengl/kw_opengl.hpp"
 #include "vulkan/kw_vulkan.hpp"
+#include "_internal/_kg_vulkan.hpp"
 #ifdef __linux__
 #include "graphics/kw_window_global.hpp"
 #endif
@@ -31,12 +31,11 @@ using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
-using KalaWindow::OpenGL::OpenGL_Context;
 using KalaWindow::Vulkan::Vulkan_Context;
-using KalaGraphics::Core::GraphicsFeature;
 using KalaGraphics::Core::WindowContext;
 using KalaGraphics::Core::WindowContextData;
 using KalaGraphics::Core::FramebufferSize;
+using KalaGraphics::Internal::Vulkan_Core;
 #ifdef __linux__
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
@@ -109,8 +108,7 @@ namespace ElypsoEngine::Graphics
         vec2 pos,
         vec2 size,
         WindowState state,
-        WindowMode mode,
-        const vector<GraphicsFeature>& gfxFeatures)
+        WindowMode mode)
     {
         if (windowTitle.empty())
         {
@@ -138,29 +136,7 @@ namespace ElypsoEngine::Graphics
 
         Input::Initialize(windowID);
 
-        OpenGL_Context* glctx{};
-        Vulkan_Context* vkctx{};
-
-        if (!ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_SOFTWARE)
-            && !ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_VULKAN)
-            && Render::AllowGL()
-            && (gfxFeatures.empty()
-            || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_OPENGL)))
-        {
-            glctx = OpenGL_Context::Initialize(windowID);
-        }
-        if (!ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_SOFTWARE)
-            && !ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_OPENGL)
-            && !glctx
-            && Render::AllowVK()
-            && (gfxFeatures.empty()
-            || ContainsValue(gfxFeatures, GraphicsFeature::GF_FORCE_VULKAN)
-            || ContainsValue(gfxFeatures, GraphicsFeature::GF_COMPUTE_SHADERS)
-            || ContainsValue(gfxFeatures, GraphicsFeature::GF_RAY_TRACING)
-            || ContainsValue(gfxFeatures, GraphicsFeature::GF_PATH_TRACING)))
-        {
-            vkctx = Vulkan_Context::Initialize(windowID);
-        }
+        Vulkan_Context* vkctx = Vulkan_Context::Initialize(windowID);
 
         const WindowData& wData = pw->GetWindowData();
 #ifdef _WIN32
@@ -184,13 +160,12 @@ namespace ElypsoEngine::Graphics
         };
 #endif
 
-        if (glctx) kgData.context_gl = glctx->GetContext();
-        if (vkctx) kgData.context_vk_surface = vkctx->GetSurface();
+        kgData.context_vk_surface = vkctx->GetSurface();
 
         //pre-sync to ensure kg gets the highest id
         EngineCore::SyncID();
 
-        WindowContext* kgctx = WindowContext::Initialize(kgData, gfxFeatures);
+        WindowContext* kgctx = WindowContext::Initialize(kgData);
 
         pw->SetRedrawCallback([kgctx](){ kgctx->Update(); });
         pw->SetResizeCallback([kgctx](){ kgctx->ResizeUpdate(); });
@@ -211,6 +186,8 @@ namespace ElypsoEngine::Graphics
         pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
         registry.AddContent(newID, std::move(newWindow));
+
+        Vulkan_Core::InitializeContext(newID);
 
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",

@@ -31,10 +31,7 @@ namespace ElypsoEngine::Core
 {
     static bool isInitialized{};
 
-    void EngineCore::Initialize(
-        string_view programName,
-        bool allowGL,
-        bool allowVK)
+    void EngineCore::Initialize(string_view programName)
     {
         if (isInitialized)
         {
@@ -69,7 +66,7 @@ namespace ElypsoEngine::Core
             "EE_CORE",
             LogType::LOG_SUCCESS);
 
-        Render::Initialize(allowGL, allowVK);
+        Render::Initialize();
     }
 
     bool EngineCore::IsInitialized() { return isInitialized; }
