@@ -49,6 +49,7 @@ using std::to_string;
 using std::unique_ptr;
 using std::make_unique;
 using std::vector;
+using std::unordered_map;
 
 namespace ElypsoEngine::Graphics
 {
@@ -129,7 +130,7 @@ namespace ElypsoEngine::Graphics
         EngineWindow* windowPtr = newWindow.get();
 
         ProcessWindow* pw = ProcessWindow::Initialize(windowTitle);
-        pw->SetClientRectSize(size);
+        pw->SetSize(size);
         pw->SetPosition(pos);
 
         u32 windowID = pw->GetID();
@@ -168,7 +169,7 @@ namespace ElypsoEngine::Graphics
         WindowContext* kgctx = WindowContext::Initialize(kgData);
 
         pw->SetRedrawCallback([kgctx](){ kgctx->Update(); });
-        pw->SetResizeCallback([kgctx](){ kgctx->ResizeUpdate(); });
+        pw->SetResizeCallback([kgctx]() { kgctx->ResizeUpdate(); });
 
         pw->SetWindowState(state);
         pw->SetWindowMode(mode);
@@ -187,7 +188,7 @@ namespace ElypsoEngine::Graphics
 
         registry.AddContent(newID, std::move(newWindow));
 
-        Vulkan_Core::InitializeContext(newID);
+        Vulkan_Core::InitializeContext(windowPtr->contextID);
 
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
@@ -233,11 +234,7 @@ namespace ElypsoEngine::Graphics
 
         pw->Update();
 
-        if (!pw->IsIdle()
-            && !pw->IsResizing())
-        {
-            kgctx->Update();
-        }
+        if (!pw->IsIdle()) kgctx->Update();
 
         input->EndFrameUpdate();
     }
