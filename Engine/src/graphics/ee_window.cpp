@@ -168,9 +168,6 @@ namespace ElypsoEngine::Graphics
 
         WindowContext* kgctx = WindowContext::Initialize(kgData);
 
-        pw->SetRedrawCallback([kgctx](){ kgctx->Update(); });
-        pw->SetResizeCallback([kgctx]() { kgctx->ResizeUpdate(); });
-
         pw->SetWindowState(state);
         pw->SetWindowMode(mode);
 
