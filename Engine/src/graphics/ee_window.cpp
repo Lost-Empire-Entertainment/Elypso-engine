@@ -4,28 +4,24 @@
 //Read LICENSE.md for more information.
 
 #include <memory>
-#include <vector>
 
 #include "log_utils.hpp"
-#include "core_utils.hpp"
 
 #include "core/kw_core.hpp"
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "core/kg_context.hpp"
 #include "vulkan/kw_vulkan.hpp"
-#include "_internal/_kg_vulkan.hpp"
+#include "graphics/kg_vulkan.hpp"
 #ifdef __linux__
 #include "graphics/kw_window_global.hpp"
 #endif
 
 #include "graphics/ee_window.hpp"
-#include "graphics/ee_render.hpp"
 #include "core/ee_core.hpp"
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
-using KalaHeaders::KalaCore::ContainsValue;
 
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
@@ -35,21 +31,18 @@ using KalaWindow::Vulkan::Vulkan_Context;
 using KalaGraphics::Core::WindowContext;
 using KalaGraphics::Core::WindowContextData;
 using KalaGraphics::Core::FramebufferSize;
-using KalaGraphics::Internal::Vulkan_Core;
+using KalaGraphics::Graphics::Vulkan_Core;
 #ifdef __linux__
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
 #endif
 
-using ElypsoEngine::Graphics::Render;
 using ElypsoEngine::Core::EngineCore;
 
 using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::make_unique;
-using std::vector;
-using std::unordered_map;
 
 namespace ElypsoEngine::Graphics
 {
