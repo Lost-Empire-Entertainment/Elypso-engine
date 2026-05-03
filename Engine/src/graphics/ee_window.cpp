@@ -90,7 +90,7 @@ namespace ElypsoEngine::Graphics
             return;
         }
 
-        kgctx->Shutdown();
+        kgctx->Destroy();
 
         registry.RemoveContent(enwin->GetID());
     }
