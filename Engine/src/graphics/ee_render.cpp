@@ -20,7 +20,7 @@ using KalaHeaders::KalaLog::LogType;
 
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Vulkan::Vulkan_Global;
-using KalaGraphics::Core::WindowContext;
+using KalaGraphics::Core::GraphicsContext;
 #ifdef __linux__
 using KalaWindow::Core::MessageLoop;
 #endif
@@ -45,7 +45,7 @@ namespace ElypsoEngine::Graphics
         Window_Global::Initialize();
 
         Vulkan_Global::Initialize();
-        WindowContext::SetVKInstance(Vulkan_Global::GetInstance());
+        GraphicsContext::SetVKInstance(Vulkan_Global::GetInstance());
 
         Log::Print(
             "Initialized render!",

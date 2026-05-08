@@ -21,7 +21,7 @@ using KalaHeaders::KalaLog::LogType;
 using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::EngineWindow;
 using KalaWindow::Core::KalaWindowCore;
-using KalaGraphics::Core::WindowContext;
+using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Graphics::Model_Primitive;
 
 using std::unique_ptr;
@@ -56,7 +56,7 @@ namespace ElypsoEngine::Entity
             return nullptr;
         }
 
-        WindowContext* kgctx = WindowContext::GetRegistry().createdContent[ew->GetContextID()].get();
+        GraphicsContext* kgctx = GraphicsContext::GetRegistry().createdContent[ew->GetContextID()].get();
         if (!kgctx)
         {
             Log::Print(
@@ -68,7 +68,7 @@ namespace ElypsoEngine::Entity
             return nullptr;
         }
 
-        auto& ctx = kgctx->GetWindowContextData();
+        auto& ctx = kgctx->GetGraphicsContextData();
 
         //pre-sync to ensure kg gets the highest id
         EngineCore::SyncID();

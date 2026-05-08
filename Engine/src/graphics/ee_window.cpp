@@ -28,10 +28,9 @@ using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
 using KalaWindow::Vulkan::Vulkan_Context;
-using KalaGraphics::Core::WindowContext;
-using KalaGraphics::Core::WindowContextData;
+using KalaGraphics::Core::GraphicsContext;
+using KalaGraphics::Core::GraphicsContextData;
 using KalaGraphics::Core::FramebufferSize;
-using KalaGraphics::Graphics::Vulkan_Core;
 #ifdef __linux__
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
@@ -78,7 +77,7 @@ namespace ElypsoEngine::Graphics
             "EE_WINDOW",
             LogType::LOG_INFO);
 
-        WindowContext* kgctx = WindowContext::GetRegistry().GetContent(enwin->GetContextID());
+        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(enwin->GetContextID());
         if (!kgctx)
         {
             Log::Print(
@@ -134,7 +133,7 @@ namespace ElypsoEngine::Graphics
 
         const WindowData& wData = pw->GetWindowData();
 #ifdef _WIN32
-        WindowContextData kgData =
+        GraphicsContextData kgData =
         {
             .windowID = windowID,
             .isFramebufferDynamic = true,
@@ -144,7 +143,7 @@ namespace ElypsoEngine::Graphics
 #else
         const X11GlobalData& data = Window_Global::GetGlobalData();
 
-        WindowContextData kgData =
+        GraphicsContextData kgData =
         {
             .windowID = windowID,
             .isFramebufferDynamic = true,
@@ -159,7 +158,7 @@ namespace ElypsoEngine::Graphics
         //pre-sync to ensure kg gets the highest id
         EngineCore::SyncID();
 
-        WindowContext* kgctx = WindowContext::Initialize(kgData);
+        GraphicsContext* kgctx = GraphicsContext::Initialize(kgData);
 
         pw->SetWindowState(state);
         pw->SetWindowMode(mode);
@@ -177,8 +176,6 @@ namespace ElypsoEngine::Graphics
         pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
         registry.AddContent(newID, std::move(newWindow));
-
-        Vulkan_Core::InitializeContext(windowPtr->contextID);
 
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
@@ -212,7 +209,7 @@ namespace ElypsoEngine::Graphics
 
             return;
         }
-        WindowContext* kgctx = WindowContext::GetRegistry().GetContent(contextID);
+        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(contextID);
         if (!kgctx)
         {
             KalaWindowCore::ForceClose(

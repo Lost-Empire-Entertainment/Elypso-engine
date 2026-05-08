@@ -60,6 +60,8 @@ namespace ElypsoEngine::Core
         CrashHandler::Initialize(programName, Shutdown);
 
         KalaWindowCore::SetUserShutdownCallback(Shutdown);
+        
+        KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
 
         Log::Print(
             "Initialized core!",
