@@ -85,7 +85,7 @@ namespace ElypsoEngine::Entity
         const string& GetName() const;
 
         u32 GetID() const;
-        u32 GetContextID() const;
+        u32 GetGraphicsContextID() const;
         u32 GetModelID() const;
 
         void Update();
@@ -95,7 +95,7 @@ namespace ElypsoEngine::Entity
         string name{};
 
         u32 ID{};
-        u32 contextID{};
+        u32 graphicsContextID{};
         u32 modelID{};
     };
 }

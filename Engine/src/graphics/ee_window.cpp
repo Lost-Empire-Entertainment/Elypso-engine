@@ -30,7 +30,7 @@ using KalaWindow::Graphics::WindowData;
 using KalaWindow::Vulkan::Vulkan_Context;
 using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Core::GraphicsContextData;
-using KalaGraphics::Core::FramebufferSize;
+using KalaGraphics::Core::ViewportSize;
 #ifdef __linux__
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
@@ -60,7 +60,7 @@ namespace ElypsoEngine::Graphics
             return;
         }
         
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(enwin->GetWindowID());
+        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(enwin->GetWindowContextID());
         if (!pw)
         {
             Log::Print(
@@ -77,7 +77,7 @@ namespace ElypsoEngine::Graphics
             "EE_WINDOW",
             LogType::LOG_INFO);
 
-        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(enwin->GetContextID());
+        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(enwin->GetGraphicsContextID());
         if (!kgctx)
         {
             Log::Print(
@@ -146,8 +146,6 @@ namespace ElypsoEngine::Graphics
         GraphicsContextData kgData =
         {
             .windowID = windowID,
-            .isFramebufferDynamic = true,
-            .fbSize = FramebufferSize::FB_1920_1080,
             .context_display = data.display,
             .context_window = wData.window
         };
@@ -170,8 +168,8 @@ namespace ElypsoEngine::Graphics
         KalaWindowCore::SetGlobalID(newID);
 
         windowPtr->ID = newID;
-        windowPtr->windowID = windowID;
-        windowPtr->contextID = kgctx->GetID();
+        windowPtr->windowContextID = windowID;
+        windowPtr->graphicsContextID = kgctx->GetID();
 
         pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
@@ -186,12 +184,12 @@ namespace ElypsoEngine::Graphics
     }
 
     u32 EngineWindow::GetID() const { return ID; }
-    u32 EngineWindow::GetWindowID() const { return windowID; }
-    u32 EngineWindow::GetContextID() const { return contextID; }
+    u32 EngineWindow::GetWindowContextID() const { return windowContextID; }
+    u32 EngineWindow::GetGraphicsContextID() const { return graphicsContextID; }
 
     void EngineWindow::Update()
     {
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowID);
+        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowContextID);
         if (!pw)
         {
             KalaWindowCore::ForceClose(
@@ -209,7 +207,7 @@ namespace ElypsoEngine::Graphics
 
             return;
         }
-        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(contextID);
+        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);
         if (!kgctx)
         {
             KalaWindowCore::ForceClose(
@@ -228,7 +226,7 @@ namespace ElypsoEngine::Graphics
 
     void EngineWindow::Shutdown()
     { 
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowID);
+        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowContextID);
         if (!pw)
         {
             Log::Print(

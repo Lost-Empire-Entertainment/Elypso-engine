@@ -56,7 +56,7 @@ namespace ElypsoEngine::Entity
             return nullptr;
         }
 
-        GraphicsContext* kgctx = GraphicsContext::GetRegistry().createdContent[ew->GetContextID()].get();
+        GraphicsContext* kgctx = GraphicsContext::GetRegistry().createdContent[ew->GetGraphicsContextID()].get();
         if (!kgctx)
         {
             Log::Print(
@@ -68,7 +68,7 @@ namespace ElypsoEngine::Entity
             return nullptr;
         }
 
-        auto& ctx = kgctx->GetGraphicsContextData();
+        const auto& ctx = kgctx->GetGraphicsContextData();
 
         //pre-sync to ensure kg gets the highest id
         EngineCore::SyncID();
@@ -262,7 +262,7 @@ namespace ElypsoEngine::Entity
     const string& Object::GetName() const { return name; }
 
     u32 Object::GetID() const { return ID; }
-    u32 Object::GetContextID() const { return contextID; }
+    u32 Object::GetGraphicsContextID() const { return graphicsContextID; }
     u32 Object::GetModelID() const { return modelID; }
 
     void Object::Update()
