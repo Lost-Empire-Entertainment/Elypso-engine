@@ -72,11 +72,6 @@ namespace ElypsoEngine::Graphics
             return;
         }
 
-        Log::Print(
-            "Closing Elypso Engine window '" + pw->GetTitle() + "'.",
-            "EE_WINDOW",
-            LogType::LOG_INFO);
-
         GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(enwin->GetGraphicsContextID());
         if (!kgctx)
         {
@@ -116,8 +111,6 @@ namespace ElypsoEngine::Graphics
                 "Window title is too long!");
         }
 
-        string title = string(windowTitle);
-
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
         EngineWindow* windowPtr = newWindow.get();
 
@@ -136,8 +129,6 @@ namespace ElypsoEngine::Graphics
         GraphicsContextData kgData =
         {
             .windowID = windowID,
-            .isFramebufferDynamic = true,
-            .fbSize = FramebufferSize::FB_1920_1080,
             .context_window = wData.window
         };
 #else
@@ -224,13 +215,18 @@ namespace ElypsoEngine::Graphics
         input->EndFrameUpdate();
     }
 
-    void EngineWindow::Shutdown()
+    void EngineWindow::Destroy()
     { 
+        registry.RemoveContent(ID);
+    }
+
+    EngineWindow::~EngineWindow()
+    {
         ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowContextID);
         if (!pw)
         {
             Log::Print(
-                "Failed to shut down engine window because its window ID was not found!",
+                "Failed to shut down window because its window ID was not found!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -238,6 +234,11 @@ namespace ElypsoEngine::Graphics
             return;
         }
 
-        pw->CloseWindow();
+        Log::Print(
+            "Destroying window '" + pw->GetTitle() + "' with ID '" + to_string(ID) + "'.",
+            "EE_WINDOW",
+            LogType::LOG_INFO);
+
+        pw->Destroy();
     }
 }

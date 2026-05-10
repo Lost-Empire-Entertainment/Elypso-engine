@@ -79,14 +79,9 @@ namespace ElypsoEngine::Graphics
 
     void Render::Shutdown()
     {
-        Log::Print(
-            "Shutting down Elypso Engine render structure.",
-            "EE_RENDER",
-            LogType::LOG_INFO);
-
         for (const auto& w : EngineWindow::GetRegistry().runtimeContent)
         {
-            w->Shutdown();
+            w->Destroy();
         }
     }
 }

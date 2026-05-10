@@ -47,8 +47,9 @@ namespace ElypsoEngine::Graphics
         //Single window update
         void Update();
 
-        //Shut down all window content
-        void Shutdown();
+        void Destroy();
+
+        ~EngineWindow();
     private:
         u32 ID{};
         u32 windowContextID{};
