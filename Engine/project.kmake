@@ -55,14 +55,14 @@ customflags: export-compile-commands, export-vscode-sln
 
 #profile debug-windows
 binaryname: ${name_bin}d
-compiler: clang-cl
+compiler: clang++
 buildtype: debug
 buildpath: "${dir_debug}windows"
 links: "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib"
 
 #profile release-windows
 binaryname: ${name_bin}
-compiler: clang-cl
+compiler: clang++
 buildtype: minsizerel
 buildpath: "${dir_release}windows"
 links: "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib"
