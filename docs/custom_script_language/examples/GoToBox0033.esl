@@ -1,0 +1,23 @@
+script GoToBox0033
+    priority 80
+
+    //box0033 can be any box that shares the same name, we go to the specific one we need
+    vec3 box0033pos = 52,55,3
+
+    start
+    endstart
+
+    update
+        //go to box
+        if distance(this, box0033pos) > 2
+            this.goto(box0033pos)
+        //get last item from box
+        elseif distance(this, box0033pos) <= 2
+            this.stop
+            this.lookat(box0033pos)
+            this.playanim(TakeFromBox)
+            this.additem(box0033.getcontent.last)
+            this.deattach(GoToBox0033)
+        endif
+    endupdate
+endscript

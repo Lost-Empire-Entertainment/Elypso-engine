@@ -1,0 +1,52 @@
+//core script type for inspector in editor
+script GodItems
+    //a container acts like a struct, it holds multiple different variables
+    container godItem
+    string name
+    bool instakill
+    u8 damage
+
+    //a list is like a vector of the same variables
+    list<godItem> items
+    list<inspectorpanel> panels
+    inputfield itemName
+    checkbox itemInstaKill
+    slider itemDamage
+
+    action addgoditem(godItem i)
+        inspectorpanel p = createinspectorpanel
+        p.attachentity(itemName "itemName" as i.name)
+        p.attachentity(itemInstaKill "itemInstaKill" as i.instakill)
+        p.attachentity(itemDamage "itemDamage" as i.damage)
+        p.attachvalue(i "goditem")
+        panels.add(p)
+    endaction
+
+    start
+        godItem.attachvalue(name)
+        godItem.attachvalue(instakill)
+        godItem.attachvalue(damage)
+
+        godItem item1 = "myGodItem", true, 1
+        godItem item2 = "myOtherGodItem", false, 255
+        addgoditem(item1)
+        addgoditem(item2)
+    endstart
+
+    update
+        for p in panels
+            if p.itemName.isDirty
+                p.goditem.name = p.itemName.value
+                p.itemName.dirty = false
+            endif
+            if p.itemInstaKill.isDirty
+                p.goditem.instakill = p.itemInstaKill.value
+                p.itemInstaKill.dirty = false
+            endif
+            if p.itemDamage.isDirty
+                p.goditem.damage = p.itemDamage.value
+                p.itemDamage.dirty = false
+            endif
+        endfor
+    endupdate
+endscript

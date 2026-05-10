@@ -1,0 +1,41 @@
+script WindowAndInputExample
+    priority 1
+    ignoredeath true
+
+    window w
+
+    start
+        w = getwindow(MAIN_WINDOW)
+    endstart
+
+    update
+        if getkeydown(PageDown) destroy(w) endif
+    endupdate
+
+    script ConsoleExample
+    priority 1
+
+    start
+    endstart
+
+    update
+        if getkeydown(PageUp)
+            if console.isopen console.open
+            else console.close
+            endif
+        endif
+    endupdate
+endscript
+
+script PopupExample
+    priority 1
+
+    popup newpopup
+
+    start
+    endstart
+
+    update
+        if getkeydown(x) newpopup.show("title", "this is a popup test") endif
+    endupdate
+endscript

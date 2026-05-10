@@ -1,0 +1,78 @@
+//create a new action which returns type entity,
+//actions can be inside or outside scripts
+action getclosestentity(triggersphere sp) : entity
+    entity closest
+    for e in sp.getentities
+        if distance(this, e) < closest
+        && closest.isalive
+            closest = e
+            break
+        endif
+    endfor
+
+    return closest
+endaction
+
+locked script CheckHostiles
+    priority 100
+
+    triggersphere enemytrigger
+
+    start
+        //assign a radius to the trigger sphere
+        enemytrigger.radius = 50
+
+        //this refers to whatever entity this script is attached to
+        this.attachentity(enemytrigger)
+        //now the sphere is always following this
+        enemytrigger.follow(this)
+    endstart
+
+    update
+        if enemytrigger.getentity(ANY_HOSTILE)
+            entity e = getclosestentity(enemytrigger)
+            if e.agression > this.agression
+                && !this.hasscript(Flee)
+                this.attachscript(Flee)
+            elseif e.agression <= this.agression
+                && !this.hasscript(AttackEnemy)
+                this.attachscript(AttackEnemy)
+            endif
+        endif
+    endupdate
+endscript
+
+script Flee
+    priority 100
+
+    start
+    endstart
+
+    update
+    endupdate
+endscript
+
+script AttackEnemy
+    priority 100
+
+    entity closest
+    ref triggersphere sp = this.getattachment(enemytrigger)
+
+    start
+        closest = getclosestentity(sp)
+        this.attack(closest)
+    endstart
+
+    update
+        if closest.isalive
+            return
+        endif
+
+        closest = getclosestentity(sp)
+        if sp.getentities.count > 0
+            this.attack(closest)
+        else
+            this.deattach(AttackEnemy)
+        endif
+    endupdate
+endscript
