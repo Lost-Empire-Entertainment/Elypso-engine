@@ -28,6 +28,7 @@ using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
 using KalaWindow::Vulkan::Vulkan_Context;
+using KalaGraphics::Graphics::VulkanContext;
 using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Core::GraphicsContextData;
 using KalaGraphics::Core::ViewportSize;
@@ -148,6 +149,34 @@ namespace ElypsoEngine::Graphics
         EngineCore::SyncID();
 
         GraphicsContext* kgctx = GraphicsContext::Initialize(kgData);
+
+#ifdef _WIN32
+        pw->SetResizeCallback([kgctx]() 
+        {
+            if (!kgctx)
+            {
+                KalaWindowCore::ForceClose(
+                    "Resize callback error",
+                    "Failed to call resize callback because graphics context was not found!");
+
+                return;
+            }
+
+            u32 vkctxID = kgctx->GetVulkanContextID();
+            VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(vkctxID);
+            if (vkctx) vkctx->RecreateSwapchain();
+            else
+            {
+                KalaWindowCore::ForceClose(
+                    "Resize callback error",
+                    "Failed to call resize callback because Vulkan context '" + to_string(vkctxID) + "' was not found!");
+
+                return;
+            }
+
+            kgctx->Update();
+        });
+#endif
 
         pw->SetWindowState(state);
         pw->SetWindowMode(mode);
