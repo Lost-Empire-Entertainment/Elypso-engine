@@ -61,33 +61,7 @@ namespace ElypsoEngine::Graphics
             return;
         }
         
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(enwin->GetWindowContextID());
-        if (!pw)
-        {
-            Log::Print(
-                "Failed to call shutdown callback because the window ID was not found!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-
-        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(enwin->GetGraphicsContextID());
-        if (!kgctx)
-        {
-            Log::Print(
-                "Failed to call shutdown callback because the context ID was not found!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-
-        kgctx->Destroy();
-
-        registry.RemoveContent(enwin->GetID());
+        enwin->Destroy();
     }
 
 	ElypsoRegistry<EngineWindow>& EngineWindow::GetRegistry() { return registry; }
@@ -245,17 +219,17 @@ namespace ElypsoEngine::Graphics
     }
 
     void EngineWindow::Destroy()
-    { 
+    {
         registry.RemoveContent(ID);
     }
 
     EngineWindow::~EngineWindow()
     {
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowContextID);
-        if (!pw)
+        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);
+        if (!kgctx)
         {
             Log::Print(
-                "Failed to shut down window because its window ID was not found!",
+                "Failed to graphics context because its ID was not found!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -263,11 +237,6 @@ namespace ElypsoEngine::Graphics
             return;
         }
 
-        Log::Print(
-            "Destroying window '" + pw->GetTitle() + "' with ID '" + to_string(ID) + "'.",
-            "EE_WINDOW",
-            LogType::LOG_INFO);
-
-        pw->Destroy();
+        kgctx->Destroy();
     }
 }
