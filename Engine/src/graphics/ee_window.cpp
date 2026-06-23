@@ -60,7 +60,7 @@ namespace ElypsoEngine::Graphics
 
             return;
         }
-        
+
         enwin->Destroy();
     }
 
@@ -218,10 +218,7 @@ namespace ElypsoEngine::Graphics
         input->EndFrameUpdate();
     }
 
-    void EngineWindow::Destroy()
-    {
-        registry.RemoveContent(ID);
-    }
+    void EngineWindow::Destroy() { registry.RemoveContent(ID); }
 
     EngineWindow::~EngineWindow()
     {

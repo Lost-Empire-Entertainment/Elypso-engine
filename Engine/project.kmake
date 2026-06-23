@@ -64,6 +64,7 @@ links: "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_
 binaryname: ${name_bin}
 buildtype: minsizerel
 buildpath: "${dir_release}windows"
+//customflags: generate-symbols
 links: "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib"
 
 #profile debug-linux

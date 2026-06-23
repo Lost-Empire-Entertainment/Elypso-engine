@@ -57,7 +57,7 @@ namespace ElypsoEngine::Core
                 "Program name is too long!");
         }
         
-        CrashHandler::Initialize(programName, Shutdown);
+        CrashHandler::Initialize(programName);
 
         KalaWindowCore::SetUserShutdownCallback(Shutdown);
         
