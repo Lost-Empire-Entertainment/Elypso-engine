@@ -23,6 +23,7 @@
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
+using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
@@ -79,7 +80,7 @@ namespace ElypsoEngine::Graphics
                 "Elypso Engine window init error",
                 "Window title cannot be empty!");
         }
-        if (windowTitle.size() > 50)
+        if (windowTitle.size() > MAX_NAME_LENGTH)
         {
             KalaWindowCore::ForceClose(
                 "Elypso Engine window init error",
@@ -89,9 +90,10 @@ namespace ElypsoEngine::Graphics
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
         EngineWindow* windowPtr = newWindow.get();
 
-        ProcessWindow* pw = ProcessWindow::Initialize(windowTitle);
-        pw->SetSize(size);
-        pw->SetPosition(pos);
+        ProcessWindow* pw = ProcessWindow::Initialize(
+            windowTitle,
+            pos,
+            size);
 
         u32 windowID = pw->GetID();
 
