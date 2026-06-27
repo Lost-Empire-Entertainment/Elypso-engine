@@ -51,9 +51,9 @@ namespace ElypsoEngine::Graphics
     static void ShutdownCallback(u32 windowID)
     {
         EngineWindow* enwin = registry.GetContent(windowID);
-        if (enwin == nullptr)
+        if (!enwin)
         {
-            Log::Print("Failed to call shutdown callback because the engine window ID was not found!",
+            Log::Print("Failed to call shutdown callback because the engine window ID '" + to_string(windowID) + "' was not found!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -124,33 +124,31 @@ namespace ElypsoEngine::Graphics
 
         GraphicsContext* kgctx = GraphicsContext::Initialize(kgData);
 
-#ifdef _WIN32
         pw->SetResizeCallback([kgctx]() 
-        {
-            if (!kgctx)
             {
-                KalaWindowCore::ForceClose(
-                    "Resize callback error",
-                    "Failed to call resize callback because graphics context was not found!");
+                if (!kgctx)
+                {
+                    KalaWindowCore::ForceClose(
+                        "Resize callback error",
+                        "Failed to call resize callback because graphics context was not found!");
 
-                return;
-            }
+                    return;
+                }
 
-            u32 vkctxID = kgctx->GetVulkanContextID();
-            VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(vkctxID);
-            if (vkctx) vkctx->RecreateSwapchain();
-            else
-            {
-                KalaWindowCore::ForceClose(
-                    "Resize callback error",
-                    "Failed to call resize callback because Vulkan context '" + to_string(vkctxID) + "' was not found!");
+                u32 vkctxID = kgctx->GetVulkanContextID();
+                VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(vkctxID);
+                if (vkctx) vkctx->RecreateSwapchain();
+                else
+                {
+                    KalaWindowCore::ForceClose(
+                        "Resize callback error",
+                        "Failed to call resize callback because Vulkan context '" + to_string(vkctxID) + "' was not found!");
 
-                return;
-            }
+                    return;
+                }
 
-            kgctx->Update();
-        });
-#endif
+                kgctx->Update();
+            });
 
         pw->SetWindowState(state);
         pw->SetWindowMode(mode);
@@ -218,15 +216,13 @@ namespace ElypsoEngine::Graphics
         input->EndFrameUpdate();
     }
 
-    void EngineWindow::Destroy() { registry.RemoveContent(ID); }
-
-    EngineWindow::~EngineWindow()
+    void EngineWindow::Destroy()
     {
         GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);
         if (!kgctx)
         {
             Log::Print(
-                "Failed to graphics context because its ID was not found!",
+                "Failed to destroy graphics context because its ID '" + to_string(graphicsContextID) + "' was not found!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -235,5 +231,15 @@ namespace ElypsoEngine::Graphics
         }
 
         kgctx->Destroy();
+
+        registry.RemoveContent(ID);
+    }
+
+    EngineWindow::~EngineWindow()
+    {
+		Log::Print(
+			"Destroying engine window '" + to_string(ID) + "'.",
+			"EE_WINDOW",
+			LogType::LOG_INFO);
     }
 }

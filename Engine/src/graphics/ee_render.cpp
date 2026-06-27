@@ -5,6 +5,7 @@
 
 #include "log_utils.hpp"
 
+#include "core/kw_core.hpp"
 #include "graphics/kw_window_global.hpp"
 #include "vulkan/kw_vulkan.hpp"
 #ifdef __linux__
@@ -18,6 +19,7 @@
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
+using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Vulkan::Vulkan_Global;
 using KalaGraphics::Core::GraphicsContext;
@@ -59,10 +61,9 @@ namespace ElypsoEngine::Graphics
     {
         if (EngineWindow::GetRegistry().runtimeContent.empty())
         {
-            Log::Print(
-                "There are no windows to render! Did you forget to initialize a window?",
-                "EE_RENDER",
-                LogType::LOG_WARNING);
+            KalaWindowCore::ForceClose(
+                "Elypso Engine window update error",
+                "There are no active windows! The program has to shut down.");
 
             return;
         }
