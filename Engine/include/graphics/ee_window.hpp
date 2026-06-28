@@ -35,8 +35,7 @@ namespace ElypsoEngine::Graphics
             string_view windowTitle = "UNASSIGNED TITLE",
             vec2 pos = 800,
             vec2 size = 800,
-            WindowState state = WindowState::WINDOW_NORMAL,
-            WindowMode mode = WindowMode::WINDOWMODE_WINDOWED);
+            EngineWindow* parent = nullptr);
 
         u32 GetID() const;
         //Returns the KalaWindow process window ID

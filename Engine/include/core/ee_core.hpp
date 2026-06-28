@@ -5,26 +5,36 @@
 
 #pragma once
 
-#include <string_view>
+#include <string>
 
 #include "core_utils.hpp"
+#include "math_utils.hpp"
 
 namespace ElypsoEngine::Core
 {
-    using std::string_view;
+    using KalaHeaders::KalaMath::vec2;
+
+    using std::string;
+
+    struct LIB_API AppConfig
+    {
+        string title = "UNASSIGNED TITLE";
+        vec2 pos{};
+        vec2 size = { 800, 600 };
+    };
+
+    extern const AppConfig appConfig;
+
+    extern void Init();
+    extern void Update();
 
     class LIB_API EngineCore
     {
     public:
-        //Core engine initialization
-        static void Initialize(string_view programName);
-
-        static bool IsInitialized();
-
         //Synchronizes all library IDs
         static void SyncID();
         
         //Shut down engine
-        static void Shutdown();  
+        static void Shutdown();
     };
 }

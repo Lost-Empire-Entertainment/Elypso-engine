@@ -23,7 +23,6 @@
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
-using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
@@ -71,35 +70,58 @@ namespace ElypsoEngine::Graphics
         string_view windowTitle,
         vec2 pos,
         vec2 size,
-        WindowState state,
-        WindowMode mode)
+        EngineWindow* parent)
     {
-        if (windowTitle.empty())
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine window init error",
-                "Window title cannot be empty!");
-        }
-        if (windowTitle.size() > MAX_NAME_LENGTH)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine window init error",
-                "Window title is too long!");
-        }
-
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
         EngineWindow* windowPtr = newWindow.get();
+
+        ProcessWindow* pwParent{};
+        if (parent)
+        {
+            pwParent = ProcessWindow::GetRegistry().GetContent(parent->GetWindowContextID());
+            if (!pwParent)
+            {
+                Log::Print(
+                    "Failed to assign parent to engine window because the parent engine window '" 
+                    + to_string(parent->GetID()) + "' process window '" + to_string(parent->GetWindowContextID()) + "' was not found!",
+                    "EE_WINDOW",
+                    LogType::LOG_ERROR, 
+                    2);
+            }
+        }
 
         ProcessWindow* pw = ProcessWindow::Initialize(
             windowTitle,
             pos,
-            size);
+            size,
+            pwParent);
+
+        if (!pw)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Engine window init error",
+                "Failed to create process window!");
+        }
 
         u32 windowID = pw->GetID();
 
-        Input::Initialize(windowID);
+        Input* in = Input::Initialize(windowID);
+
+        if (!in)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Engine window init error",
+                "Failed to create input!");
+        }
 
         Vulkan_Context* vkctx = Vulkan_Context::Initialize(windowID);
+
+        if (!vkctx)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Engine window init error",
+                "Failed to create Vulkan context!");
+        }
 
         const WindowData& wData = pw->GetWindowData();
 #ifdef _WIN32
@@ -126,6 +148,13 @@ namespace ElypsoEngine::Graphics
 
         GraphicsContext* kgctx = GraphicsContext::Initialize(kgData);
 
+        if (!kgctx)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Engine window init error",
+                "Failed to create graphics context!");
+        }
+
         pw->SetResizeCallback([kgctx]() 
             {
                 if (!kgctx)
@@ -151,9 +180,6 @@ namespace ElypsoEngine::Graphics
 
                 kgctx->Update();
             });
-
-        pw->SetWindowState(state);
-        pw->SetWindowMode(mode);
 
         //post-sync to ensure ee gets the highest id from kw
         EngineCore::SyncID();
@@ -186,27 +212,35 @@ namespace ElypsoEngine::Graphics
         ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowContextID);
         if (!pw)
         {
-            KalaWindowCore::ForceClose(
-                "Engine window error",
-                "Failed to update engine window because its window ID was not found!");
+            Log::Print(
+                "Failed to update engine window '" + to_string(ID) + "' because its window ID '" + to_string(windowContextID) + "' was not found!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
 
             return;
         }
+        
         Input* input = Input::GetRegistry().GetContent(pw->GetInputID());
         if (!input)
         {
-            KalaWindowCore::ForceClose(
-                "Engine window error",
-                "Failed to update engine window because its process window input ID was not found!");
+            Log::Print(
+                "Failed to update engine window '" + to_string(ID) + "' because its input ID '" + to_string(pw->GetInputID()) + "' was not found!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
 
             return;
         }
+
         GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);
         if (!kgctx)
         {
-            KalaWindowCore::ForceClose(
-                "Engine window error",
-                "Failed to update engine window because its context ID was not found!");
+            Log::Print(
+                "Failed to update engine window '" + to_string(ID) + "' because its context ID '" + to_string(graphicsContextID) + "' was not found!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
 
             return;
         }

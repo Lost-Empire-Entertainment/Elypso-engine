@@ -5,74 +5,24 @@
 
 #include "log_utils.hpp"
 
+#include "core/ee_core.hpp"
+#include "graphics/ee_window.hpp"
 #include "core/kw_core.hpp"
-#include "core/kw_crash.hpp"
 #include "core/kg_core.hpp"
 #include "core/kp_core.hpp"
 #include "core/ka_core.hpp"
 
-#include "core/ee_core.hpp"
-#include "graphics/ee_render.hpp"
-
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
-using KalaWindow::Core::CrashHandler;
+using ElypsoEngine::Graphics::EngineWindow;
 using KalaWindow::Core::KalaWindowCore;
 using KalaGraphics::Core::KalaGraphicsCore;
 using KalaPhysics::Core::KalaPhysicsCore;
 using KalaAudio::Core::KalaAudioCore;
 
-using ElypsoEngine::Graphics::Render;
-
-using u32 = uint32_t;
-
 namespace ElypsoEngine::Core
 {
-    static bool isInitialized{};
-
-    void EngineCore::Initialize(string_view programName)
-    {
-        if (isInitialized)
-        {
-            Log::Print(
-                "Cannot initialize Elypso Engine core structure more than once!",
-                "EE_CORE",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-
-        if (programName.empty())
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine init error",
-                "Program name cannot be empty!");
-        }
-        if (programName.size() > 50)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine init error",
-                "Program name is too long!");
-        }
-        
-        CrashHandler::Initialize(programName);
-
-        KalaWindowCore::SetUserShutdownCallback(Shutdown);
-        
-        KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
-
-        Log::Print(
-            "Initialized core!",
-            "EE_CORE",
-            LogType::LOG_SUCCESS);
-
-        Render::Initialize();
-    }
-
-    bool EngineCore::IsInitialized() { return isInitialized; }
-
     void EngineCore::SyncID()
     {
         u32 highest = KalaWindowCore::GetGlobalID();
@@ -101,6 +51,9 @@ namespace ElypsoEngine::Core
             "EE_CORE",
             LogType::LOG_INFO);
 
-        Render::Shutdown();
+        for (const auto& w : EngineWindow::GetRegistry().runtimeContent)
+        {
+            w->Destroy();
+        }
     }
 }
