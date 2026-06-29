@@ -18,6 +18,7 @@
 #endif
 
 #include "graphics/ee_window.hpp"
+#include "graphics/ee_scene.hpp"
 #include "core/ee_core.hpp"
 
 using KalaHeaders::KalaLog::Log;
@@ -99,7 +100,7 @@ namespace ElypsoEngine::Graphics
         if (!pw)
         {
             KalaWindowCore::ForceClose(
-                "Elypso Engine window init error",
+                "Engine window init error",
                 "Failed to create process window!");
         }
 
@@ -110,7 +111,7 @@ namespace ElypsoEngine::Graphics
         if (!in)
         {
             KalaWindowCore::ForceClose(
-                "Elypso Engine window init error",
+                "Engine window init error",
                 "Failed to create input!");
         }
 
@@ -119,7 +120,7 @@ namespace ElypsoEngine::Graphics
         if (!vkctx)
         {
             KalaWindowCore::ForceClose(
-                "Elypso Engine window init error",
+                "Engine window init error",
                 "Failed to create Vulkan context!");
         }
 
@@ -151,7 +152,7 @@ namespace ElypsoEngine::Graphics
         if (!kgctx)
         {
             KalaWindowCore::ForceClose(
-                "Elypso Engine window init error",
+                "Engine window init error",
                 "Failed to create graphics context!");
         }
 
@@ -195,6 +196,17 @@ namespace ElypsoEngine::Graphics
 
         registry.AddContent(newID, std::move(newWindow));
 
+        Scene* newScene = Scene::Initialize(
+            string(windowTitle) + " scene",
+            newID);
+
+        if (!newScene)
+        {
+            KalaWindowCore::ForceClose(
+                "Engine window init error",
+                "Failed to create scene!");
+        }
+
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
 			"EE_WINDOW",
@@ -206,6 +218,8 @@ namespace ElypsoEngine::Graphics
     u32 EngineWindow::GetID() const { return ID; }
     u32 EngineWindow::GetWindowContextID() const { return windowContextID; }
     u32 EngineWindow::GetGraphicsContextID() const { return graphicsContextID; }
+
+    const vector<u32>& EngineWindow::GetSceneIDs() const { return sceneIDs; }
 
     void EngineWindow::Update()
     {
@@ -254,14 +268,26 @@ namespace ElypsoEngine::Graphics
 
     void EngineWindow::Destroy()
     {
+        for (const auto& s : sceneIDs)
+        {
+            Scene* sc = Scene::GetRegistry().GetContent(s);
+            if (sc) sc->Destroy();
+            else
+            {
+                KalaWindowCore::ForceClose(
+                    "Engine window destruction error",
+                    "Failed to destroy engine window '" + to_string(ID)
+                    + "' because it had an invalid scene '" + to_string(s) + "'!");
+            }
+        }
+
         GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);
         if (!kgctx)
         {
-            Log::Print(
-                "Failed to destroy graphics context because its ID '" + to_string(graphicsContextID) + "' was not found!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
+            KalaWindowCore::ForceClose(
+                "Engine window destruction error",
+                "Failed to destroy engine window '" + to_string(ID)
+                + "' because its graphics context '"+ to_string(graphicsContextID) + "' was not found!");
 
             return;
         }
