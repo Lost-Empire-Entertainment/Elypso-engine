@@ -82,12 +82,10 @@ namespace ElypsoEngine::Graphics
             pwParent = ProcessWindow::GetRegistry().GetContent(parent->GetWindowContextID());
             if (!pwParent)
             {
-                Log::Print(
+                KalaWindowCore::ForceClose(
+                    "Engine window init error",
                     "Failed to assign parent to engine window because the parent engine window '" 
-                    + to_string(parent->GetID()) + "' process window '" + to_string(parent->GetWindowContextID()) + "' was not found!",
-                    "EE_WINDOW",
-                    LogType::LOG_ERROR, 
-                    2);
+                    + to_string(parent->GetID()) + "' process window '" + to_string(parent->GetWindowContextID()) + "' was not found!");
             }
         }
 
@@ -200,12 +198,7 @@ namespace ElypsoEngine::Graphics
             string(windowTitle) + " scene",
             newID);
 
-        if (!newScene)
-        {
-            KalaWindowCore::ForceClose(
-                "Engine window init error",
-                "Failed to create scene!");
-        }
+        newScene->LoadScene();
 
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
@@ -220,51 +213,6 @@ namespace ElypsoEngine::Graphics
     u32 EngineWindow::GetGraphicsContextID() const { return graphicsContextID; }
 
     const vector<u32>& EngineWindow::GetSceneIDs() const { return sceneIDs; }
-
-    void EngineWindow::Update()
-    {
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(windowContextID);
-        if (!pw)
-        {
-            Log::Print(
-                "Failed to update engine window '" + to_string(ID) + "' because its window ID '" + to_string(windowContextID) + "' was not found!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-        
-        Input* input = Input::GetRegistry().GetContent(pw->GetInputID());
-        if (!input)
-        {
-            Log::Print(
-                "Failed to update engine window '" + to_string(ID) + "' because its input ID '" + to_string(pw->GetInputID()) + "' was not found!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-
-        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);
-        if (!kgctx)
-        {
-            Log::Print(
-                "Failed to update engine window '" + to_string(ID) + "' because its context ID '" + to_string(graphicsContextID) + "' was not found!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-
-        pw->Update();
-
-        if (!pw->IsIdle()) kgctx->Update();
-
-        input->EndFrameUpdate();
-    }
 
     void EngineWindow::Destroy()
     {

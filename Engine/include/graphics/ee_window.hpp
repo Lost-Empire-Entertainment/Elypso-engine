@@ -34,7 +34,7 @@ namespace ElypsoEngine::Graphics
         static EngineWindow* Initialize(
             string_view windowTitle = "UNASSIGNED TITLE",
             vec2 pos = 800,
-            vec2 size = 800,
+            vec2 size = { 800, 600 },
             EngineWindow* parent = nullptr);
 
         u32 GetID() const;
@@ -44,9 +44,6 @@ namespace ElypsoEngine::Graphics
         u32 GetGraphicsContextID() const;
 
         const vector<u32>& GetSceneIDs() const;
-        
-        //Single window update
-        void Update();
 
         void Destroy();
 
