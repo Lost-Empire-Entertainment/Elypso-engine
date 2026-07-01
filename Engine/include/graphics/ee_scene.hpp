@@ -47,8 +47,12 @@ namespace ElypsoEngine::Graphics
         //Returns true if this scene is currently loaded
         bool IsActive() const;
 
-        //Set this scene as the current active,
-        //the last loaded scene will be unloaded
+        //Returns true if this scenes entity graphics data will stay in memory after unloading the scene
+        bool CanStayAlive() const;
+        void SetStayAlive(bool newValue);
+
+        //Set this scene as the current active, the last loaded scene will be unloaded.
+        //Set keepAlive to true if you want this scenes assets to stay in memory even after the scene is unloaded.
         void LoadScene();
 
         //Deletes all entities found within this scene but leaves the scene alive
@@ -67,6 +71,7 @@ namespace ElypsoEngine::Graphics
         string title{};
 
         bool isActive{};
+        bool stayAlive{};
 
         vector<u32> sceneEntities{};
     };

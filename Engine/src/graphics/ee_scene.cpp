@@ -133,9 +133,77 @@ namespace ElypsoEngine::Graphics
 
     bool Scene::IsActive() const { return isActive; }
 
-    void Scene::SetTitle(string_view title)
-    {
+    bool Scene::CanStayAlive() const { return stayAlive; }
+    void Scene::SetStayAlive(bool newValue)
+    { 
+        stayAlive = newValue;
 
+        Log::Print(
+            "Set scene '" + title + "' stayAlive state to '" + (stayAlive ? "true" : "false") + "'.",
+            "EE_SCENE",
+            LogType::LOG_INFO);
+    }
+
+    void Scene::SetTitle(string_view newtitle)
+    {
+        if (newtitle.empty())
+        {
+            Log::Print(
+                "Cannot update scene '" + title + "' title because the new name cannot be empty!",
+                "EE_SCENE",
+                LogType::LOG_ERROR);
+
+            return;
+        }
+        if (newtitle.length() > MAX_NAME_LENGTH)
+        {
+            Log::Print(
+                "Cannot update scene '" + title + "' title because the new name cannot be longer than '" + to_string(MAX_NAME_LENGTH) + "' characters!",
+                "EE_SCENE",
+                LogType::LOG_ERROR);
+            
+            return;
+        }
+
+        for (EngineWindow* ew : EngineWindow::GetRegistry().runtimeContent)
+        {
+            if (!ew)
+            {
+                KalaWindowCore::ForceClose(
+                    "Scene title change error",
+                    "Failed to change scene '" + title + "' title because a nullptr engine window was found during scene existence check!");
+            }
+
+            for (u32 s : ew->GetSceneIDs())
+            {
+                Scene* sc = Scene::GetRegistry().GetContent(s);
+
+                if (!sc)
+                {
+                    KalaWindowCore::ForceClose(
+                        "Scene title change error",
+                        "Failed to change scene '" + title + "' title because a nullptr scene was found in engine window '" 
+                        + to_string(windowID) + "' during scene existence check!");
+                }
+
+                if (sc->GetTitle() == title)
+                {
+                    Log::Print(
+                        "A scene with the title '" + string(newtitle) + "' already exists in window '" + to_string(ew->GetID()) + "'!",
+                        "EE_SCENE",
+                        LogType::LOG_ERROR);
+
+                    return;
+                }
+            }
+        }
+
+        title = newtitle;
+
+        Log::Print(
+            "Set scene title to '" + title + "'!",
+            "EE_SCENE",
+            LogType::LOG_SUCCESS);
     }
 
     string_view Scene::GetTitle() const { return title; }
@@ -154,7 +222,7 @@ namespace ElypsoEngine::Graphics
         if (activeScene == this)
         {
             Log::Print(
-                "Cannot load scene '" + to_string(activeScene->ID) + "' because it is already loaded!",
+                "Cannot load scene '" + title + "' because it is already loaded!",
                 "EE_SCENE",
                 LogType::LOG_ERROR,
                 2);
@@ -179,7 +247,37 @@ namespace ElypsoEngine::Graphics
 
     void Scene::ClearScene()
     {
+        for (const auto& e : sceneEntities)
+        {
+            Entity* en = Entity::GetRegistry().GetContent(e);
 
+            if (!en)
+            {
+                KalaWindowCore::ForceClose(
+                    "Scene clear error",
+                    "Failed to clear scene '" + title
+                    + "' because it had an invalid entity '" + to_string(e) + "'!");
+            }
+
+            en->Destroy();
+        }
+
+        if (sceneEntities.empty())
+        {
+            Log::Print(
+                "Failed to clear scene '" + title + "' because it is already empty!",
+                "EE_SCENE",
+                LogType::LOG_ERROR);
+
+            return;
+        }
+
+        sceneEntities.clear();
+
+        Log::Print(
+            "Finished clearing scene '" + title + "'!",
+            "EE_SCENE",
+            LogType::LOG_SUCCESS);
     }
 
     void Scene::Unload()
@@ -192,14 +290,15 @@ namespace ElypsoEngine::Graphics
         for (const auto& e : sceneEntities)
         {
             Entity* en = Entity::GetRegistry().GetContent(e);
-            if (en) en->Destroy();
-            else
+            if (!en) 
             {
                 KalaWindowCore::ForceClose(
                     "Scene destruction error",
-                    "Failed to destroy scene '" + to_string(ID)
+                    "Failed to destroy scene '" + title
                     + "' because it had an invalid entity '" + to_string(e) + "'!");
             }
+
+            en->Destroy();
         }
 
         registry.RemoveContent(ID);
@@ -208,7 +307,7 @@ namespace ElypsoEngine::Graphics
     Scene::~Scene()
     {
         Log::Print(
-            "Destroying scene '" + to_string(ID) + "'.",
+            "Destroying scene '" + title + "'.",
             "EE_SCENE",
             LogType::LOG_INFO);
     }
