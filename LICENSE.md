@@ -1,53 +1,27 @@
-# Elypso Engine Free License 3.0
+# Lost Empire Entertainment Free License 1.0
 
-Copyright (c) 2026 **Lost Empire Entertainment**  
+Copyright (c) 2026 **Lost Empire Entertainment**
 
 ## Definitions
-- **The Company** refers to **Lost Empire Entertainment**.  
-- **The Repository** refers to the Elypso Engine source code repository and all content it contains.  
-- **The Engine** refers to the binary executable built from the **Repository**.  
-- **User-Created Work** refers to any game, application, or other interactive work developed using the **Engine**, excluding the **Repository** and the **Engine** themselves.  
+- **The Licensor** refers to the copyright holder(s).
+- **The Repository** refers to the parent directory of the License and all its content in its original form.
+- **The Software** refers to the binary executable(s) built from the **Repository**.
+- **User-Created Work** refers to any application, game, mod, asset pack, or other derivative output developed using the **Software**, excluding the **Repository** and the **Software** themselves.
 
-## 1. Scope
+## 1. Free Use
+You are free to download, install, and use the **Software** for the purpose of creating **User-Created Works**. You retain full ownership of **User-Created Works**. You owe **The Licensor** no fees or royalties for publishing, selling, or distributing **User-Created Works** created with the **Software**.
 
-This license applies to all source code, binaries and assets contained in the **Repository** with the following exceptions, including but not limited to:
-  
-- `/Editor/files`  
-- `/Engine/files`  
-- `/Game_templates`  
-- `/files`  
-- `/_external_shared`  
+## 2. No Commercial Transfer
+You may not sell, sublicense, redistribute, or commercially transfer the **Software** or any part of the **Repository** (source, binaries, or bundled assets covered by this license), modified or unmodified. Commercial distribution is permitted only for **User-Created Works**.
 
-Each of these directories may contain libraries or files licensed under their own separate licenses, whether or not they were created by the **Company**. If a directory contains a separate license, that license governs the directory and all of its subdirectories, and this license does not apply to that content.  
+## 3. Modification & Attribution
+You may modify the **Repository** for personal or internal use. If you distribute modified versions (forks, public builds), you must:
+- Clearly attribute **The Licensor** as original developers.
+- Retain all copyright and license notices.
+- Prominently state your version is modified and not official.
 
-All remaining content in the **Repository** is the property of the **Company** and is covered by this license.
+## 4. No Warranty & Limitation of Liability
+THE REPOSITORY AND SOFTWARE ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. IN NO EVENT SHALL THE LICENSOR OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR LIABILITY ARISING FROM USE OF THE REPOSITORY, SOFTWARE, OR USER-CREATED WORKS, WHETHER IN CONTRACT, TORT, OR OTHERWISE.
 
-## 2. Free Use
-
-You are free to download, install, and use the **Engine** for the purpose of creating **User-Created Works**.  
-You retain all rights and ownership to **User-Created Works**.  
-You do not owe the **Company** any fees or royalties upon publishing, selling, or otherwise distributing **User-Created Works** that were made with the **Engine**.
-
-## 3. No Commercial Transfer
-
-You may not sell, sublicense, redistribute, or otherwise commercially transfer the **Engine** itself, or any part of the **Repository** including its source code, binaries, or bundled assets covered by this license.  
-This restriction applies regardless of whether modifications have been made.  
-Commercial distribution is only permitted for **User-Created Works**.
-
-## 4. Modification and Attribution (For Distributed Versions)
-
-You may modify the **Repository** for personal or internal use.  
-If you share modified versions of the **Repository** (including forks or public distributions), you must:  
-- Include clear attribution to the **Engine** and the **Company** as the developer of the **Engine**.  
-- Retain all copyright and license notices.  
-- Make clear that your version is modified and not the official **Engine**.
-
-## 5. No Warranty and Limitation of Liability
-
-The **Repository** and the **Engine** are provided "AS IS," without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.  
-In no event shall the **Company** or any contributor to the **Repository** be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the use of the **Repository**, the **Engine**, or any **User-Created Work**.
-
-## 6. Termination
-
-This license terminates automatically if you fail to comply with its terms.  
-Upon termination, you must cease all use and distribution of the **Engine** and the **Repository**, but may continue to use and distribute **User-Created Works** you created prior to termination.
+## 5. Termination
+This license terminates automatically upon breach. Upon termination, you must cease use/distribution of the **Software** and **Repository**, but may continue using and distributing **User-Created Works** created prior to termination.
