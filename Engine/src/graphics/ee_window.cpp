@@ -210,6 +210,7 @@ namespace ElypsoEngine::Graphics
     u32 EngineWindow::GetWindowContextID() const { return windowContextID; }
     u32 EngineWindow::GetGraphicsContextID() const { return graphicsContextID; }
 
+    u32 EngineWindow::GetActiveSceneID() const { return activeSceneID; }
     const vector<u32>& EngineWindow::GetSceneIDs() const { return sceneIDs; }
 
     void EngineWindow::Destroy() { registry.RemoveContent(ID); }

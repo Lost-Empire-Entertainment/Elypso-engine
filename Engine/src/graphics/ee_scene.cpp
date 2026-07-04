@@ -4,6 +4,7 @@
 //Read LICENSE.md for more information.
 
 #include <memory>
+#include <vector>
 
 #include "graphics/ee_window.hpp"
 #include "log_utils.hpp"
@@ -19,41 +20,88 @@ using KalaHeaders::KalaLog::LogType;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::MAX_NAME_LENGTH;
 
+using ElypsoEngine::Graphics::Scene;
+
+using std::string_view;
 using std::to_string;
 using std::make_unique;
 using std::unique_ptr;
+using std::vector;
+
+static vector<FILE*> openFiles{};
 
 namespace ElypsoEngine::Graphics
 {
-    static bool loadedFirstActiveScene{};
-
     static ElypsoRegistry<Scene> registry{};
-
-    static Scene* activeScene{};
 
     ElypsoRegistry<Scene>& Scene::GetRegistry() { return registry; }
 
-    void Scene::LoadScene(string_view title)
+    Scene* Scene::GetActiveScene(u32 windowID)
     {
+        const auto& ewreg = EngineWindow::GetRegistry();
 
-    }
-
-    u32 Scene::GetActiveSceneID() { return activeScene->ID; }
-    string Scene::GetActiveSceneTitle()
-    {
-        if (!activeScene)
+        if (!ewreg.createdContent.contains(windowID))
         {
-            KalaWindowCore::ForceClose(
-                "Scene error",
-                "Failed to get scene title because active scene was invalid!");
+            Log::Print(
+                "Couldn't get active scene because engine window '" + to_string(windowID) + "' was not found!",
+                "EE_SCENE",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
         }
 
-        return activeScene->title;
+        EngineWindow* ew = ewreg.createdContent[windowID].get();
+
+        if (!registry.createdContent.contains(ew->activeSceneID))
+        {
+            KalaWindowCore::ForceClose(
+                "Active scene check error",
+                "Failed to get active scene because engine window '" + to_string(windowID) 
+                + "' active scene '" + to_string(ew->activeSceneID) + "' does not exist!");
+        }
+
+        return registry.createdContent[ew->activeSceneID].get();
+    }
+
+    void Scene::LoadScene(string_view title)
+    {
+        Scene* targetScene{};
+
+        for (Scene* s : Scene::GetRegistry().runtimeContent)
+        {
+            if (!s)
+            {
+                KalaWindowCore::ForceClose(
+                    "Scene find error",
+                    "Failed to find scene because a nullptr scene was found during scene search!");
+            }
+
+            if (s->GetTitle() == title)
+            {
+                targetScene = s;
+                break;
+            }
+        }
+
+        if (!targetScene)
+        {
+            Log::Print(
+                "Failed to load scene because scene with title '" + string(title) + "' was not found!",
+                "EE_SCENE",
+                LogType::LOG_ERROR,
+                2);
+
+            return;
+        }
+
+        targetScene->LoadScene();
     }
 
     Scene* Scene::Initialize(
         string_view title,
-        u32 windowID)
+        u32 windowID,
+        const path& escnPath)
     {
         if (title.empty())
         {
@@ -128,7 +176,12 @@ namespace ElypsoEngine::Graphics
     u32 Scene::GetID() const { return ID; }
     u32 Scene::GetWindowID() const { return windowID; }
 
-    bool Scene::IsActive() const { return isActive; }
+    bool Scene::IsActiveScene() const
+    {
+
+
+        return false;
+    }
 
     bool Scene::CanStayAlive() const { return stayAlive; }
     void Scene::SetStayAlive(bool newValue)
@@ -207,34 +260,54 @@ namespace ElypsoEngine::Graphics
 
     void Scene::LoadScene()
     {
-        if (loadedFirstActiveScene
-            && !activeScene)
+        if (IsActiveScene())
         {
-            KalaWindowCore::ForceClose(
-                "Scene load error",
-                "Failed to get active scene to unload it because it was not found!");
+            Log::Print(
+                "Cannot load scene '" + title + "' because it is already loaded!",
+                "EE_SCENE",
+                LogType::LOG_ERROR,
+                2);
+
+            return;    
         }
 
-        if (activeScene)
-        {
-            if (activeScene == this)
-            {
-                Log::Print(
-                    "Cannot load scene '" + title + "' because it is already loaded!",
-                    "EE_SCENE",
-                    LogType::LOG_ERROR,
-                    2);
+        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
 
-                return;
+        u32 activeSceneID = ew->activeSceneID;
+        ew->activeSceneID = ID;
+
+        Scene* activeScene{};
+
+        for (Scene* s : registry.runtimeContent)
+        {
+            if (!s)
+            {
+                KalaWindowCore::ForceClose(
+                    "Scene load error",
+                    "Failed to laod scene because a nullptr scene was found during scene load!");
             }
 
-            activeScene->Unload();
+            if (s->ID == activeSceneID)
+            {
+                activeScene = s;
+                break;
+            }
         }
 
-        //todo: load this scene assets here
+        if (!activeScene)
+        {
+            Log::Print(
+                "Failed to load scene '" + to_string(activeSceneID) + "' because it was not found!",
+                "EE_SCENE",
+                LogType::LOG_ERROR,
+                2);
 
-        if (!loadedFirstActiveScene) loadedFirstActiveScene = true;
-        activeScene = this;
+            return;
+        }
+
+        activeScene->Unload();
+
+        //todo: load this scene assets here
 
         Log::Print(
 			"Loaded scene '" + string(title) + "' with ID '" + to_string(ID) + "' from window '" + to_string(windowID) + "'!",
@@ -242,7 +315,7 @@ namespace ElypsoEngine::Graphics
 			LogType::LOG_SUCCESS);
     }
 
-    void Scene::ClearScene()
+    void Scene::Unload()
     {
         for (const auto& e : sceneEntities)
         {
@@ -259,27 +332,17 @@ namespace ElypsoEngine::Graphics
             en->Destroy();
         }
 
-        if (sceneEntities.empty())
-        {
-            Log::Print(
-                "Failed to clear scene '" + title + "' because it is already empty!",
-                "EE_SCENE",
-                LogType::LOG_ERROR);
-
-            return;
-        }
-
         sceneEntities.clear();
 
-        Log::Print(
-            "Finished clearing scene '" + title + "'!",
-            "EE_SCENE",
-            LogType::LOG_SUCCESS);
-    }
-
-    void Scene::Unload()
-    {
-        //todo: unload loaded scene assets here
+        for (auto& f : openFiles)
+        {
+            if (f)
+            {
+                fclose(f);
+                f = nullptr;
+            }
+        }
+        openFiles.clear();
     }
 
     void Scene::Destroy()
@@ -288,7 +351,7 @@ namespace ElypsoEngine::Graphics
 
         if (ew
             && ew->GetSceneIDs().size() > 1
-            && title == activeScene->title)
+            && title == GetActiveScene(windowID)->title)
         {
             KalaWindowCore::ForceClose(
                 "Scene destroy error",
@@ -311,18 +374,34 @@ namespace ElypsoEngine::Graphics
             "EE_SCENE",
             LogType::LOG_INFO);
 
-        for (auto e : sceneEntities)
+        for (const auto& e : sceneEntities)
         {
             Entity* en = Entity::GetRegistry().GetContent(e);
-            if (!en) 
+
+            if (!en)
             {
                 KalaWindowCore::ForceClose(
-                    "Scene destruction error",
-                    "Failed to destroy scene '" + title
+                    "Scene clear error",
+                    "Failed to clear scene '" + title
                     + "' because it had an invalid entity '" + to_string(e) + "'!");
             }
 
             en->Destroy();
+        }
+
+        sceneEntities.clear();
+
+        if (registry.runtimeContent.empty())
+        {
+            for (auto& f : openFiles)
+            {
+                if (f)
+                {
+                    fclose(f);
+                    f = nullptr;
+                }
+            }
+            openFiles.clear();
         }
     }
 }

@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include "core_utils.hpp"
 
@@ -19,6 +20,7 @@ namespace ElypsoEngine::Graphics
     using std::string;
     using std::string_view;
     using std::vector;
+    using std::filesystem::path;
 
     using u32 = uint32_t;
 
@@ -29,16 +31,16 @@ namespace ElypsoEngine::Graphics
     public:
         static ElypsoRegistry<Scene>& GetRegistry();
 
+        static Scene* GetActiveScene(u32 windowID);
+
         //Load a scene by title, this scene is set as active and last loaded scene will be unloaded
         static void LoadScene(string_view title);
-
-        static u32 GetActiveSceneID();
-        static string GetActiveSceneTitle();
 
         //Create a new scene with the chosen title
         static Scene* Initialize(
             string_view title,
-            u32 windowID);
+            u32 windowID,
+            const path& escnPath = {});
 
         u32 GetID() const;
         u32 GetWindowID() const;
@@ -47,7 +49,7 @@ namespace ElypsoEngine::Graphics
         void SetTitle(string_view title);
 
         //Returns true if this scene is currently loaded
-        bool IsActive() const;
+        bool IsActiveScene() const;
 
         //Returns true if this scenes entity graphics data will stay in memory after unloading the scene
         bool CanStayAlive() const;
@@ -56,9 +58,6 @@ namespace ElypsoEngine::Graphics
         //Set this scene as the current active, the last loaded scene will be unloaded.
         //Set keepAlive to true if you want this scenes assets to stay in memory even after the scene is unloaded.
         void LoadScene();
-
-        //Deletes all entities found within this scene but leaves the scene alive
-        void ClearScene();
 
         void Destroy();
 
@@ -72,8 +71,9 @@ namespace ElypsoEngine::Graphics
 
         string title{};
 
-        bool isActive{};
         bool stayAlive{};
+
+        path escnPath{};
 
         vector<u32> sceneEntities{};
     };

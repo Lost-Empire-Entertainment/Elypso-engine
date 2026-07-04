@@ -46,6 +46,7 @@ namespace ElypsoEngine::Graphics
         //Returns the KalaGraphics context ID
         u32 GetGraphicsContextID() const;
 
+        u32 GetActiveSceneID() const;
         const vector<u32>& GetSceneIDs() const;
 
         void Destroy();
@@ -56,6 +57,7 @@ namespace ElypsoEngine::Graphics
         u32 windowContextID{};
         u32 graphicsContextID{};
 
+        u32 activeSceneID{};
         vector<u32> sceneIDs{};
     };
 }
