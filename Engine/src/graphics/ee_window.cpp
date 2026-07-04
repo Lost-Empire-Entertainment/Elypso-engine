@@ -11,8 +11,7 @@
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "core/kg_context.hpp"
-#include "vulkan/kw_vulkan.hpp"
-#include "graphics/kg_vulkan.hpp"
+#include "graphics/kw_vulkan.hpp"
 #ifdef __linux__
 #include "graphics/kw_window_global.hpp"
 #endif
@@ -28,8 +27,7 @@ using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
-using KalaWindow::Vulkan::Vulkan_Context;
-using KalaGraphics::Graphics::VulkanContext;
+using KalaWindow::Graphics::VulkanContext;
 using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Core::GraphicsContextData;
 using KalaGraphics::Core::ViewportSize;
@@ -113,7 +111,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create input!");
         }
 
-        Vulkan_Context* vkctx = Vulkan_Context::Initialize(windowID);
+        VulkanContext* vkctx = VulkanContext::Initialize(windowID);
 
         if (!vkctx)
         {
@@ -165,15 +163,13 @@ namespace ElypsoEngine::Graphics
                     return;
                 }
 
-                u32 vkctxID = kgctx->GetVulkanContextID();
-                VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(vkctxID);
-                if (vkctx) vkctx->RecreateSwapchain();
-                else
+                if (!kgctx->RecreateSwapchain())
                 {
-                    KalaWindowCore::ForceClose(
-                        "Resize callback error",
-                        "Failed to call resize callback because Vulkan context '" + to_string(vkctxID) + "' was not found!");
-
+                    Log::Print(
+                        "Failed to recreate swapchain!",
+                        "EE_WINDOW",
+                        LogType::LOG_ERROR);
+                    
                     return;
                 }
 
@@ -200,6 +196,8 @@ namespace ElypsoEngine::Graphics
 
         newScene->LoadScene();
 
+        windowPtr->sceneIDs.push_back(newScene->GetID());
+
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
 			"EE_WINDOW",
@@ -214,11 +212,19 @@ namespace ElypsoEngine::Graphics
 
     const vector<u32>& EngineWindow::GetSceneIDs() const { return sceneIDs; }
 
-    void EngineWindow::Destroy()
+    void EngineWindow::Destroy() { registry.RemoveContent(ID); }
+
+    EngineWindow::~EngineWindow()
     {
-        for (const auto& s : sceneIDs)
+		Log::Print(
+			"Destroying engine window '" + to_string(ID) + "'.",
+			"EE_WINDOW",
+			LogType::LOG_INFO);
+
+        for (auto s : sceneIDs)
         {
             Scene* sc = Scene::GetRegistry().GetContent(s);
+
             if (sc) sc->Destroy();
             else
             {
@@ -241,15 +247,5 @@ namespace ElypsoEngine::Graphics
         }
 
         kgctx->Destroy();
-
-        registry.RemoveContent(ID);
-    }
-
-    EngineWindow::~EngineWindow()
-    {
-		Log::Print(
-			"Destroying engine window '" + to_string(ID) + "'.",
-			"EE_WINDOW",
-			LogType::LOG_INFO);
     }
 }

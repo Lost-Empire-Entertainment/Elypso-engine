@@ -29,8 +29,7 @@ namespace ElypsoEngine::Graphics
 
     static ElypsoRegistry<Scene> registry{};
 
-    static u32 activeSceneID = UINT32_MAX;
-    static string activeSceneTitle{};
+    static Scene* activeScene{};
 
     ElypsoRegistry<Scene>& Scene::GetRegistry() { return registry; }
 
@@ -39,11 +38,9 @@ namespace ElypsoEngine::Graphics
 
     }
 
-    u32 Scene::GetActiveSceneID() { return activeSceneID; }
+    u32 Scene::GetActiveSceneID() { return activeScene->ID; }
     string Scene::GetActiveSceneTitle()
-    { 
-        Scene* activeScene = registry.GetContent(activeSceneID);
-
+    {
         if (!activeScene)
         {
             KalaWindowCore::ForceClose(
@@ -210,7 +207,6 @@ namespace ElypsoEngine::Graphics
 
     void Scene::LoadScene()
     {
-        Scene* activeScene = registry.GetContent(activeSceneID);
         if (loadedFirstActiveScene
             && !activeScene)
         {
@@ -219,25 +215,26 @@ namespace ElypsoEngine::Graphics
                 "Failed to get active scene to unload it because it was not found!");
         }
 
-        if (activeScene == this)
+        if (activeScene)
         {
-            Log::Print(
-                "Cannot load scene '" + title + "' because it is already loaded!",
-                "EE_SCENE",
-                LogType::LOG_ERROR,
-                2);
+            if (activeScene == this)
+            {
+                Log::Print(
+                    "Cannot load scene '" + title + "' because it is already loaded!",
+                    "EE_SCENE",
+                    LogType::LOG_ERROR,
+                    2);
 
-            return;
+                return;
+            }
+
+            activeScene->Unload();
         }
-
-        if (activeScene) activeScene->Unload();
 
         //todo: load this scene assets here
 
-        activeSceneID = ID;
-        activeSceneTitle = title;
-
-        loadedFirstActiveScene = true;
+        if (!loadedFirstActiveScene) loadedFirstActiveScene = true;
+        activeScene = this;
 
         Log::Print(
 			"Loaded scene '" + string(title) + "' with ID '" + to_string(ID) + "' from window '" + to_string(windowID) + "'!",
@@ -287,7 +284,34 @@ namespace ElypsoEngine::Graphics
 
     void Scene::Destroy()
     {
-        for (const auto& e : sceneEntities)
+        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
+
+        if (ew
+            && ew->GetSceneIDs().size() > 1
+            && title == activeScene->title)
+        {
+            KalaWindowCore::ForceClose(
+                "Scene destroy error",
+                "The active scene for engine window '" + to_string(windowID) + "' was destroyed!");
+        }
+
+        if (ew)
+        {
+            auto it = find(ew->sceneIDs.begin(), ew->sceneIDs.end(), ID);
+            if (it != ew->sceneIDs.end()) ew->sceneIDs.erase(it);
+        }
+
+        registry.RemoveContent(ID);
+    }
+
+    Scene::~Scene()
+    {
+        Log::Print(
+            "Destroying scene '" + title + "' with ID '" + to_string(ID) + "'.",
+            "EE_SCENE",
+            LogType::LOG_INFO);
+
+        for (auto e : sceneEntities)
         {
             Entity* en = Entity::GetRegistry().GetContent(e);
             if (!en) 
@@ -300,15 +324,5 @@ namespace ElypsoEngine::Graphics
 
             en->Destroy();
         }
-
-        registry.RemoveContent(ID);
-    }
-
-    Scene::~Scene()
-    {
-        Log::Print(
-            "Destroying scene '" + title + "'.",
-            "EE_SCENE",
-            LogType::LOG_INFO);
     }
 }

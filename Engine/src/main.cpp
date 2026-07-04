@@ -14,7 +14,7 @@
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "graphics/kw_window_global.hpp"
-#include "vulkan/kw_vulkan.hpp"
+#include "graphics/kw_vulkan.hpp"
 #ifdef __linux__
 #include "core/kw_messageloop_x11.hpp"
 #endif
@@ -23,6 +23,8 @@
 
 #include "core/ee_core.hpp"
 #include "graphics/ee_window.hpp"
+#include "graphics/ee_scene.hpp"
+#include "graphics/ee_entity.hpp"
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
@@ -33,7 +35,7 @@ using KalaWindow::Core::CrashHandler;
 using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::Window_Global;
-using KalaWindow::Vulkan::Vulkan_Global;
+using KalaWindow::Graphics::VulkanContext;
 #ifdef __linux__
 using KalaWindow::Core::MessageLoop;
 #endif
@@ -45,11 +47,14 @@ using ElypsoEngine::Core::Init;
 using ElypsoEngine::Core::Update;
 using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::EngineWindow;
+using ElypsoEngine::Graphics::Scene;
+using ElypsoEngine::Graphics::Entity;
 
 using std::string;
 using std::to_string;
 using std::this_thread::sleep_for;
 using std::chrono::milliseconds;
+using std::vector;
 
 using u32 = uint32_t;
 
@@ -118,8 +123,9 @@ void EngineInit()
 
     Window_Global::Initialize();
 
-    Vulkan_Global::Initialize();
-    GraphicsContext::SetVKInstance(Vulkan_Global::GetInstance());
+    VulkanContext::InitializeGlobal();
+    GraphicsContext::SetVKInstance(VulkanContext::GetInstance());
+    GraphicsContext::InitializeGlobal();
 
     if (appConfig.pos == 0)
     {
@@ -150,21 +156,81 @@ void EnginePreUpdate()
     MessageLoop::Update();
 #endif
 
+    for (Entity* e : Entity::GetRegistry().runtimeContent)
+    {
+        if (!e)
+        {
+            Log::Print(
+                "Found nullptr entity in runtime content!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
+        }
+
+        Scene* s = Scene::GetRegistry().GetContent(e->GetSceneID());
+
+        if (!s)
+        {
+            Log::Print(
+                "Destroying entity '" + to_string(e->GetID()) + "' because its scene was invalid!",
+                "EE_MAIN",
+                LogType::LOG_WARNING);
+
+            e->Destroy();
+        }
+    }
+
+    for (Scene* s : Scene::GetRegistry().runtimeContent)
+    {
+        if (!s)
+        {
+            Log::Print(
+                "Found nullptr scene in runtime content!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
+        }
+
+        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(s->GetWindowID());
+
+        if (!ew)
+        {
+            Log::Print(
+                "Destroying scene '" + to_string(s->GetID()) + "' because its window was invalid!",
+                "EE_MAIN",
+                LogType::LOG_WARNING);
+
+            s->Destroy();
+        }
+    }
+
     for (EngineWindow* ew : EngineWindow::GetRegistry().runtimeContent)
     {
         if (!ew)
         {
-            KalaWindowCore::ForceClose(
-                "Engine pre-update error",
-                "Failed to run engine window pre-update because it was invalid!");
+            Log::Print(
+                "Failed to run engine window pre-update because it was invalid!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
         } 
 
         ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(ew->GetWindowContextID());
         if (!pw)
         {
-            KalaWindowCore::ForceClose(
-                "Engine pre-update error",
-                "Failed to run engine window '" + to_string(ew->GetID()) + "' pre-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was not found!");
+            Log::Print(
+                "Failed to run engine window '" + to_string(ew->GetID()) + "' pre-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was not found!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
         }
 
         pw->Update();
@@ -177,9 +243,13 @@ void EnginePostUpdate()
     {
         if (!ew)
         {
-            KalaWindowCore::ForceClose(
-                "Engine post-update error",
-                "Failed to run engine window post-update because one of its windows is invalid!");
+            Log::Print(
+                "Failed to run engine window post-update because one of its windows is invalid!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
         } 
 
         u32 ewID = ew->GetID();
@@ -187,25 +257,37 @@ void EnginePostUpdate()
         ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(ew->GetWindowContextID());
         if (!pw)
         {
-            KalaWindowCore::ForceClose(
-                "Engine post-update error",
-                "Failed to run engine window '" + to_string(ewID) + "' post-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was not found!");
+            Log::Print(
+                "Failed to run engine window '" + to_string(ewID) + "' post-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was not found!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
         }
     
         Input* input = Input::GetRegistry().GetContent(pw->GetInputID());
         if (!input)
         {
-            KalaWindowCore::ForceClose(
-                "Engine post-update error",
-                "Failed to run engine window '" + to_string(ewID) + "' post-update because its input ID '" + to_string(pw->GetInputID()) + "' was not found!");
+            Log::Print(
+                "Failed to run engine window '" + to_string(ewID) + "' post-update because its input ID '" + to_string(pw->GetInputID()) + "' was not found!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
         }
 
         GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(ew->GetGraphicsContextID());
         if (!kgctx)
         {
-            KalaWindowCore::ForceClose(
-                "Engine post-update error",
-                "Failed to run engine window '" + to_string(ewID) + "' post-update because its context ID '" + to_string(ew->GetGraphicsContextID()) + "' was not found!");
+            Log::Print(
+                "Failed to run engine window '" + to_string(ewID) + "' post-update because its context ID '" + to_string(ew->GetGraphicsContextID()) + "' was not found!",
+                "EE_MAIN",
+                LogType::LOG_ERROR,
+                2);
+
+            continue;
         }
 
         if (!pw->IsIdle()) kgctx->Update();

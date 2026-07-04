@@ -9,6 +9,7 @@
 #include "graphics/kg_model.hpp"
 
 #include "graphics/ee_entity.hpp"
+#include "graphics/ee_scene.hpp"
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
@@ -69,6 +70,23 @@ namespace ElypsoEngine::Graphics
 
     void Entity::Destroy()
     {
+        Scene* s = Scene::GetRegistry().GetContent(sceneID);
+        if (s)
+        {
+            auto it = find(s->sceneEntities.begin(), s->sceneEntities.end(), ID);
+            if (it != s->sceneEntities.end()) s->sceneEntities.erase(it);
+        }
+
+        registry.RemoveContent(ID);
+    }
+
+    Entity::~Entity()
+    {
+        Log::Print(
+            "Destroying entity '" + title + "' with ID '" + to_string(ID) + "'.",
+            "EE_ENTITY",
+            LogType::LOG_INFO);
+
         auto destroy_component = [&](const Component& c, bool isPrimary) -> void
             {
                 string primaryText = isPrimary ? "primary" : "secondary";
@@ -98,15 +116,5 @@ namespace ElypsoEngine::Graphics
         {
             destroy_component(sec, false);
         }
-
-        registry.RemoveContent(ID);
-    }
-
-    Entity::~Entity()
-    {
-        Log::Print(
-            "Destroying entity '" + to_string(ID) + "'.",
-            "EE_ENTITY",
-            LogType::LOG_INFO);
     }
 }

@@ -24,6 +24,8 @@ namespace ElypsoEngine::Graphics
 
     class LIB_API Scene
     {
+    friend class Entity;
+
     public:
         static ElypsoRegistry<Scene>& GetRegistry();
 

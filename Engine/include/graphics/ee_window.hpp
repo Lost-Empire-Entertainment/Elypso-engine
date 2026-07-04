@@ -25,8 +25,11 @@ namespace ElypsoEngine::Graphics
     using std::string_view;
     using std::vector;
 
+    
     class LIB_API EngineWindow
     {
+    friend class Scene;
+
     public:
         static ElypsoRegistry<EngineWindow>& GetRegistry();
 
