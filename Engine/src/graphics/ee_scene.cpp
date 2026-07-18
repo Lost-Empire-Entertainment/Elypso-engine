@@ -295,19 +295,13 @@ namespace ElypsoEngine::Graphics
 
     void Scene::LoadScene()
     {
-        /*
-        //TODO: decide if keep or remove
-        if (IsActiveScene(windowID))
+        if (!EngineWindow::GetRegistry().createdContent.contains(windowID))
         {
-            Log::Print(
-                "Cannot load scene '" + title + "' because it is already loaded!",
-                "EE_SCENE",
-                LogType::LOG_ERROR,
-                2);
-
-            return;    
+            KalaWindowCore::ForceClose(
+                "Scene load error",
+                "Failed to load scene '" + to_string(ID) + "' because engine window '" 
+                + to_string(windowID) + "' was not found during scene load!");
         }
-        */
 
         for (Scene* s : registry.runtimeContent)
         {
@@ -324,6 +318,9 @@ namespace ElypsoEngine::Graphics
                 break;
             }
         }
+
+        EngineWindow* ew = EngineWindow::GetRegistry().createdContent[windowID].get();
+        ew->activeSceneID = ID;
 
         //todo: load this scene assets here
 
