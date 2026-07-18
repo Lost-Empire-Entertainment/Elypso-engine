@@ -176,7 +176,7 @@ namespace ElypsoEngine::Graphics
                 kgctx->Update();
             });
 
-        //post-sync to ensure ee gets the highest id from kw
+        //sync to ensure window gets the highest id from kw
         EngineCore::SyncID();
 
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
@@ -226,14 +226,19 @@ namespace ElypsoEngine::Graphics
         {
             Scene* sc = Scene::GetRegistry().GetContent(s);
 
-            if (sc) sc->Destroy();
-            else
+            if (!sc)
             {
-                KalaWindowCore::ForceClose(
-                    "Engine window destruction error",
-                    "Failed to destroy engine window '" + to_string(ID)
-                    + "' because it had an invalid scene '" + to_string(s) + "'!");
+                Log::Print(
+                    "Scene '" + to_string(s) + "' was invalid and couldn't be "
+                    "destroyed during the destruction of engine window '" + to_string(ID) + "'!",
+                    "EE_WINDOW",
+                    LogType::LOG_ERROR,
+                    2);
+
+                continue;
             }
+
+            sc->Destroy();
         }
 
         GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);

@@ -6,13 +6,17 @@
 #include <memory>
 #include <vector>
 
-#include "graphics/ee_window.hpp"
+#include "core_utils.hpp"
 #include "log_utils.hpp"
 
 #include "core/kw_core.hpp"
 
 #include "graphics/ee_scene.hpp"
+#include "graphics/ee_window.hpp"
+#include "core/ee_core.hpp"
 #include "graphics/ee_entity.hpp"
+
+using KalaHeaders::KalaCore::ContainsValue;
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
@@ -20,6 +24,7 @@ using KalaHeaders::KalaLog::LogType;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::MAX_NAME_LENGTH;
 
+using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::Scene;
 
 using std::string_view;
@@ -118,9 +123,13 @@ namespace ElypsoEngine::Graphics
 
         if (!EngineWindow::GetRegistry().createdContent.contains(windowID))
         {
-            KalaWindowCore::ForceClose(
-                "Scene init error",
-                "Failed to create scene because engine window '" + to_string(windowID) + "' was not found!");
+            Log::Print(
+                "Failed to create scene '" + string(title) + "' because engine window '" + to_string(windowID) + "' was not found!",
+                "EE_SCENE",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
         }
 
         for (EngineWindow* ew : EngineWindow::GetRegistry().runtimeContent)
@@ -156,6 +165,9 @@ namespace ElypsoEngine::Graphics
         unique_ptr<Scene> newScene = make_unique<Scene>();
         Scene* scenePtr = newScene.get();
 
+        //sync to ensure scene gets the highest id from kw
+        EngineCore::SyncID();
+
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
         KalaWindowCore::SetGlobalID(newID);
 
@@ -164,6 +176,8 @@ namespace ElypsoEngine::Graphics
         scenePtr->title = title;
 
         registry.AddContent(newID, std::move(newScene));
+
+        EngineWindow::GetRegistry().createdContent[windowID]->sceneIDs.push_back(newID);
 
         Log::Print(
 			"Created new scene '" + string(title) + "' with ID '" + to_string(newID) + "'!",
@@ -178,7 +192,28 @@ namespace ElypsoEngine::Graphics
 
     bool Scene::IsActiveScene() const
     {
+        for (const auto& ew : EngineWindow::GetRegistry().runtimeContent)
+        {
+            if (!ew)
+            {
+                KalaWindowCore::ForceClose(
+                    "Active scene check error",
+                    "Failed to check if scene '" + to_string(ID) + "' is active because a nullptr engine window was found during scene active check!");
+            }
 
+            if (ew->GetID() != windowID) continue;
+
+            if (!ContainsValue(ew->GetSceneIDs(), ID))
+            {
+                KalaWindowCore::ForceClose(
+                    "Active scene check error",
+                    "Failed to check if scene '" + to_string(ID) 
+                    + "' is active in engine window '" + to_string(windowID) 
+                    + "' because the engine window does not contain the scene even though it should!");
+            }
+
+            if (ew->activeSceneID == ID) return true;
+        }
 
         return false;
     }
@@ -260,7 +295,9 @@ namespace ElypsoEngine::Graphics
 
     void Scene::LoadScene()
     {
-        if (IsActiveScene())
+        /*
+        //TODO: decide if keep or remove
+        if (IsActiveScene(windowID))
         {
             Log::Print(
                 "Cannot load scene '" + title + "' because it is already loaded!",
@@ -270,13 +307,7 @@ namespace ElypsoEngine::Graphics
 
             return;    
         }
-
-        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
-
-        u32 activeSceneID = ew->activeSceneID;
-        ew->activeSceneID = ID;
-
-        Scene* activeScene{};
+        */
 
         for (Scene* s : registry.runtimeContent)
         {
@@ -284,28 +315,15 @@ namespace ElypsoEngine::Graphics
             {
                 KalaWindowCore::ForceClose(
                     "Scene load error",
-                    "Failed to laod scene because a nullptr scene was found during scene load!");
+                    "Failed to load scene '" + to_string(ID) +  "' because a nullptr scene was found during scene load!");
             }
 
-            if (s->ID == activeSceneID)
+            if (s->IsActiveScene())
             {
-                activeScene = s;
+                s->Unload();
                 break;
             }
         }
-
-        if (!activeScene)
-        {
-            Log::Print(
-                "Failed to load scene '" + to_string(activeSceneID) + "' because it was not found!",
-                "EE_SCENE",
-                LogType::LOG_ERROR,
-                2);
-
-            return;
-        }
-
-        activeScene->Unload();
 
         //todo: load this scene assets here
 
