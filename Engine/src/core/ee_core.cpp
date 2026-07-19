@@ -3,23 +3,27 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <vector>
+
 #include "log_utils.hpp"
 
 #include "core/ee_core.hpp"
-#include "graphics/ee_window.hpp"
 #include "core/kw_core.hpp"
 #include "core/kg_core.hpp"
 #include "core/kp_core.hpp"
 #include "core/ka_core.hpp"
+#include "graphics/kw_window.hpp"
 
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
-using ElypsoEngine::Graphics::EngineWindow;
 using KalaWindow::Core::KalaWindowCore;
 using KalaGraphics::Core::KalaGraphicsCore;
 using KalaPhysics::Core::KalaPhysicsCore;
 using KalaAudio::Core::KalaAudioCore;
+using KalaWindow::Graphics::ProcessWindow;
+
+using std::vector;
 
 namespace ElypsoEngine::Core
 {
@@ -51,9 +55,10 @@ namespace ElypsoEngine::Core
             "EE_CORE",
             LogType::LOG_INFO);
 
-        for (const auto& w : EngineWindow::GetRegistry().runtimeContent)
+        vector<ProcessWindow*> pwcopy = ProcessWindow::GetRegistry().runtimeContent;
+        for (ProcessWindow* pw : pwcopy)
         {
-            w->Destroy();
+            pw->Destroy();
         }
     }
 }

@@ -116,8 +116,6 @@ void EngineInit()
     }
     
     CrashHandler::Initialize(appConfig.title);
-
-    KalaWindowCore::SetUserShutdownCallback(EngineCore::Shutdown);
     
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
 

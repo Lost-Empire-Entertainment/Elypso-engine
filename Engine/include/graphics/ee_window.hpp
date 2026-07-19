@@ -49,6 +49,8 @@ namespace ElypsoEngine::Graphics
         u32 GetActiveSceneID() const;
         const vector<u32>& GetSceneIDs() const;
 
+        //Do not call manually, destroy the underlying
+        //process window via GetWindowContextID instead
         void Destroy();
 
         ~EngineWindow();
