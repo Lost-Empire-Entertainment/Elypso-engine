@@ -163,17 +163,7 @@ namespace ElypsoEngine::Graphics
                     return;
                 }
 
-                if (!kgctx->RecreateSwapchain())
-                {
-                    Log::Print(
-                        "Failed to recreate swapchain!",
-                        "EE_WINDOW",
-                        LogType::LOG_ERROR);
-                    
-                    return;
-                }
-
-                kgctx->Update();
+                kgctx->ResizeUpdate();
             });
 
         //sync to ensure window gets the highest id from kw
