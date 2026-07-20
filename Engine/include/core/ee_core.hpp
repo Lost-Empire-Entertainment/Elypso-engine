@@ -35,7 +35,7 @@ namespace ElypsoEngine::Core
         //Synchronizes all library IDs
         static void SyncID();
 
-        //If true we cap framerate to 60fps, otherwise we cap to 300fps
+        //If true we cap framerate to 60fps, otherwise we cap to 1000fps
         static bool IsFramerateCapped();
         static void SetFramerateCapState(bool value);
 

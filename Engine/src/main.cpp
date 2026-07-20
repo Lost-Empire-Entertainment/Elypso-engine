@@ -66,7 +66,7 @@ using u32 = uint32_t;
 static bool isFramerateCapped = true;
 
 //world render framerate target - uncapped value if fps cap is off
-static constexpr f64 TARGET_FPS_UNCAPPED = 300.0;
+static constexpr f64 TARGET_FPS_UNCAPPED = 1000.0;
 //world render framerate target - capped value if fps cap is on
 static constexpr f64 TARGET_FPS_CAPPED = 60.0;
 
@@ -176,6 +176,12 @@ int main()
         f64 targetFrameSeconds = 1 / (isFramerateCapped 
             ? TARGET_FPS_CAPPED 
             : TARGET_FPS_UNCAPPED);
+
+        Log::Print(
+            "Frame work: " + to_string(elapsedSeconds * 1000.0f) 
+            + "ms | target: " + to_string(targetFrameSeconds * 1000.0) + "ms",
+            "EE_MAIN",
+            LogType::LOG_DEBUG);
 
         if (elapsedSeconds < targetFrameSeconds)
         {
