@@ -186,8 +186,6 @@ namespace ElypsoEngine::Graphics
 
         newScene->LoadScene();
 
-        windowPtr->sceneIDs.push_back(newScene->GetID());
-
         Log::Print(
 			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
 			"EE_WINDOW",
