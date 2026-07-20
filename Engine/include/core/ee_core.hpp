@@ -27,12 +27,23 @@ namespace ElypsoEngine::Core
 
     extern void Init();
     extern void Update();
+    extern void FixedUpdate();
 
     class LIB_API EngineCore
     {
     public:
         //Synchronizes all library IDs
         static void SyncID();
+
+        //If true we cap framerate to 60fps, otherwise we cap to 300fps
+        static bool IsFramerateCapped();
+        static void SetFramerateCapState(bool value);
+
+        //Smooth timer for preventing chaotic explosions
+        //or telerportations after a long stall
+        static f64 GetDeltaTime();
+        //Real time between each frame
+        static f64 GetFrameTime();
         
         //Shut down engine
         static void Shutdown();

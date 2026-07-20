@@ -45,6 +45,7 @@ using KalaGraphics::Core::GraphicsContext;
 using ElypsoEngine::Core::appConfig;
 using ElypsoEngine::Core::Init;
 using ElypsoEngine::Core::Update;
+using ElypsoEngine::Core::FixedUpdate;
 using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::EngineWindow;
 using ElypsoEngine::Graphics::Scene;
@@ -54,13 +55,50 @@ using std::string;
 using std::to_string;
 using std::this_thread::sleep_for;
 using std::chrono::milliseconds;
+using std::chrono::time_point;
+using std::chrono::steady_clock;
+using std::chrono::duration;
 using std::vector;
+using std::clamp;
 
 using u32 = uint32_t;
+
+static bool isFramerateCapped = true;
+
+//world render framerate target - uncapped value if fps cap is off
+static constexpr f64 TARGET_FPS_UNCAPPED = 300.0;
+//world render framerate target - capped value if fps cap is on
+static constexpr f64 TARGET_FPS_CAPPED = 60.0;
+
+//physics framerate target
+static constexpr f64 FIXED_FPS = 60.0;
+static constexpr f64 FIXED_DELTA = 1.0 / FIXED_FPS;
+
+//max allowed steps to do in FixedUpdate to catch up with target fps,
+//any higher would catch up too agressively and not have any meaningful visual difference
+static constexpr u8 MAX_FIXED_STEPS_PER_FRAME = 3;
+
+static f64 deltaTime{};
+static f64 frameTime{};
+static time_point<steady_clock> lastFrameTime{};
+
+static f64 stepAccumulator{};
 
 static void EngineInit();
 static void EnginePreUpdate();
 static void EnginePostUpdate();
+
+namespace ElypsoEngine::Core
+{
+    bool EngineCore::IsFramerateCapped() { return isFramerateCapped; }
+    void EngineCore::SetFramerateCapState(bool value)
+    {
+        isFramerateCapped = value;
+    }
+
+    f64 EngineCore::GetDeltaTime() { return deltaTime; }
+    f64 EngineCore::GetFrameTime() { return frameTime; }
+}
 
 int main()
 {
@@ -68,6 +106,8 @@ int main()
         "\n======================================================================"
 		"\nSTARTING ENGINE INITIALIZATION"
 		"\n======================================================================\n");
+
+    lastFrameTime = steady_clock::now();
 
     //engine-side initialization
     EngineInit();
@@ -87,8 +127,42 @@ int main()
 
     while(true)
     {
+        auto frameStart = steady_clock::now();
+        duration<f64> delta = frameStart - lastFrameTime;
+        lastFrameTime = frameStart;
+
+        f64 rawSeconds = delta.count();
+
+        //unscaled, unclamped
+        frameTime = rawSeconds;
+
+        //regular deltatime
+        deltaTime = clamp(rawSeconds, 0.0, 0.1);
+
         //input polling, window updates
         EnginePreUpdate();
+
+        stepAccumulator += frameTime;
+        u8 fixedStepsThisFrame{};
+
+        while (stepAccumulator >= FIXED_DELTA
+               && fixedStepsThisFrame < MAX_FIXED_STEPS_PER_FRAME)
+        {
+
+            Log::Print(
+                "Calling user-defined fixed update.",
+                "EE_MAIN",
+                LogType::LOG_DEBUG);
+
+            FixedUpdate();
+            stepAccumulator -= FIXED_DELTA;
+            fixedStepsThisFrame++;
+        }
+
+        Log::Print(
+            "Calling user-defined update after " + to_string(fixedStepsThisFrame) + " fixed steps this frame.",
+            "EE_MAIN",
+            LogType::LOG_DEBUG);
 
         //user-defined update
         Update();
@@ -96,7 +170,24 @@ int main()
         //graphics, audio and physics updates
         EnginePostUpdate();
 
-        sleep_for(milliseconds(1));
+        auto frameEnd = steady_clock::now();
+        f64 elapsedSeconds = duration<f64>(frameEnd - frameStart).count();
+
+        f64 targetFrameSeconds = 1 / (isFramerateCapped 
+            ? TARGET_FPS_CAPPED 
+            : TARGET_FPS_UNCAPPED);
+
+        if (elapsedSeconds < targetFrameSeconds)
+        {
+            f64 remainingSeconds = targetFrameSeconds - elapsedSeconds;
+
+            Log::Print(
+                "Sleeping for '" + to_string(remainingSeconds) + "' remaining seconds.",
+                "EE_MAIN",
+                LogType::LOG_DEBUG);
+
+            sleep_for(duration<f64>(remainingSeconds));
+        }
     }
 }
 
