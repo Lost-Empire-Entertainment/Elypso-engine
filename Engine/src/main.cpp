@@ -228,7 +228,7 @@ void EngineInit()
     }
 
     EngineWindow::Initialize(
-        appConfig.title,
+        string(appConfig.title),
         appConfig.pos,
         appConfig.size);
 

@@ -68,16 +68,15 @@ namespace ElypsoEngine::Graphics
         //The primary component is a model, light type, UI type or camera,
         //the secondary types are components the primary component uses like a model with a light source.
         static Entity* Initialize(
-            string_view title,
             u32 sceneID,
             ComponentType primaryComponent,
-            vector<ComponentType> optionalSecondaryComponents = {});
+            vector<ComponentType>&& optionalSecondaryComponents = {});
 
         u32 GetID() const;
         u32 GetSceneID() const;
 
         string_view GetTitle() const;
-        void SetTitle(string_view newTitle);
+        void SetTitle(string&& newTitle);
 
         void MoveToScene(u32 sceneID);
         void MoveToScene(string_view sceneTitle);

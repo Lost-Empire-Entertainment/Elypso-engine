@@ -26,22 +26,15 @@ namespace ElypsoEngine::Graphics
     ElypsoRegistry<Entity>& Entity::GetRegistry() { return registry; }
 
     Entity* Entity::Initialize(
-        string_view title,
         u32 sceneID,
         ComponentType primaryComponent,
-        vector<ComponentType> optionalSecondaryComponents)
+        vector<ComponentType>&& optionalSecondaryComponents)
     {
         return nullptr;
     }
 
     u32 Entity::GetID() const { return ID; }
     u32 Entity::GetSceneID() const { return sceneID; }
-
-    string_view Entity::GetTitle() const { return title; }
-    void Entity::SetTitle(string_view newTitle)
-    {
-
-    }
 
     void Entity::MoveToScene(u32 sceneID)
     {

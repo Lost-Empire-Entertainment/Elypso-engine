@@ -38,15 +38,15 @@ namespace ElypsoEngine::Graphics
 
         //Create a new scene with the chosen title
         static Scene* Initialize(
-            string_view title,
+            string&& title,
             u32 windowID,
-            const path& escnPath = {});
+            path&& escnPath = {});
 
         u32 GetID() const;
         u32 GetWindowID() const;
 
         string_view GetTitle() const;
-        void SetTitle(string_view title);
+        void SetTitle(string&& title);
 
         //Returns true if this scene is currently loaded
         bool IsActiveScene() const;

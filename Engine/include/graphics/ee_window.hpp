@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <string_view>
+#include <string>
 #include <vector>
 
 #include "core_utils.hpp"
@@ -22,9 +22,8 @@ namespace ElypsoEngine::Graphics
     using KalaWindow::Graphics::WindowMode;
     using KalaWindow::Graphics::WindowState;
 
-    using std::string_view;
+    using std::string;
     using std::vector;
-
     
     class LIB_API EngineWindow
     {
@@ -35,7 +34,7 @@ namespace ElypsoEngine::Graphics
 
         //Create a new window
         static EngineWindow* Initialize(
-            string_view windowTitle = "UNASSIGNED TITLE",
+            string&& windowTitle = "UNASSIGNED TITLE",
             vec2 pos = 800,
             vec2 size = { 800, 600 },
             EngineWindow* parent = nullptr);

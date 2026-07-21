@@ -104,9 +104,9 @@ namespace ElypsoEngine::Graphics
     }
 
     Scene* Scene::Initialize(
-        string_view title,
+        string&& title,
         u32 windowID,
-        const path& escnPath)
+        path&& escnPath)
     {
         if (title.empty())
         {
@@ -173,7 +173,7 @@ namespace ElypsoEngine::Graphics
 
         scenePtr->ID = newID;
         scenePtr->windowID = windowID;
-        scenePtr->title = title;
+        scenePtr->title = std::move(title);
 
         registry.AddContent(newID, std::move(newScene));
 
@@ -229,7 +229,7 @@ namespace ElypsoEngine::Graphics
             LogType::LOG_INFO);
     }
 
-    void Scene::SetTitle(string_view newtitle)
+    void Scene::SetTitle(string&& newtitle)
     {
         if (newtitle.empty())
         {
@@ -283,7 +283,7 @@ namespace ElypsoEngine::Graphics
             }
         }
 
-        title = newtitle;
+        title = std::move(newtitle);
 
         Log::Print(
             "Set scene title to '" + title + "'!",

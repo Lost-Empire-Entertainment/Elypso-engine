@@ -66,7 +66,7 @@ namespace ElypsoEngine::Graphics
 	ElypsoRegistry<EngineWindow>& EngineWindow::GetRegistry() { return registry; }
 
     EngineWindow* EngineWindow::Initialize(
-        string_view windowTitle,
+        string&& windowTitle,
         vec2 pos,
         vec2 size,
         EngineWindow* parent)
