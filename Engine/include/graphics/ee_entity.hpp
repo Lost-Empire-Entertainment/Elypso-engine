@@ -23,40 +23,22 @@ namespace ElypsoEngine::Graphics
     using u8 = uint8_t;
     using u32 = uint32_t;
 
-    enum class ComponentType : u8
+    enum class SubEntityType : u8
     {
-        C_INVALID = 0u,
+        S_INVALID = 0u,
 
-        //regular camera type
-        C_CAMERA = 1u,
+        //model type from KalaGraphics
+        S_MESH = 2u,
 
-        //regular model type
-        C_MODEL = 2u,
-
-        //not yet implemented
-        C_POINT_LIGHT = 3u,
-        //not yet implemented
-        C_SPOTLIGHT = 4u,
-        //not yet implemented
-        C_AREA_LIGHT = 5u,
-
-        //basic widget that can have a texture added to it
-        C_UI_RECT = 6u,
-
-        //not yet implemented
-        C_PHYSICS_RIGIDBODY = 7u,
-
-        //not yet implemented
-        C_AUDIO_LISTENER = 8u,
-        //not yet implemented
-        C_AUDIO_PLAYER = 9u,
+        //camera type from KalaGraphics
+        S_CAMERA = 1u,
     };
 
-    struct LIB_API Component
+    struct LIB_API SubEntity
     {
-        u32 targetID{};
-        ComponentType type{};
         bool isEnabled = true;
+        SubEntityType type{};
+        u32 targetID{};
     };
 
     class LIB_API Entity
@@ -65,31 +47,41 @@ namespace ElypsoEngine::Graphics
         static ElypsoRegistry<Entity>& GetRegistry();
 
         //Initialize a new entity inside a scene.
-        //The primary component is a model, light type, UI type or camera,
-        //the secondary types are components the primary component uses like a model with a light source.
+        //You must create the subentity in the target library first before assigning its ID here,
+        //Elypso Engine will not initialize meshes, cameras and other future types for you
         static Entity* Initialize(
+            string&& title,
             u32 sceneID,
-            ComponentType primaryComponent,
-            vector<ComponentType>&& optionalSecondaryComponents = {});
+            vector<SubEntity>&& subEntities);
 
         u32 GetID() const;
         u32 GetSceneID() const;
 
         string_view GetTitle() const;
-        void SetTitle(string&& newTitle);
+        bool SetTitle(string&& newTitle);
 
-        void MoveToScene(u32 sceneID);
-        void MoveToScene(string_view sceneTitle);
+        bool MoveToScene(u32 sceneID);
+        bool MoveToScene(string_view sceneTitle);
 
-        const Component& GetPrimaryComponent() const;
-        //Give this entity a new primary component, the old primary component will be destroyed
-        void SetPrimaryComponent(Component newComponent);
+        const vector<SubEntity>& GetSubEntities() const;
+        bool AddSubEntity(SubEntity&& subEntity);
+        //If viaID is true then the subEntity is removed via its ID,
+        //otherwise it is removed via its slot in the vector
+        bool RemoveSubEntity(
+            bool viaID,
+            u32 value);
 
-        const vector<Component>& GetSecondaryComponents() const;
-        //Add a new secondary component to this entity
-        void AddSecondaryComponent(Component newComponent);
-        //Remove an existing secondary component from this entity, this component will be destroyed
-        void RemoveSecondaryComponent(u32 targetID);
+        bool SetParentEntity(u32 entityID);
+        void RemoveParentEntity();
+        u32 GetParentEntity();
+
+        bool AddChildEntity(u32 entityID);
+        //If viaID is true then the child is removed via its ID,
+        //otherwise it is removed via its slot in the vector
+        bool RemoveChildEntity(
+            bool viaID,
+            u32 value);
+        const vector<u32>& GetChildEntities() const;
 
         void Destroy();
 
@@ -100,7 +92,9 @@ namespace ElypsoEngine::Graphics
 
         string title{};
 
-        Component primaryComponent{};
-        vector<Component> secondaryComponents{};
+        vector<SubEntity> subEntities{};
+
+        u32 parentEntity{};
+        vector<u32> childEntities{};
     };
 }

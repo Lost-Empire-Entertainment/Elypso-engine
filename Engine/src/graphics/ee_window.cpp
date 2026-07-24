@@ -88,7 +88,7 @@ namespace ElypsoEngine::Graphics
         }
 
         ProcessWindow* pw = ProcessWindow::Initialize(
-            windowTitle,
+            string(windowTitle),
             pos,
             size,
             pwParent);
@@ -181,13 +181,13 @@ namespace ElypsoEngine::Graphics
         registry.AddContent(newID, std::move(newWindow));
 
         Scene* newScene = Scene::Initialize(
-            string(windowTitle) + " scene",
+            windowTitle + " scene",
             newID);
 
         newScene->LoadScene();
 
         Log::Print(
-			"Created new window '" + string(windowTitle) + "' with ID '" + to_string(newID) + "'!",
+			"Created new window '" + windowTitle + "' with ID '" + to_string(newID) + "'!",
 			"EE_WINDOW",
 			LogType::LOG_SUCCESS);
 

@@ -56,7 +56,14 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        EngineWindow* ew = ewreg.createdContent[windowID].get();
+        EngineWindow* ew = ewreg.GetContent(windowID);
+        if (!ew)
+        {
+            KalaWindowCore::ForceClose(
+                "Active scene check error",
+                "Failed to get active scene because engine window '" 
+                + to_string(windowID) + "' does not exist!");
+        }
 
         if (!registry.createdContent.contains(ew->activeSceneID))
         {
@@ -66,7 +73,7 @@ namespace ElypsoEngine::Graphics
                 + "' active scene '" + to_string(ew->activeSceneID) + "' does not exist!");
         }
 
-        return registry.createdContent[ew->activeSceneID].get();
+        return registry.GetContent(ew->activeSceneID);
     }
 
     void Scene::LoadScene(string_view title)
@@ -319,7 +326,7 @@ namespace ElypsoEngine::Graphics
             }
         }
 
-        EngineWindow* ew = EngineWindow::GetRegistry().createdContent[windowID].get();
+        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
         ew->activeSceneID = ID;
 
         //todo: load this scene assets here

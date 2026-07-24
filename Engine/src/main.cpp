@@ -212,7 +212,7 @@ void EngineInit()
             "Program title cannot be over '" + to_string(MAX_NAME_LENGTH) + "' characters long!");
     }
     
-    CrashHandler::Initialize(appConfig.title);
+    CrashHandler::Initialize(string(appConfig.title));
     
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
 
