@@ -43,12 +43,12 @@ namespace ElypsoEngine::Graphics
 
     Scene* Scene::GetActiveScene(u32 windowID)
     {
-        const auto& ewreg = EngineWindow::GetRegistry();
-
-        if (!ewreg.createdContent.contains(windowID))
+        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
+        if (!ew)
         {
             Log::Print(
-                "Couldn't get active scene because engine window '" + to_string(windowID) + "' was not found!",
+                "Failed to get active scene because engine window '" 
+                + to_string(windowID) + "' does not exist!",
                 "EE_SCENE",
                 LogType::LOG_ERROR,
                 2);
@@ -56,24 +56,21 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        EngineWindow* ew = ewreg.GetContent(windowID);
-        if (!ew)
-        {
-            KalaWindowCore::ForceClose(
-                "Active scene check error",
-                "Failed to get active scene because engine window '" 
-                + to_string(windowID) + "' does not exist!");
-        }
+        Scene* scene = registry.GetContent(ew->activeSceneID);
 
-        if (!registry.createdContent.contains(ew->activeSceneID))
+        if (!scene)
         {
-            KalaWindowCore::ForceClose(
-                "Active scene check error",
+            Log::Print(
                 "Failed to get active scene because engine window '" + to_string(windowID) 
-                + "' active scene '" + to_string(ew->activeSceneID) + "' does not exist!");
+                + "' active scene '" + to_string(ew->activeSceneID) + "' does not exist!",
+                "EE_SCENE",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
         }
 
-        return registry.GetContent(ew->activeSceneID);
+        return scene;
     }
 
     void Scene::LoadScene(string_view title)
@@ -128,7 +125,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene because its title was too long!");
         }
 
-        if (!EngineWindow::GetRegistry().createdContent.contains(windowID))
+        if (!EngineWindow::GetRegistry().GetContent(windowID))
         {
             Log::Print(
                 "Failed to create scene '" + string(title) + "' because engine window '" + to_string(windowID) + "' was not found!",
@@ -302,7 +299,7 @@ namespace ElypsoEngine::Graphics
 
     void Scene::LoadScene()
     {
-        if (!EngineWindow::GetRegistry().createdContent.contains(windowID))
+        if (!EngineWindow::GetRegistry().GetContent(windowID))
         {
             KalaWindowCore::ForceClose(
                 "Scene load error",

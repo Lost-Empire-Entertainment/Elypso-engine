@@ -51,7 +51,7 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        if (!Scene::GetRegistry().createdContent.contains(sceneID))
+        if (!Scene::GetRegistry().GetContent(sceneID))
         {
             Log::Print(
                 "Failed to create entity because scene '" + to_string(sceneID) + "' was not found!",
