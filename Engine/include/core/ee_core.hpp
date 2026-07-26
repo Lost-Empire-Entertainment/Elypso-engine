@@ -35,15 +35,13 @@ namespace ElypsoEngine::Core
         //Synchronizes all library IDs
         static void SyncID();
 
-        //If true we cap framerate to 60fps, otherwise we cap to 1000fps
-        static bool IsFramerateCapped();
-        static void SetFramerateCapState(bool value);
-
         //Smooth timer for preventing chaotic explosions
         //or telerportations after a long stall
         static f64 GetDeltaTime();
         //Real time between each frame
         static f64 GetFrameTime();
+        //Get current average fps
+        static f64 GetCurrentFPS();
         
         //Shut down engine
         static void Shutdown();

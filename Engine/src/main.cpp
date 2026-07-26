@@ -55,20 +55,22 @@ using std::string;
 using std::to_string;
 using std::this_thread::sleep_for;
 using std::chrono::milliseconds;
+using std::chrono::nanoseconds;
 using std::chrono::time_point;
 using std::chrono::steady_clock;
 using std::chrono::duration;
 using std::vector;
 using std::clamp;
+using std::format;
+using std::milli;
 
 using u32 = uint32_t;
 
-static bool isFramerateCapped = true;
+//world render framerate target - reasonable limit if vsync is off
+static constexpr u16 TARGET_FPS_UNCAPPED = 1000;
 
-//world render framerate target - uncapped value if fps cap is off
-static constexpr f64 TARGET_FPS_UNCAPPED = 1000.0;
-//world render framerate target - capped value if fps cap is on
-static constexpr f64 TARGET_FPS_CAPPED = 60.0;
+//seconds between displayed smooth fps updates
+constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
 
 //physics framerate target
 static constexpr f64 FIXED_FPS = 60.0;
@@ -78,11 +80,11 @@ static constexpr f64 FIXED_DELTA = 1.0 / FIXED_FPS;
 //any higher would catch up too agressively and not have any meaningful visual difference
 static constexpr u8 MAX_FIXED_STEPS_PER_FRAME = 3;
 
+static constexpr nanoseconds frameDuration = nanoseconds{1000000000 / TARGET_FPS_UNCAPPED};
+
 static f64 deltaTime{};
 static f64 frameTime{};
-static time_point<steady_clock> lastFrameTime{};
-
-static f64 stepAccumulator{};
+static f64 finalFPS{};
 
 static void EngineInit();
 static void EnginePreUpdate();
@@ -90,14 +92,9 @@ static void EnginePostUpdate();
 
 namespace ElypsoEngine::Core
 {
-    bool EngineCore::IsFramerateCapped() { return isFramerateCapped; }
-    void EngineCore::SetFramerateCapState(bool value)
-    {
-        isFramerateCapped = value;
-    }
-
     f64 EngineCore::GetDeltaTime() { return deltaTime; }
     f64 EngineCore::GetFrameTime() { return frameTime; }
+    f64 EngineCore::GetCurrentFPS() { return finalFPS; }
 }
 
 int main()
@@ -107,7 +104,12 @@ int main()
 		"\nSTARTING ENGINE INITIALIZATION"
 		"\n======================================================================\n");
 
-    lastFrameTime = steady_clock::now();
+    static f64 stepAccumulator{};
+
+    static f64 fpsWindowFrames{};
+    static f64 fpsWindowAccumulation{};
+
+    static time_point<steady_clock> lastFrameTime = steady_clock::now();
 
     //engine-side initialization
     EngineInit();
@@ -133,6 +135,21 @@ int main()
 
         f64 rawSeconds = delta.count();
 
+        fpsWindowAccumulation += rawSeconds;
+        fpsWindowFrames++;
+
+        f64 rawFPS = (rawSeconds > 0.0) ? (1.0 / rawSeconds) : 0.0;
+        f64 displayedFPS{};
+
+        if (fpsWindowAccumulation >= FPS_UPDATE_INTERVAL)
+        {
+            displayedFPS = scast<f64>(fpsWindowFrames) / fpsWindowAccumulation;
+            fpsWindowAccumulation = 0.0;
+            fpsWindowFrames = 0;
+        }
+
+        finalFPS = (displayedFPS > 0.0) ? displayedFPS : rawFPS;
+
         //unscaled, unclamped
         frameTime = rawSeconds;
 
@@ -148,21 +165,24 @@ int main()
         while (stepAccumulator >= FIXED_DELTA
                && fixedStepsThisFrame < MAX_FIXED_STEPS_PER_FRAME)
         {
-
+            /*
             Log::Print(
                 "Calling user-defined fixed update.",
                 "EE_MAIN",
                 LogType::LOG_DEBUG);
+            */
 
             FixedUpdate();
             stepAccumulator -= FIXED_DELTA;
             fixedStepsThisFrame++;
         }
 
+        /*
         Log::Print(
             "Calling user-defined update after " + to_string(fixedStepsThisFrame) + " fixed steps this frame.",
             "EE_MAIN",
             LogType::LOG_DEBUG);
+        */
 
         //user-defined update
         Update();
@@ -170,30 +190,42 @@ int main()
         //graphics, audio and physics updates
         EnginePostUpdate();
 
-        auto frameEnd = steady_clock::now();
-        f64 elapsedSeconds = duration<f64>(frameEnd - frameStart).count();
+        auto postWork = steady_clock::now();
+        auto elapsed = postWork - frameStart;
+        auto remaining = frameDuration - elapsed;
 
-        f64 targetFrameSeconds = 1 / (isFramerateCapped 
-            ? TARGET_FPS_CAPPED 
-            : TARGET_FPS_UNCAPPED);
+        if (remaining > nanoseconds{0})
+        {
+            /*
+            Log::Print(
+                format(
+                    "Sleeping for {:.5f} remaining milliseconds.",
+                    duration<f64, milli>(remaining).count()),
+                "EE_MAIN",
+                LogType::LOG_INFO);
+            */
+
+            sleep_for(remaining);
+        }
+
+        /*
+        auto frameEnd = steady_clock::now();
 
         Log::Print(
-            "Frame work: " + to_string(elapsedSeconds * 1000.0f) 
-            + "ms | target: " + to_string(targetFrameSeconds * 1000.0) + "ms",
+            format(
+                "Smooth framerate: {:.2f} fps | "
+                "raw framerate: {:.2f} fps | "
+                "frame time: {:.5f} ms | "
+                "elapsed frame work: {:.5f} ms | "
+                "target frame work: {:.5f} ms",
+                finalFPS,
+                rawFPS,
+                duration<f64, std::milli>(frameEnd - frameStart).count(),
+                duration<f64, std::milli>(elapsed).count(),
+                duration<f64, std::milli>(frameDuration).count()),
             "EE_MAIN",
-            LogType::LOG_DEBUG);
-
-        if (elapsedSeconds < targetFrameSeconds)
-        {
-            f64 remainingSeconds = targetFrameSeconds - elapsedSeconds;
-
-            Log::Print(
-                "Sleeping for '" + to_string(remainingSeconds) + "' remaining seconds.",
-                "EE_MAIN",
-                LogType::LOG_DEBUG);
-
-            sleep_for(duration<f64>(remainingSeconds));
-        }
+            LogType::LOG_INFO);
+        */
     }
 }
 
