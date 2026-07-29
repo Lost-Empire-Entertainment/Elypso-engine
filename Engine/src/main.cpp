@@ -234,14 +234,16 @@ void EngineInit()
     if (appConfig.title.empty())
     {
         KalaWindowCore::ForceClose(
-            "Elypso Engine init error",
-            "Program title cannot be empty!");
+            "Elypso Engine main loop error",
+            "Failed to initialize Elypso Engine because "
+            "program title was empty!");
     }
     if (appConfig.title.size() > MAX_NAME_LENGTH)
     {
         KalaWindowCore::ForceClose(
-            "Elypso Engine init error",
-            "Program title cannot be over '" + to_string(MAX_NAME_LENGTH) + "' characters long!");
+            "Elypso Engine main loop error",
+            "Failed to initialize Elypso Engine because "
+            "program title was too long!");
     }
     
     CrashHandler::Initialize(string(appConfig.title));
@@ -272,10 +274,10 @@ void EngineInit()
 
 void EnginePreUpdate()
 {
-    if (EngineWindow::GetRegistry().runtimeContent.empty())
+    if (EngineWindow::GetRegistry().GetAllContent().empty())
     {
         KalaWindowCore::ForceClose(
-            "Engine pre-update error",
+            "Elypso Engine main loop error",
             "All engine windows were destroyed, the program has nowhere to draw to, the program must shut down!");
     }
 
@@ -283,7 +285,7 @@ void EnginePreUpdate()
     MessageLoop::Update();
 #endif
 
-    for (Entity* e : Entity::GetRegistry().runtimeContent)
+    for (Entity* e : Entity::GetRegistry().GetAllContent())
     {
         if (!e)
         {
@@ -309,7 +311,7 @@ void EnginePreUpdate()
         }
     }
 
-    for (Scene* s : Scene::GetRegistry().runtimeContent)
+    for (Scene* s : Scene::GetRegistry().GetAllContent())
     {
         if (!s)
         {
@@ -335,7 +337,7 @@ void EnginePreUpdate()
         }
     }
 
-    for (EngineWindow* ew : EngineWindow::GetRegistry().runtimeContent)
+    for (EngineWindow* ew : EngineWindow::GetRegistry().GetAllContent())
     {
         if (!ew)
         {
@@ -366,7 +368,7 @@ void EnginePreUpdate()
 
 void EnginePostUpdate()
 {
-    for (EngineWindow* ew : EngineWindow::GetRegistry().runtimeContent)
+    for (EngineWindow* ew : EngineWindow::GetRegistry().GetAllContent())
     {
         if (!ew)
         {

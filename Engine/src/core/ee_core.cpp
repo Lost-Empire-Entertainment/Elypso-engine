@@ -55,10 +55,6 @@ namespace ElypsoEngine::Core
             "EE_CORE",
             LogType::LOG_INFO);
 
-        vector<ProcessWindow*> pwcopy = ProcessWindow::GetRegistry().runtimeContent;
-        for (ProcessWindow* pw : pwcopy)
-        {
-            pw->Destroy();
-        }
+        ProcessWindow::GetRegistry().RemoveAllContent();
     }
 }

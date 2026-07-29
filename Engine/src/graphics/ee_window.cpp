@@ -81,7 +81,7 @@ namespace ElypsoEngine::Graphics
             if (!pwParent)
             {
                 KalaWindowCore::ForceClose(
-                    "Engine window init error",
+                    "Elypso Engine window error",
                     "Failed to assign parent to engine window because the parent engine window '" 
                     + to_string(parent->GetID()) + "' process window '" + to_string(parent->GetWindowContextID()) + "' was not found!");
             }
@@ -96,7 +96,7 @@ namespace ElypsoEngine::Graphics
         if (!pw)
         {
             KalaWindowCore::ForceClose(
-                "Engine window init error",
+                "Elypso Engine window error",
                 "Failed to create process window!");
         }
 
@@ -107,7 +107,7 @@ namespace ElypsoEngine::Graphics
         if (!in)
         {
             KalaWindowCore::ForceClose(
-                "Engine window init error",
+                "Elypso Engine window error",
                 "Failed to create input!");
         }
 
@@ -116,7 +116,7 @@ namespace ElypsoEngine::Graphics
         if (!vkctx)
         {
             KalaWindowCore::ForceClose(
-                "Engine window init error",
+                "Elypso Engine window error",
                 "Failed to create Vulkan context!");
         }
 
@@ -148,7 +148,7 @@ namespace ElypsoEngine::Graphics
         if (!kgctx)
         {
             KalaWindowCore::ForceClose(
-                "Engine window init error",
+                "Elypso Engine window error",
                 "Failed to create graphics context!");
         }
 
@@ -157,7 +157,7 @@ namespace ElypsoEngine::Graphics
                 if (!kgctx)
                 {
                     KalaWindowCore::ForceClose(
-                        "Resize callback error",
+                        "Elypso Engine window error",
                         "Failed to call resize callback because graphics context was not found!");
 
                     return;
@@ -233,7 +233,7 @@ namespace ElypsoEngine::Graphics
         if (!kgctx)
         {
             KalaWindowCore::ForceClose(
-                "Engine window destruction error",
+                "Elypso Engine window error",
                 "Failed to destroy engine window '" + to_string(ID)
                 + "' because its graphics context '"+ to_string(graphicsContextID) + "' was not found!");
 

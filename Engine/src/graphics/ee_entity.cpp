@@ -283,7 +283,7 @@ namespace ElypsoEngine::Graphics
                 else
                 {
                     KalaWindowCore::ForceClose(
-                        "Entity destruction error",
+                        "Elypso Engine core error",
                         "Failed to destroy entity '" + to_string(ID)
                         + "' because it had an invalid mesh '" + to_string(sub.targetID) + "'!");
                 }

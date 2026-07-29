@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include <cstdint>
+#include "core_utils.hpp"
+
 #include <unordered_map>
 #include <vector>
 #include <memory>
@@ -29,20 +30,29 @@ namespace ElypsoEngine::Core
 	//should always be stored as 'static inline ElypsoRegistry<T> registry'
 	template<typename T>
 		requires is_class_v<T>
-	struct ElypsoRegistry
+	struct LIB_API ElypsoRegistry
 	{
-		//Owner registry with ID as key
-		static inline unordered_map<u32, unique_ptr<T>> createdContent{};
-		//Runtime non-owning pointers
-		static inline vector<T*> runtimeContent{};
+		//Get a runtime-safe list of all created object IDs
+		static const vector<T*>& GetAllContent() { return runtimeContent; }
 
-		//Get non-owning value by ID
-		static inline T* GetContent(u32 targetID)
+		//Get non-owning value by ID or index
+		static inline T* GetContent(
+			u32 targetValue,
+			bool getByID = true)
 		{
-			auto it = createdContent.find(targetID);
-			return it != createdContent.end()
-				? it->second.get()
-				: nullptr;
+			if (getByID)
+			{
+				auto it = createdContent.find(targetValue);
+				return it != createdContent.end()
+					? it->second.get()
+					: nullptr;
+			}
+			else
+			{
+				return targetValue < runtimeContent.size()
+					? runtimeContent[targetValue]
+					: nullptr;
+			}
 		}
 
 		//Add a new unique ptr and its ID
@@ -67,20 +77,20 @@ namespace ElypsoEngine::Core
 		//Remove content by ID
 		static inline bool RemoveContent(u32 targetID)
 		{
-			T* targetPtr{};
-			
 			auto it = createdContent.find(targetID);
-			if (it != createdContent.end()) targetPtr = it->second.get();
+			if (it == createdContent.end()) return false; 
+			
+			T* targetPtr = it->second.get();
 			
 			runtimeContent.erase(
 				remove_if(runtimeContent.begin(), runtimeContent.end(),
 					[&](T* p)
 					{
-						return p && p->GetID() == targetID;
+						return p && p == targetPtr;
 					}),
 				runtimeContent.end());
 
-			createdContent.erase(targetID);
+			createdContent.erase(it);
 
 			return true;
 		}
@@ -185,5 +195,10 @@ namespace ElypsoEngine::Core
 				else ++it;
 			}
 		}
+	private:
+		//Owner registry with ID as key
+		static inline unordered_map<u32, unique_ptr<T>> createdContent{};
+		//Runtime non-owning pointers
+		static inline vector<T*> runtimeContent{};
 	};
 }
