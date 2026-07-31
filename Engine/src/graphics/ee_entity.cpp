@@ -54,7 +54,7 @@ namespace ElypsoEngine::Graphics
         if (!Scene::GetRegistry().GetContent(sceneID))
         {
             Log::Print(
-                "Failed to create entity because scene '" + to_string(sceneID) + "' was not found!",
+                "Failed to create entity because scene '" + to_string(sceneID) + "' was invalid!",
                 "EE_ENTITY",
                 LogType::LOG_ERROR,
                 2);
@@ -107,7 +107,7 @@ namespace ElypsoEngine::Graphics
                     if (!mesh)
                     {
                         Log::Print(
-                            "Failed to create entity because mesh '" + to_string(s.targetID) + "' was not found!",
+                            "Failed to create entity because mesh '" + to_string(s.targetID) + "' was invalid!",
                             "EE_ENTITY",
                             LogType::LOG_ERROR,
                             2);
@@ -145,7 +145,7 @@ namespace ElypsoEngine::Graphics
                     if (!camera)
                     {
                         Log::Print(
-                            "Failed to create entity because camera '" + to_string(s.targetID) + "' was not found!",
+                            "Failed to create entity because camera '" + to_string(s.targetID) + "' was invalid!",
                             "EE_ENTITY",
                             LogType::LOG_ERROR,
                             2);
@@ -258,8 +258,8 @@ namespace ElypsoEngine::Graphics
         Scene* s = Scene::GetRegistry().GetContent(sceneID);
         if (s)
         {
-            auto it = find(s->sceneEntities.begin(), s->sceneEntities.end(), ID);
-            if (it != s->sceneEntities.end()) s->sceneEntities.erase(it);
+            auto it = find(s->sceneIDs.begin(), s->sceneIDs.end(), ID);
+            if (it != s->sceneIDs.end()) s->sceneIDs.erase(it);
         }
 
         registry.RemoveContent(ID);
@@ -279,14 +279,14 @@ namespace ElypsoEngine::Graphics
             case SubEntityType::S_MESH:
             {
                 Mesh* m = Mesh::GetRegistry().GetContent(sub.targetID);
-                if (m) m->Destroy();
-                else
+                if (!m)
                 {
                     KalaWindowCore::ForceClose(
                         "Elypso Engine core error",
                         "Failed to destroy entity '" + to_string(ID)
                         + "' because it had an invalid mesh '" + to_string(sub.targetID) + "'!");
                 }
+                m->Destroy();
             };
 
             default: break;

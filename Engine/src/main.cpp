@@ -86,7 +86,7 @@ static f64 deltaTime{};
 static f64 frameTime{};
 static f64 finalFPS{};
 
-static void EngineInit();
+static void EnginePreInit();
 static void EnginePreUpdate();
 static void EnginePostUpdate();
 
@@ -112,7 +112,7 @@ int main()
     static time_point<steady_clock> lastFrameTime = steady_clock::now();
 
     //engine-side initialization
-    EngineInit();
+    EnginePreInit();
 
     Log::Print(
         "\n======================================================================"
@@ -229,7 +229,7 @@ int main()
     }
 }
 
-void EngineInit()
+void EnginePreInit()
 {
     if (appConfig.title.empty())
     {
@@ -267,7 +267,7 @@ void EngineInit()
         appConfig.size);
 
     Log::Print(
-        "Initialized Elypso Engine!",
+        "Finished initializing Elypso Engine!",
         "EE_MAIN",
         LogType::LOG_SUCCESS);
 }
@@ -354,7 +354,8 @@ void EnginePreUpdate()
         if (!pw)
         {
             Log::Print(
-                "Failed to run engine window '" + to_string(ew->GetID()) + "' pre-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was not found!",
+                "Failed to run engine window '" + to_string(ew->GetID()) 
+                + "' pre-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was invalid!",
                 "EE_MAIN",
                 LogType::LOG_ERROR,
                 2);
@@ -387,7 +388,8 @@ void EnginePostUpdate()
         if (!pw)
         {
             Log::Print(
-                "Failed to run engine window '" + to_string(ewID) + "' post-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was not found!",
+                "Failed to run engine window '" + to_string(ewID) 
+                + "' post-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was invalid!",
                 "EE_MAIN",
                 LogType::LOG_ERROR,
                 2);
@@ -399,7 +401,8 @@ void EnginePostUpdate()
         if (!input)
         {
             Log::Print(
-                "Failed to run engine window '" + to_string(ewID) + "' post-update because its input ID '" + to_string(pw->GetInputID()) + "' was not found!",
+                "Failed to run engine window '" + to_string(ewID) 
+                + "' post-update because its input ID '" + to_string(pw->GetInputID()) + "' was invalid!",
                 "EE_MAIN",
                 LogType::LOG_ERROR,
                 2);
@@ -411,7 +414,8 @@ void EnginePostUpdate()
         if (!kgctx)
         {
             Log::Print(
-                "Failed to run engine window '" + to_string(ewID) + "' post-update because its context ID '" + to_string(ew->GetGraphicsContextID()) + "' was not found!",
+                "Failed to run engine window '" + to_string(ewID) 
+                + "' post-update because its context ID '" + to_string(ew->GetGraphicsContextID()) + "' was invalid!",
                 "EE_MAIN",
                 LogType::LOG_ERROR,
                 2);

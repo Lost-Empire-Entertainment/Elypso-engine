@@ -52,7 +52,8 @@ namespace ElypsoEngine::Graphics
         EngineWindow* enwin = registry.GetContent(windowID);
         if (!enwin)
         {
-            Log::Print("Failed to call shutdown callback because the engine window ID '" + to_string(windowID) + "' was not found!",
+            Log::Print("Failed to call shutdown callback "
+                "because the engine window ID '" + to_string(windowID) + "' was invalid!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -80,10 +81,15 @@ namespace ElypsoEngine::Graphics
             pwParent = ProcessWindow::GetRegistry().GetContent(parent->GetWindowContextID());
             if (!pwParent)
             {
-                KalaWindowCore::ForceClose(
-                    "Elypso Engine window error",
-                    "Failed to assign parent to engine window because the parent engine window '" 
-                    + to_string(parent->GetID()) + "' process window '" + to_string(parent->GetWindowContextID()) + "' was not found!");
+                Log::Print(
+                    "Failed to assign parent to engine window '" + windowTitle 
+                    + "' because the parent engine window '" + to_string(parent->GetID()) 
+                    + "' process window '" + to_string(parent->GetWindowContextID()) + "' was invalid!",
+                    "EE_WINDOW",
+                    LogType::LOG_ERROR,
+                    2);
+
+                return nullptr;
             }
         }
 
@@ -92,32 +98,41 @@ namespace ElypsoEngine::Graphics
             pos,
             size,
             pwParent);
-
         if (!pw)
         {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine window error",
-                "Failed to create process window!");
+            Log::Print(
+                "Failed to create process window for engine window '" + windowTitle + "'!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
         }
 
         u32 windowID = pw->GetID();
 
         Input* in = Input::Initialize(windowID);
-
         if (!in)
         {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine window error",
-                "Failed to create input!");
+            Log::Print(
+                "Failed to create input for engine window '" + windowTitle + "'!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
         }
 
         VulkanContext* vkctx = VulkanContext::Initialize(windowID);
-
         if (!vkctx)
         {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine window error",
-                "Failed to create Vulkan context!");
+            Log::Print(
+                "Failed to create Vulkan context for engine window '" + windowTitle + "'!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
         }
 
         const WindowData& wData = pw->GetWindowData();
@@ -143,13 +158,16 @@ namespace ElypsoEngine::Graphics
         //pre-sync to ensure kg gets the highest id
         EngineCore::SyncID();
 
-        GraphicsContext* kgctx = GraphicsContext::Initialize(kgData);
-
+        GraphicsContext* kgctx = GraphicsContext::Initialize(std::move(kgData));
         if (!kgctx)
         {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine window error",
-                "Failed to create graphics context!");
+            Log::Print(
+                "Failed to create graphgics context for engine window '" + windowTitle + "'!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
         }
 
         pw->SetResizeCallback([kgctx]() 
@@ -158,7 +176,7 @@ namespace ElypsoEngine::Graphics
                 {
                     KalaWindowCore::ForceClose(
                         "Elypso Engine window error",
-                        "Failed to call resize callback because graphics context was not found!");
+                        "Failed to call resize callback because graphics context was invalid!");
 
                     return;
                 }
@@ -187,7 +205,9 @@ namespace ElypsoEngine::Graphics
         newScene->LoadScene();
 
         Log::Print(
-			"Created new window '" + windowTitle + "' with ID '" + to_string(newID) + "'!",
+			"Created new window '" + windowTitle 
+            + "' with ID '" + to_string(newID) 
+            + "' for process window '" + to_string(windowID) + "'!",
 			"EE_WINDOW",
 			LogType::LOG_SUCCESS);
 
@@ -235,7 +255,7 @@ namespace ElypsoEngine::Graphics
             KalaWindowCore::ForceClose(
                 "Elypso Engine window error",
                 "Failed to destroy engine window '" + to_string(ID)
-                + "' because its graphics context '"+ to_string(graphicsContextID) + "' was not found!");
+                + "' because its graphics context '"+ to_string(graphicsContextID) + "' was invalid!");
 
             return;
         }

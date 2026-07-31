@@ -75,6 +75,6 @@ namespace ElypsoEngine::Graphics
 
         path escnPath{};
 
-        vector<u32> sceneEntities{};
+        vector<u32> sceneIDs{};
     };
 }
