@@ -13,8 +13,9 @@ comm_objcopy: objcopy --remove-section .note.gnu.property
 
 #global
 compilerlauncher: ccache
-binaryname: Elypso Engine
+compiler: clang++
 standard: c++20
+binaryname: ${name_bin}
 binarytype: executable
 sources: "src"
 headers: "include", "../ElypsoEngine/include", "_external_shared/KalaWindow/include", "../_external_shared/KalaLua/include", "../_external_shared/lua/include"
@@ -23,19 +24,16 @@ warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln
 
 #profile debug-windows
-compiler: clang-cl
 buildtype: debug
 buildpath: "${dir_debug}windows"
 links: "${dir_ee_deb}/${name_ee}d.lib"
 
 #profile release-windows
-compiler: clang-cl
 buildtype: release
 buildpath: "${dir_release}windows"
 links: "${dir_ee_rel}/${name_ee}.lib"
 
 #profile debug-linux
-compiler: clang++
 buildtype: debug
 buildpath: "${dir_debug}linux"
 links: "${dir_ee_deb}/lib${name_ee}d.a"
@@ -43,7 +41,6 @@ links: "${dir_ee_deb}/lib${name_ee}d.a"
 postbuildaction: ${comm_objcopy} ${dir_debug}linux/${name_bin}
 
 #profile release-linux
-compiler: clang++
 buildtype: release
 buildpath: "${dir_release}linux"
 links: "${dir_ee_rel}/lib${name_ee}.a"
