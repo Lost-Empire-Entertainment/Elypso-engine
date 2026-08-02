@@ -7,7 +7,7 @@ name_bin: elypsoengine
 dir_release: build/release-
 dir_debug: build/debug-
 
-links_win_deb: "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib", "${dir_ma_deb}/${name_ma}d.lib", "${dir_sp_deb}d/${name_sp}d.lib"
+links_win_deb: "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib", "${dir_ma_deb}/${name_ma}d.lib", "${dir_sp_deb}/${name_sp}d.lib"
 links_win_rel: "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib", "${dir_ma_rel}/${name_ma}.lib", "${dir_sp_rel}/${name_sp}.lib"
 links_win_gnu_deb: "${dir_kw_deb}/${name_kw}-gnud.lib", "${dir_kg_deb}/${name_kg}-gnud.lib", "${dir_kp_deb}/${name_kp}-gnud.lib", "${dir_ka_deb}/${name_ka}-gnud.lib", "${dir_kl_deb}/${name_kl}-gnud.lib", "${dir_l_deb}/${name_l}-gnud.lib", "${dir_ma_deb}/${name_ma}-gnud.lib", "${dir_sp_deb}/${name_sp}-gnud.lib"
 links_win_gnu_rel: "${dir_kw_rel}/${name_kw}-gnu.lib", "${dir_kg_rel}/${name_kg}-gnu.lib", "${dir_kp_rel}/${name_kp}-gnu.lib", "${dir_ka_rel}/${name_ka}-gnu.lib", "${dir_kl_rel}/${name_kl}-gnu.lib", "${dir_l_rel}/${name_l}-gnu.lib", "${dir_ma_rel}/${name_ma}-gnu.lib", "${dir_sp_rel}/${name_sp}-gnu.lib"
