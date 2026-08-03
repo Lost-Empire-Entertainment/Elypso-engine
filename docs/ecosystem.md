@@ -5,9 +5,6 @@ the header collection:
 
 the clis:
 - kalamake
-- kalamove
-- kalamodel
-- kalafont
 
 `All clis follow the same original cli template which means all clis follow the same cli command system.`
 
@@ -18,6 +15,7 @@ the libraries (rely on clis or headers in some way):
 - kalaphysics
 - kalaaudio
 - kalalua
+- kalacli
 
 the executables (rely on libs or clis or headers in some way):
 - elypso engine
@@ -54,32 +52,6 @@ https://github.com/KalaKit/KalaHeaders
 C++20 CLI for compiling games, software and libraries with the .kmake format on Windows and Linux.
 
 https://github.com/KalaKit/KalaMake
-
----
-
-## KalaMove
-
-C++20 CLI for mass file and folder IO operations with the .kmf format on Windows and Linux.
-
-https://github.com/KalaKit/KalaMove
-
----
-
-
-## KalaModel
-
-C++20 CLI for converting .obj, .gltf and .fbx files to the .kmd for runtime use on Windows and Linux.
-
-
-https://github.com/KalaKit/KalaModel
-
----
-
-## KalaFont
-
-C++20 CLI for converting .ttf and .otf files to the .kfd format for runtime use on Windows and Linux.
-
-https://github.com/KalaKit/KalaFont
 
 ---
 
@@ -128,3 +100,11 @@ https://github.com/KalaKit/KalaAudio
 C++20 Lua wrapper library for games and software on Windows and Linux.
 
 https://github.com/KalaKit/KalaLua
+
+---
+
+## KalaCLI
+
+C++20 CLI template library on Windows and Linux. 
+
+https://github.com/KalaKit/KalaCLI
