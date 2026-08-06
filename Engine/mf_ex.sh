@@ -16,12 +16,11 @@ case "$1" in
         LIB_EXT=a
         LIB_ORIGIN=build/release-linux
         ;;
-    --win-on-linux)
-        OUT_NAME=ElypsoEngine-Win-on-Linux
-
+    --windows-gnu)
+        OUT_NAME=ElypsoEngine-Windows-Gnu
         LIB_NAME=elypsoengine-gnu
         LIB_EXT=lib
-        LIB_ORIGIN=build/release-win-on-linux
+        LIB_ORIGIN=build/release-windows-gnu
         ;;
     --windows)
         OUT_NAME=ElypsoEngine-Windows
@@ -31,7 +30,7 @@ case "$1" in
         LIB_ORIGIN=build/release-windows
         ;;
     *)
-        echo "Error: Argument must be --linux, --win-on-linux or --windows" >&2
+        echo "Error: Argument must be --linux, --windows-gnu or --windows" >&2
         exit 1
         ;;
 esac
@@ -131,7 +130,7 @@ case "$1" in
     --linux)
         mf --f "${IN_KW}/release/libkalawindow.a" --t "${OUT_DIR}/${OUT_KW_NAME}/libkalawindow.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_KW}/release/kalawindow-gnu.lib" --t "${OUT_DIR}/${OUT_KW_NAME}/kalawindow-gnu.lib"
         ;;
     --windows)
@@ -152,7 +151,7 @@ case "$1" in
     --linux)
         mf --f "${IN_KG}/release/libkalagraphics.a" --t "${OUT_DIR}/${OUT_KG_NAME}/libkalagraphics.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_KG}/release/kalagraphics-gnu.lib" --t "${OUT_DIR}/${OUT_KG_NAME}/kalagraphics-gnu.lib"
         ;;
     --windows)
@@ -173,7 +172,7 @@ case "$1" in
     --linux)
         mf --f "${IN_KP}/release/libkalaphysics.a" --t "${OUT_DIR}/${OUT_KP_NAME}/libkalaphysics.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_KP}/release/kalaphysics-gnu.lib" --t "${OUT_DIR}/${OUT_KP_NAME}/kalaphysics-gnu.lib"
         ;;
     --windows)
@@ -194,7 +193,7 @@ case "$1" in
     --linux)
         mf --f "${IN_KS}/release/libkalaserver.a" --t "${OUT_DIR}/${OUT_KS_NAME}/libkalaserver.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_KS}/release/kalaserver-gnu.lib" --t "${OUT_DIR}/${OUT_KS_NAME}/kalaserver-gnu.lib"
         ;;
     --windows)
@@ -215,7 +214,7 @@ case "$1" in
     --linux)
         mf --f "${IN_KA}/release/libkalaaudio.a" --t "${OUT_DIR}/${OUT_KA_NAME}/libkalaaudio.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_KA}/release/kalaaudio-gnu.lib" --t "${OUT_DIR}/${OUT_KA_NAME}/kalaaudio-gnu.lib"
         ;;
     --windows)
@@ -236,7 +235,7 @@ case "$1" in
     --linux)
         mf --f "${IN_KL}/release/libkalalua.a" --t "${OUT_DIR}/${OUT_KL_NAME}/libkalalua.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_KL}/release/kalalua-gnu.lib" --t "${OUT_DIR}/${OUT_KL_NAME}/kalalua-gnu.lib"
         ;;
     --windows)
@@ -257,7 +256,7 @@ case "$1" in
     --linux)
         mf --f "${IN_MA}/release/libminiaudio.a" --t "${OUT_DIR}/${OUT_MA_NAME}/libminiaudio.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_MA}/release/miniaudio-gnu.lib" --t "${OUT_DIR}/${OUT_MA_NAME}/miniaudio-gnu.lib"
         ;;
     --windows)
@@ -278,7 +277,7 @@ case "$1" in
     --linux)
         mf --f "${IN_LUA}/release/liblua.a" --t "${OUT_DIR}/${OUT_LUA_NAME}/liblua.a"
         ;;
-    --win-on-linux)
+    --windows-gnu)
         mf --f "${IN_LUA}/release/lua-gnu.lib" --t "${OUT_DIR}/${OUT_LUA_NAME}/lua-gnu.lib"
         ;;
     --windows)

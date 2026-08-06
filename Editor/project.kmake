@@ -122,32 +122,32 @@ postbuildaction: xcopy "..\\..\\external-shared\\KalaGraphics\\files\\shaders\\.
 postbuildaction: IF EXIST "${dir_release}windows\\files" rmdir /s /q "${dir_release}windows\\files"
 postbuildaction: xcopy "files" "${dir_release}windows\\files" /e /i /h
 
-#profile debug-win-on-linux
+#profile debug-windows-gnu
 targettype: windows-gnu
 buildtype: debug
-buildpath: "${dir_debug}win-on-linux"
+buildpath: "${dir_debug}windows-gnu"
 links: ${links_win_gnu_deb}, ${links_win_on_linux_only}, ${links_win_and_win_on_linux}
 //postbuildaction: rm -rf "files/shaders"
 //postbuildaction: cp -r "../../external-shared/KalaGraphics/files/shaders/." "files/shaders"
-postbuildaction: rm -rf "${dir_debug}win-on-linux/files"
-postbuildaction: cp -r "files" "${dir_debug}win-on-linux/files"
-postbuildaction: cp "${lib_libgcc}" "${dir_debug}win-on-linux"
-postbuildaction: cp "${lib_libstdcpp}" "${dir_debug}win-on-linux"
-postbuildaction: cp "${lib_libwinp}" "${dir_debug}win-on-linux"
+postbuildaction: rm -rf "${dir_debug}windows-gnu/files"
+postbuildaction: cp -r "files" "${dir_debug}windows-gnu/files"
+postbuildaction: cp "${lib_libgcc}" "${dir_debug}windows-gnu"
+postbuildaction: cp "${lib_libstdcpp}" "${dir_debug}windows-gnu"
+postbuildaction: cp "${lib_libwinp}" "${dir_debug}windows-gnu"
 
-#profile release-win-on-linux
+#profile release-windows-gnu
 targettype: windows-gnu
 buildtype: release
-buildpath: "${dir_release}win-on-linux"
+buildpath: "${dir_release}windows-gnu"
 customflags: no-console
 links: ${links_win_gnu_rel}, ${links_win_on_linux_only}, ${links_win_and_win_on_linux}
 //postbuildaction: rm -rf "files/shaders"
 //postbuildaction: cp -r "../../external-shared/KalaGraphics/files/shaders/." "files/shaders"
-postbuildaction: rm -rf "${dir_release}win-on-linux/files"
-postbuildaction: cp -r "files" "${dir_release}win-on-linux/files"
-postbuildaction: cp "${lib_libgcc}" "${dir_release}win-on-linux"
-postbuildaction: cp "${lib_libstdcpp}" "${dir_release}win-on-linux"
-postbuildaction: cp "${lib_libwinp}" "${dir_release}win-on-linux"
+postbuildaction: rm -rf "${dir_release}windows-gnu/files"
+postbuildaction: cp -r "files" "${dir_release}windows-gnu/files"
+postbuildaction: cp "${lib_libgcc}" "${dir_release}windows-gnu"
+postbuildaction: cp "${lib_libstdcpp}" "${dir_release}windows-gnu"
+postbuildaction: cp "${lib_libwinp}" "${dir_release}windows-gnu"
 
 #profile debug-linux
 buildtype: debug
