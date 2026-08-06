@@ -26,8 +26,11 @@ namespace ElypsoEngine::Core
     extern const AppConfig appConfig;
 
     extern void Init();
-    extern void Update();
+
+    extern void EarlyUpdate();
     extern void FixedUpdate();
+    extern void Update();
+    extern void LateUpdate();
 
     class LIB_API EngineCore
     {

@@ -13,7 +13,6 @@
 #include "core/kw_crash.hpp"
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
-#include "graphics/kw_window_global.hpp"
 #include "graphics/kw_vulkan.hpp"
 #ifdef __linux__
 #include "core/kw_messageloop_x11.hpp"
@@ -32,9 +31,7 @@ using KalaHeaders::KalaLog::LogType;
 using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::CrashHandler;
-using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
-using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::VulkanContext;
 #ifdef __linux__
 using KalaWindow::Core::MessageLoop;
@@ -44,8 +41,10 @@ using KalaGraphics::Core::GraphicsContext;
 
 using ElypsoEngine::Core::appConfig;
 using ElypsoEngine::Core::Init;
-using ElypsoEngine::Core::Update;
 using ElypsoEngine::Core::FixedUpdate;
+using ElypsoEngine::Core::EarlyUpdate;
+using ElypsoEngine::Core::Update;
+using ElypsoEngine::Core::LateUpdate;
 using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::EngineWindow;
 using ElypsoEngine::Graphics::Scene;
@@ -61,8 +60,8 @@ using std::chrono::steady_clock;
 using std::chrono::duration;
 using std::vector;
 using std::clamp;
-using std::format;
 using std::milli;
+using std::ratio;
 
 using u32 = uint32_t;
 
@@ -70,7 +69,7 @@ using u32 = uint32_t;
 static constexpr u16 TARGET_FPS_UNCAPPED = 1000;
 
 //seconds between displayed smooth fps updates
-constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
+static constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
 
 //physics framerate target
 static constexpr f64 FIXED_FPS = 60.0;
@@ -82,19 +81,36 @@ static constexpr u8 MAX_FIXED_STEPS_PER_FRAME = 3;
 
 static constexpr nanoseconds frameDuration = nanoseconds{1000000000 / TARGET_FPS_UNCAPPED};
 
-static f64 deltaTime{};
-static f64 frameTime{};
-static f64 finalFPS{};
+struct FrameLogic
+{
+    f64 deltaTime{};
+    f64 frameTime{};
+    f64 finalFPS{};
 
-static void EnginePreInit();
-static void EnginePreUpdate();
-static void EnginePostUpdate();
+    f64 stepAccumulator{};
+
+    f64 fpsWindowFrames{};
+    f64 fpsWindowAccumulation{};
+
+    time_point<steady_clock> lastFrameTime{};
+    time_point<steady_clock, duration<long long, ratio<1, 1000000000>>> frameStart{};
+
+    u8 fixedStepsThisFrame{};
+};
+
+static FrameLogic frameLogic{}; 
+
+static void EngineInit();
+
+static void FrameEarlyUpdate();
+static void FrameLateUpdate();
+static void ValidateEngineContent();
 
 namespace ElypsoEngine::Core
 {
-    f64 EngineCore::GetDeltaTime() { return deltaTime; }
-    f64 EngineCore::GetFrameTime() { return frameTime; }
-    f64 EngineCore::GetCurrentFPS() { return finalFPS; }
+    f64 EngineCore::GetDeltaTime() { return frameLogic.deltaTime; }
+    f64 EngineCore::GetFrameTime() { return frameLogic.frameTime; }
+    f64 EngineCore::GetCurrentFPS() { return frameLogic.finalFPS; }
 }
 
 int main()
@@ -104,15 +120,10 @@ int main()
 		"\nSTARTING ENGINE INITIALIZATION"
 		"\n======================================================================\n");
 
-    static f64 stepAccumulator{};
-
-    static f64 fpsWindowFrames{};
-    static f64 fpsWindowAccumulation{};
-
-    static time_point<steady_clock> lastFrameTime = steady_clock::now();
+    frameLogic.lastFrameTime = steady_clock::now();
 
     //engine-side initialization
-    EnginePreInit();
+    EngineInit();
 
     Log::Print(
         "\n======================================================================"
@@ -127,109 +138,67 @@ int main()
 		"\nSTARTING ENGINE UPDATE"
 		"\n======================================================================\n");
 
-    while(true)
-    {
-        auto frameStart = steady_clock::now();
-        duration<f64> delta = frameStart - lastFrameTime;
-        lastFrameTime = frameStart;
-
-        f64 rawSeconds = delta.count();
-
-        fpsWindowAccumulation += rawSeconds;
-        fpsWindowFrames++;
-
-        f64 rawFPS = (rawSeconds > 0.0) ? (1.0 / rawSeconds) : 0.0;
-        f64 displayedFPS{};
-
-        if (fpsWindowAccumulation >= FPS_UPDATE_INTERVAL)
+    auto globalEarlyUpdate = []() -> void
         {
-            displayedFPS = scast<f64>(fpsWindowFrames) / fpsWindowAccumulation;
-            fpsWindowAccumulation = 0.0;
-            fpsWindowFrames = 0;
-        }
+            //start-of-frame timing logic
+            FrameEarlyUpdate();
 
-        finalFPS = (displayedFPS > 0.0) ? displayedFPS : rawFPS;
-
-        //unscaled, unclamped
-        frameTime = rawSeconds;
-
-        //regular deltatime
-        deltaTime = clamp(rawSeconds, 0.0, 0.1);
-
-        //input polling, window updates
-        EnginePreUpdate();
-
-        stepAccumulator += frameTime;
-        u8 fixedStepsThisFrame{};
-
-        while (stepAccumulator >= FIXED_DELTA
-               && fixedStepsThisFrame < MAX_FIXED_STEPS_PER_FRAME)
+            //user early logic
+            EarlyUpdate();
+        };
+    auto globalUpdate = []() -> void
         {
+            //validate scenes and entities
+            ValidateEngineContent();
+
+            while (frameLogic.stepAccumulator >= FIXED_DELTA
+                && frameLogic.fixedStepsThisFrame < MAX_FIXED_STEPS_PER_FRAME)
+            {
+                /*
+                Log::Print(
+                    "Calling user-defined fixed update.",
+                    "EE_MAIN",
+                    LogType::LOG_DEBUG);
+                */
+
+                FixedUpdate();
+
+                frameLogic.stepAccumulator -= FIXED_DELTA;
+                frameLogic.fixedStepsThisFrame++;
+            }
+
             /*
             Log::Print(
-                "Calling user-defined fixed update.",
+                "Calling user-defined update after " + to_string(fixedStepsThisFrame) + " fixed steps this frame.",
                 "EE_MAIN",
                 LogType::LOG_DEBUG);
             */
 
-            FixedUpdate();
-            stepAccumulator -= FIXED_DELTA;
-            fixedStepsThisFrame++;
-        }
+            //user update logic
+            Update();
 
-        /*
-        Log::Print(
-            "Calling user-defined update after " + to_string(fixedStepsThisFrame) + " fixed steps this frame.",
-            "EE_MAIN",
-            LogType::LOG_DEBUG);
-        */
-
-        //user-defined update
-        Update();
-
-        //graphics, audio and physics updates
-        EnginePostUpdate();
-
-        auto postWork = steady_clock::now();
-        auto elapsed = postWork - frameStart;
-        auto remaining = frameDuration - elapsed;
-
-        if (remaining > nanoseconds{0})
+            //kalagraphics update
+            GraphicsContext::Update();
+        };
+    auto globalLateUpdate = []() -> void
         {
-            /*
-            Log::Print(
-                format(
-                    "Sleeping for {:.5f} remaining milliseconds.",
-                    duration<f64, milli>(remaining).count()),
-                "EE_MAIN",
-                LogType::LOG_INFO);
-            */
+            //user late update logic
+            LateUpdate();
 
-            sleep_for(remaining);
-        }
+            //end-of-frame timing logic
+            FrameLateUpdate();
+        };
 
-        /*
-        auto frameEnd = steady_clock::now();
-
-        Log::Print(
-            format(
-                "Smooth framerate: {:.2f} fps | "
-                "raw framerate: {:.2f} fps | "
-                "frame time: {:.5f} ms | "
-                "elapsed frame work: {:.5f} ms | "
-                "target frame work: {:.5f} ms",
-                finalFPS,
-                rawFPS,
-                duration<f64, std::milli>(frameEnd - frameStart).count(),
-                duration<f64, std::milli>(elapsed).count(),
-                duration<f64, std::milli>(frameDuration).count()),
-            "EE_MAIN",
-            LogType::LOG_INFO);
-        */
+    while(true)
+    {
+        ProcessWindow::Update(
+            globalEarlyUpdate,
+            globalUpdate,
+            globalLateUpdate);
     }
 }
 
-void EnginePreInit()
+void EngineInit()
 {
     if (appConfig.title.empty())
     {
@@ -250,11 +219,9 @@ void EnginePreInit()
     
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
 
-    Window_Global::Initialize();
-
-    VulkanContext::InitializeGlobal();
+    VulkanContext::Initialize();
     GraphicsContext::SetVKInstance(VulkanContext::GetInstance());
-    GraphicsContext::InitializeGlobal();
+    GraphicsContext::Initialize();
 
     if (appConfig.pos == 0)
     {
@@ -272,7 +239,78 @@ void EnginePreInit()
         LogType::LOG_SUCCESS);
 }
 
-void EnginePreUpdate()
+void FrameEarlyUpdate()
+{
+    auto frameStart = steady_clock::now();
+    duration<f64> delta = frameStart - frameLogic.lastFrameTime;
+    frameLogic.lastFrameTime = frameStart;
+
+    f64 rawSeconds = delta.count();
+
+    frameLogic.fpsWindowAccumulation += rawSeconds;
+    frameLogic.fpsWindowFrames++;
+
+    f64 rawFPS = (rawSeconds > 0.0) ? (1.0 / rawSeconds) : 0.0;
+    f64 displayedFPS{};
+
+    if (frameLogic.fpsWindowAccumulation >= FPS_UPDATE_INTERVAL)
+    {
+        displayedFPS = scast<f64>(frameLogic.fpsWindowFrames) / frameLogic.fpsWindowAccumulation;
+        frameLogic.fpsWindowAccumulation = 0.0;
+        frameLogic.fpsWindowFrames = 0;
+    }
+
+    frameLogic.finalFPS = (displayedFPS > 0.0) ? displayedFPS : rawFPS;
+
+    //unscaled, unclamped
+    frameLogic.frameTime = rawSeconds;
+
+    //regular deltatime
+    frameLogic.deltaTime = clamp(rawSeconds, 0.0, 0.1);
+
+    frameLogic.stepAccumulator += frameLogic.frameTime;
+}
+void FrameLateUpdate()
+{
+    auto postWork = steady_clock::now();
+    auto elapsed = postWork - frameLogic.frameStart;
+    auto remaining = frameDuration - elapsed;
+
+    if (remaining > nanoseconds{0})
+    {
+        /*
+        Log::Print(
+            format(
+                "Sleeping for {:.5f} remaining milliseconds.",
+                duration<f64, milli>(remaining).count()),
+            "EE_MAIN",
+            LogType::LOG_INFO);
+        */
+
+        sleep_for(remaining);
+    }
+
+    /*
+    auto frameEnd = steady_clock::now();
+
+    Log::Print(
+        format(
+            "Smooth framerate: {:.2f} fps | "
+            "raw framerate: {:.2f} fps | "
+            "frame time: {:.5f} ms | "
+            "elapsed frame work: {:.5f} ms | "
+            "target frame work: {:.5f} ms",
+            finalFPS,
+            rawFPS,
+            duration<f64, std::milli>(frameEnd - frameStart).count(),
+            duration<f64, std::milli>(elapsed).count(),
+            duration<f64, std::milli>(frameDuration).count()),
+        "EE_MAIN",
+        LogType::LOG_INFO);
+    */
+}
+
+void ValidateEngineContent()
 {
     if (EngineWindow::GetRegistry().GetAllContent().empty())
     {
@@ -281,10 +319,7 @@ void EnginePreUpdate()
             "All engine windows were destroyed, the program has nowhere to draw to, the program must shut down!");
     }
 
-#ifdef __linux__
-    MessageLoop::Update();
-#endif
-
+    vector<Entity*> removedEntities{};
     for (Entity* e : Entity::GetRegistry().GetAllContent())
     {
         if (!e)
@@ -299,18 +334,19 @@ void EnginePreUpdate()
         }
 
         Scene* s = Scene::GetRegistry().GetContent(e->GetSceneID());
+        if (!s) removedEntities.push_back(e);
+    }
+    for (Entity* e : removedEntities)
+    {
+        Log::Print(
+            "Destroying entity '" + to_string(e->GetID()) + "' because its scene was invalid!",
+            "EE_MAIN",
+            LogType::LOG_WARNING);
 
-        if (!s)
-        {
-            Log::Print(
-                "Destroying entity '" + to_string(e->GetID()) + "' because its scene was invalid!",
-                "EE_MAIN",
-                LogType::LOG_WARNING);
-
-            e->Destroy();
-        }
+        Entity::GetRegistry().RemoveContent(e);
     }
 
+    vector<Scene*> removedScenes{};
     for (Scene* s : Scene::GetRegistry().GetAllContent())
     {
         if (!s)
@@ -325,106 +361,15 @@ void EnginePreUpdate()
         }
 
         EngineWindow* ew = EngineWindow::GetRegistry().GetContent(s->GetWindowID());
-
-        if (!ew)
-        {
-            Log::Print(
-                "Destroying scene '" + to_string(s->GetID()) + "' because its window was invalid!",
-                "EE_MAIN",
-                LogType::LOG_WARNING);
-
-            s->Destroy();
-        }
+        if (!ew) removedScenes.push_back(s);
     }
-
-    for (EngineWindow* ew : EngineWindow::GetRegistry().GetAllContent())
+    for (Scene* s : removedScenes)
     {
-        if (!ew)
-        {
-            Log::Print(
-                "Failed to run engine window pre-update because it was invalid!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
+        Log::Print(
+            "Destroying scene '" + to_string(s->GetID()) + "' because its window was invalid!",
+            "EE_MAIN",
+            LogType::LOG_WARNING);
 
-            continue;
-        } 
-
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(ew->GetWindowContextID());
-        if (!pw)
-        {
-            Log::Print(
-                "Failed to run engine window '" + to_string(ew->GetID()) 
-                + "' pre-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was invalid!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
-
-            continue;
-        }
-
-        pw->Update();
-    }
-}
-
-void EnginePostUpdate()
-{
-    for (EngineWindow* ew : EngineWindow::GetRegistry().GetAllContent())
-    {
-        if (!ew)
-        {
-            Log::Print(
-                "Failed to run engine window post-update because one of its windows is invalid!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
-
-            continue;
-        } 
-
-        u32 ewID = ew->GetID();
-
-        ProcessWindow* pw = ProcessWindow::GetRegistry().GetContent(ew->GetWindowContextID());
-        if (!pw)
-        {
-            Log::Print(
-                "Failed to run engine window '" + to_string(ewID) 
-                + "' post-update because its window ID '" + to_string(ew->GetWindowContextID()) + "' was invalid!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
-
-            continue;
-        }
-    
-        Input* input = Input::GetRegistry().GetContent(pw->GetInputID());
-        if (!input)
-        {
-            Log::Print(
-                "Failed to run engine window '" + to_string(ewID) 
-                + "' post-update because its input ID '" + to_string(pw->GetInputID()) + "' was invalid!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
-
-            continue;
-        }
-
-        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(ew->GetGraphicsContextID());
-        if (!kgctx)
-        {
-            Log::Print(
-                "Failed to run engine window '" + to_string(ewID) 
-                + "' post-update because its context ID '" + to_string(ew->GetGraphicsContextID()) + "' was invalid!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
-
-            continue;
-        }
-
-        if (!pw->IsIdle()) kgctx->Update();
-
-        input->EndFrameUpdate();
+        Scene::GetRegistry().RemoveContent(s);
     }
 }

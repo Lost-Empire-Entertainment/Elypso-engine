@@ -8,7 +8,6 @@
 #include "log_utils.hpp"
 
 #include "core/kw_core.hpp"
-#include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "core/kg_context.hpp"
 #include "graphics/kw_vulkan.hpp"
@@ -24,7 +23,6 @@ using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
 using KalaWindow::Core::KalaWindowCore;
-using KalaWindow::Core::Input;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
 using KalaWindow::Graphics::VulkanContext;
@@ -98,6 +96,7 @@ namespace ElypsoEngine::Graphics
             pos,
             size,
             pwParent);
+
         if (!pw)
         {
             Log::Print(
@@ -110,30 +109,6 @@ namespace ElypsoEngine::Graphics
         }
 
         u32 windowID = pw->GetID();
-
-        Input* in = Input::Initialize(windowID);
-        if (!in)
-        {
-            Log::Print(
-                "Failed to create input for engine window '" + windowTitle + "'!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return nullptr;
-        }
-
-        VulkanContext* vkctx = VulkanContext::Initialize(windowID);
-        if (!vkctx)
-        {
-            Log::Print(
-                "Failed to create Vulkan context for engine window '" + windowTitle + "'!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return nullptr;
-        }
 
         const WindowData& wData = pw->GetWindowData();
 #ifdef _WIN32
@@ -153,12 +128,13 @@ namespace ElypsoEngine::Graphics
         };
 #endif
 
+        VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID());
         kgData.context_vk_surface = vkctx->GetSurface();
 
         //pre-sync to ensure kg gets the highest id
         EngineCore::SyncID();
 
-        GraphicsContext* kgctx = GraphicsContext::Initialize(std::move(kgData));
+        GraphicsContext* kgctx = GraphicsContext::InitializeInstance(std::move(kgData));
         if (!kgctx)
         {
             Log::Print(

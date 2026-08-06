@@ -7,12 +7,12 @@ name_bin: elypsoengine
 dir_release: build/release-
 dir_debug: build/debug-
 
-links_win_deb: "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib", "${dir_ma_deb}/${name_ma}d.lib", "${dir_sp_deb}/${name_sp}d.lib"
-links_win_rel: "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib", "${dir_ma_rel}/${name_ma}.lib", "${dir_sp_rel}/${name_sp}.lib"
-links_win_gnu_deb: "${dir_kw_deb}/${name_kw}-gnud.lib", "${dir_kg_deb}/${name_kg}-gnud.lib", "${dir_kp_deb}/${name_kp}-gnud.lib", "${dir_ka_deb}/${name_ka}-gnud.lib", "${dir_kl_deb}/${name_kl}-gnud.lib", "${dir_l_deb}/${name_l}-gnud.lib", "${dir_ma_deb}/${name_ma}-gnud.lib", "${dir_sp_deb}/${name_sp}-gnud.lib"
-links_win_gnu_rel: "${dir_kw_rel}/${name_kw}-gnu.lib", "${dir_kg_rel}/${name_kg}-gnu.lib", "${dir_kp_rel}/${name_kp}-gnu.lib", "${dir_ka_rel}/${name_ka}-gnu.lib", "${dir_kl_rel}/${name_kl}-gnu.lib", "${dir_l_rel}/${name_l}-gnu.lib", "${dir_ma_rel}/${name_ma}-gnu.lib", "${dir_sp_rel}/${name_sp}-gnu.lib"
-links_lin_deb: "${dir_kw_deb}/lib${name_kw}d.a", "${dir_kg_deb}/lib${name_kg}d.a", "${dir_kp_deb}/lib${name_kp}d.a", "${dir_ka_deb}/lib${name_ka}d.a", "${dir_kl_deb}/lib${name_kl}d.a", "${dir_l_deb}/lib${name_l}d.a", "${dir_ma_deb}/lib${name_ma}d.a", "${dir_sp_deb}/lib${name_sp}d.a"
-links_lin_rel: "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a", "${dir_ma_rel}/lib${name_ma}.a", "${dir_sp_rel}/lib${name_sp}.a"
+links_win_deb: "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ks_deb}/${name_ks}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib", "${dir_ma_deb}/${name_ma}d.lib", "${dir_sp_deb}/${name_sp}d.lib"
+links_win_rel: "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ks_rel}/${name_ks}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib", "${dir_ma_rel}/${name_ma}.lib", "${dir_sp_rel}/${name_sp}.lib"
+links_win_gnu_deb: "${dir_kw_deb}/${name_kw}-gnud.lib", "${dir_kg_deb}/${name_kg}-gnud.lib", "${dir_kp_deb}/${name_kp}-gnud.lib", "${dir_ks_deb}/${name_ks}-gnud.lib", "${dir_ka_deb}/${name_ka}-gnud.lib", "${dir_kl_deb}/${name_kl}-gnud.lib", "${dir_l_deb}/${name_l}-gnud.lib", "${dir_ma_deb}/${name_ma}-gnud.lib", "${dir_sp_deb}/${name_sp}-gnud.lib"
+links_win_gnu_rel: "${dir_kw_rel}/${name_kw}-gnu.lib", "${dir_kg_rel}/${name_kg}-gnu.lib", "${dir_kp_rel}/${name_kp}-gnu.lib", "${dir_ks_rel}/${name_ks}-gnu.lib", "${dir_ka_rel}/${name_ka}-gnu.lib", "${dir_kl_rel}/${name_kl}-gnu.lib", "${dir_l_rel}/${name_l}-gnu.lib", "${dir_ma_rel}/${name_ma}-gnu.lib", "${dir_sp_rel}/${name_sp}-gnu.lib"
+links_lin_deb: "${dir_kw_deb}/lib${name_kw}d.a", "${dir_kg_deb}/lib${name_kg}d.a", "${dir_kp_deb}/lib${name_kp}d.a", "${dir_ks_deb}/lib${name_ks}d.a", "${dir_ka_deb}/lib${name_ka}d.a", "${dir_kl_deb}/lib${name_kl}d.a", "${dir_l_deb}/lib${name_l}d.a", "${dir_ma_deb}/lib${name_ma}d.a", "${dir_sp_deb}/lib${name_sp}d.a"
+links_lin_rel: "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ks_rel}/lib${name_ks}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a", "${dir_ma_rel}/lib${name_ma}.a", "${dir_sp_rel}/lib${name_sp}.a"
 
 //
 // KALAWINDOW
@@ -32,6 +32,12 @@ dir_kg_deb: ../../external-shared/KalaGraphics/debug
 name_kp: kalaphysics
 dir_kp_rel: ../../external-shared/KalaPhysics/release
 dir_kp_deb: ../../external-shared/KalaPhysics/debug
+//
+// KALASERVER
+//
+name_ks: kalaserver
+dir_ks_rel: ../../external-shared/KalaServer/release
+dir_ks_deb: ../../external-shared/KalaServer/debug
 //
 // KALAAUDIO
 //
@@ -69,7 +75,7 @@ compiler: clang++
 standard: c++20
 binarytype: static
 sources: "src"
-headers: "include", "../../external-shared/KalaHeaders", "../../external-shared/KalaWindow/include", "../../external-shared/KalaGraphics/include", "../../external-shared/KalaPhysics/include", "../../external-shared/KalaAudio/include", "../../external-shared/KalaLua/include", "../../external-shared/lua/include", "../../external-shared/Vulkan/Include", "../../external-shared/Spirv-reflect"
+headers: "include", "../../external-shared/KalaHeaders/include", "../../external-shared/KalaWindow/include", "../../external-shared/KalaGraphics/include", "../../external-shared/KalaPhysics/include", "../../external-shared/KalaAudio/include", "../../external-shared/KalaLua/include", "../../external-shared/lua/include", "../../external-shared/Vulkan/Include", "../../external-shared/Spirv-reflect"
 defines: LIB_STATIC
 warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln
