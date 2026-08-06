@@ -2,4 +2,172 @@
 
 #version 1.0
 
-//this will be filled later...
+#references
+name_bin: game-template
+dir_debug: build/debug-
+dir_release: build/release-
+
+links_win_deb: "${dir_ee_deb}/${name_ee}d.lib", "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ks_deb}/${name_ks}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib", "${dir_ma_deb}/${name_ma}d.lib", "${dir_sp_deb}/${name_sp}d.lib"
+links_win_rel: "${dir_ee_rel}/${name_ee}.lib", "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ks_rel}/${name_ks}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib", "${dir_ma_rel}/${name_ma}.lib", "${dir_sp_rel}/${name_sp}.lib"
+links_win_gnu_deb: "${dir_ee_deb}/${name_ee}-gnud.lib", "${dir_kw_deb}/${name_kw}-gnud.lib", "${dir_kg_deb}/${name_kg}-gnud.lib", "${dir_kp_deb}/${name_kp}-gnud.lib", "${dir_ks_deb}/${name_ks}-gnud.lib", "${dir_ka_deb}/${name_ka}-gnud.lib", "${dir_kl_deb}/${name_kl}-gnud.lib", "${dir_l_deb}/${name_l}-gnud.lib", "${dir_ma_deb}/${name_ma}-gnud.lib", "${dir_sp_deb}/${name_sp}-gnud.lib"
+links_win_gnu_rel: "${dir_ee_rel}/${name_ee}-gnu.lib", "${dir_kw_rel}/${name_kw}-gnu.lib", "${dir_kg_rel}/${name_kg}-gnu.lib", "${dir_kp_rel}/${name_kp}-gnu.lib", "${dir_ks_rel}/${name_ks}-gnu.lib", "${dir_ka_rel}/${name_ka}-gnu.lib", "${dir_kl_rel}/${name_kl}-gnu.lib", "${dir_l_rel}/${name_l}-gnu.lib", "${dir_ma_rel}/${name_ma}-gnu.lib", "${dir_sp_rel}/${name_sp}-gnu.lib"
+links_lin_deb: "${dir_ee_deb}/lib${name_ee}d.a", "${dir_kw_deb}/lib${name_kw}d.a", "${dir_kg_deb}/lib${name_kg}d.a", "${dir_kp_deb}/lib${name_kp}d.a", "${dir_ks_deb}/lib${name_ks}d.a", "${dir_ka_deb}/lib${name_ka}d.a", "${dir_kl_deb}/lib${name_kl}d.a", "${dir_l_deb}/lib${name_l}d.a", "${dir_ma_deb}/lib${name_ma}d.a", "${dir_sp_deb}/lib${name_sp}d.a"
+links_lin_rel: "${dir_ee_rel}/lib${name_ee}.a", "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ks_rel}/lib${name_ks}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a", "${dir_ma_rel}/lib${name_ma}.a", "${dir_sp_rel}/lib${name_sp}.a"
+
+links_win_only: msvcrt, msvcprt, vcruntime
+links_win_and_win_on_linux: ucrt, ole32, uuid, winmm, dbghelp, dwmapi, wtsapi32, runtimeobject, "../../external-shared/Vulkan/vulkan-1.lib"
+links_win_on_linux_only: winpthread
+links_lin: X11, Xi, notify, gobject-2.0, glib-2.0, canberra, vulkan
+
+lib_libgcc: /usr/x86_64-w64-mingw32/bin/libgcc_s_seh-1.dll
+lib_libstdcpp: /usr/x86_64-w64-mingw32/bin/libstdc++-6.dll
+lib_libwinp: /usr/x86_64-w64-mingw32/bin/libwinpthread-1.dll
+
+vkdir_win: ..\\..\\external-shared\\Vulkan
+
+comm_objcopy: objcopy --remove-section .note.gnu.property
+
+//
+// ELYPSO ENGINE
+//
+name_ee: elypsoengine
+dir_ee_rel: ../../external-shared/ElypsoEngine/release
+dir_ee_deb: ../../external-shared/ElypsoEngine/debug
+//
+// KALAWINDOW
+//
+name_kw: kalawindow
+dir_kw_rel: ../../external-shared/KalaWindow/release
+dir_kw_deb: ../../external-shared/KalaWindow/debug
+//
+// KALAGRAPHICS
+//
+name_kg: kalagraphics
+dir_kg_rel: ../../external-shared/KalaGraphics/release
+dir_kg_deb: ../../external-shared/KalaGraphics/debug
+//
+// KALAPHYSICS
+//
+name_kp: kalaphysics
+dir_kp_rel: ../../external-shared/KalaPhysics/release
+dir_kp_deb: ../../external-shared/KalaPhysics/debug
+//
+// KALASERVER
+//
+name_ks: kalaserver
+dir_ks_rel: ../../external-shared/KalaServer/release
+dir_ks_deb: ../../external-shared/KalaServer/debug
+//
+// KALAAUDIO
+//
+name_ka: kalaaudio
+dir_ka_rel: ../../external-shared/KalaAudio/release
+dir_ka_deb: ../../external-shared/KalaAudio/debug
+//
+// KALALUA
+//
+name_kl: kalalua
+dir_kl_rel: ../../external-shared/KalaLua/release
+dir_kl_deb: ../../external-shared/KalaLua/debug
+//
+// LUA
+//
+name_l: lua
+dir_l_rel: ../../external-shared/lua/release
+dir_l_deb: ../../external-shared/lua/debug
+//
+// MINIAUDIO
+//
+name_ma: miniaudio
+dir_ma_rel: ../../external-shared/miniaudio/release
+dir_ma_deb: ../../external-shared/miniaudio/debug
+//
+// SPIRV-REFLECT
+//
+name_sp: spirv-reflect
+dir_sp_rel: ../../external-shared/Spirv-reflect/release
+dir_sp_deb: ../../external-shared/Spirv-reflect/debug
+
+#global
+compilerlauncher: ccache
+compiler: clang++
+binaryname: ${name_bin}
+binarytype: executable
+standard: c++20
+sources: "src"
+headers: "include", "../../external-shared/KalaHeaders/include", "../../external-shared/Vulkan", "../../external-shared/ElypsoEngine/include", "../../external-shared/KalaWindow/include", "../../external-shared/KalaGraphics/include", "../../external-shared/KalaPhysics/include", "../../external-shared/KalaAudio/include", "../../external-shared/KalaLua/include", "../../external-shared/lua/include", "../../external-shared/Vulkan/Include", "../../external-shared/Spirv-reflect"
+warninglevel: normal
+defines: LIB_STATIC
+customflags: export-compile-commands, export-vscode-sln
+
+#profile debug-windows
+buildtype: debug
+buildpath: "${dir_debug}windows"
+links: ${links_win_deb}, ${links_win_only}, ${links_win_and_win_on_linux}
+postbuildaction: rmdir /s /q "files\\shaders"
+postbuildaction: xcopy "..\\..\\external-shared\\KalaGraphics\\files\\shaders\\." "files\\shaders" /e /i /h
+postbuildaction: IF EXIST "${dir_debug}windows\\files" rmdir /s /q "${dir_debug}windows\\files"
+postbuildaction: xcopy "files" "${dir_debug}windows\\files" /e /i /h
+//copy files for vk_layer_path
+postbuildaction: xcopy /y /d "${vkdir_win}\\VkLayer_khronos_validation.dll" "${dir_debug}windows\\"
+postbuildaction: xcopy /y /d "${vkdir_win}\\VkLayer_khronos_validation.json" "${dir_debug}windows\\"
+
+#profile release-windows
+buildtype: release
+buildpath: "${dir_release}windows"
+customflags: no-console
+links: ${links_win_rel}, ${links_win_only}, ${links_win_and_win_on_linux}
+postbuildaction: rmdir /s /q "files\\shaders"
+postbuildaction: xcopy "..\\..\\external-shared\\KalaGraphics\\files\\shaders\\." "files\\shaders" /e /i /h
+postbuildaction: IF EXIST "${dir_release}windows\\files" rmdir /s /q "${dir_release}windows\\files"
+postbuildaction: xcopy "files" "${dir_release}windows\\files" /e /i /h
+
+#profile debug-windows-gnu
+targettype: windows-gnu
+buildtype: debug
+buildpath: "${dir_debug}windows-gnu"
+links: ${links_win_gnu_deb}, ${links_win_on_linux_only}, ${links_win_and_win_on_linux}
+//postbuildaction: rm -rf "files/shaders"
+//postbuildaction: cp -r "../../external-shared/KalaGraphics/files/shaders/." "files/shaders"
+postbuildaction: rm -rf "${dir_debug}windows-gnu/files"
+postbuildaction: cp -r "files" "${dir_debug}windows-gnu/files"
+postbuildaction: cp "${lib_libgcc}" "${dir_debug}windows-gnu"
+postbuildaction: cp "${lib_libstdcpp}" "${dir_debug}windows-gnu"
+postbuildaction: cp "${lib_libwinp}" "${dir_debug}windows-gnu"
+
+#profile release-windows-gnu
+targettype: windows-gnu
+buildtype: release
+buildpath: "${dir_release}windows-gnu"
+customflags: no-console
+links: ${links_win_gnu_rel}, ${links_win_on_linux_only}, ${links_win_and_win_on_linux}
+//postbuildaction: rm -rf "files/shaders"
+//postbuildaction: cp -r "../../external-shared/KalaGraphics/files/shaders/." "files/shaders"
+postbuildaction: rm -rf "${dir_release}windows-gnu/files"
+postbuildaction: cp -r "files" "${dir_release}windows-gnu/files"
+postbuildaction: cp "${lib_libgcc}" "${dir_release}windows-gnu"
+postbuildaction: cp "${lib_libstdcpp}" "${dir_release}windows-gnu"
+postbuildaction: cp "${lib_libwinp}" "${dir_release}windows-gnu"
+
+#profile debug-linux
+buildtype: debug
+buildpath: "${dir_debug}linux"
+links: ${links_lin_deb}, ${links_lin}
+//postbuildaction: rm -rf "files/shaders"
+//postbuildaction: cp -r "../../external-shared/KalaGraphics/files/shaders/." "files/shaders"
+postbuildaction: rm -rf "${dir_debug}linux/files"
+postbuildaction: cp -r "files" "${dir_debug}linux/files"
+//strips stupid avx requirements that cachyos seems to add for no reason
+postbuildaction: ${comm_objcopy} ${dir_debug}linux/${name_bin}
+
+#profile release-linux
+buildtype: release
+buildpath: "${dir_release}linux"
+links: ${links_lin_rel}, ${links_lin}
+//postbuildaction: rm -rf "files/shaders"
+//postbuildaction: cp -r "../../external-shared/KalaGraphics/files/shaders/." "files/shaders"
+postbuildaction: rm -rf "${dir_release}linux/files"
+postbuildaction: cp -r "files" "${dir_release}linux/files"
+//strips stupid avx requirements that cachyos seems to add for no reason
+postbuildaction: ${comm_objcopy} ${dir_release}linux/${name_bin}
+postbuildaction: strip --strip-unneeded ${dir_release}linux/${name_bin}
