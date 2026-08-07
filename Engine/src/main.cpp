@@ -154,25 +154,11 @@ int main()
             while (frameLogic.stepAccumulator >= FIXED_DELTA
                 && frameLogic.fixedStepsThisFrame < MAX_FIXED_STEPS_PER_FRAME)
             {
-                /*
-                Log::Print(
-                    "Calling user-defined fixed update.",
-                    "EE_MAIN",
-                    LogType::LOG_DEBUG);
-                */
-
                 FixedUpdate();
 
                 frameLogic.stepAccumulator -= FIXED_DELTA;
                 frameLogic.fixedStepsThisFrame++;
             }
-
-            /*
-            Log::Print(
-                "Calling user-defined update after " + to_string(fixedStepsThisFrame) + " fixed steps this frame.",
-                "EE_MAIN",
-                LogType::LOG_DEBUG);
-            */
 
             //user update logic
             Update();
@@ -241,9 +227,11 @@ void EngineInit()
 
 void FrameEarlyUpdate()
 {
-    auto frameStart = steady_clock::now();
-    duration<f64> delta = frameStart - frameLogic.lastFrameTime;
-    frameLogic.lastFrameTime = frameStart;
+    frameLogic.fixedStepsThisFrame = 0;
+
+    frameLogic.frameStart = steady_clock::now();
+    duration<f64> delta = frameLogic.frameStart - frameLogic.lastFrameTime;
+    frameLogic.lastFrameTime = frameLogic.frameStart;
 
     f64 rawSeconds = delta.count();
 

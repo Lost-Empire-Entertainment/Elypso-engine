@@ -76,7 +76,7 @@ standard: c++20
 binarytype: static
 sources: "src"
 headers: "include", "../../external-shared/KalaHeaders/include", "../../external-shared/KalaWindow/include", "../../external-shared/KalaGraphics/include", "../../external-shared/KalaPhysics/include", "../../external-shared/KalaAudio/include", "../../external-shared/KalaLua/include", "../../external-shared/lua/include", "../../external-shared/Vulkan/Include", "../../external-shared/Spirv-reflect"
-defines: LIB_STATIC
+defines: LIB_STATIC, __USE_VULKAN__
 warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln
 
