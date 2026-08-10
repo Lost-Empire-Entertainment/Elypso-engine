@@ -97,7 +97,7 @@ standard: c++20
 sources: "src"
 headers: "include", "../../external-shared/KalaHeaders/include", "../../external-shared/Vulkan", "../../external-shared/ElypsoEngine/include", "../../external-shared/KalaWindow/include", "../../external-shared/KalaGraphics/include", "../../external-shared/KalaPhysics/include", "../../external-shared/KalaAudio/include", "../../external-shared/KalaLua/include", "../../external-shared/lua/include", "../../external-shared/Vulkan/Include", "../../external-shared/Spirv-reflect"
 warninglevel: normal
-defines: LIB_STATIC
+defines: LIB_STATIC, __USE_VULKAN__
 customflags: export-compile-commands, export-vscode-sln
 
 #profile debug-windows
