@@ -3,7 +3,6 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <thread>
 #include <chrono>
 #include <string>
 
@@ -52,7 +51,6 @@ using ElypsoEngine::Graphics::Entity;
 
 using std::string;
 using std::to_string;
-using std::this_thread::sleep_for;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 using std::chrono::time_point;
@@ -62,11 +60,9 @@ using std::vector;
 using std::clamp;
 using std::milli;
 using std::ratio;
+using std::format;
 
 using u32 = uint32_t;
-
-//world render framerate target - reasonable limit if vsync is off
-static constexpr u16 TARGET_FPS_UNCAPPED = 1000;
 
 //seconds between displayed smooth fps updates
 static constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
@@ -79,12 +75,12 @@ static constexpr f64 FIXED_DELTA = 1.0 / FIXED_FPS;
 //any higher would catch up too agressively and not have any meaningful visual difference
 static constexpr u8 MAX_FIXED_STEPS_PER_FRAME = 3;
 
-static constexpr nanoseconds frameDuration = nanoseconds{1000000000 / TARGET_FPS_UNCAPPED};
-
 struct FrameLogic
 {
     f64 deltaTime{};
     f64 frameTime{};
+
+    f64 rawFPS{};
     f64 finalFPS{};
 
     f64 stepAccumulator{};
@@ -211,7 +207,7 @@ void EngineInit()
 
     if (appConfig.pos == 0)
     {
-        //todo: set window pos to monitor center
+        //TODO: set window pos to monitor center
     }
 
     EngineWindow::Initialize(
@@ -238,7 +234,7 @@ void FrameEarlyUpdate()
     frameLogic.fpsWindowAccumulation += rawSeconds;
     frameLogic.fpsWindowFrames++;
 
-    f64 rawFPS = (rawSeconds > 0.0) ? (1.0 / rawSeconds) : 0.0;
+    frameLogic.rawFPS = (rawSeconds > 0.0) ? (1.0 / rawSeconds) : 0.0;
     f64 displayedFPS{};
 
     if (frameLogic.fpsWindowAccumulation >= FPS_UPDATE_INTERVAL)
@@ -248,7 +244,7 @@ void FrameEarlyUpdate()
         frameLogic.fpsWindowFrames = 0;
     }
 
-    frameLogic.finalFPS = (displayedFPS > 0.0) ? displayedFPS : rawFPS;
+    frameLogic.finalFPS = (displayedFPS > 0.0) ? displayedFPS : frameLogic.rawFPS;
 
     //unscaled, unclamped
     frameLogic.frameTime = rawSeconds;
@@ -260,25 +256,10 @@ void FrameEarlyUpdate()
 }
 void FrameLateUpdate()
 {
+    /*
     auto postWork = steady_clock::now();
     auto elapsed = postWork - frameLogic.frameStart;
-    auto remaining = frameDuration - elapsed;
 
-    if (remaining > nanoseconds{0})
-    {
-        /*
-        Log::Print(
-            format(
-                "Sleeping for {:.5f} remaining milliseconds.",
-                duration<f64, milli>(remaining).count()),
-            "EE_MAIN",
-            LogType::LOG_INFO);
-        */
-
-        sleep_for(remaining);
-    }
-
-    /*
     auto frameEnd = steady_clock::now();
 
     Log::Print(
@@ -286,13 +267,11 @@ void FrameLateUpdate()
             "Smooth framerate: {:.2f} fps | "
             "raw framerate: {:.2f} fps | "
             "frame time: {:.5f} ms | "
-            "elapsed frame work: {:.5f} ms | "
-            "target frame work: {:.5f} ms",
-            finalFPS,
-            rawFPS,
-            duration<f64, std::milli>(frameEnd - frameStart).count(),
-            duration<f64, std::milli>(elapsed).count(),
-            duration<f64, std::milli>(frameDuration).count()),
+            "elapsed frame work: {:.5f} ms",
+            frameLogic.finalFPS,
+            frameLogic.rawFPS,
+            duration<f64, std::milli>(frameEnd - frameLogic.frameStart).count(),
+            duration<f64, std::milli>(elapsed).count()),
         "EE_MAIN",
         LogType::LOG_INFO);
     */

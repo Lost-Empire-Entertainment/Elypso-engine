@@ -333,7 +333,7 @@ namespace ElypsoEngine::Graphics
         EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
         ew->activeSceneID = ID;
 
-        //todo: load this scene assets here
+        //TODO: load this scene assets here
 
         Log::Print(
 			"Loaded scene '" + string(title) 
