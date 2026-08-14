@@ -21,13 +21,14 @@ namespace ElypsoEngine::Graphics
     using std::string_view;
     using std::vector;
     using std::filesystem::path;
+    using std::default_delete;
 
     using u32 = uint32_t;
 
     class LIB_API Scene
     {
     friend class Entity;
-
+    friend struct default_delete<Scene>;
     public:
         static ElypsoRegistry<Scene>& GetRegistry();
 
@@ -60,9 +61,9 @@ namespace ElypsoEngine::Graphics
         void LoadScene();
 
         void Destroy();
-
-        ~Scene();
     private:
+        ~Scene();
+
         //Unload this scene and disable all its entities
         void Unload();
 

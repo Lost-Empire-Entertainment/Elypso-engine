@@ -24,11 +24,12 @@ namespace ElypsoEngine::Graphics
 
     using std::string;
     using std::vector;
+    using std::default_delete;
     
     class LIB_API EngineWindow
     {
     friend class Scene;
-
+    friend struct default_delete<EngineWindow>;
     public:
         static ElypsoRegistry<EngineWindow>& GetRegistry();
 
@@ -51,9 +52,9 @@ namespace ElypsoEngine::Graphics
         //Do not call manually, destroy the underlying
         //process window via GetWindowContextID instead
         void Destroy();
-
-        ~EngineWindow();
     private:
+        ~EngineWindow();
+
         u32 ID{};
         u32 windowContextID{};
         u32 graphicsContextID{};

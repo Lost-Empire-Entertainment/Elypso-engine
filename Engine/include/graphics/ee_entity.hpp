@@ -19,6 +19,7 @@ namespace ElypsoEngine::Graphics
     using std::string;
     using std::string_view;
     using std::vector;
+    using std::default_delete;
 
     using u8 = uint8_t;
     using u32 = uint32_t;
@@ -43,6 +44,7 @@ namespace ElypsoEngine::Graphics
 
     class LIB_API Entity
     {
+    friend struct default_delete<Entity>;
     public:
         static ElypsoRegistry<Entity>& GetRegistry();
 
@@ -84,9 +86,9 @@ namespace ElypsoEngine::Graphics
         const vector<u32>& GetChildEntities() const;
 
         void Destroy();
-
-        ~Entity();
     private:
+        ~Entity();
+
         u32 ID{};
         u32 sceneID{};
 
