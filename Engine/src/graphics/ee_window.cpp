@@ -146,19 +146,8 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        pw->SetResizeCallback([kgctx]() 
-            {
-                if (!kgctx)
-                {
-                    KalaWindowCore::ForceClose(
-                        "Elypso Engine window error",
-                        "Failed to call resize callback because graphics context was invalid!");
-
-                    return;
-                }
-
-                kgctx->ResizeUpdate();
-            });
+        //TODO: figure out if this is even needed
+        //pw->SetResizeCallback([kgctx]() {});
 
         //sync to ensure window gets the highest id from kw
         EngineCore::SyncID();

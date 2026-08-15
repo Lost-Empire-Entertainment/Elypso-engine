@@ -32,9 +32,6 @@ using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::CrashHandler;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::VulkanContext;
-#ifdef __linux__
-using KalaWindow::Core::MessageLoop;
-#endif
 using KalaGraphics::Core::KalaGraphicsCore;
 using KalaGraphics::Core::GraphicsContext;
 
@@ -202,8 +199,7 @@ void EngineInit()
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
 
     VulkanContext::Initialize();
-    GraphicsContext::SetVKInstance(VulkanContext::GetInstance());
-    GraphicsContext::Initialize();
+    GraphicsContext::Initialize(VulkanContext::GetInstance());
 
     if (appConfig.pos == 0)
     {
