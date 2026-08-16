@@ -118,6 +118,20 @@ int main()
     //engine-side initialization
     EngineInit();
 
+#ifdef EE_SYSTEM_INFO
+    Log::Print("\n======================================================================");
+
+    //print all user system info for now always at the very top
+
+    Log::Print(KalaWindowCore::GetCPUInfoString());
+    Log::Print(" ");
+    Log::Print(KalaWindowCore::GetGPUInfoString());
+    Log::Print(" ");
+    Log::Print(KalaWindowCore::GetRAMInfoString(true));
+    Log::Print(" ");
+    Log::Print(KalaWindowCore::GetOSInfoString());
+#endif
+
     Log::Print(
         "\n======================================================================"
 		"\nSTARTING USER INITIALIZATION"

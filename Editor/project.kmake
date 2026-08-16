@@ -15,7 +15,7 @@ links_lin_deb: "${dir_ee_deb}/lib${name_ee}d.a", "${dir_kw_deb}/lib${name_kw}d.a
 links_lin_rel: "${dir_ee_rel}/lib${name_ee}.a", "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ks_rel}/lib${name_ks}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a", "${dir_ma_rel}/lib${name_ma}.a", "${dir_sp_rel}/lib${name_sp}.a"
 
 links_win_only: msvcrt, msvcprt, vcruntime
-links_win_and_win_on_linux: ucrt, ole32, uuid, winmm, dbghelp, shlwapi, dwmapi, wtsapi32, runtimeobject, "../../external-shared/Vulkan/vulkan-1.lib"
+links_win_and_win_on_linux: ucrt, ole32, uuid, winmm, dbghelp, shlwapi, dwmapi, wtsapi32, runtimeobject, powrprof, "../../external-shared/Vulkan/vulkan-1.lib"
 links_win_on_linux_only: winpthread
 links_lin: X11, Xi, notify, gobject-2.0, glib-2.0, canberra, vulkan
 
