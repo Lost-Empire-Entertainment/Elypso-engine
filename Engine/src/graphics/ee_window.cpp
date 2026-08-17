@@ -70,11 +70,6 @@ namespace ElypsoEngine::Graphics
         vec2 size,
         EngineWindow* parent)
     {
-        if (!GraphicsContext::IsInitialized())
-        {
-            GraphicsContext::Initialize(VulkanContext::GetInstance());
-        }
-
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
         EngineWindow* windowPtr = newWindow.get();
 
@@ -132,6 +127,11 @@ namespace ElypsoEngine::Graphics
             .context_window = wData.window
         };
 #endif
+
+        if (!GraphicsContext::IsInitialized())
+        {
+            GraphicsContext::Initialize(VulkanContext::GetInstance());
+        }
 
         VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID());
         kgData.context_vk_surface = vkctx->GetSurface();
