@@ -208,7 +208,7 @@ void EngineInit()
             "program title was too long!");
     }
         
-    VulkanContext::Initialize();
+    VulkanContext::Initialize(string(appConfig.title));
 
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
     GraphicsContext::Initialize(VulkanContext::GetInstance());
