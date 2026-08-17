@@ -208,12 +208,7 @@ void EngineInit()
             "program title was too long!");
     }
     
-    CrashHandler::Initialize(string(appConfig.title));
-    
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
-
-    VulkanContext::Initialize();
-    GraphicsContext::Initialize(VulkanContext::GetInstance());
 
     if (appConfig.pos == 0)
     {

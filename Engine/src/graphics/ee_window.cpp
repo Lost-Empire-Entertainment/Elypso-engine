@@ -70,6 +70,11 @@ namespace ElypsoEngine::Graphics
         vec2 size,
         EngineWindow* parent)
     {
+        if (!GraphicsContext::IsInitialized())
+        {
+            GraphicsContext::Initialize(VulkanContext::GetInstance());
+        }
+
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
         EngineWindow* windowPtr = newWindow.get();
 
