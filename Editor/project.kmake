@@ -14,7 +14,7 @@ links_win_gnu_rel: "${dir_ee_rel}/${name_ee}-gnu.lib", "${dir_kw_rel}/${name_kw}
 links_lin_deb: "${dir_ee_deb}/lib${name_ee}d.a", "${dir_kw_deb}/lib${name_kw}d.a", "${dir_kg_deb}/lib${name_kg}d.a", "${dir_kp_deb}/lib${name_kp}d.a", "${dir_ks_deb}/lib${name_ks}d.a", "${dir_ka_deb}/lib${name_ka}d.a", "${dir_kl_deb}/lib${name_kl}d.a", "${dir_l_deb}/lib${name_l}d.a", "${dir_ma_deb}/lib${name_ma}d.a", "${dir_sp_deb}/lib${name_sp}d.a"
 links_lin_rel: "${dir_ee_rel}/lib${name_ee}.a", "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ks_rel}/lib${name_ks}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a", "${dir_ma_rel}/lib${name_ma}.a", "${dir_sp_rel}/lib${name_sp}.a"
 
-links_win_only: msvcrt, msvcprt, vcruntime
+links_win_only: msvcrt, msvcprt, vcruntime, user32, gdi32, shell32, oleaut32, advapi32
 links_win_and_win_on_linux: ucrt, ole32, uuid, winmm, dbghelp, shlwapi, dwmapi, wtsapi32, runtimeobject, powrprof, "../../external-shared/Vulkan/vulkan-1.lib"
 links_win_on_linux_only: winpthread
 links_lin: X11, Xi, notify, gobject-2.0, glib-2.0, canberra, vulkan
@@ -104,10 +104,10 @@ customflags: export-compile-commands, export-vscode-sln
 buildtype: debug
 buildpath: "${dir_debug}windows"
 links: ${links_win_deb}, ${links_win_only}, ${links_win_and_win_on_linux}
-postbuildaction: rmdir /s /q "files\\shaders"
-postbuildaction: xcopy "..\\..\\external-shared\\KalaGraphics\\files\\shaders\\." "files\\shaders" /e /i /h
+postbuildaction: IF EXIST "files\\shaders" rmdir /s /q "files\\shaders"
+postbuildaction: xcopy "..\\..\\external-shared\\KalaGraphics\\files\\shaders\\." "files\\shaders" /e /i /h /y
 postbuildaction: IF EXIST "${dir_debug}windows\\files" rmdir /s /q "${dir_debug}windows\\files"
-postbuildaction: xcopy "files" "${dir_debug}windows\\files" /e /i /h
+postbuildaction: xcopy "files" "${dir_debug}windows\\files" /e /i /h /y
 //copy files for vk_layer_path
 postbuildaction: xcopy /y /d "${vkdir_win}\\VkLayer_khronos_validation.dll" "${dir_debug}windows\\"
 postbuildaction: xcopy /y /d "${vkdir_win}\\VkLayer_khronos_validation.json" "${dir_debug}windows\\"
@@ -116,11 +116,10 @@ postbuildaction: xcopy /y /d "${vkdir_win}\\VkLayer_khronos_validation.json" "${
 buildtype: release
 buildpath: "${dir_release}windows"
 customflags: no-console
-links: ${links_win_rel}, ${links_win_only}, ${links_win_and_win_on_linux}
-postbuildaction: rmdir /s /q "files\\shaders"
-postbuildaction: xcopy "..\\..\\external-shared\\KalaGraphics\\files\\shaders\\." "files\\shaders" /e /i /h
+postbuildaction: IF EXIST "files\\shaders" rmdir /s /q "files\\shaders"
+postbuildaction: xcopy "..\\..\\external-shared\\KalaGraphics\\files\\shaders\\." "files\\shaders" /e /i /h /y
 postbuildaction: IF EXIST "${dir_release}windows\\files" rmdir /s /q "${dir_release}windows\\files"
-postbuildaction: xcopy "files" "${dir_release}windows\\files" /e /i /h
+postbuildaction: xcopy "files" "${dir_release}windows\\files" /e /i /h /y
 
 #profile debug-windows-gnu
 targettype: windows-gnu

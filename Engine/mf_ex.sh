@@ -26,7 +26,7 @@ case "$1" in
         OUT_NAME=ElypsoEngine-Windows
 
         LIB_NAME=elypsoengine
-        LIB_EXT=
+        LIB_EXT=lib
         LIB_ORIGIN=build/release-windows
         ;;
     *)
