@@ -128,11 +128,6 @@ namespace ElypsoEngine::Graphics
         };
 #endif
 
-        if (!GraphicsContext::IsInitialized())
-        {
-            GraphicsContext::Initialize(VulkanContext::GetInstance());
-        }
-
         VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID());
         kgData.context_vk_surface = vkctx->GetSurface();
 

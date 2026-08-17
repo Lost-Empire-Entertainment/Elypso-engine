@@ -207,8 +207,9 @@ void EngineInit()
             "Failed to initialize Elypso Engine because "
             "program title was too long!");
     }
-    
+        
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
+    GraphicsContext::Initialize(VulkanContext::GetInstance());
 
     if (appConfig.pos == 0)
     {
