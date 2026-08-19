@@ -11,7 +11,7 @@
 #include "graphics/kw_window.hpp"
 #include "core/kg_context.hpp"
 #include "graphics/kw_vulkan.hpp"
-#ifdef __linux__
+#if defined(KLIN_ANY)
 #include "graphics/kw_window_global.hpp"
 #endif
 
@@ -29,7 +29,7 @@ using KalaWindow::Graphics::VulkanContext;
 using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Core::GraphicsContextData;
 using KalaGraphics::Core::ViewportSize;
-#ifdef __linux__
+#if defined(KLIN_ANY)
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
 #endif
@@ -70,9 +70,6 @@ namespace ElypsoEngine::Graphics
         vec2 size,
         EngineWindow* parent)
     {
-        unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
-        EngineWindow* windowPtr = newWindow.get();
-
         ProcessWindow* pwParent{};
         if (parent)
         {
@@ -111,13 +108,13 @@ namespace ElypsoEngine::Graphics
         u32 windowID = pw->GetID();
 
         const WindowData& wData = pw->GetWindowData();
-#ifdef _WIN32
+#if defined(KWIN_ANY)
         GraphicsContextData kgData =
         {
             .windowID = windowID,
             .context_window = wData.window
         };
-#else
+#elif defined(KLIN_ANY)
         const X11GlobalData& data = Window_Global::GetGlobalData();
 
         GraphicsContextData kgData =
@@ -127,6 +124,8 @@ namespace ElypsoEngine::Graphics
             .context_window = wData.window
         };
 #endif
+
+        if (!GraphicsContext::IsInitialized()) GraphicsContext::Initialize(VulkanContext::GetInstance());
 
         VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID());
         kgData.context_vk_surface = vkctx->GetSurface();
@@ -138,7 +137,7 @@ namespace ElypsoEngine::Graphics
         if (!kgctx)
         {
             Log::Print(
-                "Failed to create graphgics context for engine window '" + windowTitle + "'!",
+                "Failed to create graphics context for engine window '" + windowTitle + "'!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -151,6 +150,9 @@ namespace ElypsoEngine::Graphics
 
         //sync to ensure window gets the highest id from kw
         EngineCore::SyncID();
+
+        unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
+        EngineWindow* windowPtr = newWindow.get();
 
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
         KalaWindowCore::SetGlobalID(newID);

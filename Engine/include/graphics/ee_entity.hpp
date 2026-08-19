@@ -21,9 +21,6 @@ namespace ElypsoEngine::Graphics
     using std::vector;
     using std::default_delete;
 
-    using u8 = uint8_t;
-    using u32 = uint32_t;
-
     enum class SubEntityType : u8
     {
         S_INVALID = 0u,

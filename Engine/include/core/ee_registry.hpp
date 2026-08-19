@@ -23,8 +23,6 @@ namespace ElypsoEngine::Core
 	using std::remove;
 	using std::remove_if;
 	using std::is_class_v;
-	
-	using u32 = uint32_t;
 
 	//Stores unique_ptrs and non-owning pointers of class T for ID-based lookups,
 	//should always be stored as 'static inline ElypsoRegistry<T> registry'

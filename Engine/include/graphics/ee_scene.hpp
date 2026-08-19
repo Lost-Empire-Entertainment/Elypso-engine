@@ -23,8 +23,6 @@ namespace ElypsoEngine::Graphics
     using std::filesystem::path;
     using std::default_delete;
 
-    using u32 = uint32_t;
-
     class LIB_API Scene
     {
     friend class Entity;

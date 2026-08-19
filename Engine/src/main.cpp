@@ -9,11 +9,11 @@
 #include "log_utils.hpp"
 
 #include "core/kw_core.hpp"
-#include "core/kw_crash.hpp"
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
+#include "graphics/kw_window_global.hpp"
 #include "graphics/kw_vulkan.hpp"
-#ifdef __linux__
+#if defined(KLIN_ANY)
 #include "core/kw_messageloop_x11.hpp"
 #endif
 #include "core/kg_core.hpp"
@@ -29,7 +29,7 @@ using KalaHeaders::KalaLog::LogType;
 
 using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Core::KalaWindowCore;
-using KalaWindow::Core::CrashHandler;
+using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::VulkanContext;
 using KalaGraphics::Core::KalaGraphicsCore;
@@ -58,8 +58,6 @@ using std::clamp;
 using std::milli;
 using std::ratio;
 using std::format;
-
-using u32 = uint32_t;
 
 //seconds between displayed smooth fps updates
 static constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
@@ -208,20 +206,25 @@ void EngineInit()
             "program title was too long!");
     }
         
-    VulkanContext::Initialize(string(appConfig.title));
-
+    Window_Global::SetAppName(string(appConfig.title));
     KalaGraphicsCore::SetExternalHandler(KalaWindowCore::ForceClose);
-    GraphicsContext::Initialize(VulkanContext::GetInstance());
 
     if (appConfig.pos == 0)
     {
         //TODO: set window pos to monitor center
     }
 
-    EngineWindow::Initialize(
+    EngineWindow* ew = EngineWindow::Initialize(
         string(appConfig.title),
         appConfig.pos,
         appConfig.size);
+    
+    if (!ew)
+    {
+        KalaWindowCore::ForceClose(
+            "Elypso engine main loop error",
+            "Failed to create primary window!");
+    }
 
     Log::Print(
         "Finished initializing Elypso Engine!",
