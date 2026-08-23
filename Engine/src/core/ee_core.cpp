@@ -51,6 +51,6 @@ namespace ElypsoEngine::Core
             "EE_CORE",
             LogType::LOG_INFO);
 
-        ProcessWindow::GetRegistry().RemoveAllContent();
+        ProcessWindow::GetRegistry().DestroyAllContent();
     }
 }

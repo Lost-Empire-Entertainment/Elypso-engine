@@ -14,7 +14,7 @@
 
 namespace ElypsoEngine::Graphics
 {
-    using ElypsoEngine::Core::ElypsoRegistry;
+    using ElypsoEngine::Core::EngineRegistry;
 
     using std::string;
     using std::string_view;
@@ -23,13 +23,8 @@ namespace ElypsoEngine::Graphics
 
     enum class SubEntityType : u8
     {
-        S_INVALID = 0u,
-
-        //model type from KalaGraphics
-        S_MESH = 2u,
-
-        //camera type from KalaGraphics
-        S_CAMERA = 1u,
+        SUBENTITY_MESH    = 0,
+        SUBENTITY_CAMERA  = 1
     };
 
     struct LIB_API SubEntity
@@ -43,7 +38,7 @@ namespace ElypsoEngine::Graphics
     {
     friend struct default_delete<Entity>;
     public:
-        static ElypsoRegistry<Entity>& GetRegistry();
+        static EngineRegistry<Entity>& GetRegistry();
 
         //Initialize a new entity inside a scene.
         //You must create the subentity in the target library first before assigning its ID here,

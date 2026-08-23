@@ -12,7 +12,6 @@
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "graphics/kw_window_global.hpp"
-#include "graphics/kw_vulkan.hpp"
 #if defined(KLIN_ANY)
 #include "core/kw_messageloop_x11.hpp"
 #endif
@@ -31,7 +30,6 @@ using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::ProcessWindow;
-using KalaWindow::Graphics::VulkanContext;
 using KalaGraphics::Core::KalaGraphicsCore;
 using KalaGraphics::Core::GraphicsContext;
 
@@ -47,13 +45,11 @@ using ElypsoEngine::Graphics::Scene;
 using ElypsoEngine::Graphics::Entity;
 
 using std::string;
-using std::to_string;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 using std::chrono::time_point;
 using std::chrono::steady_clock;
 using std::chrono::duration;
-using std::vector;
 using std::clamp;
 using std::milli;
 using std::ratio;
@@ -294,60 +290,27 @@ void ValidateEngineContent()
     {
         KalaWindowCore::ForceClose(
             "Elypso Engine main loop error",
-            "All engine windows were destroyed, the program has nowhere to draw to, the program must shut down!");
+            "All engine windows were destroyed, "
+            "the program has nowhere to draw to!");
     }
 
-    vector<Entity*> removedEntities{};
     for (Entity* e : Entity::GetRegistry().GetAllContent())
     {
         if (!e)
         {
-            Log::Print(
-                "Found nullptr entity in runtime content!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
-
-            continue;
+            KalaWindowCore::ForceClose(
+                "Engine main loop error",
+                "Found dangling entity in runtime content!");
         }
-
-        Scene* s = Scene::GetRegistry().GetContent(e->GetSceneID());
-        if (!s) removedEntities.push_back(e);
-    }
-    for (Entity* e : removedEntities)
-    {
-        Log::Print(
-            "Destroying entity '" + to_string(e->GetID()) + "' because its scene was invalid!",
-            "EE_MAIN",
-            LogType::LOG_WARNING);
-
-        Entity::GetRegistry().RemoveContent(e);
     }
 
-    vector<Scene*> removedScenes{};
     for (Scene* s : Scene::GetRegistry().GetAllContent())
     {
         if (!s)
         {
-            Log::Print(
-                "Found nullptr scene in runtime content!",
-                "EE_MAIN",
-                LogType::LOG_ERROR,
-                2);
-
-            continue;
+            KalaWindowCore::ForceClose(
+                "Engine main loop error",
+                "Found dangling scene in runtime content!");
         }
-
-        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(s->GetWindowID());
-        if (!ew) removedScenes.push_back(s);
-    }
-    for (Scene* s : removedScenes)
-    {
-        Log::Print(
-            "Destroying scene '" + to_string(s->GetID()) + "' because its window was invalid!",
-            "EE_MAIN",
-            LogType::LOG_WARNING);
-
-        Scene::GetRegistry().RemoveContent(s);
     }
 }

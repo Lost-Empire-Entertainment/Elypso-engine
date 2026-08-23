@@ -28,7 +28,6 @@ using KalaWindow::Graphics::WindowData;
 using KalaWindow::Graphics::VulkanContext;
 using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Core::GraphicsContextData;
-using KalaGraphics::Core::ViewportSize;
 #if defined(KLIN_ANY)
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
@@ -43,15 +42,18 @@ using std::make_unique;
 
 namespace ElypsoEngine::Graphics
 {
-	static ElypsoRegistry<EngineWindow> registry{};
+	static EngineRegistry<EngineWindow> registry{};
+
+	EngineRegistry<EngineWindow>& EngineWindow::GetRegistry() { return registry; }
 
     static void ShutdownCallback(u32 windowID)
     {
-        EngineWindow* enwin = registry.GetContent(windowID);
-        if (!enwin)
+        EngineWindow* ew{};
+        string err = registry.GetContent(windowID, ew);
+        if (!err.empty())
         {
             Log::Print("Failed to call shutdown callback "
-                "because the engine window ID '" + to_string(windowID) + "' was invalid!",
+                "because the engine window was invalid! Reason: " + err,
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -59,10 +61,8 @@ namespace ElypsoEngine::Graphics
             return;
         }
 
-        enwin->Destroy();
+        ew->Destroy();
     }
-
-	ElypsoRegistry<EngineWindow>& EngineWindow::GetRegistry() { return registry; }
 
     EngineWindow* EngineWindow::Initialize(
         string&& windowTitle,
@@ -73,13 +73,13 @@ namespace ElypsoEngine::Graphics
         ProcessWindow* pwParent{};
         if (parent)
         {
-            pwParent = ProcessWindow::GetRegistry().GetContent(parent->GetWindowContextID());
-            if (!pwParent)
+            string err = ProcessWindow::GetRegistry().GetContent(parent->GetWindowContextID(), pwParent);
+            if (!err.empty())
             {
                 Log::Print(
                     "Failed to assign parent to engine window '" + windowTitle 
                     + "' because the parent engine window '" + to_string(parent->GetID()) 
-                    + "' process window '" + to_string(parent->GetWindowContextID()) + "' was invalid!",
+                    + "' process window was invalid! Reason: " + err,
                     "EE_WINDOW",
                     LogType::LOG_ERROR,
                     2);
@@ -127,7 +127,15 @@ namespace ElypsoEngine::Graphics
 
         if (!GraphicsContext::IsInitialized()) GraphicsContext::Initialize(VulkanContext::GetInstance());
 
-        VulkanContext* vkctx = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID());
+        VulkanContext* vkctx{};
+        string err = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID(), vkctx);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
+                "Failed to initialize window because process window Vulkan context was invalid! Reason: " + err);
+        }
+
         kgData.context_vk_surface = vkctx->GetSurface();
 
         //pre-sync to ensure kg gets the highest id
@@ -163,7 +171,13 @@ namespace ElypsoEngine::Graphics
 
         pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
-        registry.AddContent(newID, std::move(newWindow));
+        err = registry.AddContent(newID, std::move(newWindow));
+        if (!err.empty())
+        {
+			KalaWindowCore::ForceClose(
+				"Elypso engine mesh error",
+				"Failed to initialize window! Reason: " + err);
+        }
 
         Scene* newScene = Scene::Initialize(
             windowTitle + " scene",
@@ -188,7 +202,16 @@ namespace ElypsoEngine::Graphics
     u32 EngineWindow::GetActiveSceneID() const { return activeSceneID; }
     const vector<u32>& EngineWindow::GetSceneIDs() const { return sceneIDs; }
 
-    void EngineWindow::Destroy() { registry.RemoveContent(ID); }
+    void EngineWindow::Destroy()
+    { 
+        string err = registry.DestroyContent(ID);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
+                "Failed to destroy window '" + to_string(ID) + "'! Reason: " + err);
+        }
+    }
 
     EngineWindow::~EngineWindow()
     {
@@ -199,16 +222,14 @@ namespace ElypsoEngine::Graphics
 
         for (auto s : sceneIDs)
         {
-            Scene* sc = Scene::GetRegistry().GetContent(s);
-
-            if (!sc)
+            Scene* sc{};
+            string err = Scene::GetRegistry().GetContent(s, sc);
+            if (!err.empty())
             {
-                Log::Print(
-                    "Scene '" + to_string(s) + "' was invalid and couldn't be "
-                    "destroyed during the destruction of engine window '" + to_string(ID) + "'!",
-                    "EE_WINDOW",
-                    LogType::LOG_ERROR,
-                    2);
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine window error",
+                    "Failed to destroy window '" + to_string(ID)
+                    + "' because it had an invalid scene! Reason: " + err);
 
                 continue;
             }
@@ -216,13 +237,14 @@ namespace ElypsoEngine::Graphics
             sc->Destroy();
         }
 
-        GraphicsContext* kgctx = GraphicsContext::GetRegistry().GetContent(graphicsContextID);
-        if (!kgctx)
+        GraphicsContext* kgctx{};
+        string err = GraphicsContext::GetRegistry().GetContent(graphicsContextID, kgctx);
+        if (!err.empty())
         {
             KalaWindowCore::ForceClose(
                 "Elypso Engine window error",
                 "Failed to destroy engine window '" + to_string(ID)
-                + "' because its graphics context '"+ to_string(graphicsContextID) + "' was invalid!");
+                + "' because its graphics context was invalid! Reason: " + err);
 
             return;
         }

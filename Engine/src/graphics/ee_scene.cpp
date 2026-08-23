@@ -37,18 +37,18 @@ static vector<FILE*> openFiles{};
 
 namespace ElypsoEngine::Graphics
 {
-    static ElypsoRegistry<Scene> registry{};
+    static EngineRegistry<Scene> registry{};
 
-    ElypsoRegistry<Scene>& Scene::GetRegistry() { return registry; }
+    EngineRegistry<Scene>& Scene::GetRegistry() { return registry; }
 
     Scene* Scene::GetActiveScene(u32 windowID)
     {
-        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
-        if (!ew)
+        EngineWindow* ew{};
+        string err = EngineWindow::GetRegistry().GetContent(windowID, ew);
+        if (!err.empty())
         {
             Log::Print(
-                "Failed to get active scene because engine window '" 
-                + to_string(windowID) + "' was invalid!",
+                "Failed to get active scene because engine window was invalid! Reason: " + err,
                 "EE_SCENE",
                 LogType::LOG_ERROR,
                 2);
@@ -56,16 +56,14 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        Scene* scene = registry.GetContent(ew->activeSceneID);
-
-        if (!scene)
+        Scene* scene{};
+        err = registry.GetContent(ew->activeSceneID, scene);
+        if (!err.empty())
         {
-            Log::Print(
-                "Failed to get active scene because engine window '" + to_string(windowID) 
-                + "' active scene '" + to_string(ew->activeSceneID) + "' was invalid!",
-                "EE_SCENE",
-                LogType::LOG_ERROR,
-                2);
+            KalaWindowCore::ForceClose(
+                "Elypso engine scene error",
+                "Failed to get active scene because engine window '" 
+                + to_string(windowID) + "' active scene was invalid! Reason: " + err);
 
             return nullptr;
         }
@@ -113,12 +111,13 @@ namespace ElypsoEngine::Graphics
         u32 windowID,
         path&& escnPath)
     {
-        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
-        if (!ew)
+        EngineWindow* ew{};
+        string err = EngineWindow::GetRegistry().GetContent(windowID, ew);
+        if (!err.empty())
         {
             Log::Print(
                 "Failed to create scene for engine window '" + to_string(windowID) 
-                + "' because the engine window was invalid!",
+                + "' because the engine window was invalid! Reason: " + err,
                 "EE_SCENE",
                 LogType::LOG_ERROR,
                 2);
@@ -150,14 +149,14 @@ namespace ElypsoEngine::Graphics
 
             for (u32 s : ew->GetSceneIDs())
             {
-                Scene* sc = Scene::GetRegistry().GetContent(s);
-                if (!sc)
+                Scene* sc{};
+                string err = Scene::GetRegistry().GetContent(s, sc);
+                if (!err.empty())
                 {
                     KalaWindowCore::ForceClose(
                         "Elypso Engine scene error",
-                        "Failed to create scene '" + title 
-                        + "' because a nullptr scene was found in engine window '" + to_string(windowID) 
-                        + "' during scene existence check!");
+                        "Failed to create scene because engine window '" 
+                        + to_string(windowID) + " had an invalid scene! Reason: " + err);
                 }
 
                 if (sc->GetTitle() == title)
@@ -188,7 +187,13 @@ namespace ElypsoEngine::Graphics
         scenePtr->windowID = windowID;
         scenePtr->title = title;
 
-        registry.AddContent(newID, std::move(newScene));
+        err = registry.AddContent(newID, std::move(newScene));
+        if (!err.empty())
+        {
+			KalaWindowCore::ForceClose(
+				"Elypso engine scene error",
+				"Failed to initialize scene! Reason: " + err);
+        }
 
         ew->sceneIDs.push_back(newID);
 
@@ -240,7 +245,7 @@ namespace ElypsoEngine::Graphics
         stayAlive = newValue;
 
         Log::Print(
-            "Set scene '" + title + "' stayAlive state to '" + (stayAlive ? "true" : "false") + "'.",
+            "Set scene '" + to_string(ID) + "' stayAlive state to '" + (stayAlive ? "true" : "false") + "'.",
             "EE_SCENE",
             LogType::LOG_INFO);
     }
@@ -251,7 +256,7 @@ namespace ElypsoEngine::Graphics
             || newtitle.length() > MAX_NAME_LENGTH)
         {
             Log::Print(
-                "Failed to update scene '" + title + "' title because the new name was empty or too long!",
+                "Failed to update scene '" + to_string(ID) + "' title because the new name was empty or too long!",
                 "EE_SCENE",
                 LogType::LOG_ERROR);
 
@@ -270,15 +275,14 @@ namespace ElypsoEngine::Graphics
 
             for (u32 s : ew->GetSceneIDs())
             {
-                Scene* sc = Scene::GetRegistry().GetContent(s);
-
-                if (!sc)
+                Scene* sc{};
+                string err = Scene::GetRegistry().GetContent(s, sc);
+                if (!err.empty())
                 {
                     KalaWindowCore::ForceClose(
                         "Elypso Engine scene error",
-                        "Failed to change scene '" + title 
-                        + "' title because a nullptr scene was found in engine window '" 
-                        + to_string(windowID) + "' during scene existence check!");
+                        "Failed to change scene '" + to_string(ID) + "' title because engine window '" 
+                        + to_string(windowID) + "' had an invalid scene! Reason: " + err);
                 }
 
                 if (sc->GetTitle() == title)
@@ -305,13 +309,15 @@ namespace ElypsoEngine::Graphics
 
     void Scene::LoadScene()
     {
-        if (!EngineWindow::GetRegistry().GetContent(windowID))
+        EngineWindow* ew{};
+        string err = EngineWindow::GetRegistry().GetContent(windowID, ew);
+        if (!err.empty())
         {
             KalaWindowCore::ForceClose(
                 "Elypso Engine scene error",
-                "Failed to load scene '" + to_string(ID) 
-                + "' because engine window '" + to_string(windowID) + "' was invalid!");
-        }
+                "Failed to load scene '" + to_string(ID) + "' because engine window '" 
+                + to_string(windowID) + "' was invalid! Reason: " + err);
+        } 
 
         for (Scene* s : registry.GetAllContent())
         {
@@ -330,7 +336,6 @@ namespace ElypsoEngine::Graphics
             }
         }
 
-        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
         ew->activeSceneID = ID;
 
         //TODO: load this scene assets here
@@ -347,13 +352,14 @@ namespace ElypsoEngine::Graphics
     {
         for (const auto& e : sceneIDs)
         {
-            Entity* en = Entity::GetRegistry().GetContent(e);
-            if (!en)
+            Entity* en{};
+            string err = Entity::GetRegistry().GetContent(e, en);
+            if (!err.empty())
             {
                 KalaWindowCore::ForceClose(
                     "Elypso Engine scene error",
-                    "Failed to clear scene '" + title
-                    + "' because it had an invalid entity '" + to_string(e) + "'!");
+                    "Failed to clear scene '" + title 
+                    + "' because it had an invalid entity! Reason: " + err);
             }
 
             en->Destroy();
@@ -374,10 +380,17 @@ namespace ElypsoEngine::Graphics
 
     void Scene::Destroy()
     {
-        EngineWindow* ew = EngineWindow::GetRegistry().GetContent(windowID);
+        EngineWindow* ew{};
+        string err = EngineWindow::GetRegistry().GetContent(windowID, ew);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine scene error",
+                "Failed to destroy scene '" + to_string(ID) 
+                + "' because its window was invalid! Reason: " + err);
+        }
 
-        if (ew
-            && ew->GetSceneIDs().size() > 1
+        if (ew->GetSceneIDs().size() > 1
             && title == GetActiveScene(windowID)->title)
         {
             KalaWindowCore::ForceClose(
@@ -386,32 +399,35 @@ namespace ElypsoEngine::Graphics
                 + to_string(windowID) + "' was destroyed!");
         }
 
-        if (ew)
-        {
-            auto it = find(ew->sceneIDs.begin(), ew->sceneIDs.end(), ID);
-            if (it != ew->sceneIDs.end()) ew->sceneIDs.erase(it);
-        }
+        auto it = find(ew->sceneIDs.begin(), ew->sceneIDs.end(), ID);
+        if (it != ew->sceneIDs.end()) ew->sceneIDs.erase(it);
 
-        registry.RemoveContent(ID);
+        err = registry.DestroyContent(ID);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine mesh error",
+                "Failed to destroy scene '" + to_string(ID) + "'! Reason: " + err);
+        }
     }
 
     Scene::~Scene()
     {
         Log::Print(
-            "Destroying scene '" + title + "' with ID '" + to_string(ID) + "'.",
+            "Destroying scene '" + to_string(ID) + "'.",
             "EE_SCENE",
             LogType::LOG_INFO);
 
         for (const auto& e : sceneIDs)
         {
-            Entity* en = Entity::GetRegistry().GetContent(e);
-
-            if (!en)
+            Entity* en{};
+            string err = Entity::GetRegistry().GetContent(e, en);
+            if (!err.empty())
             {
                 KalaWindowCore::ForceClose(
                     "Elypso Engine scene error",
                     "Failed to destroy scene '" + title
-                    + "' because it had an invalid entity '" + to_string(e) + "'!");
+                    + "' because it had an invalid entity! Reason: " + err);
             }
 
             en->Destroy();

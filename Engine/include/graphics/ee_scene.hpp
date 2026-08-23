@@ -15,7 +15,7 @@
 
 namespace ElypsoEngine::Graphics
 {
-    using ElypsoEngine::Core::ElypsoRegistry;
+    using ElypsoEngine::Core::EngineRegistry;
 
     using std::string;
     using std::string_view;
@@ -28,7 +28,7 @@ namespace ElypsoEngine::Graphics
     friend class Entity;
     friend struct default_delete<Scene>;
     public:
-        static ElypsoRegistry<Scene>& GetRegistry();
+        static EngineRegistry<Scene>& GetRegistry();
 
         static Scene* GetActiveScene(u32 windowID);
 

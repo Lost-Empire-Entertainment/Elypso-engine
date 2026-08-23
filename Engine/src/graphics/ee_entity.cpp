@@ -31,9 +31,9 @@ using std::make_unique;
 
 namespace ElypsoEngine::Graphics
 {
-    static ElypsoRegistry<Entity> registry{};
+    static EngineRegistry<Entity> registry{};
 
-    ElypsoRegistry<Entity>& Entity::GetRegistry() { return registry; }
+    EngineRegistry<Entity>& Entity::GetRegistry() { return registry; }
 
     Entity* Entity::Initialize(
         string&& title,
@@ -51,10 +51,12 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        if (!Scene::GetRegistry().GetContent(sceneID))
+        Scene* sc{};
+        string err = Scene::GetRegistry().GetContent(sceneID, sc);
+        if (!err.empty())
         {
             Log::Print(
-                "Failed to create entity because scene '" + to_string(sceneID) + "' was invalid!",
+                "Failed to create entity because its scene was invalid! Reason: " + err,
                 "EE_ENTITY",
                 LogType::LOG_ERROR,
                 2);
@@ -91,78 +93,80 @@ namespace ElypsoEngine::Graphics
         {
             switch (s.type)
             {
-                case SubEntityType::S_INVALID:
+            default:
+            {
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine core error",
+                    "Failed to create entity because of unimplemented type!");
+            }
+            case SubEntityType::SUBENTITY_MESH:
+            {
+                Mesh* mesh{};
+                string err = Mesh::GetRegistry().GetContent(s.targetID, mesh);
+                if (!err.empty())
                 {
                     Log::Print(
-                        "Failed to create entity because one of the passed subentity types was unassigned!",
+                        "Failed to create entity because its mesh was invalid! Reason: " + err,
                         "EE_ENTITY",
                         LogType::LOG_ERROR,
                         2);
 
                     return nullptr;
                 }
-                case SubEntityType::S_MESH:
+
+                if (!hasChecked2D)
                 {
-                    Mesh* mesh = Mesh::GetRegistry().GetContent(s.targetID);
-                    if (!mesh)
-                    {
-                        Log::Print(
-                            "Failed to create entity because mesh '" + to_string(s.targetID) + "' was invalid!",
-                            "EE_ENTITY",
-                            LogType::LOG_ERROR,
-                            2);
-
-                        return nullptr;
-                    }
-
-                    if (!hasChecked2D)
-                    {
-                        is2D = mesh->Is2D();
-                        hasChecked2D = true;
-                    }
-
-                    if ((is2D
-                        && !mesh->Is2D())
-                        || (!is2D
-                        && mesh->Is2D()))
-                    {
-                        string state = is2D ? "2D" : "3D";
-
-                        Log::Print(
-                            "Failed to create entity because mesh '" + to_string(s.targetID) + "' did not match other meshes " +  state + " state!",
-                            "EE_ENTITY",
-                            LogType::LOG_ERROR,
-                            2);
-
-                        return nullptr;
-                    }
-
-                    break;
-                }
-                case SubEntityType::S_CAMERA:
-                {
-                    Camera* camera = Camera::GetRegistry().GetContent(s.targetID);
-                    if (!camera)
-                    {
-                        Log::Print(
-                            "Failed to create entity because camera '" + to_string(s.targetID) + "' was invalid!",
-                            "EE_ENTITY",
-                            LogType::LOG_ERROR,
-                            2);
-
-                        return nullptr;
-                    }
-
-                    break;
+                    is2D = mesh->Is2D();
+                    hasChecked2D = true;
                 }
 
-                default: break;
+                if ((is2D
+                    && !mesh->Is2D())
+                    || (!is2D
+                    && mesh->Is2D()))
+                {
+                    string state = is2D ? "2D" : "3D";
+
+                    Log::Print(
+                        "Failed to create entity because mesh '" + to_string(s.targetID) + "' did not match other meshes " +  state + " state!",
+                        "EE_ENTITY",
+                        LogType::LOG_ERROR,
+                        2);
+
+                    return nullptr;
+                }
+
+                break;
+            }
+            case SubEntityType::SUBENTITY_CAMERA:
+            {
+                Camera* camera{};
+                string err = Camera::GetRegistry().GetContent(s.targetID, camera);
+                if (!err.empty())
+                {
+                    Log::Print(
+                        "Failed to create entity because its camera was invalid! Reason: " + err,
+                        "EE_ENTITY",
+                        LogType::LOG_ERROR,
+                        2);
+
+                    return nullptr;
+                }
+
+                break;
+            }
             }
         }
 
         entityPtr->subEntities = std::move(subEntities);
 
-        registry.AddContent(newID, std::move(newEntity));
+        err = registry.AddContent(newID, std::move(newEntity));
+        if (!err.empty())
+        {
+			KalaWindowCore::ForceClose(
+				"Elypso engine entity error",
+				"Failed to initialize entity! Reason: " + err);
+        }
 
         Log::Print(
 			"Created new entity '" + to_string(newID) + "'!",
@@ -255,14 +259,26 @@ namespace ElypsoEngine::Graphics
 
     void Entity::Destroy()
     {
-        Scene* s = Scene::GetRegistry().GetContent(sceneID);
-        if (s)
+        Scene* sc{};
+        string err = Scene::GetRegistry().GetContent(sceneID, sc);
+        if (!err.empty())
         {
-            auto it = find(s->sceneIDs.begin(), s->sceneIDs.end(), ID);
-            if (it != s->sceneIDs.end()) s->sceneIDs.erase(it);
+            KalaWindowCore::ForceClose(
+                "Elypso engine entity error",
+                "Failed to destroy entity '" + to_string(ID) 
+                + "' because its window was invalid! Reason: " + err);
         }
 
-        registry.RemoveContent(ID);
+        auto it = find(sc->sceneIDs.begin(), sc->sceneIDs.end(), ID);
+        if (it != sc->sceneIDs.end()) sc->sceneIDs.erase(it);
+
+        err = registry.DestroyContent(ID);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine entity error",
+                "Failed to destroy entity '" + to_string(ID) + "'! Reason: " + err);
+        }
     }
 
     Entity::~Entity()
@@ -276,20 +292,33 @@ namespace ElypsoEngine::Graphics
         {
             switch (sub.type)
             {
-            case SubEntityType::S_MESH:
+            default:
             {
-                Mesh* m = Mesh::GetRegistry().GetContent(sub.targetID);
-                if (!m)
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine core error",
+                    "Failed to destroy entity '" + to_string(ID)
+                    + "' because of unimplemented type!");
+            }
+            case SubEntityType::SUBENTITY_MESH:
+            {
+                Mesh* m{};
+                string err = Mesh::GetRegistry().GetContent(sub.targetID, m);
+                if (!err.empty())
                 {
                     KalaWindowCore::ForceClose(
                         "Elypso Engine core error",
                         "Failed to destroy entity '" + to_string(ID)
-                        + "' because it had an invalid mesh '" + to_string(sub.targetID) + "'!");
+                        + "' because it had an invalid mesh! Reason: " + err);
                 }
                 m->Destroy();
             };
-
-            default: break;
+            case SubEntityType::SUBENTITY_CAMERA:
+            {
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine core error",
+                    "Failed to destroy entity '" + to_string(ID)
+                    + "' because camera destruction is unimplemented!");
+            }
             }
         }
     }

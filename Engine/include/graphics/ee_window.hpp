@@ -18,7 +18,7 @@ namespace ElypsoEngine::Graphics
 {
     using KalaHeaders::KalaMath::vec2;
 
-    using ElypsoEngine::Core::ElypsoRegistry;
+    using ElypsoEngine::Core::EngineRegistry;
     using KalaWindow::Graphics::WindowMode;
     using KalaWindow::Graphics::WindowState;
 
@@ -31,7 +31,7 @@ namespace ElypsoEngine::Graphics
     friend class Scene;
     friend struct default_delete<EngineWindow>;
     public:
-        static ElypsoRegistry<EngineWindow>& GetRegistry();
+        static EngineRegistry<EngineWindow>& GetRegistry();
 
         //Create a new window
         static EngineWindow* Initialize(
