@@ -4,16 +4,19 @@
 //Read LICENSE.md for more information.
 
 #include <memory>
+#include <filesystem>
 
 #include "log_utils.hpp"
 
 #include "core/kw_core.hpp"
 #include "graphics/kw_window.hpp"
-#include "core/kg_context.hpp"
-#include "graphics/kw_vulkan.hpp"
 #if defined(KLIN_ANY)
 #include "graphics/kw_window_global.hpp"
 #endif
+#include "graphics/kw_vulkan.hpp"
+#include "core/kg_context.hpp"
+#include "core/kg_viewport.hpp"
+#include "resources/kg_shader.hpp"
 
 #include "graphics/ee_window.hpp"
 #include "graphics/ee_scene.hpp"
@@ -23,15 +26,18 @@ using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
 using KalaWindow::Core::KalaWindowCore;
+using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
 using KalaWindow::Graphics::VulkanContext;
-using KalaGraphics::Core::GraphicsContext;
-using KalaGraphics::Core::GraphicsContextData;
 #if defined(KLIN_ANY)
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
 #endif
+using KalaGraphics::Core::GraphicsContext;
+using KalaGraphics::Core::Viewport;
+using KalaGraphics::Core::GraphicsContextData;
+using KalaGraphics::Resources::Shader;
 
 using ElypsoEngine::Core::EngineCore;
 
@@ -39,6 +45,13 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::make_unique;
+using std::filesystem::path;
+
+static const path shader_unlit_vert = path("files") / "shaders" / "unlit_vert.spv";
+static const path shader_unlit_frag = path("files") / "shaders" / "unlit_frag.spv";
+
+static const path shader_ui_rect_vert = path("files") / "shaders" / "ui_rect_vert.spv";
+static const path shader_ui_rect_frag = path("files") / "shaders" / "ui_rect_frag.spv";
 
 namespace ElypsoEngine::Graphics
 {
@@ -70,6 +83,18 @@ namespace ElypsoEngine::Graphics
         vec2 size,
         EngineWindow* parent)
     {
+        if (windowTitle.empty()
+            || windowTitle.size() > MAX_NAME_LENGTH)
+        {
+            Log::Print(
+                "Failed to initialize engine window because its name was empty or too long!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
+        }
+
         ProcessWindow* pwParent{};
         if (parent)
         {
@@ -77,8 +102,8 @@ namespace ElypsoEngine::Graphics
             if (!err.empty())
             {
                 Log::Print(
-                    "Failed to assign parent to engine window '" + windowTitle 
-                    + "' because the parent engine window '" + to_string(parent->GetID()) 
+                    "Failed to initialize engine window '" + windowTitle 
+                    + "' because its parent engine window '" + to_string(parent->GetID()) 
                     + "' process window was invalid! Reason: " + err,
                     "EE_WINDOW",
                     LogType::LOG_ERROR,
@@ -97,7 +122,7 @@ namespace ElypsoEngine::Graphics
         if (!pw)
         {
             Log::Print(
-                "Failed to create process window for engine window '" + windowTitle + "'!",
+                "Failed to initialize engine window '" + windowTitle + "' becase process window creation failed!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -133,19 +158,21 @@ namespace ElypsoEngine::Graphics
         {
             KalaWindowCore::ForceClose(
                 "Elypso engine window error",
-                "Failed to initialize window because process window Vulkan context was invalid! Reason: " + err);
+                "Failed to initialize engine window '" + windowTitle 
+                + "' because process window '" + to_string(pw->GetID()) + "' Vulkan context was invalid! Reason: " + err);
         }
 
         kgData.context_vk_surface = vkctx->GetSurface();
 
-        //pre-sync to ensure kg gets the highest id
+        //sync to ensure kgctx gets the highest id
         EngineCore::SyncID();
 
         GraphicsContext* kgctx = GraphicsContext::InitializeInstance(std::move(kgData));
         if (!kgctx)
         {
             Log::Print(
-                "Failed to create graphics context for engine window '" + windowTitle + "'!",
+                "Failed to initialize engine window '" + windowTitle 
+                + "' because graphics context creation failed!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -153,10 +180,56 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
+        Viewport* vp{};
+        err = Viewport::GetRegistry().GetContent(kgctx->GetRootViewportID(), vp);
+        if (!err.empty())
+        {
+            Log::Print(
+                "Failed to initialize engine window '" + windowTitle 
+                + "' because the graphics context '" + to_string(kgctx->GetID()) + "' root viewport was invalid!",
+                "EE_WINDOW",
+                LogType::LOG_ERROR,
+                2);
+
+            return nullptr;
+        }
+
+        //sync to ensure unlit shader gets the highest id
+        EngineCore::SyncID();
+
+        Shader* shader_unlit = Shader::Initialize(
+            vp->GetID(),
+            false,
+            path(shader_unlit_vert),
+            path(shader_unlit_frag));
+
+        if (!shader_unlit)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
+                "Failed to create 3D shader for engine window '" + windowTitle + "'!");
+        }
+
+        //sync to ensure ui rect shader gets the highest id
+        EngineCore::SyncID();
+
+        Shader* shader_ui_rect = Shader::Initialize(
+            vp->GetID(),
+            true,
+            path(shader_ui_rect_vert),
+            path(shader_ui_rect_frag));
+
+        if (!shader_ui_rect)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
+                "Failed to create 2D shader for engine window '" + windowTitle + "'!");
+        }
+
         //TODO: figure out if this is even needed
         //pw->SetResizeCallback([kgctx]() {});
 
-        //sync to ensure window gets the highest id from kw
+        //sync to ensure engine window gets the highest id from kw
         EngineCore::SyncID();
 
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
@@ -175,7 +248,7 @@ namespace ElypsoEngine::Graphics
         if (!err.empty())
         {
 			KalaWindowCore::ForceClose(
-				"Elypso engine mesh error",
+				"Elypso engine window error",
 				"Failed to initialize window! Reason: " + err);
         }
 
