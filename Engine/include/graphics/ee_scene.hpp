@@ -28,30 +28,37 @@ namespace ElypsoEngine::Graphics
     friend class Entity;
     friend struct default_delete<Scene>;
     public:
-        static EngineRegistry<Scene>& GetRegistry();
+        KNODISCARD
+		static EngineRegistry<Scene>& GetRegistry();
 
-        static Scene* GetActiveScene(u32 windowID);
+        KNODISCARD
+		static Scene* GetActiveScene(u32 windowID);
 
         //Load a scene by title, this scene is set as active and last loaded scene will be unloaded
         static void LoadScene(string_view title);
 
         //Create a new scene with the chosen title
-        static Scene* Initialize(
+        KNODISCARD
+		static Scene* Initialize(
             string&& title,
             u32 windowID,
             path&& escnPath = {});
 
-        u32 GetID() const;
-        u32 GetWindowID() const;
+        KNODISCARD
+		u32 GetID() const;
+        KNODISCARD
+		u32 GetWindowID() const;
 
         string_view GetTitle() const;
         void SetTitle(string&& title);
 
         //Returns true if this scene is currently loaded
-        bool IsActiveScene() const;
+        KNODISCARD
+		bool IsActiveScene() const;
 
         //Returns true if this scenes entity graphics data will stay in memory after unloading the scene
-        bool CanStayAlive() const;
+        KNODISCARD
+		bool CanStayAlive() const;
         void SetStayAlive(bool newValue);
 
         //Set this scene as the current active, the last loaded scene will be unloaded.

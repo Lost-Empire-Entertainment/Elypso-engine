@@ -31,22 +31,28 @@ namespace ElypsoEngine::Graphics
     friend class Scene;
     friend struct default_delete<EngineWindow>;
     public:
-        static EngineRegistry<EngineWindow>& GetRegistry();
+        KNODISCARD
+		static EngineRegistry<EngineWindow>& GetRegistry();
 
         //Create a new window
-        static EngineWindow* Initialize(
+        KNODISCARD
+		static EngineWindow* Initialize(
             string&& windowTitle = "UNASSIGNED TITLE",
             vec2 pos = 800,
             vec2 size = { 800, 600 },
             EngineWindow* parent = nullptr);
 
-        u32 GetID() const;
+        KNODISCARD
+		u32 GetID() const;
         //Returns the KalaWindow process window ID
-        u32 GetWindowContextID() const;
+        KNODISCARD
+		u32 GetWindowContextID() const;
         //Returns the KalaGraphics context ID
-        u32 GetGraphicsContextID() const;
+        KNODISCARD
+		u32 GetGraphicsContextID() const;
 
-        u32 GetActiveSceneID() const;
+        KNODISCARD
+		u32 GetActiveSceneID() const;
         const vector<u32>& GetSceneIDs() const;
 
         //Do not call manually, destroy the underlying
