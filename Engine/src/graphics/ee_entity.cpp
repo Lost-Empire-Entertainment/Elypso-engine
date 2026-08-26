@@ -261,32 +261,11 @@ namespace ElypsoEngine::Graphics
     {
         Scene* sc{};
         string err = Scene::GetRegistry().GetContent(sceneID, sc);
-        if (!err.empty())
+        if (err.empty())
         {
-            KalaWindowCore::ForceClose(
-                "Elypso engine entity error",
-                "Failed to destroy entity '" + to_string(ID) 
-                + "' because its window was invalid! Reason: " + err);
+            auto it = find(sc->sceneIDs.begin(), sc->sceneIDs.end(), ID);
+            if (it != sc->sceneIDs.end()) sc->sceneIDs.erase(it);
         }
-
-        auto it = find(sc->sceneIDs.begin(), sc->sceneIDs.end(), ID);
-        if (it != sc->sceneIDs.end()) sc->sceneIDs.erase(it);
-
-        err = registry.DestroyContent(ID);
-        if (!err.empty())
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso engine entity error",
-                "Failed to destroy entity '" + to_string(ID) + "'! Reason: " + err);
-        }
-    }
-
-    Entity::~Entity()
-    {
-        Log::Print(
-            "Destroying entity '" + title + "' with ID '" + to_string(ID) + "'.",
-            "EE_ENTITY",
-            LogType::LOG_INFO);
 
         for (auto& sub : subEntities)
         {
@@ -321,5 +300,21 @@ namespace ElypsoEngine::Graphics
             }
             }
         }
+
+        err = registry.DestroyContent(ID);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine entity error",
+                "Failed to destroy entity '" + to_string(ID) + "'! Reason: " + err);
+        }
+    }
+
+    Entity::~Entity()
+    {
+        Log::Print(
+            "Destroying entity '" + title + "' with ID '" + to_string(ID) + "'.",
+            "EE_ENTITY",
+            LogType::LOG_INFO);
     }
 }

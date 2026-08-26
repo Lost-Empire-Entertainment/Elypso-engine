@@ -35,11 +35,8 @@ namespace ElypsoEngine::Core
 	template<typename T>
 	concept HasGetID = requires(const T& t) { { t.GetID() } -> same_as<u32>; };
 
-	template<typename T>
-	concept HasGetWindowID = requires(const T& t) { { t.GetWindowID() } -> same_as<u32>; };
-
 	//Stores unique_ptrs and non-owning pointers of class T for ID-based lookups,
-	//should always be stored as 'static inline EngineRegistry<T> registry'
+	//should always be stored as 'static inline ElypsoEngineRegistry<T> registry'
 	template<typename T>
 		requires is_class_v<T>
 	struct LIB_API EngineRegistry
@@ -119,7 +116,7 @@ namespace ElypsoEngine::Core
 			if (!targetPtr)
 			{
 				KalaWindowCore::ForceClose(
-					"Elypso Engine registry error",
+					"ElypsoEngine registry error",
 					"DestroyContent failed because target ID '" + to_string(targetID) + "' is a dangling pointer, it was freed externally!");
 			}
 			
@@ -241,108 +238,6 @@ namespace ElypsoEngine::Core
 		{
 			runtimeBatchRemoveContent.clear();
 			createdContent.clear();
-		}
-		
-		//
-		// WINDOW-RELATED ACTIONS
-		//
-			
-		//Get all content as non-owning pointers by window ID from containers.
-		//Requires target class inside createdContent and runtimeContent
-		//to have the 'u32 GetWindowID()' function.
-		//Should not be used for externally created registries
-		//because the Window class does not accept new IDs,
-		//returns error string on failure
-		KNODISCARD
-		static inline string GetAllWindowContent(
-			u32 windowID,
-			vector<T*>& outContent) requires HasGetWindowID<T>
-		{
-			auto it = createdContent.find(windowID);
-			if (it == createdContent.end())
-			{
-				return "GetAllWindowContent failed because window ID '" + to_string(windowID) + "' was not found!"; 
-			}
-			
-			T* targetPtr = it->second.get();
-			if (!targetPtr)
-			{
-				KalaWindowCore::ForceClose(
-					"Elypso Engine registry error",
-					"GetAllWindowContent failed because window ID '" + to_string(windowID) + "' is a dangling pointer, it was freed externally!");
-			}
-			
-			auto vecit = find(
-				runtimeContent.begin(), 
-				runtimeContent.end(), 
-				targetPtr);
-			if (vecit == runtimeContent.end())
-			{
-				return
-					"GetAllWindowContent failed because window ID '" + to_string(windowID) + "' was not found "
-					"in runtime container and was moved to batch add/remove container!";
-			}
-
-			vector<T*> out{};
-
-			for (const auto& v : runtimeContent)
-			{
-				if (v->GetWindowID() == windowID) out.push_back(v);
-			}
-				
-			outContent = std::move(out);
-			return "";
-		}
-
-		//Remove all content by window ID from containers.
-		//Requires target class inside createdContent and runtimeContent
-		//to have the 'u32 GetWindowID()' function.
-		//Should not be used for externally created registries
-		//because the Window class does not accept new IDs,
-		//returns error string on failure
-		KNODISCARD
-		static inline string DestroyAllWindowContent(u32 windowID) requires HasGetWindowID<T>
-		{
-			auto it = createdContent.find(windowID);
-			if (it == createdContent.end())
-			{
-				return "DestroyAllWindowContent failed because window ID '" + to_string(windowID) + "' was not found!"; 
-			}
-			
-			T* targetPtr = it->second.get();
-			if (!targetPtr)
-			{
-				KalaWindowCore::ForceClose(
-					"Elypso Engine registry error",
-					"DestroyAllWindowContent failed because window ID '" + to_string(windowID) + "' is a dangling pointer, it was freed externally!");
-			}
-			
-			auto vecit = find(
-				runtimeContent.begin(), 
-				runtimeContent.end(), 
-				targetPtr);
-			if (vecit == runtimeContent.end())
-			{
-				return
-					"DestroyAllWindowContent failed because window ID '" + to_string(windowID) + "' was not found "
-					"in runtime container and was moved to batch add/remove container!";
-			}
-
-			runtimeContent.erase(remove_if(
-				runtimeContent.begin(),
-				runtimeContent.end(),
-				[&](T* c)
-				{
-					return c && c->GetWindowID() == windowID;
-				}), runtimeContent.end());
-					
-			for (auto it = createdContent.begin(); it != createdContent.end();)
-			{
-				if (it->second->GetWindowID() == windowID) it = createdContent.erase(it);
-				else ++it;
-			}
-
-			return "";
 		}
 	private:
 		static inline unordered_map<u32, unique_ptr<T>> createdContent{};

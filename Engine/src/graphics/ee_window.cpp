@@ -17,6 +17,7 @@
 #include "core/kg_context.hpp"
 #include "core/kg_viewport.hpp"
 #include "resources/kg_shader.hpp"
+#include "resources/kg_camera.hpp"
 
 #include "graphics/ee_window.hpp"
 #include "graphics/ee_scene.hpp"
@@ -38,6 +39,8 @@ using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Core::Viewport;
 using KalaGraphics::Core::GraphicsContextData;
 using KalaGraphics::Resources::Shader;
+using KalaGraphics::Resources::Camera;
+using KalaGraphics::Resources::CameraType;
 
 using ElypsoEngine::Core::EngineCore;
 
@@ -226,6 +229,34 @@ namespace ElypsoEngine::Graphics
                 "Failed to create 2D shader for engine window '" + windowTitle + "'!");
         }
 
+        //sync to ensure 3D camera gets the highest id
+        EngineCore::SyncID();
+
+        Camera* cam3D = Camera::Initialize(
+            shader_unlit->GetID(),
+            CameraType::CAM_PERSPECTIVE);
+
+        if (!cam3D)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
+                "Failed to create 3D camera for engine window '" + windowTitle + "'!");
+        }
+
+        //sync to ensure 2D camera gets the highest id
+        EngineCore::SyncID();
+
+        Camera* cam2D = Camera::Initialize(
+            shader_ui_rect->GetID(),
+            CameraType::CAM_ORTHOGRAPHIC);
+
+        if (!cam2D)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
+                "Failed to create 2D camera for engine window '" + windowTitle + "'!");
+        }
+
         //TODO: figure out if this is even needed
         //pw->SetResizeCallback([kgctx]() {});
 
@@ -276,23 +307,7 @@ namespace ElypsoEngine::Graphics
     const vector<u32>& EngineWindow::GetSceneIDs() const { return sceneIDs; }
 
     void EngineWindow::Destroy()
-    { 
-        string err = registry.DestroyContent(ID);
-        if (!err.empty())
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso engine window error",
-                "Failed to destroy window '" + to_string(ID) + "'! Reason: " + err);
-        }
-    }
-
-    EngineWindow::~EngineWindow()
     {
-		Log::Print(
-			"Destroying engine window '" + to_string(ID) + "'.",
-			"EE_WINDOW",
-			LogType::LOG_INFO);
-
         for (auto s : sceneIDs)
         {
             Scene* sc{};
@@ -323,5 +338,21 @@ namespace ElypsoEngine::Graphics
         }
 
         kgctx->Destroy();
+        
+        err = registry.DestroyContent(ID);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
+                "Failed to destroy window '" + to_string(ID) + "'! Reason: " + err);
+        }
+    }
+
+    EngineWindow::~EngineWindow()
+    {
+		Log::Print(
+			"Destroying engine window '" + to_string(ID) + "'.",
+			"EE_WINDOW",
+			LogType::LOG_INFO);
     }
 }

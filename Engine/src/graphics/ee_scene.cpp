@@ -382,41 +382,20 @@ namespace ElypsoEngine::Graphics
     {
         EngineWindow* ew{};
         string err = EngineWindow::GetRegistry().GetContent(windowID, ew);
-        if (!err.empty())
+        if (err.empty())
         {
-            KalaWindowCore::ForceClose(
-                "Elypso engine scene error",
-                "Failed to destroy scene '" + to_string(ID) 
-                + "' because its window was invalid! Reason: " + err);
+            if (ew->GetSceneIDs().size() > 1
+                && title == GetActiveScene(windowID)->title)
+            {
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine scene error",
+                    "The active scene for engine window '" 
+                    + to_string(windowID) + "' was destroyed!");
+            }
+
+            auto it = find(ew->sceneIDs.begin(), ew->sceneIDs.end(), ID);
+            if (it != ew->sceneIDs.end()) ew->sceneIDs.erase(it);
         }
-
-        if (ew->GetSceneIDs().size() > 1
-            && title == GetActiveScene(windowID)->title)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso Engine scene error",
-                "The active scene for engine window '" 
-                + to_string(windowID) + "' was destroyed!");
-        }
-
-        auto it = find(ew->sceneIDs.begin(), ew->sceneIDs.end(), ID);
-        if (it != ew->sceneIDs.end()) ew->sceneIDs.erase(it);
-
-        err = registry.DestroyContent(ID);
-        if (!err.empty())
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso engine mesh error",
-                "Failed to destroy scene '" + to_string(ID) + "'! Reason: " + err);
-        }
-    }
-
-    Scene::~Scene()
-    {
-        Log::Print(
-            "Destroying scene '" + to_string(ID) + "'.",
-            "EE_SCENE",
-            LogType::LOG_INFO);
 
         for (const auto& e : sceneIDs)
         {
@@ -447,5 +426,21 @@ namespace ElypsoEngine::Graphics
             }
             openFiles.clear();
         }
+
+        err = registry.DestroyContent(ID);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso engine mesh error",
+                "Failed to destroy scene '" + to_string(ID) + "'! Reason: " + err);
+        }
+    }
+
+    Scene::~Scene()
+    {
+        Log::Print(
+            "Destroying scene '" + to_string(ID) + "'.",
+            "EE_SCENE",
+            LogType::LOG_INFO);
     }
 }
