@@ -3,6 +3,8 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include <vector>
+
 #include "log_utils.hpp"
 
 #include "core/ee_core.hpp"
@@ -20,6 +22,8 @@ using KalaGraphics::Core::KalaGraphicsCore;
 using KalaPhysics::Core::KalaPhysicsCore;
 using KalaAudio::Core::KalaAudioCore;
 using KalaWindow::Graphics::ProcessWindow;
+
+using std::vector;
 
 namespace ElypsoEngine::Core
 {
@@ -51,6 +55,7 @@ namespace ElypsoEngine::Core
             "EE_CORE",
             LogType::LOG_INFO);
 
-        ProcessWindow::GetRegistry().DestroyAllContent();
+        vector<ProcessWindow*> windows = ProcessWindow::GetRegistry().GetAllContent();
+        for (ProcessWindow* pw : windows) pw->Destroy();
     }
 }
