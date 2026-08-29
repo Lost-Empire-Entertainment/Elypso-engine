@@ -257,8 +257,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create 2D camera for engine window '" + windowTitle + "'!");
         }
 
-        //TODO: figure out if this is even needed
-        //pw->SetResizeCallback([kgctx]() {});
+        pw->SetResizeCallback([kgctx]() { kgctx->RequestRecreateSwapchain(); });
 
         //sync to ensure engine window gets the highest id from kw
         EngineCore::SyncID();
