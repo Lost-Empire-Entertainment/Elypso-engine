@@ -68,7 +68,8 @@ namespace ElypsoEngine::Graphics
         string err = registry.GetContent(windowID, ew);
         if (!err.empty())
         {
-            Log::Print("Failed to call shutdown callback "
+            Log::Print(
+                "Failed to call shutdown callback "
                 "because the engine window was invalid! Reason: " + err,
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
