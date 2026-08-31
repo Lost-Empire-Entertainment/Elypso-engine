@@ -258,8 +258,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create 2D camera for engine window '" + windowTitle + "'!");
         }
 
-        pw->SetResizeCallback([kgctx]() { kgctx->RequestRecreateSwapchain(); });
-
+        
         //sync to ensure engine window gets the highest id from kw
         EngineCore::SyncID();
 
@@ -273,6 +272,15 @@ namespace ElypsoEngine::Graphics
         windowPtr->windowContextID = windowID;
         windowPtr->graphicsContextID = kgctx->GetID();
 
+        pw->SetResizeCallback([kgctx]() 
+            {
+#if defined(KWIN_ANY)
+                bool alreadyRecreated = kgctx->_UpdateInstance();
+                if (!alreadyRecreated) kgctx->_RecreateSwapchain();
+#else
+                kgctx->RequestRecreateSwapchain();
+#endif
+            });
         pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
         err = registry.AddContent(newID, std::move(newWindow));
