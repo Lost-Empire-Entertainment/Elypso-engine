@@ -272,14 +272,17 @@ namespace ElypsoEngine::Graphics
         windowPtr->windowContextID = windowID;
         windowPtr->graphicsContextID = kgctx->GetID();
 
-        pw->SetResizeCallback([kgctx]() 
+        pw->SetResizeCallback([kgctx](bool forceRecreate) 
             {
-#if defined(KWIN_ANY)
-                bool alreadyRecreated = kgctx->_UpdateInstance();
-                if (!alreadyRecreated) kgctx->_RecreateSwapchain();
-#else
-                kgctx->RequestRecreateSwapchain();
-#endif
+                if (forceRecreate)
+                {
+                    bool alreadyRecreated = kgctx->_UpdateInstance();
+                    if (!alreadyRecreated) kgctx->_RecreateSwapchain();
+                }
+                else
+                {
+                    kgctx->RequestRecreateSwapchain();
+                }
             });
         pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
