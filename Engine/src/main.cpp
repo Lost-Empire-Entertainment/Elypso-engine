@@ -12,9 +12,6 @@
 #include "core/kw_input.hpp"
 #include "graphics/kw_window.hpp"
 #include "graphics/kw_window_global.hpp"
-#if defined(KLIN_ANY)
-#include "core/kw_messageloop_x11.hpp"
-#endif
 #include "core/kg_core.hpp"
 #include "core/kg_context.hpp"
 
