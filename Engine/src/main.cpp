@@ -24,6 +24,7 @@ using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
 using KalaWindow::Core::MAX_NAME_LENGTH;
+using KalaWindow::Core::Input;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::ProcessWindow;
@@ -42,6 +43,7 @@ using ElypsoEngine::Graphics::Scene;
 using ElypsoEngine::Graphics::Entity;
 
 using std::string;
+using std::to_string;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 using std::chrono::time_point;
@@ -138,8 +140,53 @@ int main()
             //validate scenes and entities
             ValidateEngineContent();
 
+            for (EngineWindow* ew : EngineWindow::GetRegistry().GetAllContent())
+            {
+                GraphicsContext* gctx{};
+                string err = GraphicsContext::GetRegistry().GetContent(ew->GetGraphicsContextID(), gctx);
+                if (!err.empty())
+                {
+                    KalaWindowCore::ForceClose(
+                        "Elypso engine main loop error",
+                        "Failed to update graphics context input states because "
+                        "engine window '" + to_string(ew->GetID()) + "' graphics context was invalid! Reason: " + err);
+                }
+
+                ProcessWindow* pw{};
+                err = ProcessWindow::GetRegistry().GetContent(ew->GetWindowContextID(), pw);
+                if (!err.empty())
+                {
+                    KalaWindowCore::ForceClose(
+                        "Elypso engine main loop error",
+                        "Failed to update graphics context input states because "
+                        "engine window '" + to_string(ew->GetID()) + "' process window was invalid! Reason: " + err);
+                }
+
+                Input* input{};
+                err = Input::GetRegistry().GetContent(pw->GetInputID(), input);
+                if (!err.empty())
+                {
+                    KalaWindowCore::ForceClose(
+                        "Elypso engine main loop error",
+                        "Failed to update graphics context input states because "
+                        "the process window '" + to_string(ew->GetWindowContextID()) + "' input was invalid! Reason: " + err);
+                }
+
+                gctx->SetHeldKeys(input->GetHeldKeys());
+                gctx->SetPressedKeys(input->GetPressedKeys());
+                gctx->SetReleasedKeys(input->GetReleasedKeys());
+
+                gctx->SetHeldMouseButtons(input->GetHeldMouseButtons());
+                gctx->SetPressedMouseButtons(input->GetPressedMouseButtons());
+                gctx->SetReleasedMouseButtons(input->GetReleasedMouseButtons());
+                gctx->SetDoubleClickedMouseButtons(input->GetDoubleClickedMouseButtons());
+                gctx->SetDraggingMouseButtons(input->GetDraggingMouseButtons());
+
+                gctx->SetScrollWheelDelta(input->GetScrollwheelDelta());
+            }
+
             while (frameLogic.stepAccumulator >= FIXED_DELTA
-                && frameLogic.fixedStepsThisFrame < MAX_FIXED_STEPS_PER_FRAME)
+                   && frameLogic.fixedStepsThisFrame < MAX_FIXED_STEPS_PER_FRAME)
             {
                 FixedUpdate();
 
