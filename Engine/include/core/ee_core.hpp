@@ -47,12 +47,10 @@ namespace ElypsoEngine::Core
 		static f64 GetFrameTime();
 
         KNODISCARD
-        static u32 GetFrameTimeSampleCount();
+        static u16 GetFrameTimeSampleCount();
         //Adjust the stored amount of samples for measuring 1% and 0.1% lows,
-        //cannot be set below 1000, defaults to 1000,
-        //first 100 frames are discarded each time a new value is set
-        //to avoid tanked 1% and 0.1% lows
-        static void SetFrameTimeSampleCount(u32 newValue);
+        //cannot be set below 1000, defaults to 1000
+        static void SetFrameTimeSampleCount(u16 newValue);
 
         //Get average fps over 0.5 seconds 
         KNODISCARD

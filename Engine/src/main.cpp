@@ -64,11 +64,7 @@ static constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
 static constexpr f64 FIXED_DELTA = 1.0 / 60.0;
 
 //any less would break 1% and 0.1% low measurements
-static constexpr u32 MIN_FPS_FRAME_TIME_SAMPLE_COUNT = 1000;
-
-//ignore the first 100 samples to ensure 0.1% and 1% lows arent tanked,
-//shows 1% and 0.1% lows as 0 while within warmup frame count range
-static constexpr u8 FPS_WARMUP_FRAME_COUNT = 100;
+static constexpr u16 MIN_FPS_FRAME_TIME_SAMPLE_COUNT = 1000;
 
 //max allowed steps to do in FixedUpdate to catch up with target fps,
 //any higher would catch up too agressively and not have any meaningful visual difference
@@ -85,11 +81,6 @@ struct FrameLogic
     u32 totalFrameTimeSampleCount{};
     //stored samples
     vector<f64> frameTimes{};
-
-    //start counting within warmum range once true
-    bool hasStartedWarmup{};
-    //amount since warmup count started
-    u32 warmupCount{};
 
     //next ring-buffer slot to overwrite
     u32 frameTimeSampleIndex{};
@@ -126,12 +117,9 @@ namespace ElypsoEngine::Core
     f64 EngineCore::GetDeltaTime() { return frameLogic.deltaTime; }
     f64 EngineCore::GetFrameTime() { return frameLogic.frameTime; }
 
-    u32 EngineCore::GetFrameTimeSampleCount() { return frameLogic.totalFrameTimeSampleCount; }
-    void EngineCore::SetFrameTimeSampleCount(u32 newValue)
+    u16 EngineCore::GetFrameTimeSampleCount() { return frameLogic.totalFrameTimeSampleCount; }
+    void EngineCore::SetFrameTimeSampleCount(u16 newValue)
     {
-        frameLogic.hasStartedWarmup = true;
-        frameLogic.warmupCount = 0;
-
         frameLogic.totalFrameTimeSampleCount = max(
             newValue,
             MIN_FPS_FRAME_TIME_SAMPLE_COUNT);
@@ -333,26 +321,15 @@ void FrameEarlyUpdate()
         ? (1.0 / rawSeconds) 
         : 0.0;
 
-    if (frameLogic.hasStartedWarmup)
-    {
-        frameLogic.warmupCount++;
-        if (frameLogic.warmupCount >= FPS_WARMUP_FRAME_COUNT)
-        {
-            frameLogic.hasStartedWarmup = false;
-        }
-    }
-    else
-    {
-        frameLogic.frameTimes[frameLogic.frameTimeSampleIndex] = rawSeconds;
+    frameLogic.frameTimes[frameLogic.frameTimeSampleIndex] = rawSeconds;
 
-        frameLogic.frameTimeSampleIndex = 
-            (frameLogic.frameTimeSampleIndex + 1)
-            % frameLogic.totalFrameTimeSampleCount;
+    frameLogic.frameTimeSampleIndex = 
+        (frameLogic.frameTimeSampleIndex + 1)
+        % frameLogic.totalFrameTimeSampleCount;
 
-        if (frameLogic.frameTimeSampleCount < frameLogic.totalFrameTimeSampleCount)
-        {
-            frameLogic.frameTimeSampleCount++;
-        }
+    if (frameLogic.frameTimeSampleCount < frameLogic.totalFrameTimeSampleCount)
+    {
+        frameLogic.frameTimeSampleCount++;
     }
 
     if (frameLogic.fpsWindowAccumulation >= FPS_UPDATE_INTERVAL)
@@ -368,40 +345,33 @@ void FrameEarlyUpdate()
         frameLogic.fpsWindowAccumulation = 0.0;
         frameLogic.fpsWindowFrames = 0;
 
-        //only update after warmup is done and samples exist
-        if (!frameLogic.hasStartedWarmup
-            && frameLogic.frameTimeSampleCount > 0)
+        vector<f64> sortedFrameTimes = frameLogic.frameTimes;
+
+        sort(
+            sortedFrameTimes.begin(),
+            sortedFrameTimes.begin() + frameLogic.frameTimeSampleCount,
+            greater<f64>());
+
+        u32 onePercentCount = max(1u, frameLogic.frameTimeSampleCount / 100);
+        u32 zeroOnePercentCount = max(1u, frameLogic.frameTimeSampleCount / 1000);
+
+        f64 onePercentAccumulation{};
+        for (u32 i = 0; i < onePercentCount; i++)
         {
-            vector<f64> sortedFrameTimes = frameLogic.frameTimes;
-
-            sort(
-                sortedFrameTimes.begin(),
-                sortedFrameTimes.begin() + frameLogic.frameTimeSampleCount,
-                greater<f64>());
-
-            u32 onePercentCount = max(1u, frameLogic.frameTimeSampleCount / 100);
-            u32 zeroOnePercentCount = max(1u, frameLogic.frameTimeSampleCount / 1000);
-
-            f64 onePercentAccumulation{};
-            for (u32 i = 0; i < onePercentCount; i++)
-            {
-                onePercentAccumulation += sortedFrameTimes[i];
-            }
-
-            f64 zeroOnePercentAccumulation{};
-            for (u32 i = 0; i < zeroOnePercentCount; i++)
-            {
-                zeroOnePercentAccumulation += sortedFrameTimes[i];
-            }
-
-            f64 onePercentFrameTime = onePercentAccumulation / onePercentCount;
-            f64 zeroOnePercentFrameTime = zeroOnePercentAccumulation / zeroOnePercentCount;
-
-            frameLogic.onePercentLowFPS = 1.0 / onePercentFrameTime;
-            frameLogic.zeroOnePercentLowFPS = 1.0 / zeroOnePercentFrameTime;
-
-
+            onePercentAccumulation += sortedFrameTimes[i];
         }
+
+        f64 zeroOnePercentAccumulation{};
+        for (u32 i = 0; i < zeroOnePercentCount; i++)
+        {
+            zeroOnePercentAccumulation += sortedFrameTimes[i];
+        }
+
+        f64 onePercentFrameTime = onePercentAccumulation / onePercentCount;
+        f64 zeroOnePercentFrameTime = zeroOnePercentAccumulation / zeroOnePercentCount;
+
+        frameLogic.onePercentLowFPS = 1.0 / onePercentFrameTime;
+        frameLogic.zeroOnePercentLowFPS = 1.0 / zeroOnePercentFrameTime;
     }
 
     //unscaled, unclamped
