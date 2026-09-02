@@ -44,6 +44,7 @@ using ElypsoEngine::Graphics::Entity;
 
 using std::string;
 using std::to_string;
+using std::vector;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 using std::chrono::time_point;
@@ -52,14 +53,22 @@ using std::chrono::duration;
 using std::clamp;
 using std::milli;
 using std::ratio;
+using std::greater;
+using std::max;
 using std::format;
 
-//seconds between displayed smooth fps updates
+//seconds between updated fps, frame length, 1% lows and 0.1% lows
 static constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
 
 //physics framerate target
-static constexpr f64 FIXED_FPS = 60.0;
-static constexpr f64 FIXED_DELTA = 1.0 / FIXED_FPS;
+static constexpr f64 FIXED_DELTA = 1.0 / 60.0;
+
+//any less would break 1% and 0.1% low measurements
+static constexpr u32 MIN_FPS_FRAME_TIME_SAMPLE_COUNT = 1000;
+
+//ignore the first 100 samples to ensure 0.1% and 1% lows arent tanked,
+//shows 1% and 0.1% lows as 0 while within warmup frame count range
+static constexpr u8 FPS_WARMUP_FRAME_COUNT = 100;
 
 //max allowed steps to do in FixedUpdate to catch up with target fps,
 //any higher would catch up too agressively and not have any meaningful visual difference
@@ -71,7 +80,27 @@ struct FrameLogic
     f64 frameTime{};
 
     f64 rawFPS{};
+
+    //total allowed samples
+    u32 totalFrameTimeSampleCount{};
+    //stored samples
+    vector<f64> frameTimes{};
+
+    //start counting within warmum range once true
+    bool hasStartedWarmup{};
+    //amount since warmup count started
+    u32 warmupCount{};
+
+    //next ring-buffer slot to overwrite
+    u32 frameTimeSampleIndex{};
+    //current sample count
+    u32 frameTimeSampleCount{};
+
     f64 finalFPS{};
+    f64 frameLength{};
+
+    f64 onePercentLowFPS{};
+    f64 zeroOnePercentLowFPS{};
 
     f64 stepAccumulator{};
 
@@ -96,7 +125,29 @@ namespace ElypsoEngine::Core
 {
     f64 EngineCore::GetDeltaTime() { return frameLogic.deltaTime; }
     f64 EngineCore::GetFrameTime() { return frameLogic.frameTime; }
-    f64 EngineCore::GetCurrentFPS() { return frameLogic.finalFPS; }
+
+    u32 EngineCore::GetFrameTimeSampleCount() { return frameLogic.totalFrameTimeSampleCount; }
+    void EngineCore::SetFrameTimeSampleCount(u32 newValue)
+    {
+        frameLogic.hasStartedWarmup = true;
+        frameLogic.warmupCount = 0;
+
+        frameLogic.totalFrameTimeSampleCount = max(
+            newValue,
+            MIN_FPS_FRAME_TIME_SAMPLE_COUNT);
+
+        frameLogic.frameTimes.clear();
+        frameLogic.frameTimes.resize(frameLogic.totalFrameTimeSampleCount);
+
+        frameLogic.frameTimeSampleIndex = 0;
+        frameLogic.frameTimeSampleCount = 0;
+    }
+
+    f64 EngineCore::GetAverageFPS()         { return frameLogic.finalFPS; }
+    f64 EngineCore::GetAverageFrameLength() { return frameLogic.frameLength * 1000.0; }
+
+    f64 EngineCore::GetOnePercentLowFPS()          { return frameLogic.onePercentLowFPS; }
+    f64 EngineCore::GetZeroPointOnePercentLowFPS() { return frameLogic.zeroOnePercentLowFPS; }
 }
 
 int main()
@@ -106,6 +157,7 @@ int main()
 		"\nSTARTING ENGINE INITIALIZATION"
 		"\n======================================================================\n");
 
+    EngineCore::SetFrameTimeSampleCount(MIN_FPS_FRAME_TIME_SAMPLE_COUNT);
     frameLogic.lastFrameTime = steady_clock::now();
 
     //engine-side initialization
@@ -277,17 +329,80 @@ void FrameEarlyUpdate()
     frameLogic.fpsWindowAccumulation += rawSeconds;
     frameLogic.fpsWindowFrames++;
 
-    frameLogic.rawFPS = (rawSeconds > 0.0) ? (1.0 / rawSeconds) : 0.0;
-    f64 displayedFPS{};
+    frameLogic.rawFPS = (rawSeconds > 0.0) 
+        ? (1.0 / rawSeconds) 
+        : 0.0;
+
+    if (frameLogic.hasStartedWarmup)
+    {
+        frameLogic.warmupCount++;
+        if (frameLogic.warmupCount >= FPS_WARMUP_FRAME_COUNT)
+        {
+            frameLogic.hasStartedWarmup = false;
+        }
+    }
+    else
+    {
+        frameLogic.frameTimes[frameLogic.frameTimeSampleIndex] = rawSeconds;
+
+        frameLogic.frameTimeSampleIndex = 
+            (frameLogic.frameTimeSampleIndex + 1)
+            % frameLogic.totalFrameTimeSampleCount;
+
+        if (frameLogic.frameTimeSampleCount < frameLogic.totalFrameTimeSampleCount)
+        {
+            frameLogic.frameTimeSampleCount++;
+        }
+    }
 
     if (frameLogic.fpsWindowAccumulation >= FPS_UPDATE_INTERVAL)
     {
-        displayedFPS = scast<f64>(frameLogic.fpsWindowFrames) / frameLogic.fpsWindowAccumulation;
+        frameLogic.finalFPS = 
+            scast<f64>(frameLogic.fpsWindowFrames) 
+            / frameLogic.fpsWindowAccumulation;
+
+        frameLogic.frameLength =
+            frameLogic.fpsWindowAccumulation
+            / frameLogic.fpsWindowFrames;
+
         frameLogic.fpsWindowAccumulation = 0.0;
         frameLogic.fpsWindowFrames = 0;
-    }
 
-    frameLogic.finalFPS = (displayedFPS > 0.0) ? displayedFPS : frameLogic.rawFPS;
+        //only update after warmup is done and samples exist
+        if (!frameLogic.hasStartedWarmup
+            && frameLogic.frameTimeSampleCount > 0)
+        {
+            vector<f64> sortedFrameTimes = frameLogic.frameTimes;
+
+            sort(
+                sortedFrameTimes.begin(),
+                sortedFrameTimes.begin() + frameLogic.frameTimeSampleCount,
+                greater<f64>());
+
+            u32 onePercentCount = max(1u, frameLogic.frameTimeSampleCount / 100);
+            u32 zeroOnePercentCount = max(1u, frameLogic.frameTimeSampleCount / 1000);
+
+            f64 onePercentAccumulation{};
+            for (u32 i = 0; i < onePercentCount; i++)
+            {
+                onePercentAccumulation += sortedFrameTimes[i];
+            }
+
+            f64 zeroOnePercentAccumulation{};
+            for (u32 i = 0; i < zeroOnePercentCount; i++)
+            {
+                zeroOnePercentAccumulation += sortedFrameTimes[i];
+            }
+
+            f64 onePercentFrameTime = onePercentAccumulation / onePercentCount;
+            f64 zeroOnePercentFrameTime = zeroOnePercentAccumulation / zeroOnePercentCount;
+
+            frameLogic.onePercentLowFPS = 1.0 / onePercentFrameTime;
+            frameLogic.zeroOnePercentLowFPS = 1.0 / zeroOnePercentFrameTime;
+
+
+        }
+    }
 
     //unscaled, unclamped
     frameLogic.frameTime = rawSeconds;

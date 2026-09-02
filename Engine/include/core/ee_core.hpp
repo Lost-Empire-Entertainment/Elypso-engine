@@ -45,9 +45,25 @@ namespace ElypsoEngine::Core
         //Real time between each frame
         KNODISCARD
 		static f64 GetFrameTime();
-        //Get current average fps
+
         KNODISCARD
-		static f64 GetCurrentFPS();
+        static u32 GetFrameTimeSampleCount();
+        //Adjust the stored amount of samples for measuring 1% and 0.1% lows,
+        //cannot be set below 1000, defaults to 1000,
+        //first 100 frames are discarded each time a new value is set
+        //to avoid tanked 1% and 0.1% lows
+        static void SetFrameTimeSampleCount(u32 newValue);
+
+        //Get average fps over 0.5 seconds 
+        KNODISCARD
+		static f64 GetAverageFPS();
+        //Get average frame length over 0.5 seconds in milliseconds
+        KNODISCARD
+        static f64 GetAverageFrameLength();
+        KNODISCARD
+		static f64 GetOnePercentLowFPS();
+        KNODISCARD
+		static f64 GetZeroPointOnePercentLowFPS();
         
         //Shut down engine
         static void Shutdown();
