@@ -16,7 +16,7 @@
 #include "graphics/kw_vulkan.hpp"
 #include "core/kg_context.hpp"
 #include "core/kg_viewport.hpp"
-#include "resources/kg_shader.hpp"
+#include "core/kg_shader.hpp"
 #include "resources/kg_camera.hpp"
 
 #include "graphics/ee_window.hpp"
@@ -38,7 +38,7 @@ using KalaWindow::Graphics::X11GlobalData;
 using KalaGraphics::Core::GraphicsContext;
 using KalaGraphics::Core::Viewport;
 using KalaGraphics::Core::GraphicsContextData;
-using KalaGraphics::Resources::Shader;
+using KalaGraphics::Core::Shader;
 using KalaGraphics::Resources::Camera;
 using KalaGraphics::Resources::CameraType;
 
