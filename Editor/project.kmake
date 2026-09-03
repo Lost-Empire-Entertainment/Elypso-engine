@@ -7,12 +7,12 @@ name_bin: elypsoengine
 dir_debug: build/debug-
 dir_release: build/release-
 
-links_win_deb: "${dir_ee_deb}/${name_ee}d.lib", "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ks_deb}/${name_ks}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib", "${dir_ma_deb}/${name_ma}d.lib", "${dir_sp_deb}/${name_sp}d.lib"
-links_win_rel: "${dir_ee_rel}/${name_ee}.lib", "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ks_rel}/${name_ks}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib", "${dir_ma_rel}/${name_ma}.lib", "${dir_sp_rel}/${name_sp}.lib"
-links_win_gnu_deb: "${dir_ee_deb}/${name_ee}-gnud.lib", "${dir_kw_deb}/${name_kw}-gnud.lib", "${dir_kg_deb}/${name_kg}-gnud.lib", "${dir_kp_deb}/${name_kp}-gnud.lib", "${dir_ks_deb}/${name_ks}-gnud.lib", "${dir_ka_deb}/${name_ka}-gnud.lib", "${dir_kl_deb}/${name_kl}-gnud.lib", "${dir_l_deb}/${name_l}-gnud.lib", "${dir_ma_deb}/${name_ma}-gnud.lib", "${dir_sp_deb}/${name_sp}-gnud.lib"
-links_win_gnu_rel: "${dir_ee_rel}/${name_ee}-gnu.lib", "${dir_kw_rel}/${name_kw}-gnu.lib", "${dir_kg_rel}/${name_kg}-gnu.lib", "${dir_kp_rel}/${name_kp}-gnu.lib", "${dir_ks_rel}/${name_ks}-gnu.lib", "${dir_ka_rel}/${name_ka}-gnu.lib", "${dir_kl_rel}/${name_kl}-gnu.lib", "${dir_l_rel}/${name_l}-gnu.lib", "${dir_ma_rel}/${name_ma}-gnu.lib", "${dir_sp_rel}/${name_sp}-gnu.lib"
-links_lin_deb: "${dir_ee_deb}/lib${name_ee}d.a", "${dir_kw_deb}/lib${name_kw}d.a", "${dir_kg_deb}/lib${name_kg}d.a", "${dir_kp_deb}/lib${name_kp}d.a", "${dir_ks_deb}/lib${name_ks}d.a", "${dir_ka_deb}/lib${name_ka}d.a", "${dir_kl_deb}/lib${name_kl}d.a", "${dir_l_deb}/lib${name_l}d.a", "${dir_ma_deb}/lib${name_ma}d.a", "${dir_sp_deb}/lib${name_sp}d.a"
-links_lin_rel: "${dir_ee_rel}/lib${name_ee}.a", "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ks_rel}/lib${name_ks}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a", "${dir_ma_rel}/lib${name_ma}.a", "${dir_sp_rel}/lib${name_sp}.a"
+links_win_deb: "${dir_ee_deb}/${name_ee}d.lib", "${dir_kw_deb}/${name_kw}d.lib", "${dir_kg_deb}/${name_kg}d.lib", "${dir_kp_deb}/${name_kp}d.lib", "${dir_ks_deb}/${name_ks}d.lib", "${dir_ka_deb}/${name_ka}d.lib", "${dir_kl_deb}/${name_kl}d.lib", "${dir_l_deb}/${name_l}d.lib", "${dir_ma_deb}/${name_ma}d.lib", "${dir_sp_deb}/${name_sp}d.lib", "${dir_hb_deb}/${name_hb}d.lib"
+links_win_rel: "${dir_ee_rel}/${name_ee}.lib", "${dir_kw_rel}/${name_kw}.lib", "${dir_kg_rel}/${name_kg}.lib", "${dir_kp_rel}/${name_kp}.lib", "${dir_ks_rel}/${name_ks}.lib", "${dir_ka_rel}/${name_ka}.lib", "${dir_kl_rel}/${name_kl}.lib", "${dir_l_rel}/${name_l}.lib", "${dir_ma_rel}/${name_ma}.lib", "${dir_sp_rel}/${name_sp}.lib", "${dir_hb_rel}/${name_hb}.lib"
+links_win_gnu_deb: "${dir_ee_deb}/${name_ee}-gnud.lib", "${dir_kw_deb}/${name_kw}-gnud.lib", "${dir_kg_deb}/${name_kg}-gnud.lib", "${dir_kp_deb}/${name_kp}-gnud.lib", "${dir_ks_deb}/${name_ks}-gnud.lib", "${dir_ka_deb}/${name_ka}-gnud.lib", "${dir_kl_deb}/${name_kl}-gnud.lib", "${dir_l_deb}/${name_l}-gnud.lib", "${dir_ma_deb}/${name_ma}-gnud.lib", "${dir_sp_deb}/${name_sp}-gnud.lib", "${dir_hb_deb}/${name_hb}-gnud.lib"
+links_win_gnu_rel: "${dir_ee_rel}/${name_ee}-gnu.lib", "${dir_kw_rel}/${name_kw}-gnu.lib", "${dir_kg_rel}/${name_kg}-gnu.lib", "${dir_kp_rel}/${name_kp}-gnu.lib", "${dir_ks_rel}/${name_ks}-gnu.lib", "${dir_ka_rel}/${name_ka}-gnu.lib", "${dir_kl_rel}/${name_kl}-gnu.lib", "${dir_l_rel}/${name_l}-gnu.lib", "${dir_ma_rel}/${name_ma}-gnu.lib", "${dir_sp_rel}/${name_sp}-gnu.lib", "${dir_hb_rel}/${name_hb}-gnu.lib"
+links_lin_deb: "${dir_ee_deb}/lib${name_ee}d.a", "${dir_kw_deb}/lib${name_kw}d.a", "${dir_kg_deb}/lib${name_kg}d.a", "${dir_kp_deb}/lib${name_kp}d.a", "${dir_ks_deb}/lib${name_ks}d.a", "${dir_ka_deb}/lib${name_ka}d.a", "${dir_kl_deb}/lib${name_kl}d.a", "${dir_l_deb}/lib${name_l}d.a", "${dir_ma_deb}/lib${name_ma}d.a", "${dir_sp_deb}/lib${name_sp}d.a", "${dir_hb_deb}/lib${name_hb}d.a"
+links_lin_rel: "${dir_ee_rel}/lib${name_ee}.a", "${dir_kw_rel}/lib${name_kw}.a", "${dir_kg_rel}/lib${name_kg}.a", "${dir_kp_rel}/lib${name_kp}.a", "${dir_ks_rel}/lib${name_ks}.a", "${dir_ka_rel}/lib${name_ka}.a", "${dir_kl_rel}/lib${name_kl}.a", "${dir_l_rel}/lib${name_l}.a", "${dir_ma_rel}/lib${name_ma}.a", "${dir_sp_rel}/lib${name_sp}.a", "${dir_hb_rel}/lib${name_hb}.a"
 
 links_win_only: msvcrt, msvcprt, vcruntime, user32, gdi32, shell32, oleaut32, advapi32
 links_win_and_win_on_linux: ucrt, ole32, uuid, winmm, dbghelp, shlwapi, dwmapi, wtsapi32, runtimeobject, powrprof, "../../external-shared/Vulkan/vulkan-1.lib"
@@ -87,6 +87,12 @@ dir_ma_deb: ../../external-shared/miniaudio/debug
 name_sp: spirv-reflect
 dir_sp_rel: ../../external-shared/Spirv-reflect/release
 dir_sp_deb: ../../external-shared/Spirv-reflect/debug
+//
+// HARFBUZZ
+//
+name_hb: harfbuzz
+dir_hb_rel: ../../external-shared/HarfBuzz/release
+dir_hb_deb: ../../external-shared/HarfBuzz/debug
 
 #global
 compilerlauncher: ccache
