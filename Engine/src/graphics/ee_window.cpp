@@ -4,7 +4,6 @@
 //Read LICENSE.md for more information.
 
 #include <memory>
-#include <filesystem>
 
 #include "log_utils.hpp"
 
@@ -16,7 +15,6 @@
 #include "graphics/kw_vulkan.hpp"
 #include "core/kg_context.hpp"
 #include "core/kg_viewport.hpp"
-#include "core/kg_shader.hpp"
 #include "resources/kg_camera.hpp"
 
 #include "graphics/ee_window.hpp"
@@ -36,9 +34,9 @@ using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
 #endif
 using KalaGraphics::Core::GraphicsContext;
+using KalaGraphics::Core::RootShaderTarget;
 using KalaGraphics::Core::Viewport;
 using KalaGraphics::Core::GraphicsContextData;
-using KalaGraphics::Core::Shader;
 using KalaGraphics::Resources::Camera;
 using KalaGraphics::Resources::CameraType;
 
@@ -48,13 +46,6 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::make_unique;
-using std::filesystem::path;
-
-static const path shader_unlit_vert = path("files") / "shaders" / "unlit_vert.spv";
-static const path shader_unlit_frag = path("files") / "shaders" / "unlit_frag.spv";
-
-static const path shader_ui_rect_vert = path("files") / "shaders" / "ui_rect_vert.spv";
-static const path shader_ui_rect_frag = path("files") / "shaders" / "ui_rect_frag.spv";
 
 namespace ElypsoEngine::Graphics
 {
@@ -117,6 +108,9 @@ namespace ElypsoEngine::Graphics
             }
         }
 
+        //sync for making KW content
+        EngineCore::SyncID();
+
         ProcessWindow* pw = ProcessWindow::Initialize(
             string(windowTitle),
             pos,
@@ -143,7 +137,7 @@ namespace ElypsoEngine::Graphics
             .windowID = windowID,
             .context_window = wData.window
         };
-#elif defined(KLIN_ANY)
+#else
         const X11GlobalData& data = Window_Global::GetGlobalData();
 
         GraphicsContextData kgData =
@@ -153,6 +147,9 @@ namespace ElypsoEngine::Graphics
             .context_window = wData.window
         };
 #endif
+
+        //sync for making KG content
+        EngineCore::SyncID();
 
         if (!GraphicsContext::IsInitialized()) GraphicsContext::Initialize(VulkanContext::GetInstance());
 
@@ -167,9 +164,6 @@ namespace ElypsoEngine::Graphics
         }
 
         kgData.context_vk_surface = vkctx->GetSurface();
-
-        //sync to ensure kgctx gets the highest id
-        EngineCore::SyncID();
 
         GraphicsContext* kgctx = GraphicsContext::InitializeInstance(std::move(kgData));
         if (!kgctx)
@@ -197,44 +191,12 @@ namespace ElypsoEngine::Graphics
 
             return nullptr;
         }
-
-        //sync to ensure unlit shader gets the highest id
-        EngineCore::SyncID();
-
-        Shader* shader_unlit = Shader::Initialize(
-            vp->GetID(),
-            false,
-            path(shader_unlit_vert),
-            path(shader_unlit_frag));
-
-        if (!shader_unlit)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso engine window error",
-                "Failed to create 3D shader for engine window '" + windowTitle + "'!");
-        }
-
-        //sync to ensure ui rect shader gets the highest id
-        EngineCore::SyncID();
-
-        Shader* shader_ui_rect = Shader::Initialize(
-            vp->GetID(),
-            true,
-            path(shader_ui_rect_vert),
-            path(shader_ui_rect_frag));
-
-        if (!shader_ui_rect)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso engine window error",
-                "Failed to create 2D shader for engine window '" + windowTitle + "'!");
-        }
-
-        //sync to ensure 3D camera gets the highest id
-        EngineCore::SyncID();
+        
+        u32 shader3DID = vp->GetRootShaderID(RootShaderTarget::T_UNLIT);
+        u32 shader2DID = vp->GetRootShaderID(RootShaderTarget::T_RECT);
 
         Camera* cam3D = Camera::Initialize(
-            shader_unlit->GetID(),
+            shader3DID,
             CameraType::CAM_PERSPECTIVE);
 
         if (!cam3D)
@@ -244,11 +206,8 @@ namespace ElypsoEngine::Graphics
                 "Failed to create 3D camera for engine window '" + windowTitle + "'!");
         }
 
-        //sync to ensure 2D camera gets the highest id
-        EngineCore::SyncID();
-
         Camera* cam2D = Camera::Initialize(
-            shader_ui_rect->GetID(),
+            shader2DID,
             CameraType::CAM_ORTHOGRAPHIC);
 
         if (!cam2D)
@@ -258,8 +217,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create 2D camera for engine window '" + windowTitle + "'!");
         }
 
-        
-        //sync to ensure engine window gets the highest id from kw
+        //sync for making EE content
         EngineCore::SyncID();
 
         unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
