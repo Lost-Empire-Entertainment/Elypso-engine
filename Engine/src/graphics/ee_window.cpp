@@ -34,11 +34,8 @@ using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
 #endif
 using KalaGraphics::Core::GraphicsContext;
-using KalaGraphics::Core::RootShaderTarget;
 using KalaGraphics::Core::Viewport;
 using KalaGraphics::Core::GraphicsContextData;
-using KalaGraphics::Resources::Camera;
-using KalaGraphics::Resources::CameraType;
 
 using ElypsoEngine::Core::EngineCore;
 
@@ -190,31 +187,6 @@ namespace ElypsoEngine::Graphics
                 2);
 
             return nullptr;
-        }
-        
-        u32 shader3DID = vp->GetRootShaderID(RootShaderTarget::T_UNLIT);
-        u32 shader2DID = vp->GetRootShaderID(RootShaderTarget::T_RECT);
-
-        Camera* cam3D = Camera::Initialize(
-            shader3DID,
-            CameraType::CAM_PERSPECTIVE);
-
-        if (!cam3D)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso engine window error",
-                "Failed to create 3D camera for engine window '" + windowTitle + "'!");
-        }
-
-        Camera* cam2D = Camera::Initialize(
-            shader2DID,
-            CameraType::CAM_ORTHOGRAPHIC);
-
-        if (!cam2D)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso engine window error",
-                "Failed to create 2D camera for engine window '" + windowTitle + "'!");
         }
 
         //sync for making EE content
