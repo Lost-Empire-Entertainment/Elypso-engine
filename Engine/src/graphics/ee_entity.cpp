@@ -8,8 +8,8 @@
 #include "log_utils.hpp"
 
 #include "core/kw_core.hpp"
-#include "resources/kg_mesh.hpp"
-#include "resources/kg_camera.hpp"
+#include "graphics/kg_mesh.hpp"
+#include "graphics/kg_camera.hpp"
 
 #include "graphics/ee_entity.hpp"
 #include "graphics/ee_scene.hpp"
@@ -20,8 +20,8 @@ using KalaHeaders::KalaLog::LogType;
 
 using KalaWindow::Core::KalaWindowCore;
 
-using KalaGraphics::Resources::Mesh;
-using KalaGraphics::Resources::Camera;
+using KalaGraphics::Graphics::Mesh;
+using KalaGraphics::Graphics::Camera;
 
 using ElypsoEngine::Core::EngineCore;
 

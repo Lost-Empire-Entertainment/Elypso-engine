@@ -16,6 +16,13 @@
 #include <algorithm>
 #include <type_traits>
 
+namespace ElypsoEngine::Graphics
+{
+	class EngineWindow;
+	class Scene;
+	class Entity;
+}
+
 namespace ElypsoEngine::Core
 {
 	using KalaWindow::Core::KalaWindowCore;
@@ -36,11 +43,15 @@ namespace ElypsoEngine::Core
 	concept HasGetID = requires(const T& t) { { t.GetID() } -> same_as<u32>; };
 
 	//Stores unique_ptrs and non-owning pointers of class T for ID-based lookups,
-	//should always be stored as 'static inline ElypsoEngineRegistry<T> registry'
+	//should always be stored as 'static inline EngineRegistry<T> registry'
 	template<typename T>
 		requires is_class_v<T>
 	struct LIB_API EngineRegistry
 	{
+	friend class ElypsoEngine::Graphics::EngineWindow;
+	friend class ElypsoEngine::Graphics::Scene;
+	friend class ElypsoEngine::Graphics::Entity;
+	public:
 		//Get a runtime iteration safe list of all
 		//created object pointers of this registry
 		KNODISCARD
@@ -75,7 +86,7 @@ namespace ElypsoEngine::Core
 
 			return "";
 		}
-
+	private:
 		//Add a new unique ptr and its ID, returns error string on failure
 		KNODISCARD
 		static inline string AddContent(
@@ -116,7 +127,7 @@ namespace ElypsoEngine::Core
 			if (!targetPtr)
 			{
 				KalaWindowCore::ForceClose(
-					"ElypsoEngine registry error",
+					"Elypso Engine registry error",
 					"DestroyContent failed because target ID '" + to_string(targetID) + "' is a dangling pointer, it was freed externally!");
 			}
 			
@@ -173,7 +184,7 @@ namespace ElypsoEngine::Core
 			runtimeContent.clear();
 			createdContent.clear();
 		}
-	private:
+
 		static inline unordered_map<u32, unique_ptr<T>> createdContent{};
 		static inline vector<T*> runtimeContent{};
 	};

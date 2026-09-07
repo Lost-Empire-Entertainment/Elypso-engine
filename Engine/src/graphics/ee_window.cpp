@@ -13,9 +13,9 @@
 #include "graphics/kw_window_global.hpp"
 #endif
 #include "graphics/kw_vulkan.hpp"
-#include "core/kg_context.hpp"
-#include "core/kg_viewport.hpp"
-#include "resources/kg_camera.hpp"
+#include "graphics/kg_context.hpp"
+#include "graphics/kg_viewport.hpp"
+#include "graphics/kg_camera.hpp"
 
 #include "graphics/ee_window.hpp"
 #include "graphics/ee_scene.hpp"
@@ -33,9 +33,9 @@ using KalaWindow::Graphics::VulkanContext;
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::X11GlobalData;
 #endif
-using KalaGraphics::Core::GraphicsContext;
-using KalaGraphics::Core::Viewport;
-using KalaGraphics::Core::GraphicsContextData;
+using KalaGraphics::Graphics::GraphicsContext;
+using KalaGraphics::Graphics::Viewport;
+using KalaGraphics::Graphics::GraphicsContextData;
 
 using ElypsoEngine::Core::EngineCore;
 

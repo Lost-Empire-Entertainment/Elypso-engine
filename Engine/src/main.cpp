@@ -13,7 +13,7 @@
 #include "graphics/kw_window.hpp"
 #include "graphics/kw_window_global.hpp"
 #include "core/kg_core.hpp"
-#include "core/kg_context.hpp"
+#include "graphics/kg_context.hpp"
 
 #include "core/ee_core.hpp"
 #include "graphics/ee_window.hpp"
@@ -29,7 +29,7 @@ using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaGraphics::Core::KalaGraphicsCore;
-using KalaGraphics::Core::GraphicsContext;
+using KalaGraphics::Graphics::GraphicsContext;
 
 using ElypsoEngine::Core::appConfig;
 using ElypsoEngine::Core::Init;
