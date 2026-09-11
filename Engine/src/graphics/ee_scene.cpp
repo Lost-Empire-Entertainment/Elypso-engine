@@ -50,8 +50,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to get active scene because engine window was invalid! Reason: " + err,
                 "EE_SCENE",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -97,8 +96,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to load scene '" + string(title) + "' because it was invalid!",
                 "EE_SCENE",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -119,8 +117,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene for engine window '" + to_string(windowID) 
                 + "' because the engine window was invalid! Reason: " + err,
                 "EE_SCENE",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -131,8 +128,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to create scene for engine window '" + to_string(windowID) + "' because its title was empty or too long!",
                 "EE_SCENE",
-                LogType::LOG_ERROR, 
-                2);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -166,8 +162,7 @@ namespace ElypsoEngine::Graphics
                         + "' because a scene with that title already exists in window '" 
                         + to_string(ew->GetID()) + "'!",
                         "EE_SCENE",
-                        LogType::LOG_ERROR,
-                        2);
+                        LogType::LOG_WARNING);
 
                     return nullptr;
                 }
@@ -258,7 +253,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to update scene '" + to_string(ID) + "' title because the new name was empty or too long!",
                 "EE_SCENE",
-                LogType::LOG_ERROR);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -290,7 +285,7 @@ namespace ElypsoEngine::Graphics
                     Log::Print(
                         "A scene with the title '" + string(newtitle) + "' already exists in window '" + to_string(ew->GetID()) + "'!",
                         "EE_SCENE",
-                        LogType::LOG_ERROR);
+                        LogType::LOG_WARNING);
 
                     return;
                 }

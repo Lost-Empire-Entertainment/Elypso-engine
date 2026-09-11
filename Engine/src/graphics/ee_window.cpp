@@ -60,8 +60,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to call shutdown callback "
                 "because the engine window was invalid! Reason: " + err,
                 "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -81,8 +80,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to initialize engine window because its name was empty or too long!",
                 "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -98,8 +96,7 @@ namespace ElypsoEngine::Graphics
                     + "' because its parent engine window '" + to_string(parent->GetID()) 
                     + "' process window was invalid! Reason: " + err,
                     "EE_WINDOW",
-                    LogType::LOG_ERROR,
-                    2);
+                    LogType::LOG_WARNING);
 
                 return nullptr;
             }
@@ -179,14 +176,10 @@ namespace ElypsoEngine::Graphics
         err = Viewport::GetRegistry().GetContent(kgctx->GetRootViewportID(), vp);
         if (!err.empty())
         {
-            Log::Print(
+            KalaWindowCore::ForceClose(
+                "Elypso engine window error",
                 "Failed to initialize engine window '" + windowTitle 
-                + "' because the graphics context '" + to_string(kgctx->GetID()) + "' root viewport was invalid!",
-                "EE_WINDOW",
-                LogType::LOG_ERROR,
-                2);
-
-            return nullptr;
+                + "' because the graphics context '" + to_string(kgctx->GetID()) + "' root viewport was invalid!");
         }
 
         //sync for making EE content

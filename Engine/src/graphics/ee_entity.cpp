@@ -45,8 +45,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to create entity because no subentities were passed!",
                 "EE_ENTITY",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -58,8 +57,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to create entity because its scene was invalid! Reason: " + err,
                 "EE_ENTITY",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -72,8 +70,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to create entity because title couldn't be set!",
                 "EE_ENTITY",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -108,8 +105,7 @@ namespace ElypsoEngine::Graphics
                     Log::Print(
                         "Failed to create entity because its mesh was invalid! Reason: " + err,
                         "EE_ENTITY",
-                        LogType::LOG_ERROR,
-                        2);
+                        LogType::LOG_WARNING);
 
                     return nullptr;
                 }
@@ -130,8 +126,7 @@ namespace ElypsoEngine::Graphics
                     Log::Print(
                         "Failed to create entity because mesh '" + to_string(s.targetID) + "' did not match other meshes " +  state + " state!",
                         "EE_ENTITY",
-                        LogType::LOG_ERROR,
-                        2);
+                        LogType::LOG_WARNING);
 
                     return nullptr;
                 }
@@ -147,8 +142,7 @@ namespace ElypsoEngine::Graphics
                     Log::Print(
                         "Failed to create entity because its camera was invalid! Reason: " + err,
                         "EE_ENTITY",
-                        LogType::LOG_ERROR,
-                        2);
+                        LogType::LOG_WARNING);
 
                     return nullptr;
                 }
@@ -188,8 +182,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to set title because it was empty or too long!",
                 "EE_ENTITY",
-                LogType::LOG_ERROR,
-                2);
+                LogType::LOG_WARNING);
 
             return false;
         }
