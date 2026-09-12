@@ -46,7 +46,7 @@ namespace ElypsoEngine::Graphics
         //Elypso Engine will not initialize meshes, cameras and other future types for you
         KNODISCARD
 		static Entity* Initialize(
-            string&& title,
+            string_view title,
             u32 sceneID,
             vector<SubEntity>&& subEntities);
 
@@ -55,9 +55,9 @@ namespace ElypsoEngine::Graphics
         KNODISCARD
 		u32 GetSceneID() const;
 
-        string_view GetTitle() const;
+        const string& GetTitle() const;
         KNODISCARD
-		bool SetTitle(string&& newTitle);
+		bool SetTitle(string_view newTitle);
 
         KNODISCARD
 		bool MoveToScene(u32 sceneID);

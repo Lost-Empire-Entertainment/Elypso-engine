@@ -69,7 +69,7 @@ namespace ElypsoEngine::Graphics
     }
 
     EngineWindow* EngineWindow::Initialize(
-        string&& windowTitle,
+        string_view windowTitle,
         vec2 pos,
         vec2 size,
         EngineWindow* parent)
@@ -92,7 +92,7 @@ namespace ElypsoEngine::Graphics
             if (!err.empty())
             {
                 Log::Print(
-                    "Failed to initialize engine window '" + windowTitle 
+                    "Failed to initialize engine window '" + string(windowTitle) 
                     + "' because its parent engine window '" + to_string(parent->GetID()) 
                     + "' process window was invalid! Reason: " + err,
                     "EE_WINDOW",
@@ -106,7 +106,7 @@ namespace ElypsoEngine::Graphics
         EngineCore::SyncID();
 
         ProcessWindow* pw = ProcessWindow::Initialize(
-            string(windowTitle),
+            windowTitle,
             pos,
             size,
             pwParent);
@@ -114,7 +114,7 @@ namespace ElypsoEngine::Graphics
         if (!pw)
         {
             Log::Print(
-                "Failed to initialize engine window '" + windowTitle + "' becase process window creation failed!",
+                "Failed to initialize engine window '" + string(windowTitle) + "' because process window creation failed!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
                 2);
@@ -153,7 +153,7 @@ namespace ElypsoEngine::Graphics
         {
             KalaWindowCore::ForceClose(
                 "Elypso engine window error",
-                "Failed to initialize engine window '" + windowTitle 
+                "Failed to initialize engine window '" + string(windowTitle) 
                 + "' because process window '" + to_string(pw->GetID()) + "' Vulkan context was invalid! Reason: " + err);
         }
 
@@ -163,7 +163,7 @@ namespace ElypsoEngine::Graphics
         if (!kgctx)
         {
             Log::Print(
-                "Failed to initialize engine window '" + windowTitle 
+                "Failed to initialize engine window '" + string(windowTitle) 
                 + "' because graphics context creation failed!",
                 "EE_WINDOW",
                 LogType::LOG_ERROR,
@@ -178,7 +178,7 @@ namespace ElypsoEngine::Graphics
         {
             KalaWindowCore::ForceClose(
                 "Elypso engine window error",
-                "Failed to initialize engine window '" + windowTitle 
+                "Failed to initialize engine window '" + string(windowTitle) 
                 + "' because the graphics context '" + to_string(kgctx->GetID()) + "' root viewport was invalid!");
         }
 
@@ -218,13 +218,13 @@ namespace ElypsoEngine::Graphics
         }
 
         Scene* newScene = Scene::Initialize(
-            windowTitle + " scene",
+            string(windowTitle) + " scene",
             newID);
 
         newScene->LoadScene();
 
         Log::Print(
-			"Created new window '" + windowTitle 
+			"Created new window '" + string(windowTitle) 
             + "' with ID '" + to_string(newID) 
             + "' for process window '" + to_string(windowID) + "'!",
 			"EE_WINDOW",

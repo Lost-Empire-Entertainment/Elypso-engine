@@ -23,6 +23,7 @@ namespace ElypsoEngine::Graphics
     using KalaWindow::Graphics::WindowState;
 
     using std::string;
+    using std::string_view;
     using std::vector;
     using std::default_delete;
     
@@ -37,7 +38,7 @@ namespace ElypsoEngine::Graphics
         //Create a new window
         KNODISCARD
 		static EngineWindow* Initialize(
-            string&& windowTitle = "UNASSIGNED TITLE",
+            string_view windowTitle = "UNASSIGNED TITLE",
             vec2 pos = 800,
             vec2 size = { 800, 600 },
             EngineWindow* parent = nullptr);

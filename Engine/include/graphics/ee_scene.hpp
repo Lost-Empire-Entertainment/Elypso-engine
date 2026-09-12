@@ -40,7 +40,7 @@ namespace ElypsoEngine::Graphics
         //Create a new scene with the chosen title
         KNODISCARD
 		static Scene* Initialize(
-            string&& title,
+            string_view title,
             u32 windowID,
             path&& escnPath = {});
 
@@ -49,8 +49,8 @@ namespace ElypsoEngine::Graphics
         KNODISCARD
 		u32 GetWindowID() const;
 
-        string_view GetTitle() const;
-        void SetTitle(string&& title);
+        const string& GetTitle() const;
+        void SetTitle(string_view title);
 
         //Returns true if this scene is currently loaded
         KNODISCARD

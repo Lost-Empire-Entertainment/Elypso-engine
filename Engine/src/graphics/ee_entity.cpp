@@ -36,7 +36,7 @@ namespace ElypsoEngine::Graphics
     EngineRegistry<Entity>& Entity::GetRegistry() { return registry; }
 
     Entity* Entity::Initialize(
-        string&& title,
+        string_view title,
         u32 sceneID,
         vector<SubEntity>&& subEntities)
     {
@@ -65,7 +65,7 @@ namespace ElypsoEngine::Graphics
         unique_ptr<Entity> newEntity = make_unique<Entity>();
         Entity* entityPtr = newEntity.get();
 
-        if (!entityPtr->SetTitle(std::move(title)))
+        if (!entityPtr->SetTitle(title))
         {
             Log::Print(
                 "Failed to create entity because title couldn't be set!",
@@ -173,8 +173,8 @@ namespace ElypsoEngine::Graphics
     u32 Entity::GetID() const { return ID; }
     u32 Entity::GetSceneID() const { return sceneID; }
 
-    string_view Entity::GetTitle() const { return title; }
-    bool Entity::SetTitle(string&& newTitle)
+    const string& Entity::GetTitle() const { return title; }
+    bool Entity::SetTitle(string_view newTitle)
     {
         if (newTitle.empty()
             || newTitle.size() > 50)
@@ -187,7 +187,7 @@ namespace ElypsoEngine::Graphics
             return false;
         }
 
-        title = std::move(newTitle);
+        title = newTitle;
 
         return true;
     }

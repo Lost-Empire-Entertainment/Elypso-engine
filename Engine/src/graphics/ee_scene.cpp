@@ -105,7 +105,7 @@ namespace ElypsoEngine::Graphics
     }
 
     Scene* Scene::Initialize(
-        string&& title,
+        string_view title,
         u32 windowID,
         path&& escnPath)
     {
@@ -139,7 +139,7 @@ namespace ElypsoEngine::Graphics
             {
                 KalaWindowCore::ForceClose(
                     "Elypso Engine scene error",
-                    "Failed to create scene '" + title 
+                    "Failed to create scene '" + string(title) 
                     + "' because a nullptr engine window was found during scene existence check!");
             }
 
@@ -158,7 +158,7 @@ namespace ElypsoEngine::Graphics
                 if (sc->GetTitle() == title)
                 {
                     Log::Print(
-                        "Failed to create scene '" + title 
+                        "Failed to create scene '" + string(title) 
                         + "' because a scene with that title already exists in window '" 
                         + to_string(ew->GetID()) + "'!",
                         "EE_SCENE",
@@ -193,7 +193,7 @@ namespace ElypsoEngine::Graphics
         ew->sceneIDs.push_back(newID);
 
         Log::Print(
-			"Created new scene '" + title 
+			"Created new scene '" + string(title) 
             + "' with ID '" + to_string(newID) 
             + "' for engine window '" + to_string(windowID) + "'!",
 			"EE_SCENE",
@@ -245,7 +245,7 @@ namespace ElypsoEngine::Graphics
             LogType::LOG_INFO);
     }
 
-    void Scene::SetTitle(string&& newtitle)
+    void Scene::SetTitle(string_view newtitle)
     {
         if (newtitle.empty()
             || newtitle.length() > MAX_NAME_LENGTH)
@@ -292,7 +292,7 @@ namespace ElypsoEngine::Graphics
             }
         }
 
-        title = std::move(newtitle);
+        title = newtitle;
 
         Log::Print(
             "Set scene '" + to_string(ID) + "' title to '" + title + "'!",
@@ -300,7 +300,7 @@ namespace ElypsoEngine::Graphics
             LogType::LOG_SUCCESS);
     }
 
-    string_view Scene::GetTitle() const { return title; }
+    const string& Scene::GetTitle() const { return title; }
 
     void Scene::LoadScene()
     {
