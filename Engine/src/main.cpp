@@ -10,6 +10,7 @@
 
 #include "core/kw_core.hpp"
 #include "core/kw_input.hpp"
+#include "core/kw_messageloop.hpp"
 #include "graphics/kw_window.hpp"
 #include "graphics/kw_window_global.hpp"
 #include "core/kg_core.hpp"
@@ -24,8 +25,9 @@ using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
 using KalaWindow::Core::MAX_NAME_LENGTH;
-using KalaWindow::Core::Input;
 using KalaWindow::Core::KalaWindowCore;
+using KalaWindow::Core::Input;
+using KalaWindow::Core::MessageLoop;
 using KalaWindow::Graphics::Window_Global;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaGraphics::Core::KalaGraphicsCore;
@@ -169,6 +171,8 @@ int main()
             //start-of-frame timing logic
             FrameEarlyUpdate();
 
+            KalaGraphicsCore::SetDeltaTime(EngineCore::GetDeltaTime());
+
             //kalagraphics update
             GraphicsContext::EarlyUpdate();
 
@@ -212,6 +216,11 @@ int main()
                         "the process window '" + to_string(ew->GetWindowContextID()) + "' input was invalid! Reason: " + err);
                 }
 
+                gctx->SetPressedChar(MessageLoop::GetPressedChar());
+                gctx->SetBackspaceState(MessageLoop::GetBackspaceState());
+                gctx->SetTabState(MessageLoop::GetTabState());
+                gctx->SetReturnState(MessageLoop::GetReturnState());
+
                 gctx->SetHeldKeys(input->GetHeldKeys());
                 gctx->SetPressedKeys(input->GetPressedKeys());
                 gctx->SetReleasedKeys(input->GetReleasedKeys());
@@ -223,6 +232,7 @@ int main()
                 gctx->SetDraggingMouseButtons(input->GetDraggingMouseButtons());
 
                 gctx->SetScrollWheelDelta(input->GetScrollwheelDelta());
+                gctx->SetMousePos(input->GetMousePosition());
             }
 
             while (frameLogic.stepAccumulator >= FIXED_DELTA
