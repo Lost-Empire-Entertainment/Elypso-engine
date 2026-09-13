@@ -216,10 +216,15 @@ int main()
                         "the process window '" + to_string(ew->GetWindowContextID()) + "' input was invalid! Reason: " + err);
                 }
 
-                gctx->SetPressedChar(MessageLoop::GetPressedChar());
+                gctx->SetModifierChar(MessageLoop::GetModifierChar());
+
                 gctx->SetBackspaceState(MessageLoop::GetBackspaceState());
                 gctx->SetTabState(MessageLoop::GetTabState());
-                gctx->SetReturnState(MessageLoop::GetReturnState());
+
+                gctx->SetLeftArrowState(MessageLoop::GetLeftArrowState());
+                gctx->SetRightArrowState(MessageLoop::GetRightArrowState());
+                gctx->SetUpArrowState(MessageLoop::GetUpArrowState());
+                gctx->SetDownArrowState(MessageLoop::GetDownArrowState());
 
                 gctx->SetHeldKeys(input->GetHeldKeys());
                 gctx->SetPressedKeys(input->GetPressedKeys());
