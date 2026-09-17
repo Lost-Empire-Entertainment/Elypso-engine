@@ -278,7 +278,7 @@ namespace ElypsoEngine::Graphics
         {
             KalaWindowCore::ForceClose(
                 "Elypso engine window error",
-                "Failed to destroy window '" + to_string(ID) + "'! Reason: " + err);
+                "Failed to destroy window! Reason: " + err);
         }
     }
 

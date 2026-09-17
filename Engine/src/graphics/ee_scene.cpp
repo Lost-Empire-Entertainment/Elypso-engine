@@ -427,7 +427,7 @@ namespace ElypsoEngine::Graphics
         {
             KalaWindowCore::ForceClose(
                 "Elypso engine mesh error",
-                "Failed to destroy scene '" + to_string(ID) + "'! Reason: " + err);
+                "Failed to destroy scene! Reason: " + err);
         }
     }
 

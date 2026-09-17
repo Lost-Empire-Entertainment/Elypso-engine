@@ -299,7 +299,7 @@ namespace ElypsoEngine::Graphics
         {
             KalaWindowCore::ForceClose(
                 "Elypso engine entity error",
-                "Failed to destroy entity '" + to_string(ID) + "'! Reason: " + err);
+                "Failed to destroy entity! Reason: " + err);
         }
     }
 

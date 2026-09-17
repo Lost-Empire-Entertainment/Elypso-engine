@@ -16,7 +16,7 @@ This license applies to all source code, binaries and assets contained in the **
 You are free to download, install, and use the **Software** for the purpose of creating **User-Created Works**. You retain full ownership of **User-Created Works**. You owe **The Licensor** no fees or royalties for publishing, selling, or distributing **User-Created Works** created with the **Software**.
 
 ## 3. No Commercial Transfer
-You may not sell, sublicense, redistribute, or commercially transfer the **Software** or any part of the **Repository** (source, binaries, or bundled assets covered by this license), modified or unmodified. Commercial distribution is permitted only for **User-Created Works**.
+You may not sell, sublicense, redistribute, or otherwise commercially transfer the **Software** or any part of the **Repository** (source, binaries, or bundled assets covered by this license), modified or unmodified. Commercial distribution is permitted only for **User-Created Works**.
 
 ## 4. Modification & Attribution
 You may modify the **Repository** for personal or internal use. If you distribute modified versions (forks, public builds), you must:
