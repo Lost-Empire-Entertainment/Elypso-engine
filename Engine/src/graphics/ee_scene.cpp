@@ -8,6 +8,7 @@
 
 #include "core_utils.hpp"
 #include "log_utils.hpp"
+#include "string_utils.hpp"
 
 #include "core/kw_core.hpp"
 
@@ -21,7 +22,10 @@ using KalaHeaders::KalaCore::ContainsValue;
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
+using KalaHeaders::KalaString::IsStringInRange;
+
 using KalaWindow::Core::KalaWindowCore;
+using KalaWindow::Core::MIN_NAME_LENGTH;
 using KalaWindow::Core::MAX_NAME_LENGTH;
 
 using ElypsoEngine::Core::EngineCore;
@@ -122,11 +126,11 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        if (title.empty()
-            || title.length() > MAX_NAME_LENGTH)
+        if (!IsStringInRange(title, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
         {
             Log::Print(
-                "Failed to create scene for engine window '" + to_string(windowID) + "' because its title was empty or too long!",
+                "Failed to create scene for engine window '" 
+                + to_string(windowID) + "' because its title length was out of range!",
                 "EE_SCENE",
                 LogType::LOG_WARNING);
 
@@ -247,11 +251,11 @@ namespace ElypsoEngine::Graphics
 
     void Scene::SetTitle(string_view newtitle)
     {
-        if (newtitle.empty()
-            || newtitle.length() > MAX_NAME_LENGTH)
+        if (!IsStringInRange(newtitle, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
         {
             Log::Print(
-                "Failed to update scene '" + to_string(ID) + "' title because the new name was empty or too long!",
+                "Failed to update scene '" + to_string(ID) 
+                + "' title because the new name length was out of range!",
                 "EE_SCENE",
                 LogType::LOG_WARNING);
 

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "log_utils.hpp"
+#include "string_utils.hpp"
 
 #include "core/kw_core.hpp"
 #include "core/kw_input.hpp"
@@ -24,6 +25,9 @@
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
+using KalaHeaders::KalaString::IsStringInRange;
+
+using KalaWindow::Core::MIN_NAME_LENGTH;
 using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
@@ -278,19 +282,12 @@ int main()
 
 void EngineInit()
 {
-    if (appConfig.title.empty())
+    if (!IsStringInRange(appConfig.title, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
     {
         KalaWindowCore::ForceClose(
             "Elypso Engine main loop error",
             "Failed to initialize Elypso Engine because "
-            "program title was empty!");
-    }
-    if (appConfig.title.size() > MAX_NAME_LENGTH)
-    {
-        KalaWindowCore::ForceClose(
-            "Elypso Engine main loop error",
-            "Failed to initialize Elypso Engine because "
-            "program title was too long!");
+            "program title length was out of range!");
     }
         
     Window_Global::SetAppName(string(appConfig.title));

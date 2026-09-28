@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "log_utils.hpp"
+#include "string_utils.hpp"
 
 #include "core/kw_core.hpp"
 #include "graphics/kw_window.hpp"
@@ -24,7 +25,10 @@
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
+using KalaHeaders::KalaString::IsStringInRange;
+
 using KalaWindow::Core::KalaWindowCore;
+using KalaWindow::Core::MIN_NAME_LENGTH;
 using KalaWindow::Core::MAX_NAME_LENGTH;
 using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::WindowData;
@@ -74,11 +78,10 @@ namespace ElypsoEngine::Graphics
         vec2 size,
         EngineWindow* parent)
     {
-        if (windowTitle.empty()
-            || windowTitle.size() > MAX_NAME_LENGTH)
+        if (!IsStringInRange(windowTitle, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
         {
             Log::Print(
-                "Failed to initialize engine window because its name was empty or too long!",
+                "Failed to initialize engine window because its name was out of range!",
                 "EE_WINDOW",
                 LogType::LOG_WARNING);
 
