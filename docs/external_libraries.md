@@ -13,9 +13,3 @@ These libraries are used for various purposes, their licenses are included in th
 | [KalaAudio](https://github.com/KalaKit/KalaAudio)       | Audio playback and audio listener. |
 | [KalaLua](https://github.com/KalaKit/KalaLua)           | Wrapper library for Lua. |
 | [KalaHeaders](https://github.com/KalaKit/KalaHeaders)   | Lightweight, independent header-only scripts for various uses. |
-
-## Not owned by Lost Empire Entertainment
-
-| Library                                                        | Use case                                             |
-|----------------------------------------------------------------|------------------------------------------------------|
-| [Vulkan tools and headers](https://www.lunarg.com/vulkan-sdk/) | Tools and headers used for Vulkan functionality      |
