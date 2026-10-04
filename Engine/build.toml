@@ -1,5 +1,5 @@
 [project]
-name="elypso-engine"
+name="elypsoengine"
 version="0-0-1"
 kmake="project.kmake"
 
@@ -32,10 +32,12 @@ ext_lua="../external/lua"
 ext_ma="../external/miniaudio"
 ext_vk="../external/vulkan"
 ext_spv="../external/spirv-reflect"
+kg_files="../../kalagraphics/files"
 
 [windows-sync]
 kw_stuff=[ "${dir_kw}", "${ext_kw}", "copy" ]
 kg_stuff=[ "${dir_kg}", "${ext_kg}", "copy" ]
+kg_files=[ "${kg_files}", "${ext_kg}/files", "copy" ]
 kp_stuff=[ "${dir_kp}", "${ext_kp}", "copy" ]
 ks_stuff=[ "${dir_ks}", "${ext_ks}", "copy" ]
 kl_stuff=[ "${dir_kl}", "${ext_kl}", "copy" ]
@@ -90,6 +92,7 @@ vk_spv_stuff=[ "${ext_spv}", "build/${version}/spirv-reflect", "copy" ]
 [windows-gnu-sync]
 kw_stuff=[ "${dir_kw}", "${ext_kw}", "copy" ]
 kg_stuff=[ "${dir_kg}", "${ext_kg}", "copy" ]
+kg_files=[ "${kg_files}", "${ext_kg}/files", "copy" ]
 kp_stuff=[ "${dir_kp}", "${ext_kp}", "copy" ]
 ks_stuff=[ "${dir_ks}", "${ext_ks}", "copy" ]
 kl_stuff=[ "${dir_kl}", "${ext_kl}", "copy" ]
@@ -145,6 +148,7 @@ vk_win_stuff=[ "${ext_vk}", "build/${version}/vulkan", "copy" ] # Only windows-g
 [linux-sync]
 kw_stuff=[ "${dir_kw}", "${ext_kw}", "copy" ]
 kg_stuff=[ "${dir_kg}", "${ext_kg}", "copy" ]
+kg_files=[ "${kg_files}", "${ext_kg}/files", "copy" ]
 kp_stuff=[ "${dir_kp}", "${ext_kp}", "copy" ]
 ks_stuff=[ "${dir_ks}", "${ext_ks}", "copy" ]
 kl_stuff=[ "${dir_kl}", "${ext_kl}", "copy" ]
