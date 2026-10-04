@@ -1,31 +1,21 @@
-# Prerequisites for building from source
+# Build from source
 
-This document is only applicable if you are building this repository from source, if you see this document in a shared release package then you can ignore it.
+This document is only applicable if you are building this repository from source, if you see this document in a release package then you can ignore it.
 
-## Windows only
+## Prerequisites
 
-Download Visual Studio or Visual Studio Build Tools:
-https://visualstudio.microsoft.com/vs/
+- [Download KalaMake (1.4.0 or newer)](https://github.com/KalaKit/KalaMake/releases).
+- [Download Python (3.11 or newer)](https://www.python.org/downloads/).
+- [Clang (this or other versions, older versions should work too)](https://github.com/llvm/llvm-project/releases/tag/llvmorg-23.1.2)
+- [Visual Studio or Build tools 2022/2026 (untested on older versions)](https://visualstudio.microsoft.com/downloads/)
 
-once its installed run the visual studio installer exe and enable this checkbox:
-- desktop development with c++
+*Note*: Visual Studio or Build Tools also requires you to select `Desktop development with C++` and enable `C++ ATL` and `C++ MFC` during installation or else some projects will not compile correctly!
 
-and make sure these are toggled on at the right side panel:
-- msvc build tools
-- windows 11 sdk
-- c++ atl
-- c++ mfc
-- c++ clang
+## How to build from source
 
-## Windows and Linux
+1) open your console in the folder where `project.kmake` is at.
+2) type `python build.py sync` to sync dependencies, this needs to be done only once unless build.toml or project.kmake changes
+3) type `python build.py build` to build all applicable targets for your OS (windows on windows, or windows-gnu and linux on linux),
+add `windows`, `windows-gnu` or `linux` to target a specific build type
 
-[Download KalaMake](https://github.com/KalaKit/KalaMake/releases) and get the latest Windows or Linux build.
-
-# How to build from source
-
-1) open your console in the folder where project.kmake is at.
-2) type kalamake --compile presetname
-
-Presetname can be release-windows, debug-windows, release-linux or debug-linux.
-
-The compiled executable/binary/cli and its files will be placed to `build/` inside the folder with the name of the preset you chose.
+The compiled executable/binary and its files will be placed to `build/` inside the version folder with the name of the target you chose.

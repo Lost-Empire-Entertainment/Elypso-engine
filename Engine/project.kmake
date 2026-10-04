@@ -13,7 +13,7 @@ compiler: clang++
 standard: c++20
 binarytype: static
 sources: "src"
-headers: "include", "../external/kalaheaders/include"
+headers: "include", "../external/kalaheaders/include", "../external/kalawindow/include", "../external/kalagraphics/include", "../external/kalaphysics/include", "../external/kalaaudio/include", "../external/kalalua/include"
 defines: LIB_STATIC
 warninglevel: normal
 customflags: export-compile-commands, export-vscode-sln
@@ -22,36 +22,30 @@ customflags: export-compile-commands, export-vscode-sln
 binaryname: ${name_bin}d
 buildtype: debug
 buildpath: "${dir_debug}windows"
-headers: "../external/kalawindow/debug-windows/include", "../external/kalagraphics/debug-windows/include", "../external/kalaphysics/debug-windows/include", "../external/kalaaudio/debug-windows/include", "../external/kalalua/debug-windows/include"
 
 #profile release-windows
 binaryname: ${name_bin}
 buildtype: minsizerel
 buildpath: "${dir_release}windows"
-headers: "../external/kalawindow/release-windows/include", "../external/kalagraphics/release-windows/include", "../external/kalaphysics/release-windows/include", "../external/kalaaudio/release-windows/include", "../external/kalalua/release-windows/include"
 
 #profile debug-windows-gnu
 targettype: windows-gnu
 binaryname: ${name_bin}-gnud
 buildtype: debug
 buildpath: "${dir_debug}windows-gnu"
-headers: "../external/kalawindow/debug-windows-gnu/include", "../external/kalagraphics/debug-windows-gnu/include", "../external/kalaphysics/debug-windows-gnu/include", "../external/kalaaudio/debug-windows-gnu/include", "../external/kalalua/debug-windows-gnu/include"
 
 #profile release-windows-gnu
 targettype: windows-gnu
 binaryname: ${name_bin}-gnu
 buildtype: minsizerel
 buildpath: "${dir_release}windows-gnu"
-headers: "../external/kalawindow/release-windows-gnu/include", "../external/kalagraphics/release-windows-gnu/include", "../external/kalaphysics/release-windows-gnu/include", "../external/kalaaudio/release-windows-gnu/include", "../external/kalalua/release-windows-gnu/include"
 
 #profile debug-linux
 binaryname: lib${name_bin}d
 buildtype: debug
 buildpath: "${dir_debug}linux"
-headers: "../external/kalawindow/debug-linux/include", "../external/kalagraphics/debug-linux/include", "../external/kalaphysics/debug-linux/include", "../external/kalaaudio/debug-linux/include", "../external/kalalua/debug-linux/include"
 
 #profile release-linux
 binaryname: lib${name_bin}
 buildtype: minsizerel
 buildpath: "${dir_release}linux"
-headers: "../external/kalawindow/release-linux/include", "../external/kalagraphics/release-linux/include", "../external/kalaphysics/release-linux/include", "../external/kalaaudio/release-linux/include", "../external/kalalua/release-linux/include"
