@@ -1,51 +1,46 @@
 //Build script for use with kalamake. Read more at https://github.com/kalakit/kalamake
 
-#version 1.0
+#version 2.0
 
 #references
-name_bin: elypsoengine
-dir_release: build/temp/release-
-dir_debug: build/temp/debug-
+name_bin: "elypsoengine"
+dir_release: "build/temp/release-"
+dir_debug: "build/temp/debug-"
 
 #global
-compilerlauncher: ccache
-compiler: clang++
-standard: c++20
-binarytype: static
+compilerlauncher: "ccache"
+compiler: "clang++"
+standard: "c++20"
+binarytype: "static"
 sources: "src"
-headers: "include", "../external/kalaheaders/include", "../external/kalawindow/include", "../external/kalagraphics/include", "../external/kalaphysics/include", "../external/kalaaudio/include", "../external/kalalua/include"
-defines: LIB_STATIC
-warninglevel: normal
-customflags: export-compile-commands, export-vscode-sln
+headers:
+    "include",
+    "../external/kalaheaders/include",
+    "../external/kalawindow/include",
+    "../external/kalagraphics/include",
+    "../external/kalaphysics/include",
+    "../external/kalaaudio/include",
+    "../external/kalalua/include"
+defines: "LIB_STATIC"
+warninglevel: "normal"
+customflags: "export-compile-commands", "export-vscode-sln"
 
 #profile debug-windows
-binaryname: ${name_bin}d
-buildtype: debug
+binaryname: "${name_bin}d"
+buildtype: "debug"
 buildpath: "${dir_debug}windows"
 
 #profile release-windows
-binaryname: ${name_bin}
-buildtype: minsizerel
+binaryname: "${name_bin}"
+buildtype: "minsizerel"
 buildpath: "${dir_release}windows"
 
-#profile debug-windows-gnu
-targettype: windows-gnu
-binaryname: ${name_bin}-gnud
-buildtype: debug
-buildpath: "${dir_debug}windows-gnu"
-
-#profile release-windows-gnu
-targettype: windows-gnu
-binaryname: ${name_bin}-gnu
-buildtype: minsizerel
-buildpath: "${dir_release}windows-gnu"
-
 #profile debug-linux
-binaryname: lib${name_bin}d
-buildtype: debug
+binaryname: "lib${name_bin}d"
+buildtype: "debug"
 buildpath: "${dir_debug}linux"
 
 #profile release-linux
-binaryname: lib${name_bin}
-buildtype: minsizerel
+binaryname: "lib${name_bin}"
+buildtype: "minsizerel"
 buildpath: "${dir_release}linux"
