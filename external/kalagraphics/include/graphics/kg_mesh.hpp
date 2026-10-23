@@ -113,11 +113,16 @@ namespace KalaGraphics::Graphics
         P_NONE = 0,
         P_CENTER = 1,
 
-        P_BOTTOM_LEFT = 2,
-        P_BOTTOM_RIGHT = 3,
+        P_LEFT_CENTER = 2,
+        P_RIGHT_CENTER = 3,
+        P_TOP_CENTER = 4,
+        P_BOTTOM_CENTER = 5,
 
-        P_TOP_LEFT = 4,
-        P_TOP_RIGHT = 5
+        P_BOTTOM_LEFT = 6,
+        P_BOTTOM_RIGHT = 7,
+
+        P_TOP_LEFT = 8,
+        P_TOP_RIGHT = 9
     };
 
     struct LIB_API Vertex

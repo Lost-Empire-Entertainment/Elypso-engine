@@ -13,10 +13,14 @@
 #include "core_utils.hpp"
 #include "math_utils.hpp"
 
+#include "core/kp_registry.hpp"
+
 namespace KalaPhysics::Collision
 {
     using KalaHeaders::KalaMath::Transform3D;
     using KalaHeaders::KalaMath::vec3;
+
+    using KalaPhysics::Core::KalaPhysicsRegistry;
 
     using std::vector;
     using std::bitset;
@@ -44,79 +48,30 @@ namespace KalaPhysics::Collision
         CT_MESH    = 4
     };
 
-    struct LIB_API StationaryData
+    struct LIB_API Vertex
     {
-        //determines resistance to acceleration and collision impulses,
-        //clamped from 0.001f to 10000.0f in kilograms
-        f32 mass = 1.0f;
-        //controls resistance to sliding during contact
-        //clamped from 0.0f to 1.0f
-        f32 friction = 0.5f;
-        //how much will this object bounce,
-        //clamped from 0.0f to 1.0f
-        f32 restitution = 0.0f;
-    };
+        //X, Y, Z
+        vec3 pos{};
+        //X, Y, Z
+        vec3 normal{};
 
-    struct LIB_API LinearMotionData
-    {
-        //describes translational motion,
-        //clamped from -10000.0f to 10000.0f in meters per second
-        vec3 linearVelocity{};
-        //accumulates applied forces for the next physics step,
-        //clamped from -10000.0f to 10000.0f in newtons
-        vec3 force{};
-    };
-
-    struct LIB_API AngularMotionData
-    {
-        //describes rotational motion
-        //clamped from -10000.0f to 10000.0f in radians per second
-        vec3 angularVelocity{};
-        //accumulates rotational forces
-        //clamped from -10000.0f to 10000.0f in newton-meters
-        vec3 torque{};
-    };
-
-    struct LIB_API RuntimeData
-    {
-        //current linear speed in meters per second
-        f32 speed{};
-        //current angular speed in radians per second
-        f32 angularSpeed{};
-        //current linear acceleration in meters per second squared
-        f32 linearAcceleration{};
-        //current angular acceleration in radians per second squared
-        f32 angularAcceleration{};
+        bool operator==(const Vertex& other) const = default;
     };
 
     class LIB_API Collider
     {
-    friend class CollisionHandler;
+    friend class CollisionManager;
 	friend struct default_delete<Collider>;
     public:
-        //Create a new collider,
-        //vertices and indices are only allowed to be set
-        //if the collider is a mesh type
+        static KalaPhysicsRegistry<Collider>& GetRegistry();
+
+        //Create a new collider, shape defaults to given collider type unless mesh is provided,
+        //in that case it defaults to a sphere unless overridden its vertices and indices are overridden
         static Collider* Initialize(
             ColliderType colliderType,
-            const Transform3D& transform,
-            const vector<vec3>& vertices = {},
-            const vector<u32>& indices = {});
+            const Transform3D& transform = {});
 
         u32 GetID() const;
-
-        u8 GetMovementRotationLock() const;
-        //Set the bitflag values for the movement and rotation lock states.
-        //Bit states:
-        //- 0: movement x lock
-        //- 1: movement y lock
-        //- 2: movement z lock
-        //- 3: movement state - 0 = local, 1 = global
-        //- 4: rotation x lock
-        //- 5: rotation y lock
-        //- 6: rotation z lock
-        //- 7: rotation state - 0 = local, 1 = global
-        void SetMovementRotationLock(u8 newValue);
 
         const bitset<256>& GetCollisionLayers() const;
         //Override all collision layer states
@@ -133,37 +88,30 @@ namespace KalaPhysics::Collision
         //Does this shape count as a trigger, disabled by default
         void SetTriggerState(bool newValue);
 
+        Transform3D& GetTransform();
+
         ColliderType GetColliderType() const;
         //Setting the collider type at runtime from any collider except mesh to mesh type
         //will keep the previous collider mesh, but if you set mesh to any other type
         //then the vertices and indices of the mesh shape will be set to that mesh shape
         void SetColliderType(ColliderType newValue);
 
-        Transform3D& GetTransform();
-
-        const vector<vec3>& GetVertices() const;
+        const vector<Vertex>& GetVertices() const;
         //Update existing vertices for this collider,
         //only allowed to be called if the collider is a mesh type
-        void SetVertices(const vector<vec3>& newValue);
+        void SetVertices(const vector<Vertex>& newValue);
 
         const vector<u32>& GetIndices() const;
         //Update existing indices for this collider,
         //only allowed to be called if the collider is a mesh type
         void SetIndices(const vector<u32>& newValue);
 
-        //Returns the value for who collided against this collider
-        void OnCollisionEvent(const function<void(u32)>& newValue);
-        //Returns the value for who started triggering with this collider
-        void OnTriggerEnterEvent(const function<void(u32)>& newValue);
-        //Returns the value for who stayed within the trigger of this collider
-        void OnTriggerStayEvent(const function<void(u32)>& newValue);
-        //Returns the value for who stopped triggered with this collider
-        void OnTriggerExitEvent(const function<void(u32)>& newValue);
-
-        StationaryData& GetStationaryData();
-        LinearMotionData& GetLinearMotionData();
-        AngularMotionData& GetAngularMotionData();
-        const RuntimeData& GetRuntimeData() const;
+        void SetOnCollisionEnterEvent(const function<void(u32)>& newValue);
+        void SetOnCollisionStayEvent(const function<void(u32)>& newValue);
+        void SetOnCollisionExitEvent(const function<void(u32)>& newValue);
+        void SetOnTriggerEnterEvent(const function<void(u32)>& newValue);
+        void SetOnTriggerStayEvent(const function<void(u32)>& newValue);
+        void SetOnTriggerExitEvent(const function<void(u32)>& newValue);
 
         void Destroy();
     private:
@@ -179,20 +127,17 @@ namespace KalaPhysics::Collision
         bool isEnabled{};
         bool isTrigger{};
 
-        ColliderType colliderType{};
         Transform3D transform{};
-        Transform3D lastTransform{};
-        vector<vec3> vertices{};
+
+        ColliderType colliderType{};
+        vector<Vertex> vertices{};
         vector<u32> indices{};
 
-        function<void(u32)> collisionEvent{};
-        function<void(u32)> triggerEnterEvent{};
-        function<void(u32)> triggerStayEvent{};
-        function<void(u32)> triggerExitEvent{};
-
-        StationaryData stationaryData{};
-        LinearMotionData linearMotionData{};
-        AngularMotionData angularMotionData{};
-        RuntimeData runtimeData{};
+        function<void(u32)> onCollisionEnter{};
+        function<void(u32)> onCollisionStay{};
+        function<void(u32)> onCollisionExit{};
+        function<void(u32)> onTriggerEnter{};
+        function<void(u32)> onTriggerStay{};
+        function<void(u32)> onTriggerExit{};
     };
 }

@@ -16,6 +16,12 @@
 #include <algorithm>
 #include <type_traits>
 
+namespace KalaPhysics::Collision
+{
+	class Collider;
+	class RigidBody;
+};
+
 namespace KalaPhysics::Core
 {
 	using std::unordered_map;
@@ -39,6 +45,8 @@ namespace KalaPhysics::Core
 		requires is_class_v<T>
 	struct LIB_API KalaPhysicsRegistry
 	{
+	friend class KalaPhysics::Collision::Collider;
+	friend class KalaPhysics::Collision::RigidBody;
 	public:
 		//Get a runtime iteration safe list of all
 		//created object pointers of this registry

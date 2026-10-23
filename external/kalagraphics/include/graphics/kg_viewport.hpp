@@ -42,15 +42,19 @@ namespace KalaGraphics::Graphics
 
     enum class ViewportAnchorPosition : u8
     {
-        P_DEFAULT = 0,
+        P_NONE = 0,
+        P_CENTER = 1,
 
-        P_BOTTOM_LEFT = 1,
-        P_BOTTOM_RIGHT = 2,
+        P_LEFT_CENTER = 2,
+        P_RIGHT_CENTER = 3,
+        P_TOP_CENTER = 4,
+        P_BOTTOM_CENTER = 5,
 
-        P_TOP_LEFT = 3,
-        P_TOP_RIGHT = 4,
-        
-        P_CENTER = 5
+        P_BOTTOM_LEFT = 6,
+        P_BOTTOM_RIGHT = 7,
+
+        P_TOP_LEFT = 8,
+        P_TOP_RIGHT = 9
     };
 
     enum class ViewportStaticSize : u8
@@ -348,11 +352,15 @@ namespace KalaGraphics::Graphics
 
         ViewportType viewportType{};
 
+        vec2 posCenter{};
+        vec2 posLeftCenter{};
+        vec2 posRightCenter{};
+        vec2 posTopCenter{};
+        vec2 posBottomCenter{};
         vec2 posTopLeft{};
         vec2 posTopRight{};
         vec2 posBottomLeft{};
         vec2 posBottomRight{};
-        vec2 posCenter{};
 
         //always starts at 1, can never be 0 except for root viewport
         u8 drawOrderIndex = 1;
