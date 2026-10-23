@@ -36,6 +36,7 @@
 #include <functional>
 #include <vector>
 #include <filesystem>
+#include <source_location>
 
 #include "core_utils.hpp"
 
@@ -46,6 +47,7 @@ namespace KalaGraphics::Core
     using std::function;
     using std::vector;
     using std::filesystem::path;
+    using std::source_location;
 
     static constexpr u8 MIN_NAME_LENGTH = 4;
     static constexpr u8 MAX_NAME_LENGTH = 64;
@@ -64,7 +66,10 @@ namespace KalaGraphics::Core
         static void SetDeltaTime(f64 newValue);
 
         //External handler for force close, overrides local version so external version can do its own action
-        static void SetExternalHandler(function<void(string, string)>&& externalHandler);
+        static void SetExternalHandler(function<void(
+            string, 
+            string,
+            const source_location&)>&& externalHandler);
 
         //Force-closes the application and gives a breakpoint, good for hard stops or bad user errors,
         //assigning a callback via SetExternalHandler will always use whatever is assigned there,
@@ -72,6 +77,7 @@ namespace KalaGraphics::Core
 		KNORETURN
         static void ForceClose(
 			string_view title,
-			string_view reason);
+			string_view reason,
+            const source_location& location = source_location::current());
     };
 }
