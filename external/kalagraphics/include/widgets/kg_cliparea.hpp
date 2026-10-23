@@ -12,7 +12,7 @@
 
 #include "core/kg_registry.hpp"
 
-namespace KalaGraphics::PrimitiveWidgets
+namespace KalaGraphics::Widgets
 {
     using KalaGraphics::Core::KalaGraphicsRegistry;
 

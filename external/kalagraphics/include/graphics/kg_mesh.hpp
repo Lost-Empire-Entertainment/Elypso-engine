@@ -30,14 +30,9 @@ using VmaAllocation = VmaAllocation_T*;
 struct VkDescriptorSet_T;
 using VkDescriptorSet = VkDescriptorSet_T*;
 
-namespace KalaGraphics::PrimitiveWidgets
+namespace KalaGraphics::Widgets
 {
     class Text;
-}
-
-namespace KalaGraphics::CompositeWidgets
-{
-    class Button;
 }
 
 namespace KalaGraphics::Graphics
@@ -221,8 +216,7 @@ namespace KalaGraphics::Graphics
     friend class Camera;
     friend class Texture;
     friend class Material;
-    friend class KalaGraphics::PrimitiveWidgets::Text;
-    friend class KalaGraphics::CompositeWidgets::Button;
+    friend class KalaGraphics::Widgets::Text;
     friend struct default_delete<Mesh>;
     public:
         KNODISCARD
@@ -265,9 +259,6 @@ namespace KalaGraphics::Graphics
 
         KNODISCARD
         u32 GetTextWidgetID() const;
-
-        KNODISCARD
-        u32 GetButtonWidgetID() const;
 
         //Returns true if this 2D or 3D mesh is
         //currently being detected by the Hit Test logic
@@ -392,7 +383,6 @@ namespace KalaGraphics::Graphics
         u32 materialID{};
 
         u32 textWidgetID{};
-        u32 buttonWidgetID{};
 
         u16 drawOrderIndex{};
 

@@ -34,14 +34,9 @@ using VkImageView = VkImageView_T*;
 struct VkCommandBuffer_T;
 using VkCommandBuffer = VkCommandBuffer_T*;
 
-namespace KalaGraphics::PrimitiveWidgets
+namespace KalaGraphics::Widgets
 {
     class Text;
-}
-
-namespace KalaGraphics::CompositeWidgets
-{
-    class Button;
 }
 
 namespace KalaGraphics::Graphics
@@ -149,8 +144,7 @@ namespace KalaGraphics::Graphics
     friend class Shader;
     friend class Mesh;
     friend class Material;
-    friend class KalaGraphics::PrimitiveWidgets::Text;
-    friend class KalaGraphics::CompositeWidgets::Button;
+    friend class KalaGraphics::Widgets::Text;
     friend struct default_delete<Texture>;
     public:
         KNODISCARD
@@ -179,9 +173,6 @@ namespace KalaGraphics::Graphics
 
         KNODISCARD
         u32 GetTextWidgetID() const;
-
-        KNODISCARD
-        u32 GetButtonWidgetID() const;
 
         //converts linear RGB to sRGB color
         vec4 ToSRGB(vec4&& linearColor);
@@ -258,7 +249,6 @@ namespace KalaGraphics::Graphics
         vector<pair<u32, array<bool, 11>>> materialIDs{};
 
         u32 textWidgetID{};
-        u32 buttonWidgetID{};
 
         bool isRootTexture{};
 

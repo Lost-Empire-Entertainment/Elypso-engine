@@ -36,15 +36,10 @@ namespace KalaGraphics::Import
 	class ImportShader;
 }
 
-namespace KalaGraphics::PrimitiveWidgets
+namespace KalaGraphics::Widgets
 {
 	class Text;
 	class ClipArea;
-}
-
-namespace KalaGraphics::CompositeWidgets
-{
-	class Button;
 }
 
 namespace KalaGraphics::Core
@@ -82,9 +77,8 @@ namespace KalaGraphics::Core
 	friend class KalaGraphics::Import::ImportMesh;
 	friend class KalaGraphics::Import::ImportFont;
 	friend class KalaGraphics::Import::ImportShader;
-	friend class KalaGraphics::PrimitiveWidgets::Text;
-	friend class KalaGraphics::PrimitiveWidgets::ClipArea;
-	friend class KalaGraphics::CompositeWidgets::Button;
+	friend class KalaGraphics::Widgets::Text;
+	friend class KalaGraphics::Widgets::ClipArea;
 	public:
 		//Get a runtime iteration safe list of all
 		//created object pointers of this registry

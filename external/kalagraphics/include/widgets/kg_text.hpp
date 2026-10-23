@@ -22,12 +22,7 @@ namespace KalaGraphics::Graphics
     class Viewport;
 }
 
-namespace KalaGraphics::CompositeWidgets
-{
-    class Button;
-}
-
-namespace KalaGraphics::PrimitiveWidgets
+namespace KalaGraphics::Widgets
 {
     using KalaHeaders::KalaMath::vec2;
 
@@ -154,7 +149,6 @@ namespace KalaGraphics::PrimitiveWidgets
     class LIB_API Text
     {
     friend class KalaGraphics::Graphics::Viewport;
-    friend class KalaGraphics::CompositeWidgets::Button;
     friend struct default_delete<Text>;
     public:
         KNODISCARD
@@ -328,8 +322,6 @@ namespace KalaGraphics::PrimitiveWidgets
         u32 shaderID{};
         u32 textureID{};
         u32 meshID{};
-        
-        u32 buttonWidgetID{};
 
         bool canEdit{};
         bool isTextDirty = true;
