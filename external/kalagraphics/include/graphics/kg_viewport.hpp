@@ -331,8 +331,7 @@ namespace KalaGraphics::Graphics
         vector<u32> sorted3DOpaqueMeshes{};
         vector<u32> sorted3DTransparentMeshes{};
 
-        vector<u32> sorted2DOpaqueMeshes{};
-        vector<u32> sorted2DTransparentMeshes{};
+        vector<u32> sorted2DMeshes{};
 
         array<RootShader, 3> rootShaderTable{};
 
