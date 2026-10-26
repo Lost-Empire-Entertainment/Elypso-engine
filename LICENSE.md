@@ -1,31 +1,11 @@
-# Lost Empire Entertainment Free License 1.0
+Copyright (c) 2026 Lost Empire Entertainment
 
-Copyright (c) 2026 **Lost Empire Entertainment**
+This software is provided 'as-is', without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 
-## Definitions
-- **The Licensor** refers to the copyright holder(s).
-- **Licensor-Owned content** refers to all content created by **The Licensor** found within the source repository of this software/library and all distributed packages of this software/library that aren't licensed under another license.
-- **External Content** refers to content found within the `/external` directory.
-- **User-Created Work** refers to any application, game, mod, asset pack, or other derivative output developed using the **Licensor-Owned content**, excluding the **Licensor-Owned content**.
+Permission is granted to anyone to use this software for any purpose, including commercial applications, and to alter it and redistribute it freely, subject to the following restrictions:
 
-## 1. Scope
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
 
-This license applies to all source code, binaries and assets contained in the **Licensor-Owned content** excluding **User-Created Work** and **External Content**.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 
-## 2. Free Use
-You are free to download, install, and use the **Licensor-Owned content** for the purpose of creating **User-Created Works**. You retain full ownership of **User-Created Works**. You owe **The Licensor** no fees or royalties for publishing, selling, or distributing **User-Created Works** created with the **Licensor-Owned content**.
-
-## 3. No Commercial Transfer
-You may not sell, sublicense, redistribute, or otherwise commercially transfer the **Licensor-Owned content** in any modified or unmodified shape. Commercial distribution is permitted only for **User-Created Works**.
-
-## 4. Modification & Attribution
-You may modify the **Licensor-Owned content** for personal or internal use. If you distribute modified versions (forks, public builds), you must:
-- Clearly attribute **The Licensor** as original developers.
-- Retain all copyright and license notices.
-- Prominently state your version is modified and not official.
-
-## 5. No Warranty & Limitation of Liability
-THE LICENSOR-OWNED CONTENT IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. IN NO EVENT SHALL THE LICENSOR OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR LIABILITY ARISING FROM USE OF THE LICENSOR-OWNED CONTENT, OR USER-CREATED WORKS, WHETHER IN CONTRACT, TORT, OR OTHERWISE.
-
-## 6. Termination
-This license terminates automatically upon breach. Upon termination, you must cease use/distribution of the **Licensor-Owned content**, but may continue using and distributing **User-Created Works** created prior to termination.
+3. This notice may not be removed or altered from any source distribution.
