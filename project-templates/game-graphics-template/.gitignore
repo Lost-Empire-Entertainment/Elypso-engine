@@ -1,0 +1,18 @@
+# IDE stuff
+out/
+build/
+.vs/
+.vscode/
+.cache/
+compile_commands.json
+
+# Large files
+*.pdb
+*.obj
+*.exp
+
+# Misc
+*.spv # Vulkan shader files
+*.exe
+*.ilk
+*.log

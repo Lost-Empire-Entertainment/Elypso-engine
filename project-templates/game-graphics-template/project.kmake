@@ -1,0 +1,190 @@
+//Build script for use with kalamake. Read more at https://github.com/kalakit/kalamake
+
+#version 2.0
+
+#references
+name_bin: "game-graphics-template"
+
+dir_debug: "build/temp/debug-"
+dir_release: "build/temp/release-"
+
+//
+// ELYPSO ENGINE
+//
+name_ee: "elypsoengine"
+dir_ee: "../../Engine/build/0-0-1"
+//
+// KALAWINDOW
+//
+name_kw: "kalawindow"
+dir_kw: "../../external/kalawindow"
+//
+// KALAGRAPHICS
+//
+name_kg: "kalagraphics"
+dir_kg: "../../external/kalagraphics"
+//
+// KALAPHYSICS
+//
+name_kp: "kalaphysics"
+dir_kp: "../../external/kalaphysics"
+//
+// KALAAUDIO
+//
+name_ka: "kalaaudio"
+dir_ka: "../../external/kalaaudio"
+//
+// KALALUA
+//
+name_kl: "kalalua"
+dir_kl: "../../external/kalalua"
+//
+// LUA
+//
+name_l: "lua"
+dir_l: "../../external/lua"
+//
+// MINIAUDIO
+//
+name_ma: "miniaudio"
+dir_ma: "../../external/miniaudio"
+//
+// SPIRV-REFLECT
+//
+name_sp: "spirv-reflect"
+dir_sp: "../../external/spirv-reflect"
+//
+// HARFBUZZ
+//
+name_hb: "harfbuzz"
+dir_hb: "../../external/harfbuzz"
+//
+// CGLTF
+//
+name_cg: "cgltf"
+dir_cg: "../../external/cgltf"
+//
+// LODEPNG
+//
+name_lp: "lodepng"
+dir_lp: "../../external/lodepng"
+
+links_win_deb:
+    "${dir_ee}/${name_ee}d.lib",
+    "${dir_kw}/${name_kw}d.lib",
+    "${dir_kg}/${name_kg}d.lib",
+    "${dir_kp}/${name_kp}d.lib",
+    "${dir_ka}/${name_ka}d.lib",
+    "${dir_kl}/${name_kl}d.lib",
+    "${dir_l}/${name_l}d.lib",
+    "${dir_ma}/${name_ma}d.lib",
+    "${dir_sp}/${name_sp}d.lib",
+    "${dir_hb}/${name_hb}d.lib",
+    "${dir_cg}/${name_cg}d.lib",
+    "${dir_lp}/${name_lp}d.lib"
+links_win_rel:
+    "${dir_ee}/${name_ee}.lib",
+    "${dir_kw}/${name_kw}.lib",
+    "${dir_kg}/${name_kg}.lib",
+    "${dir_kp}/${name_kp}.lib",
+    "${dir_ka}/${name_ka}.lib",
+    "${dir_kl}/${name_kl}.lib",
+    "${dir_l}/${name_l}.lib",
+    "${dir_ma}/${name_ma}.lib",
+    "${dir_sp}/${name_sp}.lib",
+    "${dir_hb}/${name_hb}.lib",
+    "${dir_cg}/${name_cg}.lib",
+    "${dir_lp}/${name_lp}.lib"
+links_lin_deb:
+    "${dir_ee}/lib${name_ee}d.a",
+    "${dir_kw}/lib${name_kw}d.a",
+    "${dir_kg}/lib${name_kg}d.a",
+    "${dir_kp}/lib${name_kp}d.a",
+    "${dir_ka}/lib${name_ka}d.a",
+    "${dir_kl}/lib${name_kl}d.a",
+    "${dir_l}/lib${name_l}d.a",
+    "${dir_ma}/lib${name_ma}d.a",
+    "${dir_sp}/lib${name_sp}d.a",
+    "${dir_hb}/lib${name_hb}d.a",
+    "${dir_cg}/lib${name_cg}d.a",
+    "${dir_lp}/lib${name_lp}d.a"
+links_lin_rel:
+    "${dir_ee}/lib${name_ee}.a",
+    "${dir_kw}/lib${name_kw}.a",
+    "${dir_kg}/lib${name_kg}.a",
+    "${dir_kp}/lib${name_kp}.a",
+    "${dir_ka}/lib${name_ka}.a",
+    "${dir_kl}/lib${name_kl}.a",
+    "${dir_l}/lib${name_l}.a",
+    "${dir_ma}/lib${name_ma}.a",
+    "${dir_sp}/lib${name_sp}.a",
+    "${dir_hb}/lib${name_hb}.a",
+    "${dir_cg}/lib${name_cg}.a",
+    "${dir_lp}/lib${name_lp}.a"
+
+links_win_only:
+    "msvcrt",
+    "msvcprt",
+    "vcruntime",
+    "user32",
+    "gdi32",
+    "shell32",
+    "oleaut32",
+    "advapi32",
+    "vulkan-"
+links_lin:
+    "X11",
+    "Xi",
+    "notify",
+    "gobject-2.0",
+    "glib-2.0",
+    "canberra",
+    "vulkan"
+
+comm_objcopy: "objcopy --remove-section .note.gnu.property"
+
+#global
+compilerlauncher: "ccache"
+compiler: "clang++"
+binaryname: "${name_bin}"
+binarytype: "executable"
+standard: "c++20"
+sources: "src"
+headers:
+    "include",
+    "../../external/kalaheaders/include",
+    "../../Engine/include",
+    "../../external/kalawindow/include",
+    "../../external/kalagraphics/include",
+    "../../external/kalaphysics/include",
+    "../../external/kalaaudio/include",
+    "../../external/kalalua/include"
+warninglevel: "normal"
+defines: "LIB_STATIC"
+customflags: "export-compile-commands", "export-vscode-sln"
+
+#profile debug-windows
+buildtype: "debug"
+buildpath: "${dir_debug}windows"
+links: "${links_win_deb}", "${links_win_only}", "${links_win_and_win_on_linux}"
+
+#profile release-windows
+buildtype: "release"
+buildpath: "${dir_release}windows"
+//customflags: no-console
+links: "${links_win_rel}", "${links_win_only}", "${links_win_and_win_on_linux}"
+
+#profile debug-linux
+buildtype: "debug"
+buildpath: "${dir_debug}linux"
+links: "${links_lin_deb}", "${links_lin}"
+//strips stupid avx requirements that cachyos seems to add for no reason
+postbuildaction: "${comm_objcopy} ${dir_debug}linux/${name_bin}"
+
+#profile release-linux
+buildtype: "release"
+buildpath: "${dir_release}linux"
+links: "${links_lin_rel}", "${links_lin}"
+//strips stupid avx requirements that cachyos seems to add for no reason
+postbuildaction: "${comm_objcopy} ${dir_release}linux/${name_bin}"
+postbuildaction: "strip --strip-unneeded ${dir_release}linux/${name_bin}"

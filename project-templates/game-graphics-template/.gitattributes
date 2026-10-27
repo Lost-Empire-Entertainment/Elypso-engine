@@ -1,0 +1,73 @@
+# Text files
+*.txt   text eol=lf
+*.md    text eol=lf
+
+# C/C++ sources
+*.c     text eol=lf
+*.h     text eol=lf
+*.cpp   text eol=lf
+*.hpp   text eol=lf
+*.cc    text eol=lf
+*.cxx   text eol=lf
+*.hh    text eol=lf
+*.inl   text eol=lf
+
+# Build / config files
+*.kmake        text eol=lf
+*.json         text eol=lf
+*.toml         text eol=lf
+*.yaml         text eol=lf
+*.yml          text eol=lf
+*.ini          text eol=lf
+*.cfg          text eol=lf
+*.conf         text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+
+# Linux shell scripts
+*.sh    text eol=lf
+
+# Windows batch files
+*.bat   text eol=crlf
+*.ps1   text eol=crlf
+*.psm1  text eol=crlf
+*.psd1  text eol=crlf
+*.cmd   text eol=crlf
+
+# My custom utilities
+mf      text eol=lf
+dlm     text eol=lf
+
+# Binaries
+*.a     binary
+*.lib   binary
+*.obj   binary
+*.o     binary
+*.dll   binary
+*.so    binary
+*.dylib binary
+*.exe   binary
+*.pdb   binary
+
+# Images
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+
+# Archive files
+*.zip   binary
+*.tar   binary
+*.gz    binary
+*.7z    binary
+*.bz2   binary
+*.xz    binary
+*.rar   binary
+
+# Font files
+*.ttf   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary
