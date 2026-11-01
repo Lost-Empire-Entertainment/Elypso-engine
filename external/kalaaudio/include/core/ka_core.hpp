@@ -6,12 +6,19 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
+#include <functional>
+#include <source_location>
 
 #include "core_utils.hpp"
 
 namespace KalaAudio::Core
 {
 	using std::string;
+	using std::string_view;
+	using std::filesystem::path;
+	using std::function;
+	using std::source_location;
 	
 	class LIB_API KalaAudioCore
 	{
@@ -20,10 +27,15 @@ namespace KalaAudio::Core
 		static u32 GetGlobalID();
 		static void SetGlobalID(u32 newID);
 		
-		//Force-close the program right this very moment with no cleanups
-		KNORETURN
-		static void ForceClose(
-			const string& target,
-			const string& reason);
+        KNODISCARD
+        static path GetExePath();
+
+        static void SetExternalHandler(function<void(string, string, const source_location&)>&& newExternalHandler);
+
+        KNORETURN
+        static void ForceClose(
+            string_view title,
+            string_view reason,
+            const source_location& location = source_location::current());
 	};
 }
