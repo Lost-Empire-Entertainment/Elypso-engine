@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
 
 #include "core_utils.hpp"
 #include "math_utils.hpp"
@@ -15,6 +16,7 @@ namespace ElypsoEngine::Core
     using KalaHeaders::KalaMath::vec2;
 
     using std::string;
+    using std::filesystem::path;
 
     struct LIB_API AppConfig
     {
@@ -62,6 +64,13 @@ namespace ElypsoEngine::Core
 		static f64 GetOnePercentLowFPS();
         KNODISCARD
 		static f64 GetZeroPointOnePercentLowFPS();
+
+        //Lock a specific file so another process or user cannot accidentally modify, move or delete it
+        static void LockFile(const path& file);
+        //Unlock a file locked by Elypso Engine
+        static void UnlockFile(const path& file);
+        //Unlock all files locked by Elypso Engine
+        static void UnlockAllLockedFiles();
         
         //Shut down engine
         static void Shutdown();

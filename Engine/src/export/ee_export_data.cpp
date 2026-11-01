@@ -19,6 +19,7 @@ using KalaHeaders::KalaLog::LogType;
 using KalaHeaders::KalaFile::WriteBinaryDataToFile;
 using KalaHeaders::KalaFile::ReadBinaryDataFromFile;
 using KalaHeaders::KalaFile::HasAnyUnsafePathChar;
+using KalaHeaders::KalaFile::GetCleanPath;
 
 using KalaHeaders::KalaString::IsStringInRange;
 
@@ -64,7 +65,7 @@ static string VerifyAssetBlocks(const vector<UserBlock>& assetBlocks)
 
     for (const UserBlock& b : assetBlocks)
     {
-        path abspath = absolute(b.blockPath).lexically_normal();
+        path abspath = GetCleanPath(b.blockPath);
 
         if (!is_valid_name(b.blockName))
         {
@@ -175,7 +176,7 @@ static vector<u8> WriteData(
                         u32& outAssetSize,
                         u8& outAssetType) -> string
                         {
-                            path abspath = absolute(b.blockPath).lexically_normal();
+                            path abspath = GetCleanPath(b.blockPath);
 
                             vector<u8> outData{};
 
@@ -294,7 +295,7 @@ namespace ElypsoEngine::Export
             return false;
         }
 
-        path abstarget = absolute(targetPath).lexically_normal();
+        path abstarget = GetCleanPath(targetPath);
 
         if (!allowModify
             && exists(abstarget))
