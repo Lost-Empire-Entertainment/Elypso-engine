@@ -282,7 +282,20 @@ int main()
 
 void EngineInit()
 {
-    if (!IsStringInRange(appConfig.title, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
+    bool outResult{};
+    string err = IsStringInRange(
+        appConfig.title, 
+        MIN_NAME_LENGTH, 
+        MAX_NAME_LENGTH,
+        outResult);
+
+    if (!err.empty())
+    {
+        KalaWindowCore::ForceClose(
+            "Elypso Engine main loop error",
+            "Failed to initialize Elypso Engine! Reason: " + err);
+    }
+    if (!outResult)
     {
         KalaWindowCore::ForceClose(
             "Elypso Engine main loop error",

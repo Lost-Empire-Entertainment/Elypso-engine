@@ -78,7 +78,23 @@ namespace ElypsoEngine::Graphics
         vec2 size,
         EngineWindow* parent)
     {
-        if (!IsStringInRange(windowTitle, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
+        bool outResult{};
+        string err = IsStringInRange(
+            windowTitle, 
+            MIN_NAME_LENGTH, 
+            MAX_NAME_LENGTH,
+            outResult);
+
+        if (!err.empty())
+        {
+            Log::Print(
+                "Failed to initialize engine window! Reason: " + err,
+                "EE_WINDOW",
+                LogType::LOG_WARNING);
+
+            return nullptr;
+        }
+        if (!outResult)
         {
             Log::Print(
                 "Failed to initialize engine window because its name was out of range!",
@@ -151,7 +167,7 @@ namespace ElypsoEngine::Graphics
         if (!GraphicsContext::IsInitialized()) GraphicsContext::Initialize(VulkanContext::GetInstance());
 
         VulkanContext* vkctx{};
-        string err = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID(), vkctx);
+        err = VulkanContext::GetRegistry().GetContent(pw->GetGraphicsContextID(), vkctx);
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(

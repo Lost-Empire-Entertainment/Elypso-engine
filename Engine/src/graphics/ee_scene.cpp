@@ -126,7 +126,24 @@ namespace ElypsoEngine::Graphics
             return nullptr;
         }
 
-        if (!IsStringInRange(title, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
+        bool outResult{};
+        err = IsStringInRange(
+            title, 
+            MIN_NAME_LENGTH, 
+            MAX_NAME_LENGTH,
+            outResult);
+
+        if (!err.empty())
+        {
+            Log::Print(
+                "Failed to create scene for engine window '" 
+                + to_string(windowID) + "'! Reason: " + err,
+                "EE_SCENE",
+                LogType::LOG_WARNING);
+
+            return nullptr;
+        }
+        if (!outResult)
         {
             Log::Print(
                 "Failed to create scene for engine window '" 
@@ -251,7 +268,23 @@ namespace ElypsoEngine::Graphics
 
     void Scene::SetTitle(string_view newtitle)
     {
-        if (!IsStringInRange(newtitle, MIN_NAME_LENGTH, MAX_NAME_LENGTH))
+        bool outResult{};
+        string err = IsStringInRange(
+            newtitle, 
+            MIN_NAME_LENGTH, 
+            MAX_NAME_LENGTH,
+            outResult);
+
+        if (!err.empty())
+        {
+            Log::Print(
+                "Failed to update scene '" + to_string(ID) + "' title! Reason: " + err,
+                "EE_SCENE",
+                LogType::LOG_WARNING);
+
+            return;
+        }
+        if (!outResult)
         {
             Log::Print(
                 "Failed to update scene '" + to_string(ID) 

@@ -46,8 +46,25 @@ static string VerifyAssetBlocks(const vector<UserBlock>& assetBlocks)
 {
     auto is_valid_name = [](string_view n) -> bool
         {
+            bool outResult{};
+            string err = IsStringInRange(
+                n, 
+                4, 
+                MAX_NAME_LENGTH,
+                outResult);
+
+            if (!err.empty())
+            {
+                Log::Print(
+                    "Failed to check asset block name! Reason: " + err,
+                    "EE_EXPORT_DATA",
+                    LogType::LOG_WARNING);
+
+                return false;
+            }
+
             return
-                IsStringInRange(n, 4, MAX_NAME_LENGTH)
+                outResult
                 && !HasAnyUnsafePathChar(n, true);
         };
 
