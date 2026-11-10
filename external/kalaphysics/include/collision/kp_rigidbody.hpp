@@ -12,6 +12,11 @@
 
 #include "core/kp_registry.hpp"
 
+namespace KalaPhysics::Core
+{
+    class CollisionManager;
+}
+
 namespace KalaPhysics::Collision
 {
     using KalaHeaders::KalaMath::Transform3D;
@@ -68,7 +73,7 @@ namespace KalaPhysics::Collision
 
     class LIB_API RigidBody
     {
-    friend class CollisionManager;
+    friend class KalaPhysics::Core::CollisionManager;
 	friend struct default_delete<RigidBody>;
     public:
         static KalaPhysicsRegistry<RigidBody>& GetRegistry();
