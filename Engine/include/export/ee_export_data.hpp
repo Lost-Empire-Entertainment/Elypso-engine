@@ -82,9 +82,10 @@ namespace ElypsoEngine::Export
     {
     public:
         //Export selected assets to target path, extension must be '.edat'.
-        //Set allowModify to true to modify target path if it already exists.
-        //Place assets in any order, exporter will then group by asset type and sort alphabetically.
-        static bool ExportAssetData(
+        //Set allowModify to true to modify target path if it already exists,
+        //returns error string on failure
+        KNODISCARD
+        static string ExportAssetData(
             const path& targetPath,
             const vector<UserBlock>& assetBlocks,
             bool allowModify = false);

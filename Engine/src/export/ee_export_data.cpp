@@ -297,58 +297,38 @@ static vector<u8> WriteData(
 
 namespace ElypsoEngine::Export
 {
-    bool ExportData::ExportAssetData(
+    string ExportData::ExportAssetData(
         const path& targetPath,
         const vector<UserBlock>& assetBlocks,
         bool allowModify)
     {
-        if (targetPath.empty())
-        {
-            Log::Print(
-                "Failed to export to target path because no path was provided!",
-                "EE_EXPORT_DATA",
-                LogType::LOG_WARNING);
-
-            return false;
-        }
+        if (targetPath.empty()) return "Failed to export to target path because no path was provided!";
 
         path abstarget = GetCleanPath(targetPath);
 
         if (!allowModify
             && exists(abstarget))
         {
-            Log::Print(
+            return 
                 "Failed to export to target path '" + targetPath.string() 
-                + "' because it exists but existing path modification is disabled!",
-                "EE_EXPORT_DATA",
-                LogType::LOG_WARNING);
-
-            return false;
+                + "' because it exists but existing path modification is disabled!";
         }
 
         if (abstarget.extension() != BINARY_EXT)
         {
-            Log::Print(
-                "Failed to export to target path '" + targetPath.string() + "' because its extension was not correct!",
-                "EE_EXPORT_DATA",
-                LogType::LOG_WARNING);
-
-            return false;
+            return 
+                "Failed to export to target path '" + targetPath.string() 
+                + "' because its extension was not correct!";
         }
 
         string err = VerifyAssetBlocks(assetBlocks);
         if (!err.empty())
         {
-            Log::Print(
-                "Failed to export to target path '" + targetPath.string() + "'! Reason: " + err,
-                "EE_EXPORT_DATA",
-                LogType::LOG_WARNING);
-
-            return false;
+            return "Failed to export to target path '" + targetPath.string() + "'! Reason: " + err;
         }
 
         vector<u8> binaryData = WriteData(abstarget, assetBlocks);
-        if (binaryData.empty()) return false;
+        if (binaryData.empty()) return "Failed to export to target path because WriteData returned empty vector!";
 
         err = WriteBinaryDataToFile(
             abstarget, 
@@ -357,13 +337,7 @@ namespace ElypsoEngine::Export
             allowModify);
         if (!err.empty())
         {
-            Log::Print(
-                "Failed to export to target path '" + targetPath.string() + "'! Reason: " + err,
-                "EE_EXPORT_DATA",
-                LogType::LOG_ERROR,
-                2);
-
-            return false;
+            return "Failed to export to target path '" + targetPath.string() + "'! Reason: " + err;
         }
 
         Log::Print(
@@ -371,6 +345,6 @@ namespace ElypsoEngine::Export
             "EE_EXPORT_DATA",
             LogType::LOG_SUCCESS);
 
-        return true;
+        return "";
     }
 }

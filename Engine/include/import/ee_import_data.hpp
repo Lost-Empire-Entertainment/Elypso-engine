@@ -23,22 +23,26 @@ namespace ElypsoEngine::Import
 
     struct LIB_API AssetData
     {
-        vector<u8> assetData{};
+        string assetName{};
         AssetType assetType{};
+        vector<u8> assetData{};
     };
 
     class LIB_API ImportData
     {
     public:
-        //Import the necessary data of an edat binary into memory for runtime asset streaming
-        static bool ImportAssetData(const path& assetPath);
+        //Import the necessary data of an edat binary into memory for runtime asset streaming,
+        //you can import multiple edat files over and over to stream them as needed,
+        //returns string on import error
+        static string ImportAssetData(const path& assetPath);
 
-        //Returns a vector of asset names from the currently imported edat binaries
-        static vector<string> GetAssetNames();
-        //Takes in known asset names, returns asset bytes and type of each found asset, fails on first not found asset
-        static bool StreamAssets(
+        //Returns all imported edat asset names and their types but leaves asset data empty
+        static vector<AssetData> GetAssetData();
+        //Takes in known asset names, returns asset name, type and data for all assets,
+        //returns string on stream error
+        static string StreamAssets(
             const vector<string>& assetNames,
-            vector<AssetData>& outAssetIDs);
+            vector<AssetData>& outAssetData);
 
         //Clears the list of all currently imported assets,
         //does not need to be ran on program shutdown

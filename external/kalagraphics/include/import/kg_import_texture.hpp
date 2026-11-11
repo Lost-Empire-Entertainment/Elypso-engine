@@ -49,7 +49,7 @@ namespace KalaGraphics::Import
 
         //Import from raw png binary data
         KNODISCARD
-		static ImportTexture* Initialize(vector<u8>&& imageData);
+		static ImportTexture* Initialize(vector<u8>&& textureData);
 
         KNODISCARD
 		u32 GetID() const;

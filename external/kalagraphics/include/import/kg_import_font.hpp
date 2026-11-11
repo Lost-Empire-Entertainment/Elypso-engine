@@ -90,6 +90,13 @@ namespace KalaGraphics::Import
             path&& fontPath,
             u8 fontScale);
 
+        //Import a font from the given binary data, accepts .ttf and .otf,
+        //sets the font's EM value to fontScale
+        KNODISCARD
+		static ImportFont* Initialize(
+            vector<u8>&& fontData,
+            u8 fontScale);
+
         KNODISCARD
 		u32 GetID() const;
 

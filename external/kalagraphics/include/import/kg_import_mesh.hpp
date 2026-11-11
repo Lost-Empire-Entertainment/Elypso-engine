@@ -85,6 +85,9 @@ namespace KalaGraphics::Import
 		static ImportMesh* Initialize(path&& meshPath);
 
         KNODISCARD
+		static ImportMesh* Initialize(vector<u8>&& meshData);
+
+        KNODISCARD
 		u32 GetID() const;
 
         KNODISCARD

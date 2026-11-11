@@ -45,6 +45,9 @@ namespace KalaGraphics::Import
 		static ImportShader* Initialize(path&& shaderPath);
 
         KNODISCARD
+		static ImportShader* Initialize(vector<u8>&& shaderData);
+
+        KNODISCARD
 		u32 GetID() const;
 
         KNODISCARD
