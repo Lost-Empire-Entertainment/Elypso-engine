@@ -47,6 +47,7 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::make_unique;
+using std::function;
 
 namespace ElypsoEngine::Graphics
 {
@@ -228,6 +229,9 @@ namespace ElypsoEngine::Graphics
             });
         pw->SetShutdownCallback([newID](){ ShutdownCallback(newID); });
 
+        function<bool()> canCloseCallback = EngineCore::GetCanCloseCallback();
+        if (canCloseCallback) pw->SetCanCloseCallback(canCloseCallback);
+
         err = registry.AddContent(newID, std::move(newWindow));
         if (!err.empty())
         {
@@ -261,6 +265,18 @@ namespace ElypsoEngine::Graphics
 
     void EngineWindow::Destroy()
     {
+        if (!EngineCore::CanClose())
+        {
+			Log::Print(
+				"Skipping engine window '" + to_string(ID) + "' shutdown because shutdown was denied!",
+				"EE_WINDOW",
+				LogType::LOG_WARNING);
+
+            return;
+        }
+
+        if (!EngineCore::HasCalledEngineShutdown()) { ElypsoEngine::Core::Shutdown(); }
+
         for (auto s : sceneIDs)
         {
             Scene* sc{};
