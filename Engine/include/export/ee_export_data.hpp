@@ -20,9 +20,17 @@ namespace ElypsoEngine::Export
     using std::vector;
     using std::array;
 
-    constexpr string_view BINARY_MAGIC = "EDAT";
-    constexpr string_view BINARY_VERSION = "01";
-    constexpr string_view BINARY_EXT = ".edat";
+    static constexpr string_view BINARY_MAGIC = "EDAT";
+    static constexpr string_view BINARY_VERSION = "01";
+    static constexpr string_view BINARY_EXT = ".edat";
+
+    static constexpr u8 MAX_ASSET_NAME_LENGTH = 32;
+
+    constexpr size_t NAVIGATION_HEADER_SIZE = 
+        MAX_ASSET_NAME_LENGTH
+        + sizeof(u8)
+        + sizeof(u64)
+        + sizeof(u32);
 
     constexpr array<string_view, 8> SUPPORTED_EXTENSIONS = 
     {

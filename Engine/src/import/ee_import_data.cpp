@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "log_utils.hpp"
+#include "file_utils.hpp"
 
 #include "import/ee_import_data.hpp"
 
@@ -14,9 +15,13 @@ using KalaHeaders::KalaCore::ContainsValue;
 using KalaHeaders::KalaLog::Log;
 using KalaHeaders::KalaLog::LogType;
 
+using KalaHeaders::KalaFile::ReadInt;
+
 using ElypsoEngine::Export::BINARY_MAGIC;
 using ElypsoEngine::Export::BINARY_VERSION;
 using ElypsoEngine::Export::BINARY_EXT;
+using ElypsoEngine::Export::NAVIGATION_HEADER_SIZE;
+using ElypsoEngine::Export::AssetType;
 using ElypsoEngine::Export::IdentificationHeader;
 using ElypsoEngine::Export::NavigationHeader;
 using ElypsoEngine::Export::UserBlock;
@@ -76,44 +81,125 @@ namespace ElypsoEngine::Import
 
         IdentificationHeader idHeader{};
 
-        if (!file.read(rcast<char*>(&idHeader),
-            sizeof(IdentificationHeader)))
+        vector<u8> idBytes(
+            sizeof(idHeader.binaryMagic)
+            + sizeof(idHeader.binaryVersion)
+            + sizeof(idHeader.assetCount));
+
+        if (!file.read(
+            rcast<char*>(idBytes.data()),
+            idBytes.size()))
         {
             return 
                 "Failed to get identification header from asset data file '" 
                 + assetPath.string() + "' because it was malformed!";
         }
 
-        if (memcmp(idHeader.binaryMagic, BINARY_MAGIC.data(), BINARY_MAGIC.size()) != 0)
+        memcpy(
+            idHeader.binaryMagic, 
+            idBytes.data(), 
+            sizeof(idHeader.binaryMagic));
+        if (idHeader.binaryMagic[0] != BINARY_MAGIC[0]
+            || idHeader.binaryMagic[1] != BINARY_MAGIC[1]
+            || idHeader.binaryMagic[2] != BINARY_MAGIC[2]
+            || idHeader.binaryMagic[3] != BINARY_MAGIC[3])
         {
-            string binaryMagic(rcast<const char*>(idHeader.binaryMagic), sizeof(idHeader.binaryMagic));
             return 
-                "Failed to import asset data because asset data file '" + assetPath.string() 
-                + "' binary magic '" + binaryMagic + "' was invalid!";
+                "Failed to get identification header from asset data file '" 
+                + assetPath.string() + "' because binary magic was invalid!";
         }
 
-        if (memcmp(idHeader.binaryVersion, BINARY_VERSION.data(), BINARY_VERSION.size()) != 0)
+        memcpy(
+            idHeader.binaryVersion,
+            idBytes.data() + sizeof(idHeader.binaryMagic),
+            sizeof(idHeader.binaryVersion));
+        if (idHeader.binaryVersion[0] != BINARY_VERSION[0]
+            || idHeader.binaryVersion[1] != BINARY_VERSION[1])
         {
-            string binaryVersion(rcast<const char*>(idHeader.binaryVersion), sizeof(idHeader.binaryVersion));
             return 
-                "Failed to import asset data because asset data file '" + assetPath.string() 
-                + "' binary version '" + binaryVersion + "' was unsupported!";
+                "Failed to get identification header from asset data file '" 
+                + assetPath.string() + "' because binary version was unsupported!";
         }
 
-        vector<NavigationHeader> navHeaders(idHeader.assetCount);
+        if (!ReadInt<u16>(
+            idBytes, 
+            sizeof(idHeader.binaryMagic) 
+            + sizeof(idHeader.binaryVersion),
+            idHeader.assetCount))
+        {
+            return 
+                "Failed to get identification header from asset data file '" 
+                + assetPath.string() + "' because asset count couldn't be read!";
+        }
 
-        if (!navHeaders.empty()
-            && !file.read(rcast<char*>(navHeaders.data()),
-            navHeaders.size() * sizeof(NavigationHeader)))
+        const size_t navDataSize = NAVIGATION_HEADER_SIZE * idHeader.assetCount;
+
+        if (fileSize < idBytes.size()
+            || navDataSize > fileSize - idBytes.size())
         {
             return 
                 "Failed to get navigation headers from asset data file '" 
                 + assetPath.string() + "' because it was malformed!";
         }
 
-        const size_t dataStart = 
-            sizeof(IdentificationHeader) + navHeaders.size() 
-            * sizeof(NavigationHeader);
+        vector<u8> navBytes(navDataSize);
+
+        if (!navBytes.empty()
+            && !file.read(
+                rcast<char*>(navBytes.data()),
+                navBytes.size()))
+        {
+            return 
+                "Failed to get navigation headers from asset data file '" 
+                + assetPath.string() + "' because it was malformed!";
+        }
+
+        vector<NavigationHeader> navHeaders(idHeader.assetCount);
+
+        size_t offset{};
+        for (NavigationHeader& nh : navHeaders)
+        {
+            memcpy(
+                nh.assetName,
+                navBytes.data() + offset,
+                sizeof(nh.assetName));
+            offset += sizeof(nh.assetName);
+
+            string nhName(rcast<const char*>(nh.assetName), sizeof(nh.assetName));
+            nhName.erase(nhName.find_last_not_of(' ') + 1);
+
+            if (!ReadInt<u8>(navBytes, offset, nh.assetType))
+            {
+                return 
+                    "Failed to get navigation headers from asset data file '" 
+                    + assetPath.string() + "' because asset '" + nhName + "' type couldn't be read!";
+            }
+            if (nh.assetType > scast<u8>(AssetType::A_FONT_OTF))
+            {
+                return 
+                    "Failed to get navigation headers from asset data file '" 
+                    + assetPath.string() + "' because asset '" + nhName + "' type was invalid!";
+            }
+            offset += sizeof(nh.assetType);
+
+            if (!ReadInt<u64>(navBytes, offset, nh.assetOffset))
+            {
+                return 
+                    "Failed to get navigation headers from asset data file '" 
+                    + assetPath.string() + "' because asset '" + nhName + "' offset couldn't be read!";
+            }
+            offset += sizeof(nh.assetOffset);
+
+            if (!ReadInt<u32>(navBytes, offset, nh.assetSize))
+            {
+                return 
+                    "Failed to get navigation headers from asset data file '" 
+                    + assetPath.string() + "' because asset '" + nhName + "' size couldn't be read!";
+            }
+            offset += sizeof(nh.assetSize);
+        }
+
+        const size_t dataStart = idBytes.size() + navDataSize;
 
         for (const NavigationHeader& nh : navHeaders)
         {

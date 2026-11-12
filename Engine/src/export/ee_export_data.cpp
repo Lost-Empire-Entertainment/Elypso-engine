@@ -20,11 +20,15 @@ using KalaHeaders::KalaFile::WriteBinaryDataToFile;
 using KalaHeaders::KalaFile::ReadBinaryDataFromFile;
 using KalaHeaders::KalaFile::HasAnyUnsafePathChar;
 using KalaHeaders::KalaFile::GetCleanPath;
+using KalaHeaders::KalaFile::WriteInt;
 
 using KalaHeaders::KalaString::IsStringInRange;
 
 using KalaWindow::Core::MAX_NAME_LENGTH;
+using KalaWindow::Core::KalaWindowCore;
 
+using ElypsoEngine::Export::MAX_ASSET_NAME_LENGTH;
+using ElypsoEngine::Export::NAVIGATION_HEADER_SIZE;
 using ElypsoEngine::Export::BINARY_MAGIC;
 using ElypsoEngine::Export::BINARY_VERSION;
 using ElypsoEngine::Export::SUPPORTED_EXTENSIONS;
@@ -39,8 +43,6 @@ using std::vector;
 using std::filesystem::path;
 using std::filesystem::exists;
 using std::filesystem::is_regular_file;
-
-static constexpr u8 MAX_ASSET_NAME_LENGTH = 32;
 
 static string VerifyAssetBlocks(const vector<UserBlock>& assetBlocks)
 {
@@ -120,9 +122,14 @@ static vector<u8> WriteData(
     auto append_binary_data = [](
         vector<u8>& binaryData,
         const void* source,
-        size_t size) -> string
+        size_t size) -> void
         {
-            if (size == 0) return "Failed to append binary data because size was empty!";
+            if (size == 0)
+            {
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine export data error",
+                    "Failed to append binary data because size was empty!");
+            }
 
             const size_t offset = binaryData.size();
             binaryData.resize(offset + size);
@@ -131,8 +138,6 @@ static vector<u8> WriteData(
                 binaryData.data() + offset,
                 source,
                 size);
-
-            return "";
         };
 
     vector<u8> binaryData{};
@@ -157,10 +162,13 @@ static vector<u8> WriteData(
             }
 
             u16 assetCount = scast<u16>(assetBlocks.size());
-            append_binary_data(
-                binaryData, 
-                &assetCount, 
-                sizeof(assetCount));
+            if (!WriteInt<u16>(
+                binaryData,
+                scast<size_t>(-1),
+                assetCount))
+            {
+                return "Failed to serialize asset count!";
+            }
 
             return "";
         };
@@ -172,7 +180,7 @@ static vector<u8> WriteData(
         {
             u64 dataBlockStartOffset = 
                 binaryData.size() 
-                + (sizeof(NavigationHeader) * assetBlocks.size());
+                + (NAVIGATION_HEADER_SIZE * assetBlocks.size());
 
             u64 accumulatedOffset{};
 
@@ -257,10 +265,20 @@ static vector<u8> WriteData(
                 if (!err.empty()) return err;
             }
 
-            append_binary_data(
-                binaryData, 
-                navHeaders.data(), 
-                navHeaders.size() * sizeof(NavigationHeader));
+            for (const NavigationHeader& nh : navHeaders)
+            {
+                append_binary_data(
+                    binaryData, 
+                    nh.assetName, 
+                    sizeof(nh.assetName));
+
+                if (!WriteInt<u8>(binaryData, scast<size_t>(-1), nh.assetType)
+                    || !WriteInt<u64>(binaryData, scast<size_t>(-1), nh.assetOffset)
+                    || !WriteInt<u32>(binaryData, scast<size_t>(-1), nh.assetSize))
+                {
+                    return "Failed to serialize asset navigation header!";
+                }
+            }
 
             append_binary_data(
                 binaryData,
