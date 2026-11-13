@@ -9,7 +9,6 @@
 #include <filesystem>
 #include <functional>
 
-#include "core_utils.hpp"
 #include "math_utils.hpp"
 
 namespace ElypsoEngine::Graphics

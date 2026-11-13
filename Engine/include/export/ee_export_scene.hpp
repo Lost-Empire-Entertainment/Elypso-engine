@@ -10,7 +10,7 @@
 #include <vector>
 #include <array>
 
-#include "core_utils.hpp"
+#include "macros.hpp"
 
 namespace ElypsoEngine::Export
 {

@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-#include "core_utils.hpp"
+#include "macros.hpp"
 
 namespace KalaGraphics::Core
 {

@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "core_utils.hpp"
-
 #include "core/kg_core.hpp"
 
 #include <unordered_map>

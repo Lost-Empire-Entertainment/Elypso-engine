@@ -3,6 +3,7 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
+#include "core_utils.hpp"
 #include "log_utils.hpp"
 #include "file_utils.hpp"
 #include "string_utils.hpp"

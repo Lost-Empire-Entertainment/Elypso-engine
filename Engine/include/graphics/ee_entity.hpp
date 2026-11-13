@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "core_utils.hpp"
-
 #include "core/ee_registry.hpp"
 
 namespace ElypsoEngine::Graphics

@@ -8,8 +8,6 @@
 #include <vector>
 #include <string>
 
-#include "core_utils.hpp"
-
 #include "core/kg_registry.hpp"
 
 namespace KalaGraphics::Widgets

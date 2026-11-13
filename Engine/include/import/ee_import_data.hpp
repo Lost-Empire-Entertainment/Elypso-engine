@@ -9,8 +9,6 @@
 #include <vector>
 #include <filesystem>
 
-#include "core_utils.hpp"
-
 #include "export/ee_export_data.hpp"
 
 namespace ElypsoEngine::Import

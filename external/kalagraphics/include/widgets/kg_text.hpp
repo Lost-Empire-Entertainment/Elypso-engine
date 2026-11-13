@@ -9,7 +9,6 @@
 #include <vector>
 #include <cfloat>
 
-#include "core_utils.hpp"
 #include "math_utils.hpp"
 
 #include "core/kg_registry.hpp"

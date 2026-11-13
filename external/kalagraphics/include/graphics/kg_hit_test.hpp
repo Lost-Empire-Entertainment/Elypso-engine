@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "core_utils.hpp"
-
 #include "core/kg_registry.hpp"
 
 namespace KalaGraphics::Graphics
