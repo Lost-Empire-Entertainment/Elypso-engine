@@ -9,7 +9,6 @@
 #include <filesystem>
 #include <algorithm>
 
-#include "core_utils.hpp"
 #include "math_utils.hpp"
 
 #include "core/ka_registry.hpp"

@@ -17,7 +17,6 @@ extern "C"
 #include "lua.h"
 }
 
-#include "core_utils.hpp"
 #include "log_utils.hpp"
 
 #include "core/kl_core.hpp"

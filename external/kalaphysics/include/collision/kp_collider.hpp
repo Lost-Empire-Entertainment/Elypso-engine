@@ -10,7 +10,6 @@
 #include <bitset>
 #include <functional>
 
-#include "core_utils.hpp"
 #include "math_utils.hpp"
 
 #include "core/kp_registry.hpp"

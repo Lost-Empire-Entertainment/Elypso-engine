@@ -10,7 +10,7 @@
 #include <functional>
 #include <source_location>
 
-#include "core_utils.hpp"
+#include "macros.hpp"
 
 namespace KalaAudio::Core
 {

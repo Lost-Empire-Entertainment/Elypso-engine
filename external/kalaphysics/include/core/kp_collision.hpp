@@ -10,7 +10,6 @@
 #include <vector>
 #include <string>
 
-#include "core_utils.hpp"
 #include "math_utils.hpp"
 
 namespace KalaPhysics::Core
