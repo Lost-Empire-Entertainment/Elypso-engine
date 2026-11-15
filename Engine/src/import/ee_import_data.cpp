@@ -175,7 +175,7 @@ namespace ElypsoEngine::Import
                     "Failed to get navigation headers from asset data file '" 
                     + assetPath.string() + "' because asset '" + nhName + "' type couldn't be read!";
             }
-            if (nh.assetType > scast<u8>(AssetType::A_FONT_OTF))
+            if (nh.assetType > scast<u8>(AssetType::FONT_OTF))
             {
                 return 
                     "Failed to get navigation headers from asset data file '" 
@@ -222,7 +222,7 @@ namespace ElypsoEngine::Import
         Log::Print(
             "Imported headers from asset data file '" + assetPath.string() + "'!",
             "EE_IMPORT_DATA",
-            LogType::LOG_SUCCESS);
+            LogType::SUCCESS);
 
         return "";
     }
@@ -251,7 +251,7 @@ namespace ElypsoEngine::Import
             Log::Print(
                 "Failed to get asset data because no assets have been imported!",
                 "EE_IMPORT_DATA",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
         }
 
         return assetData;
@@ -372,7 +372,7 @@ namespace ElypsoEngine::Import
         Log::Print(
             "Streamed '" + to_string(assetCount) + "' assets!",
             "EE_IMPORT_DATA",
-            LogType::LOG_SUCCESS);
+            LogType::SUCCESS);
 
         return "";
     }
@@ -384,7 +384,7 @@ namespace ElypsoEngine::Import
             Log::Print(
                 "Failed to clear imported data because there was nothing to clear!",
                 "EE_IMPORT_DATA",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return;
         }
@@ -394,6 +394,6 @@ namespace ElypsoEngine::Import
         Log::Print(
             "Cleared imported data!",
             "EE_IMPORT_DATA",
-            LogType::LOG_SUCCESS);
+            LogType::SUCCESS);
     }
 }

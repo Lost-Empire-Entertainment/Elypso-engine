@@ -39,94 +39,100 @@ namespace KalaGraphics::Graphics
 
     static constexpr u32 MIN_VIEWPORT_SIZE = 50;
 
-    enum class ViewportAnchorPosition : u8
+    enum class ViewportAnchorPosition
     {
-        P_NONE = 0,
-        P_CENTER = 1,
+        NONE,
+        CENTER,
 
-        P_LEFT_CENTER = 2,
-        P_RIGHT_CENTER = 3,
-        P_TOP_CENTER = 4,
-        P_BOTTOM_CENTER = 5,
+        LEFT_CENTER,
+        RIGHT_CENTER,
+        TOP_CENTER,
+        BOTTOM_CENTER,
 
-        P_BOTTOM_LEFT = 6,
-        P_BOTTOM_RIGHT = 7,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
 
-        P_TOP_LEFT = 8,
-        P_TOP_RIGHT = 9
+        TOP_LEFT,
+        TOP_RIGHT
     };
 
-    enum class ViewportStaticSize : u8
+    enum class ViewportStaticSize
     {
         //4:3
 
-        VP_640_480 = 0,
-        VP_800_600 = 1,
-        VP_1024_768 = 2,
-        VP_1600_1200 = 3,
+        SIZE_640_480,
+        SIZE_800_600,
+        SIZE_1024_768,
+        SIZE_1600_1200,
 
         //16:9
 
-        VP_1280_720 = 4,
-        VP_1600_900 = 5,
-        VP_1920_1080 = 6,
-        VP_2560_1440 = 7,
-        VP_3840_2160 = 8,
+        SIZE_1280_720,
+        SIZE_1600_900,
+        SIZE_1920_1080,
+        SIZE_2560_1440,
+        SIZE_3840_2160,
 
         //16:10
 
-        VP_1280_800 = 9,
-        VP_1680_1050 = 10,
-        VP_1920_1200 = 11,
-        VP_2560_1600 = 12,
+        SIZE_1280_800,
+        SIZE_1680_1050,
+        SIZE_1920_1200,
+        SIZE_2560_1600,
 
         //21:9
 
-        VP_2560_1080 = 13,
-        VP_3440_1440 = 14,
-        VP_5120_2160 = 15,
+        SIZE_2560_1080,
+        SIZE_3440_1440,
+        SIZE_5120_2160,
 
         //32:9
 
-        VP_3840_1080 = 16,
-        VP_5120_1440 = 17
+        SIZE_3840_1080,
+        SIZE_5120_1440
     };
 
-    enum class ViewportType : u8
+    enum class ViewportType
     {
         //Standard fully filled viewport, no letterboxing, no fixed resolution
-        VP_FILL = 0,
-
+        FILL,
         //Fixed resolution, uses one of the chosen static resolutions
         //and tries to fit it while preserving as much of the viewport as possible,
         //leaves letterboxing to where aspect ratio doesn't fit viewport
-        VP_FIT = 1,
-
+        FIT,
         //Same as fit, except it clamps to static viewport size,
         //so if viewport is bigger than its static size then black bars appear on all edges
-        VP_CENTER = 2,
-
+        CENTER,
         //User-defined scissor area, the only mode where manual scissor size and offset are allowed,
         //draws black boxes to area outside of scissor range
-        VP_CUSTOM = 3
+        CUSTOM
     };
 
-    enum class RootShaderTarget : u8
+    enum class RootShaderTarget
     {
-        T_UNLIT = 0,  //unlit_vert.spv + unlit_frag.spv
-        T_RECT  = 1,  //ui_rect_vert.spv + ui_rect_frag.spv
-        T_FONT  = 2   //ui_font_vert.spv + ui_font_frag.spv
+        //unlit_vert.spv + unlit_frag.spv
+        UNLIT,
+        //ui_rect_vert.spv + ui_rect_frag.spv
+        RECT,
+        //ui_font_vert.spv + ui_font_frag.spv
+        FONT
     };
     
-    enum class RootShaderType : u8
+    enum class RootShaderType
     {
-        S_VERT_UNLIT = 0, //unlit_vert.spv
-        S_VERT_RECT  = 1, //ui_rect_vert.spv
-        S_VERT_FONT  = 2, //ui_font_vert.spv
+        //unlit_vert.spv
+        VERT_UNLIT,
+        //ui_rect_vert.spv
+        VERT_RECT,
+        //ui_font_vert.spv
+        VERT_FONT,
 
-        S_FRAG_UNLIT = 3, //unlit_frag.spv
-        S_FRAG_RECT  = 4, //ui_rect_frag.spv
-        S_FRAG_FONT  = 5  //ui_font_frag.spv
+        //unlit_frag.spv
+        FRAG_UNLIT,
+        //ui_rect_frag.spv
+        FRAG_RECT,
+        //ui_font_frag.spv
+        FRAG_FONT
     };
 
     struct RootShaderTypeData
@@ -366,7 +372,7 @@ namespace KalaGraphics::Graphics
         vec4 viewportBackgroundColor = vec4{ 0.0f, 1.0f, 0.0f, 1.0f };
         vec4 viewportLetterboxColor = vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-        ViewportStaticSize viewportStaticSize = ViewportStaticSize::VP_1920_1080;
+        ViewportStaticSize viewportStaticSize = ViewportStaticSize::SIZE_1920_1080;
         vec2 viewportDynamicSize = 100;
         
         //pushes the drawable area down and right if x and y are positive

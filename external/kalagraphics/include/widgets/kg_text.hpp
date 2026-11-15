@@ -48,48 +48,49 @@ namespace KalaGraphics::Widgets
 
     static constexpr f32 DRAG_THRESHOLD_PX = 5;
 
-    enum class TextClipType : u8
+    enum class TextClipType
     {
-        //when a glyph/text exceeds line width,
+        //When a glyph/text exceeds line width,
         //allow it to continue beyond the line width and max lines
-        C_OVERFLOW = 0,
-        //if word width + existing line content exceeds line width
+        OVERFLOW,
+        //If word width + existing line content exceeds line width
         //but words own width is less than line width then word gets pushed to next line,
         //otherwise the word is not drawn at all, word is not drawn if it exceeds max lines
-        C_CLIPPED = 1
+        CLIPPED
     };
 
-    enum class TextFieldType : u8
+    enum class TextFieldType
     {
-        //supports all characters, including emojis
-        F_ANY                   = 0,
-        //only supports text and numbers
-        F_TEXT_ONLY             = 1,
-        //only supports integers, floats and doubles
-        F_NUMBER_ONLY           = 2,
-        //only supports integers
-        F_INTEGER_ONLY          = 3,
-        //only supports floats
-        F_FLOAT_ONLY            = 4,
-        //only supports floats and doubles
-        F_FLOAT_AND_DOUBLE_ONLY = 5,
-        //displays written value as stars, supports all characters
-        F_PASSWORD              = 6
+        //Supports all characters, including emojis
+        ANY,
+        //Only supports text and numbers
+        TEXT_ONLY,
+        //Only supports integers, floats and doubles
+        NUMBER_ONLY,
+        //Only supports integers
+        INTEGER_ONLY,
+        //Only supports floats
+        FLOAT_ONLY,
+        //Only supports floats and doubles
+        FLOAT_AND_DOUBLE_ONLY,
+        //Displays written value as stars, supports all characters
+        PASSWORD
     };
 
-    enum class TextAlignmentType : u8
+    enum class TextAlignmentType
     {
-        A_TOP_LEFT    = 0,
-        A_CENTER_LEFT = 1,
-        A_BOTTOM_LEFT = 2,
+        CENTER,
 
-        A_TOP_CENTER    = 3,
-        A_CENTER        = 4,
-        A_BOTTOM_CENTER = 5,
+        LEFT_CENTER,
+        RIGHT_CENTER,
+        TOP_CENTER,
+        BOTTOM_CENTER,
 
-        A_TOP_RIGHT    = 6,
-        A_CENTER_RIGHT = 7,
-        A_BOTTOM_RIGHT = 8
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
+
+        TOP_LEFT,
+        TOP_RIGHT
     };
 
     struct GlyphRasterData
@@ -327,7 +328,7 @@ namespace KalaGraphics::Widgets
 
         TextClipType clipType{};
         TextFieldType fieldType{};
-        TextAlignmentType alignmentType = TextAlignmentType::A_CENTER;
+        TextAlignmentType alignmentType = TextAlignmentType::CENTER;
 
         CursorData cursorData{}; //where to render the cursor
         HighlightData highlightData{}; //which characters are selected

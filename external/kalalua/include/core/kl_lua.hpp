@@ -46,46 +46,46 @@ namespace KalaLua::Core
 	using KalaHeaders::KalaLog::Log;
 	using KalaHeaders::KalaLog::LogType;
 
-	enum class LuaLibrary : u8
+	enum class LuaLibrary
 	{
-		//adds coroutine support.
+		//Adds coroutine support.
 		//LUA_COLIBNAME / luaopen_coroutine
-		LUA_COROUTINE,
+		COROUTINE,
 
-		//adds table utils.
+		//Adds table utils.
 		//LUA_TABLIBNAME / luaopen_table
-		LUA_TABLE,
+		TABLE,
 
-		//adds string manipulation utils.
+		//Adds string manipulation utils.
 		//LUA_STRLIBNAME / luaopen_string
-		LUA_STRING,
+		STRING,
 
-		//adds extra math functions.
+		//Adds extra math functions.
 		//LUA_MATHLIBNAME / luaopen_math
-		LUA_MATH,
+		MATH,
 
-		//adds utf-8 string handling.
+		//Adds utf-8 string handling.
 		//LUA_UTF8LIBNAME / luaopen_utf8
-		LUA_UTF8,
+		UTF8,
 
-		//adds modules and enables dynamic library loading.
+		//Adds modules and enables dynamic library loading.
 		//LUA_LOADLIBNAME / luaopen_package
-		LUA_PACKAGE,
+		PACKAGE,
 
-		//adds file I/O utils.
+		//Adds file I/O utils.
 		//LUA_IOLIBNAME / luaopen_io
-		LUA_IO,
+		IO,
 
-		//adds OS interaction utils.
+		//Adds OS interaction utils.
 		//LUA_OSLIBNAME / luaopen_os
-		LUA_OS,
+		OS,
 
-		//adds debugging utils.
+		//Adds debugging utils.
 		//LUA_DBLIBNAME / luaopen_debug
-		LUA_DEBUG,
+		DEBUG,
 
-		//adds all of the available lua libraries
-		LUA_ALL
+		//Adds all of the available lua libraries
+		ALL
 	};
 
 	using LuaVar = variant
@@ -176,7 +176,7 @@ namespace KalaLua::Core
 				Log::Print(
 					"Unsupported variable type was passed to CallFunction function '" + string(functionName) + "'!",
 					"KALALUA_CALL_FUNCTION",
-					LogType::LOG_ERROR,
+					LogType::ERROR,
 					2);
 
 				return nullopt;
@@ -211,7 +211,7 @@ namespace KalaLua::Core
 						Log::Print(
 							"Argument count mismatch when invoking function '" + string(functionName) + "'!",
 							"KALALUA_REGISTER_FUNCTION",
-							LogType::LOG_ERROR,
+							LogType::ERROR,
 							2);
 
 						return nullopt;

@@ -18,10 +18,12 @@ namespace KalaGraphics::Widgets
     using std::string;
     using std::default_delete;
 
-    enum class ClipType : u8
+    enum class ClipType
     {
-        C_FREE   = 0, //no restrictions, draw outside/inside the clip area
-        C_BOUNDS = 1  //cannot draw past/into the clip area
+        //No restrictions, draw outside/inside the clip area
+        FREE,
+        //Cannot draw past/into the clip area
+        BOUNDS
     };
 
     class LIB_API ClipArea

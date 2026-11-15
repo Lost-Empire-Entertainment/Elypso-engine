@@ -68,12 +68,12 @@ namespace KalaGraphics::Graphics
     static constexpr u8 MIN_SPHERE_DETAIL_LEVEL = 1;
     static constexpr u8 MAX_SPHERE_DETAIL_LEVEL = 8;
 
-    enum class NormalType : u8
+    enum class NormalType
     {
-        //one normal per face, often requiring duplicated vertices
-        N_FLAT = 0,
-        //one normal per shared vertex, with interpolation between them
-        N_SMOOTH = 1
+        //One normal per face, often requiring duplicated vertices
+        FLAT,
+        //One normal per shared vertex, with interpolation between them
+        SMOOTH
     };
 
     struct LIB_API Mesh_Cube
@@ -99,24 +99,24 @@ namespace KalaGraphics::Graphics
         //clamped from 1 to 8
         u8 detailLevel = 1;
 
-        NormalType normalType = NormalType::N_SMOOTH;
+        NormalType normalType = NormalType::SMOOTH;
     };
 
-    enum class AnchorPosition : u8
+    enum class AnchorPosition
     {
-        P_NONE = 0,
-        P_CENTER = 1,
+        NONE,
+        CENTER,
 
-        P_LEFT_CENTER = 2,
-        P_RIGHT_CENTER = 3,
-        P_TOP_CENTER = 4,
-        P_BOTTOM_CENTER = 5,
+        LEFT_CENTER,
+        RIGHT_CENTER,
+        TOP_CENTER,
+        BOTTOM_CENTER,
 
-        P_BOTTOM_LEFT = 6,
-        P_BOTTOM_RIGHT = 7,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
 
-        P_TOP_LEFT = 8,
-        P_TOP_RIGHT = 9
+        TOP_LEFT,
+        TOP_RIGHT
     };
 
     struct LIB_API Vertex

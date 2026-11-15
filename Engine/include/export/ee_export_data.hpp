@@ -44,16 +44,16 @@ namespace ElypsoEngine::Export
         ".otf"
     };
 
-    enum class AssetType : u8
+    enum class AssetType
     {
-        A_MODEL = 0,
-        A_SHADER = 1,
-        A_TEXTURE = 2,
-        A_AUDIO_OPUS = 3,
-        A_AUDIO_MP3 = 4,
-        A_AUDIO_WAV = 5,
-        A_FONT_TTF = 6,
-        A_FONT_OTF = 7
+        MODEL,
+        SHADER,
+        TEXTURE,
+        AUDIO_OPUS,
+        AUDIO_MP3,
+        AUDIO_WAV,
+        FONT_TTF,
+        FONT_OTF
     };
 
     //Identification header at the top of the binary

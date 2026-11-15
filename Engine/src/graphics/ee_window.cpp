@@ -65,7 +65,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to call shutdown callback "
                 "because the engine window was invalid! Reason: " + err,
                 "EE_WINDOW",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return;
         }
@@ -91,7 +91,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to initialize engine window! Reason: " + err,
                 "EE_WINDOW",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -100,7 +100,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to initialize engine window because its name was out of range!",
                 "EE_WINDOW",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -116,7 +116,7 @@ namespace ElypsoEngine::Graphics
                     + "' because its parent engine window '" + to_string(parent->GetID()) 
                     + "' process window was invalid! Reason: " + err,
                     "EE_WINDOW",
-                    LogType::LOG_WARNING);
+                    LogType::WARNING);
 
                 return nullptr;
             }
@@ -136,7 +136,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to initialize engine window '" + string(windowTitle) + "' because process window creation failed!",
                 "EE_WINDOW",
-                LogType::LOG_ERROR,
+                LogType::ERROR,
                 2);
 
             return nullptr;
@@ -186,7 +186,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to initialize engine window '" + string(windowTitle) 
                 + "' because graphics context creation failed!",
                 "EE_WINDOW",
-                LogType::LOG_ERROR,
+                LogType::ERROR,
                 2);
 
             return nullptr;
@@ -251,7 +251,7 @@ namespace ElypsoEngine::Graphics
             + "' with ID '" + to_string(newID) 
             + "' for process window '" + to_string(windowID) + "'!",
 			"EE_WINDOW",
-			LogType::LOG_SUCCESS);
+			LogType::SUCCESS);
 
         return windowPtr;
     }
@@ -270,7 +270,7 @@ namespace ElypsoEngine::Graphics
 			Log::Print(
 				"Skipping engine window '" + to_string(ID) + "' shutdown because shutdown was denied!",
 				"EE_WINDOW",
-				LogType::LOG_WARNING);
+				LogType::WARNING);
 
             return;
         }
@@ -322,6 +322,6 @@ namespace ElypsoEngine::Graphics
 		Log::Print(
 			"Destroying engine window '" + to_string(ID) + "'.",
 			"EE_WINDOW",
-			LogType::LOG_INFO);
+			LogType::INFO);
     }
 }

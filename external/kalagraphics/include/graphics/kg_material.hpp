@@ -24,43 +24,43 @@ namespace KalaGraphics::Graphics
     //The two main types of materials for 2D,
     //majority of 2D meshes should use the top one,
     //the bottom one is only for text rendering
-    enum class MaterialType2D : u8
+    enum class MaterialType2D
     {
         //one base color texture and optional alpha blend/mask
-        M_RECT = 0,
+        RECT,
         //one R8 diffuse texture
-        M_FONT = 1
+        FONT
     };
 
     //The three main types of materials for 3D,
     //each type supports full alpha (opaque, blend, mask) and full RGBA
-    enum class MaterialType3D : u8
+    enum class MaterialType3D
     {
         //basic material with no shadows and simple shading,
         //one base color texture and optional alpha blend/mask
-        M_UNLIT       = 0,
+        UNLIT,
 
         //artistic lighting approximation.
         //on top of unlit:
         //  material values: specular color and shininess
         //  textures: specular and normal
-        M_BLINN_PHONG = 1,
+        BLINN_PHONG,
 
         //modern PBR (metallic-roughness).
         //on top of unlit:
         //  material values: metallic and roughness
         //  textures: metallic roughness, normal, occlusion and emissive
-        M_PBR         = 2
+        PBR
     };
 
-    enum class AlphaMode : u8
+    enum class AlphaMode
     {
         //default opaque mesh
-        A_OPAQUE = 0,
+        OPAQUE,
         //makes alpha-based values transparent if transparency is enabled 
-        A_BLEND = 1,
+        BLEND,
         //fragments below alpha cutoff are discarded, otherwise rendered fully opaque
-        A_MASK = 2
+        MASK
     };
 
     struct MaterialData_Rect

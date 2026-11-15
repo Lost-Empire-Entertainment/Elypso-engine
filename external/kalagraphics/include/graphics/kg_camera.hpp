@@ -44,12 +44,12 @@ namespace KalaGraphics::Graphics
     static constexpr f32 DRAW_DISTANCE_MIN = 0.001f;
     static constexpr f32 DRAW_DISTANCE_MAX = 10000.0f;
 
-    enum class CameraType : u8
+    enum class CameraType
     {
         //2D camera
-        CAM_ORTHOGRAPHIC = 0,
-        //fps-stype 3D camera
-        CAM_PERSPECTIVE = 1
+        ORTHOGRAPHIC,
+        //FPS-type 3D camera
+        PERSPECTIVE
     };
 
     class LIB_API Camera
@@ -66,7 +66,7 @@ namespace KalaGraphics::Graphics
         KNODISCARD
 		static Camera* Initialize(
             u32 shaderID,
-            CameraType type = CameraType::CAM_PERSPECTIVE);
+            CameraType type = CameraType::PERSPECTIVE);
 
         KNODISCARD
 		u32 GetID() const;
@@ -135,7 +135,7 @@ namespace KalaGraphics::Graphics
         u32 shaderID{};
         u32 meshID{};
 
-        CameraType type = CameraType::CAM_PERSPECTIVE;
+        CameraType type = CameraType::PERSPECTIVE;
 
         Transform3D transform{};
 

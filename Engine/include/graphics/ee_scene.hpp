@@ -39,13 +39,19 @@ namespace ElypsoEngine::Graphics
         KNODISCARD
 		static Scene* Initialize(
             string_view title,
-            u32 windowID,
-            path&& escnPath = {});
+            u32 windowID);
 
         KNODISCARD
 		u32 GetID() const;
         KNODISCARD
 		u32 GetWindowID() const;
+        KNODISCARD
+        vector<u32> GetEntityIDs() const;
+
+        //Add existing sceneless entities or entities from another scene,
+        //if any of these entities exist in another scene then
+        //they will be removed from there and added to this scene
+        void AddEntities(const vector<u32>& entityIDs);
 
         const string& GetTitle() const;
         void SetTitle(string_view title);
@@ -53,11 +59,6 @@ namespace ElypsoEngine::Graphics
         //Returns true if this scene is currently loaded
         KNODISCARD
 		bool IsActiveScene() const;
-
-        //Returns true if this scenes entity graphics data will stay in memory after unloading the scene
-        KNODISCARD
-		bool CanStayAlive() const;
-        void SetStayAlive(bool newValue);
 
         //Set this scene as the current active, the last loaded scene will be unloaded.
         //Set keepAlive to true if you want this scenes assets to stay in memory even after the scene is unloaded.
@@ -73,12 +74,8 @@ namespace ElypsoEngine::Graphics
         u32 ID{};
         u32 windowID{};
 
+        vector<u32> entityIDs{};
+
         string title{};
-
-        bool stayAlive{};
-
-        path escnPath{};
-
-        vector<u32> sceneIDs{};
     };
 }

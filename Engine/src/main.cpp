@@ -326,7 +326,7 @@ void EngineInit()
     Log::Print(
         "Finished initializing Elypso Engine!",
         "EE_MAIN",
-        LogType::LOG_SUCCESS);
+        LogType::SUCCESS);
 }
 
 void FrameEarlyUpdate()
@@ -426,7 +426,7 @@ void FrameLateUpdate()
             duration<f64, std::milli>(frameEnd - frameLogic.frameStart).count(),
             duration<f64, std::milli>(elapsed).count()),
         "EE_MAIN",
-        LogType::LOG_INFO);
+        LogType::INFO);
     */
 }
 
@@ -438,25 +438,5 @@ void ValidateEngineContent()
             "Elypso Engine main loop error",
             "All engine windows were destroyed, "
             "the program has nowhere to draw to!");
-    }
-
-    for (Entity* e : Entity::GetRegistry().GetAllContent())
-    {
-        if (!e)
-        {
-            KalaWindowCore::ForceClose(
-                "Engine main loop error",
-                "Found dangling entity in runtime content!");
-        }
-    }
-
-    for (Scene* s : Scene::GetRegistry().GetAllContent())
-    {
-        if (!s)
-        {
-            KalaWindowCore::ForceClose(
-                "Engine main loop error",
-                "Found dangling scene in runtime content!");
-        }
     }
 }

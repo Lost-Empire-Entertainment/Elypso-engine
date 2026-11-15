@@ -8,10 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "math_utils.hpp"
+
 #include "core/ee_registry.hpp"
 
 namespace ElypsoEngine::Graphics
 {
+    using KalaHeaders::KalaMath::Transform3D;
+    using KalaHeaders::KalaMath::Transform2D;
+
     using ElypsoEngine::Core::EngineRegistry;
 
     using std::string;
@@ -19,16 +24,52 @@ namespace ElypsoEngine::Graphics
     using std::vector;
     using std::default_delete;
 
-    enum class SubEntityType : u8
+    enum class ComponentType
     {
-        SUBENTITY_MESH    = 0,
-        SUBENTITY_CAMERA  = 1
+        //from KalaGraphics
+        MESH_3D,
+        //from KalaGraphics
+        MESH_2D,
+
+        //from KalaGraphics
+        TEXT,
+        //from KalaGraphics
+        //NOT YET IMPLEMENTED
+        CLIPAREA,
+        
+        //from KalaGraphics,
+        //does not support isEnabled
+        CAMERA_3D,
+        //from KalaGraphics,
+        //does not support isEnabled
+        CAMERA_2D,
+
+        //from KalaAudio
+        //NOT YET IMPLEMENTED
+        AUDIO_LISTENER,
+        //from KalaAudio
+        //NOT YET IMPLEMENTED
+        AUDIO_PLAYER,
+
+        //from KalaPhysics
+        //NOT YET IMPLEMENTED
+        RIGIDBODY,
+        //from KalaPhysics
+        //NOT YET IMPLEMENTED
+        COLLIDER,
+
+        //from KalaServer
+        //NOT YET IMPLEMENTED
+        SERVER,
+        //from KalaServer, only one allowed for entire program
+        //NOT YET IMPLEMENTED
+        CLIENT
     };
 
-    struct LIB_API SubEntity
+    struct LIB_API Component
     {
         bool isEnabled = true;
-        SubEntityType type{};
+        ComponentType type{};
         u32 targetID{};
     };
 
@@ -39,54 +80,69 @@ namespace ElypsoEngine::Graphics
         KNODISCARD
 		static EngineRegistry<Entity>& GetRegistry();
 
-        //Initialize a new entity inside a scene.
-        //You must create the subentity in the target library first before assigning its ID here,
-        //Elypso Engine will not initialize meshes, cameras and other future types for you
+        //Initialize a new entity inside a scene,
+        //assign a KalaGraphics viewport to control which one to use,
+        //or leave it blank at let it be auto-assigned
         KNODISCARD
 		static Entity* Initialize(
             string_view title,
             u32 sceneID,
-            vector<SubEntity>&& subEntities);
+            u32 viewportID = 0);
 
         KNODISCARD
 		u32 GetID() const;
         KNODISCARD
 		u32 GetSceneID() const;
+        //Returns KalaGraphics viewport ID if one has been manually or automatically assigned,
+        //returns 0 if no valid one has been manually or automatically added for this entity
+        KNODISCARD
+        u32 GetViewportID() const;
 
         const string& GetTitle() const;
-        KNODISCARD
-		bool SetTitle(string_view newTitle);
+		void SetTitle(string_view newTitle);
 
-        KNODISCARD
-		bool MoveToScene(u32 sceneID);
-        KNODISCARD
-		bool MoveToScene(string_view sceneTitle);
+		void MoveToScene(u32 sceneID);
+		void MoveToScene(string_view sceneTitle);
 
-        const vector<SubEntity>& GetSubEntities() const;
-        KNODISCARD
-		bool AddSubEntity(SubEntity&& subEntity);
-        //If viaID is true then the subEntity is removed via its ID,
+        const vector<Component>& GetComponents() const;
+        //Add existing KalaKit component by ID to this entity or leave the ID empty
+        //and let KalaKit create it and assign it by type to this entity 
+		void AddComponent(Component component);
+        //If viaID is true then the component is removed via its ID,
         //otherwise it is removed via its slot in the vector
-        KNODISCARD
-		bool RemoveSubEntity(
+		void RemoveComponent(
             bool viaID,
-            u32 value);
+            u32 targetValue);
 
+        //Returns true if the object is found and it is enabled,
+        //also verifies the underlying KalaKit state for this component.
+        //If viaID is true then the component is checked via its ID,
+        //otherwise it is checked via its slot in the vector
         KNODISCARD
-		bool SetParentEntity(u32 entityID);
-        void RemoveParentEntity();
+        bool GetComponentEnabledState(
+            bool viaID,
+            u32 targetValue) const;
+        //Sets component enabled state and also sets its underlying KalaKit state.
+        //If viaID is true then the component is checked via its ID,
+        //otherwise it is checked via its slot in the vector
+        void SetComponentEnabledState(
+            bool newValue,
+            bool viaID,
+            u32 targetValue);
+
         KNODISCARD
 		u32 GetParentEntity();
+		void SetParentEntity(u32 entityID);
+        void RemoveParentEntity();
 
         KNODISCARD
-		bool AddChildEntity(u32 entityID);
+        const vector<u32>& GetChildEntities() const;
+		void AddChildEntity(u32 entityID);
         //If viaID is true then the child is removed via its ID,
         //otherwise it is removed via its slot in the vector
-        KNODISCARD
-		bool RemoveChildEntity(
+		void RemoveChildEntity(
             bool viaID,
             u32 value);
-        const vector<u32>& GetChildEntities() const;
 
         void Destroy();
     private:
@@ -94,10 +150,11 @@ namespace ElypsoEngine::Graphics
 
         u32 ID{};
         u32 sceneID{};
+        u32 viewportID{};
 
-        string title{};
+        string title = "UNNAMED_ENTITY";
 
-        vector<SubEntity> subEntities{};
+        vector<Component> components{};
 
         u32 parentEntity{};
         vector<u32> childEntities{};

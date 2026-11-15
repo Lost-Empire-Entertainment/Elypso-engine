@@ -50,61 +50,72 @@ namespace KalaGraphics::Graphics
     using std::pair;
     using std::default_delete;
 
-    enum class TexturePixelFormat : u8
+    enum class TexturePixelFormat
     {
-        FORMAT_BASIC_R8       = 0, //1 channel,  8-bit UNORM
-        FORMAT_BASIC_R8G8     = 1, //2 channels, 8-bit UNORM
-        FORMAT_BASIC_R8G8B8A8 = 3, //4 channels, 8-bit UNORM
+        //1 channel, 8-bit UNORM
+        BASIC_R8,
+        //2 channels, 8-bit UNORM
+        BASIC_R8G8,
+        //4 channels, 8-bit UNORM
+        BASIC_R8G8B8A8,
 
-        FORMAT_SRGB_R8G8B8A8  = 4  //4 channels, 8-bit sRGB-encoded
+        //4 channels, 8-bit sRGB-encoded
+        SRGB_R8G8B8A8
 
         //TODO: consider if HDR is worth adding or not
     };
 
-    enum class TextureType : u8
+    enum class TextureType
     {
-        TYPE_2D            = 0, //single, flat image, layer count always 1
-        TYPE_2D_ARRAY      = 1, //N independent 2D layers
-        TYPE_CUBEMAP       = 2, //always 6 layers, one per cube face
-        TYPE_CUBEMAP_ARRAY = 3, //6 layers per cubemap, one per cube face
-        TYPE_3D            = 4  //volumetric, layerCount = depth
+        //Single, flat image, layer count always 1
+        TYPE_2D,
+        //N independent 2D layers
+        TYPE_2D_ARRAY,
+        //Always 6 layers, one per cube face
+        TYPE_CUBEMAP,
+        //6 layers per cubemap, one per cube face
+        TYPE_CUBEMAP_ARRAY,
+        //Volumetric, layerCount = depth
+        TYPE_3D
     };
 
-    enum class TextureFilterMode : u8
+    enum class TextureFilterMode
     {
-        FILTER_LINEAR = 0, //standard blended filter mode, good for realistic textures
-        FILTER_NEAREST = 1 //unfiltered texture, good for pixel games
+        //Standard blended filter mode, good for realistic textures
+        LINEAR,
+        //Unfiltered texture, good for pixel games
+        NEAREST
     };
 
-    enum class TextureShadowMapMode : u8
+    enum class TextureShadowMapMode
     {
-        //comparison always passes,
+        //Comparison always passes,
         //default if not using shadow mapping
-        MODE_ALWAYS = 0,
+        ALWAYS,
 
-        //standard shadow map comparison,
+        //Standard shadow map comparison,
         //passes if the fragments depth is less
         //than the stored shadow map depth
-        MODE_LESS = 1,
-        //same as less, but also passes on exact equality,
+        LESS,
+        //Same as less, but also passes on exact equality,
         //sometimes used to avoid self-shadowing artifacts
         //at the exact depth boundary
-        MODE_LESS_OR_EQUAL = 2
+        LESS_OR_EQUAL
     };
 
-    enum class TextureWrapMode : u8
+    enum class TextureWrapMode
     {
-        WRAP_REPEAT = 0,
-        WRAP_MIRRORED_REPEAT = 1,
-        WRAP_CLAMP_TO_EDGE = 2,
-        WRAP_CLAMP_TO_BORDER = 3
+        REPEAT,
+        MIRRORED_REPEAT,
+        CLAMP_TO_EDGE,
+        CLAMP_TO_BORDER
     };
 
-    enum class TextureBorderColor : u8
+    enum class TextureBorderColor
     {
-        COLOR_TRANSPARENT_BLACK = 0,
-        COLOR_OPAQUE_BLACK = 1,
-        COLOR_OPAQUE_WHITE = 2
+        TRANSPARENT_BLACK,
+        OPAQUE_BLACK,
+        OPAQUE_WHITE
     };
 
     //Defaults to 1x1 white pixel unless overwritten
@@ -119,13 +130,13 @@ namespace KalaGraphics::Graphics
             0xFF
         };
 
-        TexturePixelFormat format       = TexturePixelFormat::FORMAT_BASIC_R8G8B8A8;
+        TexturePixelFormat format       = TexturePixelFormat::BASIC_R8G8B8A8;
         TextureType type                = TextureType::TYPE_2D;
-        TextureFilterMode filterMode    = TextureFilterMode::FILTER_LINEAR;
-        TextureShadowMapMode shadowMode = TextureShadowMapMode::MODE_ALWAYS;
-        TextureWrapMode wrapMode        = TextureWrapMode::WRAP_REPEAT;
+        TextureFilterMode filterMode    = TextureFilterMode::LINEAR;
+        TextureShadowMapMode shadowMode = TextureShadowMapMode::ALWAYS;
+        TextureWrapMode wrapMode        = TextureWrapMode::REPEAT;
         //only used if wrap mode is WRAP_CLAMP_TO_BORDER
-        TextureBorderColor borderColor  = TextureBorderColor::COLOR_OPAQUE_BLACK;
+        TextureBorderColor borderColor  = TextureBorderColor::OPAQUE_BLACK;
 
         //disabled by default, quality improvement for textures in 3D spaces when viewed at steep angles,
         //should not be used for UI textures or if using FILTER_NEAREST

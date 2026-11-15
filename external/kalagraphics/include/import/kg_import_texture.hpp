@@ -32,7 +32,7 @@ namespace KalaGraphics::Import
     {
         vector<u8> pixelData{};
         vec2 size{};
-        TexturePixelFormat pixelFormat = TexturePixelFormat::FORMAT_BASIC_R8G8B8A8;
+        TexturePixelFormat pixelFormat = TexturePixelFormat::BASIC_R8G8B8A8;
     };
 
     class LIB_API ImportTexture

@@ -37,8 +37,6 @@ using std::make_unique;
 using std::unique_ptr;
 using std::vector;
 
-static vector<FILE*> openFiles{};
-
 namespace ElypsoEngine::Graphics
 {
     static EngineRegistry<Scene> registry{};
@@ -54,7 +52,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to get active scene because engine window was invalid! Reason: " + err,
                 "EE_SCENE",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -100,7 +98,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to load scene '" + string(title) + "' because it was invalid!",
                 "EE_SCENE",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return;
         }
@@ -110,8 +108,7 @@ namespace ElypsoEngine::Graphics
 
     Scene* Scene::Initialize(
         string_view title,
-        u32 windowID,
-        path&& escnPath)
+        u32 windowID)
     {
         EngineWindow* ew{};
         string err = EngineWindow::GetRegistry().GetContent(windowID, ew);
@@ -121,7 +118,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene for engine window '" + to_string(windowID) 
                 + "' because the engine window was invalid! Reason: " + err,
                 "EE_SCENE",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -139,7 +136,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene for engine window '" 
                 + to_string(windowID) + "'! Reason: " + err,
                 "EE_SCENE",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -149,7 +146,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene for engine window '" 
                 + to_string(windowID) + "' because its title length was out of range!",
                 "EE_SCENE",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return nullptr;
         }
@@ -183,7 +180,7 @@ namespace ElypsoEngine::Graphics
                         + "' because a scene with that title already exists in window '" 
                         + to_string(ew->GetID()) + "'!",
                         "EE_SCENE",
-                        LogType::LOG_WARNING);
+                        LogType::WARNING);
 
                     return nullptr;
                 }
@@ -218,13 +215,14 @@ namespace ElypsoEngine::Graphics
             + "' with ID '" + to_string(newID) 
             + "' for engine window '" + to_string(windowID) + "'!",
 			"EE_SCENE",
-			LogType::LOG_SUCCESS);
+			LogType::SUCCESS);
 
         return scenePtr;
     }
 
     u32 Scene::GetID() const { return ID; }
     u32 Scene::GetWindowID() const { return windowID; }
+    vector<u32> Scene::GetEntityIDs() const { return entityIDs; }
 
     bool Scene::IsActiveScene() const
     {
@@ -255,17 +253,6 @@ namespace ElypsoEngine::Graphics
         return false;
     }
 
-    bool Scene::CanStayAlive() const { return stayAlive; }
-    void Scene::SetStayAlive(bool newValue)
-    { 
-        stayAlive = newValue;
-
-        Log::Print(
-            "Set scene '" + to_string(ID) + "' stayAlive state to '" + (stayAlive ? "true" : "false") + "'.",
-            "EE_SCENE",
-            LogType::LOG_INFO);
-    }
-
     void Scene::SetTitle(string_view newtitle)
     {
         bool outResult{};
@@ -280,7 +267,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to update scene '" + to_string(ID) + "' title! Reason: " + err,
                 "EE_SCENE",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return;
         }
@@ -290,7 +277,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to update scene '" + to_string(ID) 
                 + "' title because the new name length was out of range!",
                 "EE_SCENE",
-                LogType::LOG_WARNING);
+                LogType::WARNING);
 
             return;
         }
@@ -322,7 +309,7 @@ namespace ElypsoEngine::Graphics
                     Log::Print(
                         "A scene with the title '" + string(newtitle) + "' already exists in window '" + to_string(ew->GetID()) + "'!",
                         "EE_SCENE",
-                        LogType::LOG_WARNING);
+                        LogType::WARNING);
 
                     return;
                 }
@@ -334,7 +321,7 @@ namespace ElypsoEngine::Graphics
         Log::Print(
             "Set scene '" + to_string(ID) + "' title to '" + title + "'!",
             "EE_SCENE",  
-            LogType::LOG_SUCCESS);
+            LogType::SUCCESS);
     }
 
     const string& Scene::GetTitle() const { return title; }
@@ -377,15 +364,15 @@ namespace ElypsoEngine::Graphics
             + "' with ID '" + to_string(ID) 
             + "' for engine window '" + to_string(windowID) + "'!",
 			"EE_SCENE",
-			LogType::LOG_SUCCESS);
+			LogType::SUCCESS);
     }
 
     void Scene::Unload()
     {
-        for (const auto& e : sceneIDs)
+        for (const u32 eid : entityIDs)
         {
-            Entity* en{};
-            string err = Entity::GetRegistry().GetContent(e, en);
+            Entity* e{};
+            string err = Entity::GetRegistry().GetContent(eid, e);
             if (!err.empty())
             {
                 KalaWindowCore::ForceClose(
@@ -394,20 +381,10 @@ namespace ElypsoEngine::Graphics
                     + "' because it had an invalid entity! Reason: " + err);
             }
 
-            en->Destroy();
+            e->Destroy();
         }
 
-        sceneIDs.clear();
-
-        for (auto& f : openFiles)
-        {
-            if (f)
-            {
-                fclose(f);
-                f = nullptr;
-            }
-        }
-        openFiles.clear();
+        entityIDs.clear();
     }
 
     void Scene::Destroy()
@@ -429,10 +406,10 @@ namespace ElypsoEngine::Graphics
             if (it != ew->sceneIDs.end()) ew->sceneIDs.erase(it);
         }
 
-        for (const auto& e : sceneIDs)
+        for (const u32 eid : entityIDs)
         {
-            Entity* en{};
-            string err = Entity::GetRegistry().GetContent(e, en);
+            Entity* e{};
+            string err = Entity::GetRegistry().GetContent(eid, e);
             if (!err.empty())
             {
                 KalaWindowCore::ForceClose(
@@ -441,23 +418,10 @@ namespace ElypsoEngine::Graphics
                     + "' because it had an invalid entity! Reason: " + err);
             }
 
-            en->Destroy();
+            e->Destroy();
         }
 
-        sceneIDs.clear();
-
-        if (registry.GetAllContent().empty())
-        {
-            for (auto& f : openFiles)
-            {
-                if (f)
-                {
-                    fclose(f);
-                    f = nullptr;
-                }
-            }
-            openFiles.clear();
-        }
+        entityIDs.clear();
 
         err = registry.DestroyContent(ID);
         if (!err.empty())
@@ -473,6 +437,6 @@ namespace ElypsoEngine::Graphics
         Log::Print(
             "Destroying scene '" + to_string(ID) + "'.",
             "EE_SCENE",
-            LogType::LOG_INFO);
+            LogType::INFO);
     }
 }

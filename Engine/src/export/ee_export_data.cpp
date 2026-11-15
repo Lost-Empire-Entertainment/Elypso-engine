@@ -61,7 +61,7 @@ static string VerifyAssetBlocks(const vector<UserBlock>& assetBlocks)
                 Log::Print(
                     "Failed to check asset block name! Reason: " + err,
                     "EE_EXPORT_DATA",
-                    LogType::LOG_WARNING);
+                    LogType::WARNING);
 
                 return false;
             }
@@ -217,14 +217,14 @@ static vector<u8> WriteData(
                             outAssetSize = outData.size();
 
                             const path ext = abspath.extension();
-                            if (ext == ".glb") outAssetType = scast<u8>(AssetType::A_MODEL);
-                            if (ext == ".spv") outAssetType = scast<u8>(AssetType::A_SHADER);
-                            if (ext == ".png") outAssetType = scast<u8>(AssetType::A_TEXTURE);
-                            if (ext == ".opus") outAssetType = scast<u8>(AssetType::A_AUDIO_OPUS);
-                            if (ext == ".mp3") outAssetType = scast<u8>(AssetType::A_AUDIO_MP3);
-                            if (ext == ".wav") outAssetType = scast<u8>(AssetType::A_AUDIO_WAV);
-                            if (ext == ".ttf") outAssetType = scast<u8>(AssetType::A_FONT_TTF);
-                            if (ext == ".otf") outAssetType = scast<u8>(AssetType::A_FONT_OTF);
+                            if (ext == ".glb") outAssetType = scast<u8>(AssetType::MODEL);
+                            if (ext == ".spv") outAssetType = scast<u8>(AssetType::SHADER);
+                            if (ext == ".png") outAssetType = scast<u8>(AssetType::TEXTURE);
+                            if (ext == ".opus") outAssetType = scast<u8>(AssetType::AUDIO_OPUS);
+                            if (ext == ".mp3") outAssetType = scast<u8>(AssetType::AUDIO_MP3);
+                            if (ext == ".wav") outAssetType = scast<u8>(AssetType::AUDIO_WAV);
+                            if (ext == ".ttf") outAssetType = scast<u8>(AssetType::FONT_TTF);
+                            if (ext == ".otf") outAssetType = scast<u8>(AssetType::FONT_OTF);
 
                             append_binary_data(
                                 dataBlock,
@@ -295,7 +295,7 @@ static vector<u8> WriteData(
         Log::Print(
             "Failed to write to target path '" + targetPath.string() + "'! Reason: " + err,
             "EE_EXPORT_DATA",
-            LogType::LOG_WARNING);
+            LogType::WARNING);
 
         return {};
     }
@@ -306,7 +306,7 @@ static vector<u8> WriteData(
         Log::Print(
             "Failed to write to target path '" + targetPath.string() + "'! Reason: " + err,
             "EE_EXPORT_DATA",
-            LogType::LOG_WARNING);
+            LogType::WARNING);
 
         return {};
     }
@@ -362,7 +362,7 @@ namespace ElypsoEngine::Export
         Log::Print(
             "Finished exporting to target path '" + targetPath.string() + "'!",
             "EE_EXPORT_DATA",
-            LogType::LOG_SUCCESS);
+            LogType::SUCCESS);
 
         return "";
     }

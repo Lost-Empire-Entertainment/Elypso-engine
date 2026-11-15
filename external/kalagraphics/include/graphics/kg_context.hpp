@@ -97,24 +97,22 @@ namespace KalaGraphics::Graphics
     //For future bindless-style setups
     static constexpr u32 MAX_SAMPLER_DESCRIPTORS = 64;
 
-    enum class Severity : u8
+    enum class Severity
     {
-        SEVERITY_INFO = 0,
-        SEVERITY_WARNING = 1,
-        SEVERITY_FATAL = 2
+        INFO,
+        WARNING,
+        FATAL
     };
 
-    enum class VSyncState : u8
+    enum class VSyncState
 	{
-        //Lowest latency, no tearing (mailbox, fifo_relaxed/fifo as fallback)
-        VSYNC_ON_TRIPLE_BUFFERED = 0,
-
+        //Uncapped framerates, no waiting, causes tearing (immediate)
+        OFF,
         //Frames synced to display refresh rate to prevent stuttering,
         //can cause tearing (fifo_relaxed, fifo as fallback)
-        VSYNC_ON_ADAPTIVE = 1,
-
-        //Uncapped framerates, no waiting, causes tearing (immediate)
-        VSYNC_OFF = 2
+        ADAPTIVE,
+        //Lowest latency, no tearing (mailbox, fifo_relaxed/fifo as fallback)
+        TRIPLE_BUFFERED
 	};
 
     struct LIB_API GraphicsContextData
@@ -325,7 +323,7 @@ namespace KalaGraphics::Graphics
         //viewports that use this graphics context
         vector<u32> extraViewportIDs{};
 
-        VSyncState vsyncState = VSyncState::VSYNC_ON_TRIPLE_BUFFERED;
+        VSyncState vsyncState = VSyncState::TRIPLE_BUFFERED;
 
         GraphicsContextData contextData{};
 
