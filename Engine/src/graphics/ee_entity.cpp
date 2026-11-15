@@ -28,6 +28,7 @@ using KalaHeaders::KalaLog::LogType;
 using KalaWindow::Core::KalaWindowCore;
 
 using KalaGraphics::Graphics::Mesh;
+using KalaGraphics::Graphics::CameraType;
 using KalaGraphics::Graphics::Camera;
 using KalaGraphics::Graphics::Shader;
 using KalaGraphics::Graphics::GraphicsContext;
@@ -390,6 +391,17 @@ namespace ElypsoEngine::Graphics
         case ComponentType::CAMERA_3D:
         case ComponentType::CAMERA_2D:
         {
+            if (component.isEnabled == false)
+            {
+                component.isEnabled = true;
+
+                Log::Print(
+                    "A camera enabled state can never be set to false, so a camera component cannot be initialized as false. "
+                    "Overrode camera component enabled state for entity '" + to_string(ID) + "' to true.",
+                    "EE_ENTITY",
+                    LogType::WARNING);
+            }
+
             if (component.targetID != 0)
             {
                 Camera* cam{};
@@ -529,8 +541,8 @@ namespace ElypsoEngine::Graphics
                     }
                     else
                     {
-                        if (gctx->GetRootViewportID() != viewportID
-                            && !ContainsValue(gctx->GetExtraViewportIDs(), viewportID))
+                        if (gctx->GetRootViewportID() != vpID
+                            && !ContainsValue(gctx->GetExtraViewportIDs(), vpID))
                         {
                             Log::Print(
                                 "Failed to create new component for entity '" + to_string(ID) 
@@ -539,6 +551,36 @@ namespace ElypsoEngine::Graphics
                                 LogType::WARNING);
 
                             return 0;
+                        }
+
+                        if (vpID == gctx->GetRootViewportID())
+                        {
+                            string err = Viewport::GetRegistry().GetContent(vpID, vp);
+                            if (!err.empty())
+                            {
+                                KalaWindowCore::ForceClose(
+                                    "Elypso Engine entity error",
+                                    "Failed to create new component for entity '" 
+                                    + to_string(ID) + "' because root viewport was invalid! Reason: " + err);
+                            }
+                        }
+                        else
+                        {
+                            for (const u32 extraVPID : gctx->GetExtraViewportIDs())
+                            {
+                                if (extraVPID != vpID) continue;
+
+                                string err = Viewport::GetRegistry().GetContent(extraVPID, vp);
+                                if (!err.empty())
+                                {
+                                    KalaWindowCore::ForceClose(
+                                        "Elypso Engine entity error",
+                                        "Failed to create new component for entity '" 
+                                        + to_string(ID) + "' because extra viewport was invalid! Reason: " + err);
+                                }
+
+                                break;
+                            }
                         }
                     }
 
@@ -552,18 +594,56 @@ namespace ElypsoEngine::Graphics
             default:
             case ComponentType::MESH_3D:
             {
+                u32 shaderID = get_shader(viewportID, true);
+                if (shaderID == 0) return;
+
+                EngineCore::SyncID();
+                Mesh* mesh = Mesh::Initialize(shaderID);
+                
+                if (!mesh) return;
+                component.targetID = mesh->GetID();
+
                 break;
             }
             case ComponentType::MESH_2D:
             {
+                u32 shaderID = get_shader(viewportID, false);
+                if (shaderID == 0) return;
+
+                EngineCore::SyncID();
+                Mesh* mesh = Mesh::Initialize(shaderID);
+
+                if (!mesh) return;
+                component.targetID = mesh->GetID();
+
                 break;
             }
             case ComponentType::CAMERA_3D:
             {
+                u32 shaderID = get_shader(viewportID, true);
+                if (shaderID == 0) return;
+
+                EngineCore::SyncID();
+                Camera* cam = Camera::Initialize(shaderID);
+
+                if (!cam) return;
+                component.targetID = cam->GetID();
+
                 break;
             }
             case ComponentType::CAMERA_2D:
             {
+                u32 shaderID = get_shader(viewportID, false);
+                if (shaderID == 0) return;
+
+                EngineCore::SyncID();
+                Camera* cam = Camera::Initialize(
+                    shaderID,
+                    CameraType::ORTHOGRAPHIC); 
+
+                if (!cam) return;
+                component.targetID = cam->GetID();
+
                 break;
             }
             }
@@ -576,25 +656,250 @@ namespace ElypsoEngine::Graphics
             "EE_ENTITY",
             LogType::SUCCESS);
     }
-    void Entity::RemoveComponent(
-        bool viaID,
-        u32 value)
+    void Entity::RemoveComponent(u32 value)
     {
-        /*TODO: fill*/
+        auto it = components.end();
+        it = find_if(components.begin(), components.end(),
+            [&](const Component& c)
+            {
+                return c.targetID == value;
+            });
+
+        if (it == components.end())
+        {
+            Log::Print(
+                "Failed to remove component '" + to_string(value) + "' from entity '" 
+                + to_string(ID) + "' because the component was invalid!",
+                "EE_ENTITY",
+                LogType::WARNING);
+
+            return;
+        }
+
+        Component component = *it;
+        components.erase(it);
+
+        switch (component.type)
+        {
+        default:
+        case ComponentType::MESH_3D:
+        case ComponentType::MESH_2D:
+        {
+            Mesh* m{};
+            string _ = Mesh::GetRegistry().GetContent(component.targetID, m);
+
+            if (!m)
+            {
+                Log::Print(
+                    "Failed to destroy mesh '" + to_string(component.targetID) 
+                    + "' for entity '" + to_string(ID) + "' probably because "
+                    "the mesh was already destroyed! Components should not be manually destroyed.",
+                    "EE_ENTITY",
+                    LogType::WARNING);
+
+                return;
+            }
+
+            m->Destroy();
+
+            break;
+        }
+        case ComponentType::CAMERA_3D:
+        case ComponentType::CAMERA_2D:
+        {
+            Camera* c{};
+            string _ = Camera::GetRegistry().GetContent(component.targetID, c);
+
+            if (!c)
+            {
+                Log::Print(
+                    "Failed to destroy camera '" + to_string(component.targetID) 
+                    + "' for entity '" + to_string(ID) + "' probably because "
+                    "the camera was already destroyed! Components should not be manually destroyed.",
+                    "EE_ENTITY",
+                    LogType::WARNING);
+
+                return;
+            }
+
+            c->Destroy();
+
+            break;
+        }
+        }
+
+        Log::Print(
+            "Removed component '" + to_string(value) 
+            + "' from entity '" + to_string(ID) + "'!",
+            "EE_ENTITY",
+            LogType::SUCCESS);
     }
 
-    bool Entity::GetComponentEnabledState(
-        bool viaID, 
-        u32 targetValue) const
+    bool Entity::GetComponentEnabledState(u32 targetValue)
     {
-        return false;
+        Component* component{};
+        for (Component& c : components)
+        {
+            if (c.targetID == targetValue)
+            {
+                component = &c;
+                break;
+            }
+        }
+
+        if (component->targetID == 0)
+        {
+            Log::Print(
+                "Failed to get component '" + to_string(targetValue) + "' enabled state for entity '" 
+                + to_string(ID) + "' because the component was not found on this entity!",
+                "EE_ENTITY",
+                LogType::WARNING);
+
+            return false;
+        }
+
+        switch (component->type)
+        {
+        default:
+        case ComponentType::MESH_3D:
+        case ComponentType::MESH_2D:
+        {
+            Mesh* m{};
+            string err = Mesh::GetRegistry().GetContent(targetValue, m);
+            if (!err.empty())
+            {
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine entity error",
+                    "Failed to get entity '" + to_string(ID) 
+                    + "' component enabled state because it was invalid! Reason: " + err);
+            }
+
+            if (component->isEnabled != m->IsVisible())
+            {
+                component->isEnabled = m->IsVisible();
+                string enabledStr = component->isEnabled ? "true" : "false";
+
+                Log::Print(
+                    "Mesh '" + to_string(component->targetID) 
+                    + "' visible state did not match the components enabled state in entity '" + to_string(ID) 
+                    + "'! Updating component enabled state to new value '" + enabledStr + "'.",
+                    "EE_ENTITY",
+                    LogType::WARNING);
+            }
+
+            break;
+        }
+        case ComponentType::CAMERA_3D:
+        case ComponentType::CAMERA_2D:
+        {
+            Log::Print(
+                "Cameras are always enabled, so GetComponentEnabledState always returns true.",
+                "EE_ENTITY",
+                LogType::WARNING);
+
+            break;
+        }
+        }
+
+        return component->isEnabled;
     }
     void Entity::SetComponentEnabledState(
         bool newValue, 
-        bool viaID, 
         u32 targetValue)
     {
+        Component* component{};
+        for (Component& c : components)
+        {
+            if (c.targetID == targetValue)
+            {
+                component = &c;
+                break;
+            }
+        }
 
+        if (!component)
+        {
+            Log::Print(
+                "Failed to set component '" + to_string(targetValue) + "' enabled state for entity '" 
+                + to_string(ID) + "' because the component was not found on this entity!",
+                "EE_ENTITY",
+                LogType::WARNING);
+
+            return;
+        }
+
+        bool isAlreadySame{};
+        bool bothDoNotMatch{};
+
+        switch (component->type)
+        {
+        default:
+        case ComponentType::MESH_3D:
+        case ComponentType::MESH_2D:
+        {
+            Mesh* m{};
+            string err = Mesh::GetRegistry().GetContent(targetValue, m);
+            if (!err.empty())
+            {
+                KalaWindowCore::ForceClose(
+                    "Elypso Engine entity error",
+                    "Failed to get entity '" + to_string(ID) 
+                    + "' component enabled state because it was invalid! Reason: " + err);
+            }
+
+            if (m->IsVisible() == newValue)
+            {
+                isAlreadySame = true;
+            }
+            if (m->IsVisible() != component->isEnabled)
+            {
+                bothDoNotMatch = true;
+            }
+
+            m->SetVisibleState(newValue);
+            component->isEnabled = newValue;
+
+            break;
+        }
+        case ComponentType::CAMERA_3D:
+        case ComponentType::CAMERA_2D:
+        {
+            Log::Print(
+                "Failed to set camera component enabled state because camera enabled state can only be true!",
+                "EE_ENTITY",
+                LogType::WARNING);
+
+            return;
+        }
+        }
+
+        string enabledStr = component->isEnabled ? "true" : "false";
+
+        if (bothDoNotMatch)
+        {
+            Log::Print(
+                "Entity '" + to_string(ID) + "' component '" 
+                + to_string(component->targetID) + "' and its underlying KalaKit object state did not match! "
+                "It is discouraged to manually update it outside of Elypso Engine.",
+                "EE_ENTITY",
+                LogType::WARNING);
+        }
+        if (isAlreadySame)
+        {
+            Log::Print(
+                "Failed to set entity '" + to_string(ID) + "' component '" 
+                + to_string(component->targetID) + "' enabled state to '" + enabledStr + "'!",
+                "EE_ENTITY",
+                LogType::WARNING);
+
+            return;
+        }
+
+        Log::Print(
+            "Set entity '" + to_string(ID) + "' component '" 
+            + to_string(component->targetID) + "' enabled state to '" + enabledStr + "'!",
+            "EE_ENTITY",
+            LogType::SUCCESS);
     }
 
     u32 Entity::GetParentEntity()
@@ -618,9 +923,7 @@ namespace ElypsoEngine::Graphics
     {
         /*TODO: fill*/
     }
-    void Entity::RemoveChildEntity(
-        bool viaID,
-        u32 value)
+    void Entity::RemoveChildEntity(u32 value)
     {
         /*TODO: fill*/
     }

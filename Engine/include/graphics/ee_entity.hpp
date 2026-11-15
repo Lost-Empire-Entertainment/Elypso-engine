@@ -108,26 +108,16 @@ namespace ElypsoEngine::Graphics
         //Add existing KalaKit component by ID to this entity or leave the ID empty
         //and let KalaKit create it and assign it by type to this entity 
 		void AddComponent(Component component);
-        //If viaID is true then the component is removed via its ID,
-        //otherwise it is removed via its slot in the vector
-		void RemoveComponent(
-            bool viaID,
-            u32 targetValue);
+        //Remove the component and destroy its undelying Kalakit object
+		void RemoveComponent(u32 targetValue);
 
         //Returns true if the object is found and it is enabled,
-        //also verifies the underlying KalaKit state for this component.
-        //If viaID is true then the component is checked via its ID,
-        //otherwise it is checked via its slot in the vector
+        //also verifies the underlying KalaKit state for this component
         KNODISCARD
-        bool GetComponentEnabledState(
-            bool viaID,
-            u32 targetValue) const;
-        //Sets component enabled state and also sets its underlying KalaKit state.
-        //If viaID is true then the component is checked via its ID,
-        //otherwise it is checked via its slot in the vector
+        bool GetComponentEnabledState(u32 targetValue);
+        //Sets component enabled state and also sets its underlying KalaKit state
         void SetComponentEnabledState(
             bool newValue,
-            bool viaID,
             u32 targetValue);
 
         KNODISCARD
@@ -138,11 +128,7 @@ namespace ElypsoEngine::Graphics
         KNODISCARD
         const vector<u32>& GetChildEntities() const;
 		void AddChildEntity(u32 entityID);
-        //If viaID is true then the child is removed via its ID,
-        //otherwise it is removed via its slot in the vector
-		void RemoveChildEntity(
-            bool viaID,
-            u32 value);
+		void RemoveChildEntity(u32 value);
 
         void Destroy();
     private:
