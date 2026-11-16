@@ -54,14 +54,16 @@ namespace KalaGraphics::Graphics
         PBR
     };
 
+    //What is the alpha mode type,
+	//requires 'TYPE_' prefix because Windows defines OPAQUE
     enum class AlphaMode
     {
         //default opaque mesh
-        OPAQUE,
+        TYPE_OPAQUE,
         //makes alpha-based values transparent if transparency is enabled 
-        BLEND,
+        TYPE_BLEND,
         //fragments below alpha cutoff are discarded, otherwise rendered fully opaque
-        MASK
+        TYPE_MASK
     };
 
     struct MaterialData_Rect

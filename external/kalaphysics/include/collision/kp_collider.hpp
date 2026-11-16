@@ -33,23 +33,23 @@ namespace KalaPhysics::Collision
 
     enum MovementRotationLock : u8
     {
-        L_MOVE_X      = 1 << 0,
-        L_MOVE_Y      = 1 << 1,
-        L_MOVE_Z      = 1 << 2,
-        L_MOVE_GLOBAL = 1 << 3, //0 = local, 1 = global
-        L_ROT_X       = 1 << 4,
-        L_ROT_Y       = 1 << 5,
-        L_ROT_Z       = 1 << 6,
-        L_ROT_GLOBAL  = 1 << 7  //0 = local, 1 = global
+        MOVE_X      = 1 << 0,
+        MOVE_Y      = 1 << 1,
+        MOVE_Z      = 1 << 2,
+        MOVE_GLOBAL = 1 << 3, //0 = local, 1 = global
+        ROT_X       = 1 << 4,
+        ROT_Y       = 1 << 5,
+        ROT_Z       = 1 << 6,
+        ROT_GLOBAL  = 1 << 7  //0 = local, 1 = global
     };
 
-    enum class ColliderType : u8
+    enum class ColliderType
     {
-        CT_SPHERE  = 0,
-        CT_AABB    = 1,
-        CT_OBB     = 2,
-        CT_CAPSULE = 3,
-        CT_MESH    = 4
+        SPHERE,
+        AABB,
+        OBB,
+        CAPSULE,
+        MESH
     };
 
     struct LIB_API Vertex
