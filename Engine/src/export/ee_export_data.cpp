@@ -61,7 +61,7 @@ static string VerifyAssetBlocks(const vector<UserBlock>& assetBlocks)
                 Log::Print(
                     "Failed to check asset block name! Reason: " + err,
                     "EE_EXPORT_DATA",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
 
                 return false;
             }
@@ -295,7 +295,7 @@ static vector<u8> WriteData(
         Log::Print(
             "Failed to write to target path '" + targetPath.string() + "'! Reason: " + err,
             "EE_EXPORT_DATA",
-            LogType::WARNING);
+            LogType::LOG_WARNING);
 
         return {};
     }
@@ -306,7 +306,7 @@ static vector<u8> WriteData(
         Log::Print(
             "Failed to write to target path '" + targetPath.string() + "'! Reason: " + err,
             "EE_EXPORT_DATA",
-            LogType::WARNING);
+            LogType::LOG_WARNING);
 
         return {};
     }
@@ -362,7 +362,7 @@ namespace ElypsoEngine::Export
         Log::Print(
             "Finished exporting to target path '" + targetPath.string() + "'!",
             "EE_EXPORT_DATA",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
 
         return "";
     }

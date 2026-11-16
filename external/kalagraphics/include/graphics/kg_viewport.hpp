@@ -150,12 +150,6 @@ namespace KalaGraphics::Graphics
         RootShaderTypeData fragShader{};
     };
 
-    struct RootMaterial
-    {
-        RootShaderTarget shaderTarget{};
-        u32 materialID{};
-    };
-
     //TODO: check root shader validity with spir-v reflect
 
     class LIB_API Viewport
@@ -202,9 +196,8 @@ namespace KalaGraphics::Graphics
         KNODISCARD
 		const vector<u32>& GetShader2DIDs() const;
 
+        //The ID of this root shader
         u32 GetRootShaderID(RootShaderTarget rootShaderTarget);
-
-        u32 GetRootMaterialID(RootShaderTarget rootShaderTarget);
 
         //Returns true if this viewport is
         //currently being detected by the Hit Test logic
@@ -346,7 +339,6 @@ namespace KalaGraphics::Graphics
         vector<u32> sorted2DMeshes{};
 
         array<RootShader, 3> rootShaderTable{};
-        array<RootMaterial, 3> rootMaterialTable{};
 
         //used only to prevent viewport from removing its ID from
         //graphics context viewport IDs list if the graphics context

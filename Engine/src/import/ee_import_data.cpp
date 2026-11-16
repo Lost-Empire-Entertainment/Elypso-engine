@@ -222,7 +222,7 @@ namespace ElypsoEngine::Import
         Log::Print(
             "Imported headers from asset data file '" + assetPath.string() + "'!",
             "EE_IMPORT_DATA",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
 
         return "";
     }
@@ -251,7 +251,7 @@ namespace ElypsoEngine::Import
             Log::Print(
                 "Failed to get asset data because no assets have been imported!",
                 "EE_IMPORT_DATA",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
         }
 
         return assetData;
@@ -372,7 +372,7 @@ namespace ElypsoEngine::Import
         Log::Print(
             "Streamed '" + to_string(assetCount) + "' assets!",
             "EE_IMPORT_DATA",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
 
         return "";
     }
@@ -384,7 +384,7 @@ namespace ElypsoEngine::Import
             Log::Print(
                 "Failed to clear imported data because there was nothing to clear!",
                 "EE_IMPORT_DATA",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -394,6 +394,6 @@ namespace ElypsoEngine::Import
         Log::Print(
             "Cleared imported data!",
             "EE_IMPORT_DATA",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
     }
 }

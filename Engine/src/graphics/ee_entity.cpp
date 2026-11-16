@@ -59,7 +59,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to create entity because its scene was invalid! Reason: " + err,
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -73,7 +73,7 @@ namespace ElypsoEngine::Graphics
                 Log::Print(
                     "Failed to create entity because its viewport was invalid! Reason: " + err,
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
 
                 return nullptr;
             }
@@ -105,7 +105,7 @@ namespace ElypsoEngine::Graphics
                     "Failed to create entity because viewport '" 
                     + to_string(viewportID) + "' is not valid for the current scene!",
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
 
                 return nullptr;
             }
@@ -128,7 +128,7 @@ namespace ElypsoEngine::Graphics
                     "One or more entities in scene '" + to_string(sceneID) 
                     + "' already share the same title '" + string(title) + "', this is discouraged.",
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
 
                 break;
             }
@@ -162,7 +162,7 @@ namespace ElypsoEngine::Graphics
         Log::Print(
 			"Created new entity '" + to_string(newID) + "'!",
 			"EE_ENTITY",
-			LogType::SUCCESS);
+			LogType::LOG_SUCCESS);
 
         return entityPtr;
     }
@@ -176,7 +176,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to get viewport ID because none has been manually or automatically assigned yet!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
         }
         
         return viewportID;
@@ -191,7 +191,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to set title because it was empty or too long!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -217,7 +217,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to move entity '" + to_string(ID) 
                 + "' to target scene '" + to_string(targetSceneID) + "' because it is already the same!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -230,7 +230,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to move entity '" + to_string(ID) 
                 + "' to target scene because it is invalid! Reason: " + err,
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -243,7 +243,7 @@ namespace ElypsoEngine::Graphics
             "Moved entity '" + to_string(ID) + "'"
             " to target scene '" + to_string(targetSceneID) + "'!",
             "EE_ENTITY",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
     }
     void Entity::MoveToScene(string_view sceneTitle)
     {
@@ -263,7 +263,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to move entity '" + to_string(ID) 
                 + "' to target scene '" + string(sceneTitle) + "' because it is already the same!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -284,7 +284,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to move entity '" + to_string(ID) 
                 + "' to target scene because no scene exists with title '" + string(sceneTitle) + "'!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -297,7 +297,7 @@ namespace ElypsoEngine::Graphics
             "Moved entity '" + to_string(ID) + "'"
             " to target scene '" + to_string(targetScene->ID) + "'!",
             "EE_ENTITY",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
     }
 
     const vector<Component>& Entity::GetComponents() const { return components; }
@@ -312,7 +312,7 @@ namespace ElypsoEngine::Graphics
                     "Failed to add component '" + to_string(component.targetID) + "' to entity '" + to_string(ID) 
                     + "' because it is a client component and it doesn't use ID!",
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
 
                 return;
             }
@@ -326,7 +326,7 @@ namespace ElypsoEngine::Graphics
                             "Failed to add client component to entity '" + to_string(ID) 
                             + "' because entity '" + to_string(e->ID) + "' already has a client component!",
                             "EE_ENTITY",
-                            LogType::WARNING);
+                            LogType::LOG_WARNING);
 
                         return;
                     }
@@ -347,7 +347,7 @@ namespace ElypsoEngine::Graphics
                             "Failed to add component '" + to_string(component.targetID) + "' to entity '" + to_string(ID) 
                             + "' because entity '" + to_string(e->ID) + "' already has that component!",
                             "EE_ENTITY",
-                            LogType::WARNING);
+                            LogType::LOG_WARNING);
 
                         return;
                     }
@@ -364,7 +364,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to add component to entity '" + to_string(ID) 
                 + "' because the component type '" + to_string(scast<u8>(component.type)) + "' is unimplemented!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
             return;
         }
         case ComponentType::MESH_3D:
@@ -380,7 +380,7 @@ namespace ElypsoEngine::Graphics
                         "Failed to add component '" + to_string(component.targetID) + "' to entity '" 
                         + to_string(ID) + "' because the component was not found in mesh registry!",
                         "EE_ENTITY",
-                        LogType::WARNING);
+                        LogType::LOG_WARNING);
 
                     return;
                 }
@@ -399,7 +399,7 @@ namespace ElypsoEngine::Graphics
                     "A camera enabled state can never be set to false, so a camera component cannot be initialized as false. "
                     "Overrode camera component enabled state for entity '" + to_string(ID) + "' to true.",
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
             }
 
             if (component.targetID != 0)
@@ -412,7 +412,7 @@ namespace ElypsoEngine::Graphics
                         "Failed to add component '" + to_string(component.targetID) + "' to entity '" 
                         + to_string(ID) + "' because the component was not found in camera registry!",
                         "EE_ENTITY",
-                        LogType::WARNING);
+                        LogType::LOG_WARNING);
 
                     return;
                 }
@@ -473,7 +473,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to add component '" + to_string(component.targetID) + "' to entity '" 
                 + to_string(ID) + "' because this is a 3D component but this entity already has 2D components!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -484,7 +484,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to add component '" + to_string(component.targetID) + "' to entity '" 
                 + to_string(ID) + "' because this is a 2D component but this entity already has 3D components!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -548,7 +548,7 @@ namespace ElypsoEngine::Graphics
                                 "Failed to create new component for entity '" + to_string(ID) 
                                 + "' because viewport '" + to_string(viewportID) + "' is not valid for the current scene!",
                                 "EE_ENTITY",
-                                LogType::WARNING);
+                                LogType::LOG_WARNING);
 
                             return 0;
                         }
@@ -654,7 +654,7 @@ namespace ElypsoEngine::Graphics
         Log::Print(
             "Added new component '" + to_string(component.targetID) + "' to entity '" + to_string(ID) + "'!",
             "EE_ENTITY",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
     }
     void Entity::RemoveComponent(u32 value)
     {
@@ -671,7 +671,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to remove component '" + to_string(value) + "' from entity '" 
                 + to_string(ID) + "' because the component was invalid!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -695,7 +695,7 @@ namespace ElypsoEngine::Graphics
                     + "' for entity '" + to_string(ID) + "' probably because "
                     "the mesh was already destroyed! Components should not be manually destroyed.",
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
 
                 return;
             }
@@ -717,7 +717,7 @@ namespace ElypsoEngine::Graphics
                     + "' for entity '" + to_string(ID) + "' probably because "
                     "the camera was already destroyed! Components should not be manually destroyed.",
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
 
                 return;
             }
@@ -732,7 +732,7 @@ namespace ElypsoEngine::Graphics
             "Removed component '" + to_string(value) 
             + "' from entity '" + to_string(ID) + "'!",
             "EE_ENTITY",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
     }
 
     bool Entity::GetComponentEnabledState(u32 targetValue)
@@ -753,7 +753,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to get component '" + to_string(targetValue) + "' enabled state for entity '" 
                 + to_string(ID) + "' because the component was not found on this entity!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return false;
         }
@@ -784,7 +784,7 @@ namespace ElypsoEngine::Graphics
                     + "' visible state did not match the components enabled state in entity '" + to_string(ID) 
                     + "'! Updating component enabled state to new value '" + enabledStr + "'.",
                     "EE_ENTITY",
-                    LogType::WARNING);
+                    LogType::LOG_WARNING);
             }
 
             break;
@@ -795,7 +795,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Cameras are always enabled, so GetComponentEnabledState always returns true.",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             break;
         }
@@ -823,7 +823,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to set component '" + to_string(targetValue) + "' enabled state for entity '" 
                 + to_string(ID) + "' because the component was not found on this entity!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -867,7 +867,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to set camera component enabled state because camera enabled state can only be true!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -882,7 +882,7 @@ namespace ElypsoEngine::Graphics
                 + to_string(component->targetID) + "' and its underlying KalaKit object state did not match! "
                 "It is discouraged to manually update it outside of Elypso Engine.",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
         }
         if (isAlreadySame)
         {
@@ -890,7 +890,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to set entity '" + to_string(ID) + "' component '" 
                 + to_string(component->targetID) + "' enabled state to '" + enabledStr + "'!",
                 "EE_ENTITY",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -899,7 +899,7 @@ namespace ElypsoEngine::Graphics
             "Set entity '" + to_string(ID) + "' component '" 
             + to_string(component->targetID) + "' enabled state to '" + enabledStr + "'!",
             "EE_ENTITY",
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
     }
 
     u32 Entity::GetParentEntity()
@@ -988,6 +988,6 @@ namespace ElypsoEngine::Graphics
         Log::Print(
             "Destroying entity '" + title + "' with ID '" + to_string(ID) + "'.",
             "EE_ENTITY",
-            LogType::INFO);
+            LogType::LOG_INFO);
     }
 }

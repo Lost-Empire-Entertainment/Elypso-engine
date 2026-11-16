@@ -176,7 +176,7 @@ namespace KalaLua::Core
 				Log::Print(
 					"Unsupported variable type was passed to CallFunction function '" + string(functionName) + "'!",
 					"KALALUA_CALL_FUNCTION",
-					LogType::ERROR,
+					LogType::LOG_ERROR,
 					2);
 
 				return nullopt;
@@ -211,7 +211,7 @@ namespace KalaLua::Core
 						Log::Print(
 							"Argument count mismatch when invoking function '" + string(functionName) + "'!",
 							"KALALUA_REGISTER_FUNCTION",
-							LogType::ERROR,
+							LogType::LOG_ERROR,
 							2);
 
 						return nullopt;

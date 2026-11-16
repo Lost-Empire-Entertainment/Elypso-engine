@@ -52,7 +52,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to get active scene because engine window was invalid! Reason: " + err,
                 "EE_SCENE",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -98,7 +98,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to load scene '" + string(title) + "' because it was invalid!",
                 "EE_SCENE",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -118,7 +118,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene for engine window '" + to_string(windowID) 
                 + "' because the engine window was invalid! Reason: " + err,
                 "EE_SCENE",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -136,7 +136,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene for engine window '" 
                 + to_string(windowID) + "'! Reason: " + err,
                 "EE_SCENE",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -146,7 +146,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to create scene for engine window '" 
                 + to_string(windowID) + "' because its title length was out of range!",
                 "EE_SCENE",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return nullptr;
         }
@@ -180,7 +180,7 @@ namespace ElypsoEngine::Graphics
                         + "' because a scene with that title already exists in window '" 
                         + to_string(ew->GetID()) + "'!",
                         "EE_SCENE",
-                        LogType::WARNING);
+                        LogType::LOG_WARNING);
 
                     return nullptr;
                 }
@@ -215,7 +215,7 @@ namespace ElypsoEngine::Graphics
             + "' with ID '" + to_string(newID) 
             + "' for engine window '" + to_string(windowID) + "'!",
 			"EE_SCENE",
-			LogType::SUCCESS);
+			LogType::LOG_SUCCESS);
 
         return scenePtr;
     }
@@ -267,7 +267,7 @@ namespace ElypsoEngine::Graphics
             Log::Print(
                 "Failed to update scene '" + to_string(ID) + "' title! Reason: " + err,
                 "EE_SCENE",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -277,7 +277,7 @@ namespace ElypsoEngine::Graphics
                 "Failed to update scene '" + to_string(ID) 
                 + "' title because the new name length was out of range!",
                 "EE_SCENE",
-                LogType::WARNING);
+                LogType::LOG_WARNING);
 
             return;
         }
@@ -309,7 +309,7 @@ namespace ElypsoEngine::Graphics
                     Log::Print(
                         "A scene with the title '" + string(newtitle) + "' already exists in window '" + to_string(ew->GetID()) + "'!",
                         "EE_SCENE",
-                        LogType::WARNING);
+                        LogType::LOG_WARNING);
 
                     return;
                 }
@@ -321,7 +321,7 @@ namespace ElypsoEngine::Graphics
         Log::Print(
             "Set scene '" + to_string(ID) + "' title to '" + title + "'!",
             "EE_SCENE",  
-            LogType::SUCCESS);
+            LogType::LOG_SUCCESS);
     }
 
     const string& Scene::GetTitle() const { return title; }
@@ -364,7 +364,7 @@ namespace ElypsoEngine::Graphics
             + "' with ID '" + to_string(ID) 
             + "' for engine window '" + to_string(windowID) + "'!",
 			"EE_SCENE",
-			LogType::SUCCESS);
+			LogType::LOG_SUCCESS);
     }
 
     void Scene::Unload()
@@ -437,6 +437,6 @@ namespace ElypsoEngine::Graphics
         Log::Print(
             "Destroying scene '" + to_string(ID) + "'.",
             "EE_SCENE",
-            LogType::INFO);
+            LogType::LOG_INFO);
     }
 }

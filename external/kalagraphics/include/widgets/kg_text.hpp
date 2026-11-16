@@ -48,15 +48,17 @@ namespace KalaGraphics::Widgets
 
     static constexpr f32 DRAG_THRESHOLD_PX = 5;
 
+    //How is the text clipped,
+	//requires 'TYPE_' prefix because Windows defines OVERFLOW
     enum class TextClipType
     {
         //When a glyph/text exceeds line width,
         //allow it to continue beyond the line width and max lines
-        OVERFLOW,
+        TYPE_OVERFLOW,
         //If word width + existing line content exceeds line width
         //but words own width is less than line width then word gets pushed to next line,
         //otherwise the word is not drawn at all, word is not drawn if it exceeds max lines
-        CLIPPED
+        TYPE_CLIPPED
     };
 
     enum class TextFieldType

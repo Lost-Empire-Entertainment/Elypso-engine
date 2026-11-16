@@ -91,7 +91,7 @@ namespace ElypsoEngine::Core
 			Log::Print(
 				"Skipping engine shutdown because shutdown was denied!",
 				"EE_CORE",
-				LogType::WARNING);
+				LogType::LOG_WARNING);
 
             return;
         }
@@ -99,7 +99,7 @@ namespace ElypsoEngine::Core
         Log::Print(
             "Shutting down Elypso Engine.",
             "EE_CORE",
-            LogType::INFO);
+            LogType::LOG_INFO);
 
         hasCalledEngineShutdown = true;
 

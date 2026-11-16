@@ -326,7 +326,7 @@ void EngineInit()
     Log::Print(
         "Finished initializing Elypso Engine!",
         "EE_MAIN",
-        LogType::SUCCESS);
+        LogType::LOG_SUCCESS);
 }
 
 void FrameEarlyUpdate()
@@ -426,7 +426,7 @@ void FrameLateUpdate()
             duration<f64, std::milli>(frameEnd - frameLogic.frameStart).count(),
             duration<f64, std::milli>(elapsed).count()),
         "EE_MAIN",
-        LogType::INFO);
+        LogType::LOG_INFO);
     */
 }
 
