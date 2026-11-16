@@ -4,7 +4,7 @@ version="0-0-1"
 kmake="project.kmake"
 
 [references]
-dir_kw="../../kalawindow/build/1-7-0"
+dir_kw="../../kalawindow/build/1-7-1"
 dir_kg="../../kalagraphics/build/0-0-1"
 dir_kp="../../kalaphysics/build/0-0-1"
 dir_kl="../../kalalua/build/1-1-0"
