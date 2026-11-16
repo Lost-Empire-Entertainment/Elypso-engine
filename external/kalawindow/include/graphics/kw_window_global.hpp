@@ -33,18 +33,17 @@ namespace KalaWindow::Graphics
 		RETRY_CANCEL
 	};
 
-	//Icon shown on the popup,
-	//requires 'TYPE_' prefix because Windows defines ERROR
+	//Icon shown on the popup
 	enum class PopupType
 	{
 		//Info icon (blue 'i')
-		TYPE_INFO,
+		INFO,
 		//Warning icon (yellow triangle)
-		TYPE_WARNING,
+		WARNING,
 		//Error icon (red X)
-		TYPE_ERROR,
+		ERROR,
 		//Question icon (used for confirmations)
-		TYPE_QUESTION
+		QUESTION
 	};
 
 	//User response from the popup
@@ -76,12 +75,10 @@ namespace KalaWindow::Graphics
 		CUSTOM
 	};
 
-	//What sound type to play,
-	//requires 'TYPE_' prefix because Windows defines ERROR
 	enum class SoundType
 	{
-		TYPE_OK,
-		TYPE_ERROR
+		OK,
+		ERROR
 	};
 
 #if defined(KLIN_ANY)

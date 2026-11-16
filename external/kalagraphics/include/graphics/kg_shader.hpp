@@ -91,7 +91,7 @@ namespace KalaGraphics::Graphics
         KNODISCARD
 		const vector<u32>& GetTextureIDs() const;
         KNODISCARD
-		const vector<u32>& GetMeshIDs() const;
+		const vector<u32>& GetMaterialIDs() const;
 
         KNODISCARD
         const vector<u32>& GetTextWidgetIDs() const;
@@ -123,7 +123,7 @@ namespace KalaGraphics::Graphics
 
         vector<u32> textureIDs{};
         vector<u32> cameraIDs{};
-        vector<u32> meshIDs{};
+        vector<u32> materialIDs{};
 
         vector<u32> textWidgetIDs{};
 

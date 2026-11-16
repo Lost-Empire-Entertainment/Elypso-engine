@@ -225,12 +225,12 @@ namespace KalaGraphics::Graphics
 		static bool IsVerboseLoggingEnabled();
         static void SetVerboseLoggingState(bool state);
 
-        //Create a new mesh, mesh type is derived from shader,
+        //Create a new mesh, mesh type is derived from materials shader,
         //2D mesh creates its own canonical data during initialization, 
         //3D mesh stays empty and must be updated via SetMeshData, 
-        //all meshes require a shader even if that shader is also blank
+        //all meshes require a material even if that material is the root type
         KNODISCARD
-		static Mesh* Initialize(u32 shaderID);
+		static Mesh* Initialize(u32 materialID);
 
         //Generate a 3D cube or 3D cylinder
         KNODISCARD
@@ -246,15 +246,13 @@ namespace KalaGraphics::Graphics
 		u32 GetID() const;
 
         KNODISCARD
-        u32 GetShaderID() const;
-        //Swap mesh shader at runtime, not allowed to switch to a
-        //3D shader if mesh is 2D and vice versa
-        void SetShaderID(u32 newID);
+        u32 GetMaterialID() const;
+        //Change the material of this mesh, materials shader type
+        //must match the original materials shader type
+        void SetMaterialID(u32 newValue);
 
         KNODISCARD
 		u32 GetCameraID() const;
-        KNODISCARD
-		u32 GetMaterialID() const;
 
         KNODISCARD
         u32 GetTextWidgetID() const;
@@ -376,10 +374,10 @@ namespace KalaGraphics::Graphics
         void Update(VkCommandBuffer buffer);
 
         u32 ID{};
-        u32 hitTestID{};
-        u32 shaderID{};
-        u32 cameraID{};
         u32 materialID{};
+        u32 cameraID{};
+
+        u32 hitTestID{};
 
         u32 textWidgetID{};
 

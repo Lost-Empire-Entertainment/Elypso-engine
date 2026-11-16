@@ -19,6 +19,7 @@ namespace KalaGraphics::Graphics
 
     using KalaGraphics::Core::KalaGraphicsRegistry;
 
+    using std::vector;
     using std::default_delete;
 
     //The two main types of materials for 2D,
@@ -53,16 +54,14 @@ namespace KalaGraphics::Graphics
         PBR
     };
 
-    //What is the alpha mode type,
-	//requires 'TYPE_' prefix because Windows defines OPAQUE
     enum class AlphaMode
     {
         //default opaque mesh
-        TYPE_OPAQUE,
+        OPAQUE,
         //makes alpha-based values transparent if transparency is enabled 
-        TYPE_BLEND,
+        BLEND,
         //fragments below alpha cutoff are discarded, otherwise rendered fully opaque
-        TYPE_MASK
+        MASK
     };
 
     struct MaterialData_Rect
@@ -136,12 +135,15 @@ namespace KalaGraphics::Graphics
         KNODISCARD
 		static KalaGraphicsRegistry<Material>& GetRegistry();
 
+        static Material* Initialize(u32 shaderID);
+
         KNODISCARD
 		static bool IsVerboseLoggingEnabled();
         static void SetVerboseLoggingState(bool state);
 
         u32 GetID() const;
-        u32 GetMeshID() const;
+        u32 GetShaderID() const;
+        vector<u32> GetMeshIDs() const;
 
         KNODISCARD
         MaterialType2D GetMaterial2DType() const;
@@ -177,14 +179,13 @@ namespace KalaGraphics::Graphics
     private:
         ~Material();
 
-        static Material* Initialize(u32 meshID);
-
         void Update(VkCommandBuffer buffer);
 
         void Destroy();
 
         u32 ID{};
-        u32 meshID{};
+        u32 shaderID{};
+        vector<u32> meshIDs{};
 
         MaterialType2D material2DType{};
         MaterialType3D material3DType{};
