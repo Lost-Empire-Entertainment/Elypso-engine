@@ -3,8 +3,6 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <memory>
-
 #include "core_utils.hpp"
 #include "log_utils.hpp"
 
@@ -38,8 +36,6 @@ using ElypsoEngine::Core::EngineCore;
 using ElypsoEngine::Graphics::EngineWindow;
 
 using std::to_string;
-using std::unique_ptr;
-using std::make_unique;
 
 namespace ElypsoEngine::Graphics
 {
@@ -134,30 +130,28 @@ namespace ElypsoEngine::Graphics
             }
         }
 
-        unique_ptr<Entity> newEntity = make_unique<Entity>();
-        Entity* entityPtr = newEntity.get();
-
-        entityPtr->SetTitle(title);
-
         //sync to ensure entity gets the highest id from kw
         EngineCore::SyncID();
 
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
         KalaWindowCore::SetGlobalID(newID);
 
-        entityPtr->ID = newID;
-        entityPtr->sceneID = sceneID;
-        entityPtr->viewportID = viewportID;
-
-        s->entityIDs.push_back(newID);
-
-        err = registry.AddContent(newID, std::move(newEntity));
+        Entity* entityPtr{};
+        err = registry.AddContent(newID, entityPtr);
         if (!err.empty())
         {
 			KalaWindowCore::ForceClose(
 				"Elypso engine entity error",
 				"Failed to initialize entity! Reason: " + err);
         }
+
+        entityPtr->ID = newID;
+        entityPtr->sceneID = sceneID;
+        entityPtr->viewportID = viewportID;
+        
+        entityPtr->SetTitle(title);
+
+        s->entityIDs.push_back(newID);
 
         Log::Print(
 			"Created new entity '" + to_string(newID) + "'!",

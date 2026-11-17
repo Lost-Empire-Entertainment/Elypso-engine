@@ -3,8 +3,6 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <memory>
-
 #include "log_utils.hpp"
 #include "string_utils.hpp"
 
@@ -45,8 +43,6 @@ using ElypsoEngine::Core::EngineCore;
 
 using std::string;
 using std::to_string;
-using std::unique_ptr;
-using std::make_unique;
 using std::function;
 
 namespace ElypsoEngine::Graphics
@@ -205,11 +201,17 @@ namespace ElypsoEngine::Graphics
         //sync for making EE content
         EngineCore::SyncID();
 
-        unique_ptr<EngineWindow> newWindow = make_unique<EngineWindow>();
-        EngineWindow* windowPtr = newWindow.get();
-
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
         KalaWindowCore::SetGlobalID(newID);
+
+        EngineWindow* windowPtr{};
+        err = registry.AddContent(newID, windowPtr);
+        if (!err.empty())
+        {
+			KalaWindowCore::ForceClose(
+				"Elypso engine window error",
+				"Failed to initialize window! Reason: " + err);
+        }
 
         windowPtr->ID = newID;
         windowPtr->windowContextID = windowID;
@@ -231,14 +233,6 @@ namespace ElypsoEngine::Graphics
 
         function<bool()> canCloseCallback = EngineCore::GetCanCloseCallback();
         if (canCloseCallback) pw->SetCanCloseCallback(canCloseCallback);
-
-        err = registry.AddContent(newID, std::move(newWindow));
-        if (!err.empty())
-        {
-			KalaWindowCore::ForceClose(
-				"Elypso engine window error",
-				"Failed to initialize window! Reason: " + err);
-        }
 
         Scene* newScene = Scene::Initialize(
             string(windowTitle) + " scene",

@@ -3,7 +3,6 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include <memory>
 #include <vector>
 
 #include "core_utils.hpp"
@@ -33,8 +32,6 @@ using ElypsoEngine::Graphics::Scene;
 
 using std::string_view;
 using std::to_string;
-using std::make_unique;
-using std::unique_ptr;
 using std::vector;
 
 namespace ElypsoEngine::Graphics
@@ -187,26 +184,24 @@ namespace ElypsoEngine::Graphics
             }
         }
 
-        unique_ptr<Scene> newScene = make_unique<Scene>();
-        Scene* scenePtr = newScene.get();
-
         //sync to ensure scene gets the highest id from kw
         EngineCore::SyncID();
 
         u32 newID = KalaWindowCore::GetGlobalID() + 1;
         KalaWindowCore::SetGlobalID(newID);
 
-        scenePtr->ID = newID;
-        scenePtr->windowID = windowID;
-        scenePtr->title = title;
-
-        err = registry.AddContent(newID, std::move(newScene));
+        Scene* scenePtr{};
+        err = registry.AddContent(newID, scenePtr);
         if (!err.empty())
         {
 			KalaWindowCore::ForceClose(
 				"Elypso engine scene error",
 				"Failed to initialize scene! Reason: " + err);
         }
+
+        scenePtr->ID = newID;
+        scenePtr->windowID = windowID;
+        scenePtr->title = title;
 
         ew->sceneIDs.push_back(newID);
 

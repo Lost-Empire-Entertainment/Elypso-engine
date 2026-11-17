@@ -19,12 +19,11 @@ namespace ElypsoEngine::Graphics
     using std::string_view;
     using std::vector;
     using std::filesystem::path;
-    using std::default_delete;
 
     class LIB_API Scene
     {
     friend class Entity;
-    friend struct default_delete<Scene>;
+    friend struct EngineRegistry<Scene>;
     public:
         KNODISCARD
 		static EngineRegistry<Scene>& GetRegistry();

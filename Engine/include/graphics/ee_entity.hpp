@@ -22,7 +22,6 @@ namespace ElypsoEngine::Graphics
     using std::string;
     using std::string_view;
     using std::vector;
-    using std::default_delete;
 
     enum class ComponentType
     {
@@ -75,7 +74,7 @@ namespace ElypsoEngine::Graphics
 
     class LIB_API Entity
     {
-    friend struct default_delete<Entity>;
+    friend struct EngineRegistry<Entity>;
     public:
         KNODISCARD
 		static EngineRegistry<Entity>& GetRegistry();

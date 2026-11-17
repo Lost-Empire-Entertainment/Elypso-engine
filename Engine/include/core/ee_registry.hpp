@@ -146,35 +146,51 @@ namespace ElypsoEngine::Core
 			return "";
 		}
 	private:
-		//Add a new unique ptr and its ID, returns error string on failure
-		KNODISCARD
-		static inline string AddContent(
-			u32 targetID,
-			unique_ptr<T> targetContent)
+		struct Deleter
 		{
-			if (!targetContent)
-			{
-				return "AddContent failed because target content was invalid!";
-			}
-			if (targetID == 0)
-			{
-				return "AddContent failed because target ID was empty!";
-			}
-			if (isLocked)
-			{
-				return "AddContent failed because the registry is locked by the current thread!";
-			}
+			void operator()(T* ptr) const noexcept { delete ptr; }
+		};
 
-			scoped_lock lock(registryMutex);
+		//Create a new unique ptr and get its pointer, returns error string on failure
+		static string AddContent(const u32 ID, T*& outPtr)
+		{
+			auto add_content = [](const u32 targetID, unique_ptr<T, Deleter>&& targetContent) -> string
+				{
+					if (!targetContent)
+					{
+						return "AddContent failed because target content was invalid!";
+					}
+					if (targetID == 0)
+					{
+						return "AddContent failed because target ID was empty!";
+					}
+					if (isLocked)
+					{
+						return "AddContent failed because the registry is locked by the current thread!";
+					}
 
-			if (createdContent.contains(targetID))
-			{
-				return "AddContent failed because target '" + to_string(targetID) + "' has already been added!";
-			}
+					scoped_lock lock(registryMutex);
 
-			T* raw = targetContent.get();
-			createdContent[targetID] = std::move(targetContent);
-			runtimeContent.push_back(raw);
+					if (createdContent.contains(targetID))
+					{
+						return "AddContent failed because target '" + to_string(targetID) + "' has already been added!";
+					}
+
+					T* raw = targetContent.get();
+					createdContent[targetID] = std::move(targetContent);
+					runtimeContent.push_back(raw);
+
+					return "";
+				};
+
+			unique_ptr<T, Deleter> content(new T());
+
+			T* ptr = content.get();
+
+			string err = add_content(ID, std::move(content));
+			if (!err.empty()) return err;
+
+			outPtr = ptr;
 
 			return "";
 		}
@@ -188,7 +204,7 @@ namespace ElypsoEngine::Core
 				return "DestroyContent failed because the registry is locked by the current thread!";
 			}
 
-			unique_ptr<T> createdObjectCopy{};
+			unique_ptr<T, Deleter> createdObjectCopy{};
 
 			{
 				scoped_lock lock(registryMutex);
@@ -239,7 +255,7 @@ namespace ElypsoEngine::Core
 				return "DestroyContent failed because the registry is locked by the current thread!";
 			}
 
-			unique_ptr<T> createdObjectCopy{};
+			unique_ptr<T, Deleter> createdObjectCopy{};
 
 			{
 				scoped_lock lock(registryMutex);
@@ -284,7 +300,7 @@ namespace ElypsoEngine::Core
 				return "DestroyAllContent failed because the registry is locked by the current thread!";
 			}
 
-			unordered_map<u32, unique_ptr<T>> createdContentCopy{};
+			unordered_map<u32, unique_ptr<T, Deleter>> createdContentCopy{};
 			vector<T*> runtimeContentCopy{};
 
 			{
@@ -303,7 +319,7 @@ namespace ElypsoEngine::Core
 		static inline thread_local bool isLocked{};
 
 		static inline shared_mutex registryMutex{};
-		static inline unordered_map<u32, unique_ptr<T>> createdContent{};
+		static inline unordered_map<u32, unique_ptr<T, Deleter>> createdContent{};
 		static inline vector<T*> runtimeContent{};
 	};
 }

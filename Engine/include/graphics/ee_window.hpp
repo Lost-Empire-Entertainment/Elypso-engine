@@ -24,12 +24,11 @@ namespace ElypsoEngine::Graphics
     using std::string;
     using std::string_view;
     using std::vector;
-    using std::default_delete;
     
     class LIB_API EngineWindow
     {
     friend class Scene;
-    friend struct default_delete<EngineWindow>;
+    friend struct EngineRegistry<EngineWindow>;
     public:
         KNODISCARD
 		static EngineRegistry<EngineWindow>& GetRegistry();
