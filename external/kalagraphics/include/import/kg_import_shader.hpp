@@ -18,7 +18,6 @@ namespace KalaGraphics::Import
     using std::string;
     using std::vector;
     using std::filesystem::path;
-    using std::default_delete;
 
     struct ImportShaderData
     {
@@ -27,7 +26,7 @@ namespace KalaGraphics::Import
 
     class LIB_API ImportShader
     {
-    friend struct default_delete<ImportShader>;
+    friend struct KalaGraphicsRegistry<ImportShader>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<ImportShader>& GetRegistry();

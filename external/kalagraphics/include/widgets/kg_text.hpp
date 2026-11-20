@@ -31,7 +31,6 @@ namespace KalaGraphics::Widgets
     using std::string_view;
     using std::vector;
     using std::pair;
-    using std::default_delete;
 
     static constexpr u16 MAX_CHARACTERS = 1024;
 
@@ -151,7 +150,7 @@ namespace KalaGraphics::Widgets
     class LIB_API Text
     {
     friend class KalaGraphics::Graphics::Viewport;
-    friend struct default_delete<Text>;
+    friend struct KalaGraphicsRegistry<Text>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<Text>& GetRegistry();

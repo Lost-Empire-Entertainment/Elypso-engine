@@ -37,7 +37,6 @@ namespace KalaGraphics::Import
     using std::string;
     using std::vector;
     using std::filesystem::path;
-    using std::default_delete;
 
     struct GlyphData
     {
@@ -71,7 +70,7 @@ namespace KalaGraphics::Import
     
     class LIB_API ImportFont
     {
-    friend struct default_delete<ImportFont>;
+    friend struct KalaGraphicsRegistry<ImportFont>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<ImportFont>& GetRegistry();

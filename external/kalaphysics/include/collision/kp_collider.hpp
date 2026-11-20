@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
 #include <bitset>
 #include <functional>
@@ -29,7 +28,6 @@ namespace KalaPhysics::Collision
     using std::vector;
     using std::bitset;
     using std::function;
-	using std::default_delete;
 
     enum MovementRotationLock : u8
     {
@@ -65,7 +63,7 @@ namespace KalaPhysics::Collision
     class LIB_API Collider
     {
     friend class KalaPhysics::Core::CollisionManager;
-	friend struct default_delete<Collider>;
+	friend struct KalaPhysicsRegistry<Collider>;
     public:
         static KalaPhysicsRegistry<Collider>& GetRegistry();
 

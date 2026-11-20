@@ -20,7 +20,6 @@ namespace KalaGraphics::Graphics
     using KalaGraphics::Core::KalaGraphicsRegistry;
 
     using std::vector;
-    using std::default_delete;
 
     //The two main types of materials for 2D,
     //majority of 2D meshes should use the top one,
@@ -132,7 +131,7 @@ namespace KalaGraphics::Graphics
     friend class Shader;
     friend class Mesh;
     friend class Texture;
-    friend struct default_delete<Material>;
+    friend struct KalaGraphicsRegistry<Material>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<Material>& GetRegistry();
@@ -176,14 +175,14 @@ namespace KalaGraphics::Graphics
         void SetAlphaCutoff(f32 newValue);
 
         KNODISCARD
-        u32 GetBaseColorTextureID() const;
+        u32 GetBaseColorTextureID();
         void SetBaseColorTextureID(u32 newValue);
+
+        void Destroy();
     private:
         ~Material();
 
         void Update(VkCommandBuffer buffer);
-
-        void Destroy();
 
         u32 ID{};
         u32 shaderID{};

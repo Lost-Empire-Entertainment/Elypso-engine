@@ -27,8 +27,6 @@ namespace KalaGraphics::Graphics
 
     using KalaGraphics::Core::KalaGraphicsRegistry;
 
-    using std::default_delete;
-
     //min and max allowed raw deltatime for mouse
     static constexpr f32 MOUSE_MAX = 100.0f;
 
@@ -58,7 +56,7 @@ namespace KalaGraphics::Graphics
     friend class Viewport;
     friend class Shader;
     friend class Mesh;
-    friend struct default_delete<Camera>;
+    friend struct KalaGraphicsRegistry<Camera>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<Camera>& GetRegistry();

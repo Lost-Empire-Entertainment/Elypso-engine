@@ -63,9 +63,6 @@ using std::greater;
 using std::max;
 using std::format;
 
-//seconds between updated fps, frame length, 1% lows and 0.1% lows
-static constexpr f64 FPS_UPDATE_INTERVAL = 0.5;
-
 //physics framerate target
 static constexpr f64 FIXED_DELTA = 1.0 / 60.0;
 
@@ -80,6 +77,9 @@ struct FrameLogic
 {
     f64 deltaTime{};
     f64 frameTime{};
+
+    //seconds between updated fps, frame length, 1% lows and 0.1% lows
+    f32 frameTimeInterval{};
 
     f64 rawFPS{};
 
@@ -123,6 +123,13 @@ namespace ElypsoEngine::Core
     f64 EngineCore::GetDeltaTime() { return frameLogic.deltaTime; }
     f64 EngineCore::GetFrameTime() { return frameLogic.frameTime; }
 
+    f32 EngineCore::GetFramerateTimeInterval() { return frameLogic.frameTimeInterval; }
+    void EngineCore::SetFramerateTimeInterval(f32 newValue)
+    {
+        f32 clamped = clamp(newValue, 0.05f, 1.0f);
+        frameLogic.frameTimeInterval = clamped;
+    }
+
     u16 EngineCore::GetFrameTimeSampleCount() { return frameLogic.totalFrameTimeSampleCount; }
     void EngineCore::SetFrameTimeSampleCount(u16 newValue)
     {
@@ -153,6 +160,8 @@ int main()
 
     EngineCore::SetFrameTimeSampleCount(MIN_FPS_FRAME_TIME_SAMPLE_COUNT);
     frameLogic.lastFrameTime = steady_clock::now();
+    //always default frame time interval to 0.5f
+    frameLogic.frameTimeInterval = 0.5f;
 
     //engine-side initialization
     EngineInit();
@@ -357,7 +366,7 @@ void FrameEarlyUpdate()
         frameLogic.frameTimeSampleCount++;
     }
 
-    if (frameLogic.fpsWindowAccumulation >= FPS_UPDATE_INTERVAL)
+    if (frameLogic.fpsWindowAccumulation >= frameLogic.frameTimeInterval)
     {
         frameLogic.finalFPS = 
             scast<f64>(frameLogic.fpsWindowFrames) 

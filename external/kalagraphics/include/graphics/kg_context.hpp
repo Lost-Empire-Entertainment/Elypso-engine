@@ -80,7 +80,6 @@ namespace KalaGraphics::Graphics
     using std::vector;
     using std::array;
     using std::function;
-    using std::default_delete;
 
     static constexpr u8 MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -137,7 +136,7 @@ namespace KalaGraphics::Graphics
     friend class Camera;
     friend class Texture;
     friend class Mesh;
-    friend struct default_delete<GraphicsContext>;
+    friend struct KalaGraphicsRegistry<GraphicsContext>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<GraphicsContext>& GetRegistry();

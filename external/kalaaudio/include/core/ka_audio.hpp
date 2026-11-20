@@ -25,7 +25,6 @@ namespace KalaAudio::Core
 	using std::filesystem::path;
 	using std::filesystem::is_regular_file;
 	using std::clamp;
-	using std::default_delete;
 
 	using KalaHeaders::KalaMath::vec3;
 
@@ -163,7 +162,7 @@ namespace KalaAudio::Core
 
 	class LIB_API AudioPlayer
 	{
-	friend struct default_delete<AudioPlayer>;
+	friend struct KalaAudioRegistry<AudioPlayer>;
 	public:
 		KNODISCARD
 		static KalaAudioRegistry<AudioPlayer>& GetRegistry();

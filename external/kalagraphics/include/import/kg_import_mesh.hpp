@@ -35,7 +35,6 @@ namespace KalaGraphics::Import
     using std::string;
     using std::vector;
     using std::filesystem::path;
-    using std::default_delete;
 
     struct ImportMeshData
     {
@@ -75,7 +74,7 @@ namespace KalaGraphics::Import
 
     class LIB_API ImportMesh
     {
-    friend struct default_delete<ImportMesh>;
+    friend struct KalaGraphicsRegistry<ImportMesh>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<ImportMesh>& GetRegistry();

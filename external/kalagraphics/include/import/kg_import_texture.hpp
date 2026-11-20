@@ -26,7 +26,6 @@ namespace KalaGraphics::Import
     using std::string;
     using std::vector;
     using std::filesystem::path;
-    using std::default_delete;
 
     struct ImportTextureData
     {
@@ -37,7 +36,7 @@ namespace KalaGraphics::Import
 
     class LIB_API ImportTexture
     {
-    friend struct default_delete<ImportTexture>;
+    friend struct KalaGraphicsRegistry<ImportTexture>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<ImportTexture>& GetRegistry();

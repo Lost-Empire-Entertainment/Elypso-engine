@@ -42,7 +42,6 @@ namespace KalaGraphics::Graphics
     using std::string_view;
     using std::vector;
     using std::pair;
-    using std::default_delete;
 
     struct ShaderModuleData
     {
@@ -67,7 +66,7 @@ namespace KalaGraphics::Graphics
     friend class Texture;
     friend class Mesh;
     friend class KalaGraphics::Widgets::Text;
-    friend default_delete<Shader>;
+    friend KalaGraphicsRegistry<Shader>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<Shader>& GetRegistry();

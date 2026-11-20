@@ -57,7 +57,6 @@ namespace KalaGraphics::Graphics
     using std::filesystem::path;
     using std::function;
     using std::same_as;
-    using std::default_delete;
 
     static constexpr u8 MIN_CUBE_EDGE_COUNT = 3;
     static constexpr u8 MAX_CUBE_EDGE_COUNT = 32;
@@ -216,7 +215,7 @@ namespace KalaGraphics::Graphics
     friend class Texture;
     friend class Material;
     friend class KalaGraphics::Widgets::Text;
-    friend struct default_delete<Mesh>;
+    friend struct KalaGraphicsRegistry<Mesh>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<Mesh>& GetRegistry();

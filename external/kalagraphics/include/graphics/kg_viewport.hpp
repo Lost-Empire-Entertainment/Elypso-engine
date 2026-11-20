@@ -35,7 +35,6 @@ namespace KalaGraphics::Graphics
     using std::pair;
     using std::function;
     using std::filesystem::path;
-    using std::default_delete;
 
     static constexpr u32 MIN_VIEWPORT_SIZE = 50;
 
@@ -167,7 +166,7 @@ namespace KalaGraphics::Graphics
     friend class Camera;
     friend class Texture;
     friend class Mesh;
-    friend struct default_delete<Viewport>;
+    friend struct KalaGraphicsRegistry<Viewport>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<Viewport>& GetRegistry();

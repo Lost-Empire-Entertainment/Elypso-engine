@@ -48,7 +48,6 @@ namespace KalaGraphics::Graphics
     using std::vector;
     using std::array;
     using std::pair;
-    using std::default_delete;
 
     enum class TexturePixelFormat
     {
@@ -155,7 +154,7 @@ namespace KalaGraphics::Graphics
     friend class Mesh;
     friend class Material;
     friend class KalaGraphics::Widgets::Text;
-    friend struct default_delete<Texture>;
+    friend struct KalaGraphicsRegistry<Texture>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<Texture>& GetRegistry();
@@ -255,7 +254,9 @@ namespace KalaGraphics::Graphics
         u32 ID{};
         u32 shaderID{};
 
-        //materials that contain this texture
+        //materials that contain this texture.
+        //the vector contains pairs where each pair first is the material ID
+        //and the second is an array of used state and each texture type
         vector<pair<u32, array<bool, 11>>> materialIDs{};
 
         u32 textWidgetID{};

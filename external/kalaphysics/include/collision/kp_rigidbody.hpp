@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include "math_utils.hpp"
 
 #include "core/kp_registry.hpp"
@@ -22,8 +20,6 @@ namespace KalaPhysics::Collision
     using KalaHeaders::KalaMath::vec3;
 
     using KalaPhysics::Core::KalaPhysicsRegistry;
-
-    using std::default_delete;
 
     struct LIB_API StationaryData
     {
@@ -73,7 +69,7 @@ namespace KalaPhysics::Collision
     class LIB_API RigidBody
     {
     friend class KalaPhysics::Core::CollisionManager;
-	friend struct default_delete<RigidBody>;
+	friend struct KalaPhysicsRegistry<RigidBody>;
     public:
         static KalaPhysicsRegistry<RigidBody>& GetRegistry();
 

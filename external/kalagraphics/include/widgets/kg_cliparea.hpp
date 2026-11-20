@@ -16,7 +16,6 @@ namespace KalaGraphics::Widgets
 
     using std::vector;
     using std::string;
-    using std::default_delete;
 
     enum class ClipType
     {
@@ -28,7 +27,7 @@ namespace KalaGraphics::Widgets
 
     class LIB_API ClipArea
     {
-    friend struct default_delete<ClipArea>;
+    friend struct KalaGraphicsRegistry<ClipArea>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<ClipArea>& GetRegistry();

@@ -11,14 +11,12 @@ namespace KalaGraphics::Graphics
 {
     using KalaGraphics::Core::KalaGraphicsRegistry;
 
-    using std::default_delete;
-
     class LIB_API HitTest
     {
     friend class GraphicsContext;
     friend class Viewport;
     friend class Mesh;
-    friend struct default_delete<HitTest>;
+    friend struct KalaGraphicsRegistry<HitTest>;
     public:
         KNODISCARD
 		static KalaGraphicsRegistry<HitTest>& GetRegistry();

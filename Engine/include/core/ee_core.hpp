@@ -68,16 +68,21 @@ namespace ElypsoEngine::Core
         KNODISCARD
 		static f64 GetFrameTime();
 
+        //Get current measured framerate timer value
+        static f32 GetFramerateTimeInterval();
+        //Change the measured framerate timer from 0.05 to 1.0 seconds
+        static void SetFramerateTimeInterval(f32 newValue);
+
         KNODISCARD
         static u16 GetFrameTimeSampleCount();
         //Adjust the stored amount of samples for measuring 1% and 0.1% lows,
         //cannot be set below 1000, defaults to 1000
         static void SetFrameTimeSampleCount(u16 newValue);
 
-        //Get average fps over 0.5 seconds 
+        //Get average fps in two digit accuracy
         KNODISCARD
 		static f64 GetAverageFPS();
-        //Get average frame length over 0.5 seconds in milliseconds
+        //Get average frame length in milliseconds
         KNODISCARD
         static f64 GetAverageFrameLength();
         KNODISCARD
@@ -85,12 +90,14 @@ namespace ElypsoEngine::Core
         KNODISCARD
 		static f64 GetZeroPointOnePercentLowFPS();
 
+        /*
         //Lock a specific file so another process or user cannot accidentally modify, move or delete it
         static void LockFile(const path& file);
         //Unlock a file locked by Elypso Engine
         static void UnlockFile(const path& file);
         //Unlock all files locked by Elypso Engine
         static void UnlockAllLockedFiles();
+        */
 
 		//Assign a callback that gets triggered to check if the engine is allowed to close,
 		//your callback should return false if you dont want to allow the engine to close,
