@@ -61,7 +61,6 @@ using KalaWindow::Graphics::FileType;
 using KalaWindow::Graphics::Window_Global;
 using KalaGraphics::Graphics::VSyncState;
 using KalaGraphics::Graphics::GraphicsContext;
-using KalaGraphics::Graphics::ViewportType;
 using KalaGraphics::Graphics::Viewport;
 using KalaGraphics::Graphics::Shader;
 using KalaGraphics::Graphics::Camera;
@@ -120,7 +119,7 @@ namespace ElypsoEditor::Graphics
         {
             Log::Print(
                 "Failed to initialize renderer because core has not yet been initialized!",
-                "BGE_RENDER",
+                "EE_RENDER",
                 LogType::LOG_WARNING);
 
             return;
@@ -129,13 +128,11 @@ namespace ElypsoEditor::Graphics
         {
             Log::Print(
                 "Failed to initialize renderer because it has already been initialized!",
-                "BGE_RENDER",
+                "EE_RENDER",
                 LogType::LOG_WARNING);
 
             return;
         }
-
-        ElypsoEditorCore::GetViewport()->SetType(ViewportType::FILL);
 
         //sync before creating kg objects
         EngineCore::SyncID();
@@ -158,7 +155,7 @@ namespace ElypsoEditor::Graphics
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to get fallback texture from shader '" + to_string(primary3DShader->GetID()) + "'! Reason: " + err);
         }
 
@@ -219,7 +216,7 @@ namespace ElypsoEditor::Graphics
         if (files.empty())
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to import font because no font was selected!");
         }
 
@@ -231,7 +228,7 @@ namespace ElypsoEditor::Graphics
         if (!font)
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to create font!");
         }
         */
@@ -248,14 +245,14 @@ namespace ElypsoEditor::Graphics
         if (!font)
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to create font!");
         }
 
         if (!font)
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to import font '" + fontName.string() + "'!");
         }
 
@@ -278,7 +275,7 @@ namespace ElypsoEditor::Graphics
         if (!vp1_Text_fps)
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to create type test text!");
         }
         
@@ -289,7 +286,7 @@ namespace ElypsoEditor::Graphics
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to initialize text because its mesh '" 
                 + to_string(vp1_Text_fps->GetMeshID()) + "' was invalid! Reason: " + err);
         }
@@ -304,7 +301,7 @@ namespace ElypsoEditor::Graphics
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to initialize text because its mesh material '" 
                 + to_string(vp1_Mesh2D_fps->GetMaterialID()) + "' was invalid! Reason: " + err);
         }
@@ -316,7 +313,7 @@ namespace ElypsoEditor::Graphics
         if (!vp1_Mesh2D_fpsBackground)
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to create type test text background!");
         }
 
@@ -328,7 +325,7 @@ namespace ElypsoEditor::Graphics
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to initialize text because its background mesh material '" 
                 + to_string(vp1_Mesh2D_fpsBackground->GetMaterialID()) + "' was invalid! Reason: " + err);
         }
@@ -360,12 +357,12 @@ namespace ElypsoEditor::Graphics
 
         string err = ImportMeshes(
             input, 
-            unlitMat);
+            primary3DShader);
         if (!err.empty())
         {
             Log::Print(
                 "Failed to import meshes! Reason: " + err,
-                "GAME_RENDER",
+                "EE_RENDER",
                 LogType::LOG_WARNING);
         }
 
@@ -517,7 +514,7 @@ namespace ElypsoEditor::Graphics
 
         Log::Print(
             moveStr + transformStr,
-            "GAME_CAM_MOVE_TEST",
+            "EE_RENDER",
             LogType::LOG_VERBOSE);
         */
 
@@ -533,10 +530,10 @@ namespace ElypsoEditor::Graphics
 
     string Render::ImportMeshes(
         Input* input,
-        Material* material)
+        Shader* shader)
     {
         if (!input) return "Input was invalid!";
-        if (!material) return "Material was invalid!";
+        if (!shader) return "Shader was invalid!";
 
         if (input->IsKeyPressed(KeyboardButton::K_SPACE))
         {
@@ -588,23 +585,22 @@ namespace ElypsoEditor::Graphics
             {
                 for (const ImportPrimitiveData& primitiveData : nodeData.primitiveData)
                 {
-                    Mesh* primitive = Mesh::Initialize(material->GetID());
+                    Material* mat = Material::Initialize(shader->GetID());
+                    if (!mat)
+                    {
+                        KalaWindowCore::ForceClose(
+                            "Elypso Editor render error",
+                            "Failed to create mesh material!");
+                    }
+
+                    Mesh* primitive = Mesh::Initialize(mat->GetID());
 
                     if (!primitive)
                     {
                         KalaWindowCore::ForceClose(
-                            "Game render error",
+                            "Elypso Editor render error",
                             "Failed to import model '" + files.front().string() 
                             + "' because one of its primitives failed to initialize!");
-                    }
-
-                    Material* mat{};
-                    string err = Material::GetRegistry().GetContent(primitive->GetMaterialID(), mat);
-                    if (!err.empty())
-                    {
-                        KalaWindowCore::ForceClose(
-                            "Game render error",
-                            "Failed to initialize mesh because its material was invalid! Reason: " + err);
                     }
 
                     primitive->SetMeshData(
@@ -637,21 +633,11 @@ namespace ElypsoEditor::Graphics
 
                     if (!matData.textureData.pixelData.empty())
                     {
-                        Shader* matShader{};
-                        string err = Shader::GetRegistry().GetContent(mat->GetShaderID(), matShader);
-                        if (!err.empty())
-                        {
-                            KalaWindowCore::ForceClose(
-                                "Game render error",
-                                "Failed to import meshes because material '" 
-                                + to_string(material->GetID()) + "' shader was invalid! Reason: " + err);
-                        }
-
-                        Texture* meshTex = Texture::Initialize(matShader->GetID());
+                        Texture* meshTex = Texture::Initialize(shader->GetID());
                         if (!meshTex)
                         {
                             KalaWindowCore::ForceClose(
-                                "Game render error",
+                                "Elypso Editor render error",
                                 "Failed to create mesh texture!");
                         }
 
@@ -685,7 +671,7 @@ namespace ElypsoEditor::Graphics
             {
                 Log::Print(
                     "Failed to export meshes! Reason: " + err,
-                    "GAME_RENDER",
+                    "EE_RENDER",
                     LogType::LOG_WARNING);
             }
         }
@@ -772,7 +758,7 @@ namespace ElypsoEditor::Graphics
                 if (!err.empty())
                 {
                     KalaWindowCore::ForceClose(
-                        "Game render error",
+                        "Elypso Editor render error",
                         "Failed to get mesh '" + to_string(m->GetID()) 
                         + "' material because it was invalid! Reason: " + err);
                 }
@@ -782,7 +768,7 @@ namespace ElypsoEditor::Graphics
                 if (!err.empty())
                 {
                     KalaWindowCore::ForceClose(
-                        "Game render error",
+                        "Elypso Editor render error",
                         "Failed to get mesh '" + to_string(m->GetID()) 
                         + "' base color texture because it was invalid! Reason: " + err);
                 }
@@ -865,7 +851,7 @@ namespace ElypsoEditor::Graphics
         if (!texture)
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to create texture!");
         }
 
@@ -884,7 +870,7 @@ namespace ElypsoEditor::Graphics
         if (!mesh)
         {
             KalaWindowCore::ForceClose(
-                "Game render error",
+                "Elypso Editor render error",
                 "Failed to create mesh!");
         }
 

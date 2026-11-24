@@ -86,7 +86,7 @@ namespace ElypsoEditor::Core
         {
             Log::Print(
                 "Failed to initialize core because it has already been initialized!",
-                "BGE_CORE",
+                "EE_CORE",
                 LogType::LOG_WARNING);
 
             return;
@@ -96,7 +96,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get engine window '0'! Reason: " + err);
         }
 
@@ -104,7 +104,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get process window from engine window '" + to_string(ew1->GetID()) + "'! Reason: " + err);
         }
 
@@ -114,7 +114,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get graphics context from process window '" + to_string(ew1_pw->GetID()) + "'! Reason: " + err);
         }
 
@@ -122,7 +122,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get hit test from graphics context '" + to_string(ew1_gctx->GetID()) + "'! Reason: " + err);
         }
 
@@ -130,7 +130,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get root viewport from graphics context '" + to_string(ew1_gctx->GetID()) + "'! Reason: " + err);
         }
         ew1_gctx_vp1->SetType(ViewportType::FIT);
@@ -139,7 +139,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get primary 3D shader from viewport '" + to_string(ew1_gctx_vp1->GetID()) + "'! Reason: " + err);
         }
 
@@ -147,7 +147,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get primary 2D shader from viewport '" + to_string(ew1_gctx_vp1->GetID()) + "'! Reason: " + err);
         }
 
@@ -156,7 +156,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get unlit material from viewport '" + to_string(ew1_gctx_vp1->GetID()) + "'! Reason: " + err);
         }
 
@@ -165,7 +165,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get rect material from viewport '" + to_string(ew1_gctx_vp1->GetID()) + "'! Reason: " + err);
         }
 
@@ -174,7 +174,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get font material from viewport '" + to_string(ew1_gctx_vp1->GetID()) + "'! Reason: " + err);
         }
 
@@ -183,7 +183,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get root texture from shader '" + to_string(vp1_Shader3D_primary->GetID()) + "'! Reason: " + err);
         }
         Render::SetRootTexture(rootTex);
@@ -193,7 +193,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get fallback texture from shader '" + to_string(vp1_Shader3D_primary->GetID()) + "'! Reason: " + err);
         }
         Render::SetFallbackTexture(fallbackTex);
@@ -202,7 +202,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get primary 3D camera from viewport '" + to_string(ew1_gctx_vp1->GetID()) + "'! Reason: " + err);
         }
         Transform3D& camTransform = scast<Transform3D&>(vp1_Cam3D_primary->GetTransform());
@@ -215,7 +215,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get primary 2D camera from viewport '" + to_string(ew1_gctx_vp1->GetID()) + "'! Reason: " + err);
         }
 
@@ -223,7 +223,7 @@ namespace ElypsoEditor::Core
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
-                "Metal Metropolis core error",
+                "Elypso Editor core error",
                 "Failed to get input from engine windows process window '" + to_string(ew1_pw->GetID()) + "'! Reason: " + err);
         }
 
