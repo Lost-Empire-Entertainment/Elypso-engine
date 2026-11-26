@@ -369,7 +369,9 @@ namespace KalaGraphics::Graphics
     private:
         ~Mesh();
 
+        void ResolveAnchors();
         void UpdateMeshData();
+
         void Update(VkCommandBuffer buffer);
 
         u32 ID{};

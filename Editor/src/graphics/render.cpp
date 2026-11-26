@@ -17,8 +17,6 @@
 #include "graphics/kw_window_global.hpp"
 #include "graphics/kg_context.hpp"
 #include "graphics/kg_hit_test.hpp"
-#include "graphics/kg_viewport.hpp"
-#include "graphics/kg_shader.hpp"
 #include "graphics/kg_camera.hpp"
 #include "graphics/kg_material.hpp"
 #include "graphics/kg_texture.hpp"
@@ -45,6 +43,7 @@ using KalaHeaders::KalaMath::RotTarget;
 using KalaHeaders::KalaMath::SizeTarget;
 
 using KalaHeaders::KalaKeyStandards::KeyboardButton;
+using KalaHeaders::KalaKeyStandards::MouseButton;
 
 using KalaHeaders::KalaExportGLB::ExportMeshData;
 using KalaHeaders::KalaExportGLB::ExportGLBTextureData;
@@ -57,12 +56,13 @@ using ElypsoEngine::Import::ImportData;
 using ElypsoEngine::Export::ExportData;
 using KalaWindow::Core::KalaWindowCore;
 using KalaWindow::Core::Input;
+using KalaWindow::Graphics::ProcessWindow;
 using KalaWindow::Graphics::FileType;
 using KalaWindow::Graphics::Window_Global;
 using KalaGraphics::Graphics::VSyncState;
 using KalaGraphics::Graphics::GraphicsContext;
-using KalaGraphics::Graphics::Viewport;
-using KalaGraphics::Graphics::Shader;
+using KalaGraphics::Graphics::ViewportType;
+using KalaGraphics::Graphics::RootShaderTarget;
 using KalaGraphics::Graphics::Camera;
 using KalaGraphics::Graphics::AlphaMode;
 using KalaGraphics::Graphics::Material;
@@ -83,6 +83,7 @@ using KalaGraphics::Import::ImportMaterialData;
 using KalaGraphics::Import::ImportMesh;
 
 using ElypsoEditor::Core::ElypsoEditorCore;
+using ElypsoEditor::Graphics::TextData;
 
 using std::string;
 using std::to_string;
@@ -103,9 +104,7 @@ static vector<Mesh*> vp1_Mesh3D_importedMeshes{};
 static Material* vp1_Material_groundText{};
 static Mesh* vp1_Mesh3D_groundTest{};
 
-static Text* vp1_Text_fps{};
-static Mesh* vp1_Mesh2D_fps{};
-static Mesh* vp1_Mesh2D_fpsBackground{};
+static vector<TextData> vp1_Text_all{};
 
 static path lastImportedMeshPath{};
 static vector<Mesh*> lastImportedMeshPtrs{};
@@ -141,10 +140,9 @@ namespace ElypsoEditor::Graphics
 
         Viewport* viewport = ElypsoEditorCore::GetViewport();
         Shader* primary3DShader = ElypsoEditorCore::Get3DShader();
-        Shader* primary2DShader = ElypsoEditorCore::Get2DShader();
-        Material* unlitMat = ElypsoEditorCore::GetUnlitMaterial();
-        Material* rectMat = ElypsoEditorCore::GetRectMaterial();
-        Material* fontMat = ElypsoEditorCore::GetFontMaterial();
+        Input* input = ElypsoEditorCore::GetInput();
+
+        viewport->SetType(ViewportType::FILL);
 
         //
         // CREATE TEXTURES
@@ -265,72 +263,121 @@ namespace ElypsoEditor::Graphics
         */
 
         //
-        // CREATE FPS TEXT WIDGET
+        // CREATE TEXT WIDGETS
         //
 
-        vp1_Text_fps = Text::Initialize(
-            font->GetID(),
-            viewport->GetID());
+        Text* fpsText = Render::CreateText(
+            font,
+            viewport);
 
-        if (!vp1_Text_fps)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso Editor render error",
-                "Failed to create type test text!");
-        }
-        
-        //vp1_Text_fps->SetEditState(true);
-        vp1_Text_fps->SetMaxCharacters(50);
-
-        err = Mesh::GetRegistry().GetContent(vp1_Text_fps->GetMeshID(), vp1_Mesh2D_fps);
+        Mesh* fpsTextMesh{};
+        err = Mesh::GetRegistry().GetContent(fpsText->GetMeshID(), fpsTextMesh);
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
                 "Elypso Editor render error",
-                "Failed to initialize text because its mesh '" 
-                + to_string(vp1_Text_fps->GetMeshID()) + "' was invalid! Reason: " + err);
+                "Failed to create fps text because fps text mesh was invalid!");
         }
 
-        vp1_Mesh2D_fps->SetIgnoreHoverState(false);
+        Text* frameLengthText = Render::CreateText(
+            font,
+            viewport,
+            fpsTextMesh);
 
-        vp1_Mesh2D_fps->SetViewportAnchorPosition(AnchorPosition::TOP_LEFT);
-        vp1_Mesh2D_fps->SetSelfAnchorPosition(AnchorPosition::TOP_LEFT);
-
-        Material* fpsMeshMat{};
-        err = Material::GetRegistry().GetContent(vp1_Mesh2D_fps->GetMaterialID(), fpsMeshMat);
+        Mesh* frameLengthTextMesh{};
+        err = Mesh::GetRegistry().GetContent(frameLengthText->GetMeshID(), frameLengthTextMesh);
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
                 "Elypso Editor render error",
-                "Failed to initialize text because its mesh material '" 
-                + to_string(vp1_Mesh2D_fps->GetMaterialID()) + "' was invalid! Reason: " + err);
-        }
-        fpsMeshMat->SetBaseColor( vec4{0.0f, 0.0f, 0.0f, 1.0f} );
-        fpsMeshMat->SetAlphaMode(AlphaMode::TYPE_BLEND);
-
-        vp1_Mesh2D_fpsBackground = Mesh::Initialize(rectMat->GetID());
-
-        if (!vp1_Mesh2D_fpsBackground)
-        {
-            KalaWindowCore::ForceClose(
-                "Elypso Editor render error",
-                "Failed to create type test text background!");
+                "Failed to create frame length text because fps text mesh was invalid!");
         }
 
-        vp1_Mesh2D_fpsBackground->SetViewportAnchorPosition(AnchorPosition::TOP_LEFT);
-        vp1_Mesh2D_fpsBackground->SetSelfAnchorPosition(AnchorPosition::TOP_LEFT);
+        Text* pointOneText = Render::CreateText(
+            font,
+            viewport,
+            frameLengthTextMesh);
 
-        Material* fpsBackgroundMat{};
-        err = Material::GetRegistry().GetContent(vp1_Mesh2D_fpsBackground->GetMaterialID(), fpsBackgroundMat);
+        Mesh* pointOneTextMesh{};
+        err = Mesh::GetRegistry().GetContent(pointOneText->GetMeshID(), pointOneTextMesh);
         if (!err.empty())
         {
             KalaWindowCore::ForceClose(
                 "Elypso Editor render error",
-                "Failed to initialize text because its background mesh material '" 
-                + to_string(vp1_Mesh2D_fpsBackground->GetMaterialID()) + "' was invalid! Reason: " + err);
+                "Failed to create point one text because frame length text mesh was invalid!");
         }
-        fpsBackgroundMat->SetBaseColor( vec4{0.5f, 0.5f, 0.8f, 0.3f} );
-        fpsBackgroundMat->SetAlphaMode(AlphaMode::TYPE_BLEND);
+
+        Text* pointZeroOneText = Render::CreateText(
+            font,
+            viewport,
+            pointOneTextMesh);
+
+        Mesh* pointZeroOneTextMesh{};
+        err = Mesh::GetRegistry().GetContent(pointZeroOneText->GetMeshID(), pointZeroOneTextMesh);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create point zero one text because point one text mesh was invalid!");
+        }
+
+        Text* windowResText = Render::CreateText(
+            font,
+            viewport,
+            pointZeroOneTextMesh);
+
+        Mesh* windowResTextMesh{};
+        err = Mesh::GetRegistry().GetContent(windowResText->GetMeshID(), windowResTextMesh);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create window resolution text because point zero one text mesh was invalid!");
+        }
+
+        //
+        // CREATE BUTTONS
+        //
+
+        Text* importModelsButton = Render::CreateText(
+            font,
+            viewport);
+        importModelsButton->SetText("Import glb model", true);
+
+        TextData importModelsTextData = Render::GetTextData(importModelsButton);
+        if (!importModelsTextData.text)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to get import models button text data because import models text was invalid!");
+        }
+
+        importModelsTextData.textMesh->SetViewportAnchorPosition(AnchorPosition::TOP_CENTER);
+        importModelsTextData.textMesh->SetSelfAnchorPosition(AnchorPosition::TOP_CENTER);
+
+        importModelsTextData.textBackgroundMesh->SetSelfAnchorPosition(AnchorPosition::CENTER);
+        importModelsTextData.textBackgroundMesh->SetTargetAnchorPosition(
+            AnchorPosition::CENTER,
+            importModelsTextData.textMesh->GetID());
+
+        importModelsTextData.textBackgroundMesh->SetIgnoreHoverState(false);
+        importModelsTextData.textBackgroundMesh->SetMouseButtonPressedCallback(
+            MouseButton::M_LEFT,
+            [primary3DShader]() 
+                { 
+                    string err = Render::ImportMeshes(primary3DShader);
+                    if (!err.empty())
+                    {
+                        Log::Print(
+                            "Failed to import meshes! Reason: " + err,
+                            "EE_RENDER",
+                            LogType::LOG_WARNING);
+                    }
+                });
+
+        //
+        // FINISH
+        //
 
         //sync after kg objects are done with initialization
         EngineCore::SyncID();
@@ -342,10 +389,10 @@ namespace ElypsoEditor::Graphics
     {
         if (!isInitialized) return;
 
+        static ProcessWindow* pw = ElypsoEditorCore::GetProcessWindow();
         static Input* input = ElypsoEditorCore::GetInput();
         static GraphicsContext* gctx = ElypsoEditorCore::GetGraphicsContext();
-        static Shader* primary3DShader = ElypsoEditorCore::Get3DShader();
-        static Material* unlitMat = ElypsoEditorCore::GetUnlitMaterial();
+        static Viewport* viewport = ElypsoEditorCore::GetViewport();
         static Camera* camera = ElypsoEditorCore::GetCamera();
 
         ToggleCamera(input);
@@ -355,44 +402,134 @@ namespace ElypsoEditor::Graphics
             camera,
             EngineCore::GetDeltaTime());
 
-        string err = ImportMeshes(
-            input, 
-            primary3DShader);
-        if (!err.empty())
-        {
-            Log::Print(
-                "Failed to import meshes! Reason: " + err,
-                "EE_RENDER",
-                LogType::LOG_WARNING);
-        }
-
         ToggleVSync(gctx, input);
+
+        //first is always fps text
+        Text* fpsText = vp1_Text_all[0].text;
+        if (!fpsText)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor runtime error",
+                "Failed to update FPS text because its widget was invalid!");
+        }
+        //second is always frame length text
+        Text* frameLengthText = vp1_Text_all[1].text;
+        if (!frameLengthText)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor runtime error",
+                "Failed to update frame length text because its widget was invalid!");
+        }
+        //third is always point one text
+        Text* pointOneText = vp1_Text_all[2].text;
+        if (!pointOneText)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor runtime error",
+                "Failed to update point one text because its widget was invalid!");
+        }
+        //fourth is always point zero one text
+        Text* pointZeroOneText = vp1_Text_all[3].text;
+        if (!pointZeroOneText)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor runtime error",
+                "Failed to update point zero one text because its widget was invalid!");
+        }
 
         static string lastFPS{};
         string fps = ElypsoEditorCore::GetFPS()[0];
+        string frameLength = ElypsoEditorCore::GetFPS()[1];
+        string pointOne = ElypsoEditorCore::GetFPS()[2];
+        string pointZeroOne = ElypsoEditorCore::GetFPS()[3];
 
         if (lastFPS != ""
             && fps == "")
         {
             lastFPS = fps;
-            vp1_Text_fps->SetText("");
+
+            fpsText->SetText("");
+            frameLengthText->SetText("");
+            pointOneText->SetText("");
+            pointZeroOneText->SetText("");
         }
         if (lastFPS != fps)
         {
             lastFPS = fps;
-            vp1_Text_fps->SetText(fps, true);
+
+            fpsText->SetText(fps, true);
+            if (frameLengthText->GetText(true) != frameLength)
+            {
+                frameLengthText->SetText(frameLength, true);
+            }
+            if (pointOneText->GetText(true) != pointOne)
+            {
+                pointOneText->SetText(pointOne, true);
+            }
+            if (pointZeroOneText->GetText(true) != pointZeroOne)
+            {
+                pointZeroOneText->SetText(pointZeroOne, true);
+            }
         }
 
-        Transform2D& fpsTransform = scast<Transform2D&>(vp1_Mesh2D_fps->GetTransform());
-        Transform2D& fpsBackgroundTransform = scast<Transform2D&>(vp1_Mesh2D_fpsBackground->GetTransform());
-
-        const vec2 textSize = fpsTransform.getsize(SizeTarget::LOCAL);
-        const vec2 textBackgroundSize = fpsBackgroundTransform.getsize(SizeTarget::LOCAL);
-
-        if (textBackgroundSize != textSize)
+        //fifth is always window resolution
+        Text* winResText = vp1_Text_all[4].text;
+        if (!winResText)
         {
-            fpsBackgroundTransform.setsize(textSize);
-            fpsBackgroundTransform.update();
+            KalaWindowCore::ForceClose(
+                "Elypso Editor runtime error",
+                "Failed to update window resolution text because its widget was invalid!");
+        }
+        
+        static string lastWinRes{};
+        vec2 winResOriginal = pw->GetSize();
+        string winRes = 
+            "resolution: " +
+            to_string(scast<u32>(winResOriginal.x)) + "x" 
+            + to_string(scast<u32>(winResOriginal.y));
+
+        if (lastWinRes != winRes)
+        {
+            lastWinRes = winRes;
+            winResText->SetText(lastWinRes, true);
+        }
+
+        //third is always viewport resolution
+        Text* vpResText = vp1_Text_all[2].text;
+        if (!vpResText)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor runtime error",
+                "Failed to update viewport resolution text because its widget was invalid!");
+        }
+        
+        static string lastVPRes{};
+        vec2 vpResOriginal = viewport->GetScissorSize();
+        string vpRes = 
+            to_string(scast<u32>(vpResOriginal.x)) + "x" 
+            + to_string(scast<u32>(vpResOriginal.y));
+
+        if (lastVPRes != vpRes)
+        {
+            lastVPRes = vpRes;
+            vpResText->SetText(lastVPRes, true);
+        }
+
+        for (TextData& td : vp1_Text_all)
+        {
+            if (!td.text) continue;
+
+            Transform2D& tr = scast<Transform2D&>(td.textMesh->GetTransform());
+            Transform2D& bgtr = scast<Transform2D&>(td.textBackgroundMesh->GetTransform());
+
+            const vec2 textSize = tr.getsize(SizeTarget::LOCAL);
+            const vec2 textBackgroundSize = bgtr.getsize(SizeTarget::LOCAL);
+
+            if (textBackgroundSize != textSize)
+            {
+                bgtr.setsize(textSize);
+                bgtr.update();
+            }
         }
 
         /*
@@ -466,6 +603,19 @@ namespace ElypsoEditor::Graphics
         Camera* cam,
         f32 deltaTime)
     {
+        if (!input)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to move camera because input was invalid!");
+        }
+        if (!cam)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to move camera because camera was invalid!");
+        }
+
         static f32 sprintMultiplier = 2.0f;
 
         if (!isCameraMovable) return;
@@ -528,152 +678,148 @@ namespace ElypsoEditor::Graphics
     path Render::GetLastImportedMeshPath() { return lastImportedMeshPath; }
     vector<Mesh*> Render::GetLastImportedMeshPointers() { return lastImportedMeshPtrs; }
 
-    string Render::ImportMeshes(
-        Input* input,
-        Shader* shader)
+    string Render::ImportMeshes(Shader* shader)
     {
-        if (!input) return "Input was invalid!";
         if (!shader) return "Shader was invalid!";
 
-        if (input->IsKeyPressed(KeyboardButton::K_SPACE))
+        vector<path> files = Window_Global::GetFiles(
+            FileType::CUSTOM,
+            {
+                ".glb",
+                ".gltf",
+                ".edat"
+                });
+
+        if (files.empty()) return "No assets were selected!";
+
+        ImportMesh* importMesh{};
+
+        if (files.front().extension() == ".edat")
         {
-            vector<path> files = Window_Global::GetFiles(
-                FileType::CUSTOM,
+            string err = ImportData::ImportAssetData(path(files.front()));
+            if (!err.empty()) return err;
+
+            vector<AssetData> assetData = ImportData::GetAssetData();
+            if (assetData.empty()) return "GetAssetData returned empty vector!";
+
+            vector<AssetData> streamedAssets{};
+            err = ImportData::StreamAssets(
+                { assetData.front().assetName },
+                streamedAssets);
+
+            if (!err.empty()) return err;
+
+            importMesh = ImportMesh::Initialize(std::move(streamedAssets.front().assetData));
+        }
+        else importMesh = ImportMesh::Initialize(path(files.front()));
+
+        if (!importMesh) return "ImportMesh couldn't be initialized!";
+
+        vector<u32> meshIDs{};
+
+        if (!lastImportedMeshPtrs.empty())
+        {
+            for (Mesh* m : lastImportedMeshPtrs) m->Destroy();
+            lastImportedMeshPtrs.clear();
+
+            //make sure latest model has latest content
+            ImportData::ClearImportedData();
+        }
+
+        for (const ImportNodeData& nodeData : importMesh->GetMeshData())
+        {
+            for (const ImportPrimitiveData& primitiveData : nodeData.primitiveData)
+            {
+                Material* mat = Material::Initialize(shader->GetID());
+                if (!mat)
                 {
-                    ".glb",
-                    ".gltf",
-                    ".edat"
-                    });
-
-            if (files.empty()) return "No assets were selected!";
-
-            ImportMesh* importMesh{};
-
-            if (files.front().extension() == ".edat")
-            {
-                string err = ImportData::ImportAssetData(path(files.front()));
-                if (!err.empty()) return err;
-
-                vector<AssetData> assetData = ImportData::GetAssetData();
-                if (assetData.empty()) return "GetAssetData returned empty vector!";
-
-                vector<AssetData> streamedAssets{};
-                err = ImportData::StreamAssets(
-                    { assetData.front().assetName },
-                    streamedAssets);
-
-                if (!err.empty()) return err;
-
-                importMesh = ImportMesh::Initialize(std::move(streamedAssets.front().assetData));
-            }
-            else importMesh = ImportMesh::Initialize(path(files.front()));
-
-            if (!importMesh) return "ImportMesh couldn't be initialized!";
-
-            vector<u32> meshIDs{};
-
-            if (!lastImportedMeshPtrs.empty())
-            {
-                for (Mesh* m : lastImportedMeshPtrs) m->Destroy();
-                lastImportedMeshPtrs.clear();
-
-                //make sure latest model has latest content
-                ImportData::ClearImportedData();
-            }
-
-            for (const ImportNodeData& nodeData : importMesh->GetMeshData())
-            {
-                for (const ImportPrimitiveData& primitiveData : nodeData.primitiveData)
-                {
-                    Material* mat = Material::Initialize(shader->GetID());
-                    if (!mat)
-                    {
-                        KalaWindowCore::ForceClose(
-                            "Elypso Editor render error",
-                            "Failed to create mesh material!");
-                    }
-
-                    Mesh* primitive = Mesh::Initialize(mat->GetID());
-
-                    if (!primitive)
-                    {
-                        KalaWindowCore::ForceClose(
-                            "Elypso Editor render error",
-                            "Failed to import model '" + files.front().string() 
-                            + "' because one of its primitives failed to initialize!");
-                    }
-
-                    primitive->SetMeshData(
-                    {
-                        .vertices = vector<Vertex>(primitiveData.meshData.vertices),
-                        .indices = vector<u32>(primitiveData.meshData.indices)
-                    });
-
-                    Transform3D& mt = primitive->GetTransform();
-                    mt.setpos(nodeData.transform.getpos(PosTarget::LOCAL));
-                    mt.setrotquat(nodeData.transform.getrotquat(RotTarget::LOCAL));
-                    mt.setsize(nodeData.transform.getsize(SizeTarget::LOCAL));
-                    mt.update();
-
-                    primitive->FlipFaceDirection();
-
-                    const ImportMaterialData& matData = primitiveData.matData;
-
-                    mat->SetBaseColor(vec4(matData.baseColor));
-
-                    if (matData.alphaMode != AlphaMode::TYPE_OPAQUE)
-                    {
-                        mat->SetAlphaMode(matData.alphaMode);
-
-                        if (matData.alphaMode == AlphaMode::TYPE_MASK)
-                        {
-                            mat->SetAlphaCutoff(matData.alphaCutoff);
-                        }
-                    }
-
-                    if (!matData.textureData.pixelData.empty())
-                    {
-                        Texture* meshTex = Texture::Initialize(shader->GetID());
-                        if (!meshTex)
-                        {
-                            KalaWindowCore::ForceClose(
-                                "Elypso Editor render error",
-                                "Failed to create mesh texture!");
-                        }
-
-                        meshTex->SetPixelData(vector<u8>(matData.textureData.pixelData));
-                        meshTex->SetSize(matData.textureData.size);
-                        meshTex->SetPixelFormat(matData.textureData.pixelFormat);
-
-                        mat->SetBaseColorTextureID(meshTex->GetID());
-                    }
-
-                    lastImportedMeshPtrs.push_back(primitive);
-
-                    meshIDs.push_back(primitive->GetID());
+                    KalaWindowCore::ForceClose(
+                        "Elypso Editor render error",
+                        "Failed to create mesh material!");
                 }
+
+                Mesh* primitive = Mesh::Initialize(mat->GetID());
+
+                if (!primitive)
+                {
+                    KalaWindowCore::ForceClose(
+                        "Elypso Editor render error",
+                        "Failed to import model '" + files.front().string() 
+                        + "' because one of its primitives failed to initialize!");
+                }
+
+                primitive->SetMeshData(
+                {
+                    .vertices = vector<Vertex>(primitiveData.meshData.vertices),
+                    .indices = vector<u32>(primitiveData.meshData.indices)
+                });
+
+                Transform3D& mt = primitive->GetTransform();
+                mt.setpos(nodeData.transform.getpos(PosTarget::LOCAL));
+                mt.setrotquat(nodeData.transform.getrotquat(RotTarget::LOCAL));
+                mt.setsize(nodeData.transform.getsize(SizeTarget::LOCAL));
+                mt.update();
+
+                primitive->FlipFaceDirection();
+
+                const ImportMaterialData& matData = primitiveData.matData;
+
+                mat->SetBaseColor(vec4(matData.baseColor));
+
+                if (matData.alphaMode != AlphaMode::TYPE_OPAQUE)
+                {
+                    mat->SetAlphaMode(matData.alphaMode);
+
+                    if (matData.alphaMode == AlphaMode::TYPE_MASK)
+                    {
+                        mat->SetAlphaCutoff(matData.alphaCutoff);
+                    }
+                }
+
+                if (!matData.textureData.pixelData.empty())
+                {
+                    Texture* meshTex = Texture::Initialize(shader->GetID());
+                    if (!meshTex)
+                    {
+                        KalaWindowCore::ForceClose(
+                            "Elypso Editor render error",
+                            "Failed to create mesh texture!");
+                    }
+
+                    meshTex->SetPixelData(vector<u8>(matData.textureData.pixelData));
+                    meshTex->SetSize(matData.textureData.size);
+                    meshTex->SetPixelFormat(matData.textureData.pixelFormat);
+
+                    mat->SetBaseColorTextureID(meshTex->GetID());
+                }
+
+                lastImportedMeshPtrs.push_back(primitive);
+
+                meshIDs.push_back(primitive->GetID());
             }
+        }
 
-            if (files.front().extension() != ".edat")
-            {
-                lastImportedMeshPath = files.front();
-            }
+        if (files.front().extension() != ".edat")
+        {
+            lastImportedMeshPath = files.front();
+        }
 
-            static int exportIndex{};
+        static int exportIndex{};
 
-            //temporarily exporting meshes right after import succeeds
-            string err = ExportMeshes(
-                lastImportedMeshPath.parent_path() 
-                / string(lastImportedMeshPath.stem().string() + "_" + to_string(++exportIndex) + ".edat"),
-                lastImportedMeshPtrs);
+        //temporarily exporting meshes right after import succeeds
+        string err = ExportMeshes(
+            lastImportedMeshPath.parent_path() 
+            / string(lastImportedMeshPath.stem().string() + "_" + to_string(++exportIndex) + ".edat"),
+            lastImportedMeshPtrs);
 
-            if (!err.empty())
-            {
-                Log::Print(
-                    "Failed to export meshes! Reason: " + err,
-                    "EE_RENDER",
-                    LogType::LOG_WARNING);
-            }
+        if (!err.empty())
+        {
+            Log::Print(
+                "Failed to export meshes! Reason: " + err,
+                "EE_RENDER",
+                LogType::LOG_WARNING);
+
+            return {};
         }
 
         return {};
@@ -837,10 +983,140 @@ namespace ElypsoEditor::Graphics
         return "";
     }
 
+    TextData Render::GetTextData(Text* text)
+    {
+        if (!text)
+        {
+            Log::Print(
+                "Failed to get text data because text was invalid!",
+                "EE_RENDER",
+                LogType::LOG_WARNING);
+
+            return {};
+        }
+
+        for (TextData td : vp1_Text_all)
+        {
+            if (td.text->GetID() == text->GetID()) return td;
+        }
+
+        Log::Print(
+            "Failed to get text data because text was not used in editor!",
+            "EE_RENDER",
+            LogType::LOG_WARNING);
+
+        return {};
+    }
+    Text* Render::CreateText(
+        ImportFont* font,
+        Viewport* viewport,
+        Mesh* targetMeshAnchor)
+    {
+        if (!font)
+        {
+            Log::Print(
+                "Failed to create text because font was invalid!",
+                "EE_RENDER",
+                LogType::LOG_WARNING);
+
+            return {};
+        }
+        if (!viewport)
+        {
+            Log::Print(
+                "Failed to create text because viewport was invalid!",
+                "EE_RENDER",
+                LogType::LOG_WARNING);
+
+            return {};
+        }
+
+        //sync ids before generating text
+        EngineCore::SyncID();
+
+        TextData textData{};
+
+        textData.text = Text::Initialize(
+            font->GetID(),
+            viewport->GetID());
+
+        //textData.text->SetEditState(true);
+        textData.text->SetMaxCharacters(50);
+
+        string err = Mesh::GetRegistry().GetContent(textData.text->GetMeshID(), textData.textMesh);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create text because text mesh was invalid!");
+        }
+
+        //textData.textMesh->SetIgnoreHoverState(false);
+
+        if (!targetMeshAnchor)
+        {
+            textData.textMesh->SetViewportAnchorPosition(AnchorPosition::TOP_LEFT);
+            textData.textMesh->SetSelfAnchorPosition(AnchorPosition::TOP_LEFT);
+        }
+        else
+        {
+            textData.textMesh->SetSelfAnchorPosition(AnchorPosition::TOP_LEFT);
+            textData.textMesh->SetTargetAnchorPosition(
+                AnchorPosition::BOTTOM_LEFT,
+                targetMeshAnchor->GetID());
+        }
+
+        Material* textMeshMat{};
+        err = Material::GetRegistry().GetContent(textData.textMesh->GetMaterialID(), textMeshMat);
+        if (!err.empty())
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create text because text material was invalid!");
+        }
+        textMeshMat->SetBaseColor( vec4{0.0f, 0.0f, 0.0f, 1.0f} );
+        textMeshMat->SetAlphaMode(AlphaMode::TYPE_BLEND);
+
+        Material* textBackgroundMeshMat = Material::Initialize(viewport->GetRootShaderID(RootShaderTarget::RECT));
+        if (!textBackgroundMeshMat)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create text because text background material failed to be initialized!");
+        }
+
+        textData.textBackgroundMesh = Mesh::Initialize(textBackgroundMeshMat->GetID());
+        if (!textData.textBackgroundMesh)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create text because text background mesh failed to be initialized!");
+        }
+
+        textData.textBackgroundMesh->SetSelfAnchorPosition(
+            AnchorPosition::TOP_LEFT);
+        textData.textBackgroundMesh->SetTargetAnchorPosition(
+            AnchorPosition::TOP_LEFT,
+            textData.textMesh->GetID());
+
+        textBackgroundMeshMat->SetBaseColor( vec4{0.5f, 0.5f, 0.8f, 0.3f} );
+        textBackgroundMeshMat->SetAlphaMode(AlphaMode::TYPE_BLEND);
+
+        vp1_Text_all.push_back(textData);
+        return vp1_Text_all.back().text;
+    }
+
     Texture* Render::CreateTexture(
         Shader* shader,
         TextureData&& textureData)
     {
+        if (!shader)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create texture because shader was invalid!");
+        }
+
         //sync ids before generating texture
         EngineCore::SyncID();
 
@@ -862,6 +1138,13 @@ namespace ElypsoEditor::Graphics
         Material* mat,
         MeshData&& meshData)
     {
+        if (!mat)
+        {
+            KalaWindowCore::ForceClose(
+                "Elypso Editor render error",
+                "Failed to create mesh because material was invalid!");
+        }
+
         //sync ids before generating mesh
         EngineCore::SyncID();
 

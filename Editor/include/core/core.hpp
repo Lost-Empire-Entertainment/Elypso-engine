@@ -10,6 +10,7 @@
 #include <filesystem>
 
 #include "core/kw_input.hpp"
+#include "graphics/kw_window.hpp"
 #include "graphics/kg_context.hpp"
 #include "graphics/kg_viewport.hpp"
 #include "graphics/kg_shader.hpp"
@@ -19,6 +20,7 @@
 namespace ElypsoEditor::Core
 {
     using KalaWindow::Core::Input;
+    using KalaWindow::Graphics::ProcessWindow;
     using KalaGraphics::Graphics::GraphicsContext;
     using KalaGraphics::Graphics::Viewport;
     using KalaGraphics::Graphics::Shader;
@@ -36,6 +38,8 @@ namespace ElypsoEditor::Core
         static bool IsInitialized();
         static void Initialize();
 
+        KNODISCARD
+        static ProcessWindow* GetProcessWindow();
         KNODISCARD
         static Input* GetInput();
 

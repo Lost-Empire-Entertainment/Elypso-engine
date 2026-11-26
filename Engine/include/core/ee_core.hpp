@@ -47,10 +47,7 @@ namespace ElypsoEngine::Core
     extern void Update();
     //Runs once per frame after most Engine-side updates are complete
     extern void LateUpdate();
-    //Runs once just before application shutdown,
-    //should not contain KalaWindow window-specific operations because
-    //user may trigger engine shutdown via X button or Alt+F4
-    //which closes the process windows first before this call can be reached
+    //Runs once just before application shutdown
     extern void Shutdown();
 
     class LIB_API EngineCore

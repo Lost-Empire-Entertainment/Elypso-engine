@@ -230,6 +230,7 @@ namespace ElypsoEditor::Core
         isInitialized = true;
     }
 
+    ProcessWindow* ElypsoEditorCore::GetProcessWindow() { return ew1_pw; }
     Input* ElypsoEditorCore::GetInput() { return ew1_pw_input; }
     GraphicsContext* ElypsoEditorCore::GetGraphicsContext() { return ew1_gctx; }
     Viewport* ElypsoEditorCore::GetViewport() { return ew1_gctx_vp1; }
